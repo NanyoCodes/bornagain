@@ -17,7 +17,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
-import type { Soul } from "@/lib/types";
+import type { Soul, Campaign } from "@/lib/types";
 import { Textarea } from "@/components/ui/textarea";
 
 const formSchema = z.object({
@@ -30,9 +30,10 @@ const formSchema = z.object({
 
 type LogSoulFormProps = {
   onSoulLogged: (soul: Soul) => void;
+  campaigns: Campaign[];
 };
 
-export function LogSoulForm({ onSoulLogged }: LogSoulFormProps) {
+export function LogSoulForm({ onSoulLogged, campaigns }: LogSoulFormProps) {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -128,17 +129,28 @@ export function LogSoulForm({ onSoulLogged }: LogSoulFormProps) {
         />
          {form.watch("source") === "Campaign" && (
             <FormField
-            control={form.control}
-            name="sourceDetails"
-            render={({ field }) => (
+              control={form.control}
+              name="sourceDetails"
+              render={({ field }) => (
                 <FormItem>
-                <FormLabel>Campaign Name</FormLabel>
-                <FormControl>
-                    <Input placeholder="e.g., Nairobi City-Wide Outreach" {...field} />
-                </FormControl>
-                <FormMessage />
+                  <FormLabel>Campaign Name</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select from your campaigns" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {campaigns.map((campaign) => (
+                        <SelectItem key={campaign.id} value={campaign.title}>
+                          {campaign.title}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
                 </FormItem>
-            )}
+              )}
             />
          )}
          {form.watch("source") === "Referral" && (

@@ -6,11 +6,12 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { PlusCircle } from "lucide-react";
 import { SoulsWonTable } from "@/components/souls/souls-won-table";
 import { LogSoulForm } from "@/components/souls/log-soul-form";
-import { mockSoulsWon } from "@/lib/data";
-import type { Soul } from "@/lib/types";
+import { mockSoulsWon, mockCampaigns } from "@/lib/data";
+import type { Soul, Campaign } from "@/lib/types";
 
 export default function SoulsWonPage() {
   const [souls, setSouls] = useState<Soul[]>(mockSoulsWon);
+  const [campaigns] = useState<Campaign[]>(mockCampaigns);
   const [isLogDialogOpen, setIsLogDialogOpen] = useState(false);
 
   const handleSoulLogged = (newSoul: Soul) => {
@@ -47,7 +48,7 @@ export default function SoulsWonPage() {
                 Record the details of the person you've ministered to.
               </DialogDescription>
             </DialogHeader>
-            <LogSoulForm onSoulLogged={handleSoulLogged} />
+            <LogSoulForm onSoulLogged={handleSoulLogged} campaigns={campaigns} />
           </DialogContent>
         </Dialog>
       </div>

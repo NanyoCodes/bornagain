@@ -54,8 +54,7 @@ function AppHeader() {
           href="/dashboard"
           className="flex items-center gap-2 text-lg font-semibold md:text-base"
         >
-          {logo && <Image src={logo.imageUrl} alt="Logo" width={32} height={32} />}
-          <span className="font-headline text-xl font-semibold text-primary">Testify</span>
+          {logo && <Image src={logo.imageUrl} alt="Testify" width={32} height={32} />}
         </Link>
         {navItems.map((item) => (
           <Link
@@ -88,8 +87,7 @@ function AppHeader() {
               href="/dashboard"
               className="mb-4 flex items-center gap-2 text-lg font-semibold"
             >
-              {logo && <Image src={logo.imageUrl} alt="Logo" width={32} height={32} />}
-              <span className="font-headline text-xl font-semibold text-primary">Testify</span>
+              {logo && <Image src={logo.imageUrl} alt="Testify" width={32} height={32} />}
             </Link>
             {navItems.map((item) => (
               <Link
