@@ -43,6 +43,9 @@ export function CreateCampaignForm() {
   const [ideas, setIdeas] = useState<CampaignIdeas | null>(null);
   const [selectedName, setSelectedName] = useState('');
   const [customName, setCustomName] = useState('');
+  const [finalDescription, setFinalDescription] = useState('');
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const [isCreating, setIsCreating] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -61,6 +64,7 @@ export function CreateCampaignForm() {
       if (result.campaignNames.length > 0) {
         setSelectedName(result.campaignNames[0]);
       }
+      setFinalDescription(result.description);
     } catch (error) {
       toast({
         variant: "destructive",
@@ -70,6 +74,25 @@ export function CreateCampaignForm() {
     } finally {
       setIsGenerating(false);
     }
+  }
+
+  const handleCreateCampaign = async () => {
+    const finalName = selectedName === 'custom' ? customName : selectedName;
+    if (!finalName) {
+        toast({ variant: 'destructive', title: 'Missing Name', description: 'Please select or enter a campaign name.' });
+        return;
+    }
+    if (!photoFile) {
+        toast({ variant: 'destructive', title: 'Missing Photo', description: 'Please upload a campaign photo.' });
+        return;
+    }
+
+    setIsCreating(true);
+    // Simulate creation
+    await new Promise(res => setTimeout(res, 1500));
+    toast({ title: 'Campaign Created!', description: `The "${finalName}" campaign is now ready.` });
+    setIsCreating(false);
+    // In a real app, you'd probably close the dialog here and refresh.
   }
 
   return (
@@ -177,11 +200,18 @@ export function CreateCampaignForm() {
                   />
                 )}
               </div>
+              <div className="space-y-2">
+                <Label htmlFor="photo">Campaign Photo</Label>
+                <Input id="photo" type="file" accept="image/*" onChange={(e) => setPhotoFile(e.target.files?.[0] ?? null)} />
+              </div>
               <div>
                 <h3 className="text-lg font-semibold mb-2">Suggested Description</h3>
-                <Textarea value={ideas.description} readOnly rows={5} className="bg-muted"/>
+                <Textarea value={finalDescription} onChange={(e) => setFinalDescription(e.target.value)} rows={5} />
               </div>
-              <Button className="w-full">Create Campaign with these details</Button>
+              <Button className="w-full" onClick={handleCreateCampaign} disabled={isCreating}>
+                {isCreating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Create Campaign with these details
+              </Button>
             </div>
           </CardContent>
         </Card>
