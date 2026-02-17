@@ -1,8 +1,8 @@
 'use server';
 /**
- * @fileOverview This file provides an AI-powered flow to summarize longer testimonies.
+ * @fileOverview This file provides an AI-powered flow to rephrase testimonies.
  *
- * - summarizeTestimony - A function that generates a concise summary of a given testimony text.
+ * - summarizeTestimony - A function that generates a rephrased version of a given testimony text.
  * - SummarizeTestimonyInput - The input type for the summarizeTestimony function.
  * - SummarizeTestimonyOutput - The return type for the summarizeTestimony function.
  */
@@ -12,11 +12,11 @@ import {z} from 'genkit';
 
 const SummarizeTestimonyInputSchema = z
   .string()
-  .describe('The full text of the testimony to summarize.');
+  .describe('The full text of the testimony to rephrase.');
 export type SummarizeTestimonyInput = z.infer<typeof SummarizeTestimonyInputSchema>;
 
 const SummarizeTestimonyOutputSchema = z.object({
-  summary: z.string().describe('A concise summary of the testimony.'),
+  summary: z.string().describe('A rephrased version of the testimony.'),
 });
 export type SummarizeTestimonyOutput = z.infer<typeof SummarizeTestimonyOutputSchema>;
 
@@ -29,7 +29,7 @@ const summarizeTestimonyPrompt = ai.definePrompt({
   name: 'summarizeTestimonyPrompt',
   input: {schema: SummarizeTestimonyInputSchema},
   output: {schema: SummarizeTestimonyOutputSchema},
-  prompt: `Please provide a concise summary of the following testimony. Focus on the main points and key events, keeping it brief and easy to understand.
+  prompt: `Rephrase the following testimony to make it more engaging, fluent, and eloquent. Keep the original meaning and tone, but improve the wording and flow. Do not summarize it; instead, enhance the existing text.
 
 Testimony: {{{this}}}`,
 });
@@ -43,7 +43,7 @@ const summarizeTestimonyFlow = ai.defineFlow(
   async input => {
     const {output} = await summarizeTestimonyPrompt(input);
     if (!output) {
-      throw new Error('Failed to generate summary.');
+      throw new Error('Failed to generate rephrased content.');
     }
     return output;
   }

@@ -45,7 +45,7 @@ type CreateTestimonyFormProps = {
 export function CreateTestimonyForm({ onTestimonyCreated }: CreateTestimonyFormProps) {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSummarizing, setIsSummarizing] = useState(false);
+  const [isRephrasing, setIsRephrasing] = useState(false);
   const [moderationResult, setModerationResult] = useState<any>(null);
   const [mediaFile, setMediaFile] = useState<File | null>(null);
 
@@ -76,32 +76,32 @@ export function CreateTestimonyForm({ onTestimonyCreated }: CreateTestimonyFormP
     }
   };
 
-  const handleSummarize = async () => {
+  const handleRephrase = async () => {
     const content = form.getValues("content");
-    if (content.length < 100) {
+    if (content.length < 50) {
       toast({
         variant: "destructive",
         title: "Content too short",
-        description: "Please write at least 100 characters to generate a summary.",
+        description: "Please write at least 50 characters to rephrase the testimony.",
       });
       return;
     }
-    setIsSummarizing(true);
+    setIsRephrasing(true);
     try {
       const summary = await summarizeTestimony(content);
       form.setValue("content", summary);
       toast({
-        title: "Content Summarized!",
-        description: "AI has created a concise version of your testimony.",
+        title: "Content Rephrased!",
+        description: "AI has created an enhanced version of your testimony.",
       });
     } catch (error) {
       toast({
         variant: "destructive",
-        title: "Summarization Failed",
-        description: "Could not summarize the content. Please try again.",
+        title: "Rephrasing Failed",
+        description: "Could not rephrase the content. Please try again.",
       });
     } finally {
-      setIsSummarizing(false);
+      setIsRephrasing(false);
     }
   };
 
@@ -208,15 +208,15 @@ export function CreateTestimonyForm({ onTestimonyCreated }: CreateTestimonyFormP
                   type="button"
                   variant="ghost"
                   size="sm"
-                  onClick={handleSummarize}
-                  disabled={isSummarizing}
+                  onClick={handleRephrase}
+                  disabled={isRephrasing}
                 >
-                  {isSummarizing ? (
+                  {isRephrasing ? (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   ) : (
                     <Wand2 className="mr-2 h-4 w-4" />
                   )}
-                  Summarize with AI
+                  Rephrase with AI
                 </Button>
               </div>
               <FormControl>
