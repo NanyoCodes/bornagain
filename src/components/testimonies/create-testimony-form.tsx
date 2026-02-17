@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -63,7 +64,7 @@ export function CreateTestimonyForm({ onTestimonyCreated }: CreateTestimonyFormP
         toast({
           variant: "destructive",
           title: "File too large",
-          description: `The selected file exceeds the ${MAX_FILE_SIZE_MB}MB size limit.`,
+          description: `Please choose a file smaller than ${MAX_FILE_SIZE_MB}MB.`,
         });
         event.target.value = ''; // Clear the input
         setMediaFile(null);
@@ -236,7 +237,7 @@ export function CreateTestimonyForm({ onTestimonyCreated }: CreateTestimonyFormP
               <Input id="media" type="file" accept="image/*,video/*,audio/*" onChange={handleFileChange} />
             </FormControl>
             <FormDescription>
-              Optional. Max file size: {MAX_FILE_SIZE_MB}MB.
+              Optional. Add one photo, video, or audio file. Max size: {MAX_FILE_SIZE_MB}MB.
             </FormDescription>
         </div>
         
