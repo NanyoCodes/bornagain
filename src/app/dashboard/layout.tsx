@@ -8,7 +8,7 @@ import {
   Home,
   LogOut,
   Newspaper,
-  PanelLeft,
+  Menu,
   Search,
   Settings,
   Target,
@@ -18,20 +18,6 @@ import {
 } from "lucide-react";
 
 import {
-  SidebarProvider,
-  Sidebar,
-  SidebarHeader,
-  SidebarContent,
-  SidebarMenu,
-  SidebarMenuItem,
-  SidebarMenuButton,
-  SidebarFooter,
-  SidebarInset,
-  useSidebar,
-} from "@/components/ui/sidebar";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -39,39 +25,102 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { cn } from "@/lib/utils";
 
 const logo = PlaceHolderImages.find((img) => img.id === "logo");
 const userAvatar = PlaceHolderImages.find((img) => img.id === "user-1");
 
+const navItems = [
+  { href: "/dashboard", label: "Dashboard", icon: Home },
+  { href: "/dashboard/testimonies", label: "Testimonies", icon: Newspaper },
+  { href: "/dashboard/campaigns", label: "Campaigns", icon: Target },
+  { href: "/dashboard/progress", label: "Progress", icon: TrendingUp },
+  { href: "/dashboard/souls-won", label: "Souls Won", icon: UserPlus },
+];
+
 function AppHeader() {
-  const { toggleSidebar, isMobile } = useSidebar();
+  const pathname = usePathname();
+
   return (
-    <header className="sticky top-0 z-10 flex h-16 items-center gap-4 border-b bg-background/80 px-4 backdrop-blur-sm md:px-6">
-      {isMobile && (
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={toggleSidebar}
-          className="md:hidden"
+    <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background px-4 sm:px-6">
+      <nav className="hidden flex-col gap-6 text-lg font-medium md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-6">
+        <Link
+          href="/dashboard"
+          className="flex items-center gap-2 text-lg font-semibold md:text-base"
         >
-          <PanelLeft className="h-5 w-5" />
-          <span className="sr-only">Toggle sidebar</span>
-        </Button>
-      )}
-      <div className="relative flex-1">
-        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-        <Input
-          type="search"
-          placeholder="Search..."
-          className="w-full rounded-lg bg-muted pl-8 md:w-[200px] lg:w-[320px]"
-        />
-      </div>
-      <div className="flex items-center gap-2">
+          {logo && <Image src={logo.imageUrl} alt="Logo" width={32} height={32} />}
+          <span className="font-headline text-xl font-semibold text-primary">Testify</span>
+        </Link>
+        {navItems.map((item) => (
+          <Link
+            key={item.href}
+            href={item.href}
+            className={cn(
+              "transition-colors hover:text-foreground",
+              pathname === item.href ? "text-foreground font-semibold" : "text-muted-foreground"
+            )}
+          >
+            {item.label}
+          </Link>
+        ))}
+      </nav>
+
+      <Sheet>
+        <SheetTrigger asChild>
+          <Button
+            variant="outline"
+            size="icon"
+            className="shrink-0 md:hidden"
+          >
+            <Menu className="h-5 w-5" />
+            <span className="sr-only">Toggle navigation menu</span>
+          </Button>
+        </SheetTrigger>
+        <SheetContent side="left">
+          <nav className="grid gap-6 text-lg font-medium">
+            <Link
+              href="/dashboard"
+              className="mb-4 flex items-center gap-2 text-lg font-semibold"
+            >
+              {logo && <Image src={logo.imageUrl} alt="Logo" width={32} height={32} />}
+              <span className="font-headline text-xl font-semibold text-primary">Testify</span>
+            </Link>
+            {navItems.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={cn(
+                  "flex items-center gap-4 rounded-lg px-3 py-2 transition-all hover:text-primary",
+                  pathname === item.href ? "bg-muted text-primary" : "text-muted-foreground"
+                )}
+              >
+                <item.icon className="h-5 w-5" />
+                {item.label}
+              </Link>
+            ))}
+          </nav>
+        </SheetContent>
+      </Sheet>
+
+      <div className="flex w-full items-center gap-4 md:ml-auto md:gap-2 lg:gap-4">
+        <form className="ml-auto flex-1 sm:flex-initial">
+          <div className="relative">
+            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              type="search"
+              placeholder="Search..."
+              className="pl-8 sm:w-[300px] md:w-[200px] lg:w-[300px]"
+            />
+          </div>
+        </form>
         <ThemeToggle />
-        <Button variant="ghost" size="icon">
+        <Button variant="ghost" size="icon" className="h-8 w-8">
           <Bell className="h-5 w-5" />
           <span className="sr-only">Toggle notifications</span>
         </Button>
@@ -126,73 +175,6 @@ function AppHeader() {
   );
 }
 
-function AppSidebar() {
-  const pathname = usePathname();
-  const navItems = [
-    { href: "/dashboard", label: "Dashboard", icon: Home },
-    { href: "/dashboard/testimonies", label: "Testimonies", icon: Newspaper },
-    { href: "/dashboard/campaigns", label: "Campaigns", icon: Target },
-    { href: "/dashboard/progress", label: "Progress", icon: TrendingUp },
-    { href: "/dashboard/souls-won", label: "Souls Won", icon: UserPlus },
-  ];
-
-  return (
-    <Sidebar collapsible="icon" className="group">
-      <SidebarHeader>
-        <div className="flex items-center gap-2 group-data-[state=collapsed]:w-full group-data-[state=collapsed]:justify-center">
-          {logo && <Image src={logo.imageUrl} alt="Logo" width={32} height={32} />}
-          <span className="text-xl font-semibold text-primary font-headline group-data-[state=collapsed]:hidden">Testify</span>
-        </div>
-      </SidebarHeader>
-      <SidebarContent>
-        <SidebarMenu>
-          {navItems.map((item) => (
-            <SidebarMenuItem key={item.label}>
-              <SidebarMenuButton
-                asChild
-                isActive={pathname === item.href}
-                tooltip={item.label}
-              >
-                <Link href={item.href}>
-                  <item.icon />
-                  <span>{item.label}</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          ))}
-        </SidebarMenu>
-      </SidebarContent>
-      <SidebarFooter>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              asChild
-              isActive={pathname === "/dashboard/settings"}
-              tooltip="Settings"
-            >
-              <Link href="/dashboard/settings">
-                <Settings />
-                <span>Settings</span>
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-           <SidebarMenuItem>
-             <SidebarMenuButton
-                asChild
-                isActive={pathname === "/dashboard/profile"}
-                tooltip="Profile"
-              >
-                <Link href="/dashboard/profile">
-                  <User />
-                  <span>Profile</span>
-                </Link>
-              </SidebarMenuButton>
-           </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarFooter>
-    </Sidebar>
-  );
-}
 
 export default function DashboardLayout({
   children,
@@ -200,14 +182,9 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <SidebarProvider>
-      <div className="flex min-h-screen">
-        <AppSidebar />
-        <SidebarInset>
-          <AppHeader />
-          <main className="flex-1 p-4 md:p-6 lg:p-8">{children}</main>
-        </SidebarInset>
-      </div>
-    </SidebarProvider>
+    <div className="flex min-h-screen w-full flex-col bg-background">
+      <AppHeader />
+      <main className="flex flex-1 flex-col p-4 md:p-6 lg:p-8">{children}</main>
+    </div>
   );
 }
