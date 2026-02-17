@@ -16,9 +16,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-export function CampaignCard({ campaign }: { campaign: Campaign }) {
+export function CampaignCard({ campaign, userId }: { campaign: Campaign; userId: string }) {
   const { toast } = useToast();
   const [isJoined, setIsJoined] = useState(false);
+  const isOwner = campaign.organizer.id === userId;
 
   const handleJoin = () => {
     setIsJoined(true);
@@ -83,7 +84,30 @@ export function CampaignCard({ campaign }: { campaign: Campaign }) {
           <Users className="h-4 w-4" />
           <span>{campaign.participants} participants</span>
         </div>
-        {!isJoined ? (
+        {isOwner ? (
+          <div className="flex items-center gap-2">
+            <Button variant="secondary" disabled>Your Campaign</Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline">
+                  <Share2 className="mr-2 h-4 w-4" />
+                  Share
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => handleShare("link")}>
+                  Copy Link
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleShare("facebook")}>
+                  Share on Facebook
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleShare("twitter")}>
+                  Share on Twitter (X)
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        ) : !isJoined ? (
           <Button onClick={handleJoin}>Join Campaign</Button>
         ) : (
           <div className="flex items-center gap-2">

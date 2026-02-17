@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { mockCampaigns } from "@/lib/data";
+import { mockCampaigns, mockUser } from "@/lib/data";
 import { PlusCircle } from "lucide-react";
 import { CreateCampaignForm } from "@/components/campaigns/create-campaign-form";
 import {
@@ -52,7 +52,7 @@ export default function CampaignsPage() {
       </div>
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {campaigns.map((campaign) => (
-          <CampaignCard key={campaign.id} campaign={campaign} />
+          <CampaignCard key={campaign.id} campaign={campaign} userId={mockUser.id} />
         ))}
       </div>
     </div>
