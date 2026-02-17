@@ -22,9 +22,12 @@ import { generateCampaignIdeas } from "@/ai/flows/generate-campaign-ideas";
 import { Card, CardContent } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const formSchema = z.object({
-  goal: z.string().min(3, "Goal is too short.").max(100, "Goal is too long."),
+  goal: z.string({
+    required_error: "Please select a campaign goal.",
+  }),
   location: z.string().min(2, "Location is too short.").max(100, "Location is too long."),
   targetAudience: z.string().min(3, "Target audience is too short.").max(100, "Target audience is too long."),
 });
@@ -42,7 +45,6 @@ export function CreateCampaignForm() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      goal: "",
       location: "",
       targetAudience: "",
     },
@@ -76,9 +78,20 @@ export function CreateCampaignForm() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Campaign Goal</FormLabel>
-                  <FormControl>
-                    <Input placeholder="e.g., Evangelism" {...field} />
-                  </FormControl>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a campaign goal" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="Evangelism">Evangelism</SelectItem>
+                      <SelectItem value="Community Outreach">Community Outreach</SelectItem>
+                      <SelectItem value="Discipleship">Discipleship</SelectItem>
+                      <SelectItem value="Prayer Meeting">Prayer Meeting</SelectItem>
+                      <SelectItem value="Youth Program">Youth Program</SelectItem>
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}
