@@ -11,6 +11,8 @@ import { useAuth, useFirestore } from "@/firebase";
 import { signInWithPopup, GoogleAuthProvider, FacebookAuthProvider, AuthError } from "firebase/auth";
 import { useToast } from "@/hooks/use-toast";
 import { doc, setDoc } from "firebase/firestore";
+import { errorEmitter } from "@/firebase/error-emitter";
+import { FirestorePermissionError } from "@/firebase/errors";
 
 export default function LoginPage() {
   const logo = PlaceHolderImages.find((img) => img.id === "logo");
@@ -25,12 +27,22 @@ export default function LoginPage() {
       const result = await signInWithPopup(auth, authProvider);
       const user = result.user;
 
-      // Create user profile in Firestore
-      await setDoc(doc(firestore, "users", user.uid), {
+      const userDocRef = doc(firestore, "users", user.uid);
+      const userData = {
         displayName: user.displayName,
         email: user.email,
         photoURL: user.photoURL
-      }, { merge: true });
+      };
+
+      // Create user profile in Firestore
+      setDoc(userDocRef, userData, { merge: true }).catch((serverError) => {
+        const permissionError = new FirestorePermissionError({
+          path: userDocRef.path,
+          operation: 'create',
+          requestResourceData: userData,
+        });
+        errorEmitter.emit('permission-error', permissionError);
+      });
 
       toast({
         title: "Login Successful",
@@ -55,8 +67,8 @@ export default function LoginPage() {
             <Image
               src={logo.imageUrl}
               alt={logo.description}
-              width={120}
-              height={30}
+              width={80}
+              height={80}
               className="mx-auto"
               data-ai-hint={logo.imageHint}
               priority

@@ -20,6 +20,8 @@ import { Loader2 } from "lucide-react";
 import { createUserWithEmailAndPassword, updateProfile, AuthError } from "firebase/auth";
 import { useAuth, useFirestore } from "@/firebase";
 import { doc, setDoc } from "firebase/firestore";
+import { errorEmitter } from "@/firebase/error-emitter";
+import { FirestorePermissionError } from "@/firebase/errors";
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -59,11 +61,21 @@ export function SignUpForm() {
         displayName: values.name,
       });
 
-      // Create user profile in Firestore
-      await setDoc(doc(firestore, "users", user.uid), {
+      const userDocRef = doc(firestore, "users", user.uid);
+      const userData = {
         displayName: values.name,
         email: values.email,
         photoURL: user.photoURL, // Initially null for email signup
+      };
+
+      // Create user profile in Firestore
+      setDoc(userDocRef, userData).catch((serverError) => {
+        const permissionError = new FirestorePermissionError({
+          path: userDocRef.path,
+          operation: 'create',
+          requestResourceData: userData,
+        });
+        errorEmitter.emit('permission-error', permissionError);
       });
 
       toast({
