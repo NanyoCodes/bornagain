@@ -137,11 +137,11 @@ function AppSidebar() {
   ];
 
   return (
-    <Sidebar collapsible="icon">
+    <Sidebar collapsible="icon" className="group">
       <SidebarHeader>
-        <div className="flex items-center gap-2">
-          {logo && <Image src={logo.imageUrl} alt="Logo" width={56} height={56} />}
-          <span className="text-xl font-semibold text-primary font-headline">Testify</span>
+        <div className="flex items-center gap-2 group-data-[state=collapsed]:w-full group-data-[state=collapsed]:justify-center">
+          {logo && <Image src={logo.imageUrl} alt="Logo" width={32} height={32} />}
+          <span className="text-xl font-semibold text-primary font-headline group-data-[state=collapsed]:hidden">Testify</span>
         </div>
       </SidebarHeader>
       <SidebarContent>
