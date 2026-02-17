@@ -1,8 +1,10 @@
+
 "use client";
 
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import * as React from "react";
 import {
   Bell,
   Home,
@@ -179,9 +181,18 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const [mounted, setMounted] = React.useState(false);
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
-      <AppHeader />
+      {mounted ? (
+        <AppHeader />
+      ) : (
+        <header className="sticky top-0 z-30 flex h-16 items-center border-b bg-background px-4 md:px-6 lg:px-8" />
+      )}
       <main className="flex flex-1 flex-col p-4 md:p-6 lg:p-8">{children}</main>
     </div>
   );
