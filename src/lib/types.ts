@@ -55,3 +55,22 @@ export type ProgressLog = {
   date: string;
   soulsWon: number;
 };
+
+export type FollowUpStatus = 'New' | 'Contacted' | 'Attending Church' | 'In Bible Study' | 'Established';
+
+export type Soul = {
+  id: string;
+  name: string;
+  contact?: string;
+  source: 'Campaign' | 'Personal' | 'Referral';
+  sourceDetails?: string; // e.g., Campaign name or referrer name
+  wonAt: string; // ISO date string
+  status: FollowUpStatus;
+  followUpLog: {
+    date: string;
+    note: string;
+  }[];
+  attendingChurch: boolean;
+  inBibleStudy: boolean;
+  attendingPrayer: boolean;
+};

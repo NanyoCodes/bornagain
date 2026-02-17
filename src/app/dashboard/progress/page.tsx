@@ -1,10 +1,11 @@
 "use client"
 
+import Link from "next/link";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, XAxis, YAxis, Tooltip } from "recharts";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartContainer, ChartTooltipContent } from "@/components/ui/chart";
 import { Button } from "@/components/ui/button";
-import { mockProgressData } from "@/lib/data";
+import { mockProgressData, mockSoulsWon } from "@/lib/data";
 import { PlusCircle, Target, Trophy, TrendingUp, UserCheck2 } from "lucide-react";
 
 const chartConfig = {
@@ -16,7 +17,7 @@ const chartConfig = {
 
 export default function ProgressPage() {
   const stats = [
-    { title: "Total Souls Won", value: "34", icon: UserCheck2, description: "All time" },
+    { title: "Total Souls Won", value: mockSoulsWon.length.toString(), icon: UserCheck2, description: "All time" },
     { title: "Monthly Goal", value: "20 / 50", icon: Target, description: "40% complete" },
     { title: "Longest Streak", value: "12 days", icon: Trophy, description: "Keep it up!" },
     { title: "Current Streak", value: "7 days", icon: TrendingUp, description: "Don't break it!" },
@@ -29,9 +30,11 @@ export default function ProgressPage() {
           <h1 className="text-3xl font-bold tracking-tight font-headline">Progress</h1>
           <p className="text-muted-foreground">Track your personal evangelism efforts.</p>
         </div>
-        <Button>
-          <PlusCircle className="mr-2 h-4 w-4" />
-          Log Soul Won
+        <Button asChild>
+          <Link href="/dashboard/souls-won">
+            <PlusCircle className="mr-2 h-4 w-4" />
+            Log Soul Won
+          </Link>
         </Button>
       </div>
 

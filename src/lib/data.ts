@@ -1,7 +1,55 @@
-import type { User, Testimony, Campaign, ProgressLog } from './types';
+import type { User, Testimony, Campaign, ProgressLog, Soul } from './types';
 import { PlaceHolderImages } from './placeholder-images';
 
 const findImage = (id: string) => PlaceHolderImages.find(img => img.id === id)?.imageUrl || '';
+
+export const mockSoulsWon: Soul[] = [
+  {
+    id: 'soul-1',
+    name: 'Peter James',
+    contact: 'peter.j@example.com',
+    source: 'Campaign',
+    sourceDetails: 'Nairobi City-Wide Outreach',
+    wonAt: '2024-07-20T10:00:00Z',
+    status: 'Attending Church',
+    followUpLog: [
+      { date: '2024-07-22T10:00:00Z', note: 'Called and invited to church.' },
+      { date: '2024-07-28T10:00:00Z', note: 'Attended Sunday service.' },
+    ],
+    attendingChurch: true,
+    inBibleStudy: false,
+    attendingPrayer: false,
+  },
+  {
+    id: 'soul-2',
+    name: 'Mary Magdalene',
+    contact: 'mary.m@example.com',
+    source: 'Personal',
+    wonAt: '2024-07-18T14:00:00Z',
+    status: 'New',
+    followUpLog: [],
+    attendingChurch: false,
+    inBibleStudy: false,
+    attendingPrayer: false,
+  },
+  {
+    id: 'soul-3',
+    name: 'Paul Barnabas',
+    contact: 'paul.b@example.com',
+    source: 'Referral',
+    sourceDetails: 'Jane Smith',
+    wonAt: '2024-07-15T18:00:00Z',
+    status: 'Established',
+    followUpLog: [
+      { date: '2024-07-16T10:00:00Z', note: 'Met for coffee, discussed discipleship.' },
+      { date: '2024-07-21T10:00:00Z', note: 'Joined a small group for bible study.' },
+      { date: '2024-07-28T10:00:00Z', note: 'Is now a regular at church and small group.' },
+    ],
+    attendingChurch: true,
+    inBibleStudy: true,
+    attendingPrayer: true,
+  },
+];
 
 export const mockUser: User = {
   id: 'user-01',
@@ -16,7 +64,7 @@ export const mockUser: User = {
   stats: {
     testimonies: 12,
     campaignsJoined: 5,
-    soulsWon: 34,
+    soulsWon: mockSoulsWon.length,
     currentStreak: 7,
   },
   achievements: [

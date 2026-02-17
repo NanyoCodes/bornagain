@@ -14,6 +14,7 @@ import {
   Target,
   TrendingUp,
   User,
+  UserPlus,
 } from "lucide-react";
 
 import {
@@ -132,6 +133,7 @@ function AppSidebar() {
     { href: "/dashboard/testimonies", label: "Testimonies", icon: Newspaper },
     { href: "/dashboard/campaigns", label: "Campaigns", icon: Target },
     { href: "/dashboard/progress", label: "Progress", icon: TrendingUp },
+    { href: "/dashboard/souls-won", label: "Souls Won", icon: UserPlus },
   ];
 
   return (

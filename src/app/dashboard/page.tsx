@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { mockCampaigns, mockTestimonies } from "@/lib/data";
+import { mockCampaigns, mockTestimonies, mockSoulsWon } from "@/lib/data";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatDistanceToNow } from "date-fns";
 import Link from "next/link";
@@ -10,7 +10,7 @@ export default function DashboardPage() {
   const stats = [
     { title: "Testimonies Shared", value: "12", icon: Newspaper, change: "+2 this month" },
     { title: "Campaigns Joined", value: "5", icon: Target, change: "+1 this month" },
-    { title: "Souls Won", value: "34", icon: UserCheck2, change: "+8 this month" },
+    { title: "Souls Won", value: mockSoulsWon.length, icon: UserCheck2, change: "+8 this month" },
     { title: "Current Streak", value: "7 days", icon: TrendingUp, change: "Keep going!" },
   ];
 
