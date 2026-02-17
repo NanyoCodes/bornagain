@@ -21,6 +21,7 @@ import { Loader2, Sparkles } from "lucide-react";
 import { generateCampaignIdeas } from "@/ai/flows/generate-campaign-ideas";
 import { Card, CardContent } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
 
 const formSchema = z.object({
   goal: z.string().min(3, "Goal is too short.").max(100, "Goal is too long."),
