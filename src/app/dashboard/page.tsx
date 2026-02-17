@@ -2,14 +2,13 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { mockCampaigns, mockSoulsWon } from "@/lib/data";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatDistanceToNow } from "date-fns";
 import Link from "next/link";
 import { ArrowUpRight, Newspaper, Target, TrendingUp, UserCheck2 } from "lucide-react";
-import { useCollection, useFirestore } from "@/firebase";
-import { collection, query, orderBy, limit } from "firebase/firestore";
-import type { Testimony } from "@/lib/types";
+import { useCollection, useFirestore, useUser } from "@/firebase";
+import { collection, query, orderBy, limit, where } from "firebase/firestore";
+import type { Testimony, Campaign, Soul } from "@/lib/types";
 import { Skeleton } from "@/components/ui/skeleton";
 
 function RecentTestimonies() {
@@ -65,13 +64,69 @@ function RecentTestimonies() {
   );
 }
 
+function ActiveCampaigns() {
+  const firestore = useFirestore();
+  const campaignsQuery = query(collection(firestore, 'campaigns'), orderBy('createdAt', 'desc'), limit(2));
+  const { data: campaigns, loading } = useCollection<Campaign>(campaignsQuery);
+
+  return (
+    <Card className="col-span-12 lg:col-span-3">
+        <CardHeader className="flex flex-row items-center">
+            <CardTitle>Active Campaigns</CardTitle>
+            <Button asChild size="sm" className="ml-auto gap-1">
+            <Link href="/dashboard/campaigns">
+              View All
+              <ArrowUpRight className="h-4 w-4" />
+            </Link>
+          </Button>
+        </CardHeader>
+        <CardContent className="space-y-4">
+            {loading && (
+              <div className="space-y-4">
+                {[...Array(2)].map((_, i) => (
+                  <div key={i} className="flex items-center gap-4">
+                    <div className="grid gap-1 flex-1">
+                      <Skeleton className="h-4 w-3/4" />
+                      <Skeleton className="h-4 w-1/2" />
+                    </div>
+                    <Skeleton className="h-4 w-16" />
+                  </div>
+                ))}
+              </div>
+            )}
+            {campaigns?.map(campaign => (
+              <div key={campaign.id} className="flex items-center gap-4">
+                <div className="grid gap-1">
+                  <p className="text-sm font-medium">{campaign.title}</p>
+                  <p className="text-sm text-muted-foreground">{campaign.location}</p>
+                </div>
+                <div className="ml-auto font-medium">{campaign.participants} joined</div>
+              </div>
+            ))}
+        </CardContent>
+    </Card>
+  )
+}
+
 
 export default function DashboardPage() {
+  const { user } = useUser();
+  const firestore = useFirestore();
+
+  const testimoniesQuery = user ? query(collection(firestore, 'testimonies'), where('authorId', '==', user.uid)) : null;
+  const { data: myTestimonies } = useCollection<Testimony>(testimoniesQuery);
+
+  const soulsQuery = user ? query(collection(firestore, `users/${user.uid}/souls`)) : null;
+  const { data: soulsWon } = useCollection<Soul>(soulsQuery);
+
+  // TODO: Campaigns joined stat needs to be implemented
+  // TODO: Streak needs to be implemented
+
   const stats = [
-    { title: "Testimonies Shared", value: "12", icon: Newspaper, change: "+2 this month" },
-    { title: "Campaigns Joined", value: "5", icon: Target, change: "+1 this month" },
-    { title: "Souls Won", value: mockSoulsWon.length, icon: UserCheck2, change: "+8 this month" },
-    { title: "Current Streak", value: "7 days", icon: TrendingUp, change: "Keep going!" },
+    { title: "Testimonies Shared", value: myTestimonies?.length ?? 0, icon: Newspaper, change: "+2 this month" },
+    { title: "Campaigns Joined", value: "0", icon: Target, change: "+0 this month" },
+    { title: "Souls Won", value: soulsWon?.length ?? 0, icon: UserCheck2, change: "+8 this month" },
+    { title: "Current Streak", value: "0 days", icon: TrendingUp, change: "Keep going!" },
   ];
 
   return (
@@ -98,28 +153,7 @@ export default function DashboardPage() {
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7">
         <RecentTestimonies />
-        <Card className="col-span-12 lg:col-span-3">
-            <CardHeader className="flex flex-row items-center">
-                <CardTitle>Active Campaigns</CardTitle>
-                <Button asChild size="sm" className="ml-auto gap-1">
-                <Link href="/dashboard/campaigns">
-                  View All
-                  <ArrowUpRight className="h-4 w-4" />
-                </Link>
-              </Button>
-            </CardHeader>
-            <CardContent className="space-y-4">
-                {mockCampaigns.slice(0, 2).map(campaign => (
-                  <div key={campaign.id} className="flex items-center gap-4">
-                    <div className="grid gap-1">
-                      <p className="text-sm font-medium">{campaign.title}</p>
-                      <p className="text-sm text-muted-foreground">{campaign.location}</p>
-                    </div>
-                    <div className="ml-auto font-medium">{campaign.participants} joined</div>
-                  </div>
-                ))}
-            </CardContent>
-        </Card>
+        <ActiveCampaigns />
       </div>
 
     </div>

@@ -23,7 +23,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import type { Campaign } from "@/lib/types";
+import { useUser, useFirestore } from "@/firebase";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 
 const formSchema = z.object({
   goal: z.string({
@@ -40,11 +41,13 @@ type CampaignIdeas = {
 };
 
 type CreateCampaignFormProps = {
-  onCampaignCreated: (campaign: Campaign) => void;
+  onCampaignCreated: () => void;
 };
 
 export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProps) {
   const { toast } = useToast();
+  const { user } = useUser();
+  const firestore = useFirestore();
   const [isGenerating, setIsGenerating] = useState(false);
   const [ideas, setIdeas] = useState<CampaignIdeas | null>(null);
   const [selectedName, setSelectedName] = useState('');
@@ -93,33 +96,43 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
         toast({ variant: 'destructive', title: 'Missing Name', description: 'Please select or enter a campaign name.' });
         return;
     }
+    if (!user) {
+        toast({ variant: 'destructive', title: 'Not Authenticated', description: 'You must be logged in to create a campaign.' });
+        return;
+    }
+    
+    // In a real app, you would upload the photoFile to Firebase Storage first.
+    // For now, we will use a placeholder image.
     if (!photoFile) {
         toast({ variant: 'destructive', title: 'Missing Photo', description: 'Please upload a campaign photo.' });
         return;
     }
+    const imageUrl = 'https://picsum.photos/seed/campaign/600/400';
 
     setIsCreating(true);
-    // Simulate creation
-    await new Promise(res => setTimeout(res, 1500));
     
-    const photoUrl = photoFile ? URL.createObjectURL(photoFile) : '';
-
-    const newCampaign: Campaign = {
-        id: `camp-${Date.now()}`,
+    try {
+      await addDoc(collection(firestore, 'campaigns'), {
         title: finalName,
         description: finalDescription,
         goal: form.getValues('goal'),
         location: `${form.getValues('city')}, ${form.getValues('country')}`,
         participants: 1,
         progress: 0,
-        imageUrl: photoUrl,
-        createdAt: new Date().toISOString(),
-        organizer: { id: 'user-01', name: 'John Doe' },
-    };
-    
-    toast({ title: 'Campaign Created!', description: `The "${finalName}" campaign is now ready.` });
-    onCampaignCreated(newCampaign);
-    setIsCreating(false);
+        imageUrl: imageUrl, // Using placeholder for now
+        createdAt: serverTimestamp(),
+        organizerId: user.uid,
+        organizerName: user.displayName || 'Anonymous',
+      });
+      
+      toast({ title: 'Campaign Created!', description: `The "${finalName}" campaign is now ready.` });
+      onCampaignCreated();
+    } catch (error) {
+      console.error("Error creating campaign: ", error);
+      toast({ variant: 'destructive', title: 'Error', description: 'Could not create campaign.' });
+    } finally {
+      setIsCreating(false);
+    }
   }
 
   return (
@@ -245,6 +258,7 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
               <div className="space-y-2">
                 <Label htmlFor="photo">Campaign Photo</Label>
                 <Input id="photo" type="file" accept="image/*" onChange={(e) => setPhotoFile(e.target.files?.[0] ?? null)} />
+                <FormDescription>A photo is required for the campaign.</FormDescription>
               </div>
               <div>
                 <h3 className="text-lg font-semibold mb-2">Suggested Description</h3>

@@ -1,12 +1,11 @@
 "use client"
 
 import Link from "next/link";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, XAxis, YAxis, Tooltip } from "recharts";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartContainer, ChartTooltipContent } from "@/components/ui/chart";
 import { Button } from "@/components/ui/button";
-import { mockProgressData, mockSoulsWon } from "@/lib/data";
 import { CalendarIcon, Edit, PlusCircle, Target, Trophy, TrendingUp, UserCheck2 } from "lucide-react";
 import {
   Dialog,
@@ -22,7 +21,10 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { format } from "date-fns";
+import { format, isSameMonth } from "date-fns";
+import { useCollection, useFirestore, useUser } from "@/firebase";
+import type { Soul } from "@/lib/types";
+import { collection, query } from "firebase/firestore";
 
 
 const chartConfig = {
@@ -34,13 +36,50 @@ const chartConfig = {
 
 export default function ProgressPage() {
   const { toast } = useToast();
+  const { user } = useUser();
+  const firestore = useFirestore();
+
+  const soulsQuery = user ? query(collection(firestore, `users/${user.uid}/souls`)) : null;
+  const { data: souls } = useCollection<Soul>(soulsQuery);
+  
   const [monthlyGoal, setMonthlyGoal] = useState(50);
   const [goalDate, setGoalDate] = useState(new Date());
-  const [soulsThisMonth, setSoulsThisMonth] = useState(20); // This is mock data
   const [goalDialogOpen, setGoalDialogOpen] = useState(false);
   
   const [newGoal, setNewGoal] = useState(monthlyGoal);
   const [newGoalDate, setNewGoalDate] = useState(goalDate);
+
+  const soulsThisMonth = useMemo(() => {
+    if (!souls) return 0;
+    return souls.filter(soul => isSameMonth(soul.wonAt.toDate(), goalDate)).length;
+  }, [souls, goalDate]);
+  
+  const totalSoulsWon = souls?.length ?? 0;
+
+  const progressData = useMemo(() => {
+    if (!souls) return [];
+    const monthlyData: { [key: string]: { date: string, soulsWon: number } } = {};
+    const sixMonthsAgo = new Date();
+    sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 5);
+    sixMonthsAgo.setDate(1);
+
+    for (let i = 0; i < 6; i++) {
+        const date = new Date(sixMonthsAgo.getFullYear(), sixMonthsAgo.getMonth() + i, 1);
+        const monthKey = format(date, "MMM");
+        monthlyData[monthKey] = { date: monthKey, soulsWon: 0 };
+    }
+
+    souls.forEach(soul => {
+        const wonDate = soul.wonAt.toDate();
+        if (wonDate >= sixMonthsAgo) {
+            const monthKey = format(wonDate, "MMM");
+            if (monthlyData[monthKey]) {
+                monthlyData[monthKey].soulsWon++;
+            }
+        }
+    });
+    return Object.values(monthlyData);
+  }, [souls]);
 
   const handleSaveGoal = () => {
     if (newGoal > 0) {
@@ -61,9 +100,9 @@ export default function ProgressPage() {
   };
 
   const otherStats = [
-    { title: "Total Souls Won", value: mockSoulsWon.length.toString(), icon: UserCheck2, description: "All time" },
-    { title: "Longest Streak", value: "12 days", icon: Trophy, description: "Keep it up!" },
-    { title: "Current Streak", value: "7 days", icon: TrendingUp, description: "Don't break it!" },
+    { title: "Total Souls Won", value: totalSoulsWon.toString(), icon: UserCheck2, description: "All time" },
+    { title: "Longest Streak", value: "0 days", icon: Trophy, description: "Keep it up!" },
+    { title: "Current Streak", value: "0 days", icon: TrendingUp, description: "Don't break it!" },
   ];
 
   return (
@@ -168,7 +207,7 @@ export default function ProgressPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{`${soulsThisMonth} / ${monthlyGoal}`}</div>
-              <p className="text-xs text-muted-foreground">{`${Math.round((soulsThisMonth / monthlyGoal) * 100)}% complete`}</p>
+              <p className="text-xs text-muted-foreground">{`${monthlyGoal > 0 ? Math.round((soulsThisMonth / monthlyGoal) * 100) : 0}% complete`}</p>
             </CardContent>
           </Card>
       </div>
@@ -181,7 +220,7 @@ export default function ProgressPage() {
         <CardContent>
           <ChartContainer config={chartConfig} className="h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={mockProgressData} accessibilityLayer>
+              <BarChart data={progressData} accessibilityLayer>
                 <CartesianGrid vertical={false} />
                 <XAxis
                   dataKey="date"

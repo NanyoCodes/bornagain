@@ -37,34 +37,57 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import { Skeleton } from "../ui/skeleton";
 
 
 type SoulsWonTableProps = {
   souls: Soul[];
-  onUpdateSoul: (soul: Soul) => void;
+  onUpdateSoul: (soulId: string, data: Partial<Soul>) => void;
+  loading: boolean;
 };
 
 const statusOptions: FollowUpStatus[] = ['New', 'Contacted', 'Attending Church', 'In Bible Study', 'Established'];
 
-export function SoulsWonTable({ souls, onUpdateSoul }: SoulsWonTableProps) {
+export function SoulsWonTable({ souls, onUpdateSoul, loading }: SoulsWonTableProps) {
   const { toast } = useToast();
 
   const handleStatusChange = (soulId: string, newStatus: FollowUpStatus) => {
-    const soul = souls.find(s => s.id === soulId);
-    if (soul) {
-      onUpdateSoul({ ...soul, status: newStatus });
-      toast({ title: "Status Updated", description: `${soul.name}'s status is now ${newStatus}.` });
-    }
+    onUpdateSoul(soulId, { status: newStatus });
+    toast({ title: "Status Updated", description: `Status updated to ${newStatus}.` });
   };
 
   const handleCheckboxChange = (soulId: string, field: 'attendingChurch' | 'inBibleStudy' | 'attendingPrayer', checked: boolean) => {
-    const soul = souls.find(s => s.id === soulId);
-    if (soul) {
-      onUpdateSoul({ ...soul, [field]: checked });
-      const activity = field === 'attendingChurch' ? 'Church Attendance' : field === 'inBibleStudy' ? 'Bible Study' : 'Prayer Meeting';
-      toast({ title: "Follow-up Updated", description: `${soul.name}'s ${activity} status has been updated.` });
-    }
+    onUpdateSoul(soulId, { [field]: checked });
+    const activity = field === 'attendingChurch' ? 'Church Attendance' : field === 'inBibleStudy' ? 'Bible Study' : 'Prayer Meeting';
+    toast({ title: "Follow-up Updated", description: `Follow-up status for ${activity} has been updated.` });
   };
+
+  if (loading) {
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle>Follow-up Dashboard</CardTitle>
+                <CardDescription>
+                A list of souls won. Keep track of their spiritual journey.
+                </CardDescription>
+            </CardHeader>
+            <CardContent>
+                <div className="space-y-4">
+                    {[...Array(3)].map((_, i) => (
+                        <div key={i} className="flex items-center space-x-4">
+                            <div className="space-y-2 flex-1">
+                                <Skeleton className="h-4 w-3/4" />
+                                <Skeleton className="h-4 w-1/2" />
+                            </div>
+                            <Skeleton className="h-8 w-24" />
+                            <Skeleton className="h-8 w-24" />
+                        </div>
+                    ))}
+                </div>
+            </CardContent>
+        </Card>
+    )
+  }
 
   return (
     <Card>
@@ -141,7 +164,7 @@ export function SoulsWonTable({ souls, onUpdateSoul }: SoulsWonTableProps) {
                       </div>
                     </TooltipProvider>
                   </TableCell>
-                  <TableCell>{format(new Date(soul.wonAt), "PPP")}</TableCell>
+                  <TableCell>{soul.wonAt ? format(soul.wonAt.toDate(), "PPP") : ''}</TableCell>
                   <TableCell>
                     <div>{soul.source}</div>
                     {soul.sourceDetails && <div className="text-xs text-muted-foreground">{soul.sourceDetails}</div>}

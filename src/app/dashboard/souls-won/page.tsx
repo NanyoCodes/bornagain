@@ -6,23 +6,39 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { PlusCircle } from "lucide-react";
 import { SoulsWonTable } from "@/components/souls/souls-won-table";
 import { LogSoulForm } from "@/components/souls/log-soul-form";
-import { mockSoulsWon, mockCampaigns } from "@/lib/data";
 import type { Soul, Campaign } from "@/lib/types";
+import { useCollection, useFirestore, useUser } from "@/firebase";
+import { collection, query, orderBy, doc, updateDoc } from "firebase/firestore";
+import { useToast } from "@/hooks/use-toast";
 
 export default function SoulsWonPage() {
-  const [souls, setSouls] = useState<Soul[]>(mockSoulsWon);
-  const [campaigns] = useState<Campaign[]>(mockCampaigns);
+  const { user } = useUser();
+  const firestore = useFirestore();
+  const { toast } = useToast();
   const [isLogDialogOpen, setIsLogDialogOpen] = useState(false);
 
-  const handleSoulLogged = (newSoul: Soul) => {
-    setSouls((prev) => [newSoul, ...prev]);
+  // Fetch souls for the current user
+  const soulsQuery = user ? query(collection(firestore, `users/${user.uid}/souls`), orderBy("wonAt", "desc")) : null;
+  const { data: souls, loading: loadingSouls } = useCollection<Soul>(soulsQuery);
+
+  // Fetch campaigns for the form dropdown
+  const campaignsQuery = query(collection(firestore, 'campaigns'), orderBy('createdAt', 'desc'));
+  const { data: campaigns } = useCollection<Campaign>(campaignsQuery);
+
+
+  const handleSoulLogged = () => {
     setIsLogDialogOpen(false);
   };
 
-  const handleUpdateSoul = (updatedSoul: Soul) => {
-    setSouls((prev) =>
-      prev.map((soul) => (soul.id === updatedSoul.id ? updatedSoul : soul))
-    );
+  const handleUpdateSoul = async (soulId: string, data: Partial<Soul>) => {
+    if (!user) return;
+    const soulRef = doc(firestore, `users/${user.uid}/souls`, soulId);
+    try {
+      await updateDoc(soulRef, data);
+    } catch (error) {
+      console.error("Error updating soul: ", error);
+      toast({ variant: 'destructive', title: "Update Failed", description: "Could not update the record."});
+    }
   };
 
   return (
@@ -36,7 +52,7 @@ export default function SoulsWonPage() {
         </div>
         <Dialog open={isLogDialogOpen} onOpenChange={setIsLogDialogOpen}>
           <DialogTrigger asChild>
-            <Button>
+            <Button disabled={!user}>
               <PlusCircle className="mr-2 h-4 w-4" />
               Log Soul Won
             </Button>
@@ -48,12 +64,16 @@ export default function SoulsWonPage() {
                 Record the details of the person you've ministered to.
               </DialogDescription>
             </DialogHeader>
-            <LogSoulForm onSoulLogged={handleSoulLogged} campaigns={campaigns} />
+            <LogSoulForm onSoulLogged={handleSoulLogged} campaigns={campaigns || []} />
           </DialogContent>
         </Dialog>
       </div>
       
-      <SoulsWonTable souls={souls} onUpdateSoul={handleUpdateSoul} />
+      <SoulsWonTable 
+        souls={souls || []} 
+        onUpdateSoul={handleUpdateSoul} 
+        loading={loadingSouls}
+      />
     </div>
   );
 }

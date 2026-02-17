@@ -39,6 +39,43 @@
         "mediaType": { "type": "string", "enum": ["image", "video", "audio"] }
       },
       "required": ["title", "content", "category", "authorId", "authorName", "createdAt"]
+    },
+    "Campaign": {
+      "title": "Campaign",
+      "description": "A user-created evangelism campaign.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "goal": { "type": "string" },
+        "location": { "type": "string" },
+        "participants": { "type": "number" },
+        "progress": { "type": "number" },
+        "imageUrl": { "type": "string", "format": "uri" },
+        "createdAt": { "type": "object" },
+        "organizerId": { "type": "string" },
+        "organizerName": { "type": "string" }
+      },
+      "required": ["title", "description", "location", "createdAt", "organizerId", "organizerName"]
+    },
+    "Soul": {
+      "title": "Soul",
+      "description": "Represents a person led to Christ, tracked by a user.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "name": { "type": "string" },
+        "contact": { "type": "string" },
+        "source": { "type": "string", "enum": ["Personal", "Campaign", "Referral"] },
+        "sourceDetails": { "type": "string" },
+        "wonAt": { "type": "object" },
+        "status": { "type": "string" },
+        "followUpLog": { "type": "array" },
+        "attendingChurch": { "type": "boolean" },
+        "inBibleStudy": { "type": "boolean" },
+        "attendingPrayer": { "type": "boolean" }
+      },
+      "required": ["userId", "name", "source", "wonAt", "status"]
     }
   },
   "auth": {
@@ -51,11 +88,23 @@
       },
       "description": "Stores public user profile data, keyed by user ID."
     },
+    "/users/{userId}/souls/{soulId}": {
+      "schema": {
+        "$ref": "#/entities/Soul"
+      },
+      "description": "Stores souls won by a specific user."
+    },
     "/testimonies/{testimonyId}": {
       "schema": {
         "$ref": "#/entities/Testimony"
       },
       "description": "Stores user-submitted testimonies."
+    },
+    "/campaigns/{campaignId}": {
+      "schema": {
+        "$ref": "#/entities/Campaign"
+      },
+      "description": "Stores user-created campaigns."
     }
   }
 }

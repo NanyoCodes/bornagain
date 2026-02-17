@@ -16,12 +16,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-export function CampaignCard({ campaign, userId }: { campaign: Campaign; userId: string }) {
+export function CampaignCard({ campaign, userId }: { campaign: Campaign; userId?: string }) {
   const { toast } = useToast();
   const [isJoined, setIsJoined] = useState(false);
-  const isOwner = campaign.organizer.id === userId;
+  const isOwner = campaign.organizerId === userId;
 
   const handleJoin = () => {
+    // TODO: Implement Firestore logic to join a campaign
     setIsJoined(true);
     toast({
       title: "Campaign Joined!",
@@ -108,7 +109,7 @@ export function CampaignCard({ campaign, userId }: { campaign: Campaign; userId:
             </DropdownMenu>
           </div>
         ) : !isJoined ? (
-          <Button onClick={handleJoin}>Join Campaign</Button>
+          <Button onClick={handleJoin} disabled={!userId}>Join Campaign</Button>
         ) : (
           <div className="flex items-center gap-2">
             <Button variant="secondary" disabled>
@@ -138,8 +139,8 @@ export function CampaignCard({ campaign, userId }: { campaign: Campaign; userId:
       </CardFooter>
       <CardFooter className="p-6 pt-0 border-t">
         <p className="text-xs text-muted-foreground">
-          Created by {campaign.organizer.name} •{" "}
-          {formatDistanceToNow(new Date(campaign.createdAt), { addSuffix: true })}
+          Created by {campaign.organizerName} •{" "}
+          {campaign.createdAt ? formatDistanceToNow(new Date(campaign.createdAt.seconds * 1000), { addSuffix: true }) : 'just now'}
         </p>
       </CardFooter>
     </Card>

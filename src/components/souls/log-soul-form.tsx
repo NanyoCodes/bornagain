@@ -17,12 +17,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { CalendarIcon, Loader2 } from "lucide-react";
-import type { Soul, Campaign } from "@/lib/types";
+import type { Campaign } from "@/lib/types";
 import { Textarea } from "@/components/ui/textarea";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
+import { useFirestore, useUser } from "@/firebase";
+import { collection, addDoc } from "firebase/firestore";
 
 const formSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters."),
@@ -36,12 +38,14 @@ const formSchema = z.object({
 });
 
 type LogSoulFormProps = {
-  onSoulLogged: (soul: Soul) => void;
+  onSoulLogged: () => void;
   campaigns: Campaign[];
 };
 
 export function LogSoulForm({ onSoulLogged, campaigns }: LogSoulFormProps) {
   const { toast } = useToast();
+  const { user } = useUser();
+  const firestore = useFirestore();
   const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -56,32 +60,41 @@ export function LogSoulForm({ onSoulLogged, campaigns }: LogSoulFormProps) {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    if (!user) {
+      toast({ variant: "destructive", title: "Not Authenticated", description: "You must be logged in to log a soul." });
+      return;
+    }
     setIsLoading(true);
     
-    // Simulate API call
-    setTimeout(() => {
-      const newSoul: Soul = {
-        id: `soul-${Date.now()}`,
+    try {
+      const soulData = {
+        userId: user.uid,
         name: values.name,
         contact: values.contact,
-        source: values.source as Soul['source'],
+        source: values.source,
         sourceDetails: values.sourceDetails,
-        wonAt: values.wonAt.toISOString(),
+        wonAt: values.wonAt,
         status: "New",
-        followUpLog: values.initialNote ? [{ date: new Date().toISOString(), note: values.initialNote }] : [],
+        followUpLog: values.initialNote ? [{ date: new Date(), note: values.initialNote }] : [],
         attendingChurch: false,
         inBibleStudy: false,
         attendingPrayer: false,
       };
 
+      await addDoc(collection(firestore, `users/${user.uid}/souls`), soulData);
+
       toast({
         title: "Soul Logged",
         description: `${values.name} has been added to your list.`,
       });
-      onSoulLogged(newSoul);
-      setIsLoading(false);
-    }, 1000);
+      onSoulLogged();
+    } catch(error) {
+      console.error("Error logging soul: ", error);
+      toast({ variant: 'destructive', title: "Error", description: "Could not log soul." });
+    } finally {
+        setIsLoading(false);
+    }
   }
 
   return (

@@ -51,8 +51,9 @@ export type Campaign = {
   participants: number;
   progress: number;
   imageUrl: string;
-  createdAt: string;
-  organizer: Pick<User, 'id' | 'name'>;
+  createdAt: Timestamp;
+  organizerId: string;
+  organizerName: string;
 };
 
 export type ProgressLog = {
@@ -64,14 +65,15 @@ export type FollowUpStatus = 'New' | 'Contacted' | 'Attending Church' | 'In Bibl
 
 export type Soul = {
   id: string;
+  userId: string;
   name: string;
   contact?: string;
   source: 'Campaign' | 'Personal' | 'Referral';
   sourceDetails?: string; // e.g., Campaign name or referrer name
-  wonAt: string; // ISO date string
+  wonAt: Timestamp; // ISO date string
   status: FollowUpStatus;
   followUpLog: {
-    date: string;
+    date: Timestamp;
     note: string;
   }[];
   attendingChurch: boolean;
