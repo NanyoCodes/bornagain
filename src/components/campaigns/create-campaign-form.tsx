@@ -23,6 +23,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import type { Campaign } from "@/lib/types";
 
 const formSchema = z.object({
   goal: z.string({
@@ -37,7 +38,11 @@ type CampaignIdeas = {
   description: string;
 };
 
-export function CreateCampaignForm() {
+type CreateCampaignFormProps = {
+  onCampaignCreated: (campaign: Campaign) => void;
+};
+
+export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProps) {
   const { toast } = useToast();
   const [isGenerating, setIsGenerating] = useState(false);
   const [ideas, setIdeas] = useState<CampaignIdeas | null>(null);
@@ -90,9 +95,25 @@ export function CreateCampaignForm() {
     setIsCreating(true);
     // Simulate creation
     await new Promise(res => setTimeout(res, 1500));
+    
+    const photoUrl = photoFile ? URL.createObjectURL(photoFile) : '';
+
+    const newCampaign: Campaign = {
+        id: `camp-${Date.now()}`,
+        title: finalName,
+        description: finalDescription,
+        goal: form.getValues('goal'),
+        location: form.getValues('location'),
+        participants: 1,
+        progress: 0,
+        imageUrl: photoUrl,
+        createdAt: new Date().toISOString(),
+        organizer: { id: 'user-01', name: 'John Doe' },
+    };
+    
     toast({ title: 'Campaign Created!', description: `The "${finalName}" campaign is now ready.` });
+    onCampaignCreated(newCampaign);
     setIsCreating(false);
-    // In a real app, you'd probably close the dialog here and refresh.
   }
 
   return (
