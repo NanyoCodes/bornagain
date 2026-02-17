@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { mockTestimonies } from "@/lib/data";
 import { PlusCircle } from "lucide-react";
 import { CreateTestimonyForm } from "@/components/testimonies/create-testimony-form";
 import { TestimonyCard } from "@/components/testimonies/testimony-card";
@@ -25,6 +24,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useCollection, useFirestore } from "@/firebase";
+import { collection, query, where, orderBy } from "firebase/firestore";
 
 const categories: (TestimonyCategory | "All")[] = [
   "All",
@@ -37,24 +38,32 @@ const categories: (TestimonyCategory | "All")[] = [
 ];
 
 export default function TestimoniesPage() {
-  const [testimonies, setTestimonies] = useState<Testimony[]>(mockTestimonies);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [filter, setFilter] = useState<TestimonyCategory | "All">("All");
   const [mounted, setMounted] = useState(false);
   const isMobile = useIsMobile();
 
+  const firestore = useFirestore();
+
+  const testimoniesQuery =
+    filter === "All"
+      ? query(collection(firestore, "testimonies"), orderBy("createdAt", "desc"))
+      : query(
+          collection(firestore, "testimonies"),
+          where("category", "==", filter),
+          orderBy("createdAt", "desc")
+        );
+
+  const { data: testimonies, loading } = useCollection<Testimony>(testimoniesQuery);
+
+
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  const handleTestimonyCreated = (newTestimony: Testimony) => {
-    setTestimonies((prev) => [newTestimony, ...prev]);
+  const handleTestimonyCreated = () => {
     setIsDialogOpen(false);
   };
-
-  const filteredTestimonies = testimonies.filter(
-    (testimony) => filter === "All" || testimony.category === filter
-  );
 
   const filterComponent = isMobile ? (
     <Select
@@ -122,7 +131,31 @@ export default function TestimoniesPage() {
       {mounted ? filterComponent : <Skeleton className="h-10 w-full" />}
 
       <div className="grid gap-6 md:grid-cols-1 lg:max-w-3xl mx-auto">
-        {filteredTestimonies.map((testimony) => (
+        {loading && (
+          [...Array(3)].map((_, i) => (
+            <Card key={i}>
+              <CardHeader>
+                <div className="flex items-center gap-4">
+                  <Skeleton className="h-12 w-12 rounded-full" />
+                  <div className="w-full space-y-2">
+                    <Skeleton className="h-4 w-1/4" />
+                    <Skeleton className="h-4 w-1/5" />
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <Skeleton className="h-5 w-3/4" />
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-4/5" />
+              </CardContent>
+              <CardFooter>
+                 <Skeleton className="h-8 w-full" />
+              </CardFooter>
+            </Card>
+          ))
+        )}
+        {testimonies?.map((testimony) => (
           <TestimonyCard key={testimony.id} testimony={testimony} />
         ))}
       </div>

@@ -1,3 +1,5 @@
+import type { Timestamp } from "firebase/firestore";
+
 export type User = {
   id: string;
   name: string;
@@ -28,11 +30,13 @@ export type TestimonyCategory = 'Healing' | 'Financial Breakthrough' | 'Salvatio
 
 export type Testimony = {
   id: string;
-  author: Pick<User, 'id' | 'name' | 'avatarUrl'>;
+  authorId: string;
+  authorName: string;
+  authorAvatarUrl: string;
   title: string;
   content: string;
   likes: number;
-  createdAt: string;
+  createdAt: Timestamp;
   category: TestimonyCategory;
   mediaUrl?: string;
   mediaType?: 'image' | 'video' | 'audio';

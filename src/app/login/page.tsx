@@ -7,20 +7,31 @@ import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { LoginForm } from "@/components/auth/login-form";
 import { Button } from "@/components/ui/button";
 import { Icons } from "@/components/icons";
-import { useAuth } from "@/firebase";
+import { useAuth, useFirestore } from "@/firebase";
 import { signInWithPopup, GoogleAuthProvider, FacebookAuthProvider, AuthError } from "firebase/auth";
 import { useToast } from "@/hooks/use-toast";
+import { doc, setDoc } from "firebase/firestore";
 
 export default function LoginPage() {
   const logo = PlaceHolderImages.find((img) => img.id === "logo");
   const auth = useAuth();
+  const firestore = useFirestore();
   const router = useRouter();
   const { toast } = useToast();
 
   const handleSocialLogin = async (provider: 'google' | 'facebook') => {
     const authProvider = provider === 'google' ? new GoogleAuthProvider() : new FacebookAuthProvider();
     try {
-      await signInWithPopup(auth, authProvider);
+      const result = await signInWithPopup(auth, authProvider);
+      const user = result.user;
+
+      // Create user profile in Firestore
+      await setDoc(doc(firestore, "users", user.uid), {
+        displayName: user.displayName,
+        email: user.email,
+        photoURL: user.photoURL
+      }, { merge: true });
+
       toast({
         title: "Login Successful",
         description: "Welcome back!",
@@ -44,8 +55,8 @@ export default function LoginPage() {
             <Image
               src={logo.imageUrl}
               alt={logo.description}
-              width={250}
-              height={63}
+              width={120}
+              height={30}
               className="mx-auto"
               data-ai-hint={logo.imageHint}
               priority

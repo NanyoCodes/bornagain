@@ -23,8 +23,10 @@ import { Loader2, Sparkles } from "lucide-react";
 import { moderateContent } from "@/ai/flows/moderate-content-flow";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
-import type { Testimony, TestimonyCategory } from "@/lib/types";
-import { mockUser } from "@/lib/data";
+import type { TestimonyCategory } from "@/lib/types";
+import { useUser, useFirestore } from "@/firebase";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+
 
 const MAX_FILE_SIZE_MB = 5;
 const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
@@ -38,7 +40,7 @@ const formSchema = z.object({
 });
 
 type CreateTestimonyFormProps = {
-  onTestimonyCreated: (testimony: Testimony) => void;
+  onTestimonyCreated: () => void;
 };
 
 export function CreateTestimonyForm({ onTestimonyCreated }: CreateTestimonyFormProps) {
@@ -46,6 +48,9 @@ export function CreateTestimonyForm({ onTestimonyCreated }: CreateTestimonyFormP
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [moderationResult, setModerationResult] = useState<any>(null);
   const [mediaFile, setMediaFile] = useState<File | null>(null);
+  
+  const { user } = useUser();
+  const firestore = useFirestore();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -75,37 +80,44 @@ export function CreateTestimonyForm({ onTestimonyCreated }: CreateTestimonyFormP
   };
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    if (!user) {
+      toast({ variant: 'destructive', title: 'Not Authenticated', description: 'You must be logged in to share a testimony.'});
+      return;
+    }
+
     setIsSubmitting(true);
     setModerationResult(null);
 
     try {
-      // In a real app, you'd upload the file and get a URL first.
-      // Here, we'll use a local object URL for preview.
-      const mediaUrl = mediaFile ? URL.createObjectURL(mediaFile) : undefined;
-      const mediaType = mediaFile?.type.startsWith('image') ? 'image' : mediaFile?.type.startsWith('video') ? 'video' : mediaFile?.type.startsWith('audio') ? 'audio' : undefined;
+      // In a real app, you'd upload the file to Firebase Storage and get a URL first.
+      // For now, we'll skip file uploads to focus on Firestore.
+      const mediaUrl = undefined; // mediaFile ? URL.createObjectURL(mediaFile) : undefined;
+      const mediaType = undefined; // mediaFile?.type.startsWith('image') ? 'image' : mediaFile?.type.startsWith('video') ? 'video' : mediaFile?.type.startsWith('audio') ? 'audio' : undefined;
 
       const result = await moderateContent({ content: values.content, contentType: 'testimony' });
       setModerationResult(result);
 
       if (result.status === "approved" || result.status === "edited") {
-        const newTestimony: Testimony = {
-          id: `test-${Date.now()}`,
-          author: { id: mockUser.id, name: mockUser.name, avatarUrl: mockUser.avatarUrl },
+        
+        await addDoc(collection(firestore, "testimonies"), {
+          authorId: user.uid,
+          authorName: user.displayName,
+          authorAvatarUrl: user.photoURL,
           title: values.title,
           content: result.moderatedContent || values.content,
           likes: 0,
-          createdAt: new Date().toISOString(),
+          createdAt: serverTimestamp(),
           category: values.category as TestimonyCategory,
           mediaUrl,
           mediaType,
-        };
+        });
 
         toast({
           title: "Testimony Submitted!",
           description: "Thank you for sharing. Your testimony is now live.",
         });
         
-        onTestimonyCreated(newTestimony);
+        onTestimonyCreated();
 
       } else {
         toast({

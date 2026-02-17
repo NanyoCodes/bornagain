@@ -18,7 +18,8 @@ import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { createUserWithEmailAndPassword, updateProfile, AuthError } from "firebase/auth";
-import { useAuth } from "@/firebase";
+import { useAuth, useFirestore } from "@/firebase";
+import { doc, setDoc } from "firebase/firestore";
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -37,6 +38,7 @@ export function SignUpForm() {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const auth = useAuth();
+  const firestore = useFirestore();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -51,13 +53,22 @@ export function SignUpForm() {
     setIsLoading(true);
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
-      await updateProfile(userCredential.user, {
+      const user = userCredential.user;
+      
+      await updateProfile(user, {
         displayName: values.name,
+      });
+
+      // Create user profile in Firestore
+      await setDoc(doc(firestore, "users", user.uid), {
+        displayName: values.name,
+        email: values.email,
+        photoURL: user.photoURL, // Initially null for email signup
       });
 
       toast({
         title: "Account Created",
-        description: "Welcome to Testify Global! You have been logged in.",
+        description: "Welcome to Testify! You have been logged in.",
       });
       router.push("/dashboard");
 

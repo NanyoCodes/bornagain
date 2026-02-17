@@ -48,17 +48,19 @@ function MediaPreview({ testimony }: { testimony: Testimony }) {
 
 
 export function TestimonyCard({ testimony }: { testimony: Testimony }) {
+  const createdAtDate = testimony.createdAt ? new Date(testimony.createdAt.seconds * 1000) : new Date();
+
   return (
     <Card>
       <CardHeader>
         <div className="flex items-center gap-4">
           <Avatar>
-            <AvatarImage src={testimony.author.avatarUrl} alt={testimony.author.name} />
-            <AvatarFallback>{testimony.author.name.charAt(0)}</AvatarFallback>
+            <AvatarImage src={testimony.authorAvatarUrl} alt={testimony.authorName} />
+            <AvatarFallback>{testimony.authorName.charAt(0)}</AvatarFallback>
           </Avatar>
           <div>
-            <CardTitle>{testimony.author.name}</CardTitle>
-            <CardDescription>{formatDistanceToNow(new Date(testimony.createdAt), { addSuffix: true })}</CardDescription>
+            <CardTitle>{testimony.authorName}</CardTitle>
+            <CardDescription>{formatDistanceToNow(createdAtDate, { addSuffix: true })}</CardDescription>
           </div>
           <Badge variant="secondary" className="ml-auto">{testimony.category}</Badge>
         </div>

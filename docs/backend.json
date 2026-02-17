@@ -21,6 +21,24 @@
         }
       },
       "required": ["displayName", "email"]
+    },
+    "Testimony": {
+      "title": "Testimony",
+      "description": "A user's testimony of what God has done.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "content": { "type": "string" },
+        "category": { "type": "string" },
+        "authorId": { "type": "string" },
+        "authorName": { "type": "string" },
+        "authorAvatarUrl": { "type": "string", "format": "uri" },
+        "likes": { "type": "number" },
+        "createdAt": { "type": "object" },
+        "mediaUrl": { "type": "string", "format": "uri" },
+        "mediaType": { "type": "string", "enum": ["image", "video", "audio"] }
+      },
+      "required": ["title", "content", "category", "authorId", "authorName", "createdAt"]
     }
   },
   "auth": {
@@ -32,6 +50,12 @@
         "$ref": "#/entities/UserProfile"
       },
       "description": "Stores public user profile data, keyed by user ID."
+    },
+    "/testimonies/{testimonyId}": {
+      "schema": {
+        "$ref": "#/entities/Testimony"
+      },
+      "description": "Stores user-submitted testimonies."
     }
   }
 }
