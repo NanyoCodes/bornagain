@@ -16,8 +16,8 @@ export default function SignUpPage() {
             <Image
               src={logo.imageUrl}
               alt={logo.description}
-              width={160}
-              height={160}
+              width={250}
+              height={100}
               className="mx-auto"
               data-ai-hint={logo.imageHint}
               priority
