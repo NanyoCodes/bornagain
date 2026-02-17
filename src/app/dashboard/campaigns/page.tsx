@@ -15,15 +15,26 @@ import {
 } from "@/components/ui/dialog";
 import { CampaignCard } from "@/components/campaigns/campaign-card";
 import type { Campaign } from "@/lib/types";
+import { Input } from "@/components/ui/input";
 
 export default function CampaignsPage() {
   const [campaigns, setCampaigns] = useState<Campaign[]>(mockCampaigns);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [cityFilter, setCityFilter] = useState("");
+  const [countryFilter, setCountryFilter] = useState("");
 
   const handleCampaignCreated = (newCampaign: Campaign) => {
     setCampaigns((prev) => [newCampaign, ...prev]);
     setIsDialogOpen(false);
   };
+
+  const filteredCampaigns = campaigns.filter((campaign) => {
+    const locationLower = campaign.location.toLowerCase();
+    return (
+      (!cityFilter || locationLower.includes(cityFilter.toLowerCase())) &&
+      (!countryFilter || locationLower.includes(countryFilter.toLowerCase()))
+    );
+  });
 
   return (
     <div className="space-y-8">
@@ -50,8 +61,22 @@ export default function CampaignsPage() {
           </DialogContent>
         </Dialog>
       </div>
+
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <Input
+          placeholder="Filter by city..."
+          value={cityFilter}
+          onChange={(e) => setCityFilter(e.target.value)}
+        />
+        <Input
+          placeholder="Filter by country..."
+          value={countryFilter}
+          onChange={(e) => setCountryFilter(e.target.value)}
+        />
+      </div>
+
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {campaigns.map((campaign) => (
+        {filteredCampaigns.map((campaign) => (
           <CampaignCard key={campaign.id} campaign={campaign} userId={mockUser.id} />
         ))}
       </div>

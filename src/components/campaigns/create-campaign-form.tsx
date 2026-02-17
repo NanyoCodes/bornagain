@@ -29,7 +29,8 @@ const formSchema = z.object({
   goal: z.string({
     required_error: "Please select a campaign goal.",
   }),
-  location: z.string().min(2, "Location is too short.").max(100, "Location is too long."),
+  city: z.string().min(2, "City is too short.").max(50, "City is too long."),
+  country: z.string().min(2, "Country is too short.").max(50, "Country is too long."),
   targetAudience: z.string().min(3, "Target audience is too short.").max(100, "Target audience is too long."),
 });
 
@@ -55,7 +56,8 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      location: "",
+      city: "",
+      country: "",
       targetAudience: "",
     },
   });
@@ -64,7 +66,11 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
     setIsGenerating(true);
     setIdeas(null);
     try {
-      const result = await generateCampaignIdeas(values);
+      const result = await generateCampaignIdeas({
+        goal: values.goal,
+        location: `${values.city}, ${values.country}`,
+        targetAudience: values.targetAudience,
+      });
       setIdeas(result);
       if (result.campaignNames.length > 0) {
         setSelectedName(result.campaignNames[0]);
@@ -103,7 +109,7 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
         title: finalName,
         description: finalDescription,
         goal: form.getValues('goal'),
-        location: form.getValues('location'),
+        location: `${form.getValues('city')}, ${form.getValues('country')}`,
         participants: 1,
         progress: 0,
         imageUrl: photoUrl,
@@ -120,7 +126,7 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
     <>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <FormField
               control={form.control}
               name="goal"
@@ -147,10 +153,25 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
             />
             <FormField
               control={form.control}
-              name="location"
+              name="targetAudience"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Location</FormLabel>
+                  <FormLabel>Target Audience</FormLabel>
+                  <FormControl>
+                    <Input placeholder="e.g., University Students" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <FormField
+              control={form.control}
+              name="city"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>City</FormLabel>
                   <FormControl>
                     <Input placeholder="e.g., Nairobi" {...field} />
                   </FormControl>
@@ -160,12 +181,12 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
             />
             <FormField
               control={form.control}
-              name="targetAudience"
+              name="country"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Target Audience</FormLabel>
+                  <FormLabel>Country</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g., University Students" {...field} />
+                    <Input placeholder="e.g., Kenya" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
