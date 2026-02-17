@@ -3,7 +3,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import * as React from "react";
 import {
   Bell,
@@ -16,6 +16,7 @@ import {
   TrendingUp,
   User,
   UserPlus,
+  Loader2,
 } from "lucide-react";
 
 import {
@@ -32,9 +33,11 @@ import { Input } from "@/components/ui/input";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { cn } from "@/lib/utils";
+import { useUser, useAuth } from "@/firebase";
+import { signOut } from "firebase/auth";
+import type { User as FirebaseUser } from "firebase/auth";
 
 const logo = PlaceHolderImages.find((img) => img.id === "logo");
-const userAvatar = PlaceHolderImages.find((img) => img.id === "user-1");
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: Home },
@@ -44,8 +47,15 @@ const navItems = [
   { href: "/dashboard/souls-won", label: "Souls Won", icon: UserPlus },
 ];
 
-function AppHeader() {
+function AppHeader({ user }: { user: FirebaseUser }) {
   const pathname = usePathname();
+  const auth = useAuth();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    await signOut(auth);
+    router.push("/login");
+  };
 
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b bg-background px-4 md:px-6 lg:px-8">
@@ -94,23 +104,28 @@ function AppHeader() {
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="relative h-8 w-8 rounded-full">
               <Avatar className="h-9 w-9">
-                {userAvatar && (
+                {user.photoURL ? (
                   <AvatarImage
-                    src={userAvatar.imageUrl}
+                    src={user.photoURL}
+                    alt={user.displayName || "User avatar"}
+                  />
+                ) : (
+                  <AvatarImage
+                    src="https://images.unsplash.com/photo-1610655507808-a59293f4e332?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHx3b21hbiUyMHBvcnRyYWl0fGVufDB8fHx8MTc3MTM0MTI2N3ww&ixlib=rb-4.1.0&q=80&w=1080"
                     alt="User avatar"
-                    data-ai-hint={userAvatar.imageHint}
+                    data-ai-hint="woman portrait"
                   />
                 )}
-                <AvatarFallback>U</AvatarFallback>
+                <AvatarFallback>{user.displayName?.charAt(0) || user.email?.charAt(0) || 'U'}</AvatarFallback>
               </Avatar>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-56" align="end" forceMount>
             <DropdownMenuLabel className="font-normal">
               <div className="flex flex-col space-y-1">
-                <p className="text-sm font-medium leading-none">John Doe</p>
+                <p className="text-sm font-medium leading-none">{user.displayName || 'User'}</p>
                 <p className="text-xs leading-none text-muted-foreground">
-                  user@testify.com
+                  {user.email}
                 </p>
               </div>
             </DropdownMenuLabel>
@@ -128,11 +143,9 @@ function AppHeader() {
               </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem asChild>
-              <Link href="/login">
+            <DropdownMenuItem onClick={handleLogout}>
                 <LogOut className="mr-2 h-4 w-4" />
                 <span>Logout</span>
-              </Link>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -171,20 +184,33 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [mounted, setMounted] = React.useState(false);
+  const { user, loading } = useUser();
+  const router = useRouter();
+
   React.useEffect(() => {
-    setMounted(true);
-  }, []);
+    if (!loading && !user) {
+      router.push('/login');
+    }
+  }, [user, loading, router]);
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen w-full flex-col items-center justify-center bg-background">
+        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+        <p className="mt-4 text-muted-foreground">Loading your dashboard...</p>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null; // Or a redirect component
+  }
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
-      {mounted ? (
-        <AppHeader />
-      ) : (
-        <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6 lg:px-8" />
-      )}
+      <AppHeader user={user} />
       <main className="flex flex-1 flex-col p-4 pb-24 md:p-6 md:pb-8 lg:p-8">{children}</main>
-      {mounted && <BottomNavBar />}
+      <BottomNavBar />
     </div>
   );
 }

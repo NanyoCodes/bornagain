@@ -17,6 +17,8 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
+import { signInWithEmailAndPassword, AuthError } from "firebase/auth";
+import { useAuth } from "@/firebase";
 
 const formSchema = z.object({
   email: z.string().email({
@@ -31,6 +33,7 @@ export function LoginForm() {
   const router = useRouter();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const auth = useAuth();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -40,27 +43,24 @@ export function LoginForm() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
-    // Simulate API call
-    setTimeout(() => {
-      // In a real app, you'd handle auth here.
-      // For this demo, we'll just show a toast and redirect.
-      if (values.email === "user@testify.com" && values.password === "password123") {
-        toast({
-          title: "Login Successful",
-          description: "Welcome back!",
-        });
-        router.push("/dashboard");
-      } else {
-        toast({
-          variant: "destructive",
-          title: "Login Failed",
-          description: "Invalid email or password. Please try again.",
-        });
-        setIsLoading(false);
-      }
-    }, 1500);
+    try {
+      await signInWithEmailAndPassword(auth, values.email, values.password);
+      toast({
+        title: "Login Successful",
+        description: "Welcome back!",
+      });
+      router.push("/dashboard");
+    } catch (error) {
+      const authError = error as AuthError;
+      toast({
+        variant: "destructive",
+        title: "Login Failed",
+        description: authError.message || "Invalid email or password. Please try again.",
+      });
+      setIsLoading(false);
+    }
   }
 
   return (

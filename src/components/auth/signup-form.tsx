@@ -17,6 +17,8 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
+import { createUserWithEmailAndPassword, updateProfile, AuthError } from "firebase/auth";
+import { useAuth } from "@/firebase";
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -34,6 +36,7 @@ export function SignUpForm() {
   const router = useRouter();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const auth = useAuth();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -44,16 +47,29 @@ export function SignUpForm() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
-    // Simulate API call for signup
-    setTimeout(() => {
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
+      await updateProfile(userCredential.user, {
+        displayName: values.name,
+      });
+
       toast({
         title: "Account Created",
         description: "Welcome to Testify Global! You have been logged in.",
       });
       router.push("/dashboard");
-    }, 1500);
+
+    } catch (error) {
+      const authError = error as AuthError;
+      toast({
+        variant: "destructive",
+        title: "Sign Up Failed",
+        description: authError.message || "Could not create account. Please try again.",
+      });
+      setIsLoading(false);
+    }
   }
 
   return (

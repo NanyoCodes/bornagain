@@ -1,12 +1,40 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { LoginForm } from "@/components/auth/login-form";
 import { Button } from "@/components/ui/button";
 import { Icons } from "@/components/icons";
+import { useAuth } from "@/firebase";
+import { signInWithPopup, GoogleAuthProvider, FacebookAuthProvider, AuthError } from "firebase/auth";
+import { useToast } from "@/hooks/use-toast";
 
 export default function LoginPage() {
   const logo = PlaceHolderImages.find((img) => img.id === "logo");
+  const auth = useAuth();
+  const router = useRouter();
+  const { toast } = useToast();
+
+  const handleSocialLogin = async (provider: 'google' | 'facebook') => {
+    const authProvider = provider === 'google' ? new GoogleAuthProvider() : new FacebookAuthProvider();
+    try {
+      await signInWithPopup(auth, authProvider);
+      toast({
+        title: "Login Successful",
+        description: "Welcome back!",
+      });
+      router.push("/dashboard");
+    } catch (error) {
+      const authError = error as AuthError;
+      toast({
+        variant: "destructive",
+        title: "Login Failed",
+        description: authError.message || "An error occurred during social login.",
+      });
+    }
+  };
 
   return (
     <div className="flex min-h-screen w-full bg-background">
@@ -43,11 +71,11 @@ export default function LoginPage() {
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
-            <Button variant="outline">
+            <Button variant="outline" onClick={() => handleSocialLogin('google')}>
               <Icons.google className="mr-2 h-5 w-5" />
               Google
             </Button>
-            <Button variant="outline">
+            <Button variant="outline" onClick={() => handleSocialLogin('facebook')}>
               <Icons.facebook className="mr-2 h-5 w-5 text-[#1877F2]" />
               Facebook
             </Button>
