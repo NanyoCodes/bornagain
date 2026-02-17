@@ -25,7 +25,7 @@ export default function LoginPage() {
           )}
           <div className="space-y-2">
             <h1 className="font-headline text-4xl font-bold tracking-tighter text-primary">
-              Testify Global
+              Testify
             </h1>
             <p className="text-muted-foreground">
               Empowering believers worldwide to share their faith.

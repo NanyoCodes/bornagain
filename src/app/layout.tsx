@@ -4,7 +4,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { ThemeProvider } from '@/components/theme-provider';
 
 export const metadata: Metadata = {
-  title: 'Testify Global',
+  title: 'Testify',
   description:
     'A global platform for believers to share testimonies, organize soul-winning campaigns, and track evangelism progress.',
 };
