@@ -41,6 +41,8 @@ export function CreateCampaignForm() {
   const { toast } = useToast();
   const [isGenerating, setIsGenerating] = useState(false);
   const [ideas, setIdeas] = useState<CampaignIdeas | null>(null);
+  const [selectedName, setSelectedName] = useState('');
+  const [customName, setCustomName] = useState('');
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -56,6 +58,9 @@ export function CreateCampaignForm() {
     try {
       const result = await generateCampaignIdeas(values);
       setIdeas(result);
+      if (result.campaignNames.length > 0) {
+        setSelectedName(result.campaignNames[0]);
+      }
     } catch (error) {
       toast({
         variant: "destructive",
@@ -151,14 +156,26 @@ export function CreateCampaignForm() {
             <div className="space-y-6">
               <div>
                 <h3 className="text-lg font-semibold mb-2">Choose a Campaign Name</h3>
-                <RadioGroup defaultValue={ideas.campaignNames[0]}>
+                <RadioGroup onValueChange={setSelectedName} value={selectedName}>
                   {ideas.campaignNames.map((name, index) => (
                     <div key={index} className="flex items-center space-x-2">
                       <RadioGroupItem value={name} id={`name-${index}`} />
                       <Label htmlFor={`name-${index}`} className="font-normal">{name}</Label>
                     </div>
                   ))}
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="custom" id="name-custom" />
+                    <Label htmlFor="name-custom" className="font-normal">Custom</Label>
+                  </div>
                 </RadioGroup>
+                {selectedName === 'custom' && (
+                  <Input 
+                    placeholder="Enter custom campaign name" 
+                    className="mt-4"
+                    value={customName}
+                    onChange={(e) => setCustomName(e.target.value)}
+                  />
+                )}
               </div>
               <div>
                 <h3 className="text-lg font-semibold mb-2">Suggested Description</h3>
