@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { ChartContainer, ChartTooltipContent } from "@/components/ui/chart";
 import { Button } from "@/components/ui/button";
 import { mockProgressData, mockSoulsWon } from "@/lib/data";
-import { Edit, PlusCircle, Target, Trophy, TrendingUp, UserCheck2 } from "lucide-react";
+import { CalendarIcon, Edit, PlusCircle, Target, Trophy, TrendingUp, UserCheck2 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -20,6 +20,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { format } from "date-fns";
 
 
 const chartConfig = {
@@ -32,17 +35,21 @@ const chartConfig = {
 export default function ProgressPage() {
   const { toast } = useToast();
   const [monthlyGoal, setMonthlyGoal] = useState(50);
+  const [goalDate, setGoalDate] = useState(new Date());
   const [soulsThisMonth, setSoulsThisMonth] = useState(20); // This is mock data
   const [goalDialogOpen, setGoalDialogOpen] = useState(false);
+  
   const [newGoal, setNewGoal] = useState(monthlyGoal);
+  const [newGoalDate, setNewGoalDate] = useState(goalDate);
 
   const handleSaveGoal = () => {
     if (newGoal > 0) {
       setMonthlyGoal(newGoal);
+      setGoalDate(newGoalDate);
       setGoalDialogOpen(false);
       toast({
         title: "Monthly Goal Updated",
-        description: `Your new goal is ${newGoal} souls per month.`,
+        description: `Your new goal for ${format(newGoalDate, "MMMM yyyy")} is ${newGoal} souls.`,
       });
     } else {
       toast({
@@ -89,8 +96,17 @@ export default function ProgressPage() {
         ))}
         <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Monthly Goal</CardTitle>
-              <Dialog open={goalDialogOpen} onOpenChange={setGoalDialogOpen}>
+              <CardTitle className="text-sm font-medium">{format(goalDate, 'MMMM yyyy')} Goal</CardTitle>
+              <Dialog 
+                open={goalDialogOpen} 
+                onOpenChange={(isOpen) => {
+                  if(isOpen) {
+                      setNewGoal(monthlyGoal);
+                      setNewGoalDate(goalDate);
+                  }
+                  setGoalDialogOpen(isOpen);
+                }}
+              >
                 <DialogTrigger asChild>
                   <Button variant="ghost" size="icon" className="h-5 w-5">
                     <Edit className="h-4 w-4 text-muted-foreground" />
@@ -100,7 +116,7 @@ export default function ProgressPage() {
                   <DialogHeader>
                     <DialogTitle>Set Monthly Goal</DialogTitle>
                     <DialogDescription>
-                      Set your personal goal for souls won this month.
+                      Set your personal goal for souls won for a specific month.
                     </DialogDescription>
                   </DialogHeader>
                   <div className="grid gap-4 py-4">
@@ -115,6 +131,33 @@ export default function ProgressPage() {
                         onChange={(e) => setNewGoal(Number(e.target.value))}
                         className="col-span-3"
                       />
+                    </div>
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label className="text-right">
+                          For Month
+                      </Label>
+                      <Popover>
+                          <PopoverTrigger asChild>
+                              <Button
+                              variant={"outline"}
+                              className="col-span-3 font-normal"
+                              >
+                              <span>{format(newGoalDate, "MMMM yyyy")}</span>
+                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                              </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start">
+                              <Calendar
+                                captionLayout="dropdown-buttons"
+                                fromYear={2020}
+                                toYear={2030}
+                                mode="single"
+                                selected={newGoalDate}
+                                onSelect={(date) => date && setNewGoalDate(date)}
+                                initialFocus
+                              />
+                          </PopoverContent>
+                      </Popover>
                     </div>
                   </div>
                   <DialogFooter>
