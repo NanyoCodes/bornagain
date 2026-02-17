@@ -16,9 +16,13 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
-import { Loader2 } from "lucide-react";
+import { CalendarIcon, Loader2 } from "lucide-react";
 import type { Soul, Campaign } from "@/lib/types";
 import { Textarea } from "@/components/ui/textarea";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
 
 const formSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters."),
@@ -26,6 +30,9 @@ const formSchema = z.object({
   source: z.string({ required_error: "Please select a source." }),
   sourceDetails: z.string().optional(),
   initialNote: z.string().optional(),
+  wonAt: z.date({
+    required_error: "A date is required.",
+  }),
 });
 
 type LogSoulFormProps = {
@@ -45,6 +52,7 @@ export function LogSoulForm({ onSoulLogged, campaigns }: LogSoulFormProps) {
       source: "Personal",
       sourceDetails: "",
       initialNote: "",
+      wonAt: new Date(),
     },
   });
 
@@ -59,7 +67,7 @@ export function LogSoulForm({ onSoulLogged, campaigns }: LogSoulFormProps) {
         contact: values.contact,
         source: values.source as Soul['source'],
         sourceDetails: values.sourceDetails,
-        wonAt: new Date().toISOString(),
+        wonAt: values.wonAt.toISOString(),
         status: "New",
         followUpLog: values.initialNote ? [{ date: new Date().toISOString(), note: values.initialNote }] : [],
         attendingChurch: false,
@@ -88,6 +96,47 @@ export function LogSoulForm({ onSoulLogged, campaigns }: LogSoulFormProps) {
               <FormControl>
                 <Input placeholder="John Doe" {...field} />
               </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+         <FormField
+          control={form.control}
+          name="wonAt"
+          render={({ field }) => (
+            <FormItem className="flex flex-col">
+              <FormLabel>Date Won</FormLabel>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <FormControl>
+                    <Button
+                      variant={"outline"}
+                      className={cn(
+                        "w-full pl-3 text-left font-normal",
+                        !field.value && "text-muted-foreground"
+                      )}
+                    >
+                      {field.value ? (
+                        format(field.value, "PPP")
+                      ) : (
+                        <span>Pick a date</span>
+                      )}
+                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                    </Button>
+                  </FormControl>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={field.value}
+                    onSelect={field.onChange}
+                    disabled={(date) =>
+                      date > new Date() || date < new Date("1900-01-01")
+                    }
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
               <FormMessage />
             </FormItem>
           )}

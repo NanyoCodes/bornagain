@@ -55,7 +55,6 @@ function AppHeader() {
           className="flex items-center gap-2 text-lg font-semibold md:text-base"
         >
           {logo && <Image src={logo.imageUrl} alt="Testify" width={32} height={32} />}
-          <span className="font-bold">Testify Global</span>
         </Link>
         {navItems.map((item) => (
           <Link
@@ -89,7 +88,6 @@ function AppHeader() {
               className="mb-4 flex items-center gap-2 text-lg font-semibold"
             >
               {logo && <Image src={logo.imageUrl} alt="Testify" width={32} height={32} />}
-              <span className="font-bold">Testify Global</span>
             </Link>
             {navItems.map((item) => (
               <Link
