@@ -19,8 +19,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
-import { Loader2, Sparkles, Wand2 } from "lucide-react";
-import { summarizeTestimony } from "@/ai/flows/summarize-testimony-flow";
+import { Loader2, Sparkles } from "lucide-react";
 import { moderateContent } from "@/ai/flows/moderate-content-flow";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
@@ -45,7 +44,6 @@ type CreateTestimonyFormProps = {
 export function CreateTestimonyForm({ onTestimonyCreated }: CreateTestimonyFormProps) {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isRephrasing, setIsRephrasing] = useState(false);
   const [moderationResult, setModerationResult] = useState<any>(null);
   const [mediaFile, setMediaFile] = useState<File | null>(null);
 
@@ -73,35 +71,6 @@ export function CreateTestimonyForm({ onTestimonyCreated }: CreateTestimonyFormP
       }
     } else {
         setMediaFile(null);
-    }
-  };
-
-  const handleRephrase = async () => {
-    const content = form.getValues("content");
-    if (content.length < 50) {
-      toast({
-        variant: "destructive",
-        title: "Content too short",
-        description: "Please write at least 50 characters to rephrase the testimony.",
-      });
-      return;
-    }
-    setIsRephrasing(true);
-    try {
-      const summary = await summarizeTestimony(content);
-      form.setValue("content", summary);
-      toast({
-        title: "Content Rephrased!",
-        description: "AI has created an enhanced version of your testimony.",
-      });
-    } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "Rephrasing Failed",
-        description: "Could not rephrase the content. Please try again.",
-      });
-    } finally {
-      setIsRephrasing(false);
     }
   };
 
@@ -202,23 +171,7 @@ export function CreateTestimonyForm({ onTestimonyCreated }: CreateTestimonyFormP
           name="content"
           render={({ field }) => (
             <FormItem>
-              <div className="flex items-center justify-between">
-                <FormLabel>Your Testimony</FormLabel>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleRephrase}
-                  disabled={isRephrasing}
-                >
-                  {isRephrasing ? (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  ) : (
-                    <Wand2 className="mr-2 h-4 w-4" />
-                  )}
-                  Rephrase with AI
-                </Button>
-              </div>
+              <FormLabel>Your Testimony</FormLabel>
               <FormControl>
                 <Textarea
                   placeholder="Share the details of what God has done..."
