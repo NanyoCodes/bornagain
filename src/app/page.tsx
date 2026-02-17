@@ -1,11 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
-import { LoginForm } from "@/components/auth/login-form";
+import { SignUpForm } from "@/components/auth/signup-form";
 import { Button } from "@/components/ui/button";
 import { Icons } from "@/components/icons";
 
-export default function LoginPage() {
+export default function SignUpPage() {
   const logo = PlaceHolderImages.find((img) => img.id === "logo");
 
   return (
@@ -25,20 +25,20 @@ export default function LoginPage() {
           )}
           <div className="space-y-2">
             <h1 className="font-headline text-4xl font-bold tracking-tighter text-primary">
-              Testify Global
+              Create an Account
             </h1>
             <p className="text-muted-foreground">
-              Empowering believers worldwide to share their faith.
+              Join believers worldwide to share your faith.
             </p>
           </div>
-          <LoginForm />
+          <SignUpForm />
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
               <span className="w-full border-t" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
               <span className="bg-background px-2 text-muted-foreground">
-                Or continue with
+                Or sign up with
               </span>
             </div>
           </div>
@@ -53,19 +53,12 @@ export default function LoginPage() {
             </Button>
           </div>
           <p className="px-8 text-center text-sm text-muted-foreground">
-            By clicking continue, you agree to our{" "}
+            Already have an account?{" "}
             <Link
-              href="/terms"
+              href="/login"
               className="underline underline-offset-4 hover:text-primary"
             >
-              Terms of Service
-            </Link>{" "}
-            and{" "}
-            <Link
-              href="/privacy"
-              className="underline underline-offset-4 hover:text-primary"
-            >
-              Privacy Policy
+              Log In
             </Link>
             .
           </p>
