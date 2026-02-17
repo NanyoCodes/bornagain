@@ -24,6 +24,8 @@ export type Achievement = {
   description: string;
 };
 
+export type TestimonyCategory = 'Healing' | 'Financial Breakthrough' | 'Salvation' | 'Relationships' | 'Deliverance' | 'General';
+
 export type Testimony = {
   id: string;
   author: Pick<User, 'id' | 'name' | 'avatarUrl'>;
@@ -31,6 +33,9 @@ export type Testimony = {
   content: string;
   likes: number;
   createdAt: string;
+  category: TestimonyCategory;
+  mediaUrl?: string;
+  mediaType?: 'image' | 'video' | 'audio';
 };
 
 export type Campaign = {
