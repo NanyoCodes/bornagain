@@ -56,7 +56,7 @@ function AppHeader() {
           href="/dashboard"
           className="flex items-center gap-2 text-lg font-semibold md:text-base"
         >
-          {logo && <Image src={logo.imageUrl} alt="Testify" width={120} height={30} />}
+          {logo && <Image src={logo.imageUrl} alt="Testify" width={30} height={30} />}
         </Link>
         {navItems.map((item) => (
           <Link
@@ -191,7 +191,7 @@ export default function DashboardLayout({
       {mounted ? (
         <AppHeader />
       ) : (
-        <header className="sticky top-0 z-30 flex h-16 items-center border-b bg-background px-4 md:px-6 lg:px-8" />
+        <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6 lg:px-8" />
       )}
       <main className="flex flex-1 flex-col p-4 md:p-6 lg:p-8">{children}</main>
     </div>
