@@ -55,13 +55,14 @@ function AppHeader() {
           className="flex items-center gap-2 text-lg font-semibold md:text-base"
         >
           {logo && <Image src={logo.imageUrl} alt="Testify" width={32} height={32} />}
+          <span className="font-bold">Testify Global</span>
         </Link>
         {navItems.map((item) => (
           <Link
             key={item.href}
             href={item.href}
             className={cn(
-              "transition-colors hover:text-foreground",
+              "transition-colors hover:text-foreground whitespace-nowrap",
               pathname === item.href ? "text-foreground font-semibold" : "text-muted-foreground"
             )}
           >
@@ -88,6 +89,7 @@ function AppHeader() {
               className="mb-4 flex items-center gap-2 text-lg font-semibold"
             >
               {logo && <Image src={logo.imageUrl} alt="Testify" width={32} height={32} />}
+              <span className="font-bold">Testify Global</span>
             </Link>
             {navItems.map((item) => (
               <Link
