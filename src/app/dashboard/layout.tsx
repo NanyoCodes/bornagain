@@ -146,15 +146,16 @@ function AppSidebar() {
         <SidebarMenu>
           {navItems.map((item) => (
             <SidebarMenuItem key={item.label}>
-              <Link href={item.href} legacyBehavior passHref>
-                <SidebarMenuButton
-                  isActive={pathname === item.href}
-                  tooltip={item.label}
-                >
+              <SidebarMenuButton
+                asChild
+                isActive={pathname === item.href}
+                tooltip={item.label}
+              >
+                <Link href={item.href}>
                   <item.icon />
                   <span>{item.label}</span>
-                </SidebarMenuButton>
-              </Link>
+                </Link>
+              </SidebarMenuButton>
             </SidebarMenuItem>
           ))}
         </SidebarMenu>
@@ -162,26 +163,28 @@ function AppSidebar() {
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
-            <Link href="/dashboard/settings" legacyBehavior passHref>
-              <SidebarMenuButton
-                isActive={pathname === "/dashboard/settings"}
-                tooltip="Settings"
-              >
+            <SidebarMenuButton
+              asChild
+              isActive={pathname === "/dashboard/settings"}
+              tooltip="Settings"
+            >
+              <Link href="/dashboard/settings">
                 <Settings />
                 <span>Settings</span>
-              </SidebarMenuButton>
-            </Link>
+              </Link>
+            </SidebarMenuButton>
           </SidebarMenuItem>
            <SidebarMenuItem>
-             <Link href="/dashboard/profile" legacyBehavior passHref>
-                <SidebarMenuButton
-                  isActive={pathname === "/dashboard/profile"}
-                  tooltip="Profile"
-                >
+             <SidebarMenuButton
+                asChild
+                isActive={pathname === "/dashboard/profile"}
+                tooltip="Profile"
+              >
+                <Link href="/dashboard/profile">
                   <User />
                   <span>Profile</span>
-                </SidebarMenuButton>
-              </Link>
+                </Link>
+              </SidebarMenuButton>
            </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
