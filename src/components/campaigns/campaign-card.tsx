@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { format, formatDistanceToNow, parse, isSameDay } from "date-fns";
-import { CalendarDays, MapPin, Users, Share2, Clock } from "lucide-react";
+import { CalendarDays, MapPin, Users, Share2, Clock, Edit } from "lucide-react";
 import type { Campaign } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,14 +15,25 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { useFirestore, useUser } from "@/firebase";
 import { doc, serverTimestamp, setDoc, updateDoc, increment } from "firebase/firestore";
+import { useState } from "react";
+import { ManageCampaignForm } from "./manage-campaign-form";
 
 export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaign; userId?: string, isJoined: boolean }) {
   const { toast } = useToast();
   const firestore = useFirestore();
   const { user } = useUser();
   const isOwner = campaign.organizerId === userId;
+  const [isManageOpen, setIsManageOpen] = useState(false);
 
   const handleJoin = async () => {
     if (!user || !firestore) return;
@@ -99,6 +110,83 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
   
   const timeString = `${startTimeFormatted} - ${endTimeFormatted}`;
 
+  const renderOwnerActions = () => (
+    <div className="flex items-center gap-2">
+      <Dialog open={isManageOpen} onOpenChange={setIsManageOpen}>
+        <DialogTrigger asChild>
+          <Button variant="secondary">
+            <Edit className="mr-2 h-4 w-4" />
+            Manage
+          </Button>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Manage Campaign</DialogTitle>
+            <DialogDescription>
+              Update the progress and details of your campaign.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="max-h-[70vh] overflow-y-auto pr-2">
+            <ManageCampaignForm
+              campaign={campaign}
+              onCampaignUpdated={() => setIsManageOpen(false)}
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="outline">
+            <Share2 className="mr-2 h-4 w-4" />
+            Share
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem onClick={() => handleShare("link")}>
+            Copy Link
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => handleShare("facebook")}>
+            Share on Facebook
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => handleShare("twitter")}>
+            Share on Twitter (X)
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
+  );
+
+  const renderParticipantActions = () => (
+    <div className="flex items-center gap-2">
+      <Button variant="secondary" disabled>
+        Joined
+      </Button>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="outline">
+            <Share2 className="mr-2 h-4 w-4" />
+            Share
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem onClick={() => handleShare("link")}>
+            Copy Link
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => handleShare("facebook")}>
+            Share on Facebook
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => handleShare("twitter")}>
+            Share on Twitter (X)
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
+  );
+
+  const renderVisitorActions = () => (
+    <Button onClick={handleJoin} disabled={!userId}>Join Campaign</Button>
+  );
+
 
   return (
     <Card className="flex flex-col">
@@ -132,57 +220,12 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
           <Users className="h-4 w-4" />
           <span>{campaign.participants} participants</span>
         </div>
-        {isOwner ? (
-          <div className="flex items-center gap-2">
-            <Button variant="secondary" disabled>Your Campaign</Button>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline">
-                  <Share2 className="mr-2 h-4 w-4" />
-                  Share
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => handleShare("link")}>
-                  Copy Link
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleShare("facebook")}>
-                  Share on Facebook
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleShare("twitter")}>
-                  Share on Twitter (X)
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        ) : !isJoined ? (
-          <Button onClick={handleJoin} disabled={!userId}>Join Campaign</Button>
-        ) : (
-          <div className="flex items-center gap-2">
-            <Button variant="secondary" disabled>
-              Joined
-            </Button>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline">
-                  <Share2 className="mr-2 h-4 w-4" />
-                  Share
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => handleShare("link")}>
-                  Copy Link
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleShare("facebook")}>
-                  Share on Facebook
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleShare("twitter")}>
-                  Share on Twitter (X)
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        )}
+        {isOwner
+          ? renderOwnerActions()
+          : isJoined
+          ? renderParticipantActions()
+          : renderVisitorActions()
+        }
       </CardFooter>
       <CardFooter className="p-6 pt-0 border-t">
         <p className="text-xs text-muted-foreground">
