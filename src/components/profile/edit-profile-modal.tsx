@@ -94,7 +94,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
         photoURL = await getDownloadURL(uploadTask.snapshot.ref);
       }
 
-      const updates: Partial<Pick<UserProfile, 'displayName' | 'bio' | 'location' | 'phone' | 'photoURL'>> = {};
+      const updates: Partial<UserProfile> = {};
 
       if (values.displayName !== userProfile.displayName) updates.displayName = values.displayName;
       if (values.bio !== userProfile.bio) updates.bio = values.bio;
@@ -112,15 +112,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
       
       if (Object.keys(updates).length > 0) {
         const userDocRef = doc(firestore, 'users', user.uid);
-        updateDoc(userDocRef, updates)
-            .catch((serverError) => {
-                const permissionError = new FirestorePermissionError({
-                    path: userDocRef.path,
-                    operation: 'update',
-                    requestResourceData: updates,
-                });
-                errorEmitter.emit('permission-error', permissionError);
-            });
+        await updateDoc(userDocRef, updates);
       }
       
       toast({ title: "Profile Updated", description: "Your changes have been saved." });
@@ -128,6 +120,14 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
 
     } catch (error: any) {
       console.error("Profile update error:", error);
+       if (error.code && error.code === 'permission-denied') {
+        const permissionError = new FirestorePermissionError({
+            path: `users/${user.uid}`,
+            operation: 'update',
+            requestResourceData: values,
+        });
+        errorEmitter.emit('permission-error', permissionError);
+      }
       toast({ variant: 'destructive', title: "Update Failed", description: error.message || "Could not update profile." });
     } finally {
       setIsSubmitting(false);
