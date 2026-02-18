@@ -75,6 +75,12 @@ export type ProgressLog = {
 
 export type FollowUpStatus = 'New' | 'Contacted' | 'Attending Church' | 'In Bible Study' | 'Established';
 
+export type FollowUpLogItem = {
+  date: Timestamp;
+  note?: string;
+  checklist?: string[];
+};
+
 export type Soul = {
   id: string;
   userId: string;
@@ -85,10 +91,7 @@ export type Soul = {
   sourceDetails?: string; // e.g., Campaign name or referrer name
   wonAt: Timestamp; // ISO date string
   status: FollowUpStatus;
-  followUpLog: {
-    date: Timestamp;
-    note: string;
-  }[];
+  followUpLog: FollowUpLogItem[];
   attendingChurch: boolean;
   inBibleStudy: boolean;
   attendingPrayer: boolean;

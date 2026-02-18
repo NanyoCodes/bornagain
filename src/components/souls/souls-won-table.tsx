@@ -3,9 +3,8 @@
 
 import * as React from "react";
 import { format } from "date-fns";
-import { MoreHorizontal, Church, BookOpen, HandHelping } from "lucide-react";
-import type { Soul, FollowUpStatus } from "@/lib/types";
-
+import { MoreHorizontal, Church, BookOpen, HandHelping, Check, Loader2 } from "lucide-react";
+import type { Soul, FollowUpStatus, FollowUpLogItem } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -42,6 +41,210 @@ import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "../ui/skeleton";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
+import { Textarea } from "@/components/ui/textarea";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
+import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
+import { useFirestore, useUser } from "@/firebase";
+import { doc, updateDoc, arrayUnion, serverTimestamp } from "firebase/firestore";
+
+// --- LogFollowUpDialog Component Definition ---
+const followUpIdeas = [
+    { id: 'invite-service', label: 'Invited to small group/service' },
+    { id: 'connect-leader', label: 'Connected with a leader/mentor' },
+    { id: 'share-resources', label: 'Shared new believer resources' },
+    { id: 'pray-needs', label: 'Prayed for their specific needs' },
+    { id: 'schedule-meeting', label: 'Scheduled a follow-up meeting' },
+];
+
+const logFollowUpFormSchema = z.object({
+    checklist: z.array(z.string()).optional(),
+    note: z.string().optional(),
+});
+
+function LogFollowUpDialog({ soul, children }: { soul: Soul; children: React.ReactNode; }) {
+  const { toast } = useToast();
+  const { user } = useUser();
+  const firestore = useFirestore();
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [isOpen, setIsOpen] = React.useState(false);
+
+  const form = useForm<z.infer<typeof logFollowUpFormSchema>>({
+    resolver: zodResolver(logFollowUpFormSchema),
+    defaultValues: {
+      checklist: [],
+      note: '',
+    },
+  });
+
+  async function onSubmit(values: z.infer<typeof logFollowUpFormSchema>) {
+    if (!user || !firestore) {
+      toast({ variant: 'destructive', title: 'Not Authenticated' });
+      return;
+    }
+    if (!values.checklist?.length && !values.note) {
+      toast({ variant: 'destructive', title: 'Empty Log', description: 'Please select an item or write a note.' });
+      return;
+    }
+    setIsLoading(true);
+
+    try {
+      const soulRef = doc(firestore, `users/${user.uid}/souls`, soul.id);
+      
+      const newLogEntry: FollowUpLogItem = {
+        date: serverTimestamp() as any,
+        note: values.note || '',
+        checklist: values.checklist || [],
+      };
+
+      await updateDoc(soulRef, {
+        followUpLog: arrayUnion(newLogEntry),
+      });
+
+      toast({
+        title: 'Follow-up Logged',
+        description: `A new entry has been added for ${soul.name}.`,
+      });
+      setIsOpen(false);
+      form.reset();
+    } catch (error: any) {
+      console.error('Error logging follow-up: ', error);
+      toast({ variant: 'destructive', title: 'Error', description: 'Could not log follow-up.' });
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  return (
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <DialogTrigger asChild>{children}</DialogTrigger>
+        <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+                <DialogTitle>Log Follow-up for {soul.name}</DialogTitle>
+                <DialogDescription>
+                    Select the actions you took and add any relevant notes.
+                </DialogDescription>
+            </DialogHeader>
+            <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                    <FormField
+                        control={form.control}
+                        name="checklist"
+                        render={() => (
+                            <FormItem>
+                                <div className="mb-4">
+                                    <Label className="text-base">Follow-up Checklist</Label>
+                                </div>
+                                {followUpIdeas.map((item) => (
+                                    <FormField
+                                        key={item.id}
+                                        control={form.control}
+                                        name="checklist"
+                                        render={({ field }) => {
+                                            return (
+                                                <FormItem
+                                                    key={item.id}
+                                                    className="flex flex-row items-start space-x-3 space-y-0"
+                                                >
+                                                    <FormControl>
+                                                        <Checkbox
+                                                            checked={field.value?.includes(item.label)}
+                                                            onCheckedChange={(checked) => {
+                                                                return checked
+                                                                    ? field.onChange([...(field.value || []), item.label])
+                                                                    : field.onChange(field.value?.filter((value) => value !== item.label));
+                                                            }}
+                                                        />
+                                                    </FormControl>
+                                                    <Label className="font-normal">{item.label}</Label>
+                                                </FormItem>
+                                            );
+                                        }}
+                                    />
+                                ))}
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="note"
+                        render={({ field }) => (
+                            <FormItem>
+                                <Label>Additional Notes</Label>
+                                <FormControl>
+                                    <Textarea placeholder="e.g., They are struggling with..." {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <DialogFooter>
+                        <Button type="submit" disabled={isLoading}>
+                            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                            Save Log
+                        </Button>
+                    </DialogFooter>
+                </form>
+            </Form>
+        </DialogContent>
+    </Dialog>
+  );
+}
+
+// --- ViewHistoryDialog Component Definition ---
+function ViewHistoryDialog({ soul, children }: { soul: Soul; children: React.ReactNode; }) {
+  return (
+    <Dialog>
+      <DialogTrigger asChild>{children}</DialogTrigger>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>Follow-up History for {soul.name}</DialogTitle>
+          <DialogDescription>A complete log of all follow-up interactions.</DialogDescription>
+        </DialogHeader>
+        <ScrollArea className="max-h-[60vh] pr-4">
+            <div className="space-y-6">
+                {soul.followUpLog && [...soul.followUpLog].reverse().map((log, index) => (
+                    <div key={index}>
+                        <p className="font-semibold text-sm mb-2">
+                           {log.date ? format(log.date.toDate(), "PPP 'at' p") : 'Date not available'}
+                        </p>
+                        <div className="pl-4 border-l-2 space-y-3">
+                            {log.checklist && log.checklist.length > 0 && (
+                                <div className="space-y-1">
+                                    {log.checklist.map((item, i) => (
+                                        <div key={i} className="flex items-center gap-2 text-sm">
+                                            <Check className="h-4 w-4 text-green-500" />
+                                            <span>{item}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                            {log.note && (
+                                <blockquote className="text-sm text-muted-foreground italic">
+                                    &ldquo;{log.note}&rdquo;
+                                </blockquote>
+                            )}
+                             {(!log.checklist || log.checklist.length === 0) && !log.note && (
+                                 <p className="text-sm text-muted-foreground italic">No details recorded for this entry.</p>
+                             )}
+                        </div>
+                         {index < soul.followUpLog.length - 1 && <Separator className="mt-6" />}
+                    </div>
+                ))}
+                 {(!soul.followUpLog || soul.followUpLog.length === 0) && (
+                    <p className="text-sm text-muted-foreground text-center py-8">No follow-up history recorded yet.</p>
+                )}
+            </div>
+        </ScrollArea>
+      </DialogContent>
+    </Dialog>
+  );
+}
 
 type SoulsWonTableProps = {
   souls: Soul[];
@@ -83,8 +286,12 @@ function SoulCard({ soul, onUpdateSoul }: { soul: Soul, onUpdateSoul: SoulsWonTa
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem>Log Follow-up Note</DropdownMenuItem>
-                        <DropdownMenuItem>View History</DropdownMenuItem>
+                        <LogFollowUpDialog soul={soul}>
+                            <DropdownMenuItem onSelect={(e) => e.preventDefault()}>Log Follow-up</DropdownMenuItem>
+                        </LogFollowUpDialog>
+                        <ViewHistoryDialog soul={soul}>
+                            <DropdownMenuItem onSelect={(e) => e.preventDefault()}>View History</DropdownMenuItem>
+                        </ViewHistoryDialog>
                       </DropdownMenuContent>
                     </DropdownMenu>
                 </div>
@@ -311,8 +518,12 @@ export function SoulsWonTable({ souls, onUpdateSoul, loading }: SoulsWonTablePro
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem>Log Follow-up Note</DropdownMenuItem>
-                        <DropdownMenuItem>View History</DropdownMenuItem>
+                        <LogFollowUpDialog soul={soul}>
+                            <DropdownMenuItem onSelect={(e) => e.preventDefault()}>Log Follow-up</DropdownMenuItem>
+                        </LogFollowUpDialog>
+                        <ViewHistoryDialog soul={soul}>
+                            <DropdownMenuItem onSelect={(e) => e.preventDefault()}>View History</DropdownMenuItem>
+                        </ViewHistoryDialog>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>
