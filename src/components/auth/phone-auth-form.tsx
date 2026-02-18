@@ -39,13 +39,13 @@ declare global {
 }
 
 const phoneSchema = z.object({
-  phone: z.string().min(10, "Phone number is too short.").refine(
+  phone: z.string().min(10, "Please enter a valid phone number including the country code.").refine(
     (value) => {
       const digitsOnly = value.replace(/\D/g, '');
       return digitsOnly.length >= 10;
     },
     {
-      message: "Please enter a valid phone number with at least 10 digits.",
+      message: "Please include your country code and make sure the number has at least 10 digits.",
     }
   ),
 });
@@ -97,7 +97,6 @@ export function PhoneAuthForm() {
     return () => {
       if (window.recaptchaVerifier) {
         window.recaptchaVerifier.clear();
-        window.recaptchaVerifier = undefined;
       }
     };
   }, [auth]);
@@ -128,7 +127,7 @@ export function PhoneAuthForm() {
         description: authError.message || "Please check the phone number and try again.",
       });
       // Reset reCAPTCHA on error to allow retries
-      if (window.grecaptcha && recaptchaWidgetId !== null) {
+      if (window.grecaptcha && recaptchaWidgetId !== null && typeof window.grecaptcha.reset === 'function') {
         window.grecaptcha.reset(recaptchaWidgetId);
       }
     } finally {
@@ -224,7 +223,7 @@ export function PhoneAuthForm() {
               <FormItem>
                 <FormLabel>Phone Number</FormLabel>
                 <FormControl>
-                  <Input placeholder="+1 123 456 7890" {...field} />
+                  <Input placeholder="+11234567890" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
