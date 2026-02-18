@@ -1,7 +1,6 @@
-
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -29,14 +28,6 @@ import { doc, setDoc } from "firebase/firestore";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 
-
-// Add a global declaration for the verifier to avoid issues with React's fast refresh/strict mode
-declare global {
-    interface Window {
-      recaptchaVerifier?: RecaptchaVerifier;
-    }
-}
-
 const phoneSchema = z.object({
   phone: z.string().refine(
     (value) => /^\+[1-9]\d{9,14}$/.test(value),
@@ -59,6 +50,27 @@ export function PhoneAuthForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [isCodeSent, setIsCodeSent] = useState(false);
   const [confirmationResult, setConfirmationResult] = useState<ConfirmationResult | null>(null);
+  const verifierRef = useRef<RecaptchaVerifier | null>(null);
+
+  useEffect(() => {
+    if (!auth) return;
+
+    const verifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+      'size': 'invisible',
+      'callback': () => {
+        // reCAPTCHA solved
+      },
+      'expired-callback': () => {
+        toast({ variant: 'destructive', title: 'reCAPTCHA expired.', description: 'Please try sending the code again.' });
+      }
+    });
+    
+    verifierRef.current = verifier;
+
+    return () => {
+      verifier.clear();
+    };
+  }, [auth, toast]);
 
 
   const phoneForm = useForm<z.infer<typeof phoneSchema>>({
@@ -79,23 +91,16 @@ export function PhoneAuthForm() {
         return;
     }
     
-    // Clear any previous verifier
-    if (window.recaptchaVerifier) {
-        window.recaptchaVerifier.clear();
+    const appVerifier = verifierRef.current;
+    if (!appVerifier) {
+      toast({ variant: "destructive", title: "reCAPTCHA not ready", description: "Please wait a moment and try again." });
+      setIsLoading(false);
+      return;
     }
 
     const phoneNumber = values.phone;
 
     try {
-      // Create a new verifier on each submit attempt to avoid lifecycle issues.
-      const appVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-        'size': 'invisible',
-        'callback': (response: any) => {
-          // reCAPTCHA solved.
-        },
-      });
-      window.recaptchaVerifier = appVerifier; // Store it on window for potential callbacks
-
       const result = await signInWithPhoneNumber(auth, phoneNumber, appVerifier);
       setConfirmationResult(result);
       setIsCodeSent(true);
