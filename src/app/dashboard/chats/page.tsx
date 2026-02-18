@@ -43,17 +43,19 @@ function ChatListItem({ chat, currentUserId }: { chat: Chat, currentUserId: stri
 
 
 export default function ChatsPage() {
-    const { user } = useUser();
+    const { user, loading: userLoading } = useUser();
     const firestore = useFirestore();
 
-    const chatsQuery = user && firestore ? query(
+    const chatsQuery = !userLoading && user && firestore ? query(
         collection(firestore, 'chats'),
         where('participantIds', 'array-contains', user.uid),
         where('hasMessages', '==', true),
         orderBy('lastUpdatedAt', 'desc')
     ) : null;
 
-    const { data: chats, loading } = useCollection<Chat>(chatsQuery);
+    const { data: chats, loading: chatsLoading } = useCollection<Chat>(chatsQuery);
+
+    const loading = userLoading || chatsLoading;
 
     return (
         <div className="space-y-8">
@@ -90,7 +92,7 @@ export default function ChatsPage() {
                         </div>
                     )}
                     <div className="border-t">
-                        {user && chats?.map(chat => (
+                        {!loading && user && chats?.map(chat => (
                             <ChatListItem key={chat.id} chat={chat} currentUserId={user.uid} />
                         ))}
                     </div>

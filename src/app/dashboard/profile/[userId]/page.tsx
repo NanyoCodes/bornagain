@@ -28,7 +28,7 @@ export default function UserProfilePage() {
   const params = useParams();
   const userId = params.userId as string;
 
-  const { user: currentUser, loading: loadingUser } = useUser();
+  const { user: currentUser, loading: userLoading } = useUser();
   const firestore = useFirestore();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -41,18 +41,18 @@ export default function UserProfilePage() {
   const isOwnProfile = currentUser?.uid === userId;
 
   const userDocRef = userId && firestore ? doc(firestore, 'users', userId) : null;
-  const { data: userProfile, loading: loadingProfile } = useDoc<UserProfile>(userDocRef);
+  const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userDocRef);
 
-  const testimoniesQuery = userId && currentUser && firestore ? query(collection(firestore, 'testimonies'), where('authorId', '==', userId)) : null;
-  const { data: testimonies, loading: loadingTestimonies } = useCollection<Testimony>(testimoniesQuery);
+  const testimoniesQuery = !userLoading && userId && firestore ? query(collection(firestore, 'testimonies'), where('authorId', '==', userId)) : null;
+  const { data: testimonies, loading: testimoniesLoading } = useCollection<Testimony>(testimoniesQuery);
 
-  const soulsQuery = isOwnProfile && firestore ? query(collection(firestore, `users/${userId}/souls`)) : null;
-  const { data: soulsWon } = useCollection<Soul>(soulsQuery);
+  const soulsQuery = !userLoading && isOwnProfile && firestore ? query(collection(firestore, `users/${userId}/souls`)) : null;
+  const { data: soulsWon, loading: soulsLoading } = useCollection<Soul>(soulsQuery);
 
-  const joinedCampaignsQuery = isOwnProfile && firestore ? query(collection(firestore, `users/${userId}/joinedCampaigns`)) : null;
-  const { data: joinedCampaigns } = useCollection<JoinedCampaign>(joinedCampaignsQuery);
+  const joinedCampaignsQuery = !userLoading && isOwnProfile && firestore ? query(collection(firestore, `users/${userId}/joinedCampaigns`)) : null;
+  const { data: joinedCampaigns, loading: campaignsLoading } = useCollection<JoinedCampaign>(joinedCampaignsQuery);
 
-  const loading = loadingUser || loadingProfile || loadingTestimonies;
+  const loading = userLoading || profileLoading || testimoniesLoading || soulsLoading || campaignsLoading;
 
   if (loading) {
     return <div className="flex items-center justify-center h-full"><Loader2 className="h-8 w-8 animate-spin" /></div>;

@@ -53,10 +53,10 @@ export default function TestimoniesPage() {
   const [mounted, setMounted] = useState(false);
   const isMobile = useIsMobile();
 
-  const { user } = useUser();
+  const { user, loading: userLoading } = useUser();
   const firestore = useFirestore();
 
-  const testimoniesQuery = user && firestore ? (
+  const testimoniesQuery = !userLoading && user && firestore ? (
     filter === "All"
       ? query(collection(firestore, "testimonies"), orderBy("createdAt", "desc"))
       : query(
@@ -66,8 +66,8 @@ export default function TestimoniesPage() {
         )
     ) : null;
 
-  const { data: testimonies, loading } = useCollection<Testimony>(testimoniesQuery);
-
+  const { data: testimonies, loading: testimoniesLoading } = useCollection<Testimony>(testimoniesQuery);
+  const loading = userLoading || testimoniesLoading;
 
   useEffect(() => {
     setMounted(true);
@@ -191,7 +191,7 @@ export default function TestimoniesPage() {
             </Card>
           ))
         )}
-        {testimonies?.map((testimony) => (
+        {!loading && testimonies?.map((testimony) => (
           <TestimonyCard key={testimony.id} testimony={testimony} />
         ))}
       </div>

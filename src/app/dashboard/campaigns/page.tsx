@@ -48,7 +48,7 @@ function CampaignSkeletons() {
 }
 
 export default function CampaignsPage() {
-  const { user } = useUser();
+  const { user, loading: userLoading } = useUser();
   const firestore = useFirestore();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [cityFilter, setCityFilter] = useState("");
@@ -61,14 +61,16 @@ export default function CampaignsPage() {
     setMounted(true);
   }, []);
 
-  const userDocRef = user && firestore ? doc(firestore, 'users', user.uid) : null;
-  const { data: userProfile } = useDoc<UserProfile>(userDocRef);
+  const userDocRef = !userLoading && user && firestore ? doc(firestore, 'users', user.uid) : null;
+  const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userDocRef);
 
-  const campaignsQuery = user && firestore ? query(collection(firestore, 'campaigns'), orderBy('createdAt', 'desc')) : null;
-  const { data: campaigns, loading } = useCollection<Campaign>(campaignsQuery);
+  const campaignsQuery = !userLoading && user && firestore ? query(collection(firestore, 'campaigns'), orderBy('createdAt', 'desc')) : null;
+  const { data: campaigns, loading: campaignsLoading } = useCollection<Campaign>(campaignsQuery);
 
-  const joinedCampaignsQuery = user && firestore ? query(collection(firestore, `users/${user.uid}/joinedCampaigns`)) : null;
-  const { data: joinedCampaigns } = useCollection<JoinedCampaign>(joinedCampaignsQuery);
+  const joinedCampaignsQuery = !userLoading && user && firestore ? query(collection(firestore, `users/${user.uid}/joinedCampaigns`)) : null;
+  const { data: joinedCampaigns, loading: joinedCampaignsLoading } = useCollection<JoinedCampaign>(joinedCampaignsQuery);
+  
+  const loading = userLoading || profileLoading || campaignsLoading || joinedCampaignsLoading;
 
   const joinedCampaignIds = useMemo(() => {
     if (!joinedCampaigns) return new Set();

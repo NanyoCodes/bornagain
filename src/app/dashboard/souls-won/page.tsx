@@ -22,7 +22,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 export default function SoulsWonPage() {
-  const { user } = useUser();
+  const { user, loading: userLoading } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
   const [isLogDialogOpen, setIsLogDialogOpen] = useState(false);
@@ -34,13 +34,14 @@ export default function SoulsWonPage() {
   }, []);
 
   // Fetch souls for the current user
-  const soulsQuery = user && firestore ? query(collection(firestore, `users/${user.uid}/souls`), orderBy("wonAt", "desc")) : null;
+  const soulsQuery = !userLoading && user && firestore ? query(collection(firestore, `users/${user.uid}/souls`), orderBy("wonAt", "desc")) : null;
   const { data: souls, loading: loadingSouls } = useCollection<Soul>(soulsQuery);
 
   // Fetch campaigns for the form dropdown
-  const campaignsQuery = user && firestore ? query(collection(firestore, 'campaigns'), orderBy('createdAt', 'desc')) : null;
-  const { data: campaigns } = useCollection<Campaign>(campaignsQuery);
+  const campaignsQuery = !userLoading && user && firestore ? query(collection(firestore, 'campaigns'), orderBy('createdAt', 'desc')) : null;
+  const { data: campaigns, loading: loadingCampaigns } = useCollection<Campaign>(campaignsQuery);
 
+  const loading = userLoading || loadingSouls || loadingCampaigns;
 
   const handleSoulLogged = () => {
     setIsLogDialogOpen(false);
@@ -111,7 +112,7 @@ export default function SoulsWonPage() {
       <SoulsWonTable 
         souls={souls || []} 
         onUpdateSoul={handleUpdateSoul} 
-        loading={loadingSouls}
+        loading={loading}
       />
     </div>
   );

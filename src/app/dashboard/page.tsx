@@ -15,9 +15,10 @@ import { useMemo } from "react";
 
 function RecentTestimonies() {
   const firestore = useFirestore();
-  const { user } = useUser();
-  const testimoniesQuery = user && firestore ? query(collection(firestore, 'testimonies'), orderBy('createdAt', 'desc'), limit(3)) : null;
-  const { data: testimonies, loading } = useCollection<Testimony>(testimoniesQuery);
+  const { user, loading: userLoading } = useUser();
+  const testimoniesQuery = !userLoading && user && firestore ? query(collection(firestore, 'testimonies'), orderBy('createdAt', 'desc'), limit(3)) : null;
+  const { data: testimonies, loading: testimoniesLoading } = useCollection<Testimony>(testimoniesQuery);
+  const loading = userLoading || testimoniesLoading;
 
   return (
     <Card className="lg:col-span-2">
@@ -47,7 +48,7 @@ function RecentTestimonies() {
               ))}
             </div>
            )}
-           {testimonies?.map(testimony => (
+           {!loading && testimonies?.map(testimony => (
              <div key={testimony.id} className="flex items-start gap-4">
                 <Avatar className="h-9 w-9">
                   <AvatarImage src={testimony.authorAvatarUrl ?? undefined} alt="Avatar" />
@@ -69,9 +70,10 @@ function RecentTestimonies() {
 
 function ActiveCampaigns() {
   const firestore = useFirestore();
-  const { user } = useUser();
-  const campaignsQuery = user && firestore ? query(collection(firestore, 'campaigns'), orderBy('createdAt', 'desc'), limit(2)) : null;
-  const { data: campaigns, loading } = useCollection<Campaign>(campaignsQuery);
+  const { user, loading: userLoading } = useUser();
+  const campaignsQuery = !userLoading && user && firestore ? query(collection(firestore, 'campaigns'), orderBy('createdAt', 'desc'), limit(2)) : null;
+  const { data: campaigns, loading: campaignsLoading } = useCollection<Campaign>(campaignsQuery);
+  const loading = userLoading || campaignsLoading;
 
   return (
     <Card>
@@ -98,7 +100,7 @@ function ActiveCampaigns() {
                 ))}
               </div>
             )}
-            {campaigns?.map(campaign => (
+            {!loading && campaigns?.map(campaign => (
               <div key={campaign.id} className="flex items-center gap-4">
                 <div className="grid gap-1">
                   <p className="text-sm font-medium">{campaign.title}</p>
@@ -114,17 +116,17 @@ function ActiveCampaigns() {
 
 
 export default function DashboardPage() {
-  const { user } = useUser();
+  const { user, loading: userLoading } = useUser();
   const firestore = useFirestore();
   const now = useMemo(() => new Date(), []);
 
-  const testimoniesQuery = user && firestore ? query(collection(firestore, 'testimonies'), where('authorId', '==', user.uid)) : null;
+  const testimoniesQuery = !userLoading && user && firestore ? query(collection(firestore, 'testimonies'), where('authorId', '==', user.uid)) : null;
   const { data: myTestimonies } = useCollection<Testimony>(testimoniesQuery);
 
-  const soulsQuery = user && firestore ? query(collection(firestore, `users/${user.uid}/souls`)) : null;
+  const soulsQuery = !userLoading && user && firestore ? query(collection(firestore, `users/${user.uid}/souls`)) : null;
   const { data: soulsWon } = useCollection<Soul>(soulsQuery);
   
-  const joinedCampaignsQuery = user && firestore ? query(collection(firestore, `users/${user.uid}/joinedCampaigns`)) : null;
+  const joinedCampaignsQuery = !userLoading && user && firestore ? query(collection(firestore, `users/${user.uid}/joinedCampaigns`)) : null;
   const { data: joinedCampaigns } = useCollection<JoinedCampaign>(joinedCampaignsQuery);
 
   const testimoniesThisMonth = useMemo(() => {

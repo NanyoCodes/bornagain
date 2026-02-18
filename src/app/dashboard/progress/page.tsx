@@ -37,10 +37,10 @@ const chartConfig = {
 
 export default function ProgressPage() {
   const { toast } = useToast();
-  const { user } = useUser();
+  const { user, loading: userLoading } = useUser();
   const firestore = useFirestore();
 
-  const soulsQuery = user && firestore ? query(collection(firestore, `users/${user.uid}/souls`)) : null;
+  const soulsQuery = !userLoading && user && firestore ? query(collection(firestore, `users/${user.uid}/souls`)) : null;
   const { data: souls } = useCollection<Soul>(soulsQuery);
   
   const [monthlyGoal, setMonthlyGoal] = useState(50);
