@@ -125,7 +125,7 @@ export function TestimonyCard({ testimony }: { testimony: Testimony }) {
           </Link>
           <div className="min-w-0">
             <Link href={`/dashboard/profile/${testimony.authorId}`} passHref>
-              <CardTitle className="cursor-pointer hover:underline text-base font-semibold truncate">{testimony.authorName}</CardTitle>
+              <CardTitle className="cursor-pointer hover:underline text-base font-semibold">{testimony.authorName}</CardTitle>
             </Link>
             <CardDescription className="text-xs mt-1">
               {formatDistanceToNow(createdAtDate, { addSuffix: true })}

@@ -93,12 +93,13 @@ export function PhoneAuthForm() {
     }
     
     const appVerifier = window.recaptchaVerifier;
+    const phoneNumber = values.phone.startsWith('+') ? values.phone : `+${values.phone}`;
 
     try {
-      const confirmationResult = await signInWithPhoneNumber(auth, values.phone, appVerifier);
+      const confirmationResult = await signInWithPhoneNumber(auth, phoneNumber, appVerifier);
       window.confirmationResult = confirmationResult;
       setIsCodeSent(true);
-      toast({ title: "Verification code sent", description: `A code has been sent to ${values.phone}` });
+      toast({ title: "Verification code sent", description: `A code has been sent to ${phoneNumber}` });
     } catch (error) {
       const authError = error as AuthError;
       console.error("Phone Auth Error:", authError);
@@ -107,7 +108,7 @@ export function PhoneAuthForm() {
         title: "Could not send code",
         description: authError.message || "Please check the phone number and try again.",
       });
-      window.recaptchaVerifier.render().then((widgetId) => {
+      window.recaptchaVerifier?.render().then((widgetId) => {
         if(window.grecaptcha) {
             window.grecaptcha.reset(widgetId);
         }
