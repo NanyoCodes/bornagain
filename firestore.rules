@@ -28,29 +28,26 @@ service cloud.firestore {
 
     // Campaigns are public to all authenticated users.
     // Creating a campaign is allowed for authenticated users.
-    // Deletes are restricted to the organizer.
     // Updates are restricted to the organizer, except for incrementing participant count.
+    // Deletes are soft-deletes (an update), hard deletes are disallowed.
     match /campaigns/{campaignId} {
     	allow read: if request.auth != null;
       allow create: if request.auth != null;
-      // An update is allowed if:
-      // 1. The user is the organizer and is updating allowed fields.
-      // 2. A user is joining and only incrementing the participant count.
-      allow update: if request.auth != null &&
+      allow update: if request.auth != null && (
+        // Case 1: A user is joining the campaign.
+        // This is only allowed to increment the participant count by 1.
         (
-          // Organizer updates: can't change participants, organizerId, or createdAt
-          (request.auth.uid == resource.data.organizerId &&
-            !('participants' in request.resource.data.diff(resource.data).affectedKeys()) &&
-            !('organizerId' in request.resource.data.diff(resource.data).affectedKeys()) &&
-            !('createdAt' in request.resource.data.diff(resource.data).affectedKeys())
-          ) ||
-          // Participant joining: only affects 'participants' field by incrementing it.
-          (
-            request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participants']) &&
-            request.resource.data.participants == resource.data.participants + 1
-          )
-        );
-      allow delete: if request.auth != null && request.auth.uid == resource.data.organizerId;
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participants']) &&
+          request.resource.data.participants == resource.data.participants + 1
+        ) ||
+        // Case 2: The organizer is updating the campaign (including soft-deleting).
+        // They can change anything except for the participant count.
+        (
+          request.auth.uid == resource.data.organizerId &&
+          !request.resource.data.diff(resource.data).affectedKeys().has('participants')
+        )
+      );
+      allow delete: if false; // Hard deletes are disallowed.
 
       // Campaign organizers can read participants.
       // Users can add/remove themselves as a participant.
