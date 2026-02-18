@@ -29,12 +29,6 @@ import { doc, setDoc } from "firebase/firestore";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 
-declare global {
-    interface Window {
-        recaptchaVerifier?: RecaptchaVerifier;
-        confirmationResult?: ConfirmationResult;
-    }
-}
 
 const phoneSchema = z.object({
   phone: z.string().refine(
@@ -57,23 +51,25 @@ export function PhoneAuthForm() {
 
   const [isLoading, setIsLoading] = useState(false);
   const [isCodeSent, setIsCodeSent] = useState(false);
+  const [confirmationResult, setConfirmationResult] = useState<ConfirmationResult | null>(null);
+
+  const recaptchaVerifierRef = useRef<RecaptchaVerifier | null>(null);
   const recaptchaContainerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    if (!auth || !recaptchaContainerRef.current) {
-        return;
-    }
-    // Only initialize if it hasn't been initialized yet
-    if (!window.recaptchaVerifier) {
-      const verifier = new RecaptchaVerifier(auth, recaptchaContainerRef.current, {
-        size: 'invisible',
-        callback: () => {
-          // reCAPTCHA solved, allow signInWithPhoneNumber.
-        },
-      });
-      window.recaptchaVerifier = verifier;
-    }
-    // No cleanup function to avoid issues with React Strict Mode
+    if (!auth || !recaptchaContainerRef.current) return;
+
+    const verifier = new RecaptchaVerifier(auth, recaptchaContainerRef.current, {
+      size: 'invisible',
+      callback: () => {
+        // reCAPTCHA solved, allow signInWithPhoneNumber.
+      },
+    });
+    recaptchaVerifierRef.current = verifier;
+
+    return () => {
+      verifier.clear();
+    };
   }, [auth]);
 
   const phoneForm = useForm<z.infer<typeof phoneSchema>>({
@@ -88,19 +84,18 @@ export function PhoneAuthForm() {
 
   async function onPhoneSubmit(values: z.infer<typeof phoneSchema>) {
     setIsLoading(true);
-    if (!auth || !firestore || !window.recaptchaVerifier) {
+    if (!auth || !firestore || !recaptchaVerifierRef.current) {
         toast({ variant: "destructive", title: "Firebase not initialized." });
         setIsLoading(false);
         return;
     }
     
-    const appVerifier = window.recaptchaVerifier;
+    const appVerifier = recaptchaVerifierRef.current;
     const phoneNumber = values.phone;
 
     try {
-      await appVerifier.render(); // Ensure reCAPTCHA is rendered before signing in
-      const confirmationResult = await signInWithPhoneNumber(auth, phoneNumber, appVerifier);
-      window.confirmationResult = confirmationResult;
+      const result = await signInWithPhoneNumber(auth, phoneNumber, appVerifier);
+      setConfirmationResult(result);
       setIsCodeSent(true);
       toast({ title: "Verification code sent", description: `A code has been sent to ${phoneNumber}` });
     } catch (error) {
@@ -119,20 +114,20 @@ export function PhoneAuthForm() {
 
   async function onCodeSubmit(values: z.infer<typeof codeSchema>) {
     setIsLoading(true);
-    if (!window.confirmationResult || !firestore) {
+    if (!confirmationResult || !firestore) {
         toast({ variant: "destructive", title: "An error occurred", description: "Please try sending the code again." });
         setIsLoading(false);
         return;
     }
 
     try {
-      const result = await window.confirmationResult.confirm(values.code);
+      const result = await confirmationResult.confirm(values.code);
       const user = result.user;
 
       const userDocRef = doc(firestore, "users", user.uid);
       const userData = {
         displayName: user.displayName || `User ${user.uid.substring(0, 5)}`,
-        email: user.email, // will be null
+        email: user.email,
         photoURL: user.photoURL,
         phone: user.phoneNumber,
       };
