@@ -3,7 +3,7 @@
 
 import { useMemo, useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { PlusCircle } from "lucide-react";
+import { CalendarIcon, PlusCircle, X } from "lucide-react";
 import { CreateCampaignForm } from "@/components/campaigns/create-campaign-form";
 import {
   Dialog,
@@ -28,6 +28,10 @@ import { useCollection, useFirestore, useUser } from "@/firebase";
 import { collection, query, orderBy } from "firebase/firestore";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
 
 function CampaignSkeletons() {
   return (
@@ -51,6 +55,7 @@ export default function CampaignsPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [cityFilter, setCityFilter] = useState("");
   const [countryFilter, setCountryFilter] = useState("");
+  const [dateFilter, setDateFilter] = useState<Date | null>(null);
   const [mounted, setMounted] = useState(false);
   const isMobile = useIsMobile();
 
@@ -73,13 +78,21 @@ export default function CampaignsPage() {
     setIsDialogOpen(false);
   };
 
-  const filteredCampaigns = campaigns?.filter((campaign) => {
-    const locationLower = campaign.location.toLowerCase();
-    return (
-      (!cityFilter || locationLower.includes(cityFilter.toLowerCase())) &&
-      (!countryFilter || locationLower.includes(countryFilter.toLowerCase()))
-    );
-  });
+  const filteredCampaigns = useMemo(() => {
+    return campaigns?.filter((campaign) => {
+      const locationLower = campaign.location.toLowerCase();
+      const campaignDate = campaign.date.toDate();
+      const campaignDay = new Date(campaignDate.getFullYear(), campaignDate.getMonth(), campaignDate.getDate());
+
+      const dateFilterStart = dateFilter ? new Date(dateFilter.getFullYear(), dateFilter.getMonth(), dateFilter.getDate()) : null;
+
+      return (
+        (!cityFilter || locationLower.includes(cityFilter.toLowerCase())) &&
+        (!countryFilter || locationLower.includes(countryFilter.toLowerCase())) &&
+        (!dateFilterStart || campaignDay >= dateFilterStart)
+      );
+    });
+  }, [campaigns, cityFilter, countryFilter, dateFilter]);
 
   const triggerButton = (
     <Button disabled={!user}>
@@ -130,17 +143,44 @@ export default function CampaignsPage() {
         )}
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
         <Input
           placeholder="Filter by city..."
           value={cityFilter}
           onChange={(e) => setCityFilter(e.target.value)}
+          className="text-base"
         />
         <Input
           placeholder="Filter by country..."
           value={countryFilter}
           onChange={(e) => setCountryFilter(e.target.value)}
+          className="text-base"
         />
+        <div className="relative">
+            <Popover>
+                <PopoverTrigger asChild>
+                    <Button
+                    variant={"outline"}
+                    className={cn(
+                        "w-full justify-start text-left font-normal text-base h-10",
+                        !dateFilter && "text-muted-foreground"
+                    )}
+                    >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {dateFilter ? format(dateFilter, "PPP") : <span>Filter by date...</span>}
+                    </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                    <Calendar
+                    mode="single"
+                    selected={dateFilter}
+                    onSelect={setDateFilter}
+                    initialFocus
+                    />
+                </PopoverContent>
+            </Popover>
+            {dateFilter && <Button variant="ghost" size="icon" className="absolute right-1 top-1 h-8 w-8" onClick={() => setDateFilter(null)}><X className="h-4 w-4" /></Button>}
+        </div>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
