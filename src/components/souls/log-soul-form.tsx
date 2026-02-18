@@ -17,13 +17,10 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
-import { CalendarIcon, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import type { Campaign, Soul } from "@/lib/types";
 import { Textarea } from "@/components/ui/textarea";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
-import { cn } from "@/lib/utils";
 import { useFirestore, useUser } from "@/firebase";
 import { collection, addDoc } from "firebase/firestore";
 import { FirestorePermissionError } from "@/firebase/errors";
@@ -35,7 +32,7 @@ const formSchema = z.object({
   source: z.string({ required_error: "Please select a source." }),
   sourceDetails: z.string().optional(),
   initialNote: z.string().optional(),
-  wonAt: z.date({
+  wonAt: z.coerce.date({
     required_error: "A date is required.",
   }),
 });
@@ -132,38 +129,17 @@ export function LogSoulForm({ onSoulLogged, campaigns, campaign }: LogSoulFormPr
           control={form.control}
           name="wonAt"
           render={({ field }) => (
-            <FormItem className="flex flex-col">
+            <FormItem>
               <FormLabel>Date Won</FormLabel>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <FormControl>
-                    <Button
-                      variant={"outline"}
-                      className={cn(
-                        "w-full pl-3 text-left font-normal text-base",
-                        !field.value && "text-muted-foreground"
-                      )}
-                    >
-                      {field.value ? (
-                        format(field.value, "PPP")
-                      ) : (
-                        <span>Pick a date</span>
-                      )}
-                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                    </Button>
-                  </FormControl>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={field.value}
-                    onSelect={field.onChange}
-                    disabled={(date) =>
-                      date > new Date() || date < new Date("1900-01-01")
-                    }
-                  />
-                </PopoverContent>
-              </Popover>
+              <FormControl>
+                <Input
+                  type="date"
+                  className="text-base"
+                  value={field.value ? format(new Date(field.value), 'yyyy-MM-dd') : ''}
+                  onChange={field.onChange}
+                  max={format(new Date(), 'yyyy-MM-dd')}
+                />
+              </FormControl>
               <FormMessage />
             </FormItem>
           )}
