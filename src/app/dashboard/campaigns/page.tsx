@@ -171,8 +171,8 @@ export default function CampaignsPage() {
 
   const triggerButton = (
     <Button disabled={!user}>
-      <PlusCircle className="mr-2 h-4 w-4" />
-      Create Campaign
+      <PlusCircle className="h-4 w-4" />
+      <span className="hidden md:inline">Create Campaign</span>
     </Button>
   );
 

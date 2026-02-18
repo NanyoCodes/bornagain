@@ -74,8 +74,8 @@ export default function TestimoniesPage() {
   
   const triggerButton = (
     <Button>
-      <PlusCircle className="mr-2 h-4 w-4" />
-      Share Testimony
+      <PlusCircle className="h-4 w-4" />
+      <span className="hidden md:inline">Share Testimony</span>
     </Button>
   );
 
