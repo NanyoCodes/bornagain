@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -10,9 +11,16 @@ interface UseCollectionOptions {
   snapshotOptions?: SnapshotOptions;
 }
 
+function getQueryPath(q: Query<DocumentData>): string {
+    // This is a hack to get the path from a query.
+    // It uses internal properties of the Firestore SDK.
+    // This might break in future versions of the SDK.
+    return (q as any)._query?.path?.canonicalString() ?? '';
+}
+
 // Custom hook to memoize Firestore queries
 const useMemoizedQuery = (query: Query<DocumentData> | null): Query<DocumentData> | null => {
-  const queryKey = query ? JSON.stringify({ path: query.path, filters: (query as any)._query.filters, orderBy: (query as any)._query.orderBy }) : null;
+  const queryKey = query ? JSON.stringify({ path: getQueryPath(query), filters: (query as any)._query.filters, orderBy: (query as any)._query.orderBy }) : null;
 
   return useMemo(() => {
     return query;
@@ -56,7 +64,7 @@ export function useCollection<T extends { id: string }>(
       },
       (err) => {
         const permissionError = new FirestorePermissionError({
-          path: memoizedQuery.path,
+          path: getQueryPath(memoizedQuery),
           operation: 'list',
         });
         errorEmitter.emit('permission-error', permissionError);
