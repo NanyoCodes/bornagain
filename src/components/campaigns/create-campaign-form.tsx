@@ -132,7 +132,6 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
       startTime: form.getValues('startTime'),
       endTime: form.getValues('endTime'),
       participants: 1,
-      progress: 0,
       createdAt: serverTimestamp(),
       organizerId: user.uid,
       organizerName: user.displayName || 'Anonymous',

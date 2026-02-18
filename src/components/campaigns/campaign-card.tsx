@@ -8,7 +8,6 @@ import type { Campaign } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -478,13 +477,6 @@ export function CampaignCard({ campaign, userId, isJoined, allCampaigns }: { cam
                 </div>
             </div>
 
-            <div>
-            <div className="flex justify-between items-center mb-1 text-sm">
-                <span className="font-medium">Progress</span>
-                <span className="text-muted-foreground">{campaign.progress || 0}%</span>
-            </div>
-            <Progress value={campaign.progress || 0} />
-            </div>
         </CardContent>
         <CardFooter className="p-6 pt-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mt-auto border-t bg-muted/50">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">

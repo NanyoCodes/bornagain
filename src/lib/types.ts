@@ -42,7 +42,6 @@ export type Campaign = {
   startTime: string;
   endTime: string;
   participants: number;
-  progress: number;
   createdAt: Timestamp;
   organizerId: string;
   organizerName: string;

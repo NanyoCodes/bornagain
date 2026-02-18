@@ -102,9 +102,6 @@
         "participants": {
           "type": "number"
         },
-        "progress": {
-          "type": "number"
-        },
         "createdAt": {
           "type": "object"
         },

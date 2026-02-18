@@ -7,7 +7,6 @@ import * as z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Slider } from '@/components/ui/slider';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Mail } from 'lucide-react';
 import { useCollection, useFirestore, useUser } from '@/firebase';
@@ -20,7 +19,6 @@ import { Separator } from '../ui/separator';
 import { Skeleton } from '../ui/skeleton';
 
 const formSchema = z.object({
-  progress: z.number().min(0).max(100),
   description: z.string().min(3, "Description is too short.").max(5000, "Description is too long."),
   lastUpdateReason: z.string().min(10, { message: "Please provide a reason of at least 10 characters." }),
 });
@@ -76,7 +74,6 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      progress: campaign.progress || 0,
       description: campaign.description || "",
       lastUpdateReason: "",
     },
@@ -97,7 +94,6 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
     try {
       const campaignRef = doc(firestore, 'campaigns', campaign.id);
       const updateData = {
-        progress: values.progress,
         description: values.description,
         lastUpdateReason: values.lastUpdateReason,
       };
@@ -143,24 +139,6 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
                     <FormLabel>Description</FormLabel>
                     <FormControl>
                         <Textarea placeholder="Campaign description" {...field} className="text-base min-h-[120px]" />
-                    </FormControl>
-                    <FormMessage />
-                    </FormItem>
-                )}
-                />
-                <FormField
-                control={form.control}
-                name="progress"
-                render={({ field }) => (
-                    <FormItem>
-                    <FormLabel>Progress: {field.value}%</FormLabel>
-                    <FormControl>
-                        <Slider
-                        value={[field.value]}
-                        onValueChange={(value) => field.onChange(value[0])}
-                        max={100}
-                        step={1}
-                        />
                     </FormControl>
                     <FormMessage />
                     </FormItem>
