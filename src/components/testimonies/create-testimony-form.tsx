@@ -99,28 +99,29 @@ export function CreateTestimonyForm({ onTestimonyCreated }: CreateTestimonyFormP
         const testimonyData: { [key: string]: any } = {
           authorId: user.uid,
           authorName: user.displayName || user.email || 'Anonymous',
+          authorAvatarUrl: user.photoURL || null,
           title: values.title,
           content: result.moderatedContent || values.content,
           createdAt: serverTimestamp(),
           category: values.category as TestimonyCategory,
         };
-        
-        if (user.photoURL) {
-          testimonyData.authorAvatarUrl = user.photoURL;
-        }
 
         if (mediaFile) {
-          const fileRef = ref(storage, `testimonies/${user.uid}/${Date.now()}-${mediaFile.name}`);
-          const snapshot = await uploadBytes(fileRef, mediaFile);
-          const mediaUrl = await getDownloadURL(snapshot.ref);
-          testimonyData.mediaUrl = mediaUrl;
-
+          let mediaType: 'image' | 'video' | 'audio' | undefined;
           if (mediaFile.type.startsWith('image')) {
-            testimonyData.mediaType = 'image';
+            mediaType = 'image';
           } else if (mediaFile.type.startsWith('video')) {
-            testimonyData.mediaType = 'video';
+            mediaType = 'video';
           } else if (mediaFile.type.startsWith('audio')) {
-            testimonyData.mediaType = 'audio';
+            mediaType = 'audio';
+          }
+
+          if (mediaType) {
+            const fileRef = ref(storage, `testimonies/${user.uid}/${Date.now()}-${mediaFile.name}`);
+            const snapshot = await uploadBytes(fileRef, mediaFile);
+            const mediaUrl = await getDownloadURL(snapshot.ref);
+            testimonyData.mediaUrl = mediaUrl;
+            testimonyData.mediaType = mediaType;
           }
         }
 
