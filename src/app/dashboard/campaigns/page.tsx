@@ -123,7 +123,7 @@ export default function CampaignsPage() {
       return searchableFields.some(field => field && field.toLowerCase().includes(term));
     });
 
-    if (!filtered) return [];
+    if (!filtered || !mounted) return filtered || [];
 
     const now = new Date();
     const userLocation = userProfile?.location?.toLowerCase().trim();
@@ -140,7 +140,7 @@ export default function CampaignsPage() {
       return 1; // Ongoing
     };
 
-    return filtered.sort((a, b) => {
+    return [...filtered].sort((a, b) => {
       const statusA = getStatus(a);
       const statusB = getStatus(b);
       if (statusA !== statusB) {
@@ -167,7 +167,7 @@ export default function CampaignsPage() {
       return 0;
     });
 
-  }, [campaigns, searchTerm, userProfile]);
+  }, [campaigns, searchTerm, userProfile, mounted]);
 
   const triggerButton = (
     <Button disabled={!user}>
