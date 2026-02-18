@@ -4,7 +4,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import {
   Bell,
   Home,
@@ -193,11 +193,6 @@ export default function DashboardLayout({
 }) {
   const { user, loading } = useUser();
   const router = useRouter();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -205,7 +200,7 @@ export default function DashboardLayout({
     }
   }, [user, loading, router]);
 
-  if (loading || !mounted) {
+  if (loading) {
     return (
       <div className="flex min-h-screen w-full flex-col items-center justify-center bg-background">
         <Loader2 className="h-12 w-12 animate-spin text-primary" />
@@ -215,7 +210,7 @@ export default function DashboardLayout({
   }
 
   if (!user) {
-    return null; // Or a redirect component
+    return null; // Redirect is in progress
   }
 
   return (
