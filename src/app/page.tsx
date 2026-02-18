@@ -1,4 +1,3 @@
-
 "use client";
 
 import Image from "next/image";
@@ -83,7 +82,7 @@ export default function SignUpPage() {
   return (
     <div className="w-full lg:grid lg:min-h-screen lg:grid-cols-2">
       <div className="flex items-center justify-center py-12 px-4">
-        <div className="mx-auto grid w-full max-w-sm gap-6">
+        <div className="mx-auto grid w-full max-w-xs gap-6">
           <div className="grid gap-2 text-center">
              {logo && (
               <Image
