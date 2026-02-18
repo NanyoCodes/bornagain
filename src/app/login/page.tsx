@@ -86,7 +86,7 @@ export default function LoginPage() {
                 src={logo.imageUrl}
                 alt={logo.description}
                 width={200}
-                height={60}
+                height={61}
                 className="mx-auto"
                 data-ai-hint={logo.imageHint}
                 priority
