@@ -1,3 +1,4 @@
+
 "use client";
 
 import Image from "next/image";
@@ -22,6 +23,14 @@ export default function LoginPage() {
   const { toast } = useToast();
 
   const handleSocialLogin = async (provider: 'google' | 'facebook') => {
+    if (!auth || !firestore) {
+      toast({
+        variant: "destructive",
+        title: "Firebase not initialized",
+        description: "Please wait a moment and try again.",
+      });
+      return;
+    }
     const authProvider = provider === 'google' ? new GoogleAuthProvider() : new FacebookAuthProvider();
     try {
       const result = await signInWithPopup(auth, authProvider);
@@ -34,11 +43,11 @@ export default function LoginPage() {
         photoURL: user.photoURL
       };
 
-      // Create user profile in Firestore
+      // Create or merge user profile in Firestore
       setDoc(userDocRef, userData, { merge: true }).catch((serverError) => {
         const permissionError = new FirestorePermissionError({
           path: userDocRef.path,
-          operation: 'create',
+          operation: 'write',
           requestResourceData: userData,
         });
         errorEmitter.emit('permission-error', permissionError);
@@ -51,11 +60,19 @@ export default function LoginPage() {
       router.push("/dashboard");
     } catch (error) {
       const authError = error as AuthError;
-      toast({
-        variant: "destructive",
-        title: "Login Failed",
-        description: authError.message || "An error occurred during social login.",
-      });
+       if (authError.code === 'auth/unauthorized-domain') {
+        toast({
+          variant: "destructive",
+          title: "Login Failed",
+          description: "This app's domain is not authorized for authentication. Please contact support.",
+        });
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Login Failed",
+          description: authError.message || "An error occurred during social login.",
+        });
+      }
     }
   };
 
@@ -67,7 +84,7 @@ export default function LoginPage() {
             <Image
               src={logo.imageUrl}
               alt={logo.description}
-              width={80}
+              width={250}
               height={80}
               className="mx-auto"
               data-ai-hint={logo.imageHint}

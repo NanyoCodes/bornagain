@@ -52,11 +52,6 @@ function AppHeader() {
   const pathname = usePathname();
   const auth = useAuth();
   const router = useRouter();
-  const [mounted, setMounted] = React.useState(false);
-
-  React.useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const handleLogout = async () => {
     if (!auth) return;
@@ -64,10 +59,8 @@ function AppHeader() {
     router.push("/login");
   };
   
-  if (!user || !mounted) {
-    return (
-      <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6 lg:px-8" />
-    );
+  if (!user) {
+    return null;
   }
 
   return (
@@ -77,8 +70,8 @@ function AppHeader() {
           href="/dashboard"
           className="flex items-center gap-2 text-lg font-semibold"
         >
-          {logo && <Image src={logo.imageUrl} alt="Testify" width={40} height={40} />}
-          <span className="hidden font-bold sm:inline-block">Testify</span>
+          {logo && <Image src={logo.imageUrl} alt="Testify" width={120} height={40} />}
+          <span className="sr-only font-bold sm:inline-block">Testify</span>
         </Link>
         {/* Desktop Navigation */}
         <nav className="hidden items-center gap-5 text-sm font-medium md:flex lg:gap-6">
@@ -109,10 +102,34 @@ function AppHeader() {
           </div>
         </form>
         <ThemeToggle />
-        <Button variant="ghost" size="icon" className="h-8 w-8">
-          <Bell className="h-5 w-5" />
-          <span className="sr-only">Toggle notifications</span>
-        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon" className="relative h-8 w-8">
+              <Bell className="h-5 w-5" />
+              <span className="absolute top-1 right-1 flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+              </span>
+              <span className="sr-only">Toggle notifications</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-80">
+            <DropdownMenuLabel>Notifications</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem className="flex-col items-start gap-1">
+              <p className="font-semibold">New Campaign Nearby</p>
+              <p className="text-xs text-muted-foreground">'Hope for the City' has started in Nairobi.</p>
+            </DropdownMenuItem>
+            <DropdownMenuItem className="flex-col items-start gap-1">
+              <p className="font-semibold">Testimony Liked</p>
+              <p className="text-xs text-muted-foreground">John Doe liked your testimony 'Healed from Sickness'.</p>
+            </DropdownMenuItem>
+            <DropdownMenuItem className="flex-col items-start gap-1">
+              <p className="font-semibold">Campaign Update</p>
+              <p className="text-xs text-muted-foreground">'Street Evangelism' has 5 new participants.</p>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="relative h-8 w-8 rounded-full">
@@ -188,6 +205,11 @@ export default function DashboardLayout({
 }) {
   const { user, loading } = useUser();
   const router = useRouter();
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
   React.useEffect(() => {
     if (!loading && !user) {
@@ -195,7 +217,7 @@ export default function DashboardLayout({
     }
   }, [user, loading, router]);
 
-  if (loading) {
+  if (loading || !mounted) {
     return (
       <div className="flex min-h-screen w-full flex-col items-center justify-center bg-background">
         <Loader2 className="h-12 w-12 animate-spin text-primary" />

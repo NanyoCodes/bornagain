@@ -1,3 +1,4 @@
+
 "use client";
 
 import Image from "next/image";
@@ -107,7 +108,7 @@ export default function ProfilePage() {
                   Edit Profile
                 </Button>
               </DialogTrigger>
-              <DialogContent>
+              <DialogContent className="sm:max-w-2xl">
                 <DialogHeader>
                   <DialogTitle>Edit Profile</DialogTitle>
                   <DialogDescription>

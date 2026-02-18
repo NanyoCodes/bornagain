@@ -1,3 +1,4 @@
+
 "use client";
 
 import Image from "next/image";
@@ -23,6 +24,14 @@ export default function SignUpPage() {
   const { toast } = useToast();
 
   const handleSocialLogin = async (provider: 'google' | 'facebook') => {
+    if (!auth || !firestore) {
+      toast({
+        variant: "destructive",
+        title: "Firebase not initialized",
+        description: "Please wait a moment and try again.",
+      });
+      return;
+    }
     const authProvider = provider === 'google' ? new GoogleAuthProvider() : new FacebookAuthProvider();
     try {
       const result = await signInWithPopup(auth, authProvider);
@@ -53,11 +62,19 @@ export default function SignUpPage() {
       router.push("/dashboard");
     } catch (error) {
       const authError = error as AuthError;
-      toast({
-        variant: "destructive",
-        title: "Sign Up Failed",
-        description: authError.message || "An error occurred during social sign-up.",
-      });
+      if (authError.code === 'auth/unauthorized-domain') {
+        toast({
+          variant: "destructive",
+          title: "Sign Up Failed",
+          description: "This app's domain is not authorized for authentication. Please contact support.",
+        });
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Sign Up Failed",
+          description: authError.message || "An error occurred during social sign-up.",
+        });
+      }
     }
   };
 
@@ -69,7 +86,7 @@ export default function SignUpPage() {
             <Image
               src={logo.imageUrl}
               alt={logo.description}
-              width={80}
+              width={250}
               height={80}
               className="mx-auto"
               data-ai-hint={logo.imageHint}
