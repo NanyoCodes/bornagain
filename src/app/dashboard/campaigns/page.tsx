@@ -26,7 +26,7 @@ import type { Campaign, JoinedCampaign, UserProfile } from "@/lib/types";
 import { Input } from "@/components/ui/input";
 import { useCollection, useFirestore, useUser } from "@/firebase";
 import { useDoc } from "@/firebase/firestore/use-doc";
-import { collection, query, orderBy, doc, where } from "firebase/firestore";
+import { collection, query, orderBy, doc } from "firebase/firestore";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { format } from "date-fns";
@@ -64,7 +64,7 @@ export default function CampaignsPage() {
   const userDocRef = user ? doc(firestore, 'users', user.uid) : null;
   const { data: userProfile } = useDoc<UserProfile>(userDocRef);
 
-  const campaignsQuery = user ? query(collection(firestore, 'campaigns'), where('status', '!=', 'deleted'), orderBy('createdAt', 'desc')) : null;
+  const campaignsQuery = user ? query(collection(firestore, 'campaigns'), orderBy('createdAt', 'desc')) : null;
   const { data: campaigns, loading } = useCollection<Campaign>(campaignsQuery);
 
   const joinedCampaignsQuery = user ? query(collection(firestore, `users/${user.uid}/joinedCampaigns`)) : null;
@@ -84,18 +84,21 @@ export default function CampaignsPage() {
 
     const filtered = activeCampaigns?.filter((campaign) => {
       const locationLower = campaign.location.toLowerCase();
-      if (!campaign.startDate || !campaign.endDate) return false;
-
-      const campaignStartDate = campaign.startDate.toDate ? campaign.startDate.toDate() : new Date(campaign.startDate as any);
-      const campaignEndDate = campaign.endDate.toDate ? campaign.endDate.toDate() : new Date(campaign.endDate as any);
       
-      // Normalize campaign dates to midnight for day-level comparison
-      const campaignStartDay = new Date(campaignStartDate.getFullYear(), campaignStartDate.getMonth(), campaignStartDate.getDate());
-      const campaignEndDay = new Date(campaignEndDate.getFullYear(), campaignEndDate.getMonth(), campaignEndDate.getDate());
+      const dateMatch = (() => {
+        if (!dateFilter) return true;
+        if (!campaign.startDate || !campaign.endDate) return false;
 
-      const dateFilterDay = dateFilter ? new Date(dateFilter.getFullYear(), dateFilter.getMonth(), dateFilter.getDate()) : null;
+        const campaignStartDate = campaign.startDate.toDate ? campaign.startDate.toDate() : new Date(campaign.startDate as any);
+        const campaignEndDate = campaign.endDate.toDate ? campaign.endDate.toDate() : new Date(campaign.endDate as any);
+        
+        const campaignStartDay = new Date(campaignStartDate.getFullYear(), campaignStartDate.getMonth(), campaignStartDate.getDate());
+        const campaignEndDay = new Date(campaignEndDate.getFullYear(), campaignEndDate.getMonth(), campaignEndDate.getDate());
 
-      const dateMatch = !dateFilterDay || (dateFilterDay >= campaignStartDay && dateFilterDay <= campaignEndDay);
+        const dateFilterDay = new Date(dateFilter.getFullYear(), dateFilter.getMonth(), dateFilter.getDate());
+
+        return dateFilterDay >= campaignStartDay && dateFilterDay <= campaignEndDay;
+      })();
 
       return (
         (!cityFilter || locationLower.includes(cityFilter.toLowerCase())) &&
@@ -142,9 +145,14 @@ export default function CampaignsPage() {
       }
 
       // 3. Finally, sort by start date (ascending, sooner campaigns first)
-      const startDateA = a.startDate?.toDate ? a.startDate.toDate() : new Date(a.startDate as any);
-      const startDateB = b.startDate?.toDate ? b.startDate.toDate() : new Date(b.startDate as any);
-      return startDateA.getTime() - startDateB.getTime();
+      const startDateA = a.startDate && (a.startDate.toDate ? a.startDate.toDate() : new Date(a.startDate as any));
+      const startDateB = b.startDate && (b.startDate.toDate ? b.startDate.toDate() : new Date(b.startDate as any));
+      if (startDateA && startDateB) {
+        return startDateA.getTime() - startDateB.getTime();
+      }
+      if (startDateA) return -1;
+      if (startDateB) return 1;
+      return 0;
     });
 
   }, [campaigns, cityFilter, countryFilter, dateFilter, userProfile]);
@@ -248,3 +256,5 @@ export default function CampaignsPage() {
     </div>
   );
 }
+
+    
