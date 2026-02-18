@@ -1,7 +1,5 @@
-
 "use client";
 
-import Image from "next/image";
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -63,7 +61,7 @@ export default function UserProfilePage() {
     return <p>User profile not found.</p>
   }
   
-  const { displayName, email, photoURL, bio, coverBannerUrl, location, phone } = userProfile;
+  const { displayName, email, photoURL, bio, location, phone } = userProfile;
 
   const stats = {
     testimonies: testimonies?.length ?? 0,
@@ -82,74 +80,65 @@ export default function UserProfilePage() {
 
   return (
     <div className="space-y-8">
-      <Card className="overflow-hidden">
-        <div className="relative">
-          <Image
-            src={coverBannerUrl || "https://images.unsplash.com/photo-1707130869369-c00812966290?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8YWJzdHJhY3QlMjBncmFkaWVudHxlbnwwfHx8fDE3NzEzMzcxOTJ8MA&ixlib=rb-4.1.0&q=80&w=1080"}
-            alt="Cover Banner"
-            width={1200}
-            height={300}
-            className="w-full h-36 sm:h-48 object-cover"
-            data-ai-hint="abstract gradient"
-          />
-           <div className="absolute -bottom-12 left-4 sm:left-8">
-             <Avatar className="h-24 w-24 sm:h-32 sm:w-32 border-4 border-background">
+      <Card>
+        <CardContent className="p-6 sm:p-8">
+          <div className="flex flex-col sm:flex-row items-start gap-6">
+             <Avatar className="h-24 w-24 sm:h-32 sm:w-32 border-4 border-background shrink-0">
                 <AvatarImage src={photoURL ?? undefined} alt={displayName || 'user'} />
                 <AvatarFallback className="text-4xl sm:text-5xl">
                     {displayName?.charAt(0) || email?.charAt(0) || 'U'}
                 </AvatarFallback>
             </Avatar>
-          </div>
-        </div>
-
-        <div className="px-4 sm:px-8 pt-16 pb-8">
-            <div className="flex flex-col sm:flex-row justify-between items-start">
-                <div className="flex-grow">
-                    <h1 className="text-2xl sm:text-3xl font-bold font-headline">{displayName}</h1>
-                    <p className="text-muted-foreground mt-1">{bio}</p>
-                </div>
-                {isOwnProfile && (
-                    <div className="mt-4 sm:mt-0 sm:ml-4 shrink-0">
-                        {mounted && isMobile ? (
-                            <Sheet open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
-                            <SheetTrigger asChild>{triggerButton}</SheetTrigger>
-                            <SheetContent side="bottom">
-                                <SheetHeader>
-                                <SheetTitle>Edit Profile</SheetTitle>
-                                <SheetDescription>
-                                    Make changes to your public profile.
-                                </SheetDescription>
-                                </SheetHeader>
-                                <div className="max-h-[80vh] overflow-y-auto p-1 mt-4">
-                                {formContent}
-                                </div>
-                            </SheetContent>
-                            </Sheet>
-                        ) : (
-                            <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
-                            <DialogTrigger asChild>{triggerButton}</DialogTrigger>
-                            <DialogContent className="sm:max-w-lg">
-                                <DialogHeader>
-                                <DialogTitle>Edit Profile</DialogTitle>
-                                <DialogDescription>
-                                    Make changes to your public profile.
-                                </DialogDescription>
-                                </DialogHeader>
-                                <div className="max-h-[70vh] overflow-y-auto pr-2">
-                                {formContent}
-                                </div>
-                            </DialogContent>
-                            </Dialog>
-                        )}
+            <div className="flex-grow">
+                <div className="flex flex-col sm:flex-row justify-between items-start">
+                    <div className="flex-grow">
+                        <h1 className="text-2xl sm:text-3xl font-bold font-headline">{displayName}</h1>
+                        <p className="text-muted-foreground mt-1">{bio}</p>
                     </div>
-                )}
+                    {isOwnProfile && (
+                        <div className="mt-4 sm:mt-0 sm:ml-4 shrink-0">
+                            {mounted && isMobile ? (
+                                <Sheet open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
+                                <SheetTrigger asChild>{triggerButton}</SheetTrigger>
+                                <SheetContent side="bottom">
+                                    <SheetHeader>
+                                    <SheetTitle>Edit Profile</SheetTitle>
+                                    <SheetDescription>
+                                        Make changes to your public profile.
+                                    </SheetDescription>
+                                    </SheetHeader>
+                                    <div className="max-h-[80vh] overflow-y-auto p-1 mt-4">
+                                    {formContent}
+                                    </div>
+                                </SheetContent>
+                                </Sheet>
+                            ) : (
+                                <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
+                                <DialogTrigger asChild>{triggerButton}</DialogTrigger>
+                                <DialogContent className="sm:max-w-lg">
+                                    <DialogHeader>
+                                    <DialogTitle>Edit Profile</DialogTitle>
+                                    <DialogDescription>
+                                        Make changes to your public profile.
+                                    </DialogDescription>
+                                    </DialogHeader>
+                                    <div className="max-h-[70vh] overflow-y-auto pr-2">
+                                    {formContent}
+                                    </div>
+                                </DialogContent>
+                                </Dialog>
+                            )}
+                        </div>
+                    )}
+                </div>
+                <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground">
+                    {location && <div className="flex items-center gap-2"><MapPin className="h-4 w-4" /> {location}</div>}
+                    {email && <div className="flex items-center gap-2"><Mail className="h-4 w-4" /> {email}</div>}
+                    {phone && <div className="flex items-center gap-2"><Phone className="h-4 w-4" /> {phone}</div>}
+                </div>
             </div>
-            <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground">
-                {location && <div className="flex items-center gap-2"><MapPin className="h-4 w-4" /> {location}</div>}
-                {email && <div className="flex items-center gap-2"><Mail className="h-4 w-4" /> {email}</div>}
-                {phone && <div className="flex items-center gap-2"><Phone className="h-4 w-4" /> {phone}</div>}
-            </div>
-        </div>
+          </div>
+        </CardContent>
       </Card>
       
       <div className="grid grid-cols-1 gap-6">

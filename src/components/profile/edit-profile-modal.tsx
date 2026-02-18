@@ -19,12 +19,9 @@ import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { useAuth, useFirestore, useUser } from "@/firebase";
-import { useStorage } from "@/firebase/provider";
 import { doc, updateDoc } from "firebase/firestore";
 import { updateProfile } from "firebase/auth";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import type { UserProfile } from "@/lib/types";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 
@@ -45,11 +42,8 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
   const { user } = useUser();
   const auth = useAuth();
   const firestore = useFirestore();
-  const storage = useStorage();
   
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [photoFile, setPhotoFile] = useState<File | null>(null);
-  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -61,66 +55,40 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
     },
   });
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      if (file.size > 2 * 1024 * 1024) { // 2MB limit
-        toast({ variant: "destructive", title: "File too large", description: "Please select an image smaller than 2MB." });
-        return;
-      }
-      setPhotoFile(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPhotoPreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    if (!user || !auth || !firestore || !storage) {
+    if (!user || !auth || !firestore) {
       toast({ variant: 'destructive', title: 'Not authenticated or Firebase not ready' });
       return;
     }
     setIsSubmitting(true);
 
     try {
-      const firestoreUpdatePayload: Partial<UserProfile> = {
-        displayName: values.displayName,
-        bio: values.bio || "",
-        location: values.location || "",
-        phone: values.phone || "",
-      };
+      const firestoreUpdatePayload: { [key: string]: any } = {};
 
-      let authPhotoURL: string | null = auth.currentUser?.photoURL || null;
+      // Only add values to payload if they have changed from the initial profile
+      if (values.displayName !== userProfile.displayName) firestoreUpdatePayload.displayName = values.displayName;
+      if (values.bio !== userProfile.bio) firestoreUpdatePayload.bio = values.bio || "";
+      if (values.location !== userProfile.location) firestoreUpdatePayload.location = values.location || "";
+      if (values.phone !== userProfile.phone) firestoreUpdatePayload.phone = values.phone || "";
 
-      // Only handle photo upload if a new file was selected.
-      if (photoFile) {
-        const storageRef = ref(storage, `profile-pictures/${user.uid}`);
-        const uploadTask = await uploadBytes(storageRef, photoFile);
-        const newPhotoURL = await getDownloadURL(uploadTask.ref);
-        
-        firestoreUpdatePayload.photoURL = newPhotoURL;
-        authPhotoURL = newPhotoURL;
+      // Only update if there are changes
+      if (Object.keys(firestoreUpdatePayload).length > 0) {
+        const userDocRef = doc(firestore, 'users', user.uid);
+        await updateDoc(userDocRef, firestoreUpdatePayload).catch((serverError) => {
+            const permissionError = new FirestorePermissionError({
+                path: userDocRef.path,
+                operation: 'update',
+                requestResourceData: firestoreUpdatePayload,
+            });
+            errorEmitter.emit('permission-error', permissionError);
+            throw permissionError; // Re-throw to be caught by the outer catch
+          });
       }
 
-      // Update Firestore document with only the changed fields.
-      const userDocRef = doc(firestore, 'users', user.uid);
-      await updateDoc(userDocRef, firestoreUpdatePayload).catch((serverError) => {
-        const permissionError = new FirestorePermissionError({
-            path: userDocRef.path,
-            operation: 'update',
-            requestResourceData: firestoreUpdatePayload,
-        });
-        errorEmitter.emit('permission-error', permissionError);
-        throw permissionError; // Re-throw to be caught by the outer catch
-      });
-
-      // Update Firebase Auth profile.
-      if (auth.currentUser) {
+      // Update Firebase Auth profile if display name changed
+      if (auth.currentUser && values.displayName !== auth.currentUser.displayName) {
         await updateProfile(auth.currentUser, {
           displayName: values.displayName,
-          photoURL: authPhotoURL,
         });
       }
       
@@ -131,8 +99,6 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
       console.error("Profile update error:", error);
        if (error.name === 'FirestorePermissionError') {
          // This was already handled by the emitter, do nothing.
-       } else if (error.code?.startsWith('storage/')) {
-         toast({ variant: 'destructive', title: 'Image Upload Failed', description: 'Could not upload your profile picture. Please check permissions and try again.' });
        } else {
          toast({ variant: 'destructive', title: "Update Failed", description: error.message || "Could not update profile." });
        }
@@ -144,18 +110,6 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <div className="space-y-4">
-            <FormLabel>Profile Picture</FormLabel>
-            <div className="flex items-center gap-4">
-                <Avatar className="h-20 w-20">
-                    <AvatarImage src={photoPreview || userProfile.photoURL || undefined} alt={form.watch('displayName')} />
-                    <AvatarFallback className="text-3xl">
-                        {form.watch('displayName')?.charAt(0) || userProfile.email?.charAt(0)}
-                    </AvatarFallback>
-                </Avatar>
-                <Input id="picture" type="file" accept="image/jpeg,image/png" onChange={handleFileChange} className="max-w-xs text-base" />
-            </div>
-        </div>
         <FormField
           control={form.control}
           name="displayName"

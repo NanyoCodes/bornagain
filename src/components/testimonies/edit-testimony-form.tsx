@@ -8,26 +8,21 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { Testimony, TestimonyCategory } from "@/lib/types";
-import { useFirestore, useStorage, useUser } from "@/firebase";
+import { useFirestore, useUser } from "@/firebase";
 import { doc, updateDoc, serverTimestamp } from "firebase/firestore";
-import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
-import Image from "next/image";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
-import { Label } from "@/components/ui/label";
 
 const testimonyCategories: TestimonyCategory[] = ['Healing', 'Financial Breakthrough', 'Salvation', 'Relationships', 'Deliverance', 'General'];
 
@@ -41,19 +36,11 @@ type EditTestimonyFormProps = {
   onTestimonyUpdated: () => void;
 };
 
-const MAX_FILE_SIZE_MB = 5;
-const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
-
 export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimonyFormProps) {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { user } = useUser();
   const firestore = useFirestore();
-  const storage = useStorage();
-
-  const [mediaFile, setMediaFile] = useState<File | null>(null);
-  const [mediaPreview, setMediaPreview] = useState<string | null>(testimony.mediaUrl || null);
-  const [mediaType, setMediaType] = useState<string | undefined>(testimony.mediaType);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -63,36 +50,9 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
     },
   });
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0] ?? null;
-    if (file) {
-      if (file.size > MAX_FILE_SIZE_BYTES) {
-        toast({
-          variant: "destructive",
-          title: "File too large",
-          description: `Please choose a file smaller than ${MAX_FILE_SIZE_MB}MB.`,
-        });
-        event.target.value = '';
-        return;
-      }
-      setMediaFile(file);
-      setMediaType(file.type);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setMediaPreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleRemoveMedia = () => {
-    setMediaFile(null);
-    setMediaPreview(null);
-    setMediaType(undefined);
-  }
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    if (!user || !firestore || !storage) {
+    if (!user || !firestore) {
       toast({ variant: 'destructive', title: 'Authentication Error', description: 'Please log in again.' });
       return;
     }
@@ -109,54 +69,9 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
         category: values.category,
         content: values.content,
         updatedAt: serverTimestamp(),
+        mediaUrl: null,
+        mediaType: null,
       };
-
-      // Handle media file update
-      if (mediaFile) { // New file selected
-        const fileMediaType = mediaFile.type.startsWith('image') ? 'image' : mediaFile.type.startsWith('video') ? 'video' : mediaFile.type.startsWith('audio') ? 'audio' : undefined;
-
-        if (!fileMediaType) {
-            toast({
-              variant: "destructive",
-              title: "Unsupported File Type",
-              description: "Please upload an image, video, or audio file.",
-            });
-            setIsSubmitting(false);
-            return;
-        }
-
-        // Delete old file if it exists
-        if (testimony.mediaUrl) {
-          try {
-            const oldFileRef = ref(storage, testimony.mediaUrl);
-            await deleteObject(oldFileRef);
-          } catch (error: any) {
-            // It's okay if the old file doesn't exist, log other errors
-            if (error.code !== 'storage/object-not-found') {
-                console.warn("Could not delete old media file:", error);
-            }
-          }
-        }
-
-        // Upload new file
-        const newFileRef = ref(storage, `testimonies/${user.uid}/${Date.now()}-${mediaFile.name}`);
-        const snapshot = await uploadBytes(newFileRef, mediaFile);
-        testimonyUpdate.mediaUrl = await getDownloadURL(snapshot.ref);
-        testimonyUpdate.mediaType = fileMediaType;
-
-      } else if (!mediaPreview && testimony.mediaUrl) { // Media was removed
-        // Delete old file
-        try {
-            const oldFileRef = ref(storage, testimony.mediaUrl);
-            await deleteObject(oldFileRef);
-        } catch (error: any) {
-            if (error.code !== 'storage/object-not-found') {
-                console.warn("Could not delete old media file:", error);
-            }
-        }
-        testimonyUpdate.mediaUrl = null;
-        testimonyUpdate.mediaType = null;
-      }
 
       await updateDoc(testimonyRef, testimonyUpdate).catch((serverError) => {
         const permissionError = new FirestorePermissionError({
@@ -178,12 +93,6 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
       console.error("Update error:", error);
       if (error.name === 'FirestorePermissionError') {
         // Handled by emitter
-      } else if (error.code?.startsWith('storage/')) {
-        toast({
-            variant: "destructive",
-            title: "Media Update Failed",
-            description: "Could not upload or remove your media file. Please try again.",
-        });
       } else {
         toast({
             variant: "destructive",
@@ -230,22 +139,6 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
             </FormItem>
           )}
         />
-
-        <div className="space-y-2">
-          <Label>Media</Label>
-          {mediaPreview && (
-            <div className="relative w-full aspect-video rounded-lg overflow-hidden">
-                {mediaType?.startsWith('image') && <Image src={mediaPreview} alt="Media preview" fill className="object-cover" />}
-                {mediaType?.startsWith('video') && <video controls src={mediaPreview} className="w-full h-full" />}
-                {mediaType?.startsWith('audio') && <audio controls src={mediaPreview} className="w-full" />}
-                <Button variant="destructive" size="sm" className="absolute top-2 right-2" onClick={handleRemoveMedia}>Remove</Button>
-            </div>
-          )}
-          <Input id="media-edit" type="file" accept="image/jpeg,image/png,video/*,audio/*" onChange={handleFileChange} />
-          <p className="text-sm text-muted-foreground">
-            Replace or remove the current media. Max size: {MAX_FILE_SIZE_MB}MB.
-          </p>
-        </div>
 
         <Button type="submit" className="w-full" disabled={isSubmitting}>
           {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

@@ -1,7 +1,6 @@
 
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import {
   Card,
@@ -17,7 +16,7 @@ import { Badge } from "@/components/ui/badge";
 import { Testimony } from "@/lib/types";
 import { formatDistanceToNow } from "date-fns";
 import { MessageCircle, Share2, MoreVertical, Edit, Trash2, Loader2 } from "lucide-react";
-import { useUser, useFirestore, useStorage } from "@/firebase";
+import { useUser, useFirestore } from "@/firebase";
 import { useState } from "react";
 import {
   DropdownMenu,
@@ -30,54 +29,11 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { doc, deleteDoc } from "firebase/firestore";
-import { ref, deleteObject } from "firebase/storage";
 import { EditTestimonyForm } from "./edit-testimony-form";
-
-function MediaPreview({ testimony }: { testimony: Testimony }) {
-  if (!testimony.mediaUrl || !testimony.mediaType) {
-    return null;
-  }
-
-  if (testimony.mediaType === "image") {
-    return (
-      <div className="relative aspect-video w-full mt-4 rounded-lg overflow-hidden">
-        <Image
-          src={testimony.mediaUrl}
-          alt="Testimony media"
-          fill
-          className="object-cover"
-        />
-      </div>
-    );
-  }
-
-  if (testimony.mediaType === "video") {
-    return (
-      <video
-        controls
-        src={testimony.mediaUrl}
-        className="w-full mt-4 rounded-lg"
-      >
-        Your browser does not support the video tag.
-      </video>
-    );
-  }
-
-  if (testimony.mediaType === "audio") {
-    return (
-      <audio controls src={testimony.mediaUrl} className="w-full mt-4">
-        Your browser does not support the audio element.
-      </audio>
-    );
-  }
-
-  return null;
-}
 
 export function TestimonyCard({ testimony }: { testimony: Testimony }) {
   const { user } = useUser();
   const firestore = useFirestore();
-  const storage = useStorage();
   const { toast } = useToast();
 
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -89,24 +45,12 @@ export function TestimonyCard({ testimony }: { testimony: Testimony }) {
     : new Date();
 
   const handleDelete = async () => {
-    if (!isAuthor || !firestore || !storage) return;
+    if (!isAuthor || !firestore) return;
 
     setIsDeleting(true);
     try {
       // Delete Firestore document
       await deleteDoc(doc(firestore, "testimonies", testimony.id));
-
-      // Delete media from Storage if it exists
-      if (testimony.mediaUrl) {
-        try {
-            const fileRef = ref(storage, testimony.mediaUrl);
-            await deleteObject(fileRef);
-        } catch (storageError: any) {
-            if (storageError.code !== 'storage/object-not-found') {
-                throw storageError; // re-throw if it's not a "not found" error
-            }
-        }
-      }
 
       toast({
         title: "Testimony Deleted",
@@ -177,7 +121,7 @@ export function TestimonyCard({ testimony }: { testimony: Testimony }) {
                             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
                             <AlertDialogDescription>
                             This action cannot be undone. This will permanently delete
-                            your testimony and any associated media.
+                            your testimony.
                             </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
@@ -209,7 +153,6 @@ export function TestimonyCard({ testimony }: { testimony: Testimony }) {
         <p className="text-muted-foreground whitespace-pre-wrap">
           {testimony.content}
         </p>
-        <MediaPreview testimony={testimony} />
       </CardContent>
       <CardFooter className="flex justify-between">
         <div className="flex gap-4">

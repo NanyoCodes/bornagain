@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -24,9 +23,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useUser, useFirestore, useStorage } from "@/firebase";
+import { useUser, useFirestore } from "@/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 
@@ -52,13 +50,11 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
   const { toast } = useToast();
   const { user } = useUser();
   const firestore = useFirestore();
-  const storage = useStorage();
   const [isGenerating, setIsGenerating] = useState(false);
   const [ideas, setIdeas] = useState<CampaignIdeas | null>(null);
   const [selectedName, setSelectedName] = useState('');
   const [customName, setCustomName] = useState('');
   const [finalDescription, setFinalDescription] = useState('');
-  const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [isCreating, setIsCreating] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -101,13 +97,8 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
         toast({ variant: 'destructive', title: 'Missing Name', description: 'Please select or enter a campaign name.' });
         return;
     }
-    if (!user || !firestore || !storage) {
+    if (!user || !firestore) {
         toast({ variant: 'destructive', title: 'Not Authenticated', description: 'You must be logged in to create a campaign.' });
-        return;
-    }
-    
-    if (!photoFile) {
-        toast({ variant: 'destructive', title: 'Missing Photo', description: 'Please upload a campaign photo.' });
         return;
     }
     
@@ -121,19 +112,13 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
       location: `${form.getValues('city')}, ${form.getValues('country')}`,
       participants: 1,
       progress: 0,
-      imageUrl: '', // Will be set after upload
+      imageUrl: 'https://images.unsplash.com/photo-1740065592719-052d3e5ec6fb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxjb21tdW5pdHklMjBoYW5kc3xlbnwwfHx8fDE3NzEzNDE1NDJ8MA&ixlib=rb-4.1.0&q=80&w=1080', // Placeholder
       createdAt: serverTimestamp(),
       organizerId: user.uid,
       organizerName: user.displayName || 'Anonymous',
     };
     
     try {
-      // 1. Upload photo to Firebase Storage
-      const imageRef = ref(storage, `campaign-images/${user.uid}/${Date.now()}-${photoFile.name}`);
-      const snapshot = await uploadBytes(imageRef, photoFile);
-      campaignData.imageUrl = await getDownloadURL(snapshot.ref);
-
-      // 2. Add campaign document to Firestore
       await addDoc(campaignCollectionRef, campaignData).catch((serverError) => {
         const permissionError = new FirestorePermissionError({
           path: campaignCollectionRef.path,
@@ -148,11 +133,7 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
       onCampaignCreated();
     } catch (error: any) {
       console.error("Error creating campaign: ", error);
-      if (error.name === 'FirestorePermissionError') {
-        // This was already handled by the emitter, do nothing.
-      } else if (error.code?.startsWith('storage/')) {
-        toast({ variant: 'destructive', title: 'Image Upload Failed', description: 'Could not upload campaign image. Please check permissions and try again.' });
-      } else {
+      if (error.name !== 'FirestorePermissionError') {
         toast({ variant: 'destructive', title: 'Error', description: 'Could not create campaign. Please check your connection and try again.' });
       }
     } finally {
@@ -279,11 +260,6 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
                     onChange={(e) => setCustomName(e.target.value)}
                   />
                 )}
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="photo">Campaign Photo</Label>
-                <Input id="photo" type="file" accept="image/jpeg,image/png" onChange={(e) => setPhotoFile(e.target.files?.[0] ?? null)} />
-                <p className="text-sm text-muted-foreground">A photo is required for the campaign.</p>
               </div>
               <div>
                 <h3 className="text-lg font-semibold mb-2">Suggested Description</h3>

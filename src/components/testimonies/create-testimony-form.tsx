@@ -13,23 +13,17 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import type { TestimonyCategory } from "@/lib/types";
-import { useUser, useFirestore, useStorage } from "@/firebase";
+import { useUser, useFirestore } from "@/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { errorEmitter } from "@/firebase/error-emitter";
-import { Label } from "@/components/ui/label";
 
-
-const MAX_FILE_SIZE_MB = 5;
-const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
 
 const testimonyCategories: TestimonyCategory[] = ['Healing', 'Financial Breakthrough', 'Salvation', 'Relationships', 'Deliverance', 'General'];
 
@@ -45,11 +39,9 @@ type CreateTestimonyFormProps = {
 export function CreateTestimonyForm({ onTestimonyCreated }: CreateTestimonyFormProps) {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [mediaFile, setMediaFile] = useState<File | null>(null);
   
   const { user } = useUser();
   const firestore = useFirestore();
-  const storage = useStorage();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -58,27 +50,8 @@ export function CreateTestimonyForm({ onTestimonyCreated }: CreateTestimonyFormP
     },
   });
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0] ?? null;
-    if (file) {
-      if (file.size > MAX_FILE_SIZE_BYTES) {
-        toast({
-          variant: "destructive",
-          title: "File too large",
-          description: `Please choose a file smaller than ${MAX_FILE_SIZE_MB}MB.`,
-        });
-        event.target.value = ''; // Clear the input
-        setMediaFile(null);
-      } else {
-        setMediaFile(file);
-      }
-    } else {
-        setMediaFile(null);
-    }
-  };
-
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    if (!user || !firestore || !storage) {
+    if (!user || !firestore) {
       toast({ variant: 'destructive', title: 'Not Authenticated', description: 'You must be logged in to share a testimony.'});
       return;
     }
@@ -98,27 +71,6 @@ export function CreateTestimonyForm({ onTestimonyCreated }: CreateTestimonyFormP
           mediaUrl: null,
           mediaType: null,
       };
-
-      if (mediaFile) {
-        const fileMediaType = mediaFile.type.startsWith('image') ? 'image' : mediaFile.type.startsWith('video') ? 'video' : mediaFile.type.startsWith('audio') ? 'audio' : undefined;
-
-        if (fileMediaType) {
-          const fileRef = ref(storage, `testimonies/${user.uid}/${Date.now()}-${mediaFile.name}`);
-          const snapshot = await uploadBytes(fileRef, mediaFile);
-          const mediaUrl = await getDownloadURL(snapshot.ref);
-          
-          testimonyData.mediaUrl = mediaUrl;
-          testimonyData.mediaType = fileMediaType;
-        } else {
-          toast({
-              variant: "destructive",
-              title: "Unsupported File Type",
-              description: "Please upload an image, video, or audio file.",
-          });
-          setIsSubmitting(false);
-          return;
-        }
-      }
       
       await addDoc(testimonyCollectionRef, testimonyData).catch((serverError) => {
         const permissionError = new FirestorePermissionError({
@@ -141,12 +93,6 @@ export function CreateTestimonyForm({ onTestimonyCreated }: CreateTestimonyFormP
         console.error("Submission error:", error);
         if (error.name === 'FirestorePermissionError') {
             // handled by emitter
-        } else if (error.code?.startsWith('storage/')) {
-            toast({
-                variant: "destructive",
-                title: "Media Upload Failed",
-                description: "Could not upload your media file. Please check permissions and try again.",
-            });
         } else {
              toast({
                 variant: "destructive",
@@ -202,14 +148,6 @@ export function CreateTestimonyForm({ onTestimonyCreated }: CreateTestimonyFormP
             </FormItem>
           )}
         />
-        
-        <div className="space-y-2">
-            <Label htmlFor="media">Add Photo, Video, or Audio</Label>
-            <Input id="media" type="file" accept="image/jpeg,image/png,video/*,audio/*" onChange={handleFileChange} />
-            <p className="text-sm text-muted-foreground">
-              Optional. Add one photo, video, or audio file. Max size: {MAX_FILE_SIZE_MB}MB.
-            </p>
-        </div>
 
         <Button type="submit" className="w-full" disabled={isSubmitting}>
           {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
