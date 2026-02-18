@@ -216,6 +216,32 @@
         "campaignId",
         "joinedAt"
       ]
+    },
+    "CampaignParticipant": {
+      "title": "Campaign Participant",
+      "description": "Represents a user who has joined a campaign.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string"
+        },
+        "displayName": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string",
+          "format": "email"
+        },
+        "joinedAt": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "userId",
+        "displayName",
+        "email",
+        "joinedAt"
+      ]
     }
   },
   "auth": {
@@ -255,6 +281,12 @@
         "$ref": "#/entities/Campaign"
       },
       "description": "Stores user-created campaigns."
+    },
+    "/campaigns/{campaignId}/participants/{userId}": {
+      "schema": {
+        "$ref": "#/entities/CampaignParticipant"
+      },
+      "description": "Stores participants of a specific campaign, allowing the organizer to see who has joined."
     }
   }
 }

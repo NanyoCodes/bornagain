@@ -40,6 +40,8 @@ import { doc, serverTimestamp, setDoc, updateDoc, increment } from "firebase/fir
 import { useState } from "react";
 import { ManageCampaignForm } from "./manage-campaign-form";
 import { Textarea } from "../ui/textarea";
+import { errorEmitter } from "@/firebase/error-emitter";
+import { FirestorePermissionError } from "@/firebase/errors";
 
 export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaign; userId?: string, isJoined: boolean }) {
   const { toast } = useToast();
@@ -52,26 +54,54 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
 
   const handleJoin = async () => {
     if (!user || !firestore) return;
-    
+
     const campaignRef = doc(firestore, 'campaigns', campaign.id);
     const joinedRef = doc(firestore, 'users', user.uid, 'joinedCampaigns', campaign.id);
+    const participantRef = doc(firestore, 'campaigns', campaign.id, 'participants', user.uid);
+
+    const participantData = {
+        userId: user.uid,
+        displayName: user.displayName,
+        email: user.email,
+        joinedAt: serverTimestamp()
+    };
 
     try {
+      // Write to the user's private subcollection
       await setDoc(joinedRef, {
         campaignId: campaign.id,
         joinedAt: serverTimestamp(),
+      }).catch((serverError) => {
+          const permissionError = new FirestorePermissionError({ path: joinedRef.path, operation: 'create', requestResourceData: { campaignId: campaign.id } });
+          errorEmitter.emit('permission-error', permissionError);
+          throw permissionError;
       });
+
+      // Write to the campaign's public participant list
+      await setDoc(participantRef, participantData).catch((serverError) => {
+          const permissionError = new FirestorePermissionError({ path: participantRef.path, operation: 'create', requestResourceData: participantData });
+          errorEmitter.emit('permission-error', permissionError);
+          throw permissionError;
+      });
+
+      // Increment the participant count
       await updateDoc(campaignRef, {
         participants: increment(1)
+      }).catch((serverError) => {
+          const permissionError = new FirestorePermissionError({ path: campaignRef.path, operation: 'update', requestResourceData: { participants: 'increment(1)' } });
+          errorEmitter.emit('permission-error', permissionError);
+          throw permissionError;
       });
 
       toast({
         title: "Campaign Joined!",
         description: `You have successfully joined the "${campaign.title}" campaign.`,
       });
-    } catch (error) {
-      console.error(error);
-      toast({ variant: 'destructive', title: "Error", description: "Could not join campaign." });
+    } catch (error: any) {
+      console.error("Join campaign error:", error);
+      if (error.name !== 'FirestorePermissionError') {
+        toast({ variant: 'destructive', title: "Error", description: "Could not join the campaign. Please try again." });
+      }
     }
   };
   

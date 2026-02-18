@@ -58,6 +58,14 @@ export type JoinedCampaign = {
   joinedAt: Timestamp;
 }
 
+export type CampaignParticipant = {
+  id: string;
+  userId: string;
+  displayName: string;
+  email: string;
+  joinedAt: Timestamp;
+};
+
 export type ProgressLog = {
   date: string;
   soulsWon: number;

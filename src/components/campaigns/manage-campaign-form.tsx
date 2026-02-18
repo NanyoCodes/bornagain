@@ -9,13 +9,15 @@ import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Slider } from '@/components/ui/slider';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2 } from 'lucide-react';
-import { useFirestore, useUser } from '@/firebase';
-import { doc, updateDoc } from 'firebase/firestore';
-import type { Campaign } from '@/lib/types';
+import { Loader2, Mail } from 'lucide-react';
+import { useCollection, useFirestore, useUser } from '@/firebase';
+import { collection, doc, updateDoc } from 'firebase/firestore';
+import type { Campaign, CampaignParticipant } from '@/lib/types';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { Textarea } from '../ui/textarea';
+import { Separator } from '../ui/separator';
+import { Skeleton } from '../ui/skeleton';
 
 const formSchema = z.object({
   progress: z.number().min(0).max(100),
@@ -27,6 +29,43 @@ type ManageCampaignFormProps = {
   campaign: Campaign;
   onCampaignUpdated: () => void;
 };
+
+function ParticipantList({ campaignId }: { campaignId: string }) {
+  const firestore = useFirestore();
+  const participantsQuery = collection(firestore, 'campaigns', campaignId, 'participants');
+  const { data: participants, loading } = useCollection<CampaignParticipant>(participantsQuery);
+
+  if (loading) {
+    return (
+        <div className="space-y-2">
+            <Skeleton className="h-5 w-32" />
+            <Skeleton className="h-8 w-full" />
+            <Skeleton className="h-8 w-full" />
+        </div>
+    )
+  }
+
+  return (
+    <div className="space-y-4">
+        <h3 className="text-lg font-semibold">Participants ({participants?.length || 0})</h3>
+        {participants && participants.length > 0 ? (
+            <div className="space-y-3 max-h-60 overflow-y-auto pr-2 border rounded-lg p-4">
+                {participants.map(p => (
+                    <div key={p.id} className="flex items-center justify-between">
+                        <span className='font-medium'>{p.displayName}</span>
+                        <a href={`mailto:${p.email}`} className="text-sm text-muted-foreground hover:text-primary flex items-center gap-1.5">
+                           <Mail className="h-4 w-4" /> {p.email}
+                        </a>
+                    </div>
+                ))}
+            </div>
+        ) : (
+            <p className="text-sm text-muted-foreground">No one has joined this campaign yet.</p>
+        )}
+    </div>
+  )
+}
+
 
 export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampaignFormProps) {
   const { toast } = useToast();
@@ -93,58 +132,64 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
   }
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <FormField
-          control={form.control}
-          name="description"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Description</FormLabel>
-              <FormControl>
-                <Textarea placeholder="Campaign description" {...field} className="text-base min-h-[120px]" />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="progress"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Progress: {field.value}%</FormLabel>
-              <FormControl>
-                <Slider
-                  value={[field.value]}
-                  onValueChange={(value) => field.onChange(value[0])}
-                  max={100}
-                  step={1}
+    <div className="space-y-8">
+        <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>Description</FormLabel>
+                    <FormControl>
+                        <Textarea placeholder="Campaign description" {...field} className="text-base min-h-[120px]" />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
                 />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-         <FormField
-          control={form.control}
-          name="lastUpdateReason"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Reason for Update</FormLabel>
-              <FormControl>
-                <Input placeholder="e.g., Updated progress after event" {...field} className="text-base" />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+                <FormField
+                control={form.control}
+                name="progress"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>Progress: {field.value}%</FormLabel>
+                    <FormControl>
+                        <Slider
+                        value={[field.value]}
+                        onValueChange={(value) => field.onChange(value[0])}
+                        max={100}
+                        step={1}
+                        />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
+                <FormField
+                control={form.control}
+                name="lastUpdateReason"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>Reason for Update</FormLabel>
+                    <FormControl>
+                        <Textarea placeholder="e.g., Updated progress after event" {...field} className="text-base" />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
 
-        <Button type="submit" className="w-full" disabled={isSubmitting}>
-          {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Save Changes
-        </Button>
-      </form>
-    </Form>
+                <Button type="submit" className="w-full" disabled={isSubmitting}>
+                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Save Changes
+                </Button>
+            </form>
+        </Form>
+
+        <Separator />
+
+        <ParticipantList campaignId={campaign.id} />
+    </div>
   );
 }
