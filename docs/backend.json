@@ -246,6 +246,60 @@
         "email",
         "joinedAt"
       ]
+    },
+    "Chat": {
+      "title": "Chat",
+      "description": "A private chat session between a user and a campaign owner.",
+      "type": "object",
+      "properties": {
+        "participantIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "participantInfo": {
+          "type": "object"
+        },
+        "campaignId": {
+          "type": "string"
+        },
+        "campaignTitle": {
+          "type": "string"
+        },
+        "lastMessageText": {
+          "type": "string"
+        },
+        "lastUpdatedAt": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "participantIds",
+        "campaignId",
+        "lastUpdatedAt"
+      ]
+    },
+    "ChatMessage": {
+      "title": "Chat Message",
+      "description": "A single message within a chat session.",
+      "type": "object",
+      "properties": {
+        "senderId": {
+          "type": "string"
+        },
+        "text": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "senderId",
+        "text",
+        "createdAt"
+      ]
     }
   },
   "auth": {
@@ -292,6 +346,18 @@
         "$ref": "#/entities/CampaignParticipant"
       },
       "description": "Stores participants of a specific campaign, allowing the organizer to see who has joined."
+    },
+    "/chats/{chatId}": {
+      "schema": {
+        "$ref": "#/entities/Chat"
+      },
+      "description": "Stores private chat sessions between users."
+    },
+    "/chats/{chatId}/messages/{messageId}": {
+      "schema": {
+        "$ref": "#/entities/ChatMessage"
+      },
+      "description": "Stores messages for a specific chat session."
     }
   }
 }

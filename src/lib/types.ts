@@ -91,3 +91,27 @@ export type Soul = {
   inBibleStudy: boolean;
   attendingPrayer: boolean;
 };
+
+export type ChatParticipantInfo = {
+  [key: string]: {
+    displayName: string;
+    photoURL?: string;
+  }
+};
+
+export type Chat = {
+  id: string;
+  participantIds: string[];
+  participantInfo: ChatParticipantInfo;
+  campaignId: string;
+  campaignTitle: string;
+  lastMessageText?: string;
+  lastUpdatedAt: Timestamp;
+};
+
+export type ChatMessage = {
+  id: string;
+  senderId: string;
+  text: string;
+  createdAt: Timestamp;
+};
