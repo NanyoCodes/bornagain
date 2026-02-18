@@ -165,7 +165,7 @@ export default function DashboardPage() {
     <div className="space-y-8">
       <div className="space-y-2">
         <h1 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight font-headline">Dashboard</h1>
-        <p className="text-muted-foreground">Welcome back! Here's your ministry overview.</p>
+        <p className="text-muted-foreground">Welcome back, {user?.displayName || 'User'}! Here's your ministry overview.</p>
       </div>
       
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">

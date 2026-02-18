@@ -3,7 +3,7 @@
 
 import { useMemo, useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { CalendarIcon, PlusCircle, X } from "lucide-react";
+import { PlusCircle, X } from "lucide-react";
 import { CreateCampaignForm } from "@/components/campaigns/create-campaign-form";
 import {
   Dialog,
@@ -28,10 +28,7 @@ import { useCollection, useFirestore, useUser } from "@/firebase";
 import { collection, query, orderBy } from "firebase/firestore";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
-import { cn } from "@/lib/utils";
 
 function CampaignSkeletons() {
   return (
@@ -165,28 +162,24 @@ export default function CampaignsPage() {
           className="text-base"
         />
         <div className="relative">
-            <Popover>
-                <PopoverTrigger asChild>
-                    <Button
-                    variant={"outline"}
-                    className={cn(
-                        "w-full justify-start text-left font-normal text-base h-10",
-                        !dateFilter && "text-muted-foreground"
-                    )}
-                    >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {dateFilter ? format(dateFilter, "PPP") : <span>Filter by date...</span>}
-                    </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" onPointerDownOutside={(e) => e.preventDefault()}>
-                    <Calendar
-                    mode="single"
-                    selected={dateFilter}
-                    onSelect={setDateFilter}
-                    />
-                </PopoverContent>
-            </Popover>
-            {dateFilter && <Button variant="ghost" size="icon" className="absolute right-1 top-1 h-8 w-8" onClick={() => setDateFilter(null)}><X className="h-4 w-4" /></Button>}
+          <Input
+            type="date"
+            value={dateFilter ? format(dateFilter, "yyyy-MM-dd") : ""}
+            onChange={(e) =>
+              setDateFilter(e.target.value ? new Date(e.target.value + "T00:00:00") : null)
+            }
+            className="text-base"
+          />
+           {dateFilter && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute right-1 top-1 h-8 w-8"
+              onClick={() => setDateFilter(null)}
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          )}
         </div>
       </div>
 
