@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import Image from "next/image";
 import { formatDistanceToNow } from "date-fns";
 import { MapPin, Users, Share2 } from "lucide-react";
@@ -15,19 +14,38 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useFirestore, useUser } from "@/firebase";
+import { doc, serverTimestamp, setDoc, updateDoc, increment } from "firebase/firestore";
 
-export function CampaignCard({ campaign, userId }: { campaign: Campaign; userId?: string }) {
+export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaign; userId?: string, isJoined: boolean }) {
   const { toast } = useToast();
-  const [isJoined, setIsJoined] = useState(false);
+  const firestore = useFirestore();
+  const { user } = useUser();
   const isOwner = campaign.organizerId === userId;
 
-  const handleJoin = () => {
-    // TODO: Implement Firestore logic to join a campaign
-    setIsJoined(true);
-    toast({
-      title: "Campaign Joined!",
-      description: `You have successfully joined the "${campaign.title}" campaign.`,
-    });
+  const handleJoin = async () => {
+    if (!user || !firestore) return;
+    
+    const campaignRef = doc(firestore, 'campaigns', campaign.id);
+    const joinedRef = doc(firestore, 'users', user.uid, 'joinedCampaigns', campaign.id);
+
+    try {
+      await setDoc(joinedRef, {
+        campaignId: campaign.id,
+        joinedAt: serverTimestamp(),
+      });
+      await updateDoc(campaignRef, {
+        participants: increment(1)
+      });
+
+      toast({
+        title: "Campaign Joined!",
+        description: `You have successfully joined the "${campaign.title}" campaign.`,
+      });
+    } catch (error) {
+      console.error(error);
+      toast({ variant: 'destructive', title: "Error", description: "Could not join campaign." });
+    }
   };
 
   const handleShare = (platform: "link" | "facebook" | "twitter") => {

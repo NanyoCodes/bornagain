@@ -24,8 +24,9 @@ import { moderateContent } from "@/ai/flows/moderate-content-flow";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import type { TestimonyCategory } from "@/lib/types";
-import { useUser, useFirestore } from "@/firebase";
+import { useUser, useFirestore, useStorage } from "@/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 
 const MAX_FILE_SIZE_MB = 5;
@@ -51,6 +52,7 @@ export function CreateTestimonyForm({ onTestimonyCreated }: CreateTestimonyFormP
   
   const { user } = useUser();
   const firestore = useFirestore();
+  const storage = useStorage();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -80,7 +82,7 @@ export function CreateTestimonyForm({ onTestimonyCreated }: CreateTestimonyFormP
   };
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    if (!user) {
+    if (!user || !firestore || !storage) {
       toast({ variant: 'destructive', title: 'Not Authenticated', description: 'You must be logged in to share a testimony.'});
       return;
     }
@@ -89,11 +91,6 @@ export function CreateTestimonyForm({ onTestimonyCreated }: CreateTestimonyFormP
     setModerationResult(null);
 
     try {
-      // In a real app, you'd upload the file to Firebase Storage and get a URL first.
-      // For now, we'll skip file uploads to focus on Firestore.
-      const mediaUrl = undefined; // mediaFile ? URL.createObjectURL(mediaFile) : undefined;
-      const mediaType = undefined; // mediaFile?.type.startsWith('image') ? 'image' : mediaFile?.type.startsWith('video') ? 'video' : mediaFile?.type.startsWith('audio') ? 'audio' : undefined;
-
       const result = await moderateContent({ content: values.content, contentType: 'testimony' });
       setModerationResult(result);
 
@@ -105,16 +102,16 @@ export function CreateTestimonyForm({ onTestimonyCreated }: CreateTestimonyFormP
           authorAvatarUrl: user.photoURL,
           title: values.title,
           content: result.moderatedContent || values.content,
-          likes: 0,
           createdAt: serverTimestamp(),
           category: values.category as TestimonyCategory,
         };
-        
-        if (mediaUrl) {
+
+        if (mediaFile) {
+          const fileRef = ref(storage, `testimonies/${user.uid}/${Date.now()}-${mediaFile.name}`);
+          const snapshot = await uploadBytes(fileRef, mediaFile);
+          const mediaUrl = await getDownloadURL(snapshot.ref);
           testimonyData.mediaUrl = mediaUrl;
-        }
-        if (mediaType) {
-          testimonyData.mediaType = mediaType;
+          testimonyData.mediaType = mediaFile.type.startsWith('image') ? 'image' : mediaFile.type.startsWith('video') ? 'video' : mediaFile.type.startsWith('audio') ? 'audio' : undefined;
         }
 
         await addDoc(collection(firestore, "testimonies"), testimonyData);

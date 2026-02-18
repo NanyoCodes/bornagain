@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
 import { CreateCampaignForm } from "@/components/campaigns/create-campaign-form";
@@ -13,7 +13,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { CampaignCard } from "@/components/campaigns/campaign-card";
-import type { Campaign } from "@/lib/types";
+import type { Campaign, JoinedCampaign } from "@/lib/types";
 import { Input } from "@/components/ui/input";
 import { useCollection, useFirestore, useUser } from "@/firebase";
 import { collection, query, orderBy } from "firebase/firestore";
@@ -44,6 +44,14 @@ export default function CampaignsPage() {
 
   const campaignsQuery = query(collection(firestore, 'campaigns'), orderBy('createdAt', 'desc'));
   const { data: campaigns, loading } = useCollection<Campaign>(campaignsQuery);
+
+  const joinedCampaignsQuery = user ? query(collection(firestore, `users/${user.uid}/joinedCampaigns`)) : null;
+  const { data: joinedCampaigns } = useCollection<JoinedCampaign>(joinedCampaignsQuery);
+
+  const joinedCampaignIds = useMemo(() => {
+    if (!joinedCampaigns) return new Set();
+    return new Set(joinedCampaigns.map(jc => jc.id));
+  }, [joinedCampaigns]);
 
   const handleCampaignCreated = () => {
     setIsDialogOpen(false);
@@ -99,7 +107,12 @@ export default function CampaignsPage() {
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {loading && <CampaignSkeletons />}
         {filteredCampaigns?.map((campaign) => (
-          <CampaignCard key={campaign.id} campaign={campaign} userId={user?.uid} />
+          <CampaignCard 
+            key={campaign.id} 
+            campaign={campaign} 
+            userId={user?.uid}
+            isJoined={joinedCampaignIds.has(campaign.id)}
+          />
         ))}
       </div>
     </div>

@@ -8,7 +8,7 @@ import Link from "next/link";
 import { ArrowUpRight, Newspaper, Target, TrendingUp, UserCheck2 } from "lucide-react";
 import { useCollection, useFirestore, useUser } from "@/firebase";
 import { collection, query, orderBy, limit, where } from "firebase/firestore";
-import type { Testimony, Campaign, Soul } from "@/lib/types";
+import type { Testimony, Campaign, Soul, JoinedCampaign } from "@/lib/types";
 import { Skeleton } from "@/components/ui/skeleton";
 
 function RecentTestimonies() {
@@ -118,13 +118,15 @@ export default function DashboardPage() {
 
   const soulsQuery = user ? query(collection(firestore, `users/${user.uid}/souls`)) : null;
   const { data: soulsWon } = useCollection<Soul>(soulsQuery);
+  
+  const joinedCampaignsQuery = user ? query(collection(firestore, `users/${user.uid}/joinedCampaigns`)) : null;
+  const { data: joinedCampaigns } = useCollection<JoinedCampaign>(joinedCampaignsQuery);
 
-  // TODO: Campaigns joined stat needs to be implemented
   // TODO: Streak needs to be implemented
 
   const stats = [
     { title: "Testimonies Shared", value: myTestimonies?.length ?? 0, icon: Newspaper, change: "+2 this month" },
-    { title: "Campaigns Joined", value: "0", icon: Target, change: "+0 this month" },
+    { title: "Campaigns Joined", value: joinedCampaigns?.length ?? 0, icon: Target, change: "+0 this month" },
     { title: "Souls Won", value: soulsWon?.length ?? 0, icon: UserCheck2, change: "+8 this month" },
     { title: "Current Streak", value: "0 days", icon: TrendingUp, change: "Keep going!" },
   ];

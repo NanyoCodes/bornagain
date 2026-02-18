@@ -4,7 +4,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import * as React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Bell,
   Home,
@@ -30,14 +30,10 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { cn } from "@/lib/utils";
 import { useUser, useAuth } from "@/firebase";
 import { signOut } from "firebase/auth";
-import type { User as FirebaseUser } from "firebase/auth";
-
-const logo = PlaceHolderImages.find((img) => img.id === "logo");
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: Home },
@@ -70,7 +66,7 @@ function AppHeader() {
           href="/dashboard"
           className="flex items-center gap-2 text-lg font-semibold"
         >
-          {logo && <Image src={logo.imageUrl} alt="Testify" width={120} height={40} />}
+          <Image src="https://i.ibb.co/C9Pqmrj/testify-logo-6.png" alt="Testify" width={120} height={40} />
           <span className="sr-only font-bold sm:inline-block">Testify</span>
         </Link>
         {/* Desktop Navigation */}
@@ -118,11 +114,7 @@ function AppHeader() {
             <DropdownMenuSeparator />
             <DropdownMenuItem className="flex-col items-start gap-1">
               <p className="font-semibold">New Campaign Nearby</p>
-              <p className="text-xs text-muted-foreground">'Hope for the City' has started in Nairobi.</p>
-            </DropdownMenuItem>
-            <DropdownMenuItem className="flex-col items-start gap-1">
-              <p className="font-semibold">Testimony Liked</p>
-              <p className="text-xs text-muted-foreground">John Doe liked your testimony 'Healed from Sickness'.</p>
+              <p className="text-xs text-muted-foreground">Check out 'Hope for the City' in Nairobi.</p>
             </DropdownMenuItem>
             <DropdownMenuItem className="flex-col items-start gap-1">
               <p className="font-semibold">Campaign Update</p>
@@ -205,13 +197,13 @@ export default function DashboardLayout({
 }) {
   const { user, loading } = useUser();
   const router = useRouter();
-  const [mounted, setMounted] = React.useState(false);
+  const [mounted, setMounted] = useState(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     setMounted(true);
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!loading && !user) {
       router.push('/login');
     }

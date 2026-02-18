@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Testimony } from "@/lib/types";
 import { formatDistanceToNow } from 'date-fns';
-import { Heart, MessageCircle, Share2 } from "lucide-react";
+import { MessageCircle, Share2 } from "lucide-react";
 
 function MediaPreview({ testimony }: { testimony: Testimony }) {
   if (!testimony.mediaUrl || !testimony.mediaType) {
@@ -72,10 +72,6 @@ export function TestimonyCard({ testimony }: { testimony: Testimony }) {
       </CardContent>
       <CardFooter className="flex justify-between">
         <div className="flex gap-4">
-          <Button variant="ghost" size="sm" className="flex items-center gap-2 group">
-            <Heart className="h-4 w-4 group-hover:text-red-500 group-hover:fill-red-500 transition-colors" />
-            <span className="text-muted-foreground">{testimony.likes}</span>
-          </Button>
           <Button variant="ghost" size="sm" className="flex items-center gap-2">
             <MessageCircle className="h-4 w-4" />
             <span className="text-muted-foreground">Comment</span>

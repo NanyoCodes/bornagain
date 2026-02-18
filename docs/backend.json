@@ -71,9 +71,6 @@
           "type": "string",
           "format": "uri"
         },
-        "likes": {
-          "type": "number"
-        },
         "createdAt": {
           "type": "object"
         },
@@ -196,6 +193,23 @@
         "wonAt",
         "status"
       ]
+    },
+    "JoinedCampaign": {
+      "title": "Joined Campaign",
+      "description": "A record of a user joining a campaign.",
+      "type": "object",
+      "properties": {
+        "campaignId": {
+          "type": "string"
+        },
+        "joinedAt": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "campaignId",
+        "joinedAt"
+      ]
     }
   },
   "auth": {
@@ -217,6 +231,12 @@
         "$ref": "#/entities/Soul"
       },
       "description": "Stores souls won by a specific user."
+    },
+    "/users/{userId}/joinedCampaigns/{campaignId}": {
+      "schema": {
+        "$ref": "#/entities/JoinedCampaign"
+      },
+      "description": "Stores a record of campaigns a user has joined."
     },
     "/testimonies/{testimonyId}": {
       "schema": {

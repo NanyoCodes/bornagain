@@ -28,7 +28,6 @@ export type Testimony = {
   authorAvatarUrl: string;
   title: string;
   content: string;
-  likes: number;
   createdAt: Timestamp;
   category: TestimonyCategory;
   mediaUrl?: string;
@@ -48,6 +47,12 @@ export type Campaign = {
   organizerId: string;
   organizerName: string;
 };
+
+export type JoinedCampaign = {
+  id: string;
+  campaignId: string;
+  joinedAt: Timestamp;
+}
 
 export type ProgressLog = {
   date: string;

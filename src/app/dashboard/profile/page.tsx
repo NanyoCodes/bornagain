@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { useCollection, useFirestore, useUser } from "@/firebase";
 import { useDoc } from "@/firebase/firestore/use-doc";
 import { collection, query, where, doc } from "firebase/firestore";
-import type { Soul, Testimony, UserProfile } from "@/lib/types";
+import type { Soul, Testimony, UserProfile, JoinedCampaign } from "@/lib/types";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { EditProfileModal } from "@/components/profile/edit-profile-modal";
@@ -61,6 +61,9 @@ export default function ProfilePage() {
   const soulsQuery = user ? query(collection(firestore, `users/${user.uid}/souls`)) : null;
   const { data: soulsWon } = useCollection<Soul>(soulsQuery);
 
+  const joinedCampaignsQuery = user ? query(collection(firestore, `users/${user.uid}/joinedCampaigns`)) : null;
+  const { data: joinedCampaigns } = useCollection<JoinedCampaign>(joinedCampaignsQuery);
+
   const loading = loadingUser || loadingProfile;
 
   if (loading) {
@@ -77,7 +80,7 @@ export default function ProfilePage() {
   const stats = {
     testimonies: testimonies?.length ?? 0,
     soulsWon: soulsWon?.length ?? 0,
-    campaignsJoined: 0, // Placeholder
+    campaignsJoined: joinedCampaigns?.length ?? 0,
   }
 
   return (
