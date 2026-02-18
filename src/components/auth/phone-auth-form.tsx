@@ -39,7 +39,15 @@ declare global {
 }
 
 const phoneSchema = z.object({
-  phone: z.string().min(10, "Please enter a valid phone number with country code."),
+  phone: z.string().min(10, "Phone number is too short.").refine(
+    (value) => {
+      const digitsOnly = value.replace(/\D/g, '');
+      return digitsOnly.length >= 10;
+    },
+    {
+      message: "Please enter a valid phone number with at least 10 digits.",
+    }
+  ),
 });
 
 const codeSchema = z.object({
@@ -69,6 +77,10 @@ export function PhoneAuthForm() {
   useEffect(() => {
     if (!auth) return;
 
+    if (window.recaptchaVerifier) {
+        window.recaptchaVerifier.clear();
+    }
+
     const verifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
       'size': 'invisible',
       'callback': (response: any) => {
@@ -83,8 +95,10 @@ export function PhoneAuthForm() {
     });
 
     return () => {
-      verifier.clear();
-      window.recaptchaVerifier = undefined;
+      if (window.recaptchaVerifier) {
+        window.recaptchaVerifier.clear();
+        window.recaptchaVerifier = undefined;
+      }
     };
   }, [auth]);
 
