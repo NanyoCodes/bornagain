@@ -40,7 +40,7 @@ export default function ProgressPage() {
   const { user } = useUser();
   const firestore = useFirestore();
 
-  const soulsQuery = user ? query(collection(firestore, `users/${user.uid}/souls`)) : null;
+  const soulsQuery = user && firestore ? query(collection(firestore, `users/${user.uid}/souls`)) : null;
   const { data: souls } = useCollection<Soul>(soulsQuery);
   
   const [monthlyGoal, setMonthlyGoal] = useState(50);

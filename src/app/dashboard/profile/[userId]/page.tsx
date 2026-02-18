@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -39,16 +40,16 @@ export default function UserProfilePage() {
 
   const isOwnProfile = currentUser?.uid === userId;
 
-  const userDocRef = userId ? doc(firestore, 'users', userId) : null;
+  const userDocRef = userId && firestore ? doc(firestore, 'users', userId) : null;
   const { data: userProfile, loading: loadingProfile } = useDoc<UserProfile>(userDocRef);
 
-  const testimoniesQuery = userId ? query(collection(firestore, 'testimonies'), where('authorId', '==', userId)) : null;
+  const testimoniesQuery = userId && currentUser && firestore ? query(collection(firestore, 'testimonies'), where('authorId', '==', userId)) : null;
   const { data: testimonies, loading: loadingTestimonies } = useCollection<Testimony>(testimoniesQuery);
 
-  const soulsQuery = isOwnProfile ? query(collection(firestore, `users/${userId}/souls`)) : null;
+  const soulsQuery = isOwnProfile && firestore ? query(collection(firestore, `users/${userId}/souls`)) : null;
   const { data: soulsWon } = useCollection<Soul>(soulsQuery);
 
-  const joinedCampaignsQuery = isOwnProfile ? query(collection(firestore, `users/${userId}/joinedCampaigns`)) : null;
+  const joinedCampaignsQuery = isOwnProfile && firestore ? query(collection(firestore, `users/${userId}/joinedCampaigns`)) : null;
   const { data: joinedCampaigns } = useCollection<JoinedCampaign>(joinedCampaignsQuery);
 
   const loading = loadingUser || loadingProfile || loadingTestimonies;

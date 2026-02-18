@@ -16,7 +16,7 @@ import { useMemo } from "react";
 function RecentTestimonies() {
   const firestore = useFirestore();
   const { user } = useUser();
-  const testimoniesQuery = user ? query(collection(firestore, 'testimonies'), orderBy('createdAt', 'desc'), limit(3)) : null;
+  const testimoniesQuery = user && firestore ? query(collection(firestore, 'testimonies'), orderBy('createdAt', 'desc'), limit(3)) : null;
   const { data: testimonies, loading } = useCollection<Testimony>(testimoniesQuery);
 
   return (
@@ -70,7 +70,7 @@ function RecentTestimonies() {
 function ActiveCampaigns() {
   const firestore = useFirestore();
   const { user } = useUser();
-  const campaignsQuery = user ? query(collection(firestore, 'campaigns'), orderBy('createdAt', 'desc'), limit(2)) : null;
+  const campaignsQuery = user && firestore ? query(collection(firestore, 'campaigns'), orderBy('createdAt', 'desc'), limit(2)) : null;
   const { data: campaigns, loading } = useCollection<Campaign>(campaignsQuery);
 
   return (
@@ -118,13 +118,13 @@ export default function DashboardPage() {
   const firestore = useFirestore();
   const now = useMemo(() => new Date(), []);
 
-  const testimoniesQuery = user ? query(collection(firestore, 'testimonies'), where('authorId', '==', user.uid)) : null;
+  const testimoniesQuery = user && firestore ? query(collection(firestore, 'testimonies'), where('authorId', '==', user.uid)) : null;
   const { data: myTestimonies } = useCollection<Testimony>(testimoniesQuery);
 
-  const soulsQuery = user ? query(collection(firestore, `users/${user.uid}/souls`)) : null;
+  const soulsQuery = user && firestore ? query(collection(firestore, `users/${user.uid}/souls`)) : null;
   const { data: soulsWon } = useCollection<Soul>(soulsQuery);
   
-  const joinedCampaignsQuery = user ? query(collection(firestore, `users/${user.uid}/joinedCampaigns`)) : null;
+  const joinedCampaignsQuery = user && firestore ? query(collection(firestore, `users/${user.uid}/joinedCampaigns`)) : null;
   const { data: joinedCampaigns } = useCollection<JoinedCampaign>(joinedCampaignsQuery);
 
   const testimoniesThisMonth = useMemo(() => {

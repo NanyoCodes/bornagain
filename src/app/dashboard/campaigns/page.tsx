@@ -61,13 +61,13 @@ export default function CampaignsPage() {
     setMounted(true);
   }, []);
 
-  const userDocRef = user ? doc(firestore, 'users', user.uid) : null;
+  const userDocRef = user && firestore ? doc(firestore, 'users', user.uid) : null;
   const { data: userProfile } = useDoc<UserProfile>(userDocRef);
 
-  const campaignsQuery = user ? query(collection(firestore, 'campaigns'), orderBy('createdAt', 'desc')) : null;
+  const campaignsQuery = user && firestore ? query(collection(firestore, 'campaigns'), orderBy('createdAt', 'desc')) : null;
   const { data: campaigns, loading } = useCollection<Campaign>(campaignsQuery);
 
-  const joinedCampaignsQuery = user ? query(collection(firestore, `users/${user.uid}/joinedCampaigns`)) : null;
+  const joinedCampaignsQuery = user && firestore ? query(collection(firestore, `users/${user.uid}/joinedCampaigns`)) : null;
   const { data: joinedCampaigns } = useCollection<JoinedCampaign>(joinedCampaignsQuery);
 
   const joinedCampaignIds = useMemo(() => {
@@ -83,8 +83,17 @@ export default function CampaignsPage() {
     if (!value) return null;
     if (value instanceof Date) return value;
     if (typeof value.toDate === 'function') return value.toDate();
-    const d = new Date(value);
-    return isNaN(d.getTime()) ? null : d;
+    try {
+      const d = new Date(value);
+      if (!isNaN(d.getTime())) return d;
+    } catch (e) {}
+    try {
+      if (typeof value === 'object' && value.seconds) {
+         const d = new Date(value.seconds * 1000);
+         if(!isNaN(d.getTime())) return d;
+      }
+    } catch(e) {}
+    return null;
   };
 
   const sortedAndFilteredCampaigns = useMemo(() => {
@@ -264,7 +273,3 @@ export default function CampaignsPage() {
     </div>
   );
 }
-
-    
-
-    

@@ -34,11 +34,11 @@ export default function SoulsWonPage() {
   }, []);
 
   // Fetch souls for the current user
-  const soulsQuery = user ? query(collection(firestore, `users/${user.uid}/souls`), orderBy("wonAt", "desc")) : null;
+  const soulsQuery = user && firestore ? query(collection(firestore, `users/${user.uid}/souls`), orderBy("wonAt", "desc")) : null;
   const { data: souls, loading: loadingSouls } = useCollection<Soul>(soulsQuery);
 
   // Fetch campaigns for the form dropdown
-  const campaignsQuery = user ? query(collection(firestore, 'campaigns'), orderBy('createdAt', 'desc')) : null;
+  const campaignsQuery = user && firestore ? query(collection(firestore, 'campaigns'), orderBy('createdAt', 'desc')) : null;
   const { data: campaigns } = useCollection<Campaign>(campaignsQuery);
 
 
