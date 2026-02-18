@@ -85,25 +85,26 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
     setIsSubmitting(true);
 
     try {
-      let newPhotoURL = userProfile.photoURL;
-
-      // Step 1: Upload new photo if it exists.
-      if (photoFile) {
-        const storageRef = ref(storage, `profile-pictures/${user.uid}`);
-        const uploadTask = await uploadBytes(storageRef, photoFile);
-        newPhotoURL = await getDownloadURL(uploadTask.ref);
-      }
-
-      // Step 2: Prepare the data for Firestore update.
-      const firestoreUpdatePayload: any = {
+      const firestoreUpdatePayload: Partial<UserProfile> = {
         displayName: values.displayName,
         bio: values.bio || "",
         location: values.location || "",
         phone: values.phone || "",
-        photoURL: newPhotoURL ?? null,
       };
 
-      // Step 3: Update Firestore document.
+      let authPhotoURL: string | null = auth.currentUser?.photoURL || null;
+
+      // Only handle photo upload if a new file was selected.
+      if (photoFile) {
+        const storageRef = ref(storage, `profile-pictures/${user.uid}`);
+        const uploadTask = await uploadBytes(storageRef, photoFile);
+        const newPhotoURL = await getDownloadURL(uploadTask.ref);
+        
+        firestoreUpdatePayload.photoURL = newPhotoURL;
+        authPhotoURL = newPhotoURL;
+      }
+
+      // Update Firestore document with only the changed fields.
       const userDocRef = doc(firestore, 'users', user.uid);
       await updateDoc(userDocRef, firestoreUpdatePayload).catch((serverError) => {
         const permissionError = new FirestorePermissionError({
@@ -115,11 +116,11 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
         throw permissionError; // Re-throw to be caught by the outer catch
       });
 
-      // Step 4: Update Firebase Auth profile.
+      // Update Firebase Auth profile.
       if (auth.currentUser) {
         await updateProfile(auth.currentUser, {
           displayName: values.displayName,
-          photoURL: newPhotoURL ?? null,
+          photoURL: authPhotoURL,
         });
       }
       
@@ -147,9 +148,9 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
             <FormLabel>Profile Picture</FormLabel>
             <div className="flex items-center gap-4">
                 <Avatar className="h-20 w-20">
-                    <AvatarImage src={photoPreview || userProfile.photoURL || undefined} alt={userProfile.displayName} />
+                    <AvatarImage src={photoPreview || userProfile.photoURL || undefined} alt={form.watch('displayName')} />
                     <AvatarFallback className="text-3xl">
-                        {userProfile.displayName?.charAt(0) || userProfile.email?.charAt(0)}
+                        {form.watch('displayName')?.charAt(0) || userProfile.email?.charAt(0)}
                     </AvatarFallback>
                 </Avatar>
                 <Input id="picture" type="file" accept="image/jpeg,image/png" onChange={handleFileChange} className="max-w-xs text-base" />
