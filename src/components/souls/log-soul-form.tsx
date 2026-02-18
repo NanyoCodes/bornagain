@@ -18,7 +18,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { CalendarIcon, Loader2 } from "lucide-react";
-import type { Campaign } from "@/lib/types";
+import type { Campaign, Soul } from "@/lib/types";
 import { Textarea } from "@/components/ui/textarea";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
@@ -26,6 +26,8 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useFirestore, useUser } from "@/firebase";
 import { collection, addDoc } from "firebase/firestore";
+import { FirestorePermissionError } from "@/firebase/errors";
+import { errorEmitter } from "@/firebase/error-emitter";
 
 const formSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters."),
@@ -62,37 +64,48 @@ export function LogSoulForm({ onSoulLogged, campaigns }: LogSoulFormProps) {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    if (!user) {
+    if (!user || !firestore) {
       toast({ variant: "destructive", title: "Not Authenticated", description: "You must be logged in to log a soul." });
       return;
     }
     setIsLoading(true);
     
     try {
-      const soulData = {
+      const soulsCollectionRef = collection(firestore, `users/${user.uid}/souls`);
+      const soulData: Omit<Soul, 'id'> = {
         userId: user.uid,
         name: values.name,
         contact: values.contact,
-        source: values.source,
+        source: values.source as 'Personal' | 'Campaign' | 'Referral',
         sourceDetails: values.sourceDetails,
-        wonAt: values.wonAt,
+        wonAt: values.wonAt as any, // Firestore will convert it
         status: "New",
-        followUpLog: values.initialNote ? [{ date: new Date(), note: values.initialNote }] : [],
+        followUpLog: values.initialNote ? [{ date: new Date() as any, note: values.initialNote }] : [],
         attendingChurch: false,
         inBibleStudy: false,
         attendingPrayer: false,
       };
 
-      await addDoc(collection(firestore, `users/${user.uid}/souls`), soulData);
+      await addDoc(soulsCollectionRef, soulData).catch((serverError) => {
+        const permissionError = new FirestorePermissionError({
+          path: soulsCollectionRef.path,
+          operation: 'create',
+          requestResourceData: soulData,
+        });
+        errorEmitter.emit('permission-error', permissionError);
+        throw permissionError;
+      });
 
       toast({
         title: "Soul Logged",
         description: `${values.name} has been added to your list.`,
       });
       onSoulLogged();
-    } catch(error) {
+    } catch(error: any) {
       console.error("Error logging soul: ", error);
-      toast({ variant: 'destructive', title: "Error", description: "Could not log soul." });
+      if (error.name !== 'FirestorePermissionError') {
+        toast({ variant: 'destructive', title: "Error", description: "Could not log soul." });
+      }
     } finally {
         setIsLoading(false);
     }
@@ -108,7 +121,7 @@ export function LogSoulForm({ onSoulLogged, campaigns }: LogSoulFormProps) {
             <FormItem>
               <FormLabel>Name</FormLabel>
               <FormControl>
-                <Input placeholder="John Doe" {...field} />
+                <Input placeholder="John Doe" {...field} className="text-base"/>
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -126,7 +139,7 @@ export function LogSoulForm({ onSoulLogged, campaigns }: LogSoulFormProps) {
                     <Button
                       variant={"outline"}
                       className={cn(
-                        "w-full pl-3 text-left font-normal",
+                        "w-full pl-3 text-left font-normal text-base",
                         !field.value && "text-muted-foreground"
                       )}
                     >
@@ -147,7 +160,6 @@ export function LogSoulForm({ onSoulLogged, campaigns }: LogSoulFormProps) {
                     disabled={(date) =>
                       date > new Date() || date < new Date("1900-01-01")
                     }
-                    initialFocus
                   />
                 </PopoverContent>
               </Popover>
@@ -162,7 +174,7 @@ export function LogSoulForm({ onSoulLogged, campaigns }: LogSoulFormProps) {
             <FormItem>
               <FormLabel>Contact Info (Email or Phone)</FormLabel>
               <FormControl>
-                <Input placeholder="john.doe@example.com" {...field} />
+                <Input placeholder="john.doe@example.com" {...field} className="text-base"/>
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -176,7 +188,7 @@ export function LogSoulForm({ onSoulLogged, campaigns }: LogSoulFormProps) {
               <FormLabel>Source</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
-                  <SelectTrigger>
+                  <SelectTrigger className="text-base">
                     <SelectValue placeholder="Select the source" />
                   </SelectTrigger>
                 </FormControl>
@@ -199,7 +211,7 @@ export function LogSoulForm({ onSoulLogged, campaigns }: LogSoulFormProps) {
                   <FormLabel>Campaign Name</FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
-                      <SelectTrigger>
+                      <SelectTrigger className="text-base">
                         <SelectValue placeholder="Select from your campaigns" />
                       </SelectTrigger>
                     </FormControl>
@@ -224,7 +236,7 @@ export function LogSoulForm({ onSoulLogged, campaigns }: LogSoulFormProps) {
                 <FormItem>
                 <FormLabel>Referred By</FormLabel>
                 <FormControl>
-                    <Input placeholder="e.g., Jane Smith" {...field} />
+                    <Input placeholder="e.g., Jane Smith" {...field} className="text-base"/>
                 </FormControl>
                 <FormMessage />
                 </FormItem>
@@ -238,7 +250,7 @@ export function LogSoulForm({ onSoulLogged, campaigns }: LogSoulFormProps) {
             <FormItem>
               <FormLabel>Initial Note (Optional)</FormLabel>
               <FormControl>
-                <Textarea placeholder="e.g., Met at the park, prayed together..." {...field} />
+                <Textarea placeholder="e.g., Met at the park, prayed together..." {...field} className="text-base"/>
               </FormControl>
               <FormMessage />
             </FormItem>

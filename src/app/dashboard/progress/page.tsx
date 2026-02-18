@@ -7,7 +7,7 @@ import { Bar, BarChart, CartesianGrid, ResponsiveContainer, XAxis, YAxis, Toolti
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartContainer, ChartTooltipContent } from "@/components/ui/chart";
 import { Button } from "@/components/ui/button";
-import { CalendarIcon, Edit, PlusCircle, Target, Trophy, TrendingUp, UserCheck2 } from "lucide-react";
+import { CalendarIcon, Edit, PlusCircle, Trophy, TrendingUp, UserCheck2 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -52,7 +52,7 @@ export default function ProgressPage() {
 
   const soulsThisMonth = useMemo(() => {
     if (!souls) return 0;
-    return souls.filter(soul => isSameMonth(soul.wonAt.toDate(), goalDate)).length;
+    return souls.filter(soul => soul.wonAt && isSameMonth(soul.wonAt.toDate(), goalDate)).length;
   }, [souls, goalDate]);
   
   const totalSoulsWon = souls?.length ?? 0;
@@ -71,6 +71,7 @@ export default function ProgressPage() {
     }
 
     souls.forEach(soul => {
+      if (soul.wonAt) {
         const wonDate = soul.wonAt.toDate();
         if (wonDate >= sixMonthsAgo) {
             const monthKey = format(wonDate, "MMM");
@@ -78,6 +79,7 @@ export default function ProgressPage() {
                 monthlyData[monthKey].soulsWon++;
             }
         }
+      }
     });
     return Object.values(monthlyData);
   }, [souls]);
@@ -110,7 +112,7 @@ export default function ProgressPage() {
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div className="space-y-2">
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight font-headline">Progress</h1>
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight font-headline">Progress</h1>
           <p className="text-muted-foreground">Track your personal evangelism efforts.</p>
         </div>
         <Button asChild>
@@ -194,7 +196,6 @@ export default function ProgressPage() {
                                 mode="single"
                                 selected={newGoalDate}
                                 onSelect={(date) => date && setNewGoalDate(date)}
-                                initialFocus
                               />
                           </PopoverContent>
                       </Popover>

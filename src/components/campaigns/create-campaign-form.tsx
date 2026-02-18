@@ -24,7 +24,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useUser, useFirestore } from "@/firebase";
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp, doc, setDoc } from "firebase/firestore";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
@@ -113,7 +113,6 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
     
     setIsCreating(true);
 
-    const campaignCollectionRef = collection(firestore, 'campaigns');
     const campaignData: any = {
       title: finalName,
       description: finalDescription,
@@ -129,15 +128,32 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
     };
     
     try {
-      await addDoc(campaignCollectionRef, campaignData).catch((serverError) => {
-        const permissionError = new FirestorePermissionError({
-          path: campaignCollectionRef.path,
-          operation: 'create',
-          requestResourceData: campaignData,
+        const campaignCollectionRef = collection(firestore, 'campaigns');
+        const campaignDocRef = await addDoc(campaignCollectionRef, campaignData).catch((serverError) => {
+            const permissionError = new FirestorePermissionError({
+            path: campaignCollectionRef.path,
+            operation: 'create',
+            requestResourceData: campaignData,
+            });
+            errorEmitter.emit('permission-error', permissionError);
+            throw permissionError; // Re-throw to be caught by the outer catch
         });
-        errorEmitter.emit('permission-error', permissionError);
-        throw permissionError; // Re-throw to be caught by the outer catch
-      });
+
+        // Also add the 'joinedCampaigns' record for the creator
+        const joinedRef = doc(firestore, 'users', user.uid, 'joinedCampaigns', campaignDocRef.id);
+        await setDoc(joinedRef, {
+            campaignId: campaignDocRef.id,
+            joinedAt: serverTimestamp(),
+        }).catch((serverError) => {
+            const permissionError = new FirestorePermissionError({
+                path: joinedRef.path,
+                operation: 'create',
+                requestResourceData: { campaignId: campaignDocRef.id },
+            });
+            errorEmitter.emit('permission-error', permissionError);
+            // Don't rethrow, creating the campaign is the main success
+        });
+
       
       toast({ title: 'Campaign Created!', description: `The "${finalName}" campaign is now ready.` });
       onCampaignCreated();
@@ -187,7 +203,7 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
                 <FormItem>
                   <FormLabel>Target Audience</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g., University Students" {...field} />
+                    <Input placeholder="e.g., University Students" {...field} className="text-base" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -202,7 +218,7 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
                 <FormItem>
                   <FormLabel>City</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g., Nairobi" {...field} />
+                    <Input placeholder="e.g., Nairobi" {...field} className="text-base" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -215,7 +231,7 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
                 <FormItem>
                   <FormLabel>Country</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g., Kenya" {...field} />
+                    <Input placeholder="e.g., Kenya" {...field} className="text-base" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -235,7 +251,7 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
                           <Button
                             variant={"outline"}
                             className={cn(
-                              "w-full pl-3 text-left font-normal",
+                              "w-full pl-3 text-left font-normal text-base",
                               !field.value && "text-muted-foreground"
                             )}
                           >
@@ -256,7 +272,6 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
                           disabled={(date) =>
                             date < new Date(new Date().setHours(0, 0, 0, 0))
                           }
-                          initialFocus
                         />
                       </PopoverContent>
                     </Popover>
@@ -271,14 +286,14 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
                   <FormItem>
                     <FormLabel>Time</FormLabel>
                     <FormControl>
-                      <Input type="time" {...field} />
+                      <Input type="time" {...field} className="text-base" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
            </div>
-          <p className="text-sm text-muted-foreground">
+           <p className="text-sm text-muted-foreground">
             Provide some keywords and let our AI assistant brainstorm for you.
           </p>
 
@@ -321,7 +336,7 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
                 {selectedName === 'custom' && (
                   <Input 
                     placeholder="Enter custom campaign name" 
-                    className="mt-4"
+                    className="mt-4 text-base"
                     value={customName}
                     onChange={(e) => setCustomName(e.target.value)}
                   />
@@ -329,7 +344,7 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
               </div>
               <div>
                 <h3 className="text-lg font-semibold mb-2">Suggested Description</h3>
-                <Textarea value={finalDescription} onChange={(e) => setFinalDescription(e.target.value)} rows={5} />
+                <Textarea value={finalDescription} onChange={(e) => setFinalDescription(e.target.value)} rows={5} className="text-base" />
               </div>
               <Button className="w-full" onClick={handleCreateCampaign} disabled={isCreating}>
                 {isCreating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
