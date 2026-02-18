@@ -44,6 +44,7 @@ const formSchema = z.object({
   startTime: z.string().min(1, "A start time is required."),
   endTime: z.string().min(1, "An end time is required."),
   targetAudience: z.string().min(3, "Target audience is too short.").max(100, "Target audience is too long."),
+  scripture: z.string().min(3, "Scripture is too short.").max(100, "Scripture is too long."),
 }).refine((data) => data.endDate >= data.startDate, {
     message: "End date cannot be before start date.",
     path: ["endDate"],
@@ -76,6 +77,7 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
       city: "",
       country: "",
       targetAudience: "",
+      scripture: "",
       startTime: "10:00",
       endTime: "12:00",
     },
@@ -89,6 +91,7 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
         goal: values.goal,
         location: `${values.city}, ${values.country}`,
         targetAudience: values.targetAudience,
+        scripture: values.scripture,
       });
       setIdeas(result);
       if (result.campaignNames.length > 0) {
@@ -134,6 +137,7 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
       organizerId: user.uid,
       organizerName: user.displayName || 'Anonymous',
       status: 'active',
+      scripture: form.getValues('scripture'),
     };
     
     try {
@@ -247,6 +251,19 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
               )}
             />
           </div>
+          <FormField
+            control={form.control}
+            name="scripture"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Inspirational Scripture</FormLabel>
+                <FormControl>
+                  <Input placeholder="e.g., John 3:16" {...field} className="text-base" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
                 control={form.control}

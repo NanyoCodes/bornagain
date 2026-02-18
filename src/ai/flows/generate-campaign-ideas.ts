@@ -14,6 +14,7 @@ const CampaignIdeaInputSchema = z.object({
   goal: z.string().describe('The primary goal of the campaign (e.g., evangelism, community outreach).'),
   location: z.string().describe('The geographical location or target area for the campaign.'),
   targetAudience: z.string().describe('The demographic or group the campaign aims to reach.'),
+  scripture: z.string().describe('An inspirational scripture reference (e.g., John 3:16).'),
 });
 export type CampaignIdeaInput = z.infer<typeof CampaignIdeaInputSchema>;
 
@@ -39,13 +40,14 @@ const generateCampaignIdeasPrompt = ai.definePrompt({
   output: {schema: CampaignIdeaOutputSchema},
   prompt: `You are an AI assistant specialized in creating engaging and inspirational campaign ideas for faith-based initiatives.
 
-Based on the following keywords, generate 3-5 creative and compelling campaign names, and a detailed, engaging description (2-3 paragraphs) that clearly communicates the campaign's purpose and encourages participation.
+Based on the following keywords and inspirational scripture, generate 3-5 creative and compelling campaign names, and a detailed, engaging description (2-3 paragraphs) that draws revelation from the scripture and clearly communicates the campaign's purpose, encouraging participation.
 
 Goal: {{{goal}}}
 Location: {{{location}}}
 Target Audience: {{{targetAudience}}}
+Inspirational Scripture: {{{scripture}}}
 
-Ensure the names are catchy and relevant to the goal, and the description is inspiring and clear.`,
+Ensure the names are catchy and relevant to the goal, and the description is inspiring, clear, and reflects the essence of the provided scripture.`,
 });
 
 const generateCampaignIdeasFlow = ai.defineFlow(

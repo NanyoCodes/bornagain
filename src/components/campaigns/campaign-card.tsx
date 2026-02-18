@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { format, formatDistanceToNow, parse, isSameDay } from "date-fns";
-import { CalendarDays, MapPin, Users, Share2, Clock, Edit, Trash2, MoreVertical, Loader2, MessageSquare } from "lucide-react";
+import { CalendarDays, MapPin, Users, Share2, Clock, Edit, Trash2, MoreVertical, Loader2, MessageSquare, BookOpen } from "lucide-react";
 import type { Campaign } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -454,20 +454,26 @@ export function CampaignCard({ campaign, userId, isJoined, allCampaigns }: { cam
             
             <p className="text-muted-foreground text-sm line-clamp-3">{campaign.description}</p>
             
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-                <div className="border rounded-lg p-3 flex items-start gap-3">
-                    <MapPin className="h-5 w-5 text-primary mt-0.5 shrink-0" />
+            {campaign.scripture && (
+                <blockquote className="mt-4 border-l-2 pl-4 italic text-muted-foreground">
+                    &ldquo;Revelation from {campaign.scripture}&rdquo;
+                </blockquote>
+            )}
+
+            <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                <div className="rounded-lg border p-3 flex items-start gap-3">
+                    <MapPin className="h-5 w-5 text-primary shrink-0 mt-1" />
                     <div>
-                        <p className="text-xs text-muted-foreground">Location</p>
-                        <p className="font-medium truncate">{campaign.location}</p>
+                        <p className="font-medium">Location</p>
+                        <p className="text-muted-foreground truncate">{campaign.location}</p>
                     </div>
                 </div>
-                <div className="border rounded-lg p-3 flex items-start gap-3">
-                    <CalendarDays className="h-5 w-5 text-primary mt-0.5 shrink-0" />
+                <div className="rounded-lg border p-3 flex items-start gap-3">
+                    <CalendarDays className="h-5 w-5 text-primary shrink-0 mt-1" />
                     <div>
-                        <p className="text-xs text-muted-foreground">Date & Time</p>
-                        <p className="font-medium">{dateString}</p>
-                        <p className="font-medium">{timeString}</p>
+                        <p className="font-medium">Date & Time</p>
+                        <p className="text-muted-foreground">{dateString}</p>
+                        <p className="text-muted-foreground">{timeString}</p>
                     </div>
                 </div>
             </div>

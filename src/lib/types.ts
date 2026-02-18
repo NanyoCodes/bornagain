@@ -50,6 +50,7 @@ export type Campaign = {
   lastUpdateReason?: string;
   deletionReason?: string;
   deletedAt?: Timestamp;
+  scripture?: string;
 };
 
 export type JoinedCampaign = {

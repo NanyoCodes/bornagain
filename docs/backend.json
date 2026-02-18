@@ -133,6 +133,10 @@
         "deletedAt": {
           "type": "object",
           "description": "Timestamp when the campaign was deleted."
+        },
+        "scripture": {
+          "type": "string",
+          "description": "An inspirational scripture for the campaign."
         }
       },
       "required": [
