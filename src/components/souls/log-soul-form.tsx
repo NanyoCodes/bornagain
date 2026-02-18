@@ -29,6 +29,7 @@ import { errorEmitter } from "@/firebase/error-emitter";
 const formSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters."),
   contact: z.string().optional(),
+  church: z.string().optional(),
   source: z.string({ required_error: "Please select a source." }),
   sourceDetails: z.string().optional(),
   initialNote: z.string().optional(),
@@ -54,6 +55,7 @@ export function LogSoulForm({ onSoulLogged, campaigns, campaign }: LogSoulFormPr
     defaultValues: {
       name: "",
       contact: "",
+      church: "",
       source: campaign ? "Campaign" : "Personal",
       sourceDetails: campaign ? campaign.title : "",
       initialNote: "",
@@ -74,6 +76,7 @@ export function LogSoulForm({ onSoulLogged, campaigns, campaign }: LogSoulFormPr
         userId: user.uid,
         name: values.name,
         contact: values.contact,
+        church: values.church,
         source: values.source as 'Personal' | 'Campaign' | 'Referral',
         sourceDetails: values.sourceDetails,
         wonAt: values.wonAt as any, // Firestore will convert it
@@ -152,6 +155,19 @@ export function LogSoulForm({ onSoulLogged, campaigns, campaign }: LogSoulFormPr
               <FormLabel>Contact Info (Email or Phone)</FormLabel>
               <FormControl>
                 <Input placeholder="john.doe@example.com" {...field} className="text-base"/>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="church"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Church (Optional)</FormLabel>
+              <FormControl>
+                <Input placeholder="e.g., New Life Church" {...field} className="text-base"/>
               </FormControl>
               <FormMessage />
             </FormItem>

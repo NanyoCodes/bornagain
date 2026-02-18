@@ -162,6 +162,10 @@
         "contact": {
           "type": "string"
         },
+        "church": {
+          "type": "string",
+          "description": "The church the soul is attending."
+        },
         "source": {
           "type": "string",
           "enum": [

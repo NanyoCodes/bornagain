@@ -78,6 +78,7 @@ export type Soul = {
   userId: string;
   name: string;
   contact?: string;
+  church?: string;
   source: 'Campaign' | 'Personal' | 'Referral';
   sourceDetails?: string; // e.g., Campaign name or referrer name
   wonAt: Timestamp; // ISO date string

@@ -72,6 +72,7 @@ function SoulCard({ soul, onUpdateSoul }: { soul: Soul, onUpdateSoul: SoulsWonTa
                     <div>
                         <CardTitle>{soul.name}</CardTitle>
                         <CardDescription>{soul.contact}</CardDescription>
+                        {soul.church && <CardDescription className="flex items-center gap-1 pt-1"><Church className="h-4 w-4" /> {soul.church}</CardDescription>}
                     </div>
                      <DropdownMenu>
                       <DropdownMenuTrigger asChild>
@@ -244,6 +245,7 @@ export function SoulsWonTable({ souls, onUpdateSoul, loading }: SoulsWonTablePro
                   <TableCell className="font-medium">
                     <div>{soul.name}</div>
                     <div className="text-xs text-muted-foreground">{soul.contact}</div>
+                    {soul.church && <div className="text-xs text-muted-foreground flex items-center gap-1"><Church className="h-3 w-3" />{soul.church}</div>}
                   </TableCell>
                   <TableCell>
                     <Select value={soul.status} onValueChange={(value: FollowUpStatus) => handleStatusChange(soul.id, value)}>
