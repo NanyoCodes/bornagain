@@ -6,7 +6,7 @@ import { format, formatDistanceToNow, parse, isSameDay } from "date-fns";
 import { CalendarDays, MapPin, Users, Share2, Clock, Edit, Trash2, MoreVertical, Loader2 } from "lucide-react";
 import type { Campaign } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import {
@@ -43,6 +43,7 @@ import { Textarea } from "../ui/textarea";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { LogSoulForm } from "../souls/log-soul-form";
+import { Badge } from "../ui/badge";
 
 export function CampaignCard({ campaign, userId, isJoined, allCampaigns }: { campaign: Campaign; userId?: string, isJoined: boolean, allCampaigns?: Campaign[] }) {
   const { toast } = useToast();
@@ -161,8 +162,17 @@ export function CampaignCard({ campaign, userId, isJoined, allCampaigns }: { cam
     if (!value) return null;
     if (value instanceof Date) return value;
     if (typeof value.toDate === 'function') return value.toDate();
-    const d = new Date(value);
-    return isNaN(d.getTime()) ? null : d;
+    try {
+      const d = new Date(value);
+      if (!isNaN(d.getTime())) return d;
+    } catch (e) {}
+    try {
+      if (typeof value === 'object' && value.seconds) {
+         const d = new Date(value.seconds * 1000);
+         if(!isNaN(d.getTime())) return d;
+      }
+    } catch(e) {}
+    return null;
   };
 
   const startDate = safeToDate(campaign.startDate);
@@ -189,7 +199,21 @@ export function CampaignCard({ campaign, userId, isJoined, allCampaigns }: { cam
       dateString = "Date not set";
   }
   
-  const timeString = `${startTimeFormatted} - ${endTimeFormatted}`;
+  const timeString = campaign.startTime && campaign.endTime ? `${startTimeFormatted} - ${endTimeFormatted}` : "Time not set";
+  
+  const getStatus = (): "Ongoing" | "Upcoming" | "Past" => {
+    const now = new Date();
+    if (!startDate || !endDate) return "Past";
+    
+    // Create a copy of endDate to avoid modifying the original
+    const endOfDay = new Date(endDate);
+    endOfDay.setHours(23, 59, 59, 999);
+
+    if (endOfDay < now) return "Past";
+    if (startDate > now) return "Upcoming";
+    return "Ongoing";
+  };
+  const status = getStatus();
 
   const LogSoulDialog = (
     <Dialog open={isLogSoulOpen} onOpenChange={setIsLogSoulOpen}>
@@ -337,36 +361,50 @@ export function CampaignCard({ campaign, userId, isJoined, allCampaigns }: { cam
 
 
   return (
-    <Card className="flex flex-col">
-      <CardHeader className="p-6">
-        <CardTitle>{campaign.title}</CardTitle>
+    <Card className="flex flex-col h-full overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300">
+      <CardHeader className="p-6 flex flex-row items-start justify-between gap-4">
+        <div className="flex-1">
+            <CardTitle className="font-bold text-xl">{campaign.title}</CardTitle>
+            <CardDescription className="text-sm mt-1">{campaign.goal}</CardDescription>
+        </div>
+        <Badge variant={status === 'Ongoing' ? 'default' : status === 'Upcoming' ? 'secondary' : 'outline'}>
+            {status}
+        </Badge>
       </CardHeader>
       <CardContent className="p-6 pt-0 flex-grow space-y-4">
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <MapPin className="h-4 w-4" />
-          <span>{campaign.location}</span>
+        
+        <p className="text-muted-foreground text-sm line-clamp-3">{campaign.description}</p>
+        
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+            <div className="border rounded-lg p-3 flex items-start gap-3">
+                <MapPin className="h-5 w-5 text-primary mt-0.5 shrink-0" />
+                <div>
+                    <p className="text-xs text-muted-foreground">Location</p>
+                    <p className="font-medium">{campaign.location}</p>
+                </div>
+            </div>
+            <div className="border rounded-lg p-3 flex items-start gap-3">
+                <CalendarDays className="h-5 w-5 text-primary mt-0.5 shrink-0" />
+                <div>
+                    <p className="text-xs text-muted-foreground">Date & Time</p>
+                    <p className="font-medium">{dateString}</p>
+                    <p className="font-medium">{timeString}</p>
+                </div>
+            </div>
         </div>
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <CalendarDays className="h-4 w-4" />
-          <span>{dateString}</span>
-        </div>
-         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <Clock className="h-4 w-4" />
-          <span>{timeString}</span>
-        </div>
-        <p className="text-muted-foreground text-sm">{campaign.description}</p>
+
         <div>
           <div className="flex justify-between items-center mb-1 text-sm">
             <span className="font-medium">Progress</span>
-            <span className="text-muted-foreground">{campaign.progress}%</span>
+            <span className="text-muted-foreground">{campaign.progress || 0}%</span>
           </div>
-          <Progress value={campaign.progress} />
+          <Progress value={campaign.progress || 0} />
         </div>
       </CardContent>
-      <CardFooter className="p-6 pt-0 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <CardFooter className="p-6 pt-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mt-auto border-t bg-muted/50">
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <Users className="h-4 w-4" />
-          <span>{campaign.participants} participants</span>
+          <span>{campaign.participants} participant{campaign.participants === 1 ? '' : 's'}</span>
         </div>
         {isOwner
           ? renderOwnerActions()
@@ -375,15 +413,13 @@ export function CampaignCard({ campaign, userId, isJoined, allCampaigns }: { cam
           : renderVisitorActions()
         }
       </CardFooter>
-      <CardFooter className="p-6 pt-0 border-t">
-        <p className="text-xs text-muted-foreground">
-          Created by{" "}
-          <Link href={`/dashboard/profile/${campaign.organizerId}`} className="font-medium text-primary hover:underline">
+      <CardFooter className="p-4 bg-muted/20 text-xs text-muted-foreground">
+        Created by{" "}
+        <Link href={`/dashboard/profile/${campaign.organizerId}`} className="font-medium text-primary hover:underline px-1">
             {campaign.organizerName}
-          </Link>
-          {" "}•{" "}
-          {campaign.createdAt ? formatDistanceToNow(new Date(campaign.createdAt.seconds * 1000), { addSuffix: true }) : 'just now'}
-        </p>
+        </Link>
+        {" "}•{" "}
+        {campaign.createdAt ? formatDistanceToNow(safeToDate(campaign.createdAt)!, { addSuffix: true }) : 'just now'}
       </CardFooter>
     </Card>
   );
