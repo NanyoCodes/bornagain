@@ -47,9 +47,6 @@
       "description": "A user's testimony of what God has done.",
       "type": "object",
       "properties": {
-        "title": {
-          "type": "string"
-        },
         "content": {
           "type": "string"
         },
@@ -83,7 +80,6 @@
         }
       },
       "required": [
-        "title",
         "content",
         "category",
         "authorId",

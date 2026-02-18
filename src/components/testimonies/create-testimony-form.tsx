@@ -34,7 +34,6 @@ const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
 const testimonyCategories: TestimonyCategory[] = ['Healing', 'Financial Breakthrough', 'Salvation', 'Relationships', 'Deliverance', 'General'];
 
 const formSchema = z.object({
-  title: z.string().min(5, "Title must be at least 5 characters.").max(100, "Title is too long."),
   category: z.string({ required_error: "Please select a category." }),
   content: z.string().min(50, "Testimony must be at least 50 characters.").max(5000, "Testimony is too long."),
 });
@@ -55,7 +54,6 @@ export function CreateTestimonyForm({ onTestimonyCreated }: CreateTestimonyFormP
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      title: "",
       content: "",
     },
   });
@@ -109,7 +107,6 @@ export function CreateTestimonyForm({ onTestimonyCreated }: CreateTestimonyFormP
         authorId: user.uid,
         authorName: user.displayName || user.email || 'Anonymous',
         authorAvatarUrl: user.photoURL || null,
-        title: values.title,
         content: values.content,
         createdAt: serverTimestamp(),
         category: values.category as TestimonyCategory,
@@ -151,20 +148,6 @@ export function CreateTestimonyForm({ onTestimonyCreated }: CreateTestimonyFormP
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <FormField
-          control={form.control}
-          name="title"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Title</FormLabel>
-              <FormControl>
-                <Input placeholder="e.g., 'Healed from Sickness'" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
         <FormField
           control={form.control}
           name="category"

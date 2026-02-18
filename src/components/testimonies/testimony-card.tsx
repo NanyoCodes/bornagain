@@ -1,3 +1,4 @@
+
 "use client";
 
 import Image from "next/image";
@@ -42,7 +43,7 @@ function MediaPreview({ testimony }: { testimony: Testimony }) {
       <div className="relative aspect-video w-full mt-4 rounded-lg overflow-hidden">
         <Image
           src={testimony.mediaUrl}
-          alt={testimony.title}
+          alt="Testimony media"
           fill
           className="object-cover"
         />
@@ -205,7 +206,6 @@ export function TestimonyCard({ testimony }: { testimony: Testimony }) {
         </div>
       </CardHeader>
       <CardContent>
-        <h3 className="font-semibold text-lg mb-2">{testimony.title}</h3>
         <p className="text-muted-foreground whitespace-pre-wrap">
           {testimony.content}
         </p>
