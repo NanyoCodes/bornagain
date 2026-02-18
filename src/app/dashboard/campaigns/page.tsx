@@ -61,13 +61,13 @@ export default function CampaignsPage() {
     setMounted(true);
   }, []);
 
-  const userDocRef = !userLoading && user && firestore ? doc(firestore, 'users', user.uid) : null;
+  const userDocRef = !userLoading && user?.uid && firestore ? doc(firestore, 'users', user.uid) : null;
   const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userDocRef);
 
-  const campaignsQuery = !userLoading && user && firestore ? query(collection(firestore, 'campaigns'), orderBy('createdAt', 'desc')) : null;
+  const campaignsQuery = firestore ? query(collection(firestore, 'campaigns'), orderBy('createdAt', 'desc')) : null;
   const { data: campaigns, loading: campaignsLoading } = useCollection<Campaign>(campaignsQuery);
 
-  const joinedCampaignsQuery = !userLoading && user && firestore ? query(collection(firestore, `users/${user.uid}/joinedCampaigns`)) : null;
+  const joinedCampaignsQuery = !userLoading && user?.uid && firestore ? query(collection(firestore, `users/${user.uid}/joinedCampaigns`)) : null;
   const { data: joinedCampaigns, loading: joinedCampaignsLoading } = useCollection<JoinedCampaign>(joinedCampaignsQuery);
   
   const loading = userLoading || profileLoading || campaignsLoading || joinedCampaignsLoading;
