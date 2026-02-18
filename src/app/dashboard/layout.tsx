@@ -41,7 +41,6 @@ const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: Home },
   { href: "/dashboard/testimonies", label: "Testimonies", icon: Newspaper },
   { href: "/dashboard/campaigns", label: "Campaigns", icon: Target },
-  { href: "/dashboard/chats", label: "Chats", icon: MessageSquare },
   { href: "/dashboard/progress", label: "Progress", icon: TrendingUp },
   { href: "/dashboard/souls-won", label: "Souls Won", icon: UserPlus },
 ];
@@ -103,6 +102,12 @@ function AppHeader() {
           </div>
         </form>
         <ThemeToggle />
+        <Button variant="ghost" size="icon" className="relative h-8 w-8" asChild>
+            <Link href="/dashboard/chats">
+                <MessageSquare className="h-5 w-5" />
+                <span className="sr-only">Chats</span>
+            </Link>
+        </Button>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon" className="relative h-8 w-8">
@@ -166,7 +171,7 @@ function BottomNavBar() {
   
     return (
       <nav className="fixed bottom-0 left-0 right-0 z-40 border-t bg-background md:hidden">
-        <div className="grid h-16 grid-cols-6 items-center">
+        <div className="grid h-16 grid-cols-5 items-center">
           {navItems.map((item) => (
             <Link
               key={item.href}
@@ -200,17 +205,13 @@ export default function DashboardLayout({
     }
   }, [user, loading, router]);
 
-  if (loading) {
+  if (loading || !user) {
     return (
       <div className="flex min-h-screen w-full flex-col items-center justify-center bg-background">
         <Loader2 className="h-12 w-12 animate-spin text-primary" />
         <p className="mt-4 text-muted-foreground">Loading your dashboard...</p>
       </div>
     );
-  }
-
-  if (!user) {
-    return null; // Redirect is in progress
   }
 
   return (
