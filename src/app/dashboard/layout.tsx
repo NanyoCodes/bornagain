@@ -4,8 +4,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
+  ArrowLeft,
   Bell,
   Home,
   LogOut,
@@ -53,6 +54,7 @@ function AppHeader() {
   const router = useRouter();
   const logo = PlaceHolderImages.find((img) => img.id === "logo");
   const { searchTerm, setSearchTerm, searchPlaceholder, isSearchVisible } = useSearch();
+  const [showMobileSearch, setShowMobileSearch] = useState(false);
 
 
   const handleLogout = async () => {
@@ -65,8 +67,33 @@ function AppHeader() {
     return null;
   }
 
+  if (showMobileSearch) {
+    return (
+      <header className="sticky top-0 z-30 flex h-16 items-center border-b bg-background px-4 md:px-6">
+        <div className="flex w-full items-center gap-2">
+          <Button variant="ghost" size="icon" onClick={() => setShowMobileSearch(false)}>
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+          <form className="w-full" onSubmit={(e) => e.preventDefault()}>
+            <div className="relative">
+              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                type="search"
+                placeholder={searchPlaceholder}
+                className="w-full pl-8"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                autoFocus
+              />
+            </div>
+          </form>
+        </div>
+      </header>
+    );
+  }
+
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b bg-background px-4 md:px-6 lg:px-8">
+    <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b bg-background px-4 md:px-6">
       <div className="flex items-center gap-2 md:gap-6">
         <Link
           href="/dashboard"
@@ -92,23 +119,31 @@ function AppHeader() {
         </nav>
       </div>
         
-      <div className="flex items-center gap-2 md:gap-4">
+      <div className="flex items-center gap-2 md:gap-3">
         {isSearchVisible && (
-          <form className="hidden sm:block" onSubmit={(e) => e.preventDefault()}>
-            <div className="relative">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input
-                type="search"
-                placeholder={searchPlaceholder}
-                className="pl-8 sm:w-[200px] md:w-[250px] lg:w-[300px] text-base"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
-          </form>
+          <div className="hidden sm:block">
+            <form onSubmit={(e) => e.preventDefault()}>
+              <div className="relative">
+                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  type="search"
+                  placeholder={searchPlaceholder}
+                  className="pl-8 sm:w-auto md:w-[250px] lg:w-[300px]"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
+            </form>
+          </div>
+        )}
+        {isSearchVisible && (
+          <Button variant="ghost" size="icon" className="sm:hidden" onClick={() => setShowMobileSearch(true)}>
+            <Search className="h-5 w-5" />
+            <span className="sr-only">Search</span>
+          </Button>
         )}
         <ThemeToggle />
-        <Button variant="ghost" size="icon" className="relative h-8 w-8" asChild>
+        <Button variant="ghost" size="icon" asChild>
             <Link href="/dashboard/chats">
                 <MessageSquare className="h-5 w-5" />
                 <span className="sr-only">Chats</span>
@@ -116,7 +151,7 @@ function AppHeader() {
         </Button>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="relative h-8 w-8">
+            <Button variant="ghost" size="icon">
               <Bell className="h-5 w-5" />
               <span className="sr-only">Toggle notifications</span>
             </Button>
@@ -131,8 +166,8 @@ function AppHeader() {
         </DropdownMenu>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-              <Avatar className="h-9 w-9">
+            <Button variant="ghost" size="icon" className="rounded-full">
+              <Avatar className="h-8 w-8">
                 <AvatarImage src={user.photoURL ?? undefined} alt={user.displayName || "User avatar"} />
                 <AvatarFallback>{user.displayName?.charAt(0) || user.email?.charAt(0) || 'U'}</AvatarFallback>
               </Avatar>

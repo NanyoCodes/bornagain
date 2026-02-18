@@ -92,8 +92,8 @@ export function TestimonyCard({ testimony }: { testimony: Testimony }) {
 
   return (
     <Card className="flex flex-col h-full overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300">
-      <CardHeader>
-        <div className="flex items-start gap-4">
+      <CardHeader className="flex flex-row items-start justify-between gap-4">
+        <div className="flex items-center gap-3">
           <Link href={`/dashboard/profile/${testimony.authorId}`} passHref>
             <Avatar className="h-10 w-10 border">
               <AvatarImage
@@ -103,16 +103,16 @@ export function TestimonyCard({ testimony }: { testimony: Testimony }) {
               <AvatarFallback>{testimony.authorName?.charAt(0) ?? 'A'}</AvatarFallback>
             </Avatar>
           </Link>
-          <div className="flex-1">
+          <div>
             <Link href={`/dashboard/profile/${testimony.authorId}`} passHref>
               <CardTitle className="cursor-pointer hover:underline text-base font-semibold">{testimony.authorName}</CardTitle>
             </Link>
-            <CardDescription className="text-xs">
+            <CardDescription className="text-xs mt-1">
               {formatDistanceToNow(createdAtDate, { addSuffix: true })}
             </CardDescription>
           </div>
-          <Badge variant="outline" className="shrink-0">{testimony.category}</Badge>
         </div>
+        <Badge variant="secondary" className="shrink-0">{testimony.category}</Badge>
       </CardHeader>
       <CardContent className="flex-grow py-0">
         <p className="text-sm text-muted-foreground whitespace-pre-wrap line-clamp-6">
