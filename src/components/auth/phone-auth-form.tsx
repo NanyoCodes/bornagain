@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useRef } from "react";
@@ -50,16 +51,18 @@ export function PhoneAuthForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [isCodeSent, setIsCodeSent] = useState(false);
   const [confirmationResult, setConfirmationResult] = useState<ConfirmationResult | null>(null);
+  
   const verifierRef = useRef<RecaptchaVerifier | null>(null);
+  const recaptchaContainerRef = useRef<HTMLDivElement>(null);
 
+  // This useEffect correctly sets up and tears down the reCAPTCHA verifier,
+  // making it compatible with React's Strict Mode in development.
   useEffect(() => {
-    if (!auth) return;
-
-    const verifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+    if (!auth || !recaptchaContainerRef.current) return;
+    
+    // Create a new verifier instance and store it in the ref
+    const verifier = new RecaptchaVerifier(auth, recaptchaContainerRef.current, {
       'size': 'invisible',
-      'callback': () => {
-        // reCAPTCHA solved
-      },
       'expired-callback': () => {
         toast({ variant: 'destructive', title: 'reCAPTCHA expired.', description: 'Please try sending the code again.' });
       }
@@ -67,6 +70,8 @@ export function PhoneAuthForm() {
     
     verifierRef.current = verifier;
 
+    // The cleanup function will be called when the component unmounts.
+    // This is crucial for preventing errors in development with React Strict Mode.
     return () => {
       verifier.clear();
     };
@@ -197,7 +202,7 @@ export function PhoneAuthForm() {
 
   return (
     <>
-      <div id="recaptcha-container"></div>
+      <div ref={recaptchaContainerRef}></div>
       <Form {...phoneForm}>
         <form onSubmit={phoneForm.handleSubmit(onPhoneSubmit)} className="space-y-4">
           <FormField
