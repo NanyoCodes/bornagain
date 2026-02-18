@@ -84,13 +84,19 @@ export function CreateTestimonyForm({ onTestimonyCreated }: CreateTestimonyFormP
     }
 
     setIsSubmitting(true);
-    
+
     const testimonyCollectionRef = collection(firestore, "testimonies");
-    let testimonyData: { [key: string]: any } = {};
+    const baseData = {
+        authorId: user.uid,
+        authorName: user.displayName || user.email || 'Anonymous',
+        authorAvatarUrl: user.photoURL || null,
+        content: values.content,
+        createdAt: serverTimestamp(),
+        category: values.category as TestimonyCategory,
+    };
 
     try {
-      let mediaUrl: string | null = null;
-      let mediaType: 'image' | 'video' | 'audio' | null = null;
+      let testimonyData = { ...baseData, mediaUrl: null, mediaType: null };
 
       if (mediaFile) {
         const fileMediaType = mediaFile.type.startsWith('image') ? 'image' : mediaFile.type.startsWith('video') ? 'video' : mediaFile.type.startsWith('audio') ? 'audio' : undefined;
@@ -98,22 +104,21 @@ export function CreateTestimonyForm({ onTestimonyCreated }: CreateTestimonyFormP
         if (fileMediaType) {
           const fileRef = ref(storage, `testimonies/${user.uid}/${Date.now()}-${mediaFile.name}`);
           const snapshot = await uploadBytes(fileRef, mediaFile);
-          mediaUrl = await getDownloadURL(snapshot.ref);
-          mediaType = fileMediaType;
+          const mediaUrl = await getDownloadURL(snapshot.ref);
+          
+          testimonyData.mediaUrl = mediaUrl;
+          testimonyData.mediaType = fileMediaType;
+        } else {
+          toast({
+              variant: "destructive",
+              title: "Unsupported File Type",
+              description: "Please upload an image, video, or audio file.",
+          });
+          setIsSubmitting(false);
+          return;
         }
       }
       
-      testimonyData = {
-        authorId: user.uid,
-        authorName: user.displayName || user.email || 'Anonymous',
-        authorAvatarUrl: user.photoURL || null,
-        content: values.content,
-        createdAt: serverTimestamp(),
-        category: values.category as TestimonyCategory,
-        mediaUrl: mediaUrl,
-        mediaType: mediaType,
-      };
-
       await addDoc(testimonyCollectionRef, testimonyData);
 
       toast({
@@ -125,12 +130,11 @@ export function CreateTestimonyForm({ onTestimonyCreated }: CreateTestimonyFormP
 
     } catch (error: any) {
         console.error("Submission error:", error);
-        // Check if it's a Firestore permission error and emit a rich error
         if (error.code && error.code.includes('permission-denied')) {
             const permissionError = new FirestorePermissionError({
                 path: testimonyCollectionRef.path,
                 operation: 'create',
-                requestResourceData: testimonyData,
+                requestResourceData: baseData,
             });
             errorEmitter.emit('permission-error', permissionError);
         } else {

@@ -109,6 +109,18 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
 
       // Handle media file update
       if (mediaFile) { // New file selected
+        const fileMediaType = mediaFile.type.startsWith('image') ? 'image' : mediaFile.type.startsWith('video') ? 'video' : mediaFile.type.startsWith('audio') ? 'audio' : undefined;
+
+        if (!fileMediaType) {
+            toast({
+              variant: "destructive",
+              title: "Unsupported File Type",
+              description: "Please upload an image, video, or audio file.",
+            });
+            setIsSubmitting(false);
+            return;
+        }
+
         // Delete old file if it exists
         if (testimony.mediaUrl) {
           try {
@@ -126,7 +138,8 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
         const newFileRef = ref(storage, `testimonies/${user.uid}/${Date.now()}-${mediaFile.name}`);
         const snapshot = await uploadBytes(newFileRef, mediaFile);
         testimonyUpdate.mediaUrl = await getDownloadURL(snapshot.ref);
-        testimonyUpdate.mediaType = mediaFile.type.startsWith('image') ? 'image' : mediaFile.type.startsWith('video') ? 'video' : 'audio';
+        testimonyUpdate.mediaType = fileMediaType;
+
       } else if (!mediaPreview && testimony.mediaUrl) { // Media was removed
         // Delete old file
         try {
