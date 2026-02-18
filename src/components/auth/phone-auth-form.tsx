@@ -54,6 +54,7 @@ export function PhoneAuthForm() {
 
   const [isLoading, setIsLoading] = useState(false);
   const [isCodeSent, setIsCodeSent] = useState(false);
+  const [recaptchaWidgetId, setRecaptchaWidgetId] = useState<number | null>(null);
 
   const phoneForm = useForm<z.infer<typeof phoneSchema>>({
     resolver: zodResolver(phoneSchema),
@@ -68,18 +69,22 @@ export function PhoneAuthForm() {
   useEffect(() => {
     if (!auth) return;
 
-    // Set up reCAPTCHA verifier when component mounts
     const verifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
       'size': 'invisible',
       'callback': (response: any) => {
         // reCAPTCHA solved, allow signInWithPhoneNumber.
       }
     });
+    
     window.recaptchaVerifier = verifier;
+    
+    verifier.render().then((widgetId) => {
+        setRecaptchaWidgetId(widgetId);
+    });
 
     return () => {
-      // Cleanup verifier on unmount
-      window.recaptchaVerifier?.clear();
+      verifier.clear();
+      window.recaptchaVerifier = undefined;
     };
   }, [auth]);
 
@@ -93,7 +98,6 @@ export function PhoneAuthForm() {
     }
     
     const appVerifier = window.recaptchaVerifier;
-    // Sanitize the phone number to E.164 format by removing non-digits and adding '+'
     const phoneNumber = `+${values.phone.replace(/\D/g, '')}`;
 
     try {
@@ -110,11 +114,9 @@ export function PhoneAuthForm() {
         description: authError.message || "Please check the phone number and try again.",
       });
       // Reset reCAPTCHA on error to allow retries
-      window.recaptchaVerifier?.render().then((widgetId) => {
-        if(window.grecaptcha) {
-            window.grecaptcha.reset(widgetId);
-        }
-      });
+      if (window.grecaptcha && recaptchaWidgetId !== null) {
+        window.grecaptcha.reset(recaptchaWidgetId);
+      }
     } finally {
       setIsLoading(false);
     }
