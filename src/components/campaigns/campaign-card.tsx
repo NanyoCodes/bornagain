@@ -3,8 +3,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { formatDistanceToNow } from "date-fns";
-import { MapPin, Users, Share2 } from "lucide-react";
+import { format, formatDistanceToNow } from "date-fns";
+import { CalendarDays, MapPin, Users, Share2 } from "lucide-react";
 import type { Campaign } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -76,22 +76,21 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
 
   return (
     <Card className="flex flex-col">
-      <CardHeader className="p-0">
-        <Image
-          src={campaign.imageUrl}
-          alt={campaign.title}
-          width={600}
-          height={400}
-          className="rounded-t-lg object-cover aspect-[3/2]"
-        />
+      <CardHeader className="p-6">
+        <CardTitle>{campaign.title}</CardTitle>
       </CardHeader>
-      <CardContent className="p-6 flex-grow">
-        <CardTitle className="mb-2">{campaign.title}</CardTitle>
-        <div className="flex items-center gap-2 text-sm text-muted-foreground mb-4">
+      <CardContent className="p-6 pt-0 flex-grow space-y-4">
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <MapPin className="h-4 w-4" />
           <span>{campaign.location}</span>
         </div>
-        <p className="text-muted-foreground text-sm mb-4">{campaign.description}</p>
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <CalendarDays className="h-4 w-4" />
+          <span>
+            {campaign.date ? format(campaign.date.toDate(), "PPP") : "Date not set"} at {campaign.time}
+          </span>
+        </div>
+        <p className="text-muted-foreground text-sm">{campaign.description}</p>
         <div>
           <div className="flex justify-between items-center mb-1 text-sm">
             <span className="font-medium">Progress</span>

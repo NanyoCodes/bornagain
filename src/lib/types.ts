@@ -6,7 +6,6 @@ export type UserProfile = {
   displayName: string;
   email: string;
   photoURL?: string;
-  coverBannerUrl?: string;
   bio?: string;
   location?: string;
   phone?: string;
@@ -30,8 +29,6 @@ export type Testimony = {
   createdAt: Timestamp;
   updatedAt?: Timestamp;
   category: TestimonyCategory;
-  mediaUrl?: string;
-  mediaType?: 'image' | 'video' | 'audio';
 };
 
 export type Campaign = {
@@ -40,9 +37,10 @@ export type Campaign = {
   description: string;
   goal: string;
   location: string;
+  date: Timestamp;
+  time: string;
   participants: number;
   progress: number;
-  imageUrl: string;
   createdAt: Timestamp;
   organizerId: string;
   organizerName: string;

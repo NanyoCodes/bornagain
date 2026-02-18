@@ -60,18 +60,6 @@
         },
         "createdAt": {
           "type": "object"
-        },
-        "mediaUrl": {
-          "type": "string",
-          "format": "uri"
-        },
-        "mediaType": {
-          "type": "string",
-          "enum": [
-            "image",
-            "video",
-            "audio"
-          ]
         }
       },
       "required": [
@@ -99,15 +87,17 @@
         "location": {
           "type": "string"
         },
+        "date": {
+          "type": "object"
+        },
+        "time": {
+          "type": "string"
+        },
         "participants": {
           "type": "number"
         },
         "progress": {
           "type": "number"
-        },
-        "imageUrl": {
-          "type": "string",
-          "format": "uri"
         },
         "createdAt": {
           "type": "object"
@@ -123,6 +113,8 @@
         "title",
         "description",
         "location",
+        "date",
+        "time",
         "createdAt",
         "organizerId",
         "organizerName"

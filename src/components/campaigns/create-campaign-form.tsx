@@ -17,7 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
-import { Loader2, Sparkles } from "lucide-react";
+import { CalendarIcon, Loader2, Sparkles } from "lucide-react";
 import { generateCampaignIdeas } from "@/ai/flows/generate-campaign-ideas";
 import { Card, CardContent } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -27,6 +27,10 @@ import { useUser, useFirestore } from "@/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
+import { Calendar } from "../ui/calendar";
 
 const formSchema = z.object({
   goal: z.string({
@@ -34,6 +38,10 @@ const formSchema = z.object({
   }),
   city: z.string().min(2, "City is too short.").max(50, "City is too long."),
   country: z.string().min(2, "Country is too short.").max(50, "Country is too long."),
+  date: z.date({
+    required_error: "A date is required for the campaign.",
+  }),
+  time: z.string().min(1, "A time is required for the campaign."),
   targetAudience: z.string().min(3, "Target audience is too short.").max(100, "Target audience is too long."),
 });
 
@@ -63,6 +71,7 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
       city: "",
       country: "",
       targetAudience: "",
+      time: "10:00 AM",
     },
   });
 
@@ -110,9 +119,10 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
       description: finalDescription,
       goal: form.getValues('goal'),
       location: `${form.getValues('city')}, ${form.getValues('country')}`,
+      date: form.getValues('date'),
+      time: form.getValues('time'),
       participants: 1,
       progress: 0,
-      imageUrl: 'https://images.unsplash.com/photo-1740065592719-052d3e5ec6fb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxjb21tdW5pdHklMjBoYW5kc3xlbnwwfHx8fDE3NzEzNDE1NDJ8MA&ixlib=rb-4.1.0&q=80&w=1080', // Placeholder
       createdAt: serverTimestamp(),
       organizerId: user.uid,
       organizerName: user.displayName || 'Anonymous',
@@ -212,6 +222,59 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
               )}
             />
           </div>
+           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="date"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col">
+                    <FormLabel>Date</FormLabel>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant={"outline"}
+                            className={cn(
+                              "w-full pl-3 text-left font-normal",
+                              !field.value && "text-muted-foreground"
+                            )}
+                          >
+                            {field.value ? (
+                              format(field.value, "PPP")
+                            ) : (
+                              <span>Pick a date</span>
+                            )}
+                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={field.value}
+                          onSelect={field.onChange}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+               <FormField
+                control={form.control}
+                name="time"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Time</FormLabel>
+                    <FormControl>
+                      <Input type="time" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+           </div>
           <p className="text-sm text-muted-foreground">
             Provide some keywords and let our AI assistant brainstorm for you.
           </p>
