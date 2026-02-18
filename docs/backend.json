@@ -30,6 +30,14 @@
         "phone": {
           "type": "string",
           "description": "The user's phone number."
+        },
+        "currentStreak": {
+          "type": "number",
+          "description": "The user's current daily app usage streak."
+        },
+        "lastLogin": {
+          "type": "object",
+          "description": "Timestamp of the user's last daily app usage."
         }
       },
       "required": [

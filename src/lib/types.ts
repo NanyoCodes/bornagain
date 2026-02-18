@@ -9,6 +9,8 @@ export type UserProfile = {
   bio?: string;
   location?: string;
   phone?: string;
+  currentStreak?: number;
+  lastLogin?: Timestamp;
 };
 
 export type Achievement = {

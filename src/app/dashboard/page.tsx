@@ -4,14 +4,14 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { formatDistanceToNow, isSameMonth } from "date-fns";
+import { formatDistanceToNow, isSameMonth, startOfDay, differenceInCalendarDays } from "date-fns";
 import Link from "next/link";
 import { ArrowUpRight, Newspaper, Target, TrendingUp, UserCheck2 } from "lucide-react";
-import { useCollection, useFirestore, useUser } from "@/firebase";
-import { collection, query, orderBy, limit, where } from "firebase/firestore";
-import type { Testimony, Campaign, Soul, JoinedCampaign } from "@/lib/types";
+import { useCollection, useFirestore, useUser, useDoc } from "@/firebase";
+import { collection, query, orderBy, limit, where, doc, updateDoc, serverTimestamp } from "firebase/firestore";
+import type { Testimony, Campaign, Soul, JoinedCampaign, UserProfile } from "@/lib/types";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useMemo } from "react";
+import { useMemo, useEffect } from "react";
 
 function RecentTestimonies() {
   const firestore = useFirestore();
@@ -118,6 +118,36 @@ export default function DashboardPage() {
   const { user, loading: userLoading } = useUser();
   const firestore = useFirestore();
   const now = useMemo(() => new Date(), []);
+  
+  const userDocRef = !userLoading && user?.uid && firestore ? doc(firestore, 'users', user.uid) : null;
+  const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userDocRef);
+
+  useEffect(() => {
+    if (profileLoading || !user || !userProfile || !firestore) {
+      return;
+    }
+
+    const today = startOfDay(new Date());
+    const lastLogin = userProfile.lastLogin?.toDate ? startOfDay(userProfile.lastLogin.toDate()) : null;
+
+    if (lastLogin && differenceInCalendarDays(today, lastLogin) === 0) {
+        return;
+    }
+
+    let newStreak = 1;
+    if (lastLogin && differenceInCalendarDays(today, lastLogin) === 1) {
+        newStreak = (userProfile.currentStreak || 0) + 1;
+    }
+    
+    const userRef = doc(firestore, 'users', user.uid);
+    updateDoc(userRef, {
+        currentStreak: newStreak,
+        lastLogin: serverTimestamp(),
+    }).catch(error => {
+        console.error("Failed to update streak:", error);
+    });
+
+  }, [profileLoading, user, userProfile, firestore]);
 
   const testimoniesQuery = !userLoading && user?.uid && firestore ? query(collection(firestore, 'testimonies'), where('authorId', '==', user.uid)) : null;
   const { data: myTestimonies } = useCollection<Testimony>(testimoniesQuery);
@@ -155,13 +185,13 @@ export default function DashboardPage() {
     }).length;
   }, [joinedCampaigns, now]);
 
-  // TODO: Streak needs to be implemented
+  const currentStreak = userProfile?.currentStreak || 0;
 
   const stats = [
     { title: "Testimonies Shared", value: myTestimonies?.length ?? 0, icon: Newspaper, change: `${testimoniesThisMonth} this month` },
     { title: "Campaigns Joined", value: joinedCampaigns?.length ?? 0, icon: Target, change: `${campaignsJoinedThisMonth} this month` },
     { title: "Souls Won", value: soulsWon?.length ?? 0, icon: UserCheck2, change: `${soulsWonThisMonth} this month` },
-    { title: "Current Streak", value: "0 days", icon: TrendingUp, change: "Keep going!" },
+    { title: "Current Streak", value: `${currentStreak} day${currentStreak === 1 ? '' : 's'}`, icon: TrendingUp, change: "Keep going!" },
   ];
 
   return (
