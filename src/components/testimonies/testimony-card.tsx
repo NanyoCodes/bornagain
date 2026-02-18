@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Testimony } from "@/lib/types";
 import { formatDistanceToNow } from "date-fns";
-import { MessageCircle, Share2, MoreVertical, Edit, Trash2, Loader2 } from "lucide-react";
+import { Share2, MoreVertical, Edit, Trash2, Loader2 } from "lucide-react";
 import { useUser, useFirestore } from "@/firebase";
 import { useState } from "react";
 import {
@@ -154,13 +154,7 @@ export function TestimonyCard({ testimony }: { testimony: Testimony }) {
           {testimony.content}
         </p>
       </CardContent>
-      <CardFooter className="flex justify-between">
-        <div className="flex gap-4">
-          <Button variant="ghost" size="sm" className="flex items-center gap-2">
-            <MessageCircle className="h-4 w-4" />
-            <span className="text-muted-foreground">Comment</span>
-          </Button>
-        </div>
+      <CardFooter className="flex justify-end">
         <Button variant="ghost" size="sm" className="flex items-center gap-2">
           <Share2 className="h-4 w-4" />
           <span>Share</span>

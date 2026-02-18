@@ -51,13 +51,6 @@ export default function SettingsPage() {
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="flex items-center justify-between">
-                <Label htmlFor="likes" className="flex flex-col space-y-1">
-                  <span>Likes</span>
-                  <span className="font-normal leading-snug text-muted-foreground">When someone likes your testimony.</span>
-                </Label>
-                <Switch id="likes" defaultChecked />
-              </div>
-              <div className="flex items-center justify-between">
                 <Label htmlFor="campaigns" className="flex flex-col space-y-1">
                   <span>New Campaigns</span>
                   <span className="font-normal leading-snug text-muted-foreground">When a new campaign starts in your area.</span>
@@ -132,14 +125,21 @@ export default function SettingsPage() {
               </div>
                <div className="space-y-2">
                 <Label>Timezone</Label>
-                <Select defaultValue="nairobi">
+                <Select defaultValue="est">
                   <SelectTrigger>
                     <SelectValue placeholder="Select timezone" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="nairobi">Africa/Nairobi (GMT+3)</SelectItem>
-                    <SelectItem value="new-york">America/New_York (EST)</SelectItem>
-                    <SelectItem value="london">Europe/London (GMT)</SelectItem>
+                    <SelectItem value="pst">Pacific Standard Time (PST)</SelectItem>
+                    <SelectItem value="mst">Mountain Standard Time (MST)</SelectItem>
+                    <SelectItem value="cst">Central Standard Time (CST)</SelectItem>
+                    <SelectItem value="est">Eastern Standard Time (EST)</SelectItem>
+                    <SelectItem value="gmt">Greenwich Mean Time (GMT)</SelectItem>
+                    <SelectItem value="cet">Central European Time (CET)</SelectItem>
+                    <SelectItem value="eet">Eastern European Time (EET)</SelectItem>
+                    <SelectItem value="ist">India Standard Time (IST)</SelectItem>
+                    <SelectItem value="jst">Japan Standard Time (JST)</SelectItem>
+                    <SelectItem value="aest">Australian Eastern Standard Time (AEST)</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

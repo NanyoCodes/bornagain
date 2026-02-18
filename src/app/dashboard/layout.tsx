@@ -69,7 +69,7 @@ function AppHeader() {
           href="/dashboard"
           className="flex items-center gap-2 text-lg font-semibold"
         >
-          {logo && <Image src={logo.imageUrl} alt={logo.description} width={40} height={12} data-ai-hint={logo.imageHint} />}
+          {logo && <Image src={logo.imageUrl} alt={logo.description} width={32} height={10} data-ai-hint={logo.imageHint} />}
           <span className="sr-only">Testify</span>
         </Link>
         {/* Desktop Navigation */}
@@ -170,12 +170,12 @@ function BottomNavBar() {
               key={item.href}
               href={item.href}
               className={cn(
-                "flex flex-col items-center justify-center gap-1 p-2 text-xs transition-colors hover:text-primary",
+                "flex flex-col items-center justify-center gap-0.5 p-1 text-[11px] transition-colors hover:text-primary",
                 (pathname.startsWith(item.href) && item.href !== '/dashboard') || pathname === item.href ? "text-primary" : "text-muted-foreground"
               )}
             >
               <item.icon className="h-5 w-5" />
-              <span>{item.label}</span>
+              <span className="whitespace-nowrap">{item.label}</span>
             </Link>
           ))}
         </div>
