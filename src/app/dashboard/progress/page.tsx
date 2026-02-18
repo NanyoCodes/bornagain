@@ -1,3 +1,4 @@
+
 "use client"
 
 import Link from "next/link";
@@ -109,7 +110,7 @@ export default function ProgressPage() {
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div className="space-y-2">
-          <h1 className="text-3xl font-bold tracking-tight font-headline">Progress</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight font-headline">Progress</h1>
           <p className="text-muted-foreground">Track your personal evangelism efforts.</p>
         </div>
         <Button asChild>

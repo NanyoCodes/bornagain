@@ -94,7 +94,7 @@ export default function CampaignsPage() {
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div className="space-y-2">
-          <h1 className="text-3xl font-bold tracking-tight font-headline">Campaigns</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight font-headline">Campaigns</h1>
           <p className="text-muted-foreground">Join or create soul-winning campaigns.</p>
         </div>
         {mounted && isMobile ? (

@@ -89,61 +89,66 @@ export default function UserProfilePage() {
             alt="Cover Banner"
             width={1200}
             height={300}
-            className="w-full h-48 object-cover"
+            className="w-full h-36 sm:h-48 object-cover"
             data-ai-hint="abstract gradient"
           />
-          <div className="absolute top-24 left-8">
-             <Avatar className="h-32 w-32 border-4 border-background">
+           <div className="absolute -bottom-12 left-4 sm:left-8">
+             <Avatar className="h-24 w-24 sm:h-32 sm:w-32 border-4 border-background">
                 <AvatarImage src={photoURL ?? undefined} alt={displayName || 'user'} />
-                <AvatarFallback className="text-5xl">
+                <AvatarFallback className="text-4xl sm:text-5xl">
                     {displayName?.charAt(0) || email?.charAt(0) || 'U'}
                 </AvatarFallback>
             </Avatar>
           </div>
-          {isOwnProfile && (
-            <div className="absolute top-4 right-4">
-              {mounted && isMobile ? (
-                <Sheet open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
-                  <SheetTrigger asChild>{triggerButton}</SheetTrigger>
-                  <SheetContent side="bottom">
-                    <SheetHeader>
-                      <SheetTitle>Edit Profile</SheetTitle>
-                      <SheetDescription>
-                        Make changes to your public profile.
-                      </SheetDescription>
-                    </SheetHeader>
-                    <div className="max-h-[80vh] overflow-y-auto p-1 mt-4">
-                      {formContent}
-                    </div>
-                  </SheetContent>
-                </Sheet>
-              ) : (
-                <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
-                  <DialogTrigger asChild>{triggerButton}</DialogTrigger>
-                  <DialogContent className="sm:max-w-lg">
-                    <DialogHeader>
-                      <DialogTitle>Edit Profile</DialogTitle>
-                      <DialogDescription>
-                        Make changes to your public profile.
-                      </DialogDescription>
-                    </DialogHeader>
-                    <div className="max-h-[70vh] overflow-y-auto pr-2">
-                      {formContent}
-                    </div>
-                  </DialogContent>
-                </Dialog>
-              )}
-            </div>
-          )}
         </div>
-        <div className="pt-20 px-8 pb-8">
-          <h1 className="text-3xl font-bold font-headline">{displayName}</h1>
-          <p className="text-muted-foreground">{bio}</p>
-          <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground">
-            {location && <div className="flex items-center gap-2"><MapPin className="h-4 w-4" /> {location}</div>}
-            {email && <div className="flex items-center gap-2"><Mail className="h-4 w-4" /> {email}</div>}
-            {phone && <div className="flex items-center gap-2"><Phone className="h-4 w-4" /> {phone}</div>}
-          </div>
+
+        <div className="px-4 sm:px-8 pt-16 pb-8">
+            <div className="flex flex-col sm:flex-row justify-between items-start">
+                <div className="flex-grow">
+                    <h1 className="text-2xl sm:text-3xl font-bold font-headline">{displayName}</h1>
+                    <p className="text-muted-foreground mt-1">{bio}</p>
+                </div>
+                {isOwnProfile && (
+                    <div className="mt-4 sm:mt-0 sm:ml-4 shrink-0">
+                        {mounted && isMobile ? (
+                            <Sheet open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
+                            <SheetTrigger asChild>{triggerButton}</SheetTrigger>
+                            <SheetContent side="bottom">
+                                <SheetHeader>
+                                <SheetTitle>Edit Profile</SheetTitle>
+                                <SheetDescription>
+                                    Make changes to your public profile.
+                                </SheetDescription>
+                                </SheetHeader>
+                                <div className="max-h-[80vh] overflow-y-auto p-1 mt-4">
+                                {formContent}
+                                </div>
+                            </SheetContent>
+                            </Sheet>
+                        ) : (
+                            <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
+                            <DialogTrigger asChild>{triggerButton}</DialogTrigger>
+                            <DialogContent className="sm:max-w-lg">
+                                <DialogHeader>
+                                <DialogTitle>Edit Profile</DialogTitle>
+                                <DialogDescription>
+                                    Make changes to your public profile.
+                                </DialogDescription>
+                                </DialogHeader>
+                                <div className="max-h-[70vh] overflow-y-auto pr-2">
+                                {formContent}
+                                </div>
+                            </DialogContent>
+                            </Dialog>
+                        )}
+                    </div>
+                )}
+            </div>
+            <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground">
+                {location && <div className="flex items-center gap-2"><MapPin className="h-4 w-4" /> {location}</div>}
+                {email && <div className="flex items-center gap-2"><Mail className="h-4 w-4" /> {email}</div>}
+                {phone && <div className="flex items-center gap-2"><Phone className="h-4 w-4" /> {phone}</div>}
+            </div>
         </div>
       </Card>
       

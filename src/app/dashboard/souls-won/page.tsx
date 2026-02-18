@@ -70,7 +70,7 @@ export default function SoulsWonPage() {
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div className="space-y-2">
-          <h1 className="text-3xl font-bold tracking-tight font-headline">Souls Won</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight font-headline">Souls Won</h1>
           <p className="text-muted-foreground">
             Track and nurture individuals you've led to Christ.
           </p>

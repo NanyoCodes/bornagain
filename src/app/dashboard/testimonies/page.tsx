@@ -97,7 +97,7 @@ export default function TestimoniesPage() {
       onValueChange={(value) => setFilter(value as TestimonyCategory | "All")}
       className="w-full"
     >
-      <TabsList className="grid w-full grid-cols-3 md:grid-cols-4 lg:grid-cols-7">
+      <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7">
         {categories.map((category) => (
           <TabsTrigger key={category} value={category}>
             {category}
@@ -120,7 +120,7 @@ export default function TestimoniesPage() {
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div className="space-y-2">
-          <h1 className="text-3xl font-bold tracking-tight font-headline">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight font-headline">
             Testimonies
           </h1>
           <p className="text-muted-foreground">
@@ -148,7 +148,7 @@ export default function TestimoniesPage() {
               <DialogTrigger asChild>{triggerButton}</DialogTrigger>
               <DialogContent className="sm:max-w-lg">
                 <DialogHeader>
-                  <DialogTitle>Share Your Testimony</DialogTitle>
+                  <SheetTitle>Share Your Testimony</SheetTitle>
                   <DialogDescription>
                     Encourage others by sharing what God has done in your life. Your
                     story matters.
