@@ -1,30 +1,27 @@
 "use client";
 
 import Image from "next/image";
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Edit, Globe, Mail, MapPin, Newspaper, Phone, Target, UserCheck2 } from "lucide-react";
+import { Edit, Globe, Loader2, Mail, MapPin, Newspaper, Phone, Target, UserCheck2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useCollection, useFirestore, useUser } from "@/firebase";
-import { Loader2 } from "lucide-react";
-import { collection, query, where } from "firebase/firestore";
-import type { Soul, Testimony } from "@/lib/types";
+import { useDoc } from "@/firebase/firestore/use-doc";
+import { collection, query, where, doc } from "firebase/firestore";
+import type { Soul, Testimony, UserProfile } from "@/lib/types";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { EditProfileModal } from "@/components/profile/edit-profile-modal";
 
-// This is a placeholder since we don't have a way to edit profiles yet
-const mockContactInfo = {
-  location: 'Nairobi, Kenya',
-  phone: '+254 712 345678',
-  website: 'https://testify.com',
-  bio: "Spreading the good news, one testimony at a time. Follower of Christ. Passionate about evangelism and community outreach. Let's connect and glorify Him together!",
-  achievements: [
+
+const mockAchievements = [
     { id: 'ach-1', level: 3, name: 'Faithful Witness', description: 'Shared over 10 testimonies.' },
     { id: 'ach-2', level: 2, name: 'Campaign Enthusiast', description: 'Joined 5 campaigns.' },
     { id: 'ach-3', level: 4, name: 'Soul Winner', description: 'Led over 30 people to Christ.' },
-  ],
-  coverBannerUrl: "https://images.unsplash.com/photo-1707130869369-c00812966290?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8YWJzdHJhY3QlMjBncmFkaWVudHxlbnwwfHx8fDE3NzEzMzcxOTJ8MA&ixlib=rb-4.1.0&q=80&w=1080",
-}
+];
 
-function AchievementBadge({ achievement }: { achievement: (typeof mockContactInfo.achievements)[0] }) {
+function AchievementBadge({ achievement }: { achievement: (typeof mockAchievements)[0] }) {
   return (
     <div className="flex flex-col items-center text-center gap-2">
       <div className="relative">
@@ -50,8 +47,12 @@ function AchievementBadge({ achievement }: { achievement: (typeof mockContactInf
 }
 
 export default function ProfilePage() {
-  const { user, loading } = useUser();
+  const { user, loading: loadingUser } = useUser();
   const firestore = useFirestore();
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
+  const userDocRef = user ? doc(firestore, 'users', user.uid) : null;
+  const { data: userProfile, loading: loadingProfile } = useDoc<UserProfile>(userDocRef);
 
   const testimoniesQuery = user ? query(collection(firestore, 'testimonies'), where('authorId', '==', user.uid)) : null;
   const { data: testimonies } = useCollection<Testimony>(testimoniesQuery);
@@ -59,16 +60,18 @@ export default function ProfilePage() {
   const soulsQuery = user ? query(collection(firestore, `users/${user.uid}/souls`)) : null;
   const { data: soulsWon } = useCollection<Soul>(soulsQuery);
 
+  const loading = loadingUser || loadingProfile;
+
   if (loading) {
     return <div className="flex items-center justify-center h-full"><Loader2 className="h-8 w-8 animate-spin" /></div>;
   }
   
-  if (!user) {
+  if (!user || !userProfile) {
     return <p>Please log in to see your profile.</p>
   }
   
   const { displayName, email, photoURL } = user;
-  const { bio, coverBannerUrl, location, phone, website, achievements } = mockContactInfo;
+  const { bio, coverBannerUrl, location, phone, website } = userProfile;
 
   const stats = {
     testimonies: testimonies?.length ?? 0,
@@ -81,7 +84,7 @@ export default function ProfilePage() {
       <Card className="overflow-hidden">
         <div className="relative">
           <Image
-            src={coverBannerUrl}
+            src={coverBannerUrl || "https://images.unsplash.com/photo-1707130869369-c00812966290?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8YWJzdHJhY3QlMjBncmFkaWVudHxlbnwwfHx8fDE3NzEzMzcxOTJ8MA&ixlib=rb-4.1.0&q=80&w=1080"}
             alt="Cover Banner"
             width={1200}
             height={300}
@@ -89,30 +92,41 @@ export default function ProfilePage() {
             data-ai-hint="abstract gradient"
           />
           <div className="absolute top-24 left-8">
-            <Image
-              src={photoURL || 'https://images.unsplash.com/photo-1610655507808-a59293f4e332?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHx3b21hbiUyMHBvcnRyYWl0fGVufDB8fHx8MTc3MTM0MTI2N3ww&ixlib=rb-4.1.0&q=80&w=1080'}
-              alt={displayName || 'user'}
-              width={128}
-              height={128}
-              className="rounded-full border-4 border-background"
-              data-ai-hint="woman portrait"
-            />
+             <Avatar className="h-32 w-32 border-4 border-background">
+                <AvatarImage src={photoURL ?? undefined} alt={displayName || 'user'} />
+                <AvatarFallback className="text-5xl">
+                    {displayName?.charAt(0) || email?.charAt(0) || 'U'}
+                </AvatarFallback>
+            </Avatar>
           </div>
           <div className="absolute top-4 right-4">
-            <Button>
-              <Edit className="mr-2 h-4 w-4" />
-              Edit Profile
-            </Button>
+             <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
+              <DialogTrigger asChild>
+                <Button>
+                  <Edit className="mr-2 h-4 w-4" />
+                  Edit Profile
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Edit Profile</DialogTitle>
+                  <DialogDescription>
+                    Make changes to your public profile.
+                  </DialogDescription>
+                </DialogHeader>
+                <EditProfileModal userProfile={userProfile} onClose={() => setIsEditModalOpen(false)} />
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
         <div className="pt-20 px-8 pb-8">
           <h1 className="text-3xl font-bold font-headline">{displayName}</h1>
           <p className="text-muted-foreground">{bio}</p>
           <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground">
-            <div className="flex items-center gap-2"><MapPin className="h-4 w-4" /> {location}</div>
-            <div className="flex items-center gap-2"><Mail className="h-4 w-4" /> {email}</div>
-            <div className="flex items-center gap-2"><Phone className="h-4 w-4" /> {phone}</div>
-            <div className="flex items-center gap-2"><Globe className="h-4 w-4" /> <a href={website} className="text-primary hover:underline">{website}</a></div>
+            {location && <div className="flex items-center gap-2"><MapPin className="h-4 w-4" /> {location}</div>}
+            {email && <div className="flex items-center gap-2"><Mail className="h-4 w-4" /> {email}</div>}
+            {phone && <div className="flex items-center gap-2"><Phone className="h-4 w-4" /> {phone}</div>}
+            {website && <div className="flex items-center gap-2"><Globe className="h-4 w-4" /> <a href={website} className="text-primary hover:underline">{website}</a></div>}
           </div>
         </div>
       </Card>
@@ -133,7 +147,7 @@ export default function ProfilePage() {
             <CardTitle>Achievements</CardTitle>
           </CardHeader>
           <CardContent className="grid grid-cols-2 sm:grid-cols-3 gap-6">
-            {achievements.map(ach => <AchievementBadge key={ach.id} achievement={ach} />)}
+            {mockAchievements.map(ach => <AchievementBadge key={ach.id} achievement={ach} />)}
           </CardContent>
         </Card>
       </div>

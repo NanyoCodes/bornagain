@@ -18,68 +18,192 @@
           "type": "string",
           "format": "uri",
           "description": "URL of the user's profile picture."
+        },
+        "bio": {
+          "type": "string",
+          "description": "A short user biography."
+        },
+        "location": {
+          "type": "string",
+          "description": "The user's general location."
+        },
+        "phone": {
+          "type": "string",
+          "description": "The user's phone number."
+        },
+        "website": {
+          "type": "string",
+          "format": "uri",
+          "description": "A URL to the user's personal website."
+        },
+        "coverBannerUrl": {
+          "type": "string",
+          "format": "uri",
+          "description": "A URL for the user's profile cover image."
         }
       },
-      "required": ["displayName", "email"]
+      "required": [
+        "displayName",
+        "email"
+      ]
     },
     "Testimony": {
       "title": "Testimony",
       "description": "A user's testimony of what God has done.",
       "type": "object",
       "properties": {
-        "title": { "type": "string" },
-        "content": { "type": "string" },
-        "category": { "type": "string" },
-        "authorId": { "type": "string" },
-        "authorName": { "type": "string" },
-        "authorAvatarUrl": { "type": "string", "format": "uri" },
-        "likes": { "type": "number" },
-        "createdAt": { "type": "object" },
-        "mediaUrl": { "type": "string", "format": "uri" },
-        "mediaType": { "type": "string", "enum": ["image", "video", "audio"] }
+        "title": {
+          "type": "string"
+        },
+        "content": {
+          "type": "string"
+        },
+        "category": {
+          "type": "string"
+        },
+        "authorId": {
+          "type": "string"
+        },
+        "authorName": {
+          "type": "string"
+        },
+        "authorAvatarUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "likes": {
+          "type": "number"
+        },
+        "createdAt": {
+          "type": "object"
+        },
+        "mediaUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "mediaType": {
+          "type": "string",
+          "enum": [
+            "image",
+            "video",
+            "audio"
+          ]
+        }
       },
-      "required": ["title", "content", "category", "authorId", "authorName", "createdAt"]
+      "required": [
+        "title",
+        "content",
+        "category",
+        "authorId",
+        "authorName",
+        "createdAt"
+      ]
     },
     "Campaign": {
       "title": "Campaign",
       "description": "A user-created evangelism campaign.",
       "type": "object",
       "properties": {
-        "title": { "type": "string" },
-        "description": { "type": "string" },
-        "goal": { "type": "string" },
-        "location": { "type": "string" },
-        "participants": { "type": "number" },
-        "progress": { "type": "number" },
-        "imageUrl": { "type": "string", "format": "uri" },
-        "createdAt": { "type": "object" },
-        "organizerId": { "type": "string" },
-        "organizerName": { "type": "string" }
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "goal": {
+          "type": "string"
+        },
+        "location": {
+          "type": "string"
+        },
+        "participants": {
+          "type": "number"
+        },
+        "progress": {
+          "type": "number"
+        },
+        "imageUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "createdAt": {
+          "type": "object"
+        },
+        "organizerId": {
+          "type": "string"
+        },
+        "organizerName": {
+          "type": "string"
+        }
       },
-      "required": ["title", "description", "location", "createdAt", "organizerId", "organizerName"]
+      "required": [
+        "title",
+        "description",
+        "location",
+        "createdAt",
+        "organizerId",
+        "organizerName"
+      ]
     },
     "Soul": {
       "title": "Soul",
       "description": "Represents a person led to Christ, tracked by a user.",
       "type": "object",
       "properties": {
-        "userId": { "type": "string" },
-        "name": { "type": "string" },
-        "contact": { "type": "string" },
-        "source": { "type": "string", "enum": ["Personal", "Campaign", "Referral"] },
-        "sourceDetails": { "type": "string" },
-        "wonAt": { "type": "object" },
-        "status": { "type": "string" },
-        "followUpLog": { "type": "array" },
-        "attendingChurch": { "type": "boolean" },
-        "inBibleStudy": { "type": "boolean" },
-        "attendingPrayer": { "type": "boolean" }
+        "userId": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "contact": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string",
+          "enum": [
+            "Personal",
+            "Campaign",
+            "Referral"
+          ]
+        },
+        "sourceDetails": {
+          "type": "string"
+        },
+        "wonAt": {
+          "type": "object"
+        },
+        "status": {
+          "type": "string"
+        },
+        "followUpLog": {
+          "type": "array"
+        },
+        "attendingChurch": {
+          "type": "boolean"
+        },
+        "inBibleStudy": {
+          "type": "boolean"
+        },
+        "attendingPrayer": {
+          "type": "boolean"
+        }
       },
-      "required": ["userId", "name", "source", "wonAt", "status"]
+      "required": [
+        "userId",
+        "name",
+        "source",
+        "wonAt",
+        "status"
+      ]
     }
   },
   "auth": {
-    "providers": ["email", "google.com", "facebook.com"]
+    "providers": [
+      "email",
+      "google.com",
+      "facebook.com"
+    ]
   },
   "firestore": {
     "/users/{userId}": {

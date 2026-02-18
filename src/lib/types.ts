@@ -1,22 +1,15 @@
 import type { Timestamp } from "firebase/firestore";
 
-export type User = {
+export type UserProfile = {
   id: string;
-  name: string;
+  displayName: string;
   email: string;
-  avatarUrl: string;
-  coverBannerUrl: string;
-  bio: string;
-  location: string;
-  phone: string;
-  website: string;
-  stats: {
-    testimonies: number;
-    campaignsJoined: number;
-    soulsWon: number;
-    currentStreak: number;
-  };
-  achievements: Achievement[];
+  photoURL?: string;
+  coverBannerUrl?: string;
+  bio?: string;
+  location?: string;
+  phone?: string;
+  website?: string;
 };
 
 export type Achievement = {

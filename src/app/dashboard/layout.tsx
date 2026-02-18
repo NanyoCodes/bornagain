@@ -47,15 +47,28 @@ const navItems = [
   { href: "/dashboard/souls-won", label: "Souls Won", icon: UserPlus },
 ];
 
-function AppHeader({ user }: { user: FirebaseUser }) {
+function AppHeader() {
+  const { user } = useUser();
   const pathname = usePathname();
   const auth = useAuth();
   const router = useRouter();
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleLogout = async () => {
+    if (!auth) return;
     await signOut(auth);
     router.push("/login");
   };
+  
+  if (!user || !mounted) {
+    return (
+      <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6 lg:px-8" />
+    );
+  }
 
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b bg-background px-4 md:px-6 lg:px-8">
@@ -104,18 +117,7 @@ function AppHeader({ user }: { user: FirebaseUser }) {
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="relative h-8 w-8 rounded-full">
               <Avatar className="h-9 w-9">
-                {user.photoURL ? (
-                  <AvatarImage
-                    src={user.photoURL}
-                    alt={user.displayName || "User avatar"}
-                  />
-                ) : (
-                  <AvatarImage
-                    src="https://images.unsplash.com/photo-1610655507808-a59293f4e332?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHx3b21hbiUyMHBvcnRyYWl0fGVufDB8fHx8MTc3MTM0MTI2N3ww&ixlib=rb-4.1.0&q=80&w=1080"
-                    alt="User avatar"
-                    data-ai-hint="woman portrait"
-                  />
-                )}
+                <AvatarImage src={user.photoURL ?? undefined} alt={user.displayName || "User avatar"} />
                 <AvatarFallback>{user.displayName?.charAt(0) || user.email?.charAt(0) || 'U'}</AvatarFallback>
               </Avatar>
             </Button>
@@ -208,7 +210,7 @@ export default function DashboardLayout({
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
-      <AppHeader user={user} />
+      <AppHeader />
       <main className="flex flex-1 flex-col p-4 pb-24 md:p-6 md:pb-8 lg:p-8">{children}</main>
       <BottomNavBar />
     </div>
