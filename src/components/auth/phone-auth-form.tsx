@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -29,23 +29,18 @@ import { doc, setDoc } from "firebase/firestore";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 
-// Need to declare this on the window object for recaptcha
 declare global {
     interface Window {
         recaptchaVerifier?: RecaptchaVerifier;
         confirmationResult?: ConfirmationResult;
-        grecaptcha?: any;
     }
 }
 
 const phoneSchema = z.object({
-  phone: z.string().min(10, "Please enter a valid phone number including the country code.").refine(
-    (value) => {
-      const digitsOnly = value.replace(/\D/g, '');
-      return digitsOnly.length >= 10;
-    },
+  phone: z.string().refine(
+    (value) => /^\+[1-9]\d{9,14}$/.test(value),
     {
-      message: "Please include your country code and make sure the number has at least 10 digits.",
+      message: "Please enter a valid number in E.164 format (e.g. +11234567890).",
     }
   ),
 });
@@ -62,7 +57,24 @@ export function PhoneAuthForm() {
 
   const [isLoading, setIsLoading] = useState(false);
   const [isCodeSent, setIsCodeSent] = useState(false);
-  const [recaptchaWidgetId, setRecaptchaWidgetId] = useState<number | null>(null);
+  const recaptchaContainerRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!auth || !recaptchaContainerRef.current) {
+        return;
+    }
+    // Only initialize if it hasn't been initialized yet
+    if (!window.recaptchaVerifier) {
+      const verifier = new RecaptchaVerifier(auth, recaptchaContainerRef.current, {
+        size: 'invisible',
+        callback: () => {
+          // reCAPTCHA solved, allow signInWithPhoneNumber.
+        },
+      });
+      window.recaptchaVerifier = verifier;
+    }
+    // No cleanup function to avoid issues with React Strict Mode
+  }, [auth]);
 
   const phoneForm = useForm<z.infer<typeof phoneSchema>>({
     resolver: zodResolver(phoneSchema),
@@ -74,30 +86,6 @@ export function PhoneAuthForm() {
     defaultValues: { code: "" },
   });
 
-  useEffect(() => {
-    if (!auth) return;
-
-    const verifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-      'size': 'invisible',
-      'callback': (response: any) => {
-        // reCAPTCHA solved, allow signInWithPhoneNumber.
-      }
-    });
-    
-    window.recaptchaVerifier = verifier;
-    
-    verifier.render().then((widgetId) => {
-        setRecaptchaWidgetId(widgetId);
-    });
-
-    return () => {
-      if (window.recaptchaVerifier) {
-        window.recaptchaVerifier.clear();
-      }
-    };
-  }, [auth]);
-
-
   async function onPhoneSubmit(values: z.infer<typeof phoneSchema>) {
     setIsLoading(true);
     if (!auth || !firestore || !window.recaptchaVerifier) {
@@ -107,9 +95,10 @@ export function PhoneAuthForm() {
     }
     
     const appVerifier = window.recaptchaVerifier;
-    const phoneNumber = values.phone.startsWith('+') ? values.phone : `+${values.phone.replace(/\D/g, '')}`;
+    const phoneNumber = values.phone;
 
     try {
+      await appVerifier.render(); // Ensure reCAPTCHA is rendered before signing in
       const confirmationResult = await signInWithPhoneNumber(auth, phoneNumber, appVerifier);
       window.confirmationResult = confirmationResult;
       setIsCodeSent(true);
@@ -117,15 +106,12 @@ export function PhoneAuthForm() {
     } catch (error) {
       const authError = error as AuthError;
       console.error("Phone Auth Error:", authError);
+      
       toast({
         variant: "destructive",
         title: "Could not send code",
         description: authError.message || "Please check the phone number and try again.",
       });
-      // Reset reCAPTCHA on error to allow retries
-      if (window.grecaptcha && recaptchaWidgetId !== null && typeof window.grecaptcha.reset === 'function') {
-        window.grecaptcha.reset(recaptchaWidgetId);
-      }
     } finally {
       setIsLoading(false);
     }
@@ -209,7 +195,7 @@ export function PhoneAuthForm() {
 
   return (
     <>
-      <div id="recaptcha-container"></div>
+      <div id="recaptcha-container" ref={recaptchaContainerRef}></div>
       <Form {...phoneForm}>
         <form onSubmit={phoneForm.handleSubmit(onPhoneSubmit)} className="space-y-4">
           <FormField
