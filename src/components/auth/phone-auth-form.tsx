@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -30,6 +30,13 @@ import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 
 
+// Add a global declaration for the verifier to avoid issues with React's fast refresh/strict mode
+declare global {
+    interface Window {
+      recaptchaVerifier?: RecaptchaVerifier;
+    }
+}
+
 const phoneSchema = z.object({
   phone: z.string().refine(
     (value) => /^\+[1-9]\d{9,14}$/.test(value),
@@ -53,24 +60,6 @@ export function PhoneAuthForm() {
   const [isCodeSent, setIsCodeSent] = useState(false);
   const [confirmationResult, setConfirmationResult] = useState<ConfirmationResult | null>(null);
 
-  const recaptchaVerifierRef = useRef<RecaptchaVerifier | null>(null);
-  const recaptchaContainerRef = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    if (!auth) return;
-
-    const verifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-      'size': 'invisible',
-      'callback': (response: any) => {
-        // reCAPTCHA solved, allow signInWithPhoneNumber.
-      },
-    });
-    recaptchaVerifierRef.current = verifier;
-    
-    return () => {
-        verifier.clear();
-    };
-  }, [auth]);
 
   const phoneForm = useForm<z.infer<typeof phoneSchema>>({
     resolver: zodResolver(phoneSchema),
@@ -84,16 +73,29 @@ export function PhoneAuthForm() {
 
   async function onPhoneSubmit(values: z.infer<typeof phoneSchema>) {
     setIsLoading(true);
-    if (!auth || !firestore || !recaptchaVerifierRef.current) {
+    if (!auth || !firestore) {
         toast({ variant: "destructive", title: "Firebase not initialized." });
         setIsLoading(false);
         return;
     }
     
-    const appVerifier = recaptchaVerifierRef.current;
+    // Clear any previous verifier
+    if (window.recaptchaVerifier) {
+        window.recaptchaVerifier.clear();
+    }
+
     const phoneNumber = values.phone;
 
     try {
+      // Create a new verifier on each submit attempt to avoid lifecycle issues.
+      const appVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+        'size': 'invisible',
+        'callback': (response: any) => {
+          // reCAPTCHA solved.
+        },
+      });
+      window.recaptchaVerifier = appVerifier; // Store it on window for potential callbacks
+
       const result = await signInWithPhoneNumber(auth, phoneNumber, appVerifier);
       setConfirmationResult(result);
       setIsCodeSent(true);
@@ -190,7 +192,7 @@ export function PhoneAuthForm() {
 
   return (
     <>
-      <div id="recaptcha-container" ref={recaptchaContainerRef}></div>
+      <div id="recaptcha-container"></div>
       <Form {...phoneForm}>
         <form onSubmit={phoneForm.handleSubmit(onPhoneSubmit)} className="space-y-4">
           <FormField
