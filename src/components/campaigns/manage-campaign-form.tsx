@@ -17,11 +17,26 @@ import { FirestorePermissionError } from '@/firebase/errors';
 import { Textarea } from '../ui/textarea';
 import { Separator } from '../ui/separator';
 import { Skeleton } from '../ui/skeleton';
+import { Input } from '../ui/input';
+import { format } from 'date-fns';
 
 const formSchema = z.object({
+  title: z.string().min(3, "Title is too short.").max(100, "Title is too long."),
   description: z.string().min(3, "Description is too short.").max(5000, "Description is too long."),
+  goal: z.string().min(3, "Goal is too short.").max(100, "Goal is too long."),
+  city: z.string().min(2, "City is too short.").max(50, "City is too long."),
+  country: z.string().min(2, "Country is too short.").max(50, "Country is too long."),
+  startDate: z.coerce.date(),
+  endDate: z.coerce.date(),
+  startTime: z.string().min(1, "A start time is required."),
+  endTime: z.string().min(1, "An end time is required."),
+  scripture: z.string().max(100, "Scripture is too long.").optional(),
   lastUpdateReason: z.string().min(10, { message: "Please provide a reason of at least 10 characters." }),
+}).refine((data) => data.endDate >= data.startDate, {
+    message: "End date cannot be before start date.",
+    path: ["endDate"],
 });
+
 
 type ManageCampaignFormProps = {
   campaign: Campaign;
@@ -71,10 +86,23 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
   const { user } = useUser();
   const firestore = useFirestore();
 
+  const locationParts = campaign.location.split(',');
+  const city = locationParts[0]?.trim() || '';
+  const country = locationParts[1]?.trim() || '';
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      title: campaign.title || "",
       description: campaign.description || "",
+      goal: campaign.goal || "",
+      city: city,
+      country: country,
+      startDate: campaign.startDate?.toDate ? campaign.startDate.toDate() : new Date(),
+      endDate: campaign.endDate?.toDate ? campaign.endDate.toDate() : new Date(),
+      startTime: campaign.startTime || "10:00",
+      endTime: campaign.endTime || "12:00",
+      scripture: campaign.scripture || "",
       lastUpdateReason: "",
     },
   });
@@ -94,7 +122,15 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
     try {
       const campaignRef = doc(firestore, 'campaigns', campaign.id);
       const updateData = {
+        title: values.title,
         description: values.description,
+        goal: values.goal,
+        location: `${values.city}, ${values.country}`,
+        startDate: values.startDate,
+        endDate: values.endDate,
+        startTime: values.startTime,
+        endTime: values.endTime,
+        scripture: values.scripture,
         lastUpdateReason: values.lastUpdateReason,
       };
 
@@ -132,30 +168,164 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                 <FormField
-                control={form.control}
-                name="description"
-                render={({ field }) => (
+                  control={form.control}
+                  name="title"
+                  render={({ field }) => (
                     <FormItem>
-                    <FormLabel>Description</FormLabel>
-                    <FormControl>
-                        <Textarea placeholder="Campaign description" {...field} className="text-base min-h-[120px]" />
-                    </FormControl>
-                    <FormMessage />
+                      <FormLabel>Title</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Campaign Title" {...field} className="text-base" />
+                      </FormControl>
+                      <FormMessage />
                     </FormItem>
-                )}
+                  )}
                 />
                 <FormField
-                control={form.control}
-                name="lastUpdateReason"
-                render={({ field }) => (
+                  control={form.control}
+                  name="goal"
+                  render={({ field }) => (
                     <FormItem>
-                    <FormLabel>Reason for Update</FormLabel>
-                    <FormControl>
-                        <Textarea placeholder="e.g., Updated progress after event" {...field} className="text-base" />
-                    </FormControl>
-                    <FormMessage />
+                      <FormLabel>Goal</FormLabel>
+                      <FormControl>
+                        <Input placeholder="e.g. Evangelism" {...field} className="text-base" />
+                      </FormControl>
+                      <FormMessage />
                     </FormItem>
-                )}
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="description"
+                  render={({ field }) => (
+                      <FormItem>
+                      <FormLabel>Description</FormLabel>
+                      <FormControl>
+                          <Textarea placeholder="Campaign description" {...field} className="text-base min-h-[120px]" />
+                      </FormControl>
+                      <FormMessage />
+                      </FormItem>
+                  )}
+                />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="city"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>City</FormLabel>
+                        <FormControl>
+                          <Input placeholder="e.g., Nairobi" {...field} className="text-base" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="country"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Country</FormLabel>
+                        <FormControl>
+                          <Input placeholder="e.g., Kenya" {...field} className="text-base" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <FormField
+                    control={form.control}
+                    name="scripture"
+                    render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Inspirational Scripture</FormLabel>
+                        <FormControl>
+                        <Input placeholder="e.g., John 3:16" {...field} className="text-base" />
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                    )}
+                />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="startDate"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Start Date</FormLabel>
+                        <FormControl>
+                            <Input 
+                            type="date"
+                            className="text-base"
+                            value={field.value ? format(new Date(field.value), 'yyyy-MM-dd') : ''}
+                            onChange={field.onChange}
+                            />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="endDate"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>End Date</FormLabel>
+                        <FormControl>
+                            <Input 
+                            type="date"
+                            className="text-base"
+                            value={field.value ? format(new Date(field.value), 'yyyy-MM-dd') : ''}
+                            onChange={field.onChange}
+                            min={form.watch('startDate') ? format(new Date(form.watch('startDate')), 'yyyy-MM-dd') : ''}
+                            />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="startTime"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Start Time</FormLabel>
+                        <FormControl>
+                          <Input type="time" {...field} className="text-base" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="endTime"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>End Time</FormLabel>
+                        <FormControl>
+                          <Input type="time" {...field} className="text-base" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <FormField
+                  control={form.control}
+                  name="lastUpdateReason"
+                  render={({ field }) => (
+                      <FormItem>
+                      <FormLabel>Reason for Update</FormLabel>
+                      <FormControl>
+                          <Textarea placeholder="e.g., Updated progress after event" {...field} className="text-base" />
+                      </FormControl>
+                      <FormMessage />
+                      </FormItem>
+                  )}
                 />
 
                 <Button type="submit" className="w-full" disabled={isSubmitting}>

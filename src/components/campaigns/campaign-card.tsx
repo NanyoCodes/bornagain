@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -193,17 +194,28 @@ export function CampaignCard({ campaign, userId, isJoined, allCampaigns }: { cam
     setIsDeleting(true);
     try {
         const campaignRef = doc(firestore, 'campaigns', campaign.id);
-        const deleteData = {
+        const deleteData: { [key: string]: any } = {
             status: 'deleted',
             deletionReason: deleteReason,
             deletedAt: serverTimestamp(),
         };
-        await updateDoc(campaignRef, deleteData);
+        
+        await updateDoc(campaignRef, deleteData).catch((serverError) => {
+            const permissionError = new FirestorePermissionError({
+                path: campaignRef.path,
+                operation: 'update',
+                requestResourceData: deleteData,
+            });
+            errorEmitter.emit('permission-error', permissionError);
+            throw permissionError;
+        });
 
         toast({ title: 'Campaign Deleted', description: 'The campaign has been successfully deleted.' });
-    } catch (error) {
+    } catch (error: any) {
         console.error('Delete error:', error);
-        toast({ variant: 'destructive', title: 'Delete Error', description: 'Could not delete the campaign.' });
+        if (error.name !== 'FirestorePermissionError') {
+             toast({ variant: 'destructive', title: 'Delete Error', description: 'Could not delete the campaign.' });
+        }
     } finally {
         setIsDeleting(false);
     }
