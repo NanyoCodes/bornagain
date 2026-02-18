@@ -133,6 +133,7 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
       createdAt: serverTimestamp(),
       organizerId: user.uid,
       organizerName: user.displayName || 'Anonymous',
+      status: 'active',
     };
     
     try {
