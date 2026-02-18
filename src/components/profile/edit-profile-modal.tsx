@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -24,11 +25,15 @@ import { updateProfile } from "firebase/auth";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import type { UserProfile } from "@/lib/types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import Image from "next/image";
+import { errorEmitter } from "@/firebase/error-emitter";
+import { FirestorePermissionError } from "@/firebase/errors";
 
 const formSchema = z.object({
   displayName: z.string().min(2, "Name must be at least 2 characters.").max(50, "Name is too long."),
   bio: z.string().max(280, "Bio is too long.").optional(),
+  location: z.string().max(100, "Location is too long.").optional(),
+  phone: z.string().max(50, "Phone number is too long.").optional(),
+  website: z.string().url({ message: "Please enter a valid URL." }).or(z.literal('')).optional(),
 });
 
 type EditProfileModalProps = {
@@ -52,6 +57,9 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
     defaultValues: {
       displayName: userProfile.displayName || "",
       bio: userProfile.bio || "",
+      location: userProfile.location || "",
+      phone: userProfile.phone || "",
+      website: userProfile.website || "",
     },
   });
 
@@ -72,43 +80,52 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
   };
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    if (!user) {
-      toast({ variant: 'destructive', title: 'Not authenticated' });
+    if (!user || !auth || !firestore || !storage) {
+      toast({ variant: 'destructive', title: 'Not authenticated or Firebase not ready' });
       return;
     }
     setIsSubmitting(true);
 
     try {
-      let newPhotoURL = userProfile.photoURL;
+      let photoURL = userProfile.photoURL;
 
       if (photoFile) {
         const storageRef = ref(storage, `profile-pictures/${user.uid}`);
         const uploadTask = uploadBytesResumable(storageRef, photoFile);
-        
         await uploadTask;
-        newPhotoURL = await getDownloadURL(uploadTask.snapshot.ref);
+        photoURL = await getDownloadURL(uploadTask.snapshot.ref);
+      }
+
+      const updates: Partial<Pick<UserProfile, 'displayName' | 'bio' | 'location' | 'phone' | 'website' | 'photoURL'>> = {};
+
+      if (values.displayName !== userProfile.displayName) updates.displayName = values.displayName;
+      if (values.bio !== userProfile.bio) updates.bio = values.bio;
+      if (values.location !== userProfile.location) updates.location = values.location;
+      if (values.phone !== userProfile.phone) updates.phone = values.phone;
+      if (values.website !== userProfile.website) updates.website = values.website;
+      if (photoURL !== userProfile.photoURL) updates.photoURL = photoURL;
+      
+      const authUpdates: { displayName?: string, photoURL?: string } = {};
+      if (updates.displayName) authUpdates.displayName = updates.displayName;
+      if (updates.photoURL) authUpdates.photoURL = updates.photoURL;
+      
+      if (Object.keys(authUpdates).length > 0) {
+        await updateProfile(user, authUpdates);
       }
       
-      const updates: { displayName?: string, photoURL?: string, bio?: string } = {};
-      if (values.displayName !== userProfile.displayName) {
-        updates.displayName = values.displayName;
+      if (Object.keys(updates).length > 0) {
+        const userDocRef = doc(firestore, 'users', user.uid);
+        updateDoc(userDocRef, updates)
+            .catch((serverError) => {
+                const permissionError = new FirestorePermissionError({
+                    path: userDocRef.path,
+                    operation: 'update',
+                    requestResourceData: updates,
+                });
+                errorEmitter.emit('permission-error', permissionError);
+            });
       }
-      if (values.bio !== userProfile.bio) {
-        updates.bio = values.bio;
-      }
-      if (newPhotoURL !== userProfile.photoURL) {
-        updates.photoURL = newPhotoURL;
-      }
-
-      const authUpdates: { displayName?: string, photoURL?: string } = {};
-      if(updates.displayName) authUpdates.displayName = updates.displayName;
-      if(updates.photoURL) authUpdates.photoURL = updates.photoURL;
-
-      const authUpdatePromise = Object.keys(authUpdates).length > 0 ? updateProfile(user, authUpdates) : Promise.resolve();
-      const firestoreUpdatePromise = Object.keys(updates).length > 0 ? updateDoc(doc(firestore, 'users', user.uid), updates) : Promise.resolve();
-
-      await Promise.all([authUpdatePromise, firestoreUpdatePromise]);
-
+      
       toast({ title: "Profile Updated", description: "Your changes have been saved." });
       onClose();
 
@@ -156,6 +173,45 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
               <FormLabel>Bio</FormLabel>
               <FormControl>
                 <Textarea placeholder="Tell us a little about yourself" className="resize-none" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+         <FormField
+          control={form.control}
+          name="location"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Location</FormLabel>
+              <FormControl>
+                <Input placeholder="City, Country" {...field} value={field.value ?? ""} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+         <FormField
+          control={form.control}
+          name="phone"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Phone</FormLabel>
+              <FormControl>
+                <Input placeholder="+1 234 567 890" {...field} value={field.value ?? ""} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+         <FormField
+          control={form.control}
+          name="website"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Website</FormLabel>
+              <FormControl>
+                <Input placeholder="https://example.com" {...field} value={field.value ?? ""} />
               </FormControl>
               <FormMessage />
             </FormItem>
