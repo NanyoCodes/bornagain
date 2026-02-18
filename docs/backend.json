@@ -271,9 +271,6 @@
         "campaignTitle": {
           "type": "string"
         },
-        "lastMessageText": {
-          "type": "string"
-        },
         "lastUpdatedAt": {
           "type": "object"
         }

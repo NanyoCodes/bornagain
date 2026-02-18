@@ -34,7 +34,9 @@ function ChatListItem({ chat, currentUserId }: { chat: Chat, currentUserId: stri
                         </div>
                     </div>
                     <p className="text-sm text-muted-foreground truncate">{chat.campaignTitle}</p>
-                    <p className="text-sm text-muted-foreground truncate mt-1">{chat.lastMessageText || "No messages yet."}</p>
+                    <p className="text-sm text-muted-foreground truncate mt-1">
+                        {chat.hasMessages ? 'Click to view messages' : 'No messages yet.'}
+                    </p>
                 </div>
             </div>
         </Link>

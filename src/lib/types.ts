@@ -106,7 +106,6 @@ export type Chat = {
   participantInfo: ChatParticipantInfo;
   campaignId: string;
   campaignTitle: string;
-  lastMessageText?: string;
   lastUpdatedAt: Timestamp;
   hasMessages?: boolean;
 };

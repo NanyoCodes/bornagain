@@ -24,7 +24,7 @@ import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import Link from 'next/link';
 
 export default function ChatPage() {
-    const { user } = useUser();
+    const { user, loading: userLoading } = useUser();
     const firestore = useFirestore();
     const params = useParams();
     const router = useRouter();
@@ -34,11 +34,13 @@ export default function ChatPage() {
     const [isSending, setIsSending] = useState(false);
     const scrollAreaRef = useRef<HTMLDivElement>(null);
 
-    const chatDocRef = firestore && chatId ? doc(firestore, 'chats', chatId) : null;
+    const chatDocRef = !userLoading && user && firestore && chatId ? doc(firestore, 'chats', chatId) : null;
     const { data: chat, loading: loadingChat } = useDoc<Chat>(chatDocRef);
     
-    const messagesQuery = firestore && chatId ? query(collection(firestore, 'chats', chatId, 'messages'), orderBy('createdAt', 'asc')) : null;
+    const messagesQuery = !userLoading && user && firestore && chatId ? query(collection(firestore, 'chats', chatId, 'messages'), orderBy('createdAt', 'asc')) : null;
     const { data: messages, loading: loadingMessages } = useCollection<ChatMessage>(messagesQuery);
+    
+    const loading = userLoading || loadingChat || loadingMessages;
     
     // Auto-scroll to bottom
     useEffect(() => {
@@ -64,7 +66,6 @@ export default function ChatPage() {
 
             const chatRef = doc(firestore, 'chats', chatId);
             await updateDoc(chatRef, {
-                lastMessageText: newMessage,
                 lastUpdatedAt: serverTimestamp(),
                 hasMessages: true,
             });
@@ -77,7 +78,7 @@ export default function ChatPage() {
         }
     };
 
-    if (loadingChat || loadingMessages) {
+    if (loading) {
         return (
             <div className="flex h-full w-full flex-col items-center justify-center bg-background">
                 <Loader2 className="h-12 w-12 animate-spin text-primary" />
