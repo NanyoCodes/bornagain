@@ -1,3 +1,4 @@
+
 import type { Timestamp } from "firebase/firestore";
 
 export type UserProfile = {
@@ -29,6 +30,7 @@ export type Testimony = {
   title: string;
   content: string;
   createdAt: Timestamp;
+  updatedAt?: Timestamp;
   category: TestimonyCategory;
   mediaUrl?: string;
   mediaType?: 'image' | 'video' | 'audio';
