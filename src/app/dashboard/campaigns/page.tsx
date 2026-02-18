@@ -22,10 +22,11 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { CampaignCard } from "@/components/campaigns/campaign-card";
-import type { Campaign, JoinedCampaign } from "@/lib/types";
+import type { Campaign, JoinedCampaign, UserProfile } from "@/lib/types";
 import { Input } from "@/components/ui/input";
 import { useCollection, useFirestore, useUser } from "@/firebase";
-import { collection, query, orderBy } from "firebase/firestore";
+import { useDoc } from "@/firebase/firestore/use-doc";
+import { collection, query, orderBy, doc } from "firebase/firestore";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { format } from "date-fns";
@@ -60,6 +61,9 @@ export default function CampaignsPage() {
     setMounted(true);
   }, []);
 
+  const userDocRef = user ? doc(firestore, 'users', user.uid) : null;
+  const { data: userProfile } = useDoc<UserProfile>(userDocRef);
+
   const campaignsQuery = query(collection(firestore, 'campaigns'), orderBy('createdAt', 'desc'));
   const { data: campaigns, loading } = useCollection<Campaign>(campaignsQuery);
 
@@ -75,8 +79,8 @@ export default function CampaignsPage() {
     setIsDialogOpen(false);
   };
 
-  const filteredCampaigns = useMemo(() => {
-    return campaigns?.filter((campaign) => {
+  const sortedAndFilteredCampaigns = useMemo(() => {
+    const filtered = campaigns?.filter((campaign) => {
       const locationLower = campaign.location.toLowerCase();
       if (!campaign.startDate || !campaign.endDate) return false;
 
@@ -97,7 +101,51 @@ export default function CampaignsPage() {
         dateMatch
       );
     });
-  }, [campaigns, cityFilter, countryFilter, dateFilter]);
+
+    if (!filtered) return [];
+
+    const now = new Date();
+    const userLocation = userProfile?.location?.toLowerCase().trim();
+
+    const getStatus = (campaign: Campaign): number => {
+      if (!campaign.startDate || !campaign.endDate) return 3; // Past
+      const startDate = campaign.startDate.toDate ? campaign.startDate.toDate() : new Date(campaign.startDate as any);
+      const endDate = campaign.endDate.toDate ? campaign.endDate.toDate() : new Date(campaign.endDate as any);
+      
+      // Set time to end of day for end date to include the whole day
+      endDate.setHours(23, 59, 59, 999);
+
+      if (endDate < now) return 3; // Past
+      if (startDate > now) return 2; // Upcoming
+      return 1; // Ongoing
+    };
+
+    return filtered.sort((a, b) => {
+      // 1. Sort by status (Ongoing > Upcoming > Past)
+      const statusA = getStatus(a);
+      const statusB = getStatus(b);
+      if (statusA !== statusB) {
+        return statusA - statusB;
+      }
+
+      // 2. Within each status, sort by location proximity
+      if (userLocation) {
+        const aLocation = a.location.toLowerCase();
+        const bLocation = b.location.toLowerCase();
+        const isLocalA = aLocation.includes(userLocation);
+        const isLocalB = bLocation.includes(userLocation);
+
+        if (isLocalA && !isLocalB) return -1;
+        if (!isLocalA && isLocalB) return 1;
+      }
+
+      // 3. Finally, sort by start date (ascending, sooner campaigns first)
+      const startDateA = a.startDate?.toDate ? a.startDate.toDate() : new Date(a.startDate as any);
+      const startDateB = b.startDate?.toDate ? b.startDate.toDate() : new Date(b.startDate as any);
+      return startDateA.getTime() - startDateB.getTime();
+    });
+
+  }, [campaigns, cityFilter, countryFilter, dateFilter, userProfile]);
 
   const triggerButton = (
     <Button disabled={!user}>
@@ -185,7 +233,7 @@ export default function CampaignsPage() {
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {loading && <CampaignSkeletons />}
-        {filteredCampaigns?.map((campaign) => (
+        {sortedAndFilteredCampaigns?.map((campaign) => (
           <CampaignCard 
             key={campaign.id} 
             campaign={campaign} 
