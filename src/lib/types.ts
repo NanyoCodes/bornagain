@@ -108,6 +108,7 @@ export type Chat = {
   campaignTitle: string;
   lastMessageText?: string;
   lastUpdatedAt: Timestamp;
+  hasMessages?: boolean;
 };
 
 export type ChatMessage = {

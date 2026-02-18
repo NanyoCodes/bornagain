@@ -46,9 +46,10 @@ export default function ChatsPage() {
     const { user } = useUser();
     const firestore = useFirestore();
 
-    const chatsQuery = user ? query(
+    const chatsQuery = user && firestore ? query(
         collection(firestore, 'chats'),
         where('participantIds', 'array-contains', user.uid),
+        where('hasMessages', '==', true),
         orderBy('lastUpdatedAt', 'desc')
     ) : null;
 

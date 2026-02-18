@@ -151,6 +151,7 @@ export function CampaignCard({ campaign, userId, isJoined, allCampaigns }: { cam
               campaignTitle: campaign.title,
               lastMessageText: '',
               lastUpdatedAt: serverTimestamp(),
+              hasMessages: false,
           };
           const chatDocRef = await addDoc(chatsRef, newChatData);
           chatId = chatDocRef.id;
@@ -465,7 +466,7 @@ export function CampaignCard({ campaign, userId, isJoined, allCampaigns }: { cam
                     <MapPin className="h-5 w-5 text-primary shrink-0 mt-1" />
                     <div>
                         <p className="font-medium">Location</p>
-                        <p className="text-muted-foreground truncate">{campaign.location}</p>
+                        <p className="text-muted-foreground">{campaign.location}</p>
                     </div>
                 </div>
                 <div className="rounded-lg border p-3 flex items-start gap-3">
@@ -511,5 +512,3 @@ export function CampaignCard({ campaign, userId, isJoined, allCampaigns }: { cam
     </>
   );
 }
-
-    
