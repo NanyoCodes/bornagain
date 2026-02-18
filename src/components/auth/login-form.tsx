@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -75,7 +76,7 @@ function ForgotPasswordDialog() {
     return (
         <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
             <AlertDialogTrigger asChild>
-                <Button variant="link" className="p-0 text-sm h-auto font-normal" type="button">
+                <Button variant="link" className="p-0 text-sm h-auto font-normal text-gray-400 hover:text-white" type="button">
                     Forgot password?
                 </Button>
             </AlertDialogTrigger>
@@ -182,15 +183,15 @@ export function LoginForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 text-left">
         <FormField
           control={form.control}
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email</FormLabel>
+              <FormLabel className="text-zinc-400">Email</FormLabel>
               <FormControl>
-                <Input placeholder="name@example.com" {...field} />
+                <Input placeholder="name@example.com" {...field} className="h-12 rounded-xl bg-zinc-900 border-zinc-800 text-white placeholder:text-zinc-500" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -202,19 +203,19 @@ export function LoginForm() {
           render={({ field }) => (
             <FormItem>
                 <div className="flex items-center justify-between">
-                    <FormLabel>Password</FormLabel>
+                    <FormLabel className="text-zinc-400">Password</FormLabel>
                     <ForgotPasswordDialog />
                 </div>
               <FormControl>
-                <Input type="password" placeholder="********" {...field} />
+                <Input type="password" placeholder="********" {...field} className="h-12 rounded-xl bg-zinc-900 border-zinc-800 text-white placeholder:text-zinc-500" />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-        <Button type="submit" className="w-full" disabled={isLoading}>
+        <Button type="submit" className="w-full h-12 rounded-xl bg-gradient-to-r from-pink-500 to-orange-500 text-white font-bold text-base hover:opacity-90 transition-opacity" disabled={isLoading}>
           {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Sign In with Email
+          Sign In
         </Button>
       </form>
     </Form>

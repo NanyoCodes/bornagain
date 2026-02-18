@@ -174,25 +174,25 @@ export function PhoneAuthForm() {
   if (isCodeSent) {
     return (
       <Form {...codeForm}>
-        <form onSubmit={codeForm.handleSubmit(onCodeSubmit)} className="space-y-4">
+        <form onSubmit={codeForm.handleSubmit(onCodeSubmit)} className="space-y-4 text-left">
           <FormField
             control={codeForm.control}
             name="code"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Verification Code</FormLabel>
+                <FormLabel className="text-zinc-400">Verification Code</FormLabel>
                 <FormControl>
-                  <Input placeholder="123456" {...field} />
+                  <Input placeholder="123456" {...field} className="h-12 rounded-xl bg-zinc-900 border-zinc-800 text-white placeholder:text-zinc-500" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-          <Button type="submit" className="w-full" disabled={isLoading}>
+          <Button type="submit" className="w-full h-12 rounded-xl bg-gradient-to-r from-pink-500 to-orange-500 text-white font-bold text-base hover:opacity-90 transition-opacity" disabled={isLoading}>
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Verify Code
+            Verify & Sign In
           </Button>
-          <Button variant="link" className="w-full" onClick={() => setIsCodeSent(false)}>
+          <Button variant="link" className="w-full text-zinc-400" onClick={() => setIsCodeSent(false)}>
             Use a different phone number
           </Button>
         </form>
@@ -204,21 +204,21 @@ export function PhoneAuthForm() {
     <>
       <div ref={recaptchaContainerRef}></div>
       <Form {...phoneForm}>
-        <form onSubmit={phoneForm.handleSubmit(onPhoneSubmit)} className="space-y-4">
+        <form onSubmit={phoneForm.handleSubmit(onPhoneSubmit)} className="space-y-4 text-left">
           <FormField
             control={phoneForm.control}
             name="phone"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Phone Number</FormLabel>
+                <FormLabel className="text-zinc-400">Phone Number</FormLabel>
                 <FormControl>
-                  <Input placeholder="+11234567890" {...field} />
+                  <Input placeholder="+11234567890" {...field} className="h-12 rounded-xl bg-zinc-900 border-zinc-800 text-white placeholder:text-zinc-500" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-          <Button type="submit" className="w-full" disabled={isLoading}>
+          <Button type="submit" className="w-full h-12 rounded-xl bg-gradient-to-r from-pink-500 to-orange-500 text-white font-bold text-base hover:opacity-90 transition-opacity" disabled={isLoading}>
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Send Verification Code
           </Button>

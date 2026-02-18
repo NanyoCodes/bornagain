@@ -16,7 +16,6 @@ import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PhoneAuthForm } from "@/components/auth/phone-auth-form";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 
 
 export default function SignUpPage() {
@@ -82,69 +81,58 @@ export default function SignUpPage() {
   };
 
   return (
-    <div className="flex min-h-screen w-full items-center justify-center bg-muted p-4">
-      <Card className="w-full max-w-sm">
-        <CardHeader className="text-center">
-            {logo && (
-              <Image
-                src={logo.imageUrl}
-                alt={logo.description}
-                width={150}
-                height={45}
-                className="mx-auto"
-                data-ai-hint={logo.imageHint}
-                priority
-              />
-            )}
-            <CardTitle className="text-2xl mt-4">Create an Account</CardTitle>
-            <CardDescription>
-              Enter your information to join the community
-            </CardDescription>
-        </CardHeader>
-        <CardContent className="grid gap-4">
-          <Tabs defaultValue="email" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="email">Email</TabsTrigger>
-                <TabsTrigger value="phone">Phone</TabsTrigger>
-            </TabsList>
-            <TabsContent value="email" className="pt-4">
-                <SignUpForm />
-            </TabsContent>
-            <TabsContent value="phone" className="pt-4">
-                <PhoneAuthForm />
-            </TabsContent>
-          </Tabs>
-          
-          <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t" />
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-card px-2 text-muted-foreground">
-                  Or continue with
-              </span>
-              </div>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-              <Button variant="outline" onClick={() => handleSocialLogin('google')}>
-              <Icons.google className="mr-2 h-5 w-5" />
-              Google
-              </Button>
-              <Button variant="outline" onClick={() => handleSocialLogin('facebook')}>
-              <Icons.facebook className="mr-2 h-5 w-5 text-[#1877F2]" />
-              Facebook
-              </Button>
-          </div>
-        </CardContent>
-        <CardFooter className="flex justify-center text-sm">
-            <p>
+    <div className="relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden bg-black p-4">
+        {/* Decorative blob */}
+        <div className="absolute top-0 left-0 -translate-x-1/4 -translate-y-1/2 w-[200%] h-2/3 bg-white [clip-path:path('M0,160L48,176C96,192,192,224,288,213.3C384,203,480,149,576,133.3C672,117,768,139,864,165.3C960,192,1056,224,1152,218.7C1248,213,1344,171,1392,149.3L1440,128L1440,0L0,0Z')]"></div>
+        
+        <div className="absolute top-6 right-6 z-20">
+            <p className="text-center text-sm text-gray-300">
                 Already have an account?{" "}
-                <Link href="/login" className="underline font-semibold">
+                <Link href="/login" className="font-semibold text-white underline">
                 Sign in
                 </Link>
             </p>
-        </CardFooter>
-      </Card>
+        </div>
+
+        <div className="relative z-10 w-full max-w-sm">
+            <div className="absolute -top-52 left-1/2 w-full -translate-x-1/2 text-center">
+                 <h1 className="text-5xl font-bold text-gray-900">Create Account</h1>
+            </div>
+            
+            <div className="space-y-6">
+                <Tabs defaultValue="email" className="w-full">
+                  <TabsList className="grid w-full grid-cols-2 bg-zinc-900 text-zinc-400">
+                    <TabsTrigger value="email">Email</TabsTrigger>
+                    <TabsTrigger value="phone">Phone</TabsTrigger>
+                  </TabsList>
+                  <TabsContent value="email" className="pt-4">
+                    <SignUpForm />
+                  </TabsContent>
+                  <TabsContent value="phone" className="pt-4">
+                    <PhoneAuthForm />
+                  </TabsContent>
+                </Tabs>
+                
+                <div className="relative">
+                    <div className="absolute inset-0 flex items-center">
+                    <span className="w-full border-t border-zinc-800" />
+                    </div>
+                    <div className="relative flex justify-center text-xs uppercase">
+                    <span className="bg-black px-2 text-zinc-500">
+                        Or Continue With
+                    </span>
+                    </div>
+                </div>
+                <div className="flex justify-center gap-4">
+                  <Button variant="outline" size="icon" className="rounded-full bg-zinc-900 border-zinc-800 hover:bg-zinc-800" onClick={() => handleSocialLogin('google')}>
+                    <Icons.google className="h-5 w-5" />
+                  </Button>
+                  <Button variant="outline" size="icon" className="rounded-full bg-zinc-900 border-zinc-800 hover:bg-zinc-800" onClick={() => handleSocialLogin('facebook')}>
+                    <Icons.facebook className="h-5 w-5 text-[#1877F2]" />
+                  </Button>
+                </div>
+            </div>
+        </div>
     </div>
   );
 }
