@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -23,8 +24,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useUser, useFirestore } from "@/firebase";
+import { useUser, useFirestore, useStorage } from "@/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 const formSchema = z.object({
   goal: z.string({
@@ -48,6 +50,7 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
   const { toast } = useToast();
   const { user } = useUser();
   const firestore = useFirestore();
+  const storage = useStorage();
   const [isGenerating, setIsGenerating] = useState(false);
   const [ideas, setIdeas] = useState<CampaignIdeas | null>(null);
   const [selectedName, setSelectedName] = useState('');
@@ -96,22 +99,25 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
         toast({ variant: 'destructive', title: 'Missing Name', description: 'Please select or enter a campaign name.' });
         return;
     }
-    if (!user) {
+    if (!user || !firestore || !storage) {
         toast({ variant: 'destructive', title: 'Not Authenticated', description: 'You must be logged in to create a campaign.' });
         return;
     }
     
-    // In a real app, you would upload the photoFile to Firebase Storage first.
-    // For now, we will use a placeholder image.
     if (!photoFile) {
         toast({ variant: 'destructive', title: 'Missing Photo', description: 'Please upload a campaign photo.' });
         return;
     }
-    const imageUrl = 'https://picsum.photos/seed/campaign/600/400';
-
+    
     setIsCreating(true);
     
     try {
+      // 1. Upload photo to Firebase Storage
+      const imageRef = ref(storage, `campaign-images/${user.uid}/${Date.now()}-${photoFile.name}`);
+      const snapshot = await uploadBytes(imageRef, photoFile);
+      const imageUrl = await getDownloadURL(snapshot.ref);
+
+      // 2. Add campaign document to Firestore
       await addDoc(collection(firestore, 'campaigns'), {
         title: finalName,
         description: finalDescription,
@@ -119,7 +125,7 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
         location: `${form.getValues('city')}, ${form.getValues('country')}`,
         participants: 1,
         progress: 0,
-        imageUrl: imageUrl, // Using placeholder for now
+        imageUrl: imageUrl,
         createdAt: serverTimestamp(),
         organizerId: user.uid,
         organizerName: user.displayName || 'Anonymous',
@@ -129,7 +135,7 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
       onCampaignCreated();
     } catch (error) {
       console.error("Error creating campaign: ", error);
-      toast({ variant: 'destructive', title: 'Error', description: 'Could not create campaign.' });
+      toast({ variant: 'destructive', title: 'Error', description: 'Could not create campaign. Please check your connection and try again.' });
     } finally {
       setIsCreating(false);
     }
