@@ -27,6 +27,7 @@ import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage
 import Image from "next/image";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
+import { Label } from "@/components/ui/label";
 
 const testimonyCategories: TestimonyCategory[] = ['Healing', 'Financial Breakthrough', 'Salvation', 'Relationships', 'Deliverance', 'General'];
 
@@ -231,7 +232,7 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
         />
 
         <div className="space-y-2">
-          <FormLabel>Media</FormLabel>
+          <Label>Media</Label>
           {mediaPreview && (
             <div className="relative w-full aspect-video rounded-lg overflow-hidden">
                 {mediaType?.startsWith('image') && <Image src={mediaPreview} alt="Media preview" fill className="object-cover" />}
@@ -240,12 +241,10 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
                 <Button variant="destructive" size="sm" className="absolute top-2 right-2" onClick={handleRemoveMedia}>Remove</Button>
             </div>
           )}
-          <FormControl>
-            <Input id="media-edit" type="file" accept="image/jpeg,image/png,video/*,audio/*" onChange={handleFileChange} />
-          </FormControl>
-          <FormDescription>
+          <Input id="media-edit" type="file" accept="image/jpeg,image/png,video/*,audio/*" onChange={handleFileChange} />
+          <p className="text-sm text-muted-foreground">
             Replace or remove the current media. Max size: {MAX_FILE_SIZE_MB}MB.
-          </FormDescription>
+          </p>
         </div>
 
         <Button type="submit" className="w-full" disabled={isSubmitting}>

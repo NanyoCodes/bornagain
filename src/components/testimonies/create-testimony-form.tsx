@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -26,6 +25,7 @@ import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { errorEmitter } from "@/firebase/error-emitter";
+import { Label } from "@/components/ui/label";
 
 
 const MAX_FILE_SIZE_MB = 5;
@@ -204,13 +204,11 @@ export function CreateTestimonyForm({ onTestimonyCreated }: CreateTestimonyFormP
         />
         
         <div className="space-y-2">
-            <FormLabel htmlFor="media">Add Photo, Video, or Audio</FormLabel>
-            <FormControl>
-              <Input id="media" type="file" accept="image/jpeg,image/png,video/*,audio/*" onChange={handleFileChange} />
-            </FormControl>
-            <FormDescription>
+            <Label htmlFor="media">Add Photo, Video, or Audio</Label>
+            <Input id="media" type="file" accept="image/jpeg,image/png,video/*,audio/*" onChange={handleFileChange} />
+            <p className="text-sm text-muted-foreground">
               Optional. Add one photo, video, or audio file. Max size: {MAX_FILE_SIZE_MB}MB.
-            </FormDescription>
+            </p>
         </div>
 
         <Button type="submit" className="w-full" disabled={isSubmitting}>

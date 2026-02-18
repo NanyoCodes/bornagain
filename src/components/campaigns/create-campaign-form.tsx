@@ -231,9 +231,9 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
               )}
             />
           </div>
-          <FormDescription>
+          <p className="text-sm text-muted-foreground">
             Provide some keywords and let our AI assistant brainstorm for you.
-          </FormDescription>
+          </p>
 
           <Button type="submit" className="w-full" disabled={isGenerating}>
             {isGenerating ? (
@@ -283,7 +283,7 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
               <div className="space-y-2">
                 <Label htmlFor="photo">Campaign Photo</Label>
                 <Input id="photo" type="file" accept="image/jpeg,image/png" onChange={(e) => setPhotoFile(e.target.files?.[0] ?? null)} />
-                <FormDescription>A photo is required for the campaign.</FormDescription>
+                <p className="text-sm text-muted-foreground">A photo is required for the campaign.</p>
               </div>
               <div>
                 <h3 className="text-lg font-semibold mb-2">Suggested Description</h3>
