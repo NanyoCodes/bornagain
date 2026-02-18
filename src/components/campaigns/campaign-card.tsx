@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
 import { MapPin, Users, Share2 } from "lucide-react";
 import type { Campaign } from "@/lib/types";
@@ -157,7 +158,11 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
       </CardFooter>
       <CardFooter className="p-6 pt-0 border-t">
         <p className="text-xs text-muted-foreground">
-          Created by {campaign.organizerName} •{" "}
+          Created by{" "}
+          <Link href={`/dashboard/profile/${campaign.organizerId}`} className="font-medium text-primary hover:underline">
+            {campaign.organizerName}
+          </Link>
+          {" "}•{" "}
           {campaign.createdAt ? formatDistanceToNow(new Date(campaign.createdAt.seconds * 1000), { addSuffix: true }) : 'just now'}
         </p>
       </CardFooter>

@@ -1,7 +1,7 @@
-
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import {
   Card,
   CardContent,
@@ -127,15 +127,19 @@ export function TestimonyCard({ testimony }: { testimony: Testimony }) {
     <Card>
       <CardHeader>
         <div className="flex items-start gap-4">
-          <Avatar>
-            <AvatarImage
-              src={testimony.authorAvatarUrl ?? undefined}
-              alt={testimony.authorName}
-            />
-            <AvatarFallback>{testimony.authorName?.charAt(0) ?? 'A'}</AvatarFallback>
-          </Avatar>
+          <Link href={`/dashboard/profile/${testimony.authorId}`} passHref>
+            <Avatar>
+              <AvatarImage
+                src={testimony.authorAvatarUrl ?? undefined}
+                alt={testimony.authorName}
+              />
+              <AvatarFallback>{testimony.authorName?.charAt(0) ?? 'A'}</AvatarFallback>
+            </Avatar>
+          </Link>
           <div className="flex-1">
-            <CardTitle>{testimony.authorName}</CardTitle>
+            <Link href={`/dashboard/profile/${testimony.authorId}`} passHref>
+              <CardTitle className="cursor-pointer hover:underline">{testimony.authorName}</CardTitle>
+            </Link>
             <CardDescription>
               {formatDistanceToNow(createdAtDate, { addSuffix: true })}
             </CardDescription>
