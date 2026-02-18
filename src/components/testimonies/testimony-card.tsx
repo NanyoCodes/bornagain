@@ -129,10 +129,10 @@ export function TestimonyCard({ testimony }: { testimony: Testimony }) {
         <div className="flex items-start gap-4">
           <Avatar>
             <AvatarImage
-              src={testimony.authorAvatarUrl}
+              src={testimony.authorAvatarUrl ?? undefined}
               alt={testimony.authorName}
             />
-            <AvatarFallback>{testimony.authorName.charAt(0)}</AvatarFallback>
+            <AvatarFallback>{testimony.authorName?.charAt(0) ?? 'A'}</AvatarFallback>
           </Avatar>
           <div className="flex-1">
             <CardTitle>{testimony.authorName}</CardTitle>

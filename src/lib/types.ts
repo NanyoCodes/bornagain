@@ -26,7 +26,7 @@ export type Testimony = {
   id: string;
   authorId: string;
   authorName: string;
-  authorAvatarUrl: string;
+  authorAvatarUrl?: string;
   title: string;
   content: string;
   createdAt: Timestamp;
