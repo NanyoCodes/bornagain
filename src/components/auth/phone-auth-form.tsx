@@ -34,7 +34,7 @@ const phoneSchema = z.object({
   phone: z.string().refine(
     (value) => /^\+[1-9]\d{9,14}$/.test(value),
     {
-      message: "Please enter a valid number in E.164 format (e.g. +11234567890).",
+      message: "Please include your country code (e.g. +11234567890).",
     }
   ),
 });
@@ -57,18 +57,18 @@ export function PhoneAuthForm() {
   const recaptchaContainerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    if (!auth || !recaptchaContainerRef.current) return;
+    if (!auth) return;
 
-    const verifier = new RecaptchaVerifier(auth, recaptchaContainerRef.current, {
-      size: 'invisible',
-      callback: () => {
+    const verifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+      'size': 'invisible',
+      'callback': (response: any) => {
         // reCAPTCHA solved, allow signInWithPhoneNumber.
       },
     });
     recaptchaVerifierRef.current = verifier;
-
+    
     return () => {
-      verifier.clear();
+        verifier.clear();
     };
   }, [auth]);
 
