@@ -69,7 +69,7 @@ function AppHeader() {
           href="/dashboard"
           className="flex items-center gap-2 text-lg font-semibold"
         >
-          {logo && <Image src={logo.imageUrl} alt={logo.description} width={90} height={27} data-ai-hint={logo.imageHint} />}
+          {logo && <Image src={logo.imageUrl} alt={logo.description} width={75} height={23} data-ai-hint={logo.imageHint} />}
           <span className="sr-only">Testify</span>
         </Link>
         {/* Desktop Navigation */}
@@ -96,7 +96,7 @@ function AppHeader() {
             <Input
               type="search"
               placeholder="Search..."
-              className="pl-8 sm:w-[200px] md:w-[250px] lg:w-[300px]"
+              className="pl-8 sm:w-[200px] md:w-[250px] lg:w-[300px] text-base"
             />
           </div>
         </form>
@@ -105,24 +105,15 @@ function AppHeader() {
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon" className="relative h-8 w-8">
               <Bell className="h-5 w-5" />
-              <span className="absolute top-1 right-1 flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
-              </span>
               <span className="sr-only">Toggle notifications</span>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-80">
             <DropdownMenuLabel>Notifications</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="flex-col items-start gap-1">
-              <p className="font-semibold">New Campaign Nearby</p>
-              <p className="text-xs text-muted-foreground">Check out 'Hope for the City' in Nairobi.</p>
-            </DropdownMenuItem>
-            <DropdownMenuItem className="flex-col items-start gap-1">
-              <p className="font-semibold">Campaign Update</p>
-              <p className="text-xs text-muted-foreground">'Street Evangelism' has 5 new participants.</p>
-            </DropdownMenuItem>
+             <div className="p-4 text-sm text-center text-muted-foreground">
+              No new notifications.
+            </div>
           </DropdownMenuContent>
         </DropdownMenu>
         <DropdownMenu>
@@ -228,7 +219,7 @@ export default function DashboardLayout({
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
       <AppHeader />
-      <main className="flex w-full flex-1 flex-col p-4 pb-24 md:p-6 md:pb-8 lg:p-8 max-w-screen-2xl mx-auto">{children}</main>
+      <main className="flex w-full flex-1 flex-col p-4 pb-24 md:p-6 md:pb-8 lg:p-8 max-w-7xl mx-auto">{children}</main>
       <BottomNavBar />
     </div>
   );

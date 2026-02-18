@@ -143,16 +143,16 @@ export default function DashboardPage() {
   // TODO: Streak needs to be implemented
 
   const stats = [
-    { title: "Testimonies Shared", value: myTestimonies?.length ?? 0, icon: Newspaper, change: `+${testimoniesThisMonth} this month` },
-    { title: "Campaigns Joined", value: joinedCampaigns?.length ?? 0, icon: Target, change: `+${campaignsJoinedThisMonth} this month` },
-    { title: "Souls Won", value: soulsWon?.length ?? 0, icon: UserCheck2, change: `+${soulsWonThisMonth} this month` },
+    { title: "Testimonies Shared", value: myTestimonies?.length ?? 0, icon: Newspaper, change: `${testimoniesThisMonth} this month` },
+    { title: "Campaigns Joined", value: joinedCampaigns?.length ?? 0, icon: Target, change: `${campaignsJoinedThisMonth} this month` },
+    { title: "Souls Won", value: soulsWon?.length ?? 0, icon: UserCheck2, change: `${soulsWonThisMonth} this month` },
     { title: "Current Streak", value: "0 days", icon: TrendingUp, change: "Keep going!" },
   ];
 
   return (
     <div className="space-y-8">
       <div className="space-y-2">
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight font-headline">Dashboard</h1>
+        <h1 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight font-headline">Dashboard</h1>
         <p className="text-muted-foreground">Welcome back! Here's your ministry overview.</p>
       </div>
       

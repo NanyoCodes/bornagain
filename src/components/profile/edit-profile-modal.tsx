@@ -85,53 +85,52 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
     setIsSubmitting(true);
 
     try {
-      let photoURL = userProfile.photoURL;
+      let newPhotoURL = userProfile.photoURL;
 
       // Step 1: Upload new photo if it exists.
       if (photoFile) {
         const storageRef = ref(storage, `profile-pictures/${user.uid}`);
-        // Use uploadBytes for a simpler promise-based upload.
         const uploadTask = await uploadBytes(storageRef, photoFile);
-        photoURL = await getDownloadURL(uploadTask.ref);
+        newPhotoURL = await getDownloadURL(uploadTask.ref);
       }
 
-      // Step 2: Prepare the data objects for update.
-      // We'll update both Firebase Auth profile and the Firestore user document.
-      const authUpdatePayload = {
-        displayName: values.displayName,
-        photoURL: photoURL ?? null, // Auth profile accepts null.
-      };
-
+      // Step 2: Prepare the data for Firestore update.
       const firestoreUpdatePayload = {
         displayName: values.displayName,
-        bio: values.bio || "", // Ensure empty strings instead of undefined.
+        bio: values.bio || "",
         location: values.location || "",
         phone: values.phone || "",
-        photoURL: photoURL ?? null, // Firestore is happy with null.
+        photoURL: newPhotoURL ?? null,
       };
 
-      // Step 3: Execute updates concurrently.
+      // Step 3: Update Firestore document.
       const userDocRef = doc(firestore, 'users', user.uid);
-      await Promise.all([
-        updateProfile(user, authUpdatePayload),
-        updateDoc(userDocRef, firestoreUpdatePayload)
-      ]);
+      await updateDoc(userDocRef, firestoreUpdatePayload).catch((serverError) => {
+        const permissionError = new FirestorePermissionError({
+            path: userDocRef.path,
+            operation: 'update',
+            requestResourceData: firestoreUpdatePayload,
+        });
+        errorEmitter.emit('permission-error', permissionError);
+        throw permissionError; // Re-throw to be caught by the outer catch
+      });
+
+      // Step 4: Update Firebase Auth profile.
+      await updateProfile(user, {
+        displayName: values.displayName,
+        photoURL: newPhotoURL ?? null,
+      });
       
       toast({ title: "Profile Updated", description: "Your changes have been saved." });
       onClose();
 
     } catch (error: any) {
       console.error("Profile update error:", error);
-       if (error.code?.includes('permission-denied')) {
-        const permissionError = new FirestorePermissionError({
-            path: `users/${user.uid}`,
-            operation: 'update',
-            requestResourceData: values,
-        });
-        errorEmitter.emit('permission-error', permissionError);
-      } else {
-        toast({ variant: 'destructive', title: "Update Failed", description: error.message || "Could not update profile." });
-      }
+       // If the error is our custom permission error, it has already been emitted and will be
+       // handled by the global error listener. We don't need a duplicate toast.
+       if (error.name !== 'FirestorePermissionError') {
+         toast({ variant: 'destructive', title: "Update Failed", description: error.message || "Could not update profile." });
+       }
     } finally {
       setIsSubmitting(false);
     }
@@ -149,7 +148,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                         {userProfile.displayName?.charAt(0) || userProfile.email?.charAt(0)}
                     </AvatarFallback>
                 </Avatar>
-                <Input id="picture" type="file" accept="image/*" onChange={handleFileChange} className="max-w-xs" />
+                <Input id="picture" type="file" accept="image/*" onChange={handleFileChange} className="max-w-xs text-base" />
             </div>
         </div>
         <FormField
@@ -159,7 +158,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
             <FormItem>
               <FormLabel>Display Name</FormLabel>
               <FormControl>
-                <Input placeholder="Your Name" {...field} />
+                <Input placeholder="Your Name" {...field} className="text-base" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -172,7 +171,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
             <FormItem>
               <FormLabel>Bio</FormLabel>
               <FormControl>
-                <Textarea placeholder="Tell us a little about yourself" className="resize-none" {...field} />
+                <Textarea placeholder="Tell us a little about yourself" className="resize-none text-base" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -185,7 +184,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
             <FormItem>
               <FormLabel>Location</FormLabel>
               <FormControl>
-                <Input placeholder="City, Country" {...field} value={field.value ?? ""} />
+                <Input placeholder="City, Country" {...field} value={field.value ?? ""} className="text-base" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -198,7 +197,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
             <FormItem>
               <FormLabel>Phone</FormLabel>
               <FormControl>
-                <Input placeholder="+1 234 567 890" {...field} value={field.value ?? ""} />
+                <Input placeholder="+1 234 567 890" {...field} value={field.value ?? ""} className="text-base" />
               </FormControl>
               <FormMessage />
             </FormItem>
