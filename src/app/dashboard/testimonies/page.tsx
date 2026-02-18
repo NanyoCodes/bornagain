@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
 import { CreateTestimonyForm } from "@/components/testimonies/create-testimony-form";
@@ -22,92 +22,55 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import type { Testimony, TestimonyCategory } from "@/lib/types";
+import type { Testimony } from "@/lib/types";
 import { useIsMobile } from "@/hooks/use-mobile";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCollection, useFirestore, useUser } from "@/firebase";
-import { collection, query, where, orderBy } from "firebase/firestore";
+import { collection, query, orderBy } from "firebase/firestore";
 import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card";
-
-const categories: (TestimonyCategory | "All")[] = [
-  "All",
-  "Healing",
-  "Financial Breakthrough",
-  "Salvation",
-  "Relationships",
-  "Deliverance",
-  "General",
-];
+import { useSearch } from "@/context/search-context";
 
 export default function TestimoniesPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [filter, setFilter] = useState<TestimonyCategory | "All">("All");
   const [mounted, setMounted] = useState(false);
   const isMobile = useIsMobile();
+  const { searchTerm, setSearchPlaceholder, setIsSearchVisible, setSearchTerm } = useSearch();
 
   const { user, loading: userLoading } = useUser();
   const firestore = useFirestore();
 
-  const testimoniesQuery = !userLoading && user?.uid && firestore ? (
-    filter === "All"
-      ? query(collection(firestore, "testimonies"), orderBy("createdAt", "desc"))
-      : query(
-          collection(firestore, "testimonies"),
-          where("category", "==", filter),
-          orderBy("createdAt", "desc")
-        )
-    ) : null;
+  const testimoniesQuery = !userLoading && user?.uid && firestore 
+    ? query(collection(firestore, "testimonies"), orderBy("createdAt", "desc"))
+    : null;
 
   const { data: testimonies, loading: testimoniesLoading } = useCollection<Testimony>(testimoniesQuery);
   const loading = userLoading || testimoniesLoading;
 
   useEffect(() => {
     setMounted(true);
-  }, []);
+    setIsSearchVisible(true);
+    setSearchPlaceholder("Search testimonies by content, author...");
+    return () => {
+      setIsSearchVisible(false);
+      setSearchTerm("");
+    };
+  }, [setMounted, setIsSearchVisible, setSearchPlaceholder, setSearchTerm]);
+
+  const filteredTestimonies = useMemo(() => {
+    if (!testimonies) return [];
+    if (!searchTerm) return testimonies;
+    const term = searchTerm.toLowerCase();
+
+    return testimonies.filter(testimony => 
+      testimony.content.toLowerCase().includes(term) ||
+      testimony.authorName.toLowerCase().includes(term) ||
+      testimony.category.toLowerCase().includes(term)
+    );
+  }, [testimonies, searchTerm]);
 
   const handleTestimonyCreated = () => {
     setIsDialogOpen(false);
   };
-
-  const filterComponent = isMobile ? (
-    <Select
-      value={filter}
-      onValueChange={(value) => setFilter(value as TestimonyCategory | "All")}
-    >
-      <SelectTrigger className="w-full">
-        <SelectValue placeholder="Filter by category" />
-      </SelectTrigger>
-      <SelectContent>
-        {categories.map((category) => (
-          <SelectItem key={category} value={category}>
-            {category}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
-  ) : (
-    <Tabs
-      value={filter}
-      onValueChange={(value) => setFilter(value as TestimonyCategory | "All")}
-      className="w-full"
-    >
-      <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7">
-        {categories.map((category) => (
-          <TabsTrigger key={category} value={category}>
-            {category}
-          </TabsTrigger>
-        ))}
-      </TabsList>
-    </Tabs>
-  );
   
   const triggerButton = (
     <Button>
@@ -164,9 +127,7 @@ export default function TestimoniesPage() {
           )}
       </div>
 
-      {mounted ? filterComponent : <Skeleton className="h-10 w-full" />}
-
-      <div className="grid gap-6 md:grid-cols-1 lg:max-w-5xl mx-auto">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {loading && (
           [...Array(3)].map((_, i) => (
             <Card key={i}>
@@ -186,14 +147,17 @@ export default function TestimoniesPage() {
                 <Skeleton className="h-4 w-4/5" />
               </CardContent>
               <CardFooter>
-                 <Skeleton className="h-8 w-full" />
+                 <Skeleton className="h-8 w-24 ml-auto" />
               </CardFooter>
             </Card>
           ))
         )}
-        {!loading && testimonies?.map((testimony) => (
+        {!loading && filteredTestimonies?.map((testimony) => (
           <TestimonyCard key={testimony.id} testimony={testimony} />
         ))}
+         {!loading && filteredTestimonies?.length === 0 && (
+          <p className="text-muted-foreground col-span-full text-center">No testimonies found.</p>
+        )}
       </div>
     </div>
   );

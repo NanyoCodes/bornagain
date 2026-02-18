@@ -49,9 +49,7 @@ export function TestimonyCard({ testimony }: { testimony: Testimony }) {
 
     setIsDeleting(true);
     try {
-      // Delete Firestore document
       await deleteDoc(doc(firestore, "testimonies", testimony.id));
-
       toast({
         title: "Testimony Deleted",
         description: "Your testimony has been successfully removed.",
@@ -67,13 +65,37 @@ export function TestimonyCard({ testimony }: { testimony: Testimony }) {
       setIsDeleting(false);
     }
   };
+  
+  const handleShare = (platform: "link" | "facebook" | "twitter") => {
+    const url = typeof window !== "undefined" ? `${window.location.origin}/dashboard/testimonies` : '';
+    const text = `Read this inspiring testimony by ${testimony.authorName} on Testify Global!`;
+    let shareUrl = "";
+
+    switch (platform) {
+      case "facebook":
+        shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}&quote=${encodeURIComponent(text)}`;
+        window.open(shareUrl, "_blank");
+        break;
+      case "twitter":
+        shareUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`;
+        window.open(shareUrl, "_blank");
+        break;
+      case "link":
+        navigator.clipboard.writeText(`${text} ${url}`);
+        toast({
+          title: "Link Copied!",
+          description: "Testimony link copied to your clipboard.",
+        });
+        break;
+    }
+  };
 
   return (
-    <Card>
+    <Card className="flex flex-col h-full overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300">
       <CardHeader>
         <div className="flex items-start gap-4">
           <Link href={`/dashboard/profile/${testimony.authorId}`} passHref>
-            <Avatar>
+            <Avatar className="h-10 w-10 border">
               <AvatarImage
                 src={testimony.authorAvatarUrl ?? undefined}
                 alt={testimony.authorName}
@@ -83,82 +105,70 @@ export function TestimonyCard({ testimony }: { testimony: Testimony }) {
           </Link>
           <div className="flex-1">
             <Link href={`/dashboard/profile/${testimony.authorId}`} passHref>
-              <CardTitle className="cursor-pointer hover:underline">{testimony.authorName}</CardTitle>
+              <CardTitle className="cursor-pointer hover:underline text-base font-semibold">{testimony.authorName}</CardTitle>
             </Link>
-            <CardDescription>
+            <CardDescription className="text-xs">
               {formatDistanceToNow(createdAtDate, { addSuffix: true })}
             </CardDescription>
           </div>
-          <Badge variant="secondary" className="hidden sm:inline-flex">{testimony.category}</Badge>
-          {isAuthor && (
-            <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-                <AlertDialog>
-                    <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon">
-                        <MoreVertical className="h-4 w-4" />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        <DialogTrigger asChild>
-                            <DropdownMenuItem>
-                                <Edit className="mr-2 h-4 w-4" />
-                                <span>Edit</span>
-                            </DropdownMenuItem>
-                        </DialogTrigger>
-                        <DropdownMenuSeparator />
-                        <AlertDialogTrigger asChild>
-                            <DropdownMenuItem className="text-destructive focus:text-destructive">
-                                <Trash2 className="mr-2 h-4 w-4" />
-                                <span>Delete</span>
-                            </DropdownMenuItem>
-                        </AlertDialogTrigger>
-                    </DropdownMenuContent>
-                    </DropdownMenu>
-
-                    <AlertDialogContent>
-                        <AlertDialogHeader>
-                            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                            <AlertDialogDescription>
-                            This action cannot be undone. This will permanently delete
-                            your testimony.
-                            </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
-                            <AlertDialogAction onClick={handleDelete} disabled={isDeleting}>
-                                {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                Continue
-                            </AlertDialogAction>
-                        </AlertDialogFooter>
-                    </AlertDialogContent>
-                </AlertDialog>
-
-                <DialogContent className="sm:max-w-lg">
-                    <DialogHeader>
-                    <DialogTitle>Edit Testimony</DialogTitle>
-                    <DialogDescription>
-                        Make changes to your testimony here. Click save when you're done.
-                    </DialogDescription>
-                    </DialogHeader>
-                    <div className="max-h-[70vh] overflow-y-auto pr-2">
-                        <EditTestimonyForm testimony={testimony} onTestimonyUpdated={() => setIsEditDialogOpen(false)} />
-                    </div>
-                </DialogContent>
-            </Dialog>
-          )}
+          <Badge variant="outline" className="shrink-0">{testimony.category}</Badge>
         </div>
       </CardHeader>
-      <CardContent>
-        <p className="text-muted-foreground whitespace-pre-wrap">
+      <CardContent className="flex-grow py-0">
+        <p className="text-sm text-muted-foreground whitespace-pre-wrap line-clamp-6">
           {testimony.content}
         </p>
       </CardContent>
-      <CardFooter className="flex justify-end">
-        <Button variant="ghost" size="sm" className="flex items-center gap-2">
-          <Share2 className="h-4 w-4" />
-          <span>Share</span>
-        </Button>
+      <CardFooter className="pt-4 flex justify-end">
+        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+          <AlertDialog>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <MoreVertical className="h-4 w-4" />
+                  <span className="sr-only">More actions</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onSelect={() => handleShare('link')}><Share2 className="mr-2 h-4 w-4" /><span>Copy Link</span></DropdownMenuItem>
+                 <DropdownMenuItem onSelect={() => handleShare('facebook')}>Share on Facebook</DropdownMenuItem>
+                <DropdownMenuItem onSelect={() => handleShare('twitter')}>Share on Twitter (X)</DropdownMenuItem>
+                {isAuthor && <DropdownMenuSeparator />}
+                {isAuthor && <DialogTrigger asChild><DropdownMenuItem><Edit className="mr-2 h-4 w-4" /><span>Edit</span></DropdownMenuItem></DialogTrigger>}
+                {isAuthor && <AlertDialogTrigger asChild><DropdownMenuItem className="text-destructive focus:text-destructive"><Trash2 className="mr-2 h-4 w-4" /><span>Delete</span></DropdownMenuItem></AlertDialogTrigger>}
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This action cannot be undone. This will permanently delete
+                  your testimony.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={handleDelete} disabled={isDeleting}>
+                  {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  Continue
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+
+          <DialogContent className="sm:max-w-lg">
+            <DialogHeader>
+              <DialogTitle>Edit Testimony</DialogTitle>
+              <DialogDescription>
+                Make changes to your testimony here. Click save when you're done.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="max-h-[70vh] overflow-y-auto pr-2">
+              <EditTestimonyForm testimony={testimony} onTestimonyUpdated={() => setIsEditDialogOpen(false)} />
+            </div>
+          </DialogContent>
+        </Dialog>
       </CardFooter>
     </Card>
   );

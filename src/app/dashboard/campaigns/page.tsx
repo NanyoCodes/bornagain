@@ -3,7 +3,7 @@
 
 import { useMemo, useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { PlusCircle, X } from "lucide-react";
+import { PlusCircle } from "lucide-react";
 import { CreateCampaignForm } from "@/components/campaigns/create-campaign-form";
 import {
   Dialog,
@@ -23,13 +23,12 @@ import {
 } from "@/components/ui/sheet";
 import { CampaignCard } from "@/components/campaigns/campaign-card";
 import type { Campaign, JoinedCampaign, UserProfile } from "@/lib/types";
-import { Input } from "@/components/ui/input";
 import { useCollection, useFirestore, useUser } from "@/firebase";
 import { useDoc } from "@/firebase/firestore/use-doc";
 import { collection, query, orderBy, doc } from "firebase/firestore";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { format } from "date-fns";
+import { useSearch } from "@/context/search-context";
 
 function CampaignSkeletons() {
   return (
@@ -51,23 +50,30 @@ export default function CampaignsPage() {
   const { user, loading: userLoading } = useUser();
   const firestore = useFirestore();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [cityFilter, setCityFilter] = useState("");
-  const [countryFilter, setCountryFilter] = useState("");
-  const [dateFilter, setDateFilter] = useState<Date | null>(null);
   const [mounted, setMounted] = useState(false);
   const isMobile = useIsMobile();
+  const { searchTerm, setSearchPlaceholder, setIsSearchVisible, setSearchTerm } = useSearch();
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  const userDocRef = !userLoading && user?.uid && firestore ? doc(firestore, 'users', user.uid) : null;
+  useEffect(() => {
+    setIsSearchVisible(true);
+    setSearchPlaceholder("Search campaigns by title, goal, location...");
+    return () => {
+      setIsSearchVisible(false);
+      setSearchTerm("");
+    };
+  }, [setIsSearchVisible, setSearchPlaceholder, setSearchTerm]);
+
+  const userDocRef = user?.uid && firestore ? doc(firestore, 'users', user.uid) : null;
   const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userDocRef);
 
   const campaignsQuery = firestore ? query(collection(firestore, 'campaigns'), orderBy('createdAt', 'desc')) : null;
   const { data: campaigns, loading: campaignsLoading } = useCollection<Campaign>(campaignsQuery);
 
-  const joinedCampaignsQuery = !userLoading && user?.uid && firestore ? query(collection(firestore, `users/${user.uid}/joinedCampaigns`)) : null;
+  const joinedCampaignsQuery = user?.uid && firestore ? query(collection(firestore, `users/${user.uid}/joinedCampaigns`)) : null;
   const { data: joinedCampaigns, loading: joinedCampaignsLoading } = useCollection<JoinedCampaign>(joinedCampaignsQuery);
   
   const loading = userLoading || profileLoading || campaignsLoading || joinedCampaignsLoading;
@@ -102,28 +108,19 @@ export default function CampaignsPage() {
     const activeCampaigns = campaigns?.filter(c => c.status !== 'deleted');
 
     const filtered = activeCampaigns?.filter((campaign) => {
-      const locationLower = campaign.location.toLowerCase();
-      
-      const dateMatch = (() => {
-        if (!dateFilter) return true;
+      if (!searchTerm) return true;
+      const term = searchTerm.toLowerCase();
 
-        const campaignStartDate = safeToDate(campaign.startDate);
-        const campaignEndDate = safeToDate(campaign.endDate);
-        if (!campaignStartDate || !campaignEndDate) return false;
+      const searchableFields = [
+        campaign.title,
+        campaign.description,
+        campaign.goal,
+        campaign.location,
+        campaign.organizerName,
+        campaign.scripture
+      ];
 
-        const campaignStartDay = new Date(campaignStartDate.getFullYear(), campaignStartDate.getMonth(), campaignStartDate.getDate());
-        const campaignEndDay = new Date(campaignEndDate.getFullYear(), campaignEndDate.getMonth(), campaignEndDate.getDate());
-
-        const dateFilterDay = new Date(dateFilter.getFullYear(), dateFilter.getMonth(), dateFilter.getDate());
-
-        return dateFilterDay >= campaignStartDay && dateFilterDay <= campaignEndDay;
-      })();
-
-      return (
-        (!cityFilter || locationLower.includes(cityFilter.toLowerCase())) &&
-        (!countryFilter || locationLower.includes(countryFilter.toLowerCase())) &&
-        dateMatch
-      );
+      return searchableFields.some(field => field && field.toLowerCase().includes(term));
     });
 
     if (!filtered) return [];
@@ -136,7 +133,6 @@ export default function CampaignsPage() {
       const endDate = safeToDate(campaign.endDate);
       if (!startDate || !endDate) return 3; // Past
       
-      // Set time to end of day for end date to include the whole day
       endDate.setHours(23, 59, 59, 999);
 
       if (endDate < now) return 3; // Past
@@ -145,14 +141,12 @@ export default function CampaignsPage() {
     };
 
     return filtered.sort((a, b) => {
-      // 1. Sort by status (Ongoing > Upcoming > Past)
       const statusA = getStatus(a);
       const statusB = getStatus(b);
       if (statusA !== statusB) {
         return statusA - statusB;
       }
 
-      // 2. Within each status, sort by location proximity
       if (userLocation) {
         const aLocation = a.location.toLowerCase();
         const bLocation = b.location.toLowerCase();
@@ -163,7 +157,6 @@ export default function CampaignsPage() {
         if (!isLocalA && isLocalB) return 1;
       }
 
-      // 3. Finally, sort by start date (ascending, sooner campaigns first)
       const startDateA = safeToDate(a.startDate);
       const startDateB = safeToDate(b.startDate);
       if (startDateA && startDateB) {
@@ -174,7 +167,7 @@ export default function CampaignsPage() {
       return 0;
     });
 
-  }, [campaigns, cityFilter, countryFilter, dateFilter, userProfile]);
+  }, [campaigns, searchTerm, userProfile]);
 
   const triggerButton = (
     <Button disabled={!user}>
@@ -225,41 +218,6 @@ export default function CampaignsPage() {
         )}
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
-        <Input
-          placeholder="Filter by city..."
-          value={cityFilter}
-          onChange={(e) => setCityFilter(e.target.value)}
-          className="text-base"
-        />
-        <Input
-          placeholder="Filter by country..."
-          value={countryFilter}
-          onChange={(e) => setCountryFilter(e.target.value)}
-          className="text-base"
-        />
-        <div className="relative">
-          <Input
-            type="date"
-            value={dateFilter ? format(dateFilter, "yyyy-MM-dd") : ""}
-            onChange={(e) =>
-              setDateFilter(e.target.value ? new Date(e.target.value + "T00:00:00") : null)
-            }
-            className="text-base"
-          />
-           {dateFilter && (
-            <Button
-              variant="ghost"
-              size="icon"
-              className="absolute right-1 top-1 h-8 w-8"
-              onClick={() => setDateFilter(null)}
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          )}
-        </div>
-      </div>
-
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {loading && <CampaignSkeletons />}
         {sortedAndFilteredCampaigns?.map((campaign) => (
@@ -271,6 +229,9 @@ export default function CampaignsPage() {
             allCampaigns={campaigns || []}
           />
         ))}
+         {!loading && sortedAndFilteredCampaigns?.length === 0 && (
+          <p className="text-muted-foreground col-span-full text-center">No campaigns found.</p>
+        )}
       </div>
     </div>
   );

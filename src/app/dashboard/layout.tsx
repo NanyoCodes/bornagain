@@ -36,6 +36,7 @@ import { cn } from "@/lib/utils";
 import { useUser, useAuth } from "@/firebase";
 import { signOut } from "firebase/auth";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
+import { SearchProvider, useSearch } from "@/context/search-context";
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: Home },
@@ -51,6 +52,7 @@ function AppHeader() {
   const auth = useAuth();
   const router = useRouter();
   const logo = PlaceHolderImages.find((img) => img.id === "logo");
+  const { searchTerm, setSearchTerm, searchPlaceholder, isSearchVisible } = useSearch();
 
 
   const handleLogout = async () => {
@@ -91,16 +93,20 @@ function AppHeader() {
       </div>
         
       <div className="flex items-center gap-2 md:gap-4">
-        <form className="hidden sm:block">
-          <div className="relative">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
-              type="search"
-              placeholder="Search..."
-              className="pl-8 sm:w-[200px] md:w-[250px] lg:w-[300px] text-base"
-            />
-          </div>
-        </form>
+        {isSearchVisible && (
+          <form className="hidden sm:block" onSubmit={(e) => e.preventDefault()}>
+            <div className="relative">
+              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                type="search"
+                placeholder={searchPlaceholder}
+                className="pl-8 sm:w-[200px] md:w-[250px] lg:w-[300px] text-base"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+          </form>
+        )}
         <ThemeToggle />
         <Button variant="ghost" size="icon" className="relative h-8 w-8" asChild>
             <Link href="/dashboard/chats">
@@ -200,7 +206,9 @@ export default function DashboardLayout({
   const router = useRouter();
 
   useEffect(() => {
-    if (!loading && !user) {
+    if (!loading && user) {
+      // Prefetch dashboard assets
+    } else if (!loading && !user) {
       router.push('/login');
     }
   }, [user, loading, router]);
@@ -215,10 +223,12 @@ export default function DashboardLayout({
   }
 
   return (
-    <div className="flex min-h-screen w-full flex-col bg-background">
-      <AppHeader />
-      <main className="flex w-full flex-1 flex-col p-4 pb-24 md:p-6 md:pb-8 lg:p-8 max-w-7xl mx-auto">{children}</main>
-      <BottomNavBar />
-    </div>
+    <SearchProvider>
+      <div className="flex min-h-screen w-full flex-col bg-background">
+        <AppHeader />
+        <main className="flex w-full flex-1 flex-col p-4 pb-24 md:p-6 md:pb-8 lg:p-8 max-w-7xl mx-auto">{children}</main>
+        <BottomNavBar />
+      </div>
+    </SearchProvider>
   );
 }
