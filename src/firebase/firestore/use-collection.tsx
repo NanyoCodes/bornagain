@@ -3,6 +3,8 @@
 import { useState, useEffect, useMemo } from 'react';
 import type { Query, DocumentData, SnapshotOptions, FirestoreError } from 'firebase/firestore';
 import { onSnapshot } from 'firebase/firestore';
+import { errorEmitter } from '../error-emitter';
+import { FirestorePermissionError } from '../errors';
 
 interface UseCollectionOptions {
   snapshotOptions?: SnapshotOptions;
@@ -14,6 +16,7 @@ const useMemoizedQuery = (query: Query<DocumentData> | null): Query<DocumentData
 
   return useMemo(() => {
     return query;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [queryKey]);
 };
 
@@ -52,13 +55,19 @@ export function useCollection<T extends { id: string }>(
         setError(null);
       },
       (err) => {
-        console.error("Firestore Error in useCollection:", err);
+        const permissionError = new FirestorePermissionError({
+          path: memoizedQuery.path,
+          operation: 'list',
+        });
+        errorEmitter.emit('permission-error', permissionError);
+        
         setError(err);
         setLoading(false);
       }
     );
 
     return () => unsubscribe();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [memoizedQuery, options?.snapshotOptions]);
 
   return { data, loading, error };
