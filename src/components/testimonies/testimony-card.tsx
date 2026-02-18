@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -112,9 +113,9 @@ export function TestimonyCard({ testimony }: { testimony: Testimony }) {
   return (
     <Card className="flex flex-col h-full overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300">
       <CardHeader className="flex flex-row items-start justify-between gap-4">
-        <div className="flex items-center gap-3">
+        <div className="flex flex-1 items-center gap-3 min-w-0">
           <Link href={`/dashboard/profile/${testimony.authorId}`} passHref>
-            <Avatar className="h-10 w-10 border">
+            <Avatar className="h-10 w-10 border shrink-0">
               <AvatarImage
                 src={testimony.authorAvatarUrl ?? undefined}
                 alt={testimony.authorName}
@@ -122,9 +123,9 @@ export function TestimonyCard({ testimony }: { testimony: Testimony }) {
               <AvatarFallback>{testimony.authorName?.charAt(0) ?? 'A'}</AvatarFallback>
             </Avatar>
           </Link>
-          <div>
+          <div className="min-w-0">
             <Link href={`/dashboard/profile/${testimony.authorId}`} passHref>
-              <CardTitle className="cursor-pointer hover:underline text-base font-semibold">{testimony.authorName}</CardTitle>
+              <CardTitle className="cursor-pointer hover:underline text-base font-semibold truncate">{testimony.authorName}</CardTitle>
             </Link>
             <CardDescription className="text-xs mt-1">
               {formatDistanceToNow(createdAtDate, { addSuffix: true })}
