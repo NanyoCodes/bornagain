@@ -14,6 +14,8 @@ import { useToast } from "@/hooks/use-toast";
 import { doc, setDoc } from "firebase/firestore";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { PhoneAuthForm } from "@/components/auth/phone-auth-form";
 
 export default function LoginPage() {
   const logo = PlaceHolderImages.find((img) => img.id === "logo");
@@ -97,7 +99,20 @@ export default function LoginPage() {
                 Enter your credentials to access your account
              </p>
           </div>
-          <LoginForm />
+          
+          <Tabs defaultValue="email" className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="email">Email</TabsTrigger>
+              <TabsTrigger value="phone">Phone</TabsTrigger>
+            </TabsList>
+            <TabsContent value="email">
+              <LoginForm />
+            </TabsContent>
+            <TabsContent value="phone">
+               <PhoneAuthForm />
+            </TabsContent>
+          </Tabs>
+
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
               <span className="w-full border-t" />

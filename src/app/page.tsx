@@ -14,6 +14,8 @@ import { useToast } from "@/hooks/use-toast";
 import { doc, setDoc } from "firebase/firestore";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { PhoneAuthForm } from "@/components/auth/phone-auth-form";
 
 
 export default function SignUpPage() {
@@ -99,28 +101,38 @@ export default function SignUpPage() {
               Enter your information to create an account
             </p>
           </div>
-          <div className="grid gap-4">
-            <SignUpForm />
-            <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t" />
-                </div>
-                <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-background px-2 text-muted-foreground">
-                    Or continue with
-                </span>
-                </div>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-                <Button variant="outline" onClick={() => handleSocialLogin('google')}>
-                <Icons.google className="mr-2 h-5 w-5" />
-                Google
-                </Button>
-                <Button variant="outline" onClick={() => handleSocialLogin('facebook')}>
-                <Icons.facebook className="mr-2 h-5 w-5 text-[#1877F2]" />
-                Facebook
-                </Button>
-            </div>
+          <Tabs defaultValue="email" className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="email">Email</TabsTrigger>
+                <TabsTrigger value="phone">Phone</TabsTrigger>
+            </TabsList>
+            <TabsContent value="email">
+                <SignUpForm />
+            </TabsContent>
+            <TabsContent value="phone">
+                <PhoneAuthForm />
+            </TabsContent>
+          </Tabs>
+          
+          <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-background px-2 text-muted-foreground">
+                  Or continue with
+              </span>
+              </div>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+              <Button variant="outline" onClick={() => handleSocialLogin('google')}>
+              <Icons.google className="mr-2 h-5 w-5" />
+              Google
+              </Button>
+              <Button variant="outline" onClick={() => handleSocialLogin('facebook')}>
+              <Icons.facebook className="mr-2 h-5 w-5 text-[#1877F2]" />
+              Facebook
+              </Button>
           </div>
           <div className="mt-4 text-center text-sm">
             Already have an account?{" "}

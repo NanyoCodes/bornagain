@@ -252,7 +252,8 @@
     "providers": [
       "email",
       "google.com",
-      "facebook.com"
+      "facebook.com",
+      "phone"
     ]
   },
   "firestore": {
