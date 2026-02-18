@@ -95,7 +95,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
       }
 
       // Step 2: Prepare the data for Firestore update.
-      const firestoreUpdatePayload = {
+      const firestoreUpdatePayload: any = {
         displayName: values.displayName,
         bio: values.bio || "",
         location: values.location || "",
@@ -116,19 +116,23 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
       });
 
       // Step 4: Update Firebase Auth profile.
-      await updateProfile(user, {
-        displayName: values.displayName,
-        photoURL: newPhotoURL ?? null,
-      });
+      if (auth.currentUser) {
+        await updateProfile(auth.currentUser, {
+          displayName: values.displayName,
+          photoURL: newPhotoURL ?? null,
+        });
+      }
       
       toast({ title: "Profile Updated", description: "Your changes have been saved." });
       onClose();
 
     } catch (error: any) {
       console.error("Profile update error:", error);
-       // If the error is our custom permission error, it has already been emitted and will be
-       // handled by the global error listener. We don't need a duplicate toast.
-       if (error.name !== 'FirestorePermissionError') {
+       if (error.name === 'FirestorePermissionError') {
+         // This was already handled by the emitter, do nothing.
+       } else if (error.code?.startsWith('storage/')) {
+         toast({ variant: 'destructive', title: "Image Upload Failed", description: "Please check your network and storage permissions." });
+       } else {
          toast({ variant: 'destructive', title: "Update Failed", description: error.message || "Could not update profile." });
        }
     } finally {
@@ -197,7 +201,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
             <FormItem>
               <FormLabel>Phone</FormLabel>
               <FormControl>
-                <Input placeholder="+1 234 567 890" {...field} value={field.value ?? ""} className="text-base" />
+                <Input placeholder="123 456 7890" {...field} value={field.value ?? ""} className="text-base" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -211,3 +215,5 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
     </Form>
   );
 }
+
+    

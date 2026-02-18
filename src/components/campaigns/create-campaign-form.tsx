@@ -27,6 +27,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useUser, useFirestore, useStorage } from "@/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { errorEmitter } from "@/firebase/error-emitter";
+import { FirestorePermissionError } from "@/firebase/errors";
 
 const formSchema = z.object({
   goal: z.string({
@@ -110,32 +112,49 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
     }
     
     setIsCreating(true);
+
+    const campaignCollectionRef = collection(firestore, 'campaigns');
+    const campaignData: any = {
+      title: finalName,
+      description: finalDescription,
+      goal: form.getValues('goal'),
+      location: `${form.getValues('city')}, ${form.getValues('country')}`,
+      participants: 1,
+      progress: 0,
+      imageUrl: '', // Will be set after upload
+      createdAt: serverTimestamp(),
+      organizerId: user.uid,
+      organizerName: user.displayName || 'Anonymous',
+    };
     
     try {
       // 1. Upload photo to Firebase Storage
       const imageRef = ref(storage, `campaign-images/${user.uid}/${Date.now()}-${photoFile.name}`);
       const snapshot = await uploadBytes(imageRef, photoFile);
-      const imageUrl = await getDownloadURL(snapshot.ref);
+      campaignData.imageUrl = await getDownloadURL(snapshot.ref);
 
       // 2. Add campaign document to Firestore
-      await addDoc(collection(firestore, 'campaigns'), {
-        title: finalName,
-        description: finalDescription,
-        goal: form.getValues('goal'),
-        location: `${form.getValues('city')}, ${form.getValues('country')}`,
-        participants: 1,
-        progress: 0,
-        imageUrl: imageUrl,
-        createdAt: serverTimestamp(),
-        organizerId: user.uid,
-        organizerName: user.displayName || 'Anonymous',
+      await addDoc(campaignCollectionRef, campaignData).catch((serverError) => {
+        const permissionError = new FirestorePermissionError({
+          path: campaignCollectionRef.path,
+          operation: 'create',
+          requestResourceData: campaignData,
+        });
+        errorEmitter.emit('permission-error', permissionError);
+        throw permissionError; // Re-throw to be caught by the outer catch
       });
       
       toast({ title: 'Campaign Created!', description: `The "${finalName}" campaign is now ready.` });
       onCampaignCreated();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error creating campaign: ", error);
-      toast({ variant: 'destructive', title: 'Error', description: 'Could not create campaign. Please check your connection and try again.' });
+      if (error.name === 'FirestorePermissionError') {
+        // This was already handled by the emitter, do nothing.
+      } else if (error.code?.startsWith('storage/')) {
+        toast({ variant: 'destructive', title: 'Image Upload Failed', description: 'Could not upload campaign image. Please check permissions and try again.' });
+      } else {
+        toast({ variant: 'destructive', title: 'Error', description: 'Could not create campaign. Please check your connection and try again.' });
+      }
     } finally {
       setIsCreating(false);
     }
@@ -281,3 +300,5 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
     </>
   );
 }
+
+    

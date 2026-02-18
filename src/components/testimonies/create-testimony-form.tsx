@@ -86,17 +86,18 @@ export function CreateTestimonyForm({ onTestimonyCreated }: CreateTestimonyFormP
     setIsSubmitting(true);
 
     const testimonyCollectionRef = collection(firestore, "testimonies");
-    const baseData = {
-        authorId: user.uid,
-        authorName: user.displayName || user.email || 'Anonymous',
-        authorAvatarUrl: user.photoURL || null,
-        content: values.content,
-        createdAt: serverTimestamp(),
-        category: values.category as TestimonyCategory,
-    };
 
     try {
-      let testimonyData = { ...baseData, mediaUrl: null, mediaType: null };
+      const testimonyData: any = {
+          authorId: user.uid,
+          authorName: user.displayName || user.email || 'Anonymous',
+          authorAvatarUrl: user.photoURL || null,
+          content: values.content,
+          createdAt: serverTimestamp(),
+          category: values.category as TestimonyCategory,
+          mediaUrl: null,
+          mediaType: null,
+      };
 
       if (mediaFile) {
         const fileMediaType = mediaFile.type.startsWith('image') ? 'image' : mediaFile.type.startsWith('video') ? 'video' : mediaFile.type.startsWith('audio') ? 'audio' : undefined;
@@ -119,7 +120,15 @@ export function CreateTestimonyForm({ onTestimonyCreated }: CreateTestimonyFormP
         }
       }
       
-      await addDoc(testimonyCollectionRef, testimonyData);
+      await addDoc(testimonyCollectionRef, testimonyData).catch((serverError) => {
+        const permissionError = new FirestorePermissionError({
+            path: testimonyCollectionRef.path,
+            operation: 'create',
+            requestResourceData: testimonyData,
+        });
+        errorEmitter.emit('permission-error', permissionError);
+        throw permissionError; // Re-throw
+      });
 
       toast({
         title: "Testimony Submitted!",
@@ -130,13 +139,14 @@ export function CreateTestimonyForm({ onTestimonyCreated }: CreateTestimonyFormP
 
     } catch (error: any) {
         console.error("Submission error:", error);
-        if (error.code && error.code.includes('permission-denied')) {
-            const permissionError = new FirestorePermissionError({
-                path: testimonyCollectionRef.path,
-                operation: 'create',
-                requestResourceData: baseData,
+        if (error.name === 'FirestorePermissionError') {
+            // handled by emitter
+        } else if (error.code?.startsWith('storage/')) {
+            toast({
+                variant: "destructive",
+                title: "Media Upload Failed",
+                description: "Could not upload your media file. Please try again.",
             });
-            errorEmitter.emit('permission-error', permissionError);
         } else {
              toast({
                 variant: "destructive",
@@ -184,7 +194,7 @@ export function CreateTestimonyForm({ onTestimonyCreated }: CreateTestimonyFormP
               <FormControl>
                 <Textarea
                   placeholder="Share the details of what God has done..."
-                  className="min-h-[150px]"
+                  className="min-h-[150px] text-base"
                   {...field}
                 />
               </FormControl>
@@ -211,3 +221,5 @@ export function CreateTestimonyForm({ onTestimonyCreated }: CreateTestimonyFormP
     </Form>
   );
 }
+
+    

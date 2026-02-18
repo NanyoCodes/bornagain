@@ -25,6 +25,8 @@ import { useFirestore, useStorage, useUser } from "@/firebase";
 import { doc, updateDoc, serverTimestamp } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
 import Image from "next/image";
+import { errorEmitter } from "@/firebase/error-emitter";
+import { FirestorePermissionError } from "@/firebase/errors";
 
 const testimonyCategories: TestimonyCategory[] = ['Healing', 'Financial Breakthrough', 'Salvation', 'Relationships', 'Deliverance', 'General'];
 
@@ -103,7 +105,8 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
     try {
       const testimonyRef = doc(firestore, "testimonies", testimony.id);
       const testimonyUpdate: { [key: string]: any } = {
-        ...values,
+        category: values.category,
+        content: values.content,
         updatedAt: serverTimestamp(),
       };
 
@@ -154,20 +157,39 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
         testimonyUpdate.mediaType = null;
       }
 
-      await updateDoc(testimonyRef, testimonyUpdate);
+      await updateDoc(testimonyRef, testimonyUpdate).catch((serverError) => {
+        const permissionError = new FirestorePermissionError({
+          path: testimonyRef.path,
+          operation: 'update',
+          requestResourceData: testimonyUpdate,
+        });
+        errorEmitter.emit('permission-error', permissionError);
+        throw permissionError; // Re-throw
+      });
+
 
       toast({
         title: "Testimony Updated!",
         description: "Your changes have been saved successfully.",
       });
       onTestimonyUpdated();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Update error:", error);
-      toast({
-        variant: "destructive",
-        title: "Update Error",
-        description: "An unexpected error occurred. Please try again.",
-      });
+      if (error.name === 'FirestorePermissionError') {
+        // Handled by emitter
+      } else if (error.code?.startsWith('storage/')) {
+        toast({
+            variant: "destructive",
+            title: "Media Update Failed",
+            description: "Could not upload or remove your media file. Please try again.",
+        });
+      } else {
+        toast({
+            variant: "destructive",
+            title: "Update Error",
+            description: error.message || "An unexpected error occurred. Please try again.",
+        });
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -201,7 +223,7 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
             <FormItem>
               <FormLabel>Your Testimony</FormLabel>
               <FormControl>
-                <Textarea className="min-h-[150px]" {...field} />
+                <Textarea className="min-h-[150px] text-base" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -234,3 +256,5 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
     </Form>
   );
 }
+
+    
