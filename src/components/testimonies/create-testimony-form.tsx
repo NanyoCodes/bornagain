@@ -24,6 +24,8 @@ import type { TestimonyCategory } from "@/lib/types";
 import { useUser, useFirestore, useStorage } from "@/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { FirestorePermissionError } from "@/firebase/errors";
+import { errorEmitter } from "@/firebase/error-emitter";
 
 
 const MAX_FILE_SIZE_MB = 5;
@@ -84,9 +86,26 @@ export function CreateTestimonyForm({ onTestimonyCreated }: CreateTestimonyFormP
     }
 
     setIsSubmitting(true);
+    
+    const testimonyCollectionRef = collection(firestore, "testimonies");
+    let testimonyData: { [key: string]: any } = {};
 
     try {
-      const testimonyData: { [key: string]: any } = {
+      let mediaUrl: string | null = null;
+      let mediaType: 'image' | 'video' | 'audio' | null = null;
+
+      if (mediaFile) {
+        const fileMediaType = mediaFile.type.startsWith('image') ? 'image' : mediaFile.type.startsWith('video') ? 'video' : mediaFile.type.startsWith('audio') ? 'audio' : undefined;
+
+        if (fileMediaType) {
+          const fileRef = ref(storage, `testimonies/${user.uid}/${Date.now()}-${mediaFile.name}`);
+          const snapshot = await uploadBytes(fileRef, mediaFile);
+          mediaUrl = await getDownloadURL(snapshot.ref);
+          mediaType = fileMediaType;
+        }
+      }
+      
+      testimonyData = {
         authorId: user.uid,
         authorName: user.displayName || user.email || 'Anonymous',
         authorAvatarUrl: user.photoURL || null,
@@ -94,30 +113,11 @@ export function CreateTestimonyForm({ onTestimonyCreated }: CreateTestimonyFormP
         content: values.content,
         createdAt: serverTimestamp(),
         category: values.category as TestimonyCategory,
-        mediaUrl: null,
-        mediaType: null,
+        mediaUrl: mediaUrl,
+        mediaType: mediaType,
       };
 
-      if (mediaFile) {
-        let mediaType: 'image' | 'video' | 'audio' | undefined;
-        if (mediaFile.type.startsWith('image')) {
-          mediaType = 'image';
-        } else if (mediaFile.type.startsWith('video')) {
-          mediaType = 'video';
-        } else if (mediaFile.type.startsWith('audio')) {
-          mediaType = 'audio';
-        }
-
-        if (mediaType) {
-          const fileRef = ref(storage, `testimonies/${user.uid}/${Date.now()}-${mediaFile.name}`);
-          const snapshot = await uploadBytes(fileRef, mediaFile);
-          const mediaUrl = await getDownloadURL(snapshot.ref);
-          testimonyData.mediaUrl = mediaUrl;
-          testimonyData.mediaType = mediaType;
-        }
-      }
-
-      await addDoc(collection(firestore, "testimonies"), testimonyData);
+      await addDoc(testimonyCollectionRef, testimonyData);
 
       toast({
         title: "Testimony Submitted!",
@@ -126,13 +126,23 @@ export function CreateTestimonyForm({ onTestimonyCreated }: CreateTestimonyFormP
       
       onTestimonyCreated();
 
-    } catch (error) {
-      console.error("Submission error:", error);
-      toast({
-        variant: "destructive",
-        title: "Submission Error",
-        description: "An unexpected error occurred. Please try again.",
-      });
+    } catch (error: any) {
+        console.error("Submission error:", error);
+        // Check if it's a Firestore permission error and emit a rich error
+        if (error.code && error.code.includes('permission-denied')) {
+            const permissionError = new FirestorePermissionError({
+                path: testimonyCollectionRef.path,
+                operation: 'create',
+                requestResourceData: testimonyData,
+            });
+            errorEmitter.emit('permission-error', permissionError);
+        } else {
+             toast({
+                variant: "destructive",
+                title: "Submission Error",
+                description: error.message || "An unexpected error occurred. Please try again.",
+            });
+        }
     } finally {
       setIsSubmitting(false);
     }
