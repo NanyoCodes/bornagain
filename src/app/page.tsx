@@ -132,12 +132,12 @@ export default function SignUpPage() {
       </div>
       <div className="hidden bg-muted lg:block">
         <Image
-          src="https://images.unsplash.com/photo-1583484963886-74b91b125233?q=80&w=1974&auto=format&fit=crop"
-          alt="An open bible on a wooden table."
+          src="https://images.unsplash.com/photo-1600714226481-1f78bae21075?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fGJpYmxlJTIwdGVzdGltb25pZXN8ZW58MHx8MHx8fDA%3D"
+          alt="A Bible on a wooden table with a plant."
           width="1920"
           height="1080"
           className="h-screen w-full object-cover dark:brightness-[0.7]"
-          data-ai-hint="open bible"
+          data-ai-hint="bible plant"
         />
       </div>
     </div>
