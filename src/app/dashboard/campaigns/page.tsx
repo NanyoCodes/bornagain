@@ -64,7 +64,7 @@ export default function CampaignsPage() {
   const userDocRef = user ? doc(firestore, 'users', user.uid) : null;
   const { data: userProfile } = useDoc<UserProfile>(userDocRef);
 
-  const campaignsQuery = query(collection(firestore, 'campaigns'), where('status', '!=', 'deleted'), orderBy('createdAt', 'desc'));
+  const campaignsQuery = user ? query(collection(firestore, 'campaigns'), where('status', '!=', 'deleted'), orderBy('createdAt', 'desc')) : null;
   const { data: campaigns, loading } = useCollection<Campaign>(campaignsQuery);
 
   const joinedCampaignsQuery = user ? query(collection(firestore, `users/${user.uid}/joinedCampaigns`)) : null;

@@ -33,7 +33,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useCollection, useFirestore } from "@/firebase";
+import { useCollection, useFirestore, useUser } from "@/firebase";
 import { collection, query, where, orderBy } from "firebase/firestore";
 import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card";
 
@@ -53,16 +53,18 @@ export default function TestimoniesPage() {
   const [mounted, setMounted] = useState(false);
   const isMobile = useIsMobile();
 
+  const { user } = useUser();
   const firestore = useFirestore();
 
-  const testimoniesQuery =
+  const testimoniesQuery = user ? (
     filter === "All"
       ? query(collection(firestore, "testimonies"), orderBy("createdAt", "desc"))
       : query(
           collection(firestore, "testimonies"),
           where("category", "==", filter),
           orderBy("createdAt", "desc")
-        );
+        )
+    ) : null;
 
   const { data: testimonies, loading } = useCollection<Testimony>(testimoniesQuery);
 

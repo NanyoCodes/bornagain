@@ -54,7 +54,7 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
   const [isDeleting, setIsDeleting] = useState(false);
   const [isLogSoulOpen, setIsLogSoulOpen] = useState(false);
 
-  const campaignsQuery = query(collection(firestore, 'campaigns'), orderBy('createdAt', 'desc'));
+  const campaignsQuery = user ? query(collection(firestore, 'campaigns'), orderBy('createdAt', 'desc')) : null;
   const { data: allCampaigns } = useCollection<Campaign>(campaignsQuery);
 
 

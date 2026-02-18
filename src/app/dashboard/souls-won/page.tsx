@@ -38,7 +38,7 @@ export default function SoulsWonPage() {
   const { data: souls, loading: loadingSouls } = useCollection<Soul>(soulsQuery);
 
   // Fetch campaigns for the form dropdown
-  const campaignsQuery = query(collection(firestore, 'campaigns'), orderBy('createdAt', 'desc'));
+  const campaignsQuery = user ? query(collection(firestore, 'campaigns'), orderBy('createdAt', 'desc')) : null;
   const { data: campaigns } = useCollection<Campaign>(campaignsQuery);
 
 
