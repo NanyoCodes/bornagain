@@ -99,7 +99,7 @@ export function CreateTestimonyForm({ onTestimonyCreated }: CreateTestimonyFormP
 
       if (result.status === "approved" || result.status === "edited") {
         
-        await addDoc(collection(firestore, "testimonies"), {
+        const testimonyData: { [key: string]: any } = {
           authorId: user.uid,
           authorName: user.displayName,
           authorAvatarUrl: user.photoURL,
@@ -108,9 +108,16 @@ export function CreateTestimonyForm({ onTestimonyCreated }: CreateTestimonyFormP
           likes: 0,
           createdAt: serverTimestamp(),
           category: values.category as TestimonyCategory,
-          mediaUrl,
-          mediaType,
-        });
+        };
+        
+        if (mediaUrl) {
+          testimonyData.mediaUrl = mediaUrl;
+        }
+        if (mediaType) {
+          testimonyData.mediaType = mediaType;
+        }
+
+        await addDoc(collection(firestore, "testimonies"), testimonyData);
 
         toast({
           title: "Testimony Submitted!",
