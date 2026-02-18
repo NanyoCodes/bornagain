@@ -1,3 +1,4 @@
+
 "use client";
 
 import Image from "next/image";
@@ -15,6 +16,7 @@ import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PhoneAuthForm } from "@/components/auth/phone-auth-form";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function LoginPage() {
   const logo = PlaceHolderImages.find((img) => img.id === "logo");
@@ -78,36 +80,35 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="w-full lg:grid lg:min-h-screen lg:grid-cols-2">
-      <div className="flex items-center justify-center py-12 px-4">
-        <div className="mx-auto grid w-full max-w-xs gap-6">
-          <div className="grid gap-2 text-center">
+    <div className="flex min-h-screen w-full items-center justify-center bg-muted p-4">
+      <Card className="w-full max-w-sm">
+        <CardHeader className="text-center">
             {logo && (
-              <Image
+                <Image
                 src={logo.imageUrl}
                 alt={logo.description}
-                width={200}
-                height={61}
+                width={150}
+                height={45}
                 className="mx-auto"
                 data-ai-hint={logo.imageHint}
                 priority
-              />
+                />
             )}
-             <h1 className="text-3xl font-bold tracking-tight mt-4">Welcome Back</h1>
-             <p className="text-balance text-muted-foreground">
+            <CardTitle className="text-2xl mt-4">Welcome Back</CardTitle>
+            <CardDescription>
                 Enter your credentials to access your account
-             </p>
-          </div>
-          
+            </CardDescription>
+        </CardHeader>
+        <CardContent className="grid gap-4">
           <Tabs defaultValue="email" className="w-full">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="email">Email</TabsTrigger>
               <TabsTrigger value="phone">Phone</TabsTrigger>
             </TabsList>
-            <TabsContent value="email">
+            <TabsContent value="email" className="pt-4">
               <LoginForm />
             </TabsContent>
-            <TabsContent value="phone">
+            <TabsContent value="phone" className="pt-4">
                <PhoneAuthForm />
             </TabsContent>
           </Tabs>
@@ -117,7 +118,7 @@ export default function LoginPage() {
               <span className="w-full border-t" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">
+              <span className="bg-card px-2 text-muted-foreground">
                 Or continue with
               </span>
             </div>
@@ -132,24 +133,16 @@ export default function LoginPage() {
               Facebook
             </Button>
           </div>
-          <div className="mt-4 text-center text-sm">
+        </CardContent>
+        <CardFooter className="flex justify-center text-sm">
+            <p>
             Don&apos;t have an account?{" "}
-            <Link href="/" className="underline">
+            <Link href="/" className="underline font-semibold">
               Sign up
             </Link>
-          </div>
-        </div>
-      </div>
-      <div className="hidden bg-muted lg:block">
-        <Image
-          src="https://images.unsplash.com/photo-1600714226481-1f78bae21075?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fGJpYmxlJTIwdGVzdGltb25pZXN8ZW58MHx8MHx8fDA%3D"
-          alt="A Bible on a wooden table with a plant."
-          width="1920"
-          height="1080"
-          className="h-screen w-full object-cover dark:brightness-[0.7]"
-          data-ai-hint="bible plant"
-        />
-      </div>
+            </p>
+        </CardFooter>
+      </Card>
     </div>
   );
 }
