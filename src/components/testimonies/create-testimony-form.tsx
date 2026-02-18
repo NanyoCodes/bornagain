@@ -19,10 +19,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
-import { Loader2, Sparkles } from "lucide-react";
-import { moderateContent } from "@/ai/flows/moderate-content-flow";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Badge } from "@/components/ui/badge";
+import { Loader2 } from "lucide-react";
 import type { TestimonyCategory } from "@/lib/types";
 import { useUser, useFirestore, useStorage } from "@/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
@@ -47,7 +44,6 @@ type CreateTestimonyFormProps = {
 export function CreateTestimonyForm({ onTestimonyCreated }: CreateTestimonyFormProps) {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [moderationResult, setModerationResult] = useState<any>(null);
   const [mediaFile, setMediaFile] = useState<File | null>(null);
   
   const { user } = useUser();
@@ -88,61 +84,48 @@ export function CreateTestimonyForm({ onTestimonyCreated }: CreateTestimonyFormP
     }
 
     setIsSubmitting(true);
-    setModerationResult(null);
 
     try {
-      const result = await moderateContent({ content: values.content, contentType: 'testimony' });
-      setModerationResult(result);
+      const testimonyData: { [key: string]: any } = {
+        authorId: user.uid,
+        authorName: user.displayName || user.email || 'Anonymous',
+        authorAvatarUrl: user.photoURL || null,
+        title: values.title,
+        content: values.content,
+        createdAt: serverTimestamp(),
+        category: values.category as TestimonyCategory,
+        mediaUrl: null,
+        mediaType: null,
+      };
 
-      if (result.status === "approved" || result.status === "edited") {
-        
-        const testimonyData: { [key: string]: any } = {
-          authorId: user.uid,
-          authorName: user.displayName || user.email || 'Anonymous',
-          authorAvatarUrl: user.photoURL || null,
-          title: values.title,
-          content: result.moderatedContent || values.content,
-          createdAt: serverTimestamp(),
-          category: values.category as TestimonyCategory,
-          mediaUrl: null,
-          mediaType: null,
-        };
-
-        if (mediaFile) {
-          let mediaType: 'image' | 'video' | 'audio' | undefined;
-          if (mediaFile.type.startsWith('image')) {
-            mediaType = 'image';
-          } else if (mediaFile.type.startsWith('video')) {
-            mediaType = 'video';
-          } else if (mediaFile.type.startsWith('audio')) {
-            mediaType = 'audio';
-          }
-
-          if (mediaType) {
-            const fileRef = ref(storage, `testimonies/${user.uid}/${Date.now()}-${mediaFile.name}`);
-            const snapshot = await uploadBytes(fileRef, mediaFile);
-            const mediaUrl = await getDownloadURL(snapshot.ref);
-            testimonyData.mediaUrl = mediaUrl;
-            testimonyData.mediaType = mediaType;
-          }
+      if (mediaFile) {
+        let mediaType: 'image' | 'video' | 'audio' | undefined;
+        if (mediaFile.type.startsWith('image')) {
+          mediaType = 'image';
+        } else if (mediaFile.type.startsWith('video')) {
+          mediaType = 'video';
+        } else if (mediaFile.type.startsWith('audio')) {
+          mediaType = 'audio';
         }
 
-        await addDoc(collection(firestore, "testimonies"), testimonyData);
-
-        toast({
-          title: "Testimony Submitted!",
-          description: "Thank you for sharing. Your testimony is now live.",
-        });
-        
-        onTestimonyCreated();
-
-      } else {
-        toast({
-          variant: result.status === 'rejected' ? 'destructive' : 'default',
-          title: `Moderation Result: ${result.status.replace('_', ' ')}`,
-          description: result.reason,
-        });
+        if (mediaType) {
+          const fileRef = ref(storage, `testimonies/${user.uid}/${Date.now()}-${mediaFile.name}`);
+          const snapshot = await uploadBytes(fileRef, mediaFile);
+          const mediaUrl = await getDownloadURL(snapshot.ref);
+          testimonyData.mediaUrl = mediaUrl;
+          testimonyData.mediaType = mediaType;
+        }
       }
+
+      await addDoc(collection(firestore, "testimonies"), testimonyData);
+
+      toast({
+        title: "Testimony Submitted!",
+        description: "Thank you for sharing. Your testimony is now live.",
+      });
+      
+      onTestimonyCreated();
+
     } catch (error) {
       console.error("Submission error:", error);
       toast({
@@ -222,19 +205,6 @@ export function CreateTestimonyForm({ onTestimonyCreated }: CreateTestimonyFormP
               Optional. Add one photo, video, or audio file. Max size: {MAX_FILE_SIZE_MB}MB.
             </FormDescription>
         </div>
-        
-        {moderationResult && (
-          <Alert variant={moderationResult.status === 'rejected' ? 'destructive' : 'default'}>
-            <Sparkles className="h-4 w-4" />
-            <div className="flex items-center justify-between">
-              <AlertTitle>AI Moderation Result</AlertTitle>
-              <Badge variant={moderationResult.status === 'approved' || moderationResult.status === 'edited' ? 'secondary' : 'destructive'}>{moderationResult.status.replace('_', ' ')}</Badge>
-            </div>
-            <AlertDescription>
-              {moderationResult.reason}
-            </AlertDescription>
-          </Alert>
-        )}
 
         <Button type="submit" className="w-full" disabled={isSubmitting}>
           {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
