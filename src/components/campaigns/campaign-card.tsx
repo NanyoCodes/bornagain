@@ -1,9 +1,8 @@
-
 "use client";
 
 import Link from "next/link";
 import { format, formatDistanceToNow, parse, isSameDay } from "date-fns";
-import { CalendarDays, MapPin, Users, Share2, Clock, Edit, Trash2, MoreVertical, Loader2, MessageSquare, BookOpen } from "lucide-react";
+import { CalendarDays, MapPin, Users, Share2, Edit, Trash2, MoreVertical, Loader2, MessageSquare } from "lucide-react";
 import type { Campaign } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -36,7 +35,7 @@ import {
 } from "@/components/ui/dialog";
 import { useFirestore, useUser } from "@/firebase";
 import { collection, serverTimestamp, setDoc, updateDoc, increment, query, where, limit, getDocs, addDoc, doc } from "firebase/firestore";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { ManageCampaignForm } from "./manage-campaign-form";
 import { Textarea } from "../ui/textarea";
 import { errorEmitter } from "@/firebase/error-emitter";
@@ -57,6 +56,26 @@ export function CampaignCard({ campaign, userId, isJoined, allCampaigns }: { cam
   const [isDeleting, setIsDeleting] = useState(false);
   const [isLogSoulOpen, setIsLogSoulOpen] = useState(false);
   const [isChatLoading, setIsChatLoading] = useState(false);
+
+  const descriptionRef = useRef<HTMLParagraphElement>(null);
+  const [isDescriptionTruncated, setIsDescriptionTruncated] = useState(false);
+  const [showFullDescription, setShowFullDescription] = useState(false);
+
+  useEffect(() => {
+    if (descriptionRef.current) {
+      // We need to check after a small delay to ensure rendering is complete
+      const checkTruncation = () => {
+        if (descriptionRef.current) {
+          setIsDescriptionTruncated(
+            descriptionRef.current.scrollHeight > descriptionRef.current.clientHeight
+          );
+        }
+      };
+      setTimeout(checkTruncation, 100); // A small delay
+      window.addEventListener('resize', checkTruncation); // Re-check on resize
+      return () => window.removeEventListener('resize', checkTruncation);
+    }
+  }, [campaign.description]);
 
 
   const handleJoin = async () => {
@@ -451,7 +470,25 @@ export function CampaignCard({ campaign, userId, isJoined, allCampaigns }: { cam
         </CardHeader>
         <CardContent className="p-6 pt-0 flex-grow space-y-4">
             
-            <p className="text-muted-foreground text-sm line-clamp-3">{campaign.description}</p>
+            <div className="space-y-1">
+                <p ref={descriptionRef} className="text-muted-foreground text-sm line-clamp-3">{campaign.description}</p>
+                {isDescriptionTruncated && (
+                    <Dialog open={showFullDescription} onOpenChange={setShowFullDescription}>
+                        <DialogTrigger asChild>
+                        <Button variant="link" className="p-0 h-auto text-sm">Read More</Button>
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-md">
+                        <DialogHeader>
+                            <DialogTitle>{campaign.title}</DialogTitle>
+                            <DialogDescription>Full Campaign Description</DialogDescription>
+                        </DialogHeader>
+                        <div className="max-h-[60vh] overflow-y-auto pr-4">
+                            <p className="text-sm text-muted-foreground whitespace-pre-wrap">{campaign.description}</p>
+                        </div>
+                        </DialogContent>
+                    </Dialog>
+                )}
+            </div>
             
             {campaign.scripture && (
                 <blockquote className="mt-4 border-l-2 pl-4 italic text-muted-foreground">

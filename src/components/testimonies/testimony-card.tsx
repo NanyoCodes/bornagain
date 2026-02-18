@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from "next/link";
@@ -17,7 +16,7 @@ import { Testimony } from "@/lib/types";
 import { formatDistanceToNow } from "date-fns";
 import { Share2, MoreVertical, Edit, Trash2, Loader2 } from "lucide-react";
 import { useUser, useFirestore } from "@/firebase";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -39,10 +38,30 @@ export function TestimonyCard({ testimony }: { testimony: Testimony }) {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
+  const contentRef = useRef<HTMLParagraphElement>(null);
+  const [isContentTruncated, setIsContentTruncated] = useState(false);
+  const [showFullContent, setShowFullContent] = useState(false);
+
   const isAuthor = user?.uid === testimony.authorId;
   const createdAtDate = testimony.createdAt
     ? new Date(testimony.createdAt.seconds * 1000)
     : new Date();
+
+    useEffect(() => {
+        const checkTruncation = () => {
+          if (contentRef.current) {
+            setIsContentTruncated(
+              contentRef.current.scrollHeight > contentRef.current.clientHeight
+            );
+          }
+        };
+    
+        // We need to check after a small delay to ensure rendering is complete
+        setTimeout(checkTruncation, 100);
+        window.addEventListener('resize', checkTruncation);
+    
+        return () => window.removeEventListener('resize', checkTruncation);
+      }, [testimony.content]);
 
   const handleDelete = async () => {
     if (!isAuthor || !firestore) return;
@@ -115,9 +134,25 @@ export function TestimonyCard({ testimony }: { testimony: Testimony }) {
         <Badge variant="secondary" className="shrink-0">{testimony.category}</Badge>
       </CardHeader>
       <CardContent className="flex-grow py-0">
-        <p className="text-sm text-muted-foreground whitespace-pre-wrap line-clamp-6">
+        <p ref={contentRef} className="text-sm text-muted-foreground whitespace-pre-wrap line-clamp-6">
           {testimony.content}
         </p>
+         {isContentTruncated && (
+            <Dialog open={showFullContent} onOpenChange={setShowFullContent}>
+                <DialogTrigger asChild>
+                    <Button variant="link" className="p-0 h-auto text-sm -mt-2">Read More</Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-lg">
+                    <DialogHeader>
+                        <DialogTitle>Testimony by {testimony.authorName}</DialogTitle>
+                        <DialogDescription>Category: {testimony.category}</DialogDescription>
+                    </DialogHeader>
+                    <div className="max-h-[60vh] overflow-y-auto pr-4">
+                        <p className="text-sm text-muted-foreground whitespace-pre-wrap">{testimony.content}</p>
+                    </div>
+                </DialogContent>
+            </Dialog>
+        )}
       </CardContent>
       <CardFooter className="pt-4 flex justify-end">
         <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
