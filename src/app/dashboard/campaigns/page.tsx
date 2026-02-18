@@ -241,6 +241,7 @@ export default function CampaignsPage() {
             campaign={campaign} 
             userId={user?.uid}
             isJoined={joinedCampaignIds.has(campaign.id)}
+            allCampaigns={campaigns || []}
           />
         ))}
       </div>

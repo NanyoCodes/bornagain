@@ -35,8 +35,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { useCollection, useFirestore, useUser } from "@/firebase";
-import { doc, serverTimestamp, setDoc, updateDoc, increment, query, collection, orderBy } from "firebase/firestore";
+import { useFirestore, useUser } from "@/firebase";
+import { doc, serverTimestamp, setDoc, updateDoc, increment } from "firebase/firestore";
 import { useState } from "react";
 import { ManageCampaignForm } from "./manage-campaign-form";
 import { Textarea } from "../ui/textarea";
@@ -44,7 +44,7 @@ import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { LogSoulForm } from "../souls/log-soul-form";
 
-export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaign; userId?: string, isJoined: boolean }) {
+export function CampaignCard({ campaign, userId, isJoined, allCampaigns }: { campaign: Campaign; userId?: string, isJoined: boolean, allCampaigns?: Campaign[] }) {
   const { toast } = useToast();
   const firestore = useFirestore();
   const { user } = useUser();
@@ -53,10 +53,6 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
   const [deleteReason, setDeleteReason] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
   const [isLogSoulOpen, setIsLogSoulOpen] = useState(false);
-
-  const campaignsQuery = user ? query(collection(firestore, 'campaigns'), orderBy('createdAt', 'desc')) : null;
-  const { data: allCampaigns } = useCollection<Campaign>(campaignsQuery);
-
 
   const handleJoin = async () => {
     if (!user || !firestore) return;
