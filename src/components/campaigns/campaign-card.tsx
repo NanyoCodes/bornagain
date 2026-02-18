@@ -340,8 +340,9 @@ export function CampaignCard({ campaign, userId, isJoined, allCampaigns }: { cam
   const renderParticipantActions = () => (
     <div className="flex items-center gap-2">
       {LogSoulDialog}
-      <Button variant="secondary" disabled>
-        Joined
+      <Button onClick={() => setIsChatOpen(true)} variant="outline">
+        <MessageSquare className="mr-2 h-4 w-4" />
+        Chat
       </Button>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
