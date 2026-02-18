@@ -46,6 +46,10 @@ export type Campaign = {
   createdAt: Timestamp;
   organizerId: string;
   organizerName: string;
+  status?: 'active' | 'deleted';
+  lastUpdateReason?: string;
+  deletionReason?: string;
+  deletedAt?: Timestamp;
 };
 
 export type JoinedCampaign = {

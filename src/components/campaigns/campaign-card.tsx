@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { format, formatDistanceToNow, parse, isSameDay } from "date-fns";
-import { CalendarDays, MapPin, Users, Share2, Clock, Edit } from "lucide-react";
+import { CalendarDays, MapPin, Users, Share2, Clock, Edit, Trash2, MoreVertical, Loader2 } from "lucide-react";
 import type { Campaign } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,7 +14,19 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator
 } from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import {
   Dialog,
   DialogContent,
@@ -27,6 +39,7 @@ import { useFirestore, useUser } from "@/firebase";
 import { doc, serverTimestamp, setDoc, updateDoc, increment } from "firebase/firestore";
 import { useState } from "react";
 import { ManageCampaignForm } from "./manage-campaign-form";
+import { Textarea } from "../ui/textarea";
 
 export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaign; userId?: string, isJoined: boolean }) {
   const { toast } = useToast();
@@ -34,6 +47,8 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
   const { user } = useUser();
   const isOwner = campaign.organizerId === userId;
   const [isManageOpen, setIsManageOpen] = useState(false);
+  const [deleteReason, setDeleteReason] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const handleJoin = async () => {
     if (!user || !firestore) return;
@@ -59,6 +74,32 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
       toast({ variant: 'destructive', title: "Error", description: "Could not join campaign." });
     }
   };
+  
+  const handleDeleteCampaign = async () => {
+    if (!user || !firestore) return;
+    if (deleteReason.length < 10) {
+        toast({ variant: 'destructive', title: 'Reason Required', description: 'Please provide a deletion reason of at least 10 characters.' });
+        return;
+    }
+    setIsDeleting(true);
+    try {
+        const campaignRef = doc(firestore, 'campaigns', campaign.id);
+        const deleteData = {
+            status: 'deleted',
+            deletionReason: deleteReason,
+            deletedAt: serverTimestamp(),
+        };
+        await updateDoc(campaignRef, deleteData);
+
+        toast({ title: 'Campaign Deleted', description: 'The campaign has been successfully deleted.' });
+    } catch (error) {
+        console.error('Delete error:', error);
+        toast({ variant: 'destructive', title: 'Delete Error', description: 'Could not delete the campaign.' });
+    } finally {
+        setIsDeleting(false);
+    }
+  };
+
 
   const handleShare = (platform: "link" | "facebook" | "twitter") => {
     const url = typeof window !== "undefined" ? window.location.origin + '/dashboard/campaigns' : '';
@@ -113,12 +154,51 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
   const renderOwnerActions = () => (
     <div className="flex items-center gap-2">
       <Dialog open={isManageOpen} onOpenChange={setIsManageOpen}>
-        <DialogTrigger asChild>
-          <Button variant="secondary">
-            <Edit className="mr-2 h-4 w-4" />
-            Manage
-          </Button>
-        </DialogTrigger>
+        <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="icon">
+                    <MoreVertical className="h-4 w-4" />
+                </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+                <DialogTrigger asChild>
+                    <DropdownMenuItem>
+                        <Edit className="mr-2 h-4 w-4" />
+                        Manage
+                    </DropdownMenuItem>
+                </DialogTrigger>
+                <DropdownMenuSeparator />
+                 <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                        <DropdownMenuItem className="text-destructive focus:text-destructive">
+                             <Trash2 className="mr-2 h-4 w-4" />
+                             Delete
+                        </DropdownMenuItem>
+                    </AlertDialogTrigger>
+                     <AlertDialogContent>
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                                This will mark the campaign as deleted and hide it from public view. Please provide a reason for deleting this campaign.
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <Textarea 
+                            placeholder="Reason for deletion..."
+                            value={deleteReason}
+                            onChange={(e) => setDeleteReason(e.target.value)}
+                        />
+                        <AlertDialogFooter>
+                            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+                            <AlertDialogAction onClick={handleDeleteCampaign} disabled={isDeleting}>
+                                {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                Confirm Deletion
+                            </AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
+            </DropdownMenuContent>
+        </DropdownMenu>
+
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
             <DialogTitle>Manage Campaign</DialogTitle>

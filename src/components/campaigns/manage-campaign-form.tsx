@@ -20,6 +20,7 @@ import { Textarea } from '../ui/textarea';
 const formSchema = z.object({
   progress: z.number().min(0).max(100),
   description: z.string().min(3, "Description is too short.").max(5000, "Description is too long."),
+  lastUpdateReason: z.string().min(10, { message: "Please provide a reason of at least 10 characters." }),
 });
 
 type ManageCampaignFormProps = {
@@ -38,6 +39,7 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
     defaultValues: {
       progress: campaign.progress || 0,
       description: campaign.description || "",
+      lastUpdateReason: "",
     },
   });
 
@@ -58,6 +60,7 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
       const updateData = {
         progress: values.progress,
         description: values.description,
+        lastUpdateReason: values.lastUpdateReason,
       };
 
       await updateDoc(campaignRef, updateData).catch((serverError) => {
@@ -118,6 +121,19 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
                   max={100}
                   step={1}
                 />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+         <FormField
+          control={form.control}
+          name="lastUpdateReason"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Reason for Update</FormLabel>
+              <FormControl>
+                <Input placeholder="e.g., Updated progress after event" {...field} className="text-base" />
               </FormControl>
               <FormMessage />
             </FormItem>

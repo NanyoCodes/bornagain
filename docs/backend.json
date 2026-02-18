@@ -113,6 +113,26 @@
         },
         "organizerName": {
           "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "active",
+            "deleted"
+          ],
+          "description": "The current status of the campaign."
+        },
+        "lastUpdateReason": {
+          "type": "string",
+          "description": "The reason for the last update."
+        },
+        "deletionReason": {
+          "type": "string",
+          "description": "The reason for deleting the campaign."
+        },
+        "deletedAt": {
+          "type": "object",
+          "description": "Timestamp when the campaign was deleted."
         }
       },
       "required": [

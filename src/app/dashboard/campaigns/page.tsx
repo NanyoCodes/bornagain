@@ -26,7 +26,7 @@ import type { Campaign, JoinedCampaign, UserProfile } from "@/lib/types";
 import { Input } from "@/components/ui/input";
 import { useCollection, useFirestore, useUser } from "@/firebase";
 import { useDoc } from "@/firebase/firestore/use-doc";
-import { collection, query, orderBy, doc } from "firebase/firestore";
+import { collection, query, orderBy, doc, where } from "firebase/firestore";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { format } from "date-fns";
@@ -64,7 +64,7 @@ export default function CampaignsPage() {
   const userDocRef = user ? doc(firestore, 'users', user.uid) : null;
   const { data: userProfile } = useDoc<UserProfile>(userDocRef);
 
-  const campaignsQuery = query(collection(firestore, 'campaigns'), orderBy('createdAt', 'desc'));
+  const campaignsQuery = query(collection(firestore, 'campaigns'), where('status', '!=', 'deleted'), orderBy('createdAt', 'desc'));
   const { data: campaigns, loading } = useCollection<Campaign>(campaignsQuery);
 
   const joinedCampaignsQuery = user ? query(collection(firestore, `users/${user.uid}/joinedCampaigns`)) : null;
@@ -80,7 +80,9 @@ export default function CampaignsPage() {
   };
 
   const sortedAndFilteredCampaigns = useMemo(() => {
-    const filtered = campaigns?.filter((campaign) => {
+    const activeCampaigns = campaigns?.filter(c => c.status !== 'deleted');
+
+    const filtered = activeCampaigns?.filter((campaign) => {
       const locationLower = campaign.location.toLowerCase();
       if (!campaign.startDate || !campaign.endDate) return false;
 
