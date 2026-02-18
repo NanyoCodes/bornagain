@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from "next/link";
@@ -30,6 +29,8 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { useToast } from "@/hooks/use-toast";
 import { doc, deleteDoc } from "firebase/firestore";
 import { EditTestimonyForm } from "./edit-testimony-form";
+import { errorEmitter } from "@/firebase/error-emitter";
+import { FirestorePermissionError } from "@/firebase/errors";
 
 export function TestimonyCard({ testimony }: { testimony: Testimony }) {
   const { user } = useUser();
@@ -68,20 +69,21 @@ export function TestimonyCard({ testimony }: { testimony: Testimony }) {
     if (!isAuthor || !firestore) return;
 
     setIsDeleting(true);
+    const testimonyRef = doc(firestore, "testimonies", testimony.id);
     try {
-      await deleteDoc(doc(firestore, "testimonies", testimony.id));
+      await deleteDoc(testimonyRef);
       toast({
         title: "Testimony Deleted",
         description: "Your testimony has been successfully removed.",
       });
+      // Do not set isDeleting to false; the component will unmount.
     } catch (error) {
       console.error("Error deleting testimony:", error);
-      toast({
-        variant: "destructive",
-        title: "Deletion Failed",
-        description: "Could not delete the testimony. Please try again.",
+      const permissionError = new FirestorePermissionError({
+          path: testimonyRef.path,
+          operation: 'delete',
       });
-    } finally {
+      errorEmitter.emit('permission-error', permissionError);
       setIsDeleting(false);
     }
   };
