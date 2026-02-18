@@ -412,7 +412,7 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
                     <AlertDialogTrigger asChild>
                         <Button variant="destructive">Delete Campaign</Button>
                     </AlertDialogTrigger>
-                    <AlertDialogContent>
+                    <AlertDialogContent onPointerDownOutside={(e) => e.preventDefault()}>
                         <AlertDialogHeader>
                             <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                             <AlertDialogDescription>
