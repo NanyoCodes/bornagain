@@ -77,10 +77,6 @@ export function PhoneAuthForm() {
   useEffect(() => {
     if (!auth) return;
 
-    if (window.recaptchaVerifier) {
-        window.recaptchaVerifier.clear();
-    }
-
     const verifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
       'size': 'invisible',
       'callback': (response: any) => {
@@ -111,7 +107,7 @@ export function PhoneAuthForm() {
     }
     
     const appVerifier = window.recaptchaVerifier;
-    const phoneNumber = `+${values.phone.replace(/\D/g, '')}`;
+    const phoneNumber = values.phone.startsWith('+') ? values.phone : `+${values.phone.replace(/\D/g, '')}`;
 
     try {
       const confirmationResult = await signInWithPhoneNumber(auth, phoneNumber, appVerifier);
