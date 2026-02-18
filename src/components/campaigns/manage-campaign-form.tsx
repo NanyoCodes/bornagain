@@ -10,7 +10,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Mail } from 'lucide-react';
 import { useCollection, useFirestore, useUser } from '@/firebase';
-import { collection, doc, updateDoc } from 'firebase/firestore';
+import { collection, doc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import type { Campaign, CampaignParticipant } from '@/lib/types';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
@@ -19,6 +19,26 @@ import { Separator } from '../ui/separator';
 import { Skeleton } from '../ui/skeleton';
 import { Input } from '../ui/input';
 import { format } from 'date-fns';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { query } from 'firebase/firestore';
+
 
 const formSchema = z.object({
   title: z.string().min(3, "Title is too short.").max(100, "Title is too long."),
@@ -45,7 +65,7 @@ type ManageCampaignFormProps = {
 
 function ParticipantList({ campaignId }: { campaignId: string }) {
   const firestore = useFirestore();
-  const participantsQuery = collection(firestore, 'campaigns', campaignId, 'participants');
+  const participantsQuery = firestore ? query(collection(firestore, 'campaigns', campaignId, 'participants')) : null;
   const { data: participants, loading } = useCollection<CampaignParticipant>(participantsQuery);
 
   if (loading) {
@@ -86,6 +106,9 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
   const { user } = useUser();
   const firestore = useFirestore();
 
+  const [deleteReason, setDeleteReason] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
+
   const locationParts = campaign.location.split(',');
   const city = locationParts[0]?.trim() || '';
   const country = locationParts[1]?.trim() || '';
@@ -106,6 +129,44 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
       lastUpdateReason: "",
     },
   });
+
+    const handleDeleteCampaign = async () => {
+    if (!user || !firestore) return;
+    if (deleteReason.length < 10) {
+        toast({ variant: 'destructive', title: 'Reason Required', description: 'Please provide a deletion reason of at least 10 characters.' });
+        return;
+    }
+    setIsDeleting(true);
+    try {
+        const campaignRef = doc(firestore, 'campaigns', campaign.id);
+        const deleteData: { [key: string]: any } = {
+            status: 'deleted',
+            deletionReason: deleteReason,
+            deletedAt: serverTimestamp(),
+        };
+        
+        await updateDoc(campaignRef, deleteData).catch((serverError) => {
+            const permissionError = new FirestorePermissionError({
+                path: campaignRef.path,
+                operation: 'update',
+                requestResourceData: deleteData,
+            });
+            errorEmitter.emit('permission-error', permissionError);
+            throw permissionError;
+        });
+
+        toast({ title: 'Campaign Deleted', description: 'The campaign has been successfully deleted.' });
+        onCampaignUpdated();
+    } catch (error: any) {
+        console.error('Delete error:', error);
+        if (error.name !== 'FirestorePermissionError') {
+             toast({ variant: 'destructive', title: 'Delete Error', description: 'Could not delete the campaign.' });
+        }
+    } finally {
+        setIsDeleting(false);
+    }
+  };
+
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (!user || !firestore) {
@@ -338,6 +399,42 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
         <Separator />
 
         <ParticipantList campaignId={campaign.id} />
+
+        <Separator />
+
+         <Card className="border-destructive mt-6">
+            <CardHeader>
+                <CardTitle className="text-destructive">Delete Campaign</CardTitle>
+                <CardDescription>This action cannot be undone and will permanently remove the campaign from public view.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                        <Button variant="destructive">Delete Campaign</Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                                This will mark the campaign as deleted and hide it from public view. Please provide a reason for deleting this campaign.
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <Textarea 
+                            placeholder="Reason for deletion..."
+                            value={deleteReason}
+                            onChange={(e) => setDeleteReason(e.target.value)}
+                        />
+                        <AlertDialogFooter>
+                            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+                            <AlertDialogAction onClick={handleDeleteCampaign} disabled={isDeleting}>
+                                {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                Confirm Deletion
+                            </AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
+            </CardContent>
+        </Card>
     </div>
   );
 }
