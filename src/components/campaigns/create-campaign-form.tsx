@@ -1,4 +1,3 @@
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -71,7 +70,7 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
       city: "",
       country: "",
       targetAudience: "",
-      time: "10:00 AM",
+      time: "10:00",
     },
   });
 
@@ -253,6 +252,9 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
                           mode="single"
                           selected={field.value}
                           onSelect={field.onChange}
+                          disabled={(date) =>
+                            date < new Date(new Date().setHours(0, 0, 0, 0))
+                          }
                           initialFocus
                         />
                       </PopoverContent>
