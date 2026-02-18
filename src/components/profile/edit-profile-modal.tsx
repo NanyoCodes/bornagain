@@ -131,7 +131,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
        if (error.name === 'FirestorePermissionError') {
          // This was already handled by the emitter, do nothing.
        } else if (error.code?.startsWith('storage/')) {
-         toast({ variant: 'destructive', title: "Image Upload Failed", description: "Please check your network and storage permissions." });
+         toast({ variant: 'destructive', title: 'Image Upload Failed', description: 'Could not upload your profile picture. Please check permissions and try again.' });
        } else {
          toast({ variant: 'destructive', title: "Update Failed", description: error.message || "Could not update profile." });
        }
@@ -152,7 +152,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                         {userProfile.displayName?.charAt(0) || userProfile.email?.charAt(0)}
                     </AvatarFallback>
                 </Avatar>
-                <Input id="picture" type="file" accept="image/*" onChange={handleFileChange} className="max-w-xs text-base" />
+                <Input id="picture" type="file" accept="image/jpeg,image/png" onChange={handleFileChange} className="max-w-xs text-base" />
             </div>
         </div>
         <FormField
@@ -215,5 +215,3 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
     </Form>
   );
 }
-
-    

@@ -241,7 +241,7 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
             </div>
           )}
           <FormControl>
-            <Input id="media-edit" type="file" accept="image/*,video/*,audio/*" onChange={handleFileChange} />
+            <Input id="media-edit" type="file" accept="image/jpeg,image/png,video/*,audio/*" onChange={handleFileChange} />
           </FormControl>
           <FormDescription>
             Replace or remove the current media. Max size: {MAX_FILE_SIZE_MB}MB.
@@ -256,5 +256,3 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
     </Form>
   );
 }
-
-    

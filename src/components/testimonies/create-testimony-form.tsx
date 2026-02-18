@@ -145,7 +145,7 @@ export function CreateTestimonyForm({ onTestimonyCreated }: CreateTestimonyFormP
             toast({
                 variant: "destructive",
                 title: "Media Upload Failed",
-                description: "Could not upload your media file. Please try again.",
+                description: "Could not upload your media file. Please check permissions and try again.",
             });
         } else {
              toast({
@@ -206,7 +206,7 @@ export function CreateTestimonyForm({ onTestimonyCreated }: CreateTestimonyFormP
         <div className="space-y-2">
             <FormLabel htmlFor="media">Add Photo, Video, or Audio</FormLabel>
             <FormControl>
-              <Input id="media" type="file" accept="image/*,video/*,audio/*" onChange={handleFileChange} />
+              <Input id="media" type="file" accept="image/jpeg,image/png,video/*,audio/*" onChange={handleFileChange} />
             </FormControl>
             <FormDescription>
               Optional. Add one photo, video, or audio file. Max size: {MAX_FILE_SIZE_MB}MB.
@@ -221,5 +221,3 @@ export function CreateTestimonyForm({ onTestimonyCreated }: CreateTestimonyFormP
     </Form>
   );
 }
-
-    

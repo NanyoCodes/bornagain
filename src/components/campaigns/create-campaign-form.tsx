@@ -282,7 +282,7 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
               </div>
               <div className="space-y-2">
                 <Label htmlFor="photo">Campaign Photo</Label>
-                <Input id="photo" type="file" accept="image/*" onChange={(e) => setPhotoFile(e.target.files?.[0] ?? null)} />
+                <Input id="photo" type="file" accept="image/jpeg,image/png" onChange={(e) => setPhotoFile(e.target.files?.[0] ?? null)} />
                 <FormDescription>A photo is required for the campaign.</FormDescription>
               </div>
               <div>
@@ -300,5 +300,3 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
     </>
   );
 }
-
-    
