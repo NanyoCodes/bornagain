@@ -104,6 +104,8 @@ export function CreateTestimonyForm({ onTestimonyCreated }: CreateTestimonyFormP
           content: result.moderatedContent || values.content,
           createdAt: serverTimestamp(),
           category: values.category as TestimonyCategory,
+          mediaUrl: null,
+          mediaType: null,
         };
 
         if (mediaFile) {
