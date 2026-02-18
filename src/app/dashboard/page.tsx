@@ -1,3 +1,4 @@
+
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -17,7 +18,7 @@ function RecentTestimonies() {
   const { data: testimonies, loading } = useCollection<Testimony>(testimoniesQuery);
 
   return (
-    <Card className="col-span-12 lg:col-span-4">
+    <Card className="lg:col-span-2">
         <CardHeader className="flex flex-row items-center">
           <div className="grid gap-2">
             <CardTitle>Recent Testimonies</CardTitle>
@@ -70,7 +71,7 @@ function ActiveCampaigns() {
   const { data: campaigns, loading } = useCollection<Campaign>(campaignsQuery);
 
   return (
-    <Card className="col-span-12 lg:col-span-3">
+    <Card>
         <CardHeader className="flex flex-row items-center">
             <CardTitle>Active Campaigns</CardTitle>
             <Button asChild size="sm" className="ml-auto gap-1">
@@ -153,7 +154,7 @@ export default function DashboardPage() {
         ))}
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <RecentTestimonies />
         <ActiveCampaigns />
       </div>

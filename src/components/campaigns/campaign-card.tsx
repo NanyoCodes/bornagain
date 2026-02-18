@@ -1,3 +1,4 @@
+
 "use client";
 
 import Image from "next/image";
@@ -99,7 +100,7 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
           <Progress value={campaign.progress} />
         </div>
       </CardContent>
-      <CardFooter className="p-6 pt-0 flex justify-between items-center">
+      <CardFooter className="p-6 pt-0 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <Users className="h-4 w-4" />
           <span>{campaign.participants} participants</span>

@@ -228,7 +228,7 @@ export default function DashboardLayout({
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
       <AppHeader />
-      <main className="flex flex-1 flex-col p-4 pb-24 md:p-6 md:pb-8 lg:p-8">{children}</main>
+      <main className="flex w-full flex-1 flex-col p-4 pb-24 md:p-6 md:pb-8 lg:p-8 max-w-screen-2xl mx-auto">{children}</main>
       <BottomNavBar />
     </div>
   );

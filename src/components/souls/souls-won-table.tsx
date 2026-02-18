@@ -104,9 +104,9 @@ function SoulCard({ soul, onUpdateSoul }: { soul: Soul, onUpdateSoul: SoulsWonTa
                  </div>
                  <div className="space-y-2">
                     <Label>Follow-up Milestones</Label>
-                    <div className="flex items-center space-x-4 rounded-md border p-4">
+                    <div className="flex items-center rounded-md border p-4">
                         <TooltipProvider>
-                            <div className="flex items-center gap-3">
+                            <div className="flex w-full items-center justify-around">
                                 <Tooltip>
                                     <TooltipTrigger asChild>
                                         <label className="flex items-center gap-1.5 cursor-pointer">
