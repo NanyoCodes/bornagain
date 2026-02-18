@@ -9,6 +9,7 @@ import {
   Bell,
   Home,
   LogOut,
+  MessageSquare,
   Newspaper,
   Search,
   Settings,
@@ -40,6 +41,7 @@ const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: Home },
   { href: "/dashboard/testimonies", label: "Testimonies", icon: Newspaper },
   { href: "/dashboard/campaigns", label: "Campaigns", icon: Target },
+  { href: "/dashboard/chats", label: "Chats", icon: MessageSquare },
   { href: "/dashboard/progress", label: "Progress", icon: TrendingUp },
   { href: "/dashboard/souls-won", label: "Souls Won", icon: UserPlus },
 ];
@@ -80,7 +82,7 @@ function AppHeader() {
                 href={item.href}
                 className={cn(
                 "transition-colors hover:text-foreground whitespace-nowrap",
-                pathname === item.href ? "text-foreground font-semibold" : "text-muted-foreground"
+                pathname.startsWith(item.href) && item.href !== '/dashboard' || pathname === item.href ? "text-foreground font-semibold" : "text-muted-foreground"
                 )}
             >
                 {item.label}
@@ -164,13 +166,13 @@ function BottomNavBar() {
   
     return (
       <nav className="fixed bottom-0 left-0 right-0 z-40 border-t bg-background md:hidden">
-        <div className="grid h-16 grid-cols-5 items-center">
+        <div className="grid h-16 grid-cols-6 items-center">
           {navItems.map((item) => (
             <Link
               key={item.href}
               href={item.href}
               className={cn(
-                "flex flex-col items-center justify-center gap-0.5 p-1 text-[11px] transition-colors hover:text-primary",
+                "flex flex-col items-center justify-center gap-0.5 p-1 text-[10px] transition-colors hover:text-primary",
                 (pathname.startsWith(item.href) && item.href !== '/dashboard') || pathname === item.href ? "text-primary" : "text-muted-foreground"
               )}
             >

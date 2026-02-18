@@ -36,7 +36,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useFirestore, useUser } from "@/firebase";
-import { doc, serverTimestamp, setDoc, updateDoc, increment } from "firebase/firestore";
+import { collection, serverTimestamp, setDoc, updateDoc, increment, query, where, limit, getDocs, addDoc, doc } from "firebase/firestore";
 import { useState } from "react";
 import { ManageCampaignForm } from "./manage-campaign-form";
 import { Textarea } from "../ui/textarea";
@@ -44,18 +44,21 @@ import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { LogSoulForm } from "../souls/log-soul-form";
 import { Badge } from "../ui/badge";
-import { PrivateChatDialog } from "./private-chat-dialog";
+import { useRouter } from "next/navigation";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip";
 
 export function CampaignCard({ campaign, userId, isJoined, allCampaigns }: { campaign: Campaign; userId?: string, isJoined: boolean, allCampaigns?: Campaign[] }) {
   const { toast } = useToast();
   const firestore = useFirestore();
   const { user } = useUser();
+  const router = useRouter();
   const isOwner = campaign.organizerId === userId;
   const [isManageOpen, setIsManageOpen] = useState(false);
   const [deleteReason, setDeleteReason] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
   const [isLogSoulOpen, setIsLogSoulOpen] = useState(false);
-  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [isChatLoading, setIsChatLoading] = useState(false);
+
 
   const handleJoin = async () => {
     if (!user || !firestore) return;
@@ -110,6 +113,59 @@ export function CampaignCard({ campaign, userId, isJoined, allCampaigns }: { cam
     }
   };
   
+  const handleInitiateChat = async () => {
+    if (!user || !firestore) {
+      toast({ variant: 'destructive', title: 'Please log in', description: 'You must be logged in to start a chat.' });
+      return;
+    }
+    setIsChatLoading(true);
+    try {
+      const participantIds = [user.uid, campaign.organizerId].sort();
+      const chatsRef = collection(firestore, 'chats');
+      const q = query(
+        chatsRef,
+        where('participantIds', '==', participantIds),
+        where('campaignId', '==', campaign.id),
+        limit(1)
+      );
+
+      const querySnapshot = await getDocs(q);
+      let chatId: string;
+
+      if (!querySnapshot.empty) {
+        chatId = querySnapshot.docs[0].id;
+      } else {
+         const newChatData = {
+              participantIds,
+              participantInfo: {
+                  [user.uid]: {
+                      displayName: user.displayName || 'User',
+                      photoURL: user.photoURL || '',
+                  },
+                  [campaign.organizerId]: {
+                      displayName: campaign.organizerName,
+                      photoURL: '', 
+                  },
+              },
+              campaignId: campaign.id,
+              campaignTitle: campaign.title,
+              lastMessageText: '',
+              lastUpdatedAt: serverTimestamp(),
+          };
+          const chatDocRef = await addDoc(chatsRef, newChatData);
+          chatId = chatDocRef.id;
+      }
+      router.push(`/dashboard/chats/${chatId}`);
+
+    } catch (error) {
+       console.error("Error initiating chat:", error);
+       toast({ variant: 'destructive', title: 'Chat Error', description: 'Could not start the chat session.'});
+    } finally {
+      setIsChatLoading(false);
+    }
+  }
+
+
   const handleDeleteCampaign = async () => {
     if (!user || !firestore) return;
     if (deleteReason.length < 10) {
@@ -251,6 +307,35 @@ export function CampaignCard({ campaign, userId, isJoined, allCampaigns }: { cam
     </Dialog>
   );
 
+  const ShareDropdown = (
+    <DropdownMenu>
+        <TooltipProvider>
+            <Tooltip>
+                <TooltipTrigger asChild>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="outline" size="icon">
+                            <Share2 className="h-4 w-4" />
+                            <span className="sr-only">Share</span>
+                        </Button>
+                    </DropdownMenuTrigger>
+                </TooltipTrigger>
+                <TooltipContent><p>Share Campaign</p></TooltipContent>
+            </Tooltip>
+        </TooltipProvider>
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem onClick={() => handleShare("link")}>
+            Copy Link
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => handleShare("facebook")}>
+            Share on Facebook
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => handleShare("twitter")}>
+            Share on Twitter (X)
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+  );
+
   const renderOwnerActions = () => (
     <div className="flex items-center gap-2">
       {LogSoulDialog}
@@ -315,63 +400,39 @@ export function CampaignCard({ campaign, userId, isJoined, allCampaigns }: { cam
           </div>
         </DialogContent>
       </Dialog>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="outline">
-            <Share2 className="mr-2 h-4 w-4" />
-            Share
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuItem onClick={() => handleShare("link")}>
-            Copy Link
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => handleShare("facebook")}>
-            Share on Facebook
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => handleShare("twitter")}>
-            Share on Twitter (X)
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      {ShareDropdown}
     </div>
   );
 
   const renderParticipantActions = () => (
     <div className="flex items-center gap-2">
       {LogSoulDialog}
-      <Button onClick={() => setIsChatOpen(true)} variant="outline">
-        <MessageSquare className="mr-2 h-4 w-4" />
-        Chat
-      </Button>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="outline">
-            <Share2 className="mr-2 h-4 w-4" />
-            Share
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuItem onClick={() => handleShare("link")}>
-            Copy Link
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => handleShare("facebook")}>
-            Share on Facebook
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => handleShare("twitter")}>
-            Share on Twitter (X)
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+       <TooltipProvider>
+        <Tooltip>
+            <TooltipTrigger asChild>
+                <Button onClick={handleInitiateChat} variant="outline" size="icon" disabled={isChatLoading}>
+                    {isChatLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <MessageSquare className="h-4 w-4" />}
+                </Button>
+            </TooltipTrigger>
+            <TooltipContent><p>Chat with Owner</p></TooltipContent>
+        </Tooltip>
+       </TooltipProvider>
+      {ShareDropdown}
     </div>
   );
 
   const renderVisitorActions = () => (
     <div className="flex items-center gap-2">
-        <Button onClick={() => setIsChatOpen(true)} variant="outline" disabled={!userId}>
-            <MessageSquare className="mr-2 h-4 w-4" />
-            Chat with Owner
-        </Button>
+        <TooltipProvider>
+            <Tooltip>
+                <TooltipTrigger asChild>
+                    <Button onClick={handleInitiateChat} variant="outline" size="icon" disabled={!userId || isChatLoading}>
+                         {isChatLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <MessageSquare className="h-4 w-4" />}
+                    </Button>
+                </TooltipTrigger>
+                <TooltipContent><p>Chat with Owner</p></TooltipContent>
+            </Tooltip>
+        </TooltipProvider>
         <Button onClick={handleJoin} disabled={!userId}>Join Campaign</Button>
     </div>
   );
@@ -441,15 +502,6 @@ export function CampaignCard({ campaign, userId, isJoined, allCampaigns }: { cam
             <span className="flex-shrink-0">{footerDateText}</span>
         </CardFooter>
         </Card>
-        {user && user.uid !== campaign.organizerId && (
-            <PrivateChatDialog 
-                isOpen={isChatOpen}
-                onOpenChange={setIsChatOpen}
-                ownerId={campaign.organizerId}
-                ownerName={campaign.organizerName}
-                campaign={campaign}
-            />
-        )}
     </>
   );
 }
