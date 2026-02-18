@@ -127,17 +127,29 @@ export default function DashboardPage() {
 
   const testimoniesThisMonth = useMemo(() => {
     if (!myTestimonies) return 0;
-    return myTestimonies.filter(t => t.createdAt && isSameMonth(t.createdAt.toDate(), now)).length;
+    return myTestimonies.filter(t => {
+      if (!t.createdAt) return false;
+      const createdAtDate = t.createdAt.toDate ? t.createdAt.toDate() : new Date(t.createdAt as any);
+      return isSameMonth(createdAtDate, now);
+    }).length;
   }, [myTestimonies, now]);
 
   const soulsWonThisMonth = useMemo(() => {
     if (!soulsWon) return 0;
-    return soulsWon.filter(s => s.wonAt && isSameMonth(s.wonAt.toDate(), now)).length;
+    return soulsWon.filter(s => {
+      if (!s.wonAt) return false;
+      const wonDate = s.wonAt.toDate ? s.wonAt.toDate() : new Date(s.wonAt as any);
+      return isSameMonth(wonDate, now);
+    }).length;
   }, [soulsWon, now]);
 
   const campaignsJoinedThisMonth = useMemo(() => {
     if (!joinedCampaigns) return 0;
-    return joinedCampaigns.filter(c => c.joinedAt && isSameMonth(c.joinedAt.toDate(), now)).length;
+    return joinedCampaigns.filter(c => {
+      if (!c.joinedAt) return false;
+      const joinedDate = c.joinedAt.toDate ? c.joinedAt.toDate() : new Date(c.joinedAt as any);
+      return isSameMonth(joinedDate, now)
+    }).length;
   }, [joinedCampaigns, now]);
 
   // TODO: Streak needs to be implemented

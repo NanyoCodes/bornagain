@@ -141,7 +141,7 @@ function SoulCard({ soul, onUpdateSoul }: { soul: Soul, onUpdateSoul: SoulsWonTa
             </CardContent>
             <CardFooter className="flex justify-between text-sm text-muted-foreground">
                 <span>{soul.source} {soul.sourceDetails ? `(${soul.sourceDetails})` : ''}</span>
-                <span>{soul.wonAt ? format(soul.wonAt.toDate(), "PPP") : ''}</span>
+                <span>{soul.wonAt ? format(soul.wonAt.toDate ? soul.wonAt.toDate() : new Date(soul.wonAt as any), "PPP") : ''}</span>
             </CardFooter>
         </Card>
     )
@@ -290,7 +290,7 @@ export function SoulsWonTable({ souls, onUpdateSoul, loading }: SoulsWonTablePro
                       </div>
                     </TooltipProvider>
                   </TableCell>
-                  <TableCell>{soul.wonAt ? format(soul.wonAt.toDate(), "PPP") : ''}</TableCell>
+                  <TableCell>{soul.wonAt ? format(soul.wonAt.toDate ? soul.wonAt.toDate() : new Date(soul.wonAt as any), "PPP") : ''}</TableCell>
                   <TableCell>
                     <div>{soul.source}</div>
                     {soul.sourceDetails && <div className="text-xs text-muted-foreground">{soul.sourceDetails}</div>}

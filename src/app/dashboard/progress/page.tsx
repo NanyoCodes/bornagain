@@ -52,7 +52,11 @@ export default function ProgressPage() {
 
   const soulsThisMonth = useMemo(() => {
     if (!souls) return 0;
-    return souls.filter(soul => soul.wonAt && isSameMonth(soul.wonAt.toDate(), goalDate)).length;
+    return souls.filter(soul => {
+      if (!soul.wonAt) return false;
+      const wonDate = soul.wonAt.toDate ? soul.wonAt.toDate() : new Date(soul.wonAt as any);
+      return isSameMonth(wonDate, goalDate);
+    }).length;
   }, [souls, goalDate]);
   
   const totalSoulsWon = souls?.length ?? 0;
@@ -72,7 +76,7 @@ export default function ProgressPage() {
 
     souls.forEach(soul => {
       if (soul.wonAt) {
-        const wonDate = soul.wonAt.toDate();
+        const wonDate = soul.wonAt.toDate ? soul.wonAt.toDate() : new Date(soul.wonAt as any);
         if (wonDate >= sixMonthsAgo) {
             const monthKey = format(wonDate, "MMM");
             if (monthlyData[monthKey]) {

@@ -81,7 +81,9 @@ export default function CampaignsPage() {
   const filteredCampaigns = useMemo(() => {
     return campaigns?.filter((campaign) => {
       const locationLower = campaign.location.toLowerCase();
-      const campaignDate = campaign.date.toDate();
+      if (!campaign.date) return false;
+      const campaignDate = campaign.date.toDate ? campaign.date.toDate() : new Date(campaign.date as any);
+      
       const campaignDay = new Date(campaignDate.getFullYear(), campaignDate.getMonth(), campaignDate.getDate());
 
       const dateFilterStart = dateFilter ? new Date(dateFilter.getFullYear(), dateFilter.getMonth(), dateFilter.getDate()) : null;
@@ -170,7 +172,7 @@ export default function CampaignsPage() {
                     {dateFilter ? format(dateFilter, "PPP") : <span>Filter by date...</span>}
                     </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
+                <PopoverContent className="w-auto p-0" onPointerDownOutside={(e) => e.preventDefault()}>
                     <Calendar
                     mode="single"
                     selected={dateFilter}

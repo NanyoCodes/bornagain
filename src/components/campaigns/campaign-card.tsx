@@ -1,3 +1,4 @@
+
 "use client";
 
 import Image from "next/image";
@@ -95,7 +96,7 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <CalendarDays className="h-4 w-4" />
           <span>
-            {campaign.date ? format(campaign.date.toDate(), "PPP") : "Date not set"} at {displayTime}
+            {campaign.date ? format(campaign.date.toDate ? campaign.date.toDate() : new Date(campaign.date as any), "PPP") : "Date not set"} at {displayTime}
           </span>
         </div>
         <p className="text-muted-foreground text-sm">{campaign.description}</p>
