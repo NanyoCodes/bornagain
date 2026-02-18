@@ -79,6 +79,14 @@ export default function CampaignsPage() {
     setIsDialogOpen(false);
   };
 
+  const safeToDate = (value: any): Date | null => {
+    if (!value) return null;
+    if (value instanceof Date) return value;
+    if (typeof value.toDate === 'function') return value.toDate();
+    const d = new Date(value);
+    return isNaN(d.getTime()) ? null : d;
+  };
+
   const sortedAndFilteredCampaigns = useMemo(() => {
     const activeCampaigns = campaigns?.filter(c => c.status !== 'deleted');
 
@@ -87,11 +95,11 @@ export default function CampaignsPage() {
       
       const dateMatch = (() => {
         if (!dateFilter) return true;
-        if (!campaign.startDate || !campaign.endDate) return false;
 
-        const campaignStartDate = campaign.startDate.toDate ? campaign.startDate.toDate() : new Date(campaign.startDate as any);
-        const campaignEndDate = campaign.endDate.toDate ? campaign.endDate.toDate() : new Date(campaign.endDate as any);
-        
+        const campaignStartDate = safeToDate(campaign.startDate);
+        const campaignEndDate = safeToDate(campaign.endDate);
+        if (!campaignStartDate || !campaignEndDate) return false;
+
         const campaignStartDay = new Date(campaignStartDate.getFullYear(), campaignStartDate.getMonth(), campaignStartDate.getDate());
         const campaignEndDay = new Date(campaignEndDate.getFullYear(), campaignEndDate.getMonth(), campaignEndDate.getDate());
 
@@ -113,9 +121,9 @@ export default function CampaignsPage() {
     const userLocation = userProfile?.location?.toLowerCase().trim();
 
     const getStatus = (campaign: Campaign): number => {
-      if (!campaign.startDate || !campaign.endDate) return 3; // Past
-      const startDate = campaign.startDate.toDate ? campaign.startDate.toDate() : new Date(campaign.startDate as any);
-      const endDate = campaign.endDate.toDate ? campaign.endDate.toDate() : new Date(campaign.endDate as any);
+      const startDate = safeToDate(campaign.startDate);
+      const endDate = safeToDate(campaign.endDate);
+      if (!startDate || !endDate) return 3; // Past
       
       // Set time to end of day for end date to include the whole day
       endDate.setHours(23, 59, 59, 999);
@@ -145,8 +153,8 @@ export default function CampaignsPage() {
       }
 
       // 3. Finally, sort by start date (ascending, sooner campaigns first)
-      const startDateA = a.startDate && (a.startDate.toDate ? a.startDate.toDate() : new Date(a.startDate as any));
-      const startDateB = b.startDate && (b.startDate.toDate ? b.startDate.toDate() : new Date(b.startDate as any));
+      const startDateA = safeToDate(a.startDate);
+      const startDateB = safeToDate(b.startDate);
       if (startDateA && startDateB) {
         return startDateA.getTime() - startDateB.getTime();
       }
@@ -256,5 +264,7 @@ export default function CampaignsPage() {
     </div>
   );
 }
+
+    
 
     

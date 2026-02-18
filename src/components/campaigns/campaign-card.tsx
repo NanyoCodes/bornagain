@@ -157,8 +157,16 @@ export function CampaignCard({ campaign, userId, isJoined, allCampaigns }: { cam
     }
   };
 
-  const startDate = campaign.startDate?.toDate ? campaign.startDate.toDate() : new Date(campaign.startDate as any);
-  const endDate = campaign.endDate?.toDate ? campaign.endDate.toDate() : new Date(campaign.endDate as any);
+  const safeToDate = (value: any): Date | null => {
+    if (!value) return null;
+    if (value instanceof Date) return value;
+    if (typeof value.toDate === 'function') return value.toDate();
+    const d = new Date(value);
+    return isNaN(d.getTime()) ? null : d;
+  };
+
+  const startDate = safeToDate(campaign.startDate);
+  const endDate = safeToDate(campaign.endDate);
 
   const startTimeFormatted = campaign.startTime && /^\d{2}:\d{2}$/.test(campaign.startTime)
     ? format(parse(campaign.startTime, 'HH:mm', new Date()), 'p')
@@ -380,3 +388,5 @@ export function CampaignCard({ campaign, userId, isJoined, allCampaigns }: { cam
     </Card>
   );
 }
+
+    
