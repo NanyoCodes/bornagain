@@ -106,7 +106,6 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
   const { user } = useUser();
   const firestore = useFirestore();
 
-  const [deleteReason, setDeleteReason] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
 
   const locationParts = campaign.location.split(',');
@@ -132,16 +131,12 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
 
     const handleDeleteCampaign = async () => {
     if (!user || !firestore) return;
-    if (deleteReason.length < 10) {
-        toast({ variant: 'destructive', title: 'Reason Required', description: 'Please provide a deletion reason of at least 10 characters.' });
-        return;
-    }
     setIsDeleting(true);
     try {
         const campaignRef = doc(firestore, 'campaigns', campaign.id);
         const deleteData: { [key: string]: any } = {
             status: 'deleted',
-            deletionReason: deleteReason,
+            deletionReason: 'Campaign deleted by organizer.',
             deletedAt: serverTimestamp(),
         };
         
@@ -412,18 +407,13 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
                     <AlertDialogTrigger asChild>
                         <Button variant="destructive">Delete Campaign</Button>
                     </AlertDialogTrigger>
-                    <AlertDialogContent onPointerDownOutside={(e) => e.preventDefault()}>
+                    <AlertDialogContent>
                         <AlertDialogHeader>
                             <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                             <AlertDialogDescription>
-                                This will mark the campaign as deleted and hide it from public view. Please provide a reason for deleting this campaign.
+                                This will mark the campaign as deleted and hide it from public view. This action cannot be undone.
                             </AlertDialogDescription>
                         </AlertDialogHeader>
-                        <Textarea 
-                            placeholder="Reason for deletion..."
-                            value={deleteReason}
-                            onChange={(e) => setDeleteReason(e.target.value)}
-                        />
                         <AlertDialogFooter>
                             <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
                             <AlertDialogAction onClick={handleDeleteCampaign} disabled={isDeleting}>
