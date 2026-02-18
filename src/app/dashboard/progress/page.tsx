@@ -186,7 +186,7 @@ export default function ProgressPage() {
                               <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                               </Button>
                           </PopoverTrigger>
-                          <PopoverContent className="w-auto p-0" align="start">
+                          <PopoverContent className="w-auto p-0" align="start" onPointerDownOutside={(e) => e.preventDefault()}>
                               <Calendar
                                 captionLayout="dropdown-buttons"
                                 fromYear={2020}

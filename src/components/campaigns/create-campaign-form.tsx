@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -247,7 +248,7 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
                           </Button>
                         </FormControl>
                       </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
+                      <PopoverContent className="w-auto p-0" align="start" onPointerDownOutside={(e) => e.preventDefault()}>
                         <Calendar
                           mode="single"
                           selected={field.value}
