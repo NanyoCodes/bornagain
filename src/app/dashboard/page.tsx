@@ -4,13 +4,14 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { formatDistanceToNow } from "date-fns";
+import { formatDistanceToNow, isSameMonth } from "date-fns";
 import Link from "next/link";
 import { ArrowUpRight, Newspaper, Target, TrendingUp, UserCheck2 } from "lucide-react";
 import { useCollection, useFirestore, useUser } from "@/firebase";
 import { collection, query, orderBy, limit, where } from "firebase/firestore";
 import type { Testimony, Campaign, Soul, JoinedCampaign } from "@/lib/types";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useMemo } from "react";
 
 function RecentTestimonies() {
   const firestore = useFirestore();
@@ -48,12 +49,12 @@ function RecentTestimonies() {
            {testimonies?.map(testimony => (
              <div key={testimony.id} className="flex items-start gap-4">
                 <Avatar className="h-9 w-9">
-                  <AvatarImage src={testimony.authorAvatarUrl} alt="Avatar" />
+                  <AvatarImage src={testimony.authorAvatarUrl ?? undefined} alt="Avatar" />
                   <AvatarFallback>{testimony.authorName.charAt(0)}</AvatarFallback>
                 </Avatar>
                 <div className="grid gap-1">
                   <p className="text-sm font-medium leading-none">{testimony.authorName}</p>
-                  <p className="text-sm text-muted-foreground truncate">{testimony.title}</p>
+                  <p className="text-sm text-muted-foreground truncate">{testimony.content.substring(0, 40)}</p>
                 </div>
                 <div className="ml-auto text-sm text-muted-foreground">
                   {testimony.createdAt ? formatDistanceToNow(new Date(testimony.createdAt.seconds * 1000), { addSuffix: true }) : 'just now'}
@@ -113,6 +114,7 @@ function ActiveCampaigns() {
 export default function DashboardPage() {
   const { user } = useUser();
   const firestore = useFirestore();
+  const now = useMemo(() => new Date(), []);
 
   const testimoniesQuery = user ? query(collection(firestore, 'testimonies'), where('authorId', '==', user.uid)) : null;
   const { data: myTestimonies } = useCollection<Testimony>(testimoniesQuery);
@@ -123,12 +125,27 @@ export default function DashboardPage() {
   const joinedCampaignsQuery = user ? query(collection(firestore, `users/${user.uid}/joinedCampaigns`)) : null;
   const { data: joinedCampaigns } = useCollection<JoinedCampaign>(joinedCampaignsQuery);
 
+  const testimoniesThisMonth = useMemo(() => {
+    if (!myTestimonies) return 0;
+    return myTestimonies.filter(t => t.createdAt && isSameMonth(t.createdAt.toDate(), now)).length;
+  }, [myTestimonies, now]);
+
+  const soulsWonThisMonth = useMemo(() => {
+    if (!soulsWon) return 0;
+    return soulsWon.filter(s => s.wonAt && isSameMonth(s.wonAt.toDate(), now)).length;
+  }, [soulsWon, now]);
+
+  const campaignsJoinedThisMonth = useMemo(() => {
+    if (!joinedCampaigns) return 0;
+    return joinedCampaigns.filter(c => c.joinedAt && isSameMonth(c.joinedAt.toDate(), now)).length;
+  }, [joinedCampaigns, now]);
+
   // TODO: Streak needs to be implemented
 
   const stats = [
-    { title: "Testimonies Shared", value: myTestimonies?.length ?? 0, icon: Newspaper, change: "+2 this month" },
-    { title: "Campaigns Joined", value: joinedCampaigns?.length ?? 0, icon: Target, change: "+0 this month" },
-    { title: "Souls Won", value: soulsWon?.length ?? 0, icon: UserCheck2, change: "+8 this month" },
+    { title: "Testimonies Shared", value: myTestimonies?.length ?? 0, icon: Newspaper, change: `+${testimoniesThisMonth} this month` },
+    { title: "Campaigns Joined", value: joinedCampaigns?.length ?? 0, icon: Target, change: `+${campaignsJoinedThisMonth} this month` },
+    { title: "Souls Won", value: soulsWon?.length ?? 0, icon: UserCheck2, change: `+${soulsWonThisMonth} this month` },
     { title: "Current Streak", value: "0 days", icon: TrendingUp, change: "Keep going!" },
   ];
 
