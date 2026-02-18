@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -26,6 +27,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCollection, useFirestore } from "@/firebase";
 import { collection, query, where, orderBy } from "firebase/firestore";
+import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card";
 
 const categories: (TestimonyCategory | "All")[] = [
   "All",
