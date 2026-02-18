@@ -164,7 +164,7 @@ export default function TestimoniesPage() {
 
       {mounted ? filterComponent : <Skeleton className="h-10 w-full" />}
 
-      <div className="grid gap-6 md:grid-cols-1 lg:max-w-3xl mx-auto">
+      <div className="grid gap-6 md:grid-cols-1 lg:max-w-4xl mx-auto">
         {loading && (
           [...Array(3)].map((_, i) => (
             <Card key={i}>

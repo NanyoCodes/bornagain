@@ -61,13 +61,13 @@ function AppHeader() {
 
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b bg-background px-4 md:px-6 lg:px-8">
-      <div className="flex items-center gap-6">
+      <div className="flex items-center gap-2 md:gap-6">
         <Link
           href="/dashboard"
           className="flex items-center gap-2 text-lg font-semibold"
         >
           <Image src="https://i.ibb.co/C9Pqmrj/testify-logo-6.png" alt="Testify" width={120} height={40} />
-          <span className="sr-only font-bold sm:inline-block">Testify</span>
+          <span className="sr-only">Testify</span>
         </Link>
         {/* Desktop Navigation */}
         <nav className="hidden items-center gap-5 text-sm font-medium md:flex lg:gap-6">
@@ -93,7 +93,7 @@ function AppHeader() {
             <Input
               type="search"
               placeholder="Search..."
-              className="pl-8 md:w-[200px] lg:w-[300px]"
+              className="pl-8 sm:w-[200px] md:w-[250px] lg:w-[300px]"
             />
           </div>
         </form>

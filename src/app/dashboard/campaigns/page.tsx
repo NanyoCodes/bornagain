@@ -115,7 +115,7 @@ export default function CampaignsPage() {
         ) : (
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>{triggerButton}</DialogTrigger>
-            <DialogContent className="sm:max-w-xl">
+            <DialogContent className="sm:max-w-2xl">
               <DialogHeader>
                 <DialogTitle>Create a New Campaign</DialogTitle>
                 <DialogDescription>
