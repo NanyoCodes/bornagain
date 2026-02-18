@@ -93,7 +93,8 @@ export function PhoneAuthForm() {
     }
     
     const appVerifier = window.recaptchaVerifier;
-    const phoneNumber = values.phone.startsWith('+') ? values.phone : `+${values.phone}`;
+    // Sanitize the phone number to E.164 format by removing non-digits and adding '+'
+    const phoneNumber = `+${values.phone.replace(/\D/g, '')}`;
 
     try {
       const confirmationResult = await signInWithPhoneNumber(auth, phoneNumber, appVerifier);
@@ -108,6 +109,7 @@ export function PhoneAuthForm() {
         title: "Could not send code",
         description: authError.message || "Please check the phone number and try again.",
       });
+      // Reset reCAPTCHA on error to allow retries
       window.recaptchaVerifier?.render().then((widgetId) => {
         if(window.grecaptcha) {
             window.grecaptcha.reset(widgetId);
