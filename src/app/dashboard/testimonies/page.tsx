@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from "react";
@@ -117,7 +116,7 @@ export default function TestimoniesPage() {
               Share Testimony
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-[625px]">
+          <DialogContent className="sm:max-w-lg">
             <DialogHeader>
               <DialogTitle>Share Your Testimony</DialogTitle>
               <DialogDescription>
@@ -125,7 +124,9 @@ export default function TestimoniesPage() {
                 story matters.
               </DialogDescription>
             </DialogHeader>
-            <CreateTestimonyForm onTestimonyCreated={handleTestimonyCreated} />
+            <div className="max-h-[70vh] overflow-y-auto pr-2">
+              <CreateTestimonyForm onTestimonyCreated={handleTestimonyCreated} />
+            </div>
           </DialogContent>
         </Dialog>
       </div>

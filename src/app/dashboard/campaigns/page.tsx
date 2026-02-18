@@ -79,14 +79,16 @@ export default function CampaignsPage() {
               Create Campaign
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-2xl">
+          <DialogContent className="sm:max-w-xl">
             <DialogHeader>
               <DialogTitle>Create a New Campaign</DialogTitle>
               <DialogDescription>
                 Use our AI assistant to help you craft the perfect campaign to reach souls for Christ.
               </DialogDescription>
             </DialogHeader>
-            <CreateCampaignForm onCampaignCreated={handleCampaignCreated} />
+            <div className="max-h-[70vh] overflow-y-auto pr-2">
+              <CreateCampaignForm onCampaignCreated={handleCampaignCreated} />
+            </div>
           </DialogContent>
         </Dialog>
       </div>

@@ -1,4 +1,3 @@
-
 "use client";
 
 import Image from "next/image";
@@ -111,14 +110,16 @@ export default function ProfilePage() {
                   Edit Profile
                 </Button>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-2xl">
+              <DialogContent className="sm:max-w-lg">
                 <DialogHeader>
                   <DialogTitle>Edit Profile</DialogTitle>
                   <DialogDescription>
                     Make changes to your public profile.
                   </DialogDescription>
                 </DialogHeader>
-                <EditProfileModal userProfile={userProfile} onClose={() => setIsEditModalOpen(false)} />
+                <div className="max-h-[70vh] overflow-y-auto pr-2">
+                  <EditProfileModal userProfile={userProfile} onClose={() => setIsEditModalOpen(false)} />
+                </div>
               </DialogContent>
             </Dialog>
           </div>

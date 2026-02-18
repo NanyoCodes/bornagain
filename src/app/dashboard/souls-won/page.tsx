@@ -57,14 +57,16 @@ export default function SoulsWonPage() {
               Log Soul Won
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-xl">
+          <DialogContent className="sm:max-w-lg">
             <DialogHeader>
               <DialogTitle>Log a New Soul</DialogTitle>
               <DialogDescription>
                 Record the details of the person you've ministered to.
               </DialogDescription>
             </DialogHeader>
-            <LogSoulForm onSoulLogged={handleSoulLogged} campaigns={campaigns || []} />
+            <div className="max-h-[70vh] overflow-y-auto pr-2">
+              <LogSoulForm onSoulLogged={handleSoulLogged} campaigns={campaigns || []} />
+            </div>
           </DialogContent>
         </Dialog>
       </div>
