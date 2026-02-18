@@ -22,7 +22,7 @@ import { useAuth, useFirestore, useUser } from "@/firebase";
 import { useStorage } from "@/firebase/provider";
 import { doc, updateDoc } from "firebase/firestore";
 import { updateProfile } from "firebase/auth";
-import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import type { UserProfile } from "@/lib/types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { errorEmitter } from "@/firebase/error-emitter";
@@ -87,48 +87,51 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
     try {
       let photoURL = userProfile.photoURL;
 
+      // Step 1: Upload new photo if it exists.
       if (photoFile) {
         const storageRef = ref(storage, `profile-pictures/${user.uid}`);
-        const uploadTask = uploadBytesResumable(storageRef, photoFile);
-        await uploadTask;
-        photoURL = await getDownloadURL(uploadTask.snapshot.ref);
+        // Use uploadBytes for a simpler promise-based upload.
+        const uploadTask = await uploadBytes(storageRef, photoFile);
+        photoURL = await getDownloadURL(uploadTask.ref);
       }
 
-      const updates: Partial<UserProfile> = {};
+      // Step 2: Prepare the data objects for update.
+      // We'll update both Firebase Auth profile and the Firestore user document.
+      const authUpdatePayload = {
+        displayName: values.displayName,
+        photoURL: photoURL ?? null, // Auth profile accepts null.
+      };
 
-      if (values.displayName !== userProfile.displayName) updates.displayName = values.displayName;
-      if (values.bio !== userProfile.bio) updates.bio = values.bio;
-      if (values.location !== userProfile.location) updates.location = values.location;
-      if (values.phone !== userProfile.phone) updates.phone = values.phone;
-      if (photoURL !== userProfile.photoURL) updates.photoURL = photoURL;
-      
-      const authUpdates: { displayName?: string, photoURL?: string } = {};
-      if (updates.displayName) authUpdates.displayName = updates.displayName;
-      if (updates.photoURL) authUpdates.photoURL = updates.photoURL;
-      
-      if (Object.keys(authUpdates).length > 0) {
-        await updateProfile(user, authUpdates);
-      }
-      
-      if (Object.keys(updates).length > 0) {
-        const userDocRef = doc(firestore, 'users', user.uid);
-        await updateDoc(userDocRef, updates);
-      }
+      const firestoreUpdatePayload = {
+        displayName: values.displayName,
+        bio: values.bio || "", // Ensure empty strings instead of undefined.
+        location: values.location || "",
+        phone: values.phone || "",
+        photoURL: photoURL ?? null, // Firestore is happy with null.
+      };
+
+      // Step 3: Execute updates concurrently.
+      const userDocRef = doc(firestore, 'users', user.uid);
+      await Promise.all([
+        updateProfile(user, authUpdatePayload),
+        updateDoc(userDocRef, firestoreUpdatePayload)
+      ]);
       
       toast({ title: "Profile Updated", description: "Your changes have been saved." });
       onClose();
 
     } catch (error: any) {
       console.error("Profile update error:", error);
-       if (error.code && error.code === 'permission-denied') {
+       if (error.code?.includes('permission-denied')) {
         const permissionError = new FirestorePermissionError({
             path: `users/${user.uid}`,
             operation: 'update',
             requestResourceData: values,
         });
         errorEmitter.emit('permission-error', permissionError);
+      } else {
+        toast({ variant: 'destructive', title: "Update Failed", description: error.message || "Could not update profile." });
       }
-      toast({ variant: 'destructive', title: "Update Failed", description: error.message || "Could not update profile." });
     } finally {
       setIsSubmitting(false);
     }
