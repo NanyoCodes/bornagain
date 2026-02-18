@@ -9,6 +9,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import Link from 'next/link';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { formatDistanceToNow } from 'date-fns';
+import { useMemo } from 'react';
 
 function ChatListItem({ chat, currentUserId }: { chat: Chat, currentUserId: string }) {
     const otherParticipantId = chat.participantIds.find(id => id !== currentUserId);
@@ -50,12 +51,21 @@ export default function ChatsPage() {
 
     const chatsQuery = !userLoading && user?.uid && firestore ? query(
         collection(firestore, 'chats'),
-        where('participantIds', 'array-contains', user.uid),
-        where('hasMessages', '==', true),
-        orderBy('lastUpdatedAt', 'desc')
+        where('participantIds', 'array-contains', user.uid)
     ) : null;
 
-    const { data: chats, loading: chatsLoading } = useCollection<Chat>(chatsQuery);
+    const { data: allChats, loading: chatsLoading } = useCollection<Chat>(chatsQuery);
+
+    const chats = useMemo(() => {
+        if (!allChats) return [];
+        return allChats
+            .filter(chat => chat.hasMessages)
+            .sort((a, b) => {
+                const dateA = a.lastUpdatedAt?.toDate ? a.lastUpdatedAt.toDate().getTime() : 0;
+                const dateB = b.lastUpdatedAt?.toDate ? b.lastUpdatedAt.toDate().getTime() : 0;
+                return dateB - dateA;
+            });
+    }, [allChats]);
 
     const loading = userLoading || chatsLoading;
 
