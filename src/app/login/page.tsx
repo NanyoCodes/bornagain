@@ -77,27 +77,25 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen w-full bg-background">
-      <div className="flex flex-1 flex-col items-center justify-center gap-6 p-4 md:p-8">
-        <div className="w-full max-w-md space-y-6 text-center">
-          {logo && (
-            <Image
-              src={logo.imageUrl}
-              alt={logo.description}
-              width={250}
-              height={80}
-              className="mx-auto"
-              data-ai-hint={logo.imageHint}
-              priority
-            />
-          )}
-          <div className="space-y-2">
-            <h1 className="font-headline text-4xl font-bold tracking-tighter text-primary">
-              Testify
-            </h1>
-            <p className="text-muted-foreground">
-              Empowering believers worldwide to share their faith.
-            </p>
+    <div className="w-full lg:grid lg:min-h-screen lg:grid-cols-2">
+      <div className="flex items-center justify-center py-12">
+        <div className="mx-auto grid w-[350px] gap-6">
+          <div className="grid gap-2 text-center">
+            {logo && (
+              <Image
+                src={logo.imageUrl}
+                alt={logo.description}
+                width={200}
+                height={60}
+                className="mx-auto"
+                data-ai-hint={logo.imageHint}
+                priority
+              />
+            )}
+             <h1 className="text-3xl font-bold tracking-tight mt-4">Welcome Back</h1>
+             <p className="text-balance text-muted-foreground">
+                Enter your credentials to access your account
+             </p>
           </div>
           <LoginForm />
           <div className="relative">
@@ -120,27 +118,23 @@ export default function LoginPage() {
               Facebook
             </Button>
           </div>
-          <p className="px-8 text-center text-sm text-muted-foreground">
-            Don't have an account?{" "}
-            <Link
-              href="/"
-              className="underline underline-offset-4 hover:text-primary"
-            >
-              Sign Up
+          <div className="mt-4 text-center text-sm">
+            Don&apos;t have an account?{" "}
+            <Link href="/" className="underline">
+              Sign up
             </Link>
-            .
-          </p>
+          </div>
         </div>
       </div>
-      <div className="hidden lg:flex lg:flex-1">
-         <Image
-            src="https://images.unsplash.com/photo-1543269865-cbf427effbad?q=80&w=2070&auto=format&fit=crop"
-            alt="People gathered together in a community setting, smiling and talking."
-            width={1920}
-            height={1080}
-            className="h-full w-full object-cover"
-            priority
-          />
+      <div className="hidden bg-muted lg:block">
+        <Image
+          src="https://images.unsplash.com/photo-1583484963886-74b91b125233?q=80&w=1974&auto=format&fit=crop"
+          alt="An open bible on a wooden table."
+          width="1920"
+          height="1080"
+          className="h-screen w-full object-cover dark:brightness-[0.7]"
+          data-ai-hint="open bible"
+        />
       </div>
     </div>
   );

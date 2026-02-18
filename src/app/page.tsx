@@ -79,70 +79,66 @@ export default function SignUpPage() {
   };
 
   return (
-    <div className="flex min-h-screen w-full bg-background">
-      <div className="flex flex-1 flex-col items-center justify-center gap-6 p-4 md:p-8">
-        <div className="w-full max-w-md space-y-6 text-center">
-          {logo && (
-            <Image
-              src={logo.imageUrl}
-              alt={logo.description}
-              width={250}
-              height={80}
-              className="mx-auto"
-              data-ai-hint={logo.imageHint}
-              priority
-            />
-          )}
-          <div className="space-y-2">
-            <h1 className="font-headline text-4xl font-bold tracking-tighter text-primary">
-              Create an Account
-            </h1>
-            <p className="text-muted-foreground">
-              Join believers worldwide to share your faith.
+    <div className="w-full lg:grid lg:min-h-screen lg:grid-cols-2">
+      <div className="flex items-center justify-center py-12">
+        <div className="mx-auto grid w-[350px] gap-6">
+          <div className="grid gap-2 text-center">
+             {logo && (
+              <Image
+                src={logo.imageUrl}
+                alt={logo.description}
+                width={200}
+                height={60}
+                className="mx-auto"
+                data-ai-hint={logo.imageHint}
+                priority
+              />
+            )}
+            <h1 className="text-3xl font-bold tracking-tight mt-4">Join the Community</h1>
+            <p className="text-balance text-muted-foreground">
+              Enter your information to create an account
             </p>
           </div>
-          <SignUpForm />
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t" />
+          <div className="grid gap-4">
+            <SignUpForm />
+            <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-background px-2 text-muted-foreground">
+                    Or continue with
+                </span>
+                </div>
             </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">
-                Or sign up with
-              </span>
+            <div className="grid grid-cols-2 gap-4">
+                <Button variant="outline" onClick={() => handleSocialLogin('google')}>
+                <Icons.google className="mr-2 h-5 w-5" />
+                Google
+                </Button>
+                <Button variant="outline" onClick={() => handleSocialLogin('facebook')}>
+                <Icons.facebook className="mr-2 h-5 w-5 text-[#1877F2]" />
+                Facebook
+                </Button>
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-4">
-            <Button variant="outline" onClick={() => handleSocialLogin('google')}>
-              <Icons.google className="mr-2 h-5 w-5" />
-              Google
-            </Button>
-            <Button variant="outline" onClick={() => handleSocialLogin('facebook')}>
-              <Icons.facebook className="mr-2 h-5 w-5 text-[#1877F2]" />
-              Facebook
-            </Button>
-          </div>
-          <p className="px-8 text-center text-sm text-muted-foreground">
+          <div className="mt-4 text-center text-sm">
             Already have an account?{" "}
-            <Link
-              href="/login"
-              className="underline underline-offset-4 hover:text-primary"
-            >
-              Log In
+            <Link href="/login" className="underline">
+              Sign in
             </Link>
-            .
-          </p>
+          </div>
         </div>
       </div>
-      <div className="hidden lg:flex lg:flex-1">
-         <Image
-            src="https://images.unsplash.com/photo-1543269865-cbf427effbad?q=80&w=2070&auto=format&fit=crop"
-            alt="People gathered together in a community setting, smiling and talking."
-            width={1920}
-            height={1080}
-            className="h-full w-full object-cover"
-            priority
-          />
+      <div className="hidden bg-muted lg:block">
+        <Image
+          src="https://images.unsplash.com/photo-1583484963886-74b91b125233?q=80&w=1974&auto=format&fit=crop"
+          alt="An open bible on a wooden table."
+          width="1920"
+          height="1080"
+          className="h-screen w-full object-cover dark:brightness-[0.7]"
+          data-ai-hint="open bible"
+        />
       </div>
     </div>
   );

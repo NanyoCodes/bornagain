@@ -34,6 +34,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { cn } from "@/lib/utils";
 import { useUser, useAuth } from "@/firebase";
 import { signOut } from "firebase/auth";
+import { PlaceHolderImages } from "@/lib/placeholder-images";
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: Home },
@@ -48,6 +49,8 @@ function AppHeader() {
   const pathname = usePathname();
   const auth = useAuth();
   const router = useRouter();
+  const logo = PlaceHolderImages.find((img) => img.id === "logo");
+
 
   const handleLogout = async () => {
     if (!auth) return;
@@ -66,7 +69,7 @@ function AppHeader() {
           href="/dashboard"
           className="flex items-center gap-2 text-lg font-semibold"
         >
-          <Image src="https://i.ibb.co/C9Pqmrj/testify-logo-6.png" alt="Testify" width={120} height={40} />
+          {logo && <Image src={logo.imageUrl} alt={logo.description} width={120} height={40} data-ai-hint={logo.imageHint} />}
           <span className="sr-only">Testify</span>
         </Link>
         {/* Desktop Navigation */}
