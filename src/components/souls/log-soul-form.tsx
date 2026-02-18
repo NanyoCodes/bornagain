@@ -22,7 +22,7 @@ import type { Campaign, Soul } from "@/lib/types";
 import { Textarea } from "@/components/ui/textarea";
 import { format } from "date-fns";
 import { useFirestore, useUser } from "@/firebase";
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { collection, addDoc } from "firebase/firestore";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { errorEmitter } from "@/firebase/error-emitter";
 
@@ -81,7 +81,7 @@ export function LogSoulForm({ onSoulLogged, campaigns, campaign }: LogSoulFormPr
         sourceDetails: values.sourceDetails,
         wonAt: values.wonAt as any, // Firestore will convert it
         status: "New",
-        followUpLog: values.initialNote ? [{ date: serverTimestamp() as any, note: values.initialNote }] : [],
+        followUpLog: values.initialNote ? [{ date: new Date() as any, note: values.initialNote }] : [],
         attendingChurch: false,
         inBibleStudy: false,
         attendingPrayer: false,

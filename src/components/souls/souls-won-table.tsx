@@ -50,7 +50,7 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { useFirestore, useUser } from "@/firebase";
-import { doc, updateDoc, arrayUnion, serverTimestamp } from "firebase/firestore";
+import { doc, updateDoc, arrayUnion } from "firebase/firestore";
 
 // --- LogFollowUpDialog Component Definition ---
 const followUpIdeas = [
@@ -96,7 +96,7 @@ function LogFollowUpDialog({ soul, children }: { soul: Soul; children: React.Rea
       const soulRef = doc(firestore, `users/${user.uid}/souls`, soul.id);
       
       const newLogEntry: FollowUpLogItem = {
-        date: serverTimestamp() as any,
+        date: new Date() as any,
         note: values.note || '',
         checklist: values.checklist || [],
       };
