@@ -35,13 +35,14 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { useFirestore, useUser } from "@/firebase";
-import { doc, serverTimestamp, setDoc, updateDoc, increment } from "firebase/firestore";
+import { useCollection, useFirestore, useUser } from "@/firebase";
+import { doc, serverTimestamp, setDoc, updateDoc, increment, query, collection, orderBy } from "firebase/firestore";
 import { useState } from "react";
 import { ManageCampaignForm } from "./manage-campaign-form";
 import { Textarea } from "../ui/textarea";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
+import { LogSoulForm } from "../souls/log-soul-form";
 
 export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaign; userId?: string, isJoined: boolean }) {
   const { toast } = useToast();
@@ -51,6 +52,11 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
   const [isManageOpen, setIsManageOpen] = useState(false);
   const [deleteReason, setDeleteReason] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isLogSoulOpen, setIsLogSoulOpen] = useState(false);
+
+  const campaignsQuery = query(collection(firestore, 'campaigns'), orderBy('createdAt', 'desc'));
+  const { data: allCampaigns } = useCollection<Campaign>(campaignsQuery);
+
 
   const handleJoin = async () => {
     if (!user || !firestore) return;
@@ -181,8 +187,35 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
   
   const timeString = `${startTimeFormatted} - ${endTimeFormatted}`;
 
+  const LogSoulDialog = (
+    <Dialog open={isLogSoulOpen} onOpenChange={setIsLogSoulOpen}>
+      <DialogTrigger asChild>
+        <Button>Log Soul</Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-lg">
+        <DialogHeader>
+          <DialogTitle>Log a Soul Won in "{campaign.title}"</DialogTitle>
+          <DialogDescription>
+            Record the details of the person ministered to during this campaign. This will appear on your personal dashboard.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="max-h-[70vh] overflow-y-auto pr-2">
+          <LogSoulForm
+            onSoulLogged={() => {
+              setIsLogSoulOpen(false);
+              toast({ title: "Soul Logged!", description: "The new soul has been added to your personal dashboard." });
+            }}
+            campaigns={allCampaigns || []}
+            campaign={campaign}
+          />
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+
   const renderOwnerActions = () => (
     <div className="flex items-center gap-2">
+      {LogSoulDialog}
       <Dialog open={isManageOpen} onOpenChange={setIsManageOpen}>
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -268,6 +301,7 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
 
   const renderParticipantActions = () => (
     <div className="flex items-center gap-2">
+      {LogSoulDialog}
       <Button variant="secondary" disabled>
         Joined
       </Button>

@@ -43,9 +43,10 @@ const formSchema = z.object({
 type LogSoulFormProps = {
   onSoulLogged: () => void;
   campaigns: Campaign[];
+  campaign?: Campaign;
 };
 
-export function LogSoulForm({ onSoulLogged, campaigns }: LogSoulFormProps) {
+export function LogSoulForm({ onSoulLogged, campaigns, campaign }: LogSoulFormProps) {
   const { toast } = useToast();
   const { user } = useUser();
   const firestore = useFirestore();
@@ -56,8 +57,8 @@ export function LogSoulForm({ onSoulLogged, campaigns }: LogSoulFormProps) {
     defaultValues: {
       name: "",
       contact: "",
-      source: "Personal",
-      sourceDetails: "",
+      source: campaign ? "Campaign" : "Personal",
+      sourceDetails: campaign ? campaign.title : "",
       initialNote: "",
       wonAt: new Date(),
     },
@@ -152,7 +153,7 @@ export function LogSoulForm({ onSoulLogged, campaigns }: LogSoulFormProps) {
                     </Button>
                   </FormControl>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start" onPointerDownOutside={(e) => e.preventDefault()}>
+                <PopoverContent className="w-auto p-0" align="start">
                   <Calendar
                     mode="single"
                     selected={field.value}
@@ -186,7 +187,7 @@ export function LogSoulForm({ onSoulLogged, campaigns }: LogSoulFormProps) {
           render={({ field }) => (
             <FormItem>
               <FormLabel>Source</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <Select onValueChange={field.onChange} defaultValue={field.value} disabled={!!campaign}>
                 <FormControl>
                   <SelectTrigger className="text-base">
                     <SelectValue placeholder="Select the source" />
@@ -209,7 +210,7 @@ export function LogSoulForm({ onSoulLogged, campaigns }: LogSoulFormProps) {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Campaign Name</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={field.onChange} defaultValue={field.value} disabled={!!campaign}>
                     <FormControl>
                       <SelectTrigger className="text-base">
                         <SelectValue placeholder="Select from your campaigns" />
