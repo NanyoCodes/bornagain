@@ -1,6 +1,7 @@
+
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
 import { CreateCampaignForm } from "@/components/campaigns/create-campaign-form";
@@ -12,12 +13,21 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { CampaignCard } from "@/components/campaigns/campaign-card";
 import type { Campaign, JoinedCampaign } from "@/lib/types";
 import { Input } from "@/components/ui/input";
 import { useCollection, useFirestore, useUser } from "@/firebase";
 import { collection, query, orderBy } from "firebase/firestore";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 function CampaignSkeletons() {
   return (
@@ -41,6 +51,12 @@ export default function CampaignsPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [cityFilter, setCityFilter] = useState("");
   const [countryFilter, setCountryFilter] = useState("");
+  const [mounted, setMounted] = useState(false);
+  const isMobile = useIsMobile();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const campaignsQuery = query(collection(firestore, 'campaigns'), orderBy('createdAt', 'desc'));
   const { data: campaigns, loading } = useCollection<Campaign>(campaignsQuery);
@@ -65,6 +81,15 @@ export default function CampaignsPage() {
     );
   });
 
+  const triggerButton = (
+    <Button disabled={!user}>
+      <PlusCircle className="mr-2 h-4 w-4" />
+      Create Campaign
+    </Button>
+  );
+
+  const formContent = <CreateCampaignForm onCampaignCreated={handleCampaignCreated} />;
+
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
@@ -72,25 +97,37 @@ export default function CampaignsPage() {
           <h1 className="text-3xl font-bold tracking-tight font-headline">Campaigns</h1>
           <p className="text-muted-foreground">Join or create soul-winning campaigns.</p>
         </div>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <Button onClick={() => setIsDialogOpen(true)} disabled={!user}>
-              <PlusCircle className="mr-2 h-4 w-4" />
-              Create Campaign
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-xl">
-            <DialogHeader>
-              <DialogTitle>Create a New Campaign</DialogTitle>
-              <DialogDescription>
-                Use our AI assistant to help you craft the perfect campaign to reach souls for Christ.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="max-h-[70vh] overflow-y-auto pr-2">
-              <CreateCampaignForm onCampaignCreated={handleCampaignCreated} />
-            </div>
-          </DialogContent>
-        </Dialog>
+        {mounted && isMobile ? (
+          <Sheet open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <SheetTrigger asChild>{triggerButton}</SheetTrigger>
+            <SheetContent side="bottom">
+              <SheetHeader>
+                <SheetTitle>Create a New Campaign</SheetTitle>
+                <SheetDescription>
+                  Use our AI assistant to help you craft the perfect campaign to reach souls for Christ.
+                </SheetDescription>
+              </SheetHeader>
+              <div className="max-h-[80vh] overflow-y-auto p-1 mt-4">
+                {formContent}
+              </div>
+            </SheetContent>
+          </Sheet>
+        ) : (
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>{triggerButton}</DialogTrigger>
+            <DialogContent className="sm:max-w-xl">
+              <DialogHeader>
+                <DialogTitle>Create a New Campaign</DialogTitle>
+                <DialogDescription>
+                  Use our AI assistant to help you craft the perfect campaign to reach souls for Christ.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="max-h-[70vh] overflow-y-auto pr-2">
+                {formContent}
+              </div>
+            </DialogContent>
+          </Dialog>
+        )}
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">

@@ -1,7 +1,8 @@
+
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Edit, Globe, Loader2, Mail, MapPin, Newspaper, Phone, Target, UserCheck2 } from "lucide-react";
@@ -12,8 +13,16 @@ import { collection, query, where, doc } from "firebase/firestore";
 import type { Soul, Testimony, UserProfile, JoinedCampaign } from "@/lib/types";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { EditProfileModal } from "@/components/profile/edit-profile-modal";
-
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const mockAchievements = [
     { id: 'ach-1', level: 3, name: 'Faithful Witness', description: 'Shared over 10 testimonies.' },
@@ -50,6 +59,12 @@ export default function ProfilePage() {
   const { user, loading: loadingUser } = useUser();
   const firestore = useFirestore();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const isMobile = useIsMobile();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const userDocRef = user ? doc(firestore, 'users', user.uid) : null;
   const { data: userProfile, loading: loadingProfile } = useDoc<UserProfile>(userDocRef);
@@ -81,6 +96,16 @@ export default function ProfilePage() {
     soulsWon: soulsWon?.length ?? 0,
     campaignsJoined: joinedCampaigns?.length ?? 0,
   }
+  
+  const triggerButton = (
+    <Button>
+      <Edit className="mr-2 h-4 w-4" />
+      Edit Profile
+    </Button>
+  );
+
+  const formContent = <EditProfileModal userProfile={userProfile} onClose={() => setIsEditModalOpen(false)} />;
+
 
   return (
     <div className="space-y-8">
@@ -103,25 +128,37 @@ export default function ProfilePage() {
             </Avatar>
           </div>
           <div className="absolute top-4 right-4">
-             <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
-              <DialogTrigger asChild>
-                <Button>
-                  <Edit className="mr-2 h-4 w-4" />
-                  Edit Profile
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-lg">
-                <DialogHeader>
-                  <DialogTitle>Edit Profile</DialogTitle>
-                  <DialogDescription>
-                    Make changes to your public profile.
-                  </DialogDescription>
-                </DialogHeader>
-                <div className="max-h-[70vh] overflow-y-auto pr-2">
-                  <EditProfileModal userProfile={userProfile} onClose={() => setIsEditModalOpen(false)} />
-                </div>
-              </DialogContent>
-            </Dialog>
+            {mounted && isMobile ? (
+              <Sheet open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
+                <SheetTrigger asChild>{triggerButton}</SheetTrigger>
+                <SheetContent side="bottom">
+                  <SheetHeader>
+                    <SheetTitle>Edit Profile</SheetTitle>
+                    <SheetDescription>
+                      Make changes to your public profile.
+                    </SheetDescription>
+                  </SheetHeader>
+                  <div className="max-h-[80vh] overflow-y-auto p-1 mt-4">
+                    {formContent}
+                  </div>
+                </SheetContent>
+              </Sheet>
+            ) : (
+              <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
+                <DialogTrigger asChild>{triggerButton}</DialogTrigger>
+                <DialogContent className="sm:max-w-lg">
+                  <DialogHeader>
+                    <DialogTitle>Edit Profile</DialogTitle>
+                    <DialogDescription>
+                      Make changes to your public profile.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="max-h-[70vh] overflow-y-auto pr-2">
+                    {formContent}
+                  </div>
+                </DialogContent>
+              </Dialog>
+            )}
           </div>
         </div>
         <div className="pt-20 px-8 pb-8">

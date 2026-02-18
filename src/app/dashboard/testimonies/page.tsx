@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -13,6 +14,14 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { Testimony, TestimonyCategory } from "@/lib/types";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -97,6 +106,15 @@ export default function TestimoniesPage() {
       </TabsList>
     </Tabs>
   );
+  
+  const triggerButton = (
+    <Button>
+      <PlusCircle className="mr-2 h-4 w-4" />
+      Share Testimony
+    </Button>
+  );
+
+  const formContent = <CreateTestimonyForm onTestimonyCreated={handleTestimonyCreated} />;
 
   return (
     <div className="space-y-8">
@@ -109,26 +127,39 @@ export default function TestimoniesPage() {
             Read and share what God has done.
           </p>
         </div>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <Button onClick={() => setIsDialogOpen(true)}>
-              <PlusCircle className="mr-2 h-4 w-4" />
-              Share Testimony
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-lg">
-            <DialogHeader>
-              <DialogTitle>Share Your Testimony</DialogTitle>
-              <DialogDescription>
-                Encourage others by sharing what God has done in your life. Your
-                story matters.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="max-h-[70vh] overflow-y-auto pr-2">
-              <CreateTestimonyForm onTestimonyCreated={handleTestimonyCreated} />
-            </div>
-          </DialogContent>
-        </Dialog>
+        {mounted && isMobile ? (
+            <Sheet open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+              <SheetTrigger asChild>{triggerButton}</SheetTrigger>
+              <SheetContent side="bottom">
+                <SheetHeader>
+                  <SheetTitle>Share Your Testimony</SheetTitle>
+                  <SheetDescription>
+                    Encourage others by sharing what God has done in your life. Your
+                    story matters.
+                  </SheetDescription>
+                </SheetHeader>
+                <div className="max-h-[80vh] overflow-y-auto p-1 mt-4">
+                    {formContent}
+                </div>
+              </SheetContent>
+            </Sheet>
+          ) : (
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+              <DialogTrigger asChild>{triggerButton}</DialogTrigger>
+              <DialogContent className="sm:max-w-lg">
+                <DialogHeader>
+                  <DialogTitle>Share Your Testimony</DialogTitle>
+                  <DialogDescription>
+                    Encourage others by sharing what God has done in your life. Your
+                    story matters.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="max-h-[70vh] overflow-y-auto pr-2">
+                  {formContent}
+                </div>
+              </DialogContent>
+            </Dialog>
+          )}
       </div>
 
       {mounted ? filterComponent : <Skeleton className="h-10 w-full" />}

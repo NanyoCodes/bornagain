@@ -1,8 +1,17 @@
+
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { PlusCircle } from "lucide-react";
 import { SoulsWonTable } from "@/components/souls/souls-won-table";
 import { LogSoulForm } from "@/components/souls/log-soul-form";
@@ -10,12 +19,19 @@ import type { Soul, Campaign } from "@/lib/types";
 import { useCollection, useFirestore, useUser } from "@/firebase";
 import { collection, query, orderBy, doc, updateDoc } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export default function SoulsWonPage() {
   const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
   const [isLogDialogOpen, setIsLogDialogOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const isMobile = useIsMobile();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Fetch souls for the current user
   const soulsQuery = user ? query(collection(firestore, `users/${user.uid}/souls`), orderBy("wonAt", "desc")) : null;
@@ -41,6 +57,15 @@ export default function SoulsWonPage() {
     }
   };
 
+  const triggerButton = (
+    <Button disabled={!user}>
+      <PlusCircle className="mr-2 h-4 w-4" />
+      Log Soul Won
+    </Button>
+  );
+
+  const formContent = <LogSoulForm onSoulLogged={handleSoulLogged} campaigns={campaigns || []} />;
+
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
@@ -50,25 +75,37 @@ export default function SoulsWonPage() {
             Track and nurture individuals you've led to Christ.
           </p>
         </div>
-        <Dialog open={isLogDialogOpen} onOpenChange={setIsLogDialogOpen}>
-          <DialogTrigger asChild>
-            <Button disabled={!user}>
-              <PlusCircle className="mr-2 h-4 w-4" />
-              Log Soul Won
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-lg">
-            <DialogHeader>
-              <DialogTitle>Log a New Soul</DialogTitle>
-              <DialogDescription>
-                Record the details of the person you've ministered to.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="max-h-[70vh] overflow-y-auto pr-2">
-              <LogSoulForm onSoulLogged={handleSoulLogged} campaigns={campaigns || []} />
-            </div>
-          </DialogContent>
-        </Dialog>
+        {mounted && isMobile ? (
+          <Sheet open={isLogDialogOpen} onOpenChange={setIsLogDialogOpen}>
+            <SheetTrigger asChild>{triggerButton}</SheetTrigger>
+            <SheetContent side="bottom">
+              <SheetHeader>
+                <SheetTitle>Log a New Soul</SheetTitle>
+                <SheetDescription>
+                  Record the details of the person you've ministered to.
+                </SheetDescription>
+              </SheetHeader>
+              <div className="max-h-[80vh] overflow-y-auto p-1 mt-4">
+                {formContent}
+              </div>
+            </SheetContent>
+          </Sheet>
+        ) : (
+          <Dialog open={isLogDialogOpen} onOpenChange={setIsLogDialogOpen}>
+            <DialogTrigger asChild>{triggerButton}</DialogTrigger>
+            <DialogContent className="sm:max-w-lg">
+              <DialogHeader>
+                <DialogTitle>Log a New Soul</DialogTitle>
+                <DialogDescription>
+                  Record the details of the person you've ministered to.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="max-h-[70vh] overflow-y-auto pr-2">
+                {formContent}
+              </div>
+            </DialogContent>
+          </Dialog>
+        )}
       </div>
       
       <SoulsWonTable 
