@@ -38,6 +38,38 @@
         "lastLogin": {
           "type": "object",
           "description": "Timestamp of the user's last daily app usage."
+        },
+        "notificationSettings": {
+          "type": "object",
+          "description": "User's notification preferences.",
+          "properties": {
+            "newCampaignsInArea": {
+              "type": "boolean",
+              "description": "Notify user about new campaigns in their area."
+            },
+            "weeklyDigest": {
+              "type": "boolean",
+              "description": "Send a weekly summary of activity."
+            }
+          }
+        },
+        "privacySettings": {
+          "type": "object",
+          "description": "User's privacy preferences.",
+          "properties": {
+            "profileVisibility": {
+              "type": "string",
+              "enum": [
+                "public",
+                "private"
+              ],
+              "description": "Controls who can see the user's profile."
+            },
+            "showLocation": {
+              "type": "boolean",
+              "description": "Allow others to see the user's city and country."
+            }
+          }
         }
       },
       "required": [

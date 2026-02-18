@@ -11,6 +11,14 @@ export type UserProfile = {
   phone?: string;
   currentStreak?: number;
   lastLogin?: Timestamp;
+  notificationSettings?: {
+    newCampaignsInArea?: boolean;
+    weeklyDigest?: boolean;
+  };
+  privacySettings?: {
+    profileVisibility?: 'public' | 'private';
+    showLocation?: boolean;
+  };
 };
 
 export type Achievement = {

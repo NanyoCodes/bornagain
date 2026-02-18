@@ -1,162 +1,381 @@
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
-import { Separator } from "@/components/ui/separator";
+'use client';
 
-export default function SettingsPage() {
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import * as z from 'zod';
+import { Button } from '@/components/ui/button';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormDescription,
+  FormMessage,
+} from '@/components/ui/form';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { Switch } from '@/components/ui/switch';
+import { useToast } from '@/hooks/use-toast';
+import { Loader2, User, Bell, Lock, Trash2 } from 'lucide-react';
+import { useDoc, useFirestore, useUser } from '@/firebase';
+import { doc, updateDoc } from 'firebase/firestore';
+import type { UserProfile } from '@/lib/types';
+import { Separator } from '@/components/ui/separator';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Skeleton } from '@/components/ui/skeleton';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
+
+// --- Validation Schemas ---
+const notificationFormSchema = z.object({
+  newCampaignsInArea: z.boolean().default(false),
+  weeklyDigest: z.boolean().default(false),
+});
+
+const privacyFormSchema = z.object({
+  profileVisibility: z.enum(['public', 'private']).default('public'),
+  showLocation: z.boolean().default(true),
+});
+
+// --- Settings Components ---
+
+function ProfileSettingsCard() {
   return (
-    <div className="space-y-8">
-      <div className="space-y-2">
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight font-headline">Settings</h1>
-        <p className="text-muted-foreground">Manage your account and preferences.</p>
-      </div>
-      <Tabs defaultValue="profile" className="w-full">
-        <TabsList className="grid w-full grid-cols-1 sm:grid-cols-2 md:grid-cols-4">
-          <TabsTrigger value="profile">Profile</TabsTrigger>
-          <TabsTrigger value="notifications">Notifications</TabsTrigger>
-          <TabsTrigger value="privacy">Privacy</TabsTrigger>
-          <TabsTrigger value="account">Account</TabsTrigger>
-        </TabsList>
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2"><User className="h-5 w-5" /> Public Profile</CardTitle>
+        <CardDescription>
+          This is how others will see you on the site. Click below to edit your public information.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Button asChild>
+          <Link href="/dashboard/profile">Edit Your Profile</Link>
+        </Button>
+      </CardContent>
+    </Card>
+  );
+}
 
-        <TabsContent value="profile">
-          <Card>
-            <CardHeader>
-              <CardTitle>Public Profile</CardTitle>
-              <CardDescription>This is how others will see you on the site.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="space-y-2">
-                <Label htmlFor="name">Name</Label>
-                <Input id="name" defaultValue="John Doe" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="bio">Bio</Label>
-                <Input id="bio" defaultValue="Spreading the good news..." />
-              </div>
-              <Button>Save Changes</Button>
-            </CardContent>
-          </Card>
-        </TabsContent>
+function NotificationSettingsForm({ userProfile, userId }: { userProfile: UserProfile, userId: string }) {
+  const { toast } = useToast();
+  const firestore = useFirestore();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-        <TabsContent value="notifications">
-          <Card>
-            <CardHeader>
-              <CardTitle>Notifications</CardTitle>
-              <CardDescription>Choose what you want to be notified about.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="campaigns" className="flex flex-col space-y-1">
-                  <span>New Campaigns</span>
-                  <span className="font-normal leading-snug text-muted-foreground">When a new campaign starts in your area.</span>
-                </Label>
-                <Switch id="campaigns" defaultChecked />
-              </div>
-              <div className="flex items-center justify-between">
-                <Label htmlFor="digest" className="flex flex-col space-y-1">
-                  <span>Email Digest</span>
-                  <span className="font-normal leading-snug text-muted-foreground">Receive a weekly summary of activity.</span>
-                </Label>
-                <Switch id="digest" />
-              </div>
-              <Button>Save Changes</Button>
-            </CardContent>
-          </Card>
-        </TabsContent>
+  const form = useForm<z.infer<typeof notificationFormSchema>>({
+    resolver: zodResolver(notificationFormSchema),
+    defaultValues: {
+      newCampaignsInArea: userProfile.notificationSettings?.newCampaignsInArea ?? false,
+      weeklyDigest: userProfile.notificationSettings?.weeklyDigest ?? false,
+    },
+  });
 
-        <TabsContent value="privacy">
-          <Card>
-            <CardHeader>
-              <CardTitle>Privacy</CardTitle>
-              <CardDescription>Control who can see your profile and activity.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-               <div className="space-y-2">
-                <Label>Profile Visibility</Label>
-                <Select defaultValue="public">
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select visibility" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="public">Public</SelectItem>
-                    <SelectItem value="followers">Followers Only</SelectItem>
-                    <SelectItem value="private">Private</SelectItem>
-                  </SelectContent>
-                </Select>
-               </div>
-               <div className="flex items-center justify-between">
-                <Label htmlFor="show-location" className="flex flex-col space-y-1">
-                  <span>Show Location</span>
-                  <span className="font-normal leading-snug text-muted-foreground">Allow others to see your city and country.</span>
-                </Label>
-                <Switch id="show-location" defaultChecked />
-              </div>
-              <Button>Save Changes</Button>
-            </CardContent>
-          </Card>
-        </TabsContent>
+   useEffect(() => {
+    form.reset({
+      newCampaignsInArea: userProfile.notificationSettings?.newCampaignsInArea ?? false,
+      weeklyDigest: userProfile.notificationSettings?.weeklyDigest ?? false,
+    });
+  }, [userProfile, form]);
 
-        <TabsContent value="account">
-          <Card>
-            <CardHeader>
-              <CardTitle>Account</CardTitle>
-              <CardDescription>Manage your account settings.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="space-y-2">
-                <Label>Language</Label>
-                <Select defaultValue="en">
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select language" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="en">English</SelectItem>
-                    <SelectItem value="es">Spanish</SelectItem>
-                    <SelectItem value="fr">French</SelectItem>
-                    <SelectItem value="pt">Portuguese</SelectItem>
-                    <SelectItem value="zh">Mandarin</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-               <div className="space-y-2">
-                <Label>Timezone</Label>
-                <Select defaultValue="est">
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select timezone" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="pst">Pacific Standard Time (PST)</SelectItem>
-                    <SelectItem value="mst">Mountain Standard Time (MST)</SelectItem>
-                    <SelectItem value="cst">Central Standard Time (CST)</SelectItem>
-                    <SelectItem value="est">Eastern Standard Time (EST)</SelectItem>
-                    <SelectItem value="gmt">Greenwich Mean Time (GMT)</SelectItem>
-                    <SelectItem value="cet">Central European Time (CET)</SelectItem>
-                    <SelectItem value="eet">Eastern European Time (EET)</SelectItem>
-                    <SelectItem value="ist">India Standard Time (IST)</SelectItem>
-                    <SelectItem value="jst">Japan Standard Time (JST)</SelectItem>
-                    <SelectItem value="aest">Australian Eastern Standard Time (AEST)</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <Separator />
-               <Card className="border-destructive">
+  async function onSubmit(values: z.infer<typeof notificationFormSchema>) {
+    setIsSubmitting(true);
+    try {
+      const userRef = doc(firestore, 'users', userId);
+      await updateDoc(userRef, { notificationSettings: values });
+      toast({ title: 'Success', description: 'Notification settings saved.' });
+      form.reset(values); // Re-sync form state to prevent "dirty" state after submit
+    } catch (error) {
+      console.error('Failed to save settings:', error);
+      toast({ variant: 'destructive', title: 'Error', description: 'Could not save notification settings.' });
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+  
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2"><Bell className="h-5 w-5" /> Notifications</CardTitle>
+        <CardDescription>Choose what you want to be notified about and how.</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            <FormField
+              control={form.control}
+              name="newCampaignsInArea"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                  <div className="space-y-0.5">
+                    <FormLabel className="text-base">New Campaigns</FormLabel>
+                    <FormDescription>When a new campaign starts in your area.</FormDescription>
+                  </div>
+                  <FormControl>
+                    <Switch checked={field.value} onCheckedChange={field.onChange} />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="weeklyDigest"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                  <div className="space-y-0.5">
+                    <FormLabel className="text-base">Weekly Digest</FormLabel>
+                    <FormDescription>Receive a weekly summary of activity by email.</FormDescription>
+                  </div>
+                  <FormControl>
+                    <Switch checked={field.value} onCheckedChange={field.onChange} />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <Button type="submit" disabled={isSubmitting || !form.formState.isDirty}>
+              {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Save Notifications
+            </Button>
+          </form>
+        </Form>
+      </CardContent>
+    </Card>
+  );
+}
+
+
+function PrivacySettingsForm({ userProfile, userId }: { userProfile: UserProfile, userId: string }) {
+  const { toast } = useToast();
+  const firestore = useFirestore();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const form = useForm<z.infer<typeof privacyFormSchema>>({
+    resolver: zodResolver(privacyFormSchema),
+    defaultValues: {
+      profileVisibility: userProfile.privacySettings?.profileVisibility ?? 'public',
+      showLocation: userProfile.privacySettings?.showLocation ?? true,
+    },
+  });
+
+   useEffect(() => {
+    form.reset({
+      profileVisibility: userProfile.privacySettings?.profileVisibility ?? 'public',
+      showLocation: userProfile.privacySettings?.showLocation ?? true,
+    });
+  }, [userProfile, form]);
+
+  async function onSubmit(values: z.infer<typeof privacyFormSchema>) {
+    setIsSubmitting(true);
+    try {
+      const userRef = doc(firestore, 'users', userId);
+      await updateDoc(userRef, { privacySettings: values });
+      toast({ title: 'Success', description: 'Privacy settings saved.' });
+      form.reset(values); // Re-sync form state
+    } catch (error) {
+      console.error('Failed to save settings:', error);
+      toast({ variant: 'destructive', title: 'Error', description: 'Could not save privacy settings.' });
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2"><Lock className="h-5 w-5" /> Privacy</CardTitle>
+        <CardDescription>Control who can see your profile and activity.</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            <FormField
+              control={form.control}
+              name="profileVisibility"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Profile Visibility</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select who can see your profile" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="public">Public</SelectItem>
+                      <SelectItem value="private">Private (Only you)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormDescription>
+                    Public profiles are visible to all users. Private profiles are hidden.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="showLocation"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                  <div className="space-y-0.5">
+                    <FormLabel className="text-base">Show Location</FormLabel>
+                    <FormDescription>Allow others to see your city and country on your profile.</FormDescription>
+                  </div>
+                  <FormControl>
+                    <Switch checked={field.value} onCheckedChange={field.onChange} />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <Button type="submit" disabled={isSubmitting || !form.formState.isDirty}>
+              {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Save Privacy Settings
+            </Button>
+          </form>
+        </Form>
+      </CardContent>
+    </Card>
+  );
+}
+
+
+function AccountSettingsCard() {
+    const { toast } = useToast();
+    const [isDeleting, setIsDeleting] = useState(false);
+
+    const handleDelete = () => {
+        setIsDeleting(true);
+        // In a real app, this would trigger a backend function
+        // to delete all user data before deleting the auth user.
+        toast({
+            variant: 'destructive',
+            title: 'Account Deletion Initiated',
+            description: 'This is a demo. No data will be deleted.',
+        });
+        setTimeout(() => setIsDeleting(false), 2000);
+    }
+  return (
+    <Card className="border-destructive">
+      <CardHeader>
+        <CardTitle className="text-destructive flex items-center gap-2"><Trash2 className="h-5 w-5" /> Delete Account</CardTitle>
+        <CardDescription>
+          Permanently delete your account and all of your content. This action is irreversible.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button variant="destructive">Delete My Account</Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This will permanently delete your account, profile, testimonies, and all other data. This action cannot be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+              <AlertDialogAction onClick={handleDelete} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90">
+                {isDeleting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                Confirm Deletion
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </CardContent>
+    </Card>
+  );
+}
+
+function SettingsSkeleton() {
+    return (
+        <div className="space-y-6">
+            <Card>
                 <CardHeader>
-                  <CardTitle className="text-destructive">Delete Account</CardTitle>
-                  <CardDescription>Permanently delete your account and all of your content.</CardDescription>
+                    <Skeleton className="h-6 w-40" />
+                    <Skeleton className="h-4 w-80" />
                 </CardHeader>
                 <CardContent>
-                  <Button variant="destructive">Delete My Account</Button>
+                    <Skeleton className="h-10 w-36" />
                 </CardContent>
-               </Card>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+            </Card>
+             <Card>
+                <CardHeader>
+                    <Skeleton className="h-6 w-40" />
+                    <Skeleton className="h-4 w-80" />
+                </CardHeader>
+                <CardContent className="space-y-6">
+                    <Skeleton className="h-20 w-full" />
+                    <Skeleton className="h-20 w-full" />
+                    <Skeleton className="h-10 w-48" />
+                </CardContent>
+            </Card>
+             <Card>
+                <CardHeader>
+                    <Skeleton className="h-6 w-40" />
+                    <Skeleton className="h-4 w-80" />
+                </CardHeader>
+                <CardContent className="space-y-6">
+                    <Skeleton className="h-12 w-full" />
+                    <Skeleton className="h-20 w-full" />
+                    <Skeleton className="h-10 w-48" />
+                </CardContent>
+            </Card>
+        </div>
+    )
+}
+
+export default function SettingsPage() {
+  const { user, loading: userLoading } = useUser();
+  const firestore = useFirestore();
+  
+  const userDocRef = user?.uid && firestore ? doc(firestore, 'users', user.uid) : null;
+  const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userDocRef);
+  
+  const loading = userLoading || profileLoading;
+
+  return (
+    <div className="space-y-8 max-w-3xl mx-auto">
+      <div className="space-y-2">
+        <h1 className="text-3xl font-bold tracking-tight font-headline">Settings</h1>
+        <p className="text-muted-foreground">Manage your account settings and preferences.</p>
+      </div>
+      <Separator />
+
+       {loading || !userProfile || !user ? (
+        <SettingsSkeleton />
+      ) : (
+        <div className="space-y-6">
+          <ProfileSettingsCard />
+          <NotificationSettingsForm userProfile={userProfile} userId={user.uid} />
+          <PrivacySettingsForm userProfile={userProfile} userId={user.uid} />
+          <AccountSettingsCard />
+        </div>
+      )}
     </div>
   );
 }
