@@ -33,7 +33,6 @@ const formSchema = z.object({
   bio: z.string().max(280, "Bio is too long.").optional(),
   location: z.string().max(100, "Location is too long.").optional(),
   phone: z.string().max(50, "Phone number is too long.").optional(),
-  website: z.string().url({ message: "Please enter a valid URL." }).or(z.literal('')).optional(),
 });
 
 type EditProfileModalProps = {
@@ -59,7 +58,6 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
       bio: userProfile.bio || "",
       location: userProfile.location || "",
       phone: userProfile.phone || "",
-      website: userProfile.website || "",
     },
   });
 
@@ -96,13 +94,12 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
         photoURL = await getDownloadURL(uploadTask.snapshot.ref);
       }
 
-      const updates: Partial<Pick<UserProfile, 'displayName' | 'bio' | 'location' | 'phone' | 'website' | 'photoURL'>> = {};
+      const updates: Partial<Pick<UserProfile, 'displayName' | 'bio' | 'location' | 'phone' | 'photoURL'>> = {};
 
       if (values.displayName !== userProfile.displayName) updates.displayName = values.displayName;
       if (values.bio !== userProfile.bio) updates.bio = values.bio;
       if (values.location !== userProfile.location) updates.location = values.location;
       if (values.phone !== userProfile.phone) updates.phone = values.phone;
-      if (values.website !== userProfile.website) updates.website = values.website;
       if (photoURL !== userProfile.photoURL) updates.photoURL = photoURL;
       
       const authUpdates: { displayName?: string, photoURL?: string } = {};
@@ -199,19 +196,6 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
               <FormLabel>Phone</FormLabel>
               <FormControl>
                 <Input placeholder="+1 234 567 890" {...field} value={field.value ?? ""} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-         <FormField
-          control={form.control}
-          name="website"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Website</FormLabel>
-              <FormControl>
-                <Input placeholder="https://example.com" {...field} value={field.value ?? ""} />
               </FormControl>
               <FormMessage />
             </FormItem>

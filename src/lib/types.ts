@@ -10,7 +10,6 @@ export type UserProfile = {
   bio?: string;
   location?: string;
   phone?: string;
-  website?: string;
 };
 
 export type Achievement = {

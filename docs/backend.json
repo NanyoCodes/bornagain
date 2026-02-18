@@ -31,11 +31,6 @@
           "type": "string",
           "description": "The user's phone number."
         },
-        "website": {
-          "type": "string",
-          "format": "uri",
-          "description": "A URL to the user's personal website."
-        },
         "coverBannerUrl": {
           "type": "string",
           "format": "uri",

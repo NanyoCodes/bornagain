@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Edit, Globe, Loader2, Mail, MapPin, Newspaper, Phone, Target, UserCheck2 } from "lucide-react";
+import { Edit, Loader2, Mail, MapPin, Newspaper, Phone, Target, UserCheck2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useCollection, useFirestore, useUser } from "@/firebase";
 import { useDoc } from "@/firebase/firestore/use-doc";
@@ -62,7 +62,7 @@ export default function UserProfilePage() {
     return <p>User profile not found.</p>
   }
   
-  const { displayName, email, photoURL, bio, coverBannerUrl, location, phone, website } = userProfile;
+  const { displayName, email, photoURL, bio, coverBannerUrl, location, phone } = userProfile;
 
   const stats = {
     testimonies: testimonies?.length ?? 0,
@@ -142,7 +142,6 @@ export default function UserProfilePage() {
             {location && <div className="flex items-center gap-2"><MapPin className="h-4 w-4" /> {location}</div>}
             {email && <div className="flex items-center gap-2"><Mail className="h-4 w-4" /> {email}</div>}
             {phone && <div className="flex items-center gap-2"><Phone className="h-4 w-4" /> {phone}</div>}
-            {website && <div className="flex items-center gap-2"><Globe className="h-4 w-4" /> <a href={website} className="text-primary hover:underline">{website}</a></div>}
           </div>
         </div>
       </Card>
