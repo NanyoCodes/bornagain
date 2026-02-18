@@ -37,8 +37,10 @@ export type Campaign = {
   description: string;
   goal: string;
   location: string;
-  date: Timestamp;
-  time: string;
+  startDate: Timestamp;
+  endDate: Timestamp;
+  startTime: string;
+  endTime: string;
   participants: number;
   progress: number;
   createdAt: Timestamp;

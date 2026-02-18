@@ -81,17 +81,23 @@ export default function CampaignsPage() {
   const filteredCampaigns = useMemo(() => {
     return campaigns?.filter((campaign) => {
       const locationLower = campaign.location.toLowerCase();
-      if (!campaign.date) return false;
-      const campaignDate = campaign.date.toDate ? campaign.date.toDate() : new Date(campaign.date as any);
-      
-      const campaignDay = new Date(campaignDate.getFullYear(), campaignDate.getMonth(), campaignDate.getDate());
+      if (!campaign.startDate || !campaign.endDate) return false;
 
-      const dateFilterStart = dateFilter ? new Date(dateFilter.getFullYear(), dateFilter.getMonth(), dateFilter.getDate()) : null;
+      const campaignStartDate = campaign.startDate.toDate ? campaign.startDate.toDate() : new Date(campaign.startDate as any);
+      const campaignEndDate = campaign.endDate.toDate ? campaign.endDate.toDate() : new Date(campaign.endDate as any);
+      
+      // Normalize campaign dates to midnight for day-level comparison
+      const campaignStartDay = new Date(campaignStartDate.getFullYear(), campaignStartDate.getMonth(), campaignStartDate.getDate());
+      const campaignEndDay = new Date(campaignEndDate.getFullYear(), campaignEndDate.getMonth(), campaignEndDate.getDate());
+
+      const dateFilterDay = dateFilter ? new Date(dateFilter.getFullYear(), dateFilter.getMonth(), dateFilter.getDate()) : null;
+
+      const dateMatch = !dateFilterDay || (dateFilterDay >= campaignStartDay && dateFilterDay <= campaignEndDay);
 
       return (
         (!cityFilter || locationLower.includes(cityFilter.toLowerCase())) &&
         (!countryFilter || locationLower.includes(countryFilter.toLowerCase())) &&
-        (!dateFilterStart || campaignDay >= dateFilterStart)
+        dateMatch
       );
     });
   }, [campaigns, cityFilter, countryFilter, dateFilter]);
@@ -109,7 +115,7 @@ export default function CampaignsPage() {
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div className="space-y-2">
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight font-headline">Campaigns</h1>
+          <h1 className="text-xl sm:text-2xl font-bold tracking-tight font-headline">Campaigns</h1>
           <p className="text-muted-foreground">Join or create soul-winning campaigns.</p>
         </div>
         {mounted && isMobile ? (
@@ -177,7 +183,6 @@ export default function CampaignsPage() {
                     mode="single"
                     selected={dateFilter}
                     onSelect={setDateFilter}
-                    initialFocus
                     />
                 </PopoverContent>
             </Popover>

@@ -35,12 +35,20 @@ const formSchema = z.object({
   }),
   city: z.string().min(2, "City is too short.").max(50, "City is too long."),
   country: z.string().min(2, "Country is too short.").max(50, "Country is too long."),
-  date: z.coerce.date({
-    required_error: "A date is required for the campaign.",
+  startDate: z.coerce.date({
+    required_error: "A start date is required.",
   }),
-  time: z.string().min(1, "A time is required for the campaign."),
+  endDate: z.coerce.date({
+    required_error: "An end date is required.",
+  }),
+  startTime: z.string().min(1, "A start time is required."),
+  endTime: z.string().min(1, "An end time is required."),
   targetAudience: z.string().min(3, "Target audience is too short.").max(100, "Target audience is too long."),
+}).refine((data) => data.endDate >= data.startDate, {
+    message: "End date cannot be before start date.",
+    path: ["endDate"],
 });
+
 
 type CampaignIdeas = {
   campaignNames: string[];
@@ -68,7 +76,8 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
       city: "",
       country: "",
       targetAudience: "",
-      time: "10:00",
+      startTime: "10:00",
+      endTime: "12:00",
     },
   });
 
@@ -115,8 +124,10 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
       description: finalDescription,
       goal: form.getValues('goal'),
       location: `${form.getValues('city')}, ${form.getValues('country')}`,
-      date: form.getValues('date'),
-      time: form.getValues('time'),
+      startDate: form.getValues('startDate'),
+      endDate: form.getValues('endDate'),
+      startTime: form.getValues('startTime'),
+      endTime: form.getValues('endTime'),
       participants: 1,
       progress: 0,
       createdAt: serverTimestamp(),
@@ -238,10 +249,10 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
                 control={form.control}
-                name="date"
+                name="startDate"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Date</FormLabel>
+                    <FormLabel>Start Date</FormLabel>
                     <FormControl>
                         <Input 
                         type="date"
@@ -257,10 +268,44 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
               />
                <FormField
                 control={form.control}
-                name="time"
+                name="endDate"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Time</FormLabel>
+                    <FormLabel>End Date</FormLabel>
+                    <FormControl>
+                        <Input 
+                        type="date"
+                        className="text-base"
+                        value={field.value ? format(new Date(field.value), 'yyyy-MM-dd') : ''}
+                        onChange={field.onChange}
+                        min={form.watch('startDate') ? format(new Date(form.watch('startDate')), 'yyyy-MM-dd') : format(new Date(), 'yyyy-MM-dd')}
+                        />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+           </div>
+           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="startTime"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Start Time</FormLabel>
+                    <FormControl>
+                      <Input type="time" {...field} className="text-base" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="endTime"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>End Time</FormLabel>
                     <FormControl>
                       <Input type="time" {...field} className="text-base" />
                     </FormControl>
@@ -271,7 +316,7 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
            </div>
            <p className="text-sm text-muted-foreground">
             Provide some keywords and let our AI assistant brainstorm for you.
-          </p>
+           </p>
 
           <Button type="submit" className="w-full" disabled={isGenerating}>
             {isGenerating ? (

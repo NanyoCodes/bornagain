@@ -1,10 +1,9 @@
 
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
-import { format, formatDistanceToNow, parse } from "date-fns";
-import { CalendarDays, MapPin, Users, Share2 } from "lucide-react";
+import { format, formatDistanceToNow, parse, isSameDay } from "date-fns";
+import { CalendarDays, MapPin, Users, Share2, Clock } from "lucide-react";
 import type { Campaign } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -74,14 +73,32 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
     }
   };
 
-  let displayTime = campaign.time;
-  if (campaign.time && /^\d{2}:\d{2}$/.test(campaign.time)) {
-    try {
-      displayTime = format(parse(campaign.time, 'HH:mm', new Date()), 'p');
-    } catch (e) {
-      // ignore, use original time string
-    }
+  const startDate = campaign.startDate?.toDate ? campaign.startDate.toDate() : new Date(campaign.startDate as any);
+  const endDate = campaign.endDate?.toDate ? campaign.endDate.toDate() : new Date(campaign.endDate as any);
+
+  const startTimeFormatted = campaign.startTime && /^\d{2}:\d{2}$/.test(campaign.startTime)
+    ? format(parse(campaign.startTime, 'HH:mm', new Date()), 'p')
+    : campaign.startTime;
+
+  const endTimeFormatted = campaign.endTime && /^\d{2}:\d{2}$/.test(campaign.endTime)
+    ? format(parse(campaign.endTime, 'HH:mm', new Date()), 'p')
+    : campaign.endTime;
+
+  let dateString;
+  if (startDate && endDate) {
+      const startFormatted = format(startDate, "PPP");
+      if (isSameDay(startDate, endDate)) {
+          dateString = startFormatted;
+      } else {
+          const endFormatted = format(endDate, "PPP");
+          dateString = `${startFormatted} to ${endFormatted}`;
+      }
+  } else {
+      dateString = "Date not set";
   }
+  
+  const timeString = `${startTimeFormatted} - ${endTimeFormatted}`;
+
 
   return (
     <Card className="flex flex-col">
@@ -95,9 +112,11 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
         </div>
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <CalendarDays className="h-4 w-4" />
-          <span>
-            {campaign.date ? format(campaign.date.toDate ? campaign.date.toDate() : new Date(campaign.date as any), "PPP") : "Date not set"} at {displayTime}
-          </span>
+          <span>{dateString}</span>
+        </div>
+         <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <Clock className="h-4 w-4" />
+          <span>{timeString}</span>
         </div>
         <p className="text-muted-foreground text-sm">{campaign.description}</p>
         <div>

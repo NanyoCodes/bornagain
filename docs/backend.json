@@ -87,10 +87,16 @@
         "location": {
           "type": "string"
         },
-        "date": {
+        "startDate": {
           "type": "object"
         },
-        "time": {
+        "endDate": {
+          "type": "object"
+        },
+        "startTime": {
+          "type": "string"
+        },
+        "endTime": {
           "type": "string"
         },
         "participants": {
@@ -113,8 +119,10 @@
         "title",
         "description",
         "location",
-        "date",
-        "time",
+        "startDate",
+        "endDate",
+        "startTime",
+        "endTime",
         "createdAt",
         "organizerId",
         "organizerName"
