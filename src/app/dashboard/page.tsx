@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatDistanceToNow, isSameMonth, startOfDay, differenceInCalendarDays } from "date-fns";
 import Link from "next/link";
-import { ArrowUpRight, Newspaper, Target, TrendingUp, UserCheck2, Megaphone } from "lucide-react";
+import { ArrowRight, Newspaper, Target, TrendingUp, UserCheck2, Megaphone } from "lucide-react";
 import { useCollection, useFirestore, useUser, useDoc } from "@/firebase";
 import { collection, query, orderBy, limit, where, doc, updateDoc, serverTimestamp, documentId } from "firebase/firestore";
 import type { Testimony, Campaign, Soul, JoinedCampaign, UserProfile } from "@/lib/types";
@@ -30,7 +30,7 @@ function RecentTestimonies() {
           <Button asChild size="sm" className="ml-auto gap-1">
             <Link href="/dashboard/testimonies">
               View All
-              <ArrowUpRight className="h-4 w-4" />
+              <ArrowRight className="h-4 w-4" />
             </Link>
           </Button>
         </CardHeader>
@@ -88,7 +88,7 @@ function ActiveCampaigns() {
             <Button asChild size="sm" className="ml-auto gap-1">
             <Link href="/dashboard/campaigns">
               View All
-              <ArrowUpRight className="h-4 w-4" />
+              <ArrowRight className="h-4 w-4" />
             </Link>
           </Button>
         </CardHeader>
@@ -184,7 +184,7 @@ function MyCampaigns() {
         <Button asChild size="sm" className="ml-auto gap-1">
           <Link href="/dashboard/campaigns">
             View All
-            <ArrowUpRight className="h-4 w-4" />
+            <ArrowRight className="h-4 w-4" />
           </Link>
         </Button>
       </CardHeader>
@@ -267,19 +267,6 @@ export default function DashboardPage() {
   const joinedCampaignsQuery = useMemo(() => user ? query(collection(firestore, `users/${user.uid}/joinedCampaigns`)) : null, [user, firestore]);
   const { data: joinedCampaignsDocs } = useCollection<JoinedCampaign>(joinedCampaignsQuery);
   
-  const joinedCampaignsIds = useMemo(() => joinedCampaignsDocs?.map(j => j.id) ?? [], [joinedCampaignsDocs]);
-
-  const allJoinedCampaignsQuery = useMemo(() => {
-    if (!user || joinedCampaignsIds.length === 0) return null;
-    return query(collection(firestore, 'campaigns'), where(documentId(), 'in', joinedCampaignsIds));
-  }, [user, joinedCampaignsIds, firestore]);
-  const { data: allJoinedCampaigns } = useCollection<Campaign>(allJoinedCampaignsQuery);
-  
-  const activeJoinedCampaigns = useMemo(() => {
-    if (!allJoinedCampaigns) return [];
-    return allJoinedCampaigns.filter(c => c.status !== 'deleted');
-  }, [allJoinedCampaigns]);
-  
   const allMyCampaignsQuery = useMemo(() => user ? query(collection(firestore, 'campaigns'), where('organizerId', '==', user.uid)) : null, [user, firestore]);
   const { data: allMyCampaigns } = useCollection<Campaign>(allMyCampaignsQuery);
 
@@ -287,6 +274,27 @@ export default function DashboardPage() {
     if (!allMyCampaigns) return [];
     return allMyCampaigns.filter(c => c.status !== 'deleted');
   }, [allMyCampaigns]);
+
+  const myCreatedCampaignIds = useMemo(() => new Set(allMyCampaigns?.map(c => c.id)), [allMyCampaigns]);
+
+  const campaignsJoinedThisMonth = useMemo(() => {
+    if (!joinedCampaignsDocs) return 0;
+    
+    return joinedCampaignsDocs.filter(c => {
+      if (!c.joinedAt || myCreatedCampaignIds.has(c.id)) return false;
+      const joinedDate = c.joinedAt.toDate ? c.joinedAt.toDate() : new Date(c.joinedAt as any);
+      return isSameMonth(joinedDate, now);
+    }).length;
+  }, [joinedCampaignsDocs, myCreatedCampaignIds, now]);
+
+  const campaignsCreatedThisMonth = useMemo(() => {
+    if (!activeMyCampaigns) return 0;
+    return activeMyCampaigns.filter(c => {
+      if (!c.createdAt) return false;
+      const createdDate = c.createdAt.toDate ? c.createdAt.toDate() : new Date(c.createdAt as any);
+      return isSameMonth(createdDate, now);
+    }).length;
+  }, [activeMyCampaigns, now]);
 
   const testimoniesThisMonth = useMemo(() => {
     if (!myTestimonies) return 0;
@@ -306,32 +314,12 @@ export default function DashboardPage() {
     }).length;
   }, [soulsWon, now]);
 
-  const campaignsJoinedThisMonth = useMemo(() => {
-    if (!joinedCampaignsDocs) return 0;
-    const activeIds = new Set(activeJoinedCampaigns.map(c => c.id));
-    
-    return joinedCampaignsDocs.filter(c => {
-      if (!c.joinedAt || !activeIds.has(c.id)) return false;
-      const joinedDate = c.joinedAt.toDate ? c.joinedAt.toDate() : new Date(c.joinedAt as any);
-      return isSameMonth(joinedDate, now)
-    }).length;
-  }, [joinedCampaignsDocs, activeJoinedCampaigns, now]);
-
-   const campaignsCreatedThisMonth = useMemo(() => {
-    if (!activeMyCampaigns) return 0;
-    return activeMyCampaigns.filter(c => {
-      if (!c.createdAt) return false;
-      const createdDate = c.createdAt.toDate ? c.createdAt.toDate() : new Date(c.createdAt as any);
-      return isSameMonth(createdDate, now);
-    }).length;
-  }, [activeMyCampaigns, now]);
-
-
-  const currentStreak = userProfile?.currentStreak || 0;
-  const joinedCampaignsCount = activeJoinedCampaigns.length;
+  const campaignsCreatedCount = activeMyCampaigns.length;
+  const joinedCampaignsCount = (joinedCampaignsDocs?.length ?? 0) - campaignsCreatedCount;
   const testimoniesCount = myTestimonies?.length ?? 0;
-  const campaignsCreatedCount = activeMyCampaigns?.length ?? 0;
   const soulsWonCount = soulsWon?.length ?? 0;
+  const currentStreak = userProfile?.currentStreak || 0;
+
 
   return (
     <div className="space-y-8">

@@ -66,14 +66,15 @@ export function JoinedCampaignsList({ userId }: { userId: string }) {
   }
   
   const activeCampaigns = campaigns?.filter(c => c.status !== 'deleted') ?? [];
+  const joinedOnlyCampaigns = activeCampaigns.filter(c => c.organizerId !== userId);
 
-  if (activeCampaigns.length === 0) {
-    return <p className="text-sm text-muted-foreground text-center py-4">You haven't joined any campaigns.</p>
+  if (joinedOnlyCampaigns.length === 0) {
+    return <p className="text-sm text-muted-foreground text-center py-4">You haven't joined any campaigns created by others.</p>
   }
 
   return (
     <div className="space-y-2">
-      {activeCampaigns.map(campaign => (
+      {joinedOnlyCampaigns.map(campaign => (
         <ListItem 
             key={campaign.id}
             href="/dashboard/campaigns"
