@@ -12,6 +12,8 @@ import { collection, query, orderBy, limit, where, doc, updateDoc, serverTimesta
 import type { Testimony, Campaign, Soul, JoinedCampaign, UserProfile } from "@/lib/types";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useMemo, useEffect } from "react";
+import { StatDialog } from "@/components/dashboard/stat-dialog";
+import { JoinedCampaignsList, TestimoniesList, CampaignsCreatedList, SoulsWonList } from "@/components/dashboard/dashboard-lists";
 
 function RecentTestimonies() {
   const firestore = useFirestore();
@@ -313,13 +315,10 @@ export default function DashboardPage() {
 
 
   const currentStreak = userProfile?.currentStreak || 0;
-
-  const stats = [
-    { title: "Testimonies Shared", value: myTestimonies?.length ?? 0, icon: Newspaper, change: `${testimoniesThisMonth} this month` },
-    { title: "Campaigns Created", value: activeMyCampaigns?.length ?? 0, icon: Megaphone, change: `${campaignsCreatedThisMonth} this month` },
-    { title: "Souls Won", value: soulsWon?.length ?? 0, icon: UserCheck2, change: `${soulsWonThisMonth} this month` },
-    { title: "Current Streak", value: `${currentStreak} day${currentStreak === 1 ? '' : 's'}`, icon: TrendingUp, change: "Keep going!" },
-  ];
+  const joinedCampaignsCount = joinedCampaigns?.length ?? 0;
+  const testimoniesCount = myTestimonies?.length ?? 0;
+  const campaignsCreatedCount = activeMyCampaigns?.length ?? 0;
+  const soulsWonCount = soulsWon?.length ?? 0;
 
   return (
     <div className="space-y-8">
@@ -331,19 +330,61 @@ export default function DashboardPage() {
         </blockquote>
       </div>
       
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {stats.map((stat) => (
-          <Card key={stat.title}>
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+        <StatDialog
+            title="Testimonies Shared"
+            value={testimoniesCount}
+            change={`${testimoniesThisMonth} this month`}
+            icon={Newspaper}
+            dialogTitle="My Testimonies"
+            dialogDescription="A list of all the testimonies you have shared."
+        >
+            <TestimoniesList userId={user!.uid} />
+        </StatDialog>
+
+        <StatDialog
+            title="Campaigns Created"
+            value={campaignsCreatedCount}
+            change={`${campaignsCreatedThisMonth} this month`}
+            icon={Megaphone}
+            dialogTitle="My Created Campaigns"
+            dialogDescription="A list of all the campaigns you have organized."
+        >
+            <CampaignsCreatedList userId={user!.uid} />
+        </StatDialog>
+        
+        <StatDialog
+            title="Campaigns Joined"
+            value={joinedCampaignsCount}
+            change={`${campaignsJoinedThisMonth} this month`}
+            icon={Target}
+            dialogTitle="My Joined Campaigns"
+            dialogDescription="A list of all the campaigns you have joined."
+        >
+            <JoinedCampaignsList userId={user!.uid} />
+        </StatDialog>
+
+        <StatDialog
+            title="Souls Won"
+            value={soulsWonCount}
+            change={`${soulsWonThisMonth} this month`}
+            icon={UserCheck2}
+            dialogTitle="My Souls Won"
+            dialogDescription="A list of all the souls you have won for Christ."
+        >
+            <SoulsWonList userId={user!.uid} />
+        </StatDialog>
+        
+        <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
-              <stat.icon className="h-4 w-4 text-muted-foreground" />
+                <CardTitle className="text-sm font-medium">Current Streak</CardTitle>
+                <TrendingUp className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stat.value}</div>
-              <p className="text-xs text-muted-foreground">{stat.change}</p>
+                <div className="text-2xl font-bold">{`${currentStreak} day${currentStreak === 1 ? '' : 's'}`}</div>
+                <p className="text-xs text-muted-foreground">Keep going!</p>
             </CardContent>
-          </Card>
-        ))}
+        </Card>
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
