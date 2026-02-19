@@ -71,9 +71,15 @@ function RecentTestimonies() {
 function ActiveCampaigns() {
   const firestore = useFirestore();
   const { user, loading: userLoading } = useUser();
-  const campaignsQuery = useMemo(() => !userLoading && user?.uid && firestore ? query(collection(firestore, 'campaigns'), orderBy('createdAt', 'desc'), limit(2)) : null, [userLoading, user, firestore]);
-  const { data: campaigns, loading: campaignsLoading } = useCollection<Campaign>(campaignsQuery);
+  // Fetch a few more than needed to account for filtering out deleted ones
+  const campaignsQuery = useMemo(() => !userLoading && user?.uid && firestore ? query(collection(firestore, 'campaigns'), orderBy('createdAt', 'desc'), limit(5)) : null, [userLoading, user, firestore]);
+  const { data: recentCampaigns, loading: campaignsLoading } = useCollection<Campaign>(campaignsQuery);
   const loading = userLoading || campaignsLoading;
+
+  const campaigns = useMemo(() => {
+    if (!recentCampaigns) return [];
+    return recentCampaigns.filter(c => c.status !== 'deleted').slice(0, 2);
+  }, [recentCampaigns]);
 
   return (
     <Card>
@@ -100,7 +106,7 @@ function ActiveCampaigns() {
                 ))}
               </div>
             )}
-            {!loading && campaigns?.map(campaign => (
+            {!loading && campaigns.map(campaign => (
               <div key={campaign.id} className="flex items-center gap-4">
                 <div className="grid gap-1">
                   <p className="text-sm font-medium">{campaign.title}</p>
@@ -109,6 +115,11 @@ function ActiveCampaigns() {
                 <div className="ml-auto font-medium">{campaign.participants} joined</div>
               </div>
             ))}
+            {!loading && campaigns.length === 0 && (
+                <div className="text-center text-muted-foreground py-4 text-sm">
+                    No active campaigns found.
+                </div>
+            )}
         </CardContent>
     </Card>
   )
@@ -152,6 +163,7 @@ function MyCampaigns() {
     (joinedCampaigns || []).forEach(c => combined.set(c.id, c));
     
     return Array.from(combined.values())
+      .filter(c => c.status !== 'deleted')
       .sort((a, b) => {
           const dateA = a.createdAt?.seconds ?? 0;
           const dateB = b.createdAt?.seconds ?? 0;
@@ -258,6 +270,10 @@ export default function DashboardPage() {
   const allMyCampaignsQuery = useMemo(() => !userLoading && user?.uid && firestore ? query(collection(firestore, 'campaigns'), where('organizerId', '==', user.uid)) : null, [userLoading, user, firestore]);
   const { data: allMyCampaigns } = useCollection<Campaign>(allMyCampaignsQuery);
 
+  const activeMyCampaigns = useMemo(() => {
+    if (!allMyCampaigns) return [];
+    return allMyCampaigns.filter(c => c.status !== 'deleted');
+  }, [allMyCampaigns]);
 
   const testimoniesThisMonth = useMemo(() => {
     if (!myTestimonies) return 0;
@@ -287,20 +303,20 @@ export default function DashboardPage() {
   }, [joinedCampaigns, now]);
 
    const campaignsCreatedThisMonth = useMemo(() => {
-    if (!allMyCampaigns) return 0;
-    return allMyCampaigns.filter(c => {
+    if (!activeMyCampaigns) return 0;
+    return activeMyCampaigns.filter(c => {
       if (!c.createdAt) return false;
       const createdDate = c.createdAt.toDate ? c.createdAt.toDate() : new Date(c.createdAt as any);
       return isSameMonth(createdDate, now);
     }).length;
-  }, [allMyCampaigns, now]);
+  }, [activeMyCampaigns, now]);
 
 
   const currentStreak = userProfile?.currentStreak || 0;
 
   const stats = [
     { title: "Testimonies Shared", value: myTestimonies?.length ?? 0, icon: Newspaper, change: `${testimoniesThisMonth} this month` },
-    { title: "Campaigns Created", value: allMyCampaigns?.length ?? 0, icon: Megaphone, change: `${campaignsCreatedThisMonth} this month` },
+    { title: "Campaigns Created", value: activeMyCampaigns?.length ?? 0, icon: Megaphone, change: `${campaignsCreatedThisMonth} this month` },
     { title: "Souls Won", value: soulsWon?.length ?? 0, icon: UserCheck2, change: `${soulsWonThisMonth} this month` },
     { title: "Current Streak", value: `${currentStreak} day${currentStreak === 1 ? '' : 's'}`, icon: TrendingUp, change: "Keep going!" },
   ];
