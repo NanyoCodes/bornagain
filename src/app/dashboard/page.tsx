@@ -1,14 +1,14 @@
 
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatDistanceToNow, isSameMonth, startOfDay, differenceInCalendarDays } from "date-fns";
 import Link from "next/link";
 import { ArrowUpRight, Newspaper, Target, TrendingUp, UserCheck2, Megaphone } from "lucide-react";
 import { useCollection, useFirestore, useUser, useDoc } from "@/firebase";
-import { collection, query, orderBy, limit, where, doc, updateDoc, serverTimestamp } from "firebase/firestore";
+import { collection, query, orderBy, limit, where, doc, updateDoc, serverTimestamp, documentId } from "firebase/firestore";
 import type { Testimony, Campaign, Soul, JoinedCampaign, UserProfile } from "@/lib/types";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useMemo, useEffect } from "react";
@@ -113,17 +113,61 @@ function ActiveCampaigns() {
   )
 }
 
-function MyOrganizedCampaigns() {
+function MyCampaigns() {
   const firestore = useFirestore();
   const { user, loading: userLoading } = useUser();
-  const myCampaignsQuery = !userLoading && user?.uid && firestore ? query(collection(firestore, 'campaigns'), where('organizerId', '==', user.uid), orderBy('createdAt', 'desc'), limit(2)) : null;
-  const { data: myCampaigns, loading: myCampaignsLoading } = useCollection<Campaign>(myCampaignsQuery);
-  const loading = userLoading || myCampaignsLoading;
+
+  const organizedQuery = useMemo(() => 
+    !userLoading && user?.uid && firestore 
+    ? query(collection(firestore, 'campaigns'), where('organizerId', '==', user.uid), orderBy('createdAt', 'desc'), limit(3)) 
+    : null, 
+  [user, userLoading, firestore]);
+  const { data: organizedCampaigns, loading: organizedLoading } = useCollection<Campaign>(organizedQuery);
+
+  const joinedIdsQuery = useMemo(() => 
+    !userLoading && user?.uid && firestore 
+    ? query(collection(firestore, `users/${user.uid}/joinedCampaigns`), orderBy('joinedAt', 'desc'), limit(3)) 
+    : null,
+  [user, userLoading, firestore]);
+  const { data: joinedCampaignsDocs, loading: joinedIdsLoading } = useCollection<JoinedCampaign>(joinedIdsQuery);
+
+  const joinedCampaignIds = useMemo(() => joinedCampaignsDocs?.map(j => j.id) ?? [], [joinedCampaignsDocs]);
+
+  const joinedQuery = useMemo(() => {
+    if (!firestore || joinedCampaignIds.length === 0) return null;
+    
+    const organizedIds = new Set(organizedCampaigns?.map(c => c.id));
+    const idsToFetch = joinedCampaignIds.filter(id => !organizedIds.has(id));
+    
+    if (idsToFetch.length === 0) return null;
+
+    return query(collection(firestore, 'campaigns'), where(documentId(), 'in', idsToFetch));
+  }, [firestore, joinedCampaignIds, organizedCampaigns]);
+  const { data: joinedCampaigns, loading: joinedLoading } = useCollection<Campaign>(joinedQuery);
+
+  const myCampaigns = useMemo(() => {
+    const combined = new Map<string, Campaign>();
+    (organizedCampaigns || []).forEach(c => combined.set(c.id, c));
+    (joinedCampaigns || []).forEach(c => combined.set(c.id, c));
+    
+    return Array.from(combined.values())
+      .sort((a, b) => {
+          const dateA = a.createdAt?.seconds ?? 0;
+          const dateB = b.createdAt?.seconds ?? 0;
+          return dateB - dateA;
+      })
+      .slice(0, 3);
+  }, [organizedCampaigns, joinedCampaigns]);
+
+  const loading = userLoading || organizedLoading || joinedIdsLoading || (joinedCampaignIds.length > 0 && !!joinedQuery && joinedLoading);
 
   return (
     <Card>
       <CardHeader className="flex flex-row items-center">
-        <CardTitle>My Campaigns</CardTitle>
+        <div className="grid gap-2">
+            <CardTitle>My Campaigns</CardTitle>
+            <CardDescription>Campaigns you've created or joined.</CardDescription>
+        </div>
         <Button asChild size="sm" className="ml-auto gap-1">
           <Link href="/dashboard/campaigns">
             View All
@@ -145,7 +189,7 @@ function MyOrganizedCampaigns() {
             ))}
           </div>
         )}
-        {!loading && myCampaigns?.map(campaign => (
+        {!loading && myCampaigns.map(campaign => (
           <div key={campaign.id} className="flex items-center gap-4">
             <div className="grid gap-1">
               <p className="text-sm font-medium">{campaign.title}</p>
@@ -156,8 +200,8 @@ function MyOrganizedCampaigns() {
         ))}
         {!loading && (!myCampaigns || myCampaigns.length === 0) && (
           <div className="text-center py-4">
-            <p className="text-sm text-muted-foreground">You haven't created any campaigns yet.</p>
-            <Button variant="link" asChild><Link href="/dashboard/campaigns">Create One</Link></Button>
+            <p className="text-sm text-muted-foreground">You haven't created or joined any campaigns yet.</p>
+            <Button variant="link" asChild><Link href="/dashboard/campaigns">Find One</Link></Button>
           </div>
         )}
       </CardContent>
@@ -289,7 +333,7 @@ export default function DashboardPage() {
         <RecentTestimonies />
         <div className="space-y-6 lg:col-span-1">
           <ActiveCampaigns />
-          <MyOrganizedCampaigns />
+          <MyCampaigns />
         </div>
       </div>
 
