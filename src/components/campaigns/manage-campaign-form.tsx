@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -141,12 +140,6 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
         const participantsRef = collection(firestore, 'campaigns', campaign.id, 'participants');
         const participantsSnapshot = await getDocs(participantsRef);
         const participants = participantsSnapshot.docs.map(doc => doc.data() as CampaignParticipant & { id: string });
-
-        if (participants.length <= 1) {
-            toast({ variant: 'destructive', title: 'Not enough participants', description: 'You need at least one other participant to start a group chat.' });
-            setIsChatLoading(false);
-            return;
-        }
 
         const participantIds = participants.map(p => p.id);
         const participantInfo: { [key: string]: any } = {};
