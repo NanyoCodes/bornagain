@@ -23,7 +23,7 @@ import {
 } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, User, Bell, Lock, Trash2 } from 'lucide-react';
+import { Loader2, User, Bell, Lock, Trash2, MessageSquare, Mail, Phone } from 'lucide-react';
 import { useDoc, useFirestore, useUser } from '@/firebase';
 import { doc, updateDoc } from 'firebase/firestore';
 import type { UserProfile } from '@/lib/types';
@@ -261,6 +261,33 @@ function PrivacySettingsForm({ userProfile, userId }: { userProfile: UserProfile
   );
 }
 
+function ContactCard() {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2"><MessageSquare className="h-5 w-5" /> Contact &amp; Suggestions</CardTitle>
+        <CardDescription>
+          Have suggestions or need to get in touch? We&apos;d love to hear from you.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="flex items-center gap-4">
+            <Mail className="h-5 w-5 text-muted-foreground" />
+            <a href="mailto:testifyglobal@gmail.com" className="text-sm font-medium hover:underline">
+                testifyglobal@gmail.com
+            </a>
+        </div>
+        <div className="flex items-center gap-4">
+            <Phone className="h-5 w-5 text-muted-foreground" />
+            <a href="tel:+2348148538502" className="text-sm font-medium hover:underline">
+                +2348148538502
+            </a>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
 
 function AccountSettingsCard() {
     const { toast } = useToast();
@@ -373,6 +400,7 @@ export default function SettingsPage() {
           <ProfileSettingsCard />
           <NotificationSettingsForm userProfile={userProfile} userId={user.uid} />
           <PrivacySettingsForm userProfile={userProfile} userId={user.uid} />
+          <ContactCard />
           <AccountSettingsCard />
         </div>
       )}
