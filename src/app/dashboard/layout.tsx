@@ -41,6 +41,7 @@ import { SearchProvider, useSearch } from "@/context/search-context";
 import { collection, doc, limit, orderBy, query, writeBatch } from "firebase/firestore";
 import type { Notification } from "@/lib/types";
 import { formatDistanceToNow } from "date-fns";
+import { WelcomePopup } from "@/components/auth/welcome-popup";
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: Home },
@@ -290,10 +291,22 @@ export default function DashboardLayout({
 }) {
   const { user, loading } = useUser();
   const router = useRouter();
+  const [showWelcomePopup, setShowWelcomePopup] = useState(false);
 
   useEffect(() => {
     if (!loading && user) {
-      // Prefetch dashboard assets
+      // Check if it's a new user to show the welcome popup
+      const welcomePopupShown = sessionStorage.getItem('welcomePopupShown');
+      if (!welcomePopupShown && user.metadata.creationTime && user.metadata.lastSignInTime) {
+        const creationTime = new Date(user.metadata.creationTime).getTime();
+        const lastSignInTime = new Date(user.metadata.lastSignInTime).getTime();
+        
+        // Show popup if last sign in is within a short time from creation (e.g., 5 seconds)
+        if (lastSignInTime - creationTime < 5000) {
+          setShowWelcomePopup(true);
+          sessionStorage.setItem('welcomePopupShown', 'true');
+        }
+      }
     } else if (!loading && !user) {
       router.push('/login');
     }
@@ -314,6 +327,11 @@ export default function DashboardLayout({
         <AppHeader />
         <main className="flex w-full flex-1 flex-col p-4 pb-24 md:p-6 md:pb-8 lg:p-8 max-w-7xl mx-auto">{children}</main>
         <BottomNavBar />
+        <WelcomePopup 
+          isOpen={showWelcomePopup}
+          onClose={() => setShowWelcomePopup(false)}
+          userName={user?.displayName}
+        />
       </div>
     </SearchProvider>
   );
