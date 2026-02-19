@@ -32,7 +32,6 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ThemeToggle } from "@/components/theme-toggle";
 import { cn } from "@/lib/utils";
 import { useUser, useAuth, useFirestore, useCollection } from "@/firebase";
 import { signOut } from "firebase/auth";
@@ -167,7 +166,6 @@ function AppHeader() {
             <span className="sr-only">Search</span>
           </Button>
         )}
-        <ThemeToggle />
         <Button variant="ghost" size="icon" asChild>
             <Link href="/dashboard/chats">
                 <MessageSquare className="h-5 w-5" />

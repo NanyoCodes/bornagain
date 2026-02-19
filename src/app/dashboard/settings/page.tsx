@@ -23,7 +23,7 @@ import {
 } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, User, Bell, Lock, Trash2, MessageSquare, Mail, Phone } from 'lucide-react';
+import { Loader2, User, Bell, Lock, Trash2, MessageSquare, Mail, Phone, Palette } from 'lucide-react';
 import { useDoc, useFirestore, useUser } from '@/firebase';
 import { doc, updateDoc } from 'firebase/firestore';
 import type { UserProfile } from '@/lib/types';
@@ -49,6 +49,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import Link from 'next/link';
 import { useEffect, useState, useMemo } from 'react';
+import { ThemeToggle } from '@/components/theme-toggle';
 
 // --- Validation Schemas ---
 const notificationFormSchema = z.object({
@@ -76,6 +77,30 @@ function ProfileSettingsCard() {
         <Button asChild>
           <Link href="/dashboard/profile">Edit Your Profile</Link>
         </Button>
+      </CardContent>
+    </Card>
+  );
+}
+
+function AppearanceSettingsCard() {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2"><Palette className="h-5 w-5" /> Appearance</CardTitle>
+        <CardDescription>
+          Customize the look and feel of the application.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+         <div className="flex items-center justify-between rounded-lg border p-4">
+            <div className="space-y-0.5">
+                <label className="text-base font-medium">Theme</label>
+                <p className="text-sm text-muted-foreground">
+                    Select a light, dark, or system theme.
+                </p>
+            </div>
+            <ThemeToggle />
+        </div>
       </CardContent>
     </Card>
   );
@@ -398,6 +423,7 @@ export default function SettingsPage() {
       ) : (
         <div className="space-y-6">
           <ProfileSettingsCard />
+          <AppearanceSettingsCard />
           <NotificationSettingsForm userProfile={userProfile} userId={user.uid} />
           <PrivacySettingsForm userProfile={userProfile} userId={user.uid} />
           <ContactCard />
