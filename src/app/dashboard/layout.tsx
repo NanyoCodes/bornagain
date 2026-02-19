@@ -323,7 +323,7 @@ export default function DashboardLayout({
     <SearchProvider>
       <div className="flex min-h-screen w-full flex-col bg-background">
         <AppHeader />
-        <main className="flex w-full flex-1 flex-col p-4 pb-24 md:p-6 md:pb-8 lg:p-8 max-w-7xl mx-auto">{children}</main>
+        {user && <main className="flex w-full flex-1 flex-col p-4 pb-24 md:p-6 md:pb-8 lg:p-8 max-w-7xl mx-auto">{children}</main>}
         <BottomNavBar />
         <WelcomePopup 
           isOpen={showWelcomePopup}

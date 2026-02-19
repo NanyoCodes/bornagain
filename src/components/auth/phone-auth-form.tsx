@@ -174,7 +174,7 @@ export function PhoneAuthForm() {
   if (isCodeSent) {
     return (
       <Form {...codeForm}>
-        <form onSubmit={codeForm.handleSubmit(onCodeSubmit)} className="space-y-4">
+        <form onSubmit={codeForm.handleSubmit(onCodeSubmit)} className="space-y-3">
           <FormField
             control={codeForm.control}
             name="code"
@@ -204,7 +204,7 @@ export function PhoneAuthForm() {
     <>
       <div ref={recaptchaContainerRef}></div>
       <Form {...phoneForm}>
-        <form onSubmit={phoneForm.handleSubmit(onPhoneSubmit)} className="space-y-4">
+        <form onSubmit={phoneForm.handleSubmit(onPhoneSubmit)} className="space-y-3">
           <FormField
             control={phoneForm.control}
             name="phone"

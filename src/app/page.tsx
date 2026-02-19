@@ -16,6 +16,7 @@ import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PhoneAuthForm } from "@/components/auth/phone-auth-form";
+import { Cross, BookOpen, Bird, Fish } from "lucide-react";
 
 
 export default function SignUpPage() {
@@ -84,13 +85,13 @@ export default function SignUpPage() {
   return (
     <main className="w-full lg:grid lg:min-h-screen lg:grid-cols-2">
       <div className="flex items-center justify-center p-6 sm:p-12">
-        <div className="mx-auto grid w-full max-w-[350px] gap-6">
+        <div className="mx-auto grid w-full max-w-xs gap-4">
           <div className="grid gap-2 text-center">
             {logo && (
-              <Image src={logo.imageUrl} alt={logo.description} width={80} height={80} className="mx-auto mb-4 rounded-full" data-ai-hint={logo.imageHint} />
+              <Image src={logo.imageUrl} alt={logo.description} width={64} height={64} className="mx-auto mb-2 rounded-full" data-ai-hint={logo.imageHint} />
             )}
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Create an Account</h1>
-            <p className="text-balance text-muted-foreground">
+            <h1 className="text-2xl font-bold tracking-tight">Create an Account</h1>
+            <p className="text-balance text-muted-foreground text-sm">
               Already have an account?{' '}
               <Link href="/login" className="underline">
                 Sign in
@@ -103,15 +104,15 @@ export default function SignUpPage() {
               <TabsTrigger value="email">Email</TabsTrigger>
               <TabsTrigger value="phone">Phone</TabsTrigger>
             </TabsList>
-            <TabsContent value="email" className="pt-6">
+            <TabsContent value="email" className="pt-4">
               <SignUpForm />
             </TabsContent>
-            <TabsContent value="phone" className="pt-6">
+            <TabsContent value="phone" className="pt-4">
               <PhoneAuthForm />
             </TabsContent>
           </Tabs>
           
-          <div className="relative my-2">
+          <div className="relative my-1">
             <div className="absolute inset-0 flex items-center">
               <span className="w-full border-t" />
             </div>
@@ -123,26 +124,34 @@ export default function SignUpPage() {
           </div>
           
           <div className="grid grid-cols-2 gap-4">
-            <Button variant="outline" className="w-full" onClick={() => handleSocialLogin('google')}>
-              <Icons.google className="mr-2 h-5 w-5" /> Google
+            <Button variant="outline" className="w-full h-9" onClick={() => handleSocialLogin('google')}>
+              <Icons.google className="mr-2 h-4 w-4" /> Google
             </Button>
-            <Button variant="outline" className="w-full" onClick={() => handleSocialLogin('facebook')}>
-              <Icons.facebook className="mr-2 h-5 w-5 text-[#1877F2]" /> Facebook
+            <Button variant="outline" className="w-full h-9" onClick={() => handleSocialLogin('facebook')}>
+              <Icons.facebook className="mr-2 h-4 w-4 text-[#1877F2]" /> Facebook
             </Button>
           </div>
         </div>
       </div>
-      <div className="hidden bg-muted lg:block">
+      <div className="hidden bg-muted lg:block relative">
         {authHero && (
           <Image
             src={authHero.imageUrl}
             alt={authHero.description}
             width="1920"
             height="1080"
-            className="h-full w-full object-cover dark:brightness-[0.7]"
+            className="h-full w-full object-cover"
             data-ai-hint={authHero.imageHint}
+            priority
           />
         )}
+        <div className="absolute inset-0 bg-black/40" />
+        <div className="absolute inset-0 z-10 overflow-hidden text-white/10">
+            <Cross className="absolute -left-10 -top-10 h-36 w-36 rotate-12" />
+            <BookOpen className="absolute -right-16 bottom-1/4 h-48 w-48 rotate-12" />
+            <Bird className="absolute left-1/4 top-1/4 h-40 w-40 -rotate-12" />
+            <Fish className="absolute bottom-8 right-1/3 h-32 w-32" />
+        </div>
       </div>
     </main>
   );
