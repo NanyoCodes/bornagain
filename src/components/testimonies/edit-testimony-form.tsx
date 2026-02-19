@@ -58,9 +58,56 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
     },
   });
 
+  const completeTestimonyUpdate = async (mediaUrl: string | null) => {
+    if (!user || !firestore) return;
+    const values = form.getValues();
+
+    try {
+        const testimonyUpdate: { [key: string]: any } = {
+            category: values.category,
+            content: values.content,
+            updatedAt: serverTimestamp(),
+        };
+
+        if (mediaUrl) {
+            testimonyUpdate.mediaUrl = mediaUrl;
+            testimonyUpdate.mediaType = 'image';
+        }
+
+        const testimonyRef = doc(firestore, "testimonies", testimony.id);
+        await updateDoc(testimonyRef, testimonyUpdate).catch((serverError) => {
+            const permissionError = new FirestorePermissionError({
+                path: testimonyRef.path,
+                operation: 'update',
+                requestResourceData: testimonyUpdate,
+            });
+            errorEmitter.emit('permission-error', permissionError);
+            throw permissionError;
+        });
+
+        toast({
+            title: "Testimony Updated!",
+            description: "Your changes have been saved successfully.",
+        });
+        onTestimonyUpdated();
+    } catch (error: any) {
+        console.error("Update error:", error);
+        if (error.name !== 'FirestorePermissionError') {
+            toast({
+                variant: "destructive",
+                title: "Update Error",
+                description: error.message || "An unexpected error occurred. Please try again.",
+            });
+        }
+    } finally {
+        setIsSubmitting(false);
+        setUploadProgress(null);
+    }
+  }
+
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    if (!user || !firestore || !storage) {
+    if (!user || !storage) {
       toast({ variant: 'destructive', title: 'Authentication Error', description: 'Please log in again.' });
       return;
     }
@@ -70,71 +117,30 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
     }
 
     setIsSubmitting(true);
-
-    try {
-      const testimonyUpdate: { [key: string]: any } = {
-        category: values.category,
-        content: values.content,
-        updatedAt: serverTimestamp(),
-      };
-      
-      if (file) {
+    
+    if (file) {
         setUploadProgress(0);
         const storageRef = ref(storage, `testimonies/${user.uid}/${Date.now()}_${file.name}`);
         const uploadTask = uploadBytesResumable(storageRef, file);
-        
-        const downloadURL = await new Promise<string>((resolve, reject) => {
-            uploadTask.on('state_changed',
-                (snapshot) => {
-                    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                    setUploadProgress(progress);
-                },
-                (error) => {
-                    console.error("Upload failed:", error);
-                    reject(new Error("Could not upload file."));
-                },
-                async () => {
-                    const url = await getDownloadURL(uploadTask.snapshot.ref);
-                    resolve(url);
-                }
-            );
-        });
 
-        testimonyUpdate.mediaUrl = downloadURL;
-        testimonyUpdate.mediaType = 'image';
-      }
-
-      const testimonyRef = doc(firestore, "testimonies", testimony.id);
-      await updateDoc(testimonyRef, testimonyUpdate).catch((serverError) => {
-        const permissionError = new FirestorePermissionError({
-          path: testimonyRef.path,
-          operation: 'update',
-          requestResourceData: testimonyUpdate,
-        });
-        errorEmitter.emit('permission-error', permissionError);
-        throw permissionError; // Re-throw
-      });
-
-
-      toast({
-        title: "Testimony Updated!",
-        description: "Your changes have been saved successfully.",
-      });
-      onTestimonyUpdated();
-    } catch (error: any) {
-      console.error("Update error:", error);
-      if (error.name === 'FirestorePermissionError') {
-        // Handled by emitter
-      } else {
-        toast({
-            variant: "destructive",
-            title: "Update Error",
-            description: error.message || "An unexpected error occurred. Please try again.",
-        });
-      }
-    } finally {
-      setIsSubmitting(false);
-      setUploadProgress(null);
+        uploadTask.on('state_changed',
+            (snapshot) => {
+                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                setUploadProgress(progress);
+            },
+            (error) => {
+                console.error("Upload failed:", error);
+                toast({ variant: "destructive", title: "Upload Failed", description: "Could not upload the new image." });
+                setIsSubmitting(false);
+                setUploadProgress(null);
+            },
+            async () => {
+                const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+                await completeTestimonyUpdate(downloadURL);
+            }
+        );
+    } else {
+        await completeTestimonyUpdate(testimony.mediaUrl || null);
     }
   }
 
@@ -175,7 +181,7 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
         
         <FormItem>
             <FormLabel>Update Photo (Optional)</FormLabel>
-            {testimony.mediaUrl && (
+            {testimony.mediaUrl && !file && (
                 <div className="relative w-full aspect-video rounded-md overflow-hidden my-2">
                     <Image src={testimony.mediaUrl} alt="Current testimony photo" fill className="object-cover"/>
                 </div>
@@ -197,3 +203,5 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
     </Form>
   );
 }
+
+    

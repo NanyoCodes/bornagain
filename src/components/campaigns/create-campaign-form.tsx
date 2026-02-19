@@ -115,110 +115,109 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
     }
   }
 
-  const handleCreateCampaign = async () => {
+  const completeCampaignCreation = async (imageUrl: string | null) => {
     const finalName = selectedName === 'custom' ? customName : selectedName;
-    if (!finalName) {
+     if (!finalName) {
         toast({ variant: 'destructive', title: 'Missing Name', description: 'Please select or enter a campaign name.' });
+        setIsCreating(false);
         return;
     }
-    if (!user || !firestore || !storage) {
+    if (!user || !firestore) {
         toast({ variant: 'destructive', title: 'Not Authenticated', description: 'You must be logged in to create a campaign.' });
+        setIsCreating(false);
         return;
     }
-    
+    try {
+        const campaignData = {
+            title: finalName,
+            description: finalDescription,
+            goal: form.getValues('goal'),
+            location: `${form.getValues('city')}, ${form.getValues('country')}`,
+            startDate: form.getValues('startDate'),
+            endDate: form.getValues('endDate'),
+            startTime: form.getValues('startTime'),
+            endTime: form.getValues('endTime'),
+            participants: 1,
+            createdAt: serverTimestamp(),
+            organizerId: user.uid,
+            organizerName: user.displayName || 'Anonymous',
+            status: 'active' as const,
+            scripture: form.getValues('scripture'),
+            imageUrl: imageUrl,
+        };
+        
+        const batch = writeBatch(firestore);
+        const campaignDocRef = doc(collection(firestore, 'campaigns'));
+        batch.set(campaignDocRef, campaignData);
+
+        const joinedRef = doc(firestore, 'users', user.uid, 'joinedCampaigns', campaignDocRef.id);
+        batch.set(joinedRef, {
+            campaignId: campaignDocRef.id,
+            joinedAt: serverTimestamp(),
+        });
+
+        const participantRef = doc(firestore, 'campaigns', campaignDocRef.id, 'participants', user.uid);
+        const participantPayload: { [key: string]: any; } = {
+            userId: user.uid,
+            displayName: user.displayName || 'Anonymous',
+            photoURL: user.photoURL || null,
+            joinedAt: serverTimestamp()
+        };
+        if (user.email) {
+            participantPayload.email = user.email;
+        }
+        batch.set(participantRef, participantPayload);
+
+        await batch.commit().catch((serverError) => {
+            const permissionError = new FirestorePermissionError({
+            path: `BATCH_WRITE:CREATE_CAMPAIGN:${campaignDocRef.id}`,
+            operation: 'write',
+            requestResourceData: { action: 'User creating campaign', userId: user.uid }
+            });
+            errorEmitter.emit('permission-error', permissionError);
+            throw permissionError;
+        });
+        
+        toast({ title: 'Campaign Created!', description: `The "${finalName}" campaign is now ready.` });
+        onCampaignCreated();
+    } catch (error: any) {
+        console.error("Error creating campaign: ", error);
+        if (error.name !== 'FirestorePermissionError') {
+            toast({ variant: 'destructive', title: 'Error', description: error.message || 'Could not create campaign. Please check your connection and try again.' });
+        }
+    } finally {
+        setIsCreating(false);
+        setUploadProgress(null);
+    }
+  }
+
+
+  const handleCreateCampaign = async () => {
     setIsCreating(true);
 
-    try {
-      let imageUrl: string | null = null;
-
-      if (file) {
+    if (file && storage && user) {
         setUploadProgress(0);
         const storageRef = ref(storage, `campaigns/${user.uid}/${Date.now()}_${file.name}`);
         const uploadTask = uploadBytesResumable(storageRef, file);
 
-        imageUrl = await new Promise<string>((resolve, reject) => {
-            uploadTask.on('state_changed',
-                (snapshot) => {
-                    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                    setUploadProgress(progress);
-                },
-                (error) => {
-                    console.error("Upload failed:", error);
-                    reject(new Error("Could not upload campaign image."));
-                },
-                async () => {
-                    const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-                    resolve(downloadURL);
-                }
-            );
-        });
-      }
-
-      const campaignData = {
-        title: finalName,
-        description: finalDescription,
-        goal: form.getValues('goal'),
-        location: `${form.getValues('city')}, ${form.getValues('country')}`,
-        startDate: form.getValues('startDate'),
-        endDate: form.getValues('endDate'),
-        startTime: form.getValues('startTime'),
-        endTime: form.getValues('endTime'),
-        participants: 1,
-        createdAt: serverTimestamp(),
-        organizerId: user.uid,
-        organizerName: user.displayName || 'Anonymous',
-        status: 'active' as const,
-        scripture: form.getValues('scripture'),
-        imageUrl: imageUrl,
-      };
-      
-      const batch = writeBatch(firestore);
-
-      // 1. Create the new campaign document ref
-      const campaignDocRef = doc(collection(firestore, 'campaigns'));
-      batch.set(campaignDocRef, campaignData);
-
-      // 2. Add the 'joinedCampaigns' record for the creator
-      const joinedRef = doc(firestore, 'users', user.uid, 'joinedCampaigns', campaignDocRef.id);
-      batch.set(joinedRef, {
-          campaignId: campaignDocRef.id,
-          joinedAt: serverTimestamp(),
-      });
-
-      // 3. Add the creator to the campaign's participants subcollection
-      const participantRef = doc(firestore, 'campaigns', campaignDocRef.id, 'participants', user.uid);
-      const participantPayload: { [key: string]: any; } = {
-          userId: user.uid,
-          displayName: user.displayName || 'Anonymous',
-          photoURL: user.photoURL || null,
-          joinedAt: serverTimestamp()
-      };
-      if (user.email) {
-          participantPayload.email = user.email;
-      }
-      batch.set(participantRef, participantPayload);
-
-
-      await batch.commit().catch((serverError) => {
-          const permissionError = new FirestorePermissionError({
-          path: `BATCH_WRITE:CREATE_CAMPAIGN:${campaignDocRef.id}`,
-          operation: 'write',
-          requestResourceData: { action: 'User creating campaign', userId: user.uid }
-          });
-          errorEmitter.emit('permission-error', permissionError);
-          throw permissionError;
-      });
-      
-      toast({ title: 'Campaign Created!', description: `The "${finalName}" campaign is now ready.` });
-      onCampaignCreated();
-    } catch (error: any) {
-      console.error("Error creating campaign: ", error);
-      if (error.name !== 'FirestorePermissionError') {
-        toast({ variant: 'destructive', title: 'Error', description: error.message || 'Could not create campaign. Please check your connection and try again.' });
-      }
-    } finally {
-      setIsCreating(false);
-      setUploadProgress(null);
+        uploadTask.on('state_changed',
+            (snapshot) => {
+                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                setUploadProgress(progress);
+            },
+            (error) => {
+                console.error("Upload failed:", error);
+                toast({ variant: "destructive", title: "Upload Failed", description: "Could not upload the image."});
+                setIsCreating(false);
+                setUploadProgress(null);
+            },
+            async () => {
+                const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+                await completeCampaignCreation(downloadURL);
+            }
+        );
+    } else {
+        await completeCampaignCreation(null);
     }
   }
 
@@ -445,3 +444,5 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
     </>
   );
 }
+
+    

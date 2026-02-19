@@ -56,85 +56,85 @@ export function CreateTestimonyForm({ onTestimonyCreated }: CreateTestimonyFormP
     },
   });
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    if (!user || !firestore || !storage) {
-      toast({ variant: 'destructive', title: 'Not Authenticated', description: 'You must be logged in to share a testimony.'});
-      return;
-    }
-
-    setIsSubmitting(true);
-
+  const completeTestimonySubmission = async (mediaUrl: string | null, mediaType: 'image' | null) => {
+    if (!user || !firestore) return;
+    
+    const values = form.getValues();
     try {
-        let mediaUrl: string | null = null;
-        let mediaType: 'image' | null = null;
-
-        if (file) {
-            setUploadProgress(0);
-            const storageRef = ref(storage, `testimonies/${user.uid}/${Date.now()}_${file.name}`);
-            const uploadTask = uploadBytesResumable(storageRef, file);
-
-            mediaUrl = await new Promise<string>((resolve, reject) => {
-                uploadTask.on('state_changed',
-                    (snapshot) => {
-                        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                        setUploadProgress(progress);
-                    },
-                    (error) => {
-                        console.error("Upload failed:", error);
-                        reject(new Error("Could not upload file."));
-                    },
-                    async () => {
-                        const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-                        resolve(downloadURL);
-                    }
-                );
+        const testimonyCollectionRef = collection(firestore, "testimonies");
+        const testimonyData: any = {
+            authorId: user.uid,
+            authorName: user.displayName || user.email || 'Anonymous',
+            authorAvatarUrl: user.photoURL || null,
+            content: values.content,
+            createdAt: serverTimestamp(),
+            category: values.category as TestimonyCategory,
+            mediaUrl: mediaUrl,
+            mediaType: mediaType,
+        };
+        
+        await addDoc(testimonyCollectionRef, testimonyData).catch((serverError) => {
+            const permissionError = new FirestorePermissionError({
+                path: testimonyCollectionRef.path,
+                operation: 'create',
+                requestResourceData: testimonyData,
             });
-            mediaType = 'image';
-        }
-
-      const testimonyCollectionRef = collection(firestore, "testimonies");
-      const testimonyData: any = {
-          authorId: user.uid,
-          authorName: user.displayName || user.email || 'Anonymous',
-          authorAvatarUrl: user.photoURL || null,
-          content: values.content,
-          createdAt: serverTimestamp(),
-          category: values.category as TestimonyCategory,
-          mediaUrl: mediaUrl,
-          mediaType: mediaType,
-      };
-      
-      await addDoc(testimonyCollectionRef, testimonyData).catch((serverError) => {
-        const permissionError = new FirestorePermissionError({
-            path: testimonyCollectionRef.path,
-            operation: 'create',
-            requestResourceData: testimonyData,
+            errorEmitter.emit('permission-error', permissionError);
+            throw permissionError;
         });
-        errorEmitter.emit('permission-error', permissionError);
-        throw permissionError; // Re-throw
-      });
 
-      toast({
-        title: "Testimony Submitted!",
-        description: "Thank you for sharing. Your testimony is now live.",
-      });
-      
-      onTestimonyCreated();
-
+        toast({
+            title: "Testimony Submitted!",
+            description: "Thank you for sharing. Your testimony is now live.",
+        });
+        
+        onTestimonyCreated();
     } catch (error: any) {
         console.error("Submission error:", error);
-        if (error.name === 'FirestorePermissionError') {
-            // handled by emitter
-        } else {
-             toast({
+        if (error.name !== 'FirestorePermissionError') {
+            toast({
                 variant: "destructive",
                 title: "Submission Error",
                 description: error.message || "An unexpected error occurred. Please try again.",
             });
         }
     } finally {
-      setIsSubmitting(false);
-      setUploadProgress(null);
+        setIsSubmitting(false);
+        setUploadProgress(null);
+    }
+  }
+
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    if (!user || !storage) {
+      toast({ variant: 'destructive', title: 'Not Authenticated', description: 'You must be logged in to share a testimony.'});
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    if (file) {
+        setUploadProgress(0);
+        const storageRef = ref(storage, `testimonies/${user.uid}/${Date.now()}_${file.name}`);
+        const uploadTask = uploadBytesResumable(storageRef, file);
+
+        uploadTask.on('state_changed',
+            (snapshot) => {
+                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                setUploadProgress(progress);
+            },
+            (error) => {
+                console.error("Upload failed:", error);
+                toast({ variant: "destructive", title: "Upload Failed", description: "Could not upload the image."});
+                setIsSubmitting(false);
+                setUploadProgress(null);
+            },
+            async () => {
+                const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+                await completeTestimonySubmission(downloadURL, 'image');
+            }
+        );
+    } else {
+        await completeTestimonySubmission(null, null);
     }
   }
 
@@ -201,3 +201,5 @@ export function CreateTestimonyForm({ onTestimonyCreated }: CreateTestimonyFormP
     </Form>
   );
 }
+
+    

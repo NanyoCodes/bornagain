@@ -233,9 +233,61 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
     }
   };
 
+  const completeCampaignUpdate = async (imageUrl: string | null) => {
+    if (!user || !firestore) return;
+    const values = form.getValues();
+    try {
+        const campaignRef = doc(firestore, 'campaigns', campaign.id);
+        const updateData: { [key: string]: any } = {
+            title: values.title,
+            description: values.description,
+            goal: values.goal,
+            location: `${values.city}, ${values.country}`,
+            startDate: values.startDate,
+            endDate: values.endDate,
+            startTime: values.startTime,
+            endTime: values.endTime,
+            scripture: values.scripture,
+            lastUpdateReason: values.lastUpdateReason,
+        };
+
+        if (imageUrl) {
+            updateData.imageUrl = imageUrl;
+        }
+
+        await updateDoc(campaignRef, updateData).catch((serverError) => {
+            const permissionError = new FirestorePermissionError({
+            path: campaignRef.path,
+            operation: 'update',
+            requestResourceData: updateData,
+            });
+            errorEmitter.emit('permission-error', permissionError);
+            throw permissionError;
+        });
+
+        toast({
+            title: 'Campaign Updated!',
+            description: 'Your changes have been saved successfully.',
+        });
+        onCampaignUpdated();
+    } catch (error: any) {
+        console.error('Update error:', error);
+        if (error.name !== 'FirestorePermissionError') {
+            toast({
+                variant: 'destructive',
+                title: 'Update Error',
+                description: error.message || 'An unexpected error occurred.',
+            });
+        }
+    } finally {
+        setIsSubmitting(false);
+        setUploadProgress(null);
+    }
+  }
+
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    if (!user || !firestore || !storage) {
+    if (!user || !storage) {
       toast({ variant: 'destructive', title: 'Authentication Error', description: 'Please log in again.' });
       return;
     }
@@ -245,78 +297,30 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
     }
 
     setIsSubmitting(true);
-
-    try {
-      let imageUrl: string | undefined = undefined;
-
-      if (file) {
+    
+    if (file) {
         setUploadProgress(0);
         const storageRef = ref(storage, `campaigns/${user.uid}/${Date.now()}_${file.name}`);
         const uploadTask = uploadBytesResumable(storageRef, file);
 
-        imageUrl = await new Promise<string>((resolve, reject) => {
-            uploadTask.on('state_changed',
-                (snapshot) => {
-                    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                    setUploadProgress(progress);
-                },
-                (error) => {
-                    console.error("Upload failed:", error);
-                    reject(new Error("Could not upload new image."));
-                },
-                async () => {
-                    const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-                    resolve(downloadURL);
-                }
-            );
-        });
-      }
-
-      const campaignRef = doc(firestore, 'campaigns', campaign.id);
-      const updateData: { [key: string]: any } = {
-        title: values.title,
-        description: values.description,
-        goal: values.goal,
-        location: `${values.city}, ${values.country}`,
-        startDate: values.startDate,
-        endDate: values.endDate,
-        startTime: values.startTime,
-        endTime: values.endTime,
-        scripture: values.scripture,
-        lastUpdateReason: values.lastUpdateReason,
-      };
-
-      if (imageUrl) {
-        updateData.imageUrl = imageUrl;
-      }
-
-      await updateDoc(campaignRef, updateData).catch((serverError) => {
-        const permissionError = new FirestorePermissionError({
-          path: campaignRef.path,
-          operation: 'update',
-          requestResourceData: updateData,
-        });
-        errorEmitter.emit('permission-error', permissionError);
-        throw permissionError; // Re-throw
-      });
-
-      toast({
-        title: 'Campaign Updated!',
-        description: 'Your changes have been saved successfully.',
-      });
-      onCampaignUpdated();
-    } catch (error: any) {
-      console.error('Update error:', error);
-       if (error.name !== 'FirestorePermissionError') {
-         toast({
-            variant: 'destructive',
-            title: 'Update Error',
-            description: error.message || 'An unexpected error occurred.',
-          });
-       }
-    } finally {
-      setIsSubmitting(false);
-      setUploadProgress(null);
+        uploadTask.on('state_changed',
+            (snapshot) => {
+                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                setUploadProgress(progress);
+            },
+            (error) => {
+                console.error("Upload failed:", error);
+                toast({ variant: "destructive", title: "Upload Failed", description: "Could not upload the new image." });
+                setIsSubmitting(false);
+                setUploadProgress(null);
+            },
+            async () => {
+                const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+                await completeCampaignUpdate(downloadURL);
+            }
+        );
+    } else {
+        await completeCampaignUpdate(campaign.imageUrl || null);
     }
   }
 
@@ -556,3 +560,5 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
     </div>
   );
 }
+
+    
