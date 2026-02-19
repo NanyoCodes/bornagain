@@ -45,11 +45,11 @@ type LogSoulFormProps = {
 
 export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps) {
   const { toast } = useToast();
-  const { user } = useUser();
+  const { user, loading: userLoading } = useUser();
   const firestore = useFirestore();
   const [isLoading, setIsLoading] = useState(false);
 
-  const campaignsQuery = useMemo(() => firestore ? query(collection(firestore, 'campaigns'), orderBy('createdAt', 'desc')) : null, [firestore]);
+  const campaignsQuery = useMemo(() => !userLoading && user && firestore ? query(collection(firestore, 'campaigns'), orderBy('createdAt', 'desc')) : null, [userLoading, user, firestore]);
   const { data: campaigns, loading: loadingCampaigns } = useCollection<Campaign>(campaignsQuery);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -207,7 +207,7 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps)
                   <Select onValueChange={field.onChange} defaultValue={field.value} disabled={!!defaultCampaign}>
                     <FormControl>
                       <SelectTrigger className="text-base">
-                        <SelectValue placeholder={loadingCampaigns ? "Loading campaigns..." : "Select from your campaigns"} />
+                        <SelectValue placeholder={loadingCampaigns || userLoading ? "Loading campaigns..." : "Select from your campaigns"} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
