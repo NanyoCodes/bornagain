@@ -8,7 +8,7 @@ import type { Campaign, JoinedCampaign, Testimony, Soul } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { ExternalLink } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { format } from 'date-fns';
 
 function ListItem({ href, title, subtitle }: { href: string; title: string; subtitle: string; }) {
@@ -19,8 +19,8 @@ function ListItem({ href, title, subtitle }: { href: string; title: string; subt
             <p className="text-xs text-muted-foreground">{subtitle}</p>
           </div>
           <Button asChild size="icon" variant="ghost">
-            <Link href={href} target="_blank">
-              <ExternalLink className="h-4 w-4" />
+            <Link href={href}>
+              <ArrowRight className="h-4 w-4" />
             </Link>
           </Button>
         </div>
