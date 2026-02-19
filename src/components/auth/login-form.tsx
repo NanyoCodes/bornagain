@@ -76,7 +76,7 @@ function ForgotPasswordDialog() {
     return (
         <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
             <AlertDialogTrigger asChild>
-                <Button variant="link" className="p-0 text-sm h-auto font-normal text-gray-400 hover:text-white" type="button">
+                <Button variant="link" className="p-0 text-sm h-auto font-normal text-primary hover:text-primary/90" type="button">
                     Forgot password?
                 </Button>
             </AlertDialogTrigger>
@@ -183,15 +183,15 @@ export function LoginForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 text-left">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <FormField
           control={form.control}
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-zinc-400">Email</FormLabel>
+              <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input placeholder="name@example.com" {...field} className="h-12 rounded-xl bg-zinc-900 border-zinc-800 text-white placeholder:text-zinc-500" />
+                <Input placeholder="name@example.com" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -203,17 +203,17 @@ export function LoginForm() {
           render={({ field }) => (
             <FormItem>
                 <div className="flex items-center justify-between">
-                    <FormLabel className="text-zinc-400">Password</FormLabel>
+                    <FormLabel>Password</FormLabel>
                     <ForgotPasswordDialog />
                 </div>
               <FormControl>
-                <Input type="password" placeholder="********" {...field} className="h-12 rounded-xl bg-zinc-900 border-zinc-800 text-white placeholder:text-zinc-500" />
+                <Input type="password" placeholder="********" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-        <Button type="submit" className="w-full h-12 rounded-xl bg-gradient-to-r from-pink-500 to-orange-500 text-white font-bold text-base hover:opacity-90 transition-opacity" disabled={isLoading}>
+        <Button type="submit" className="w-full h-11 bg-gradient-to-r from-pink-500 to-orange-500 text-white font-bold text-base hover:opacity-90 transition-opacity" disabled={isLoading}>
           {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           Sign In
         </Button>

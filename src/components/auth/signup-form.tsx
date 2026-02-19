@@ -54,6 +54,15 @@ export function SignUpForm() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
+    if (!auth || !firestore) {
+      toast({
+        variant: "destructive",
+        title: "Authentication Error",
+        description: "Firebase is not ready. Please try again.",
+      });
+      setIsLoading(false);
+      return;
+    }
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
       const user = userCredential.user;
@@ -92,21 +101,22 @@ export function SignUpForm() {
         title: "Sign Up Failed",
         description: authError.message || "Could not create account. Please try again.",
       });
+    } finally {
       setIsLoading(false);
     }
   }
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 text-left">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <FormField
           control={form.control}
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-zinc-400">Name</FormLabel>
+              <FormLabel>Name</FormLabel>
               <FormControl>
-                <Input placeholder="John Doe" {...field} className="h-12 rounded-xl bg-zinc-900 border-zinc-800 text-white placeholder:text-zinc-500" />
+                <Input placeholder="John Doe" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -117,9 +127,9 @@ export function SignUpForm() {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-zinc-400">Email</FormLabel>
+              <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input placeholder="name@example.com" {...field} className="h-12 rounded-xl bg-zinc-900 border-zinc-800 text-white placeholder:text-zinc-500" />
+                <Input placeholder="name@example.com" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -130,15 +140,15 @@ export function SignUpForm() {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-zinc-400">Password</FormLabel>
+              <FormLabel>Password</FormLabel>
               <FormControl>
-                <Input type="password" placeholder="********" {...field} className="h-12 rounded-xl bg-zinc-900 border-zinc-800 text-white placeholder:text-zinc-500" />
+                <Input type="password" placeholder="********" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-        <Button type="submit" className="w-full h-12 rounded-xl bg-gradient-to-r from-pink-500 to-orange-500 text-white font-bold text-base hover:opacity-90 transition-opacity" disabled={isLoading}>
+        <Button type="submit" className="w-full h-11 bg-gradient-to-r from-pink-500 to-orange-500 text-white font-bold text-base hover:opacity-90 transition-opacity" disabled={isLoading}>
           {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           Sign Up
         </Button>
