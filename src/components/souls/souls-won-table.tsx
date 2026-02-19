@@ -177,7 +177,7 @@ function LogFollowUpDialog({ soul, children }: { soul: Soul; children: React.Rea
                             <FormItem>
                                 <Label>Additional Notes</Label>
                                 <FormControl>
-                                    <Textarea placeholder="e.g., They are struggling with..." {...field} />
+                                    <Textarea placeholder="e.g., They are struggling with..." {...field} value={field.value ?? ''} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -545,3 +545,4 @@ export function SoulsWonTable({ souls, onUpdateSoul, loading }: SoulsWonTablePro
     </Card>
   );
 }
+
