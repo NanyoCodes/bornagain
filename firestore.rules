@@ -44,7 +44,7 @@ service cloud.firestore {
         // They can change anything except for the participant count.
         (
           request.auth.uid == resource.data.organizerId &&
-          !request.resource.data.diff(resource.data).affectedKeys().has('participants')
+          request.resource.data.participants == resource.data.participants
         )
       );
       allow delete: if false; // Hard deletes are disallowed.
