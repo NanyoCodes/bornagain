@@ -52,7 +52,10 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps)
   const firestore = useFirestore();
   const [isLoading, setIsLoading] = useState(false);
 
-  const campaignsQuery = useMemo(() => !authLoading && user?.uid && firestore ? query(collection(firestore, 'campaigns'), orderBy('createdAt', 'desc')) : null, [authLoading, user, firestore]);
+  const campaignsQuery = useMemo(() => {
+    if (authLoading || !user?.uid || !firestore) return null;
+    return query(collection(firestore, 'campaigns'), orderBy('createdAt', 'desc'));
+  }, [authLoading, user?.uid, firestore]);
   const { data: campaigns, loading: loadingCampaigns } = useCollection<Campaign>(campaignsQuery);
 
   const form = useForm<z.infer<typeof formSchema>>({

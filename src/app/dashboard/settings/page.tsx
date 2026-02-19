@@ -405,7 +405,10 @@ export default function SettingsPage() {
   const { user, loading: userLoading } = useUser();
   const firestore = useFirestore();
   
-  const userDocRef = useMemo(() => !userLoading && user?.uid && firestore ? doc(firestore, 'users', user.uid) : null, [userLoading, user, firestore]);
+  const userDocRef = useMemo(() => {
+    if (userLoading || !user?.uid || !firestore) return null;
+    return doc(firestore, 'users', user.uid);
+  }, [userLoading, user?.uid, firestore]);
   const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userDocRef);
   
   const loading = userLoading || profileLoading;

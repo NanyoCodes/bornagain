@@ -40,10 +40,16 @@ export default function ProgressPage() {
   const { user, loading: authLoading } = useUser();
   const firestore = useFirestore();
 
-  const userDocRef = useMemo(() => !authLoading && user ? doc(firestore, 'users', user.uid) : null, [authLoading, user, firestore]);
+  const userDocRef = useMemo(() => {
+    if (authLoading || !user?.uid || !firestore) return null;
+    return doc(firestore, 'users', user.uid);
+  }, [authLoading, user?.uid, firestore]);
   const { data: userProfile } = useDoc<UserProfile>(userDocRef);
 
-  const soulsQuery = useMemo(() => !authLoading && user ? query(collection(firestore, `users/${user.uid}/souls`)) : null, [authLoading, user, firestore]);
+  const soulsQuery = useMemo(() => {
+    if (authLoading || !user?.uid || !firestore) return null;
+    return query(collection(firestore, `users/${user.uid}/souls`));
+  }, [authLoading, user?.uid, firestore]);
   const { data: souls } = useCollection<Soul>(soulsQuery);
   
   const [monthlyGoal, setMonthlyGoal] = useState(50);

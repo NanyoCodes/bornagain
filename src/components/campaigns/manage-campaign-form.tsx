@@ -70,7 +70,10 @@ type ManageCampaignFormProps = {
 function ParticipantList({ campaignId }: { campaignId: string }) {
   const firestore = useFirestore();
   const { user, loading: authLoading } = useUser();
-  const participantsQuery = useMemo(() => !authLoading && user && firestore ? query(collection(firestore, 'campaigns', campaignId, 'participants')) : null, [authLoading, user, firestore, campaignId]);
+  const participantsQuery = useMemo(() => {
+    if (authLoading || !user || !firestore) return null;
+    return query(collection(firestore, 'campaigns', campaignId, 'participants'));
+  }, [authLoading, user, firestore, campaignId]);
   const { data: participants, loading } = useCollection<CampaignParticipant>(participantsQuery);
 
   if (loading || authLoading) {

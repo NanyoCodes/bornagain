@@ -40,16 +40,28 @@ export default function UserProfilePage() {
 
   const isOwnProfile = currentUser?.uid === userId;
 
-  const userDocRef = useMemo(() => !authLoading && currentUser && userId && firestore ? doc(firestore, 'users', userId) : null, [authLoading, currentUser, userId, firestore]);
+  const userDocRef = useMemo(() => {
+    if (authLoading || !currentUser || !userId || !firestore) return null;
+    return doc(firestore, 'users', userId);
+  }, [authLoading, currentUser, userId, firestore]);
   const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userDocRef);
 
-  const testimoniesQuery = useMemo(() => !authLoading && currentUser && userId && firestore ? query(collection(firestore, 'testimonies'), where('authorId', '==', userId)) : null, [authLoading, currentUser, userId, firestore]);
+  const testimoniesQuery = useMemo(() => {
+    if (authLoading || !currentUser || !userId || !firestore) return null;
+    return query(collection(firestore, 'testimonies'), where('authorId', '==', userId));
+  }, [authLoading, currentUser, userId, firestore]);
   const { data: testimonies, loading: testimoniesLoading } = useCollection<Testimony>(testimoniesQuery);
 
-  const soulsQuery = useMemo(() => !authLoading && isOwnProfile && firestore ? query(collection(firestore, `users/${userId}/souls`)) : null, [authLoading, isOwnProfile, firestore, userId]);
+  const soulsQuery = useMemo(() => {
+    if (authLoading || !isOwnProfile || !firestore) return null;
+    return query(collection(firestore, `users/${userId}/souls`));
+  }, [authLoading, isOwnProfile, firestore, userId]);
   const { data: soulsWon, loading: soulsLoading } = useCollection<Soul>(soulsQuery);
 
-  const joinedCampaignsQuery = useMemo(() => !authLoading && isOwnProfile && firestore ? query(collection(firestore, `users/${userId}/joinedCampaigns`)) : null, [authLoading, isOwnProfile, firestore, userId]);
+  const joinedCampaignsQuery = useMemo(() => {
+    if (authLoading || !isOwnProfile || !firestore) return null;
+    return query(collection(firestore, `users/${userId}/joinedCampaigns`));
+  }, [authLoading, isOwnProfile, firestore, userId]);
   const { data: joinedCampaigns, loading: campaignsLoading } = useCollection<JoinedCampaign>(joinedCampaignsQuery);
 
   const loading = authLoading || profileLoading || testimoniesLoading || (isOwnProfile && (soulsLoading || campaignsLoading));

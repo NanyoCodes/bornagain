@@ -39,9 +39,10 @@ export default function TestimoniesPage() {
   const { user, loading: authLoading } = useUser();
   const firestore = useFirestore();
 
-  const testimoniesQuery = useMemo(() => !authLoading && user && firestore 
-    ? query(collection(firestore, "testimonies"), orderBy("createdAt", "desc"))
-    : null, [authLoading, user, firestore]);
+  const testimoniesQuery = useMemo(() => {
+    if (authLoading || !user || !firestore) return null;
+    return query(collection(firestore, "testimonies"), orderBy("createdAt", "desc"));
+  }, [authLoading, user, firestore]);
 
   const { data: testimonies, loading } = useCollection<Testimony>(testimoniesQuery);
 

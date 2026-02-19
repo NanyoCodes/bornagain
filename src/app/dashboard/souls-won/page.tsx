@@ -33,8 +33,10 @@ export default function SoulsWonPage() {
     setMounted(true);
   }, []);
 
-  // Fetch souls for the current user
-  const soulsQuery = useMemo(() => !authLoading && user?.uid && firestore ? query(collection(firestore, `users/${user.uid}/souls`), orderBy("wonAt", "desc")) : null, [authLoading, user, firestore]);
+  const soulsQuery = useMemo(() => {
+    if (authLoading || !user?.uid || !firestore) return null;
+    return query(collection(firestore, `users/${user.uid}/souls`), orderBy("wonAt", "desc"));
+  }, [authLoading, user?.uid, firestore]);
   const { data: souls, loading: loadingSouls } = useCollection<Soul>(soulsQuery);
 
   const loading = authLoading || loadingSouls;

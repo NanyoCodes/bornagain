@@ -73,10 +73,13 @@ export default function ChatsPage() {
     const { user, loading: userLoading } = useUser();
     const firestore = useFirestore();
 
-    const chatsQuery = useMemo(() => !userLoading && user?.uid && firestore ? query(
-        collection(firestore, 'chats'),
-        where('participantIds', 'array-contains', user.uid)
-    ) : null, [userLoading, user, firestore]);
+    const chatsQuery = useMemo(() => {
+        if (userLoading || !user?.uid || !firestore) return null;
+        return query(
+            collection(firestore, 'chats'),
+            where('participantIds', 'array-contains', user.uid)
+        );
+    }, [userLoading, user?.uid, firestore]);
 
     const { data: allChats, loading: chatsLoading } = useCollection<Chat>(chatsQuery);
 

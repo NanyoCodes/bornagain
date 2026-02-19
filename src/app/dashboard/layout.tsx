@@ -60,9 +60,11 @@ function AppHeader() {
   const { searchTerm, setSearchTerm, searchPlaceholder, isSearchVisible } = useSearch();
   const [showMobileSearch, setShowMobileSearch] = useState(false);
   
-  const notificationsQuery = useMemo(() => !authLoading && user?.uid && firestore 
-    ? query(collection(firestore, `users/${user.uid}/notifications`), orderBy('createdAt', 'desc'), limit(10)) 
-    : null, [authLoading, user, firestore]);
+  const notificationsQuery = useMemo(() => {
+    if (authLoading || !user?.uid || !firestore) return null;
+    return query(collection(firestore, `users/${user.uid}/notifications`), orderBy('createdAt', 'desc'), limit(10));
+  }, [authLoading, user?.uid, firestore]);
+
   const { data: notifications, loading: notificationsLoading } = useCollection<Notification>(notificationsQuery);
   const unreadCount = useMemo(() => notifications?.filter(n => !n.isRead).length ?? 0, [notifications]);
 
@@ -323,7 +325,7 @@ export default function DashboardLayout({
     <SearchProvider>
       <div className="flex min-h-screen w-full flex-col bg-background">
         <AppHeader />
-        {user && <main className="flex w-full flex-1 flex-col p-4 pb-24 md:p-6 md:pb-8 lg:p-8 max-w-7xl mx-auto">{children}</main>}
+        <main className="flex w-full flex-1 flex-col p-4 pb-24 md:p-6 md:pb-8 lg:p-8 max-w-7xl mx-auto">{children}</main>
         <BottomNavBar />
         <WelcomePopup 
           isOpen={showWelcomePopup}

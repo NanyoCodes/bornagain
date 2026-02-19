@@ -67,13 +67,22 @@ export default function CampaignsPage() {
     };
   }, [setIsSearchVisible, setSearchPlaceholder, setSearchTerm]);
 
-  const userDocRef = useMemo(() => !authLoading && user?.uid && firestore ? doc(firestore, 'users', user.uid) : null, [authLoading, user, firestore]);
+  const userDocRef = useMemo(() => {
+    if (authLoading || !user?.uid || !firestore) return null;
+    return doc(firestore, 'users', user.uid);
+  }, [authLoading, user?.uid, firestore]);
   const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userDocRef);
 
-  const campaignsQuery = useMemo(() => !authLoading && user && firestore ? query(collection(firestore, 'campaigns'), orderBy('createdAt', 'desc')) : null, [authLoading, user, firestore]);
+  const campaignsQuery = useMemo(() => {
+    if (authLoading || !user || !firestore) return null;
+    return query(collection(firestore, 'campaigns'), orderBy('createdAt', 'desc'));
+  }, [authLoading, user, firestore]);
   const { data: campaigns, loading: campaignsLoading } = useCollection<Campaign>(campaignsQuery);
 
-  const joinedCampaignsQuery = useMemo(() => !authLoading && user?.uid && firestore ? query(collection(firestore, `users/${user.uid}/joinedCampaigns`)) : null, [authLoading, user, firestore]);
+  const joinedCampaignsQuery = useMemo(() => {
+    if (authLoading || !user?.uid || !firestore) return null;
+    return query(collection(firestore, `users/${user.uid}/joinedCampaigns`));
+  }, [authLoading, user?.uid, firestore]);
   const { data: joinedCampaigns, loading: joinedCampaignsLoading } = useCollection<JoinedCampaign>(joinedCampaignsQuery);
   
   const loading = authLoading || profileLoading || campaignsLoading || joinedCampaignsLoading;

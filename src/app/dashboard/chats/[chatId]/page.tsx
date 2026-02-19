@@ -40,10 +40,16 @@ export default function ChatPage() {
     const [isSending, setIsSending] = useState(false);
     const scrollAreaRef = useRef<HTMLDivElement>(null);
 
-    const chatDocRef = useMemo(() => !userLoading && user && firestore && chatId ? doc(firestore, 'chats', chatId) : null, [userLoading, user, firestore, chatId]);
+    const chatDocRef = useMemo(() => {
+        if (userLoading || !user || !firestore || !chatId) return null;
+        return doc(firestore, 'chats', chatId);
+    }, [userLoading, user, firestore, chatId]);
     const { data: chat, loading: loadingChat } = useDoc<Chat>(chatDocRef);
     
-    const messagesQuery = useMemo(() => !userLoading && user && firestore && chatId ? query(collection(firestore, 'chats', chatId, 'messages'), orderBy('createdAt', 'asc')) : null, [userLoading, user, firestore, chatId]);
+    const messagesQuery = useMemo(() => {
+        if (userLoading || !user || !firestore || !chatId) return null;
+        return query(collection(firestore, 'chats', chatId, 'messages'), orderBy('createdAt', 'asc'));
+    }, [userLoading, user, firestore, chatId]);
     const { data: messages, loading: loadingMessages } = useCollection<ChatMessage>(messagesQuery);
     
     const loading = userLoading || loadingChat || loadingMessages;
