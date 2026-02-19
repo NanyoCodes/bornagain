@@ -15,7 +15,7 @@ import {
 } from 'firebase/firestore';
 import {
     ref,
-    uploadBytesResumable,
+    uploadBytes,
     getDownloadURL,
 } from 'firebase/storage';
 import type { Chat, ChatMessage } from '@/lib/types';
@@ -29,7 +29,6 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/hooks/use-toast';
 import { format, isSameDay } from 'date-fns';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -46,7 +45,6 @@ export default function ChatPage() {
 
     const [newMessage, setNewMessage] = useState('');
     const [isSending, setIsSending] = useState(false);
-    const [uploadProgress, setUploadProgress] = useState<number | null>(null);
     const scrollAreaRef = useRef<HTMLDivElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -90,74 +88,59 @@ export default function ChatPage() {
         if (!file || !user || !firestore || !storage || !chatId || !chat) return;
 
         setIsSending(true);
-        setUploadProgress(0);
 
-        const storageRef = ref(storage, `chat_media/${chatId}/${Date.now()}_${file.name}`);
-        const uploadTask = uploadBytesResumable(storageRef, file);
+        try {
+            const storageRef = ref(storage, `chat_media/${chatId}/${Date.now()}_${file.name}`);
+            const uploadResult = await uploadBytes(storageRef, file);
+            const downloadURL = await getDownloadURL(uploadResult.ref);
 
-        uploadTask.on('state_changed',
-            (snapshot) => {
-                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                setUploadProgress(progress);
-            },
-            (error) => {
-                console.error("Upload failed:", error);
-                toast({ variant: "destructive", title: "Upload failed", description: "Could not upload the file." });
-                setIsSending(false);
-                setUploadProgress(null);
-            },
-            async () => {
-                try {
-                    const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-                    const messagesRef = collection(firestore, 'chats', chatId, 'messages');
-                    const messageData: Partial<ChatMessage> = {
-                        senderId: user.uid,
-                        createdAt: serverTimestamp(),
-                    };
+            const messagesRef = collection(firestore, 'chats', chatId, 'messages');
+            const messageData: Partial<ChatMessage> = {
+                senderId: user.uid,
+                createdAt: serverTimestamp(),
+            };
 
-                    if (file.type.startsWith('image/')) {
-                        messageData.imageUrl = downloadURL;
-                    } else if (file.type.startsWith('video/')) {
-                        messageData.videoUrl = downloadURL;
-                    }
-
-                    await addDoc(messagesRef, messageData);
-                    const chatRef = doc(firestore, 'chats', chatId);
-                    await updateDoc(chatRef, {
-                        lastUpdatedAt: serverTimestamp(),
-                        hasMessages: true,
-                    });
-                    
-                    const otherParticipantIds = chat.participantIds.filter(id => id !== user.uid);
-                    if (otherParticipantIds.length > 0) {
-                        const batch = writeBatch(firestore);
-                        otherParticipantIds.forEach(participantId => {
-                            const notificationsCollectionRef = collection(firestore, 'users', participantId, 'notifications');
-                            const notificationRef = doc(notificationsCollectionRef);
-                            batch.set(notificationRef, {
-                                userId: participantId,
-                                type: 'new_chat_message',
-                                title: chat.isGroupChat 
-                                    ? `New File in ${chat.campaignTitle}`
-                                    : `New File from ${user.displayName || 'User'}`,
-                                message: `Sent by ${user.displayName || 'User'}`,
-                                link: `/dashboard/chats/${chatId}`,
-                                isRead: false,
-                                createdAt: serverTimestamp()
-                            });
-                        });
-                        await batch.commit();
-                    }
-
-                } catch (error) {
-                    console.error("Error sending file message:", error);
-                } finally {
-                    setIsSending(false);
-                    setUploadProgress(null);
-                    if (fileInputRef.current) fileInputRef.current.value = "";
-                }
+            if (file.type.startsWith('image/')) {
+                messageData.imageUrl = downloadURL;
+            } else if (file.type.startsWith('video/')) {
+                messageData.videoUrl = downloadURL;
             }
-        );
+
+            await addDoc(messagesRef, messageData);
+            const chatRef = doc(firestore, 'chats', chatId);
+            await updateDoc(chatRef, {
+                lastUpdatedAt: serverTimestamp(),
+                hasMessages: true,
+            });
+            
+            const otherParticipantIds = chat.participantIds.filter(id => id !== user.uid);
+            if (otherParticipantIds.length > 0) {
+                const batch = writeBatch(firestore);
+                otherParticipantIds.forEach(participantId => {
+                    const notificationsCollectionRef = collection(firestore, 'users', participantId, 'notifications');
+                    const notificationRef = doc(notificationsCollectionRef);
+                    batch.set(notificationRef, {
+                        userId: participantId,
+                        type: 'new_chat_message',
+                        title: chat.isGroupChat 
+                            ? `New File in ${chat.campaignTitle}`
+                            : `New File from ${user.displayName || 'User'}`,
+                        message: `Sent by ${user.displayName || 'User'}`,
+                        link: `/dashboard/chats/${chatId}`,
+                        isRead: false,
+                        createdAt: serverTimestamp()
+                    });
+                });
+                await batch.commit();
+            }
+
+        } catch (error) {
+            console.error("Error sending file message:", error);
+            toast({ variant: "destructive", title: "Upload failed", description: "Could not upload the file." });
+        } finally {
+            setIsSending(false);
+            if (fileInputRef.current) fileInputRef.current.value = "";
+        }
     };
 
 
@@ -346,9 +329,6 @@ export default function ChatPage() {
                 </CardContent>
 
                 <CardFooter className="p-2 border-t bg-background flex flex-col items-stretch gap-1">
-                     {uploadProgress !== null && (
-                        <Progress value={uploadProgress} className="w-full h-1" />
-                    )}
                     <form onSubmit={handleSendMessage} className="flex gap-2 w-full items-center p-2">
                         <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" accept="image/*,video/*" disabled={isSending} />
                         <Button type="button" size="icon" variant="ghost" onClick={() => fileInputRef.current?.click()} disabled={isSending}>
@@ -362,7 +342,7 @@ export default function ChatPage() {
                             autoComplete="off"
                         />
                         <Button type="submit" size="icon" disabled={isSending || !newMessage.trim()}>
-                            {isSending && !uploadProgress ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                            {isSending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
                         </Button>
                     </form>
                 </CardFooter>

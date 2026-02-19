@@ -28,8 +28,7 @@ import { collection, serverTimestamp, doc, writeBatch } from "firebase/firestore
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { format } from "date-fns";
-import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-import { Progress } from "../ui/progress";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 const formSchema = z.object({
   goal: z.string({
@@ -75,7 +74,6 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
   const [finalDescription, setFinalDescription] = useState('');
   const [isCreating, setIsCreating] = useState(false);
   const [file, setFile] = useState<File | null>(null);
-  const [uploadProgress, setUploadProgress] = useState<number | null>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -115,19 +113,28 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
     }
   }
 
-  const completeCampaignCreation = async (imageUrl: string | null) => {
+
+  const handleCreateCampaign = async () => {
     const finalName = selectedName === 'custom' ? customName : selectedName;
      if (!finalName) {
         toast({ variant: 'destructive', title: 'Missing Name', description: 'Please select or enter a campaign name.' });
-        setIsCreating(false);
         return;
     }
-    if (!user || !firestore) {
+    if (!user || !firestore || !storage) {
         toast({ variant: 'destructive', title: 'Not Authenticated', description: 'You must be logged in to create a campaign.' });
-        setIsCreating(false);
         return;
     }
+
+    setIsCreating(true);
+
+    let imageUrl: string | null = null;
     try {
+        if (file) {
+            const storageRef = ref(storage, `campaigns/${user.uid}/${Date.now()}_${file.name}`);
+            const uploadResult = await uploadBytes(storageRef, file);
+            imageUrl = await getDownloadURL(uploadResult.ref);
+        }
+
         const campaignData = {
             title: finalName,
             description: finalDescription,
@@ -180,6 +187,7 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
         
         toast({ title: 'Campaign Created!', description: `The "${finalName}" campaign is now ready.` });
         onCampaignCreated();
+
     } catch (error: any) {
         console.error("Error creating campaign: ", error);
         if (error.name !== 'FirestorePermissionError') {
@@ -187,37 +195,6 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
         }
     } finally {
         setIsCreating(false);
-        setUploadProgress(null);
-    }
-  }
-
-
-  const handleCreateCampaign = async () => {
-    setIsCreating(true);
-
-    if (file && storage && user) {
-        setUploadProgress(0);
-        const storageRef = ref(storage, `campaigns/${user.uid}/${Date.now()}_${file.name}`);
-        const uploadTask = uploadBytesResumable(storageRef, file);
-
-        uploadTask.on('state_changed',
-            (snapshot) => {
-                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                setUploadProgress(progress);
-            },
-            (error) => {
-                console.error("Upload failed:", error);
-                toast({ variant: "destructive", title: "Upload Failed", description: "Could not upload the image."});
-                setIsCreating(false);
-                setUploadProgress(null);
-            },
-            async () => {
-                const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-                await completeCampaignCreation(downloadURL);
-            }
-        );
-    } else {
-        await completeCampaignCreation(null);
     }
   }
 
@@ -430,12 +407,9 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
                   <Label>Campaign Image (Optional)</Label>
                   <Input type="file" accept="image/*" onChange={(e) => setFile(e.target.files?.[0] || null)} disabled={isCreating}/>
               </div>
-              {uploadProgress !== null && (
-                <Progress value={uploadProgress} className="w-full" />
-              )}
               <Button className="w-full" onClick={handleCreateCampaign} disabled={isCreating}>
                 {isCreating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                 {isCreating ? (uploadProgress !== null ? `Uploading... ${Math.round(uploadProgress)}%` : 'Creating...') : 'Create Campaign with these details'}
+                 {isCreating ? 'Creating...' : 'Create Campaign with these details'}
               </Button>
             </div>
           </CardContent>
@@ -444,5 +418,3 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
     </>
   );
 }
-
-    

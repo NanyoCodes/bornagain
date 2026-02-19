@@ -39,8 +39,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { query } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
-import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-import { Progress } from "../ui/progress";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import Image from "next/image";
 
 
@@ -117,7 +116,6 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
   const [isChatLoading, setIsChatLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [file, setFile] = useState<File | null>(null);
-  const [uploadProgress, setUploadProgress] = useState<number | null>(null);
 
   const locationParts = campaign.location.split(',');
   const city = locationParts[0]?.trim() || '';
@@ -233,10 +231,28 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
     }
   };
 
-  const completeCampaignUpdate = async (imageUrl: string | null) => {
-    if (!user || !firestore) return;
-    const values = form.getValues();
+
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    if (!user || !storage || !firestore) {
+      toast({ variant: 'destructive', title: 'Authentication Error', description: 'Please log in again.' });
+      return;
+    }
+    if (user.uid !== campaign.organizerId) {
+      toast({ variant: 'destructive', title: 'Permission Denied', description: 'You can only manage your own campaigns.' });
+      return;
+    }
+
+    setIsSubmitting(true);
+    
+    let imageUrl: string | null = campaign.imageUrl || null;
+
     try {
+        if (file) {
+            const storageRef = ref(storage, `campaigns/${user.uid}/${Date.now()}_${file.name}`);
+            const uploadResult = await uploadBytes(storageRef, file);
+            imageUrl = await getDownloadURL(uploadResult.ref);
+        }
+        
         const campaignRef = doc(firestore, 'campaigns', campaign.id);
         const updateData: { [key: string]: any } = {
             title: values.title,
@@ -249,11 +265,8 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
             endTime: values.endTime,
             scripture: values.scripture,
             lastUpdateReason: values.lastUpdateReason,
+            imageUrl: imageUrl,
         };
-
-        if (imageUrl) {
-            updateData.imageUrl = imageUrl;
-        }
 
         await updateDoc(campaignRef, updateData).catch((serverError) => {
             const permissionError = new FirestorePermissionError({
@@ -281,46 +294,6 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
         }
     } finally {
         setIsSubmitting(false);
-        setUploadProgress(null);
-    }
-  }
-
-
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    if (!user || !storage) {
-      toast({ variant: 'destructive', title: 'Authentication Error', description: 'Please log in again.' });
-      return;
-    }
-    if (user.uid !== campaign.organizerId) {
-      toast({ variant: 'destructive', title: 'Permission Denied', description: 'You can only manage your own campaigns.' });
-      return;
-    }
-
-    setIsSubmitting(true);
-    
-    if (file) {
-        setUploadProgress(0);
-        const storageRef = ref(storage, `campaigns/${user.uid}/${Date.now()}_${file.name}`);
-        const uploadTask = uploadBytesResumable(storageRef, file);
-
-        uploadTask.on('state_changed',
-            (snapshot) => {
-                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                setUploadProgress(progress);
-            },
-            (error) => {
-                console.error("Upload failed:", error);
-                toast({ variant: "destructive", title: "Upload Failed", description: "Could not upload the new image." });
-                setIsSubmitting(false);
-                setUploadProgress(null);
-            },
-            async () => {
-                const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-                await completeCampaignUpdate(downloadURL);
-            }
-        );
-    } else {
-        await completeCampaignUpdate(campaign.imageUrl || null);
     }
   }
 
@@ -365,9 +338,6 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
                         <Input type="file" accept="image/*" onChange={(e) => setFile(e.target.files?.[0] || null)} disabled={isSubmitting}/>
                     </FormControl>
                 </FormItem>
-                {uploadProgress !== null && (
-                    <Progress value={uploadProgress} className="w-full" />
-                )}
                 <FormField
                   control={form.control}
                   name="description"
@@ -505,7 +475,7 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
 
                 <Button type="submit" className="w-full" disabled={isSubmitting}>
                 {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {isSubmitting ? (uploadProgress !== null ? `Uploading... ${Math.round(uploadProgress)}%` : 'Saving...') : 'Save Changes'}
+                {isSubmitting ? 'Saving...' : 'Save Changes'}
                 </Button>
             </form>
         </Form>
@@ -560,5 +530,3 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
     </div>
   );
 }
-
-    

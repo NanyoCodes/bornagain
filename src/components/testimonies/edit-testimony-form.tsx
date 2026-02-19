@@ -23,9 +23,8 @@ import { useFirestore, useUser, useStorage } from "@/firebase";
 import { doc, updateDoc, serverTimestamp } from "firebase/firestore";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
-import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { Input } from "../ui/input";
-import { Progress } from "../ui/progress";
 import Image from "next/image";
 
 const testimonyCategories: TestimonyCategory[] = ['Healing', 'Financial Breakthrough', 'Salvation', 'Relationships', 'Deliverance', 'General'];
@@ -44,7 +43,6 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [file, setFile] = useState<File | null>(null);
-  const [uploadProgress, setUploadProgress] = useState<number | null>(null);
 
   const { user } = useUser();
   const firestore = useFirestore();
@@ -58,19 +56,35 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
     },
   });
 
-  const completeTestimonyUpdate = async (mediaUrl: string | null) => {
-    if (!user || !firestore) return;
-    const values = form.getValues();
 
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    if (!user || !storage || !firestore) {
+      toast({ variant: 'destructive', title: 'Authentication Error', description: 'Please log in again.' });
+      return;
+    }
+    if (user.uid !== testimony.authorId) {
+      toast({ variant: 'destructive', title: 'Permission Denied', description: 'You can only edit your own testimonies.' });
+      return;
+    }
+
+    setIsSubmitting(true);
+    
+    let mediaUrl: string | null = testimony.mediaUrl || null;
+    
     try {
+        if (file) {
+            const storageRef = ref(storage, `testimonies/${user.uid}/${Date.now()}_${file.name}`);
+            const uploadResult = await uploadBytes(storageRef, file);
+            mediaUrl = await getDownloadURL(uploadResult.ref);
+        }
+
         const testimonyUpdate: { [key: string]: any } = {
             category: values.category,
             content: values.content,
             updatedAt: serverTimestamp(),
+            mediaUrl: mediaUrl,
         };
-
         if (mediaUrl) {
-            testimonyUpdate.mediaUrl = mediaUrl;
             testimonyUpdate.mediaType = 'image';
         }
 
@@ -101,46 +115,6 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
         }
     } finally {
         setIsSubmitting(false);
-        setUploadProgress(null);
-    }
-  }
-
-
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    if (!user || !storage) {
-      toast({ variant: 'destructive', title: 'Authentication Error', description: 'Please log in again.' });
-      return;
-    }
-    if (user.uid !== testimony.authorId) {
-      toast({ variant: 'destructive', title: 'Permission Denied', description: 'You can only edit your own testimonies.' });
-      return;
-    }
-
-    setIsSubmitting(true);
-    
-    if (file) {
-        setUploadProgress(0);
-        const storageRef = ref(storage, `testimonies/${user.uid}/${Date.now()}_${file.name}`);
-        const uploadTask = uploadBytesResumable(storageRef, file);
-
-        uploadTask.on('state_changed',
-            (snapshot) => {
-                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                setUploadProgress(progress);
-            },
-            (error) => {
-                console.error("Upload failed:", error);
-                toast({ variant: "destructive", title: "Upload Failed", description: "Could not upload the new image." });
-                setIsSubmitting(false);
-                setUploadProgress(null);
-            },
-            async () => {
-                const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-                await completeTestimonyUpdate(downloadURL);
-            }
-        );
-    } else {
-        await completeTestimonyUpdate(testimony.mediaUrl || null);
     }
   }
 
@@ -191,17 +165,11 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
             </FormControl>
         </FormItem>
 
-        {uploadProgress !== null && (
-            <Progress value={uploadProgress} className="w-full" />
-        )}
-
         <Button type="submit" className="w-full" disabled={isSubmitting}>
           {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          {isSubmitting ? (uploadProgress !== null ? `Uploading... ${Math.round(uploadProgress)}%` : 'Saving...') : 'Save Changes'}
+          {isSubmitting ? 'Saving...' : 'Save Changes'}
         </Button>
       </form>
     </Form>
   );
 }
-
-    
