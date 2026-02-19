@@ -23,7 +23,7 @@ import { useUser, useFirestore, useStorage } from "@/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { errorEmitter } from "@/firebase/error-emitter";
-import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { Input } from "../ui/input";
 
 
@@ -68,22 +68,8 @@ export function CreateTestimonyForm({ onTestimonyCreated }: CreateTestimonyFormP
     try {
       if (file) {
         const storageRef = ref(storage, `testimonies/${user.uid}/${Date.now()}_${file.name}`);
-        mediaUrl = await new Promise<string>((resolve, reject) => {
-            const uploadTask = uploadBytesResumable(storageRef, file);
-            uploadTask.on(
-                'state_changed',
-                (snapshot) => {}, // Not using progress for now
-                (error) => {
-                    console.error("Upload failed:", error);
-                    reject(error);
-                },
-                () => {
-                    getDownloadURL(uploadTask.snapshot.ref)
-                        .then(resolve)
-                        .catch(reject);
-                }
-            );
-        });
+        const uploadResult = await uploadBytes(storageRef, file);
+        mediaUrl = await getDownloadURL(uploadResult.ref);
         mediaType = 'image';
       }
 

@@ -39,7 +39,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { query } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
-import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import Image from "next/image";
 
 
@@ -244,27 +244,12 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
 
     setIsSubmitting(true);
     
-    let imageUrl: string | null = campaign.imageUrl || null;
-
     try {
+        let imageUrl: string | null = campaign.imageUrl || null;
         if (file) {
             const storageRef = ref(storage, `campaigns/${user.uid}/${Date.now()}_${file.name}`);
-            imageUrl = await new Promise<string>((resolve, reject) => {
-                const uploadTask = uploadBytesResumable(storageRef, file);
-                uploadTask.on(
-                    'state_changed',
-                    (snapshot) => {},
-                    (error) => {
-                        console.error("Upload failed:", error);
-                        reject(error);
-                    },
-                    () => {
-                        getDownloadURL(uploadTask.snapshot.ref)
-                            .then(resolve)
-                            .catch(reject);
-                    }
-                );
-            });
+            const uploadResult = await uploadBytes(storageRef, file);
+            imageUrl = await getDownloadURL(uploadResult.ref);
         }
         
         const campaignRef = doc(firestore, 'campaigns', campaign.id);
