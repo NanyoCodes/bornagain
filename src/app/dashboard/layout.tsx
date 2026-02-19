@@ -4,7 +4,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   ArrowLeft,
   Bell,
@@ -34,10 +34,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { cn } from "@/lib/utils";
-import { useUser, useAuth } from "@/firebase";
+import { useUser, useAuth, useFirestore, useCollection } from "@/firebase";
 import { signOut } from "firebase/auth";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { SearchProvider, useSearch } from "@/context/search-context";
+import { collection, doc, limit, orderBy, query, writeBatch } from "firebase/firestore";
+import type { Notification } from "@/lib/types";
+import { formatDistanceToNow } from "date-fns";
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: Home },
@@ -51,16 +54,37 @@ function AppHeader() {
   const { user } = useUser();
   const pathname = usePathname();
   const auth = useAuth();
+  const firestore = useFirestore();
   const router = useRouter();
   const logo = PlaceHolderImages.find((img) => img.id === "logo");
   const { searchTerm, setSearchTerm, searchPlaceholder, isSearchVisible } = useSearch();
   const [showMobileSearch, setShowMobileSearch] = useState(false);
-
+  
+  const notificationsQuery = user?.uid && firestore 
+    ? query(collection(firestore, `users/${user.uid}/notifications`), orderBy('createdAt', 'desc'), limit(10)) 
+    : null;
+  const { data: notifications, loading: notificationsLoading } = useCollection<Notification>(notificationsQuery);
+  const unreadCount = useMemo(() => notifications?.filter(n => !n.isRead).length ?? 0, [notifications]);
 
   const handleLogout = async () => {
     if (!auth) return;
     await signOut(auth);
     router.push("/login");
+  };
+  
+  const handleMarkAllAsRead = async () => {
+    if (!user || !firestore || !notifications) return;
+    
+    const unreadNotifications = notifications.filter(n => !n.isRead);
+    if (unreadNotifications.length === 0) return;
+
+    const b = writeBatch(firestore);
+    unreadNotifications.forEach(notification => {
+        const notifRef = doc(firestore, `users/${user.uid}/notifications`, notification.id);
+        b.update(notifRef, { isRead: true });
+    });
+    
+    await b.commit().catch(console.error);
   };
   
   if (!user) {
@@ -149,19 +173,46 @@ function AppHeader() {
                 <span className="sr-only">Chats</span>
             </Link>
         </Button>
-        <DropdownMenu>
+        <DropdownMenu onOpenChange={(open) => {
+          if (open && unreadCount > 0) {
+            handleMarkAllAsRead();
+          }
+        }}>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon">
+            <Button variant="ghost" size="icon" className="relative">
               <Bell className="h-5 w-5" />
+              {unreadCount > 0 && (
+                <div className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-xs font-bold text-destructive-foreground">
+                  {unreadCount}
+                </div>
+              )}
               <span className="sr-only">Toggle notifications</span>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-80">
             <DropdownMenuLabel>Notifications</DropdownMenuLabel>
             <DropdownMenuSeparator />
-             <div className="p-4 text-sm text-center text-muted-foreground">
-              No new notifications.
-            </div>
+            {notificationsLoading ? (
+              <div className="p-4 text-sm text-center text-muted-foreground">
+                <Loader2 className="h-4 w-4 animate-spin mx-auto" />
+              </div>
+            ) : notifications && notifications.length > 0 ? (
+                notifications.map((notification) => (
+                  <DropdownMenuItem key={notification.id} asChild className="cursor-pointer data-[disabled]:opacity-100 data-[disabled]:pointer-events-auto">
+                    <Link href={notification.link || '#'} className={cn("flex flex-col items-start gap-1 p-2 w-full", !notification.isRead && "bg-accent/50")}>
+                        <p className="font-semibold text-sm">{notification.title}</p>
+                        <p className="text-xs text-muted-foreground whitespace-normal">{notification.message}</p>
+                         <p className="text-xs text-muted-foreground self-end">
+                            {notification.createdAt ? formatDistanceToNow(notification.createdAt.toDate(), { addSuffix: true }) : ''}
+                        </p>
+                    </Link>
+                  </DropdownMenuItem>
+                ))
+            ) : (
+                <div className="p-4 text-sm text-center text-muted-foreground">
+                  No new notifications.
+                </div>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
         <DropdownMenu>
@@ -186,7 +237,7 @@ function AppHeader() {
             <DropdownMenuItem asChild>
               <Link href="/dashboard/profile">
                 <User className="mr-2 h-4 w-4" />
-                <span>Profile</span>
+                <span>My Testimony</span>
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>

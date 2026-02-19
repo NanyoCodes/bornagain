@@ -65,7 +65,7 @@ export default function ChatPage() {
 
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
-        if (!file || !user || !firestore || !storage || !chatId) return;
+        if (!file || !user || !firestore || !storage || !chatId || !chat) return;
 
         setIsSending(true);
         setUploadProgress(0);
@@ -105,6 +105,22 @@ export default function ChatPage() {
                         lastUpdatedAt: serverTimestamp(),
                         hasMessages: true,
                     });
+                    
+                    // Notify other participant
+                    const otherParticipantId = chat.participantIds.find(id => id !== user.uid);
+                    if (otherParticipantId) {
+                        const notificationsCollectionRef = collection(firestore, 'users', otherParticipantId, 'notifications');
+                        addDoc(notificationsCollectionRef, {
+                            userId: otherParticipantId,
+                            type: 'new_chat_message',
+                            title: `New File from ${user.displayName || 'User'}`,
+                            message: `Sent a file regarding: ${chat.campaignTitle}`,
+                            link: `/dashboard/chats/${chatId}`,
+                            isRead: false,
+                            createdAt: serverTimestamp()
+                        }); // fire-and-forget
+                    }
+
                 } catch (error) {
                     console.error("Error sending file message:", error);
                 } finally {
@@ -119,7 +135,7 @@ export default function ChatPage() {
 
     const handleSendMessage = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!newMessage.trim() || !user || !firestore || !chatId || isSending) return;
+        if (!newMessage.trim() || !user || !firestore || !chatId || isSending || !chat) return;
         
         setIsSending(true);
 
@@ -136,6 +152,21 @@ export default function ChatPage() {
                 lastUpdatedAt: serverTimestamp(),
                 hasMessages: true,
             });
+
+            // Notify other participant
+            const otherParticipantId = chat.participantIds.find(id => id !== user.uid);
+            if (otherParticipantId) {
+                const notificationsCollectionRef = collection(firestore, 'users', otherParticipantId, 'notifications');
+                addDoc(notificationsCollectionRef, {
+                    userId: otherParticipantId,
+                    type: 'new_chat_message',
+                    title: `New Message from ${user.displayName || 'User'}`,
+                    message: `Regarding: ${chat.campaignTitle}`,
+                    link: `/dashboard/chats/${chatId}`,
+                    isRead: false,
+                    createdAt: serverTimestamp()
+                }); // fire-and-forget
+            }
 
             setNewMessage('');
         } catch (error) {

@@ -104,6 +104,22 @@ export function CampaignCard({ campaign, userId, isJoined, allCampaigns }: { cam
           errorEmitter.emit('permission-error', permissionError);
           throw permissionError;
       });
+      
+      // Add a notification for the campaign organizer
+      if (user.uid !== campaign.organizerId) {
+          const notificationRef = collection(firestore, `users/${campaign.organizerId}/notifications`);
+          const notificationData = {
+              userId: campaign.organizerId,
+              type: 'campaign_join',
+              title: 'New Participant!',
+              message: `${user.displayName || 'A new user'} has joined your campaign: "${campaign.title}"`,
+              link: `/dashboard/campaigns`,
+              isRead: false,
+              createdAt: serverTimestamp(),
+          };
+          await addDoc(notificationRef, notificationData);
+      }
+
 
       toast({
         title: "Campaign Joined!",
@@ -170,7 +186,27 @@ export function CampaignCard({ campaign, userId, isJoined, allCampaigns }: { cam
   }
 
 
-  const handleShare = (platform: "link" | "facebook" | "twitter" | "whatsapp") => {
+  const handleShare = async () => {
+    const shareData = {
+      title: `Join the '${campaign.title}' campaign on Testify Global!`,
+      text: `Join me in the '${campaign.title}' evangelism campaign. Let's make an impact together!`,
+      url: window.location.href,
+    };
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        // Fallback for desktop browsers
+         handleShareDropdown('link');
+      }
+    } catch (err) {
+      console.error('Share failed:', err);
+      // Fallback for when navigator.share fails
+      handleShareDropdown('link');
+    }
+  };
+
+  const handleShareDropdown = (platform: "link" | "facebook" | "twitter" | "whatsapp") => {
     const url = typeof window !== "undefined" ? window.location.origin + '/dashboard/campaigns' : '';
     const titleText = `Join the '${campaign.title}' campaign on Testify Global!`;
     const shareTextWithUrl = `${titleText} ${url}`;
@@ -198,6 +234,7 @@ export function CampaignCard({ campaign, userId, isJoined, allCampaigns }: { cam
         break;
     }
   };
+
 
   const safeToDate = (value: any): Date | null => {
     if (!value) return null;
@@ -293,22 +330,27 @@ export function CampaignCard({ campaign, userId, isJoined, allCampaigns }: { cam
   const shareButton = (
     <DropdownMenu>
         <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="icon">
+            <Button variant="outline" size="icon" onClick={(e) => {
+              e.preventDefault();
+              if (navigator.share) {
+                handleShare();
+              }
+            }}>
                 <Share2 className="h-4 w-4" />
                 <span className="sr-only">Share Campaign</span>
             </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-            <DropdownMenuItem onSelect={() => handleShare('link')}>
+            <DropdownMenuItem onSelect={() => handleShareDropdown('link')}>
                 Copy Link
             </DropdownMenuItem>
-            <DropdownMenuItem onSelect={() => handleShare('whatsapp')}>
+            <DropdownMenuItem onSelect={() => handleShareDropdown('whatsapp')}>
                 Share on WhatsApp
             </DropdownMenuItem>
-            <DropdownMenuItem onSelect={() => handleShare('facebook')}>
+            <DropdownMenuItem onSelect={() => handleShareDropdown('facebook')}>
                 Share on Facebook
             </DropdownMenuItem>
-            <DropdownMenuItem onSelect={() => handleShare('twitter')}>
+            <DropdownMenuItem onSelect={() => handleShareDropdown('twitter')}>
                 Share on Twitter (X)
             </DropdownMenuItem>
         </DropdownMenuContent>
@@ -426,7 +468,7 @@ export function CampaignCard({ campaign, userId, isJoined, allCampaigns }: { cam
             
             {campaign.scripture && (
                 <blockquote className="mt-4 border-l-2 pl-4 italic text-muted-foreground">
-                    &ldquo;Revelation from {campaign.scripture}&rdquo;
+                    &ldquo;My Testimony from {campaign.scripture}&rdquo;
                 </blockquote>
             )}
 

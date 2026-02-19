@@ -348,6 +348,38 @@
         "senderId",
         "createdAt"
       ]
+    },
+    "Notification": {
+      "title": "Notification",
+      "description": "Represents an in-app notification for a user.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "The ID of the user who should receive the notification."
+        },
+        "type": {
+          "type": "string",
+          "enum": ["campaign_join", "new_chat_message"]
+        },
+        "title": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        },
+        "link": {
+          "type": "string",
+          "description": "A URL link to the relevant page (e.g., campaign or chat)."
+        },
+        "isRead": {
+          "type": "boolean"
+        },
+        "createdAt": {
+          "type": "object"
+        }
+      },
+      "required": ["userId", "type", "title", "message", "isRead", "createdAt"]
     }
   },
   "auth": {
@@ -377,6 +409,12 @@
       },
       "description": "Stores a record of campaigns a user has joined."
     },
+    "/users/{userId}/notifications/{notificationId}": {
+      "schema": {
+        "$ref": "#/entities/Notification"
+      },
+      "description": "Stores notifications for a specific user."
+    },
     "/testimonies/{testimonyId}": {
       "schema": {
         "$ref": "#/entities/Testimony"
@@ -399,7 +437,7 @@
       "schema": {
         "$ref": "#/entities/Chat"
       },
-      "description": "Stores private chat sessions between users."
+      "description": "Stores private chat sessions between a user and campaign organizer."
     },
     "/chats/{chatId}/messages/{messageId}": {
       "schema": {

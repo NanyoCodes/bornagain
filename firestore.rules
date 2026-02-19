@@ -19,6 +19,11 @@ service cloud.firestore {
       allow read, write: if request.auth != null && request.auth.uid == userId;
     }
 
+    // Notifications are private to the user.
+    match /users/{userId}/notifications/{notificationId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
     // Testimonies are public to all authenticated users, but only writable by the author.
     match /testimonies/{testimonyId} {
       allow read: if request.auth != null;
@@ -44,7 +49,7 @@ service cloud.firestore {
         // They can change anything except for the participant count.
         (
           request.auth.uid == resource.data.organizerId &&
-          request.resource.data.participants == resource.data.participants
+          !request.resource.data.diff(resource.data).affectedKeys().hasAny(['participants'])
         )
       );
       allow delete: if false; // Hard deletes are disallowed.

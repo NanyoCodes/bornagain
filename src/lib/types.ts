@@ -1,4 +1,5 @@
 
+
 import type { Timestamp } from "firebase/firestore";
 
 export type UserProfile = {
@@ -128,5 +129,16 @@ export type ChatMessage = {
   text?: string;
   imageUrl?: string;
   videoUrl?: string;
+  createdAt: Timestamp;
+};
+
+export type Notification = {
+  id: string;
+  userId: string;
+  type: 'campaign_join' | 'new_chat_message';
+  title: string;
+  message: string;
+  link?: string;
+  isRead: boolean;
   createdAt: Timestamp;
 };
