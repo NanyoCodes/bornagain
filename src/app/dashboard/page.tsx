@@ -148,7 +148,7 @@ function MyCampaigns() {
   const joinedCampaignIds = useMemo(() => joinedCampaignsDocs?.map(j => j.id) ?? [], [joinedCampaignsDocs]);
 
   const joinedQuery = useMemo(() => {
-    if (!firestore || joinedCampaignIds.length === 0) return null;
+    if (!firestore || !user?.uid || joinedCampaignIds.length === 0) return null;
     
     const organizedIds = new Set(organizedCampaigns?.map(c => c.id));
     const idsToFetch = joinedCampaignIds.filter(id => !organizedIds.has(id));
@@ -156,7 +156,7 @@ function MyCampaigns() {
     if (idsToFetch.length === 0) return null;
 
     return query(collection(firestore, 'campaigns'), where(documentId(), 'in', idsToFetch));
-  }, [firestore, joinedCampaignIds, organizedCampaigns]);
+  }, [firestore, user, joinedCampaignIds, organizedCampaigns]);
   const { data: joinedCampaigns, loading: joinedLoading } = useCollection<Campaign>(joinedQuery);
 
   const myCampaigns = useMemo(() => {
