@@ -213,7 +213,7 @@ export function LoginForm() {
             </FormItem>
           )}
         />
-        <Button type="submit" className="w-full h-11 bg-gradient-to-r from-pink-500 to-orange-500 text-white font-bold text-base hover:opacity-90 transition-opacity" disabled={isLoading}>
+        <Button type="submit" className="w-full" disabled={isLoading}>
           {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           Sign In
         </Button>

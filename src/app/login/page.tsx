@@ -81,13 +81,13 @@ export default function LoginPage() {
 
   return (
     <main className="w-full lg:grid lg:min-h-screen lg:grid-cols-2">
-      <div className="flex items-center justify-center py-12">
-        <div className="mx-auto grid w-[380px] gap-6">
+      <div className="flex items-center justify-center p-6 sm:p-12">
+        <div className="mx-auto grid w-full max-w-[350px] gap-6">
           <div className="grid gap-2 text-center">
             {logo && (
-              <Image src={logo.imageUrl} alt={logo.description} width={100} height={100} className="mx-auto mb-4 rounded-full" data-ai-hint={logo.imageHint} />
+              <Image src={logo.imageUrl} alt={logo.description} width={80} height={80} className="mx-auto mb-4 rounded-full" data-ai-hint={logo.imageHint} />
             )}
-            <h1 className="text-3xl font-bold tracking-tight">Sign in to your account</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Sign in to your account</h1>
             <p className="text-balance text-muted-foreground">
                 Don't have an account?{' '}
                 <Link href="/" className="underline">
