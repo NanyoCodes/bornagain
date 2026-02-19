@@ -36,15 +36,14 @@ export default function TestimoniesPage() {
   const isMobile = useIsMobile();
   const { searchTerm, setSearchPlaceholder, setIsSearchVisible, setSearchTerm } = useSearch();
 
-  const { user, loading: userLoading } = useUser();
+  const { user } = useUser();
   const firestore = useFirestore();
 
-  const testimoniesQuery = useMemo(() => !userLoading && user?.uid && firestore 
+  const testimoniesQuery = useMemo(() => user?.uid && firestore 
     ? query(collection(firestore, "testimonies"), orderBy("createdAt", "desc"))
-    : null, [userLoading, user, firestore]);
+    : null, [user, firestore]);
 
-  const { data: testimonies, loading: testimoniesLoading } = useCollection<Testimony>(testimoniesQuery);
-  const loading = userLoading || testimoniesLoading;
+  const { data: testimonies, loading } = useCollection<Testimony>(testimoniesQuery);
 
   useEffect(() => {
     setMounted(true);

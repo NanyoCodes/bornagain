@@ -15,14 +15,14 @@ import {
 import { PlusCircle } from "lucide-react";
 import { SoulsWonTable } from "@/components/souls/souls-won-table";
 import { LogSoulForm } from "@/components/souls/log-soul-form";
-import type { Soul, Campaign } from "@/lib/types";
+import type { Soul } from "@/lib/types";
 import { useCollection, useFirestore, useUser } from "@/firebase";
 import { collection, query, orderBy, doc, updateDoc } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 export default function SoulsWonPage() {
-  const { user, loading: userLoading } = useUser();
+  const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
   const [isLogDialogOpen, setIsLogDialogOpen] = useState(false);
@@ -34,14 +34,10 @@ export default function SoulsWonPage() {
   }, []);
 
   // Fetch souls for the current user
-  const soulsQuery = useMemo(() => !userLoading && user?.uid && firestore ? query(collection(firestore, `users/${user.uid}/souls`), orderBy("wonAt", "desc")) : null, [userLoading, user, firestore]);
+  const soulsQuery = useMemo(() => user?.uid && firestore ? query(collection(firestore, `users/${user.uid}/souls`), orderBy("wonAt", "desc")) : null, [user, firestore]);
   const { data: souls, loading: loadingSouls } = useCollection<Soul>(soulsQuery);
 
-  // Fetch campaigns for the form dropdown
-  const campaignsQuery = useMemo(() => !userLoading && user?.uid && firestore ? query(collection(firestore, 'campaigns'), orderBy('createdAt', 'desc')) : null, [userLoading, user, firestore]);
-  const { data: campaigns, loading: loadingCampaigns } = useCollection<Campaign>(campaignsQuery);
-
-  const loading = userLoading || loadingSouls || loadingCampaigns;
+  const loading = loadingSouls;
 
   const handleSoulLogged = () => {
     setIsLogDialogOpen(false);
@@ -65,7 +61,7 @@ export default function SoulsWonPage() {
     </Button>
   );
 
-  const formContent = <LogSoulForm onSoulLogged={handleSoulLogged} campaigns={campaigns || []} />;
+  const formContent = <LogSoulForm onSoulLogged={handleSoulLogged} />;
 
   return (
     <div className="space-y-8">

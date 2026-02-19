@@ -28,7 +28,7 @@ export default function UserProfilePage() {
   const params = useParams();
   const userId = params.userId as string;
 
-  const { user: currentUser, loading: userLoading } = useUser();
+  const { user: currentUser } = useUser();
   const firestore = useFirestore();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -43,16 +43,16 @@ export default function UserProfilePage() {
   const userDocRef = useMemo(() => userId && firestore ? doc(firestore, 'users', userId) : null, [userId, firestore]);
   const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userDocRef);
 
-  const testimoniesQuery = useMemo(() => !userLoading && userId && firestore ? query(collection(firestore, 'testimonies'), where('authorId', '==', userId)) : null, [userLoading, userId, firestore]);
+  const testimoniesQuery = useMemo(() => userId && firestore ? query(collection(firestore, 'testimonies'), where('authorId', '==', userId)) : null, [userId, firestore]);
   const { data: testimonies, loading: testimoniesLoading } = useCollection<Testimony>(testimoniesQuery);
 
-  const soulsQuery = useMemo(() => !userLoading && isOwnProfile && firestore ? query(collection(firestore, `users/${userId}/souls`)) : null, [userLoading, isOwnProfile, firestore, userId]);
+  const soulsQuery = useMemo(() => isOwnProfile && firestore ? query(collection(firestore, `users/${userId}/souls`)) : null, [isOwnProfile, firestore, userId]);
   const { data: soulsWon, loading: soulsLoading } = useCollection<Soul>(soulsQuery);
 
-  const joinedCampaignsQuery = useMemo(() => !userLoading && isOwnProfile && firestore ? query(collection(firestore, `users/${userId}/joinedCampaigns`)) : null, [userLoading, isOwnProfile, firestore, userId]);
+  const joinedCampaignsQuery = useMemo(() => isOwnProfile && firestore ? query(collection(firestore, `users/${userId}/joinedCampaigns`)) : null, [isOwnProfile, firestore, userId]);
   const { data: joinedCampaigns, loading: campaignsLoading } = useCollection<JoinedCampaign>(joinedCampaignsQuery);
 
-  const loading = userLoading || profileLoading || testimoniesLoading || soulsLoading || campaignsLoading;
+  const loading = profileLoading || testimoniesLoading || (isOwnProfile && (soulsLoading || campaignsLoading));
 
   if (loading) {
     return <div className="flex items-center justify-center h-full"><Loader2 className="h-8 w-8 animate-spin" /></div>;
