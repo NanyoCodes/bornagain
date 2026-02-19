@@ -15,7 +15,7 @@ import {
 } from 'firebase/firestore';
 import {
     ref,
-    uploadBytes,
+    uploadBytesResumable,
     getDownloadURL,
 } from 'firebase/storage';
 import type { Chat, ChatMessage } from '@/lib/types';
@@ -91,8 +91,20 @@ export default function ChatPage() {
 
         try {
             const storageRef = ref(storage, `chat_media/${chatId}/${Date.now()}_${file.name}`);
-            const uploadResult = await uploadBytes(storageRef, file);
-            const downloadURL = await getDownloadURL(uploadResult.ref);
+            const uploadTask = uploadBytesResumable(storageRef, file);
+
+            const downloadURL = await new Promise<string>((resolve, reject) => {
+              uploadTask.on('state_changed',
+                (snapshot) => { /* Optional: handle progress updates */ },
+                (error) => {
+                  console.error("Upload failed:", error);
+                  reject(error);
+                },
+                () => {
+                  getDownloadURL(uploadTask.snapshot.ref).then(resolve).catch(reject);
+                }
+              );
+            });
 
             const messagesRef = collection(firestore, 'chats', chatId, 'messages');
             const messageData: Partial<ChatMessage> = {
@@ -350,5 +362,3 @@ export default function ChatPage() {
         </div>
     )
 }
-
-    

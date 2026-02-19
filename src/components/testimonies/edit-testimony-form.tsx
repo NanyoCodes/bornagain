@@ -23,7 +23,7 @@ import { useFirestore, useUser, useStorage } from "@/firebase";
 import { doc, updateDoc, serverTimestamp } from "firebase/firestore";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { Input } from "../ui/input";
 import Image from "next/image";
 
@@ -73,8 +73,20 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
         let mediaUrl: string | null = testimony.mediaUrl || null;
         if (file) {
             const storageRef = ref(storage, `testimonies/${user.uid}/${Date.now()}_${file.name}`);
-            const uploadResult = await uploadBytes(storageRef, file);
-            mediaUrl = await getDownloadURL(uploadResult.ref);
+            const uploadTask = uploadBytesResumable(storageRef, file);
+
+            mediaUrl = await new Promise<string>((resolve, reject) => {
+              uploadTask.on('state_changed',
+                (snapshot) => { /* Optional: Handle progress */ },
+                (error) => {
+                  console.error("Upload failed:", error);
+                  reject(error);
+                },
+                () => {
+                  getDownloadURL(uploadTask.snapshot.ref).then(resolve).catch(reject);
+                }
+              );
+            });
         }
 
         const testimonyUpdate: { [key: string]: any } = {
@@ -172,5 +184,3 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
     </Form>
   );
 }
-
-    
