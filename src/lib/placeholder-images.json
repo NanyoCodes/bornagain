@@ -50,9 +50,9 @@
     },
     {
       "id": "auth-hero",
-      "description": "A group of diverse people smiling",
-      "imageUrl": "https://images.unsplash.com/photo-1530785602389-07594124ac9c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxkaXZlcnNlJTIwcGVvcGxlJTIwc21pbGluZ3xlbnwwfHx8fDE3NzMyNjExMDF8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "people smiling"
+      "description": "A group of diverse people smiling and worshipping",
+      "imageUrl": "https://images.unsplash.com/photo-1620495095937-bacc3412420d?q=80&w=909&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "imageHint": "people worshiping"
     }
   ]
 }
