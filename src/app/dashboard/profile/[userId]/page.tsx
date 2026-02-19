@@ -94,7 +94,7 @@ export default function UserProfilePage() {
                 <div className="flex flex-col sm:flex-row justify-between items-start">
                     <div className="flex-grow">
                         <h1 className="text-2xl sm:text-3xl font-bold font-headline">{displayName}</h1>
-                        <p className="text-muted-foreground mt-1">{bio}</p>
+                        <p className="text-muted-foreground mt-1">{bio || (isOwnProfile ? "You haven't shared your testimony yet. You can add one by editing your profile." : "This user hasn't shared a testimony yet.")}</p>
                     </div>
                     {isOwnProfile && (
                         <div className="mt-4 sm:mt-0 sm:ml-4 shrink-0">

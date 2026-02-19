@@ -170,27 +170,28 @@ export function CampaignCard({ campaign, userId, isJoined, allCampaigns }: { cam
   }
 
 
-  const handleShare = (platform: "link" | "facebook" | "twitter") => {
+  const handleShare = async () => {
     const url = typeof window !== "undefined" ? window.location.origin + '/dashboard/campaigns' : '';
     const text = `Join the '${campaign.title}' campaign on Testify Global!`;
-    let shareUrl = "";
 
-    switch (platform) {
-      case "facebook":
-        shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
-        window.open(shareUrl, "_blank");
-        break;
-      case "twitter":
-        shareUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`;
-        window.open(shareUrl, "_blank");
-        break;
-      case "link":
-        navigator.clipboard.writeText(`${text} ${url}`);
-        toast({
-          title: "Link Copied!",
-          description: "Campaign link has been copied to your clipboard.",
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `Join the "${campaign.title}" campaign`,
+          text: text,
+          url: url,
         });
-        break;
+        toast({ title: 'Campaign shared!' });
+      } catch (error) {
+        console.log('Error sharing:', error); // Silently fail on user cancellation
+      }
+    } else {
+      // Fallback for desktop browsers
+      navigator.clipboard.writeText(`${text} ${url}`);
+      toast({
+        title: 'Link Copied!',
+        description: 'Campaign link has been copied to your clipboard.',
+      });
     }
   };
 
@@ -285,34 +286,22 @@ export function CampaignCard({ campaign, userId, isJoined, allCampaigns }: { cam
     </Dialog>
   );
 
-  const ShareDropdown = (
-    <DropdownMenu>
-        <TooltipProvider>
-            <Tooltip>
-                <TooltipTrigger asChild>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="outline" size="icon">
-                            <Share2 className="h-4 w-4" />
-                            <span className="sr-only">Share</span>
-                        </Button>
-                    </DropdownMenuTrigger>
-                </TooltipTrigger>
-                <TooltipContent><p>Share Campaign</p></TooltipContent>
-            </Tooltip>
-        </TooltipProvider>
-        <DropdownMenuContent align="end">
-          <DropdownMenuItem onClick={() => handleShare("link")}>
-            Copy Link
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => handleShare("facebook")}>
-            Share on Facebook
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => handleShare("twitter")}>
-            Share on Twitter (X)
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+  const shareButton = (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button variant="outline" size="icon" onClick={handleShare}>
+            <Share2 className="h-4 w-4" />
+            <span className="sr-only">Share</span>
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>Share Campaign</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
+
 
   const renderOwnerActions = () => (
     <div className="flex items-center gap-2">
@@ -349,7 +338,7 @@ export function CampaignCard({ campaign, userId, isJoined, allCampaigns }: { cam
           </div>
         </DialogContent>
       </Dialog>
-      {ShareDropdown}
+      {shareButton}
     </div>
   );
 
@@ -366,7 +355,7 @@ export function CampaignCard({ campaign, userId, isJoined, allCampaigns }: { cam
             <TooltipContent><p>Chat with Owner</p></TooltipContent>
         </Tooltip>
        </TooltipProvider>
-      {ShareDropdown}
+      {shareButton}
     </div>
   );
 
@@ -382,6 +371,7 @@ export function CampaignCard({ campaign, userId, isJoined, allCampaigns }: { cam
                 <TooltipContent><p>Chat with Owner</p></TooltipContent>
             </Tooltip>
         </TooltipProvider>
+        {shareButton}
         <Button onClick={handleJoin} disabled={!userId}>Join Campaign</Button>
     </div>
   );

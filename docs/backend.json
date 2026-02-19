@@ -1,3 +1,4 @@
+
 {
   "entities": {
     "UserProfile": {
@@ -21,7 +22,7 @@
         },
         "bio": {
           "type": "string",
-          "description": "A short user biography."
+          "description": "The user's personal testimony."
         },
         "location": {
           "type": "string",

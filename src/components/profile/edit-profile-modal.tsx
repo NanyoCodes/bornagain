@@ -128,9 +128,9 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
           name="bio"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Bio</FormLabel>
+              <FormLabel>My Testimony</FormLabel>
               <FormControl>
-                <Textarea placeholder="Tell us a little about yourself" className="resize-none text-base" {...field} />
+                <Textarea placeholder="Share your personal testimony to encourage others..." className="resize-none text-base" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
