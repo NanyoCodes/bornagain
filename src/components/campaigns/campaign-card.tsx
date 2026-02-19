@@ -32,6 +32,7 @@ import { LogSoulForm } from "../souls/log-soul-form";
 import { Badge } from "../ui/badge";
 import { useRouter } from "next/navigation";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip";
+import Image from "next/image";
 
 export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaign; userId?: string, isJoined: boolean }) {
   const { toast } = useToast();
@@ -462,6 +463,16 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
   return (
     <>
         <Card className="flex flex-col h-full overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300">
+        {campaign.imageUrl && (
+            <div className="relative w-full aspect-video">
+                <Image
+                    src={campaign.imageUrl}
+                    alt={campaign.title}
+                    fill
+                    className="object-cover"
+                />
+            </div>
+        )}
         <CardHeader className="p-6 flex flex-row items-start justify-between gap-4">
             <div className="flex-1 min-w-0">
                 <CardTitle className="font-bold text-xl truncate">{campaign.title}</CardTitle>

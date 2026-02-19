@@ -105,6 +105,16 @@
         },
         "createdAt": {
           "type": "object"
+        },
+        "mediaUrl": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL for an image associated with the testimony."
+        },
+        "mediaType": {
+          "type": "string",
+          "enum": ["image"],
+          "description": "The type of media linked."
         }
       },
       "required": [
@@ -179,6 +189,11 @@
         "scripture": {
           "type": "string",
           "description": "An inspirational scripture for the campaign."
+        },
+        "imageUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL for the campaign's banner image."
         }
       },
       "required": [

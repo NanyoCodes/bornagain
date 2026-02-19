@@ -23,11 +23,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useUser, useFirestore } from "@/firebase";
+import { useUser, useFirestore, useStorage } from "@/firebase";
 import { collection, serverTimestamp, doc, writeBatch } from "firebase/firestore";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { format } from "date-fns";
+import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { Progress } from "../ui/progress";
 
 const formSchema = z.object({
   goal: z.string({
@@ -64,12 +66,16 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
   const { toast } = useToast();
   const { user } = useUser();
   const firestore = useFirestore();
+  const storage = useStorage();
+
   const [isGenerating, setIsGenerating] = useState(false);
   const [ideas, setIdeas] = useState<CampaignIdeas | null>(null);
   const [selectedName, setSelectedName] = useState('');
   const [customName, setCustomName] = useState('');
   const [finalDescription, setFinalDescription] = useState('');
   const [isCreating, setIsCreating] = useState(false);
+  const [file, setFile] = useState<File | null>(null);
+  const [uploadProgress, setUploadProgress] = useState<number | null>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -115,77 +121,104 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
         toast({ variant: 'destructive', title: 'Missing Name', description: 'Please select or enter a campaign name.' });
         return;
     }
-    if (!user || !firestore) {
+    if (!user || !firestore || !storage) {
         toast({ variant: 'destructive', title: 'Not Authenticated', description: 'You must be logged in to create a campaign.' });
         return;
     }
     
     setIsCreating(true);
 
-    const campaignData = {
-      title: finalName,
-      description: finalDescription,
-      goal: form.getValues('goal'),
-      location: `${form.getValues('city')}, ${form.getValues('country')}`,
-      startDate: form.getValues('startDate'),
-      endDate: form.getValues('endDate'),
-      startTime: form.getValues('startTime'),
-      endTime: form.getValues('endTime'),
-      participants: 1,
-      createdAt: serverTimestamp(),
-      organizerId: user.uid,
-      organizerName: user.displayName || 'Anonymous',
-      status: 'active' as const,
-      scripture: form.getValues('scripture'),
-    };
-    
     try {
-        const batch = writeBatch(firestore);
+      let imageUrl: string | null = null;
 
-        // 1. Create the new campaign document ref
-        const campaignDocRef = doc(collection(firestore, 'campaigns'));
-        batch.set(campaignDocRef, campaignData);
+      if (file) {
+        setUploadProgress(0);
+        const storageRef = ref(storage, `campaigns/${user.uid}/${Date.now()}_${file.name}`);
+        const uploadTask = uploadBytesResumable(storageRef, file);
 
-        // 2. Add the 'joinedCampaigns' record for the creator
-        const joinedRef = doc(firestore, 'users', user.uid, 'joinedCampaigns', campaignDocRef.id);
-        batch.set(joinedRef, {
-            campaignId: campaignDocRef.id,
-            joinedAt: serverTimestamp(),
+        imageUrl = await new Promise<string>((resolve, reject) => {
+            uploadTask.on('state_changed',
+                (snapshot) => {
+                    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                    setUploadProgress(progress);
+                },
+                (error) => {
+                    console.error("Upload failed:", error);
+                    reject(new Error("Could not upload campaign image."));
+                },
+                async () => {
+                    const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+                    resolve(downloadURL);
+                }
+            );
         });
+      }
 
-        // 3. Add the creator to the campaign's participants subcollection
-        const participantRef = doc(firestore, 'campaigns', campaignDocRef.id, 'participants', user.uid);
-        const participantPayload: { [key: string]: any; } = {
-            userId: user.uid,
-            displayName: user.displayName || 'Anonymous',
-            photoURL: user.photoURL || null,
-            joinedAt: serverTimestamp()
-        };
-        if (user.email) {
-            participantPayload.email = user.email;
-        }
-        batch.set(participantRef, participantPayload);
+      const campaignData = {
+        title: finalName,
+        description: finalDescription,
+        goal: form.getValues('goal'),
+        location: `${form.getValues('city')}, ${form.getValues('country')}`,
+        startDate: form.getValues('startDate'),
+        endDate: form.getValues('endDate'),
+        startTime: form.getValues('startTime'),
+        endTime: form.getValues('endTime'),
+        participants: 1,
+        createdAt: serverTimestamp(),
+        organizerId: user.uid,
+        organizerName: user.displayName || 'Anonymous',
+        status: 'active' as const,
+        scripture: form.getValues('scripture'),
+        imageUrl: imageUrl,
+      };
+      
+      const batch = writeBatch(firestore);
+
+      // 1. Create the new campaign document ref
+      const campaignDocRef = doc(collection(firestore, 'campaigns'));
+      batch.set(campaignDocRef, campaignData);
+
+      // 2. Add the 'joinedCampaigns' record for the creator
+      const joinedRef = doc(firestore, 'users', user.uid, 'joinedCampaigns', campaignDocRef.id);
+      batch.set(joinedRef, {
+          campaignId: campaignDocRef.id,
+          joinedAt: serverTimestamp(),
+      });
+
+      // 3. Add the creator to the campaign's participants subcollection
+      const participantRef = doc(firestore, 'campaigns', campaignDocRef.id, 'participants', user.uid);
+      const participantPayload: { [key: string]: any; } = {
+          userId: user.uid,
+          displayName: user.displayName || 'Anonymous',
+          photoURL: user.photoURL || null,
+          joinedAt: serverTimestamp()
+      };
+      if (user.email) {
+          participantPayload.email = user.email;
+      }
+      batch.set(participantRef, participantPayload);
 
 
-        await batch.commit().catch((serverError) => {
-            const permissionError = new FirestorePermissionError({
-            path: `BATCH_WRITE:CREATE_CAMPAIGN:${campaignDocRef.id}`,
-            operation: 'write',
-            requestResourceData: { action: 'User creating campaign', userId: user.uid }
-            });
-            errorEmitter.emit('permission-error', permissionError);
-            throw permissionError;
-        });
+      await batch.commit().catch((serverError) => {
+          const permissionError = new FirestorePermissionError({
+          path: `BATCH_WRITE:CREATE_CAMPAIGN:${campaignDocRef.id}`,
+          operation: 'write',
+          requestResourceData: { action: 'User creating campaign', userId: user.uid }
+          });
+          errorEmitter.emit('permission-error', permissionError);
+          throw permissionError;
+      });
       
       toast({ title: 'Campaign Created!', description: `The "${finalName}" campaign is now ready.` });
       onCampaignCreated();
     } catch (error: any) {
       console.error("Error creating campaign: ", error);
       if (error.name !== 'FirestorePermissionError') {
-        toast({ variant: 'destructive', title: 'Error', description: 'Could not create campaign. Please check your connection and try again.' });
+        toast({ variant: 'destructive', title: 'Error', description: error.message || 'Could not create campaign. Please check your connection and try again.' });
       }
     } finally {
       setIsCreating(false);
+      setUploadProgress(null);
     }
   }
 
@@ -394,9 +427,16 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
                 <h3 className="text-lg font-semibold mb-2">Suggested Description</h3>
                 <Textarea value={finalDescription} onChange={(e) => setFinalDescription(e.target.value)} rows={5} className="text-base" />
               </div>
+              <div className="space-y-2">
+                  <Label>Campaign Image (Optional)</Label>
+                  <Input type="file" accept="image/*" onChange={(e) => setFile(e.target.files?.[0] || null)} disabled={isCreating}/>
+              </div>
+              {uploadProgress !== null && (
+                <Progress value={uploadProgress} className="w-full" />
+              )}
               <Button className="w-full" onClick={handleCreateCampaign} disabled={isCreating}>
                 {isCreating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Create Campaign with these details
+                 {isCreating ? (uploadProgress !== null ? `Uploading... ${Math.round(uploadProgress)}%` : 'Creating...') : 'Create Campaign with these details'}
               </Button>
             </div>
           </CardContent>

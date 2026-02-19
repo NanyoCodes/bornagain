@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -31,6 +32,7 @@ import { doc, deleteDoc } from "firebase/firestore";
 import { EditTestimonyForm } from "./edit-testimony-form";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
+import Image from "next/image";
 
 export function TestimonyCard({ testimony }: { testimony: Testimony }) {
   const { user } = useUser();
@@ -136,8 +138,13 @@ export function TestimonyCard({ testimony }: { testimony: Testimony }) {
         </div>
         <Badge variant="secondary" className="shrink-0">{testimony.category}</Badge>
       </CardHeader>
-      <CardContent className="flex-grow py-0">
-        <p ref={contentRef} className="text-sm text-muted-foreground whitespace-pre-wrap line-clamp-6">
+      <CardContent className="flex-grow py-0 space-y-4">
+        {testimony.mediaUrl && testimony.mediaType === 'image' && (
+            <div className="relative w-full aspect-video rounded-lg overflow-hidden">
+                <Image src={testimony.mediaUrl} alt="Testimony photo" fill className="object-cover"/>
+            </div>
+        )}
+        <p ref={contentRef} className="text-sm text-muted-foreground whitespace-pre-wrap line-clamp-4">
           {testimony.content}
         </p>
          {isContentTruncated && (
@@ -150,14 +157,19 @@ export function TestimonyCard({ testimony }: { testimony: Testimony }) {
                         <DialogTitle>Testimony by {testimony.authorName}</DialogTitle>
                         <DialogDescription>Category: {testimony.category}</DialogDescription>
                     </DialogHeader>
-                    <div className="max-h-[60vh] overflow-y-auto pr-4">
+                    <div className="max-h-[60vh] overflow-y-auto pr-4 space-y-4">
+                        {testimony.mediaUrl && testimony.mediaType === 'image' && (
+                            <div className="relative w-full aspect-video rounded-lg overflow-hidden">
+                                <Image src={testimony.mediaUrl} alt="Testimony photo" fill className="object-cover"/>
+                            </div>
+                        )}
                         <p className="text-sm text-muted-foreground whitespace-pre-wrap">{testimony.content}</p>
                     </div>
                 </DialogContent>
             </Dialog>
         )}
       </CardContent>
-      <CardFooter className="pt-4 flex justify-end">
+      <CardFooter className="pt-4 flex justify-end mt-auto">
         <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
           <AlertDialog>
             <DropdownMenu>

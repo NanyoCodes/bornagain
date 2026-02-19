@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Mail, MessageSquare } from 'lucide-react';
-import { useCollection, useFirestore, useUser } from '@/firebase';
+import { useCollection, useFirestore, useUser, useStorage } from '@/firebase';
 import { collection, doc, updateDoc, serverTimestamp, getDocs, where, limit, addDoc } from 'firebase/firestore';
 import type { Campaign, CampaignParticipant } from '@/lib/types';
 import { errorEmitter } from '@/firebase/error-emitter';
@@ -39,6 +39,9 @@ import {
 } from "@/components/ui/alert-dialog";
 import { query } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
+import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { Progress } from "../ui/progress";
+import Image from "next/image";
 
 
 const formSchema = z.object({
@@ -108,10 +111,13 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { user } = useUser();
   const firestore = useFirestore();
+  const storage = useStorage();
   const router = useRouter();
-  const [isChatLoading, setIsChatLoading] = useState(false);
 
+  const [isChatLoading, setIsChatLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [file, setFile] = useState<File | null>(null);
+  const [uploadProgress, setUploadProgress] = useState<number | null>(null);
 
   const locationParts = campaign.location.split(',');
   const city = locationParts[0]?.trim() || '';
@@ -229,7 +235,7 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
 
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    if (!user || !firestore) {
+    if (!user || !firestore || !storage) {
       toast({ variant: 'destructive', title: 'Authentication Error', description: 'Please log in again.' });
       return;
     }
@@ -241,8 +247,33 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
     setIsSubmitting(true);
 
     try {
+      let imageUrl: string | undefined = undefined;
+
+      if (file) {
+        setUploadProgress(0);
+        const storageRef = ref(storage, `campaigns/${user.uid}/${Date.now()}_${file.name}`);
+        const uploadTask = uploadBytesResumable(storageRef, file);
+
+        imageUrl = await new Promise<string>((resolve, reject) => {
+            uploadTask.on('state_changed',
+                (snapshot) => {
+                    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                    setUploadProgress(progress);
+                },
+                (error) => {
+                    console.error("Upload failed:", error);
+                    reject(new Error("Could not upload new image."));
+                },
+                async () => {
+                    const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+                    resolve(downloadURL);
+                }
+            );
+        });
+      }
+
       const campaignRef = doc(firestore, 'campaigns', campaign.id);
-      const updateData = {
+      const updateData: { [key: string]: any } = {
         title: values.title,
         description: values.description,
         goal: values.goal,
@@ -254,6 +285,10 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
         scripture: values.scripture,
         lastUpdateReason: values.lastUpdateReason,
       };
+
+      if (imageUrl) {
+        updateData.imageUrl = imageUrl;
+      }
 
       await updateDoc(campaignRef, updateData).catch((serverError) => {
         const permissionError = new FirestorePermissionError({
@@ -281,6 +316,7 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
        }
     } finally {
       setIsSubmitting(false);
+      setUploadProgress(null);
     }
   }
 
@@ -314,6 +350,20 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
                     </FormItem>
                   )}
                 />
+                 <FormItem>
+                    <FormLabel>Campaign Image</FormLabel>
+                    {campaign.imageUrl && !file && (
+                        <div className="relative w-full aspect-video rounded-md overflow-hidden my-2">
+                            <Image src={campaign.imageUrl} alt="Current campaign image" fill className="object-cover"/>
+                        </div>
+                    )}
+                    <FormControl>
+                        <Input type="file" accept="image/*" onChange={(e) => setFile(e.target.files?.[0] || null)} disabled={isSubmitting}/>
+                    </FormControl>
+                </FormItem>
+                {uploadProgress !== null && (
+                    <Progress value={uploadProgress} className="w-full" />
+                )}
                 <FormField
                   control={form.control}
                   name="description"
@@ -451,7 +501,7 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
 
                 <Button type="submit" className="w-full" disabled={isSubmitting}>
                 {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Save Changes
+                {isSubmitting ? (uploadProgress !== null ? `Uploading... ${Math.round(uploadProgress)}%` : 'Saving...') : 'Save Changes'}
                 </Button>
             </form>
         </Form>

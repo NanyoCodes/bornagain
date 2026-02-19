@@ -41,6 +41,8 @@ export type Testimony = {
   createdAt: Timestamp;
   updatedAt?: Timestamp;
   category: TestimonyCategory;
+  mediaUrl?: string;
+  mediaType?: 'image';
 };
 
 export type Campaign = {
@@ -62,6 +64,7 @@ export type Campaign = {
   deletionReason?: string;
   deletedAt?: Timestamp;
   scripture?: string;
+  imageUrl?: string;
 };
 
 export type JoinedCampaign = {
