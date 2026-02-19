@@ -23,9 +23,9 @@ import { useToast } from "@/hooks/use-toast";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { format, isSameMonth } from "date-fns";
-import { useCollection, useFirestore, useUser } from "@/firebase";
-import type { Soul } from "@/lib/types";
-import { collection, query } from "firebase/firestore";
+import { useCollection, useFirestore, useUser, useDoc } from "@/firebase";
+import type { Soul, UserProfile } from "@/lib/types";
+import { collection, query, doc } from "firebase/firestore";
 
 
 const chartConfig = {
@@ -40,7 +40,10 @@ export default function ProgressPage() {
   const { user } = useUser();
   const firestore = useFirestore();
 
-  const soulsQuery = useMemo(() => user?.uid && firestore ? query(collection(firestore, `users/${user.uid}/souls`)) : null, [user, firestore]);
+  const userDocRef = useMemo(() => user ? doc(firestore, 'users', user.uid) : null, [user, firestore]);
+  const { data: userProfile } = useDoc<UserProfile>(userDocRef);
+
+  const soulsQuery = useMemo(() => user ? query(collection(firestore, `users/${user.uid}/souls`)) : null, [user, firestore]);
   const { data: souls } = useCollection<Soul>(soulsQuery);
   
   const [monthlyGoal, setMonthlyGoal] = useState(50);
@@ -106,10 +109,13 @@ export default function ProgressPage() {
     }
   };
 
+  const currentStreak = userProfile?.currentStreak ?? 0;
+  const longestStreak = userProfile?.longestStreak ?? 0;
+
   const otherStats = [
     { title: "Total Souls Won", value: totalSoulsWon.toString(), icon: UserCheck2, description: "All time" },
-    { title: "Longest Streak", value: "0 days", icon: Trophy, description: "Keep it up!" },
-    { title: "Current Streak", value: "0 days", icon: TrendingUp, description: "Don't break it!" },
+    { title: "Longest Streak", value: `${longestStreak} day${longestStreak === 1 ? '' : 's'}`, icon: Trophy, description: "Keep it up!" },
+    { title: "Current Streak", value: `${currentStreak} day${currentStreak === 1 ? '' : 's'}`, icon: TrendingUp, description: "Don't break it!" },
   ];
 
   return (

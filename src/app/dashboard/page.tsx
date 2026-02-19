@@ -4,11 +4,11 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { formatDistanceToNow, isSameMonth, startOfDay, differenceInCalendarDays } from "date-fns";
+import { formatDistanceToNow, isSameMonth, startOfDay, differenceInCalendarDays, isSameDay } from "date-fns";
 import Link from "next/link";
-import { ArrowRight, Newspaper, Target, TrendingUp, UserCheck2, Megaphone } from "lucide-react";
+import { ArrowRight, Newspaper, Target, TrendingUp, UserCheck2, Megaphone, CheckSquare } from "lucide-react";
 import { useCollection, useFirestore, useUser, useDoc } from "@/firebase";
-import { collection, query, orderBy, limit, where, doc, updateDoc, serverTimestamp, documentId } from "firebase/firestore";
+import { collection, query, orderBy, limit, where, doc, updateDoc, serverTimestamp, documentId, getDocs } from "firebase/firestore";
 import type { Testimony, Campaign, Soul, JoinedCampaign, UserProfile } from "@/lib/types";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useMemo, useEffect } from "react";
@@ -239,7 +239,7 @@ export default function DashboardPage() {
     const today = startOfDay(new Date());
     const lastLogin = userProfile.lastLogin?.toDate ? startOfDay(userProfile.lastLogin.toDate()) : null;
 
-    if (lastLogin && differenceInCalendarDays(today, lastLogin) === 0) {
+    if (lastLogin && isSameDay(today, lastLogin)) {
         return;
     }
 
@@ -248,9 +248,13 @@ export default function DashboardPage() {
         newStreak = (userProfile.currentStreak || 0) + 1;
     }
     
+    const currentLongestStreak = userProfile.longestStreak || 0;
+    const newLongestStreak = Math.max(currentLongestStreak, newStreak);
+
     const userRef = doc(firestore, 'users', user.uid);
     updateDoc(userRef, {
         currentStreak: newStreak,
+        longestStreak: newLongestStreak,
         lastLogin: serverTimestamp(),
     }).catch(error => {
         console.error("Failed to update streak:", error);
@@ -264,9 +268,6 @@ export default function DashboardPage() {
   const soulsQuery = useMemo(() => user ? query(collection(firestore, `users/${user.uid}/souls`)) : null, [user, firestore]);
   const { data: soulsWon } = useCollection<Soul>(soulsQuery);
   
-  const joinedCampaignsQuery = useMemo(() => user ? query(collection(firestore, `users/${user.uid}/joinedCampaigns`)) : null, [user, firestore]);
-  const { data: joinedCampaignsDocs } = useCollection<JoinedCampaign>(joinedCampaignsQuery);
-  
   const allMyCampaignsQuery = useMemo(() => user ? query(collection(firestore, 'campaigns'), where('organizerId', '==', user.uid)) : null, [user, firestore]);
   const { data: allMyCampaigns } = useCollection<Campaign>(allMyCampaignsQuery);
 
@@ -277,15 +278,33 @@ export default function DashboardPage() {
 
   const myCreatedCampaignIds = useMemo(() => new Set(allMyCampaigns?.map(c => c.id)), [allMyCampaigns]);
 
+  const joinedCampaignsQuery = useMemo(() => user ? query(collection(firestore, `users/${user.uid}/joinedCampaigns`)) : null, [user, firestore]);
+  const { data: joinedCampaignsDocs, loading: joinedLoading } = useCollection<JoinedCampaign>(joinedCampaignsQuery);
+
+  const joinedCampaignsIds = useMemo(() => joinedCampaignsDocs?.map(c => c.id), [joinedCampaignsDocs]);
+
+  const joinedCampaignsFullQuery = useMemo(() => {
+    if(!user || !joinedCampaignsIds || joinedCampaignsIds.length === 0) return null;
+    return query(collection(firestore, 'campaigns'), where(documentId(), 'in', joinedCampaignsIds));
+  }, [user, joinedCampaignsIds]);
+  const { data: joinedCampaignsFull, loading: joinedFullLoading } = useCollection<Campaign>(joinedCampaignsFullQuery);
+
+
   const campaignsJoinedThisMonth = useMemo(() => {
-    if (!joinedCampaignsDocs) return 0;
+    if (!joinedCampaignsFull) return 0;
     
-    return joinedCampaignsDocs.filter(c => {
-      if (!c.joinedAt || myCreatedCampaignIds.has(c.id)) return false;
-      const joinedDate = c.joinedAt.toDate ? c.joinedAt.toDate() : new Date(c.joinedAt as any);
-      return isSameMonth(joinedDate, now);
+    return joinedCampaignsFull.filter(c => {
+      if (!c.createdAt || myCreatedCampaignIds.has(c.id) || c.status === 'deleted') return false;
+      const createdDate = c.createdAt.toDate ? c.createdAt.toDate() : new Date(c.createdAt as any);
+      return isSameMonth(createdDate, now);
     }).length;
-  }, [joinedCampaignsDocs, myCreatedCampaignIds, now]);
+  }, [joinedCampaignsFull, myCreatedCampaignIds, now]);
+  
+  const campaignsJoinedCount = useMemo(() => {
+    if (!joinedCampaignsFull) return 0;
+    return joinedCampaignsFull.filter(c => c.status !== 'deleted' && !myCreatedCampaignIds.has(c.id)).length;
+  }, [joinedCampaignsFull, myCreatedCampaignIds]);
+
 
   const campaignsCreatedThisMonth = useMemo(() => {
     if (!activeMyCampaigns) return 0;
@@ -315,7 +334,6 @@ export default function DashboardPage() {
   }, [soulsWon, now]);
 
   const campaignsCreatedCount = activeMyCampaigns.length;
-  const joinedCampaignsCount = (joinedCampaignsDocs?.length ?? 0) - campaignsCreatedCount;
   const testimoniesCount = myTestimonies?.length ?? 0;
   const soulsWonCount = soulsWon?.length ?? 0;
   const currentStreak = userProfile?.currentStreak || 0;
@@ -356,7 +374,7 @@ export default function DashboardPage() {
         
         <StatDialog
             title="Campaigns Joined"
-            value={joinedCampaignsCount}
+            value={campaignsJoinedCount}
             change={`${campaignsJoinedThisMonth} this month`}
             icon={Target}
             dialogTitle="My Joined Campaigns"

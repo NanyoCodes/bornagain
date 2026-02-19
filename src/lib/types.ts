@@ -11,6 +11,7 @@ export type UserProfile = {
   location?: string;
   phone?: string;
   currentStreak?: number;
+  longestStreak?: number;
   lastLogin?: Timestamp;
   notificationSettings?: {
     newCampaignsInArea?: boolean;

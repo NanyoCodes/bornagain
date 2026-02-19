@@ -36,6 +36,10 @@
           "type": "number",
           "description": "The user's current daily app usage streak."
         },
+        "longestStreak": {
+          "type": "number",
+          "description": "The user's longest daily app usage streak."
+        },
         "lastLogin": {
           "type": "object",
           "description": "Timestamp of the user's last daily app usage."
