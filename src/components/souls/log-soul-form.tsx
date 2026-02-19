@@ -16,13 +16,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Loader2 } from "lucide-react";
 import type { Campaign, Soul } from "@/lib/types";
 import { Textarea } from "@/components/ui/textarea";
 import { format } from "date-fns";
-import { useFirestore, useUser } from "@/firebase";
-import { collection, addDoc } from "firebase/firestore";
+import { useFirestore, useUser, useCollection } from "@/firebase";
+import { collection, addDoc, query, orderBy } from "firebase/firestore";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { errorEmitter } from "@/firebase/error-emitter";
 
@@ -40,15 +40,17 @@ const formSchema = z.object({
 
 type LogSoulFormProps = {
   onSoulLogged: () => void;
-  campaigns: Campaign[];
-  campaign?: Campaign;
+  defaultCampaign?: Campaign;
 };
 
-export function LogSoulForm({ onSoulLogged, campaigns, campaign }: LogSoulFormProps) {
+export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps) {
   const { toast } = useToast();
   const { user } = useUser();
   const firestore = useFirestore();
   const [isLoading, setIsLoading] = useState(false);
+
+  const campaignsQuery = useMemo(() => firestore ? query(collection(firestore, 'campaigns'), orderBy('createdAt', 'desc')) : null, [firestore]);
+  const { data: campaigns, loading: loadingCampaigns } = useCollection<Campaign>(campaignsQuery);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -56,8 +58,8 @@ export function LogSoulForm({ onSoulLogged, campaigns, campaign }: LogSoulFormPr
       name: "",
       contact: "",
       church: "",
-      source: campaign ? "Campaign" : "Personal",
-      sourceDetails: campaign ? campaign.title : "",
+      source: defaultCampaign ? "Campaign" : "Personal",
+      sourceDetails: defaultCampaign ? defaultCampaign.title : "",
       initialNote: "",
       wonAt: new Date(),
     },
@@ -179,7 +181,7 @@ export function LogSoulForm({ onSoulLogged, campaigns, campaign }: LogSoulFormPr
           render={({ field }) => (
             <FormItem>
               <FormLabel>Source</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value} disabled={!!campaign}>
+              <Select onValueChange={field.onChange} defaultValue={field.value} disabled={!!defaultCampaign}>
                 <FormControl>
                   <SelectTrigger className="text-base">
                     <SelectValue placeholder="Select the source" />
@@ -202,16 +204,16 @@ export function LogSoulForm({ onSoulLogged, campaigns, campaign }: LogSoulFormPr
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Campaign Name</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value} disabled={!!campaign}>
+                  <Select onValueChange={field.onChange} defaultValue={field.value} disabled={!!defaultCampaign}>
                     <FormControl>
                       <SelectTrigger className="text-base">
-                        <SelectValue placeholder="Select from your campaigns" />
+                        <SelectValue placeholder={loadingCampaigns ? "Loading campaigns..." : "Select from your campaigns"} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {campaigns.map((campaign) => (
-                        <SelectItem key={campaign.id} value={campaign.title}>
-                          {campaign.title}
+                      {campaigns && campaigns.map((c) => (
+                        <SelectItem key={c.id} value={c.title}>
+                          {c.title}
                         </SelectItem>
                       ))}
                     </SelectContent>

@@ -33,7 +33,7 @@ import { Badge } from "../ui/badge";
 import { useRouter } from "next/navigation";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip";
 
-export function CampaignCard({ campaign, userId, isJoined, allCampaigns }: { campaign: Campaign; userId?: string, isJoined: boolean, allCampaigns?: Campaign[] }) {
+export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaign; userId?: string, isJoined: boolean }) {
   const { toast } = useToast();
   const firestore = useFirestore();
   const { user } = useUser();
@@ -344,8 +344,7 @@ export function CampaignCard({ campaign, userId, isJoined, allCampaigns }: { cam
               setIsLogSoulOpen(false);
               toast({ title: "Soul Logged!", description: "The new soul has been added to your personal dashboard." });
             }}
-            campaigns={allCampaigns || []}
-            campaign={campaign}
+            defaultCampaign={campaign}
           />
         </div>
       </DialogContent>
