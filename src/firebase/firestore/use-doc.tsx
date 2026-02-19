@@ -1,6 +1,7 @@
+
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import type { DocumentReference, DocumentData, SnapshotOptions, FirestoreError } from 'firebase/firestore';
 import { onSnapshot } from 'firebase/firestore';
 import { errorEmitter } from '../error-emitter';
@@ -8,15 +9,6 @@ import { FirestorePermissionError } from '../errors';
 
 interface UseDocOptions {
   snapshotOptions?: SnapshotOptions;
-}
-
-const useMemoizedDocRef = (docRef: DocumentReference<DocumentData> | null): DocumentReference<DocumentData> | null => {
-    const docRefKey = docRef ? docRef.path : null;
-
-    return useMemo(() => {
-        return docRef;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [docRefKey]);
 }
 
 export function useDoc<T>(
@@ -27,10 +19,8 @@ export function useDoc<T>(
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<FirestoreError | null>(null);
 
-  const memoizedDocRef = useMemoizedDocRef(docRef);
-
   useEffect(() => {
-    if (!memoizedDocRef) {
+    if (!docRef) {
       setData(null);
       setLoading(false);
       return;
@@ -39,7 +29,7 @@ export function useDoc<T>(
     setLoading(true);
 
     const unsubscribe = onSnapshot(
-      memoizedDocRef,
+      docRef,
       (doc) => {
         if (doc.exists()) {
           setData({
@@ -54,7 +44,7 @@ export function useDoc<T>(
       },
       (err) => {
         const permissionError = new FirestorePermissionError({
-          path: memoizedDocRef.path,
+          path: docRef.path,
           operation: 'get',
         });
         errorEmitter.emit('permission-error', permissionError);
@@ -65,8 +55,7 @@ export function useDoc<T>(
     );
 
     return () => unsubscribe();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [memoizedDocRef, options?.snapshotOptions]);
+  }, [docRef, options?.snapshotOptions]);
 
   return { data, loading, error };
 }

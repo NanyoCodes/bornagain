@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Edit, Loader2, Mail, MapPin, Newspaper, Phone, Target, UserCheck2 } from "lucide-react";
@@ -40,16 +40,16 @@ export default function UserProfilePage() {
 
   const isOwnProfile = currentUser?.uid === userId;
 
-  const userDocRef = userId && firestore ? doc(firestore, 'users', userId) : null;
+  const userDocRef = useMemo(() => userId && firestore ? doc(firestore, 'users', userId) : null, [userId, firestore]);
   const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userDocRef);
 
-  const testimoniesQuery = !userLoading && userId && firestore ? query(collection(firestore, 'testimonies'), where('authorId', '==', userId)) : null;
+  const testimoniesQuery = useMemo(() => !userLoading && userId && firestore ? query(collection(firestore, 'testimonies'), where('authorId', '==', userId)) : null, [userLoading, userId, firestore]);
   const { data: testimonies, loading: testimoniesLoading } = useCollection<Testimony>(testimoniesQuery);
 
-  const soulsQuery = !userLoading && isOwnProfile && firestore ? query(collection(firestore, `users/${userId}/souls`)) : null;
+  const soulsQuery = useMemo(() => !userLoading && isOwnProfile && firestore ? query(collection(firestore, `users/${userId}/souls`)) : null, [userLoading, isOwnProfile, firestore, userId]);
   const { data: soulsWon, loading: soulsLoading } = useCollection<Soul>(soulsQuery);
 
-  const joinedCampaignsQuery = !userLoading && isOwnProfile && firestore ? query(collection(firestore, `users/${userId}/joinedCampaigns`)) : null;
+  const joinedCampaignsQuery = useMemo(() => !userLoading && isOwnProfile && firestore ? query(collection(firestore, `users/${userId}/joinedCampaigns`)) : null, [userLoading, isOwnProfile, firestore, userId]);
   const { data: joinedCampaigns, loading: campaignsLoading } = useCollection<JoinedCampaign>(joinedCampaignsQuery);
 
   const loading = userLoading || profileLoading || testimoniesLoading || soulsLoading || campaignsLoading;

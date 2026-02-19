@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -65,7 +65,7 @@ type ManageCampaignFormProps = {
 
 function ParticipantList({ campaignId }: { campaignId: string }) {
   const firestore = useFirestore();
-  const participantsQuery = firestore ? query(collection(firestore, 'campaigns', campaignId, 'participants')) : null;
+  const participantsQuery = useMemo(() => firestore ? query(collection(firestore, 'campaigns', campaignId, 'participants')) : null, [firestore, campaignId]);
   const { data: participants, loading } = useCollection<CampaignParticipant>(participantsQuery);
 
   if (loading) {

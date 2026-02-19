@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useUser, useFirestore, useCollection, useDoc, useStorage } from '@/firebase';
 import {
   collection,
@@ -46,10 +46,10 @@ export default function ChatPage() {
     const scrollAreaRef = useRef<HTMLDivElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    const chatDocRef = !userLoading && user && firestore && chatId ? doc(firestore, 'chats', chatId) : null;
+    const chatDocRef = useMemo(() => !userLoading && user && firestore && chatId ? doc(firestore, 'chats', chatId) : null, [userLoading, user, firestore, chatId]);
     const { data: chat, loading: loadingChat } = useDoc<Chat>(chatDocRef);
     
-    const messagesQuery = !userLoading && user && firestore && chatId ? query(collection(firestore, 'chats', chatId, 'messages'), orderBy('createdAt', 'asc')) : null;
+    const messagesQuery = useMemo(() => !userLoading && user && firestore && chatId ? query(collection(firestore, 'chats', chatId, 'messages'), orderBy('createdAt', 'asc')) : null, [userLoading, user, firestore, chatId]);
     const { data: messages, loading: loadingMessages } = useCollection<ChatMessage>(messagesQuery);
     
     const loading = userLoading || loadingChat || loadingMessages;

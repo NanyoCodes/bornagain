@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import type { Query, DocumentData, SnapshotOptions, FirestoreError } from 'firebase/firestore';
 import { onSnapshot } from 'firebase/firestore';
 import { errorEmitter } from '../error-emitter';
@@ -18,17 +18,6 @@ function getQueryPath(q: Query<DocumentData>): string {
     return (q as any)._query?.path?.canonicalString() ?? '';
 }
 
-// Custom hook to memoize Firestore queries
-const useMemoizedQuery = (query: Query<DocumentData> | null): Query<DocumentData> | null => {
-  const queryKey = query ? JSON.stringify({ path: getQueryPath(query), filters: (query as any)._query.filters, orderBy: (query as any)._query.orderBy }) : null;
-
-  return useMemo(() => {
-    return query;
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [queryKey]);
-};
-
-
 export function useCollection<T extends { id: string }>(
   query: Query<DocumentData> | null,
   options?: UseCollectionOptions
@@ -37,10 +26,8 @@ export function useCollection<T extends { id: string }>(
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<FirestoreError | null>(null);
 
-  const memoizedQuery = useMemoizedQuery(query);
-
   useEffect(() => {
-    if (!memoizedQuery) {
+    if (!query) {
       setData([]);
       setLoading(false);
       return;
@@ -49,7 +36,7 @@ export function useCollection<T extends { id: string }>(
     setLoading(true);
 
     const unsubscribe = onSnapshot(
-        memoizedQuery,
+        query,
       (snapshot) => {
         const result: T[] = [];
         snapshot.forEach((doc) => {
@@ -64,7 +51,7 @@ export function useCollection<T extends { id: string }>(
       },
       (err) => {
         const permissionError = new FirestorePermissionError({
-          path: getQueryPath(memoizedQuery),
+          path: getQueryPath(query),
           operation: 'list',
         });
         errorEmitter.emit('permission-error', permissionError);
@@ -75,8 +62,7 @@ export function useCollection<T extends { id: string }>(
     );
 
     return () => unsubscribe();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [memoizedQuery, options?.snapshotOptions]);
+  }, [query, options?.snapshotOptions]);
 
   return { data, loading, error };
 }

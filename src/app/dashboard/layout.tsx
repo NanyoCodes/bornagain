@@ -60,9 +60,9 @@ function AppHeader() {
   const { searchTerm, setSearchTerm, searchPlaceholder, isSearchVisible } = useSearch();
   const [showMobileSearch, setShowMobileSearch] = useState(false);
   
-  const notificationsQuery = user?.uid && firestore 
+  const notificationsQuery = useMemo(() => user?.uid && firestore 
     ? query(collection(firestore, `users/${user.uid}/notifications`), orderBy('createdAt', 'desc'), limit(10)) 
-    : null;
+    : null, [user, firestore]);
   const { data: notifications, loading: notificationsLoading } = useCollection<Notification>(notificationsQuery);
   const unreadCount = useMemo(() => notifications?.filter(n => !n.isRead).length ?? 0, [notifications]);
 

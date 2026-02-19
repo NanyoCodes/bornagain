@@ -48,7 +48,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 
 // --- Validation Schemas ---
 const notificationFormSchema = z.object({
@@ -380,7 +380,7 @@ export default function SettingsPage() {
   const { user, loading: userLoading } = useUser();
   const firestore = useFirestore();
   
-  const userDocRef = user?.uid && firestore ? doc(firestore, 'users', user.uid) : null;
+  const userDocRef = useMemo(() => user?.uid && firestore ? doc(firestore, 'users', user.uid) : null, [user, firestore]);
   const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userDocRef);
   
   const loading = userLoading || profileLoading;
