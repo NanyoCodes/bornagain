@@ -28,7 +28,7 @@ import { collection, serverTimestamp, doc, writeBatch } from "firebase/firestore
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { format } from "date-fns";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 
 const formSchema = z.object({
   goal: z.string({
@@ -131,8 +131,22 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
     try {
         if (file) {
             const storageRef = ref(storage, `campaigns/${user.uid}/${Date.now()}_${file.name}`);
-            const uploadResult = await uploadBytes(storageRef, file);
-            imageUrl = await getDownloadURL(uploadResult.ref);
+            imageUrl = await new Promise<string>((resolve, reject) => {
+                const uploadTask = uploadBytesResumable(storageRef, file);
+                uploadTask.on(
+                    'state_changed',
+                    (snapshot) => {},
+                    (error) => {
+                        console.error("Upload failed:", error);
+                        reject(error);
+                    },
+                    () => {
+                        getDownloadURL(uploadTask.snapshot.ref)
+                            .then(resolve)
+                            .catch(reject);
+                    }
+                );
+            });
         }
 
         const campaignData = {
