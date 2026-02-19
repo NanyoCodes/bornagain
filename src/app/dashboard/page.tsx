@@ -16,7 +16,7 @@ import { useMemo, useEffect } from "react";
 function RecentTestimonies() {
   const firestore = useFirestore();
   const { user, loading: userLoading } = useUser();
-  const testimoniesQuery = user && firestore ? query(collection(firestore, 'testimonies'), orderBy('createdAt', 'desc'), limit(3)) : null;
+  const testimoniesQuery = !userLoading && user && firestore ? query(collection(firestore, 'testimonies'), orderBy('createdAt', 'desc'), limit(3)) : null;
   const { data: testimonies, loading: testimoniesLoading } = useCollection<Testimony>(testimoniesQuery);
   const loading = userLoading || testimoniesLoading;
 
@@ -71,7 +71,7 @@ function RecentTestimonies() {
 function ActiveCampaigns() {
   const firestore = useFirestore();
   const { user, loading: userLoading } = useUser();
-  const campaignsQuery = user && firestore ? query(collection(firestore, 'campaigns'), orderBy('createdAt', 'desc'), limit(2)) : null;
+  const campaignsQuery = !userLoading && user && firestore ? query(collection(firestore, 'campaigns'), orderBy('createdAt', 'desc'), limit(2)) : null;
   const { data: campaigns, loading: campaignsLoading } = useCollection<Campaign>(campaignsQuery);
   const loading = userLoading || campaignsLoading;
 

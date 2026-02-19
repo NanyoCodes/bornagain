@@ -39,7 +39,7 @@ export default function TestimoniesPage() {
   const { user, loading: userLoading } = useUser();
   const firestore = useFirestore();
 
-  const testimoniesQuery = !userLoading && user?.uid && firestore 
+  const testimoniesQuery = !userLoading && user && firestore 
     ? query(collection(firestore, "testimonies"), orderBy("createdAt", "desc"))
     : null;
 
