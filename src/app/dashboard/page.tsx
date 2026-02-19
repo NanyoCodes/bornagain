@@ -199,6 +199,9 @@ export default function DashboardPage() {
       <div className="space-y-2">
         <h1 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight font-headline">Dashboard</h1>
         <p className="text-muted-foreground">Welcome back, {user?.displayName || 'User'}! Here's your ministry overview.</p>
+        <blockquote className="border-l-2 pl-6 italic text-muted-foreground pt-2">
+          "And they overcame him by the blood of the Lamb, and by the word of their testimony; and they loved not their lives unto the death." - Revelation 12:11
+        </blockquote>
       </div>
       
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
