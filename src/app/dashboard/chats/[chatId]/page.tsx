@@ -11,6 +11,7 @@ import {
   orderBy,
   doc,
   updateDoc,
+  writeBatch,
 } from 'firebase/firestore';
 import {
     ref,
@@ -30,6 +31,9 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/hooks/use-toast';
+import { format } from 'date-fns';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+
 
 export default function ChatPage() {
     const { user, loading: userLoading } = useUser();
@@ -106,19 +110,25 @@ export default function ChatPage() {
                         hasMessages: true,
                     });
                     
-                    // Notify other participant
-                    const otherParticipantId = chat.participantIds.find(id => id !== user.uid);
-                    if (otherParticipantId) {
-                        const notificationsCollectionRef = collection(firestore, 'users', otherParticipantId, 'notifications');
-                        addDoc(notificationsCollectionRef, {
-                            userId: otherParticipantId,
-                            type: 'new_chat_message',
-                            title: `New File from ${user.displayName || 'User'}`,
-                            message: `Sent a file regarding: ${chat.campaignTitle}`,
-                            link: `/dashboard/chats/${chatId}`,
-                            isRead: false,
-                            createdAt: serverTimestamp()
-                        }); // fire-and-forget
+                    const otherParticipantIds = chat.participantIds.filter(id => id !== user.uid);
+                    if (otherParticipantIds.length > 0) {
+                        const batch = writeBatch(firestore);
+                        otherParticipantIds.forEach(participantId => {
+                            const notificationsCollectionRef = collection(firestore, 'users', participantId, 'notifications');
+                            const notificationRef = doc(notificationsCollectionRef);
+                            batch.set(notificationRef, {
+                                userId: participantId,
+                                type: 'new_chat_message',
+                                title: chat.isGroupChat 
+                                    ? `New File in ${chat.campaignTitle}`
+                                    : `New File from ${user.displayName || 'User'}`,
+                                message: `Sent by ${user.displayName || 'User'}`,
+                                link: `/dashboard/chats/${chatId}`,
+                                isRead: false,
+                                createdAt: serverTimestamp()
+                            });
+                        });
+                        await batch.commit();
                     }
 
                 } catch (error) {
@@ -153,19 +163,27 @@ export default function ChatPage() {
                 hasMessages: true,
             });
 
-            // Notify other participant
-            const otherParticipantId = chat.participantIds.find(id => id !== user.uid);
-            if (otherParticipantId) {
-                const notificationsCollectionRef = collection(firestore, 'users', otherParticipantId, 'notifications');
-                addDoc(notificationsCollectionRef, {
-                    userId: otherParticipantId,
-                    type: 'new_chat_message',
-                    title: `New Message from ${user.displayName || 'User'}`,
-                    message: `Regarding: ${chat.campaignTitle}`,
-                    link: `/dashboard/chats/${chatId}`,
-                    isRead: false,
-                    createdAt: serverTimestamp()
-                }); // fire-and-forget
+            const otherParticipantIds = chat.participantIds.filter(id => id !== user.uid);
+            if (otherParticipantIds.length > 0) {
+                const batch = writeBatch(firestore);
+                otherParticipantIds.forEach(participantId => {
+                    const notificationsCollectionRef = collection(firestore, 'users', participantId, 'notifications');
+                    const notificationRef = doc(notificationsCollectionRef);
+                    batch.set(notificationRef, {
+                        userId: participantId,
+                        type: 'new_chat_message',
+                        title: chat.isGroupChat 
+                            ? `New Message in ${chat.campaignTitle}`
+                            : `New Message from ${user.displayName || 'User'}`,
+                        message: chat.isGroupChat
+                            ? `${user.displayName || 'User'}: ${newMessage.substring(0, 50)}${newMessage.length > 50 ? '...' : ''}`
+                            : `Regarding: ${chat.campaignTitle}`,
+                        link: `/dashboard/chats/${chatId}`,
+                        isRead: false,
+                        createdAt: serverTimestamp()
+                    });
+                });
+                await batch.commit();
             }
 
             setNewMessage('');
@@ -207,17 +225,27 @@ export default function ChatPage() {
         );
     }
 
-    const otherParticipantId = chat.participantIds.find(id => id !== user.uid);
+    const otherParticipantId = !chat.isGroupChat ? chat.participantIds.find(id => id !== user.uid) : null;
     const otherParticipantInfo = otherParticipantId ? chat.participantInfo[otherParticipantId] : null;
 
     return (
         <div className="flex flex-col h-full max-h-[calc(100vh-10rem)] w-full">
             <div className="flex items-center gap-4 mb-4">
-                 <Button variant="outline" size="icon" onClick={() => router.back()}>
+                <Button variant="outline" size="icon" onClick={() => router.back()}>
                     <ArrowLeft className="h-4 w-4" />
                     <span className="sr-only">Back</span>
                 </Button>
-                {otherParticipantInfo && (
+                {chat.isGroupChat ? (
+                    <div className="flex items-center gap-3">
+                        <Avatar>
+                            <AvatarFallback>{chat.participantIds.length}</AvatarFallback>
+                        </Avatar>
+                        <div>
+                            <h2 className="font-semibold">{chat.campaignTitle} (Group)</h2>
+                            <p className="text-sm text-muted-foreground">{chat.participantIds.length} participants</p>
+                        </div>
+                    </div>
+                ) : otherParticipantInfo ? (
                     <div className="flex items-center gap-3">
                          <Avatar>
                             <AvatarImage src={otherParticipantInfo.photoURL} />
@@ -228,7 +256,7 @@ export default function ChatPage() {
                             <p className="text-sm text-muted-foreground">Regarding: {chat.campaignTitle}</p>
                         </div>
                     </div>
-                )}
+                ) : null}
             </div>
 
             <Card className="flex flex-col flex-grow">
@@ -236,22 +264,49 @@ export default function ChatPage() {
                     <ScrollArea className="flex-grow p-4" ref={scrollAreaRef}>
                         {messages && messages.length > 0 ? (
                             <div className="space-y-4">
-                                {messages.map(msg => (
+                                {messages.map(msg => {
+                                    const senderInfo = chat.participantInfo[msg.senderId];
+                                    return (
                                     <div key={msg.id} className={cn(
-                                        "flex items-end gap-2",
+                                        "flex items-end gap-2 w-full",
                                         msg.senderId === user?.uid ? "justify-end" : "justify-start"
                                     )}>
-                                        {msg.senderId !== user?.uid && otherParticipantInfo && <Avatar className="h-8 w-8"><AvatarImage src={otherParticipantInfo.photoURL} /><AvatarFallback>{otherParticipantInfo.displayName.charAt(0)}</AvatarFallback></Avatar>}
+                                        {msg.senderId !== user?.uid && senderInfo && (
+                                            <TooltipProvider>
+                                                <Tooltip>
+                                                    <TooltipTrigger asChild>
+                                                        <Avatar className="h-8 w-8">
+                                                            <AvatarImage src={senderInfo.photoURL} />
+                                                            <AvatarFallback>{senderInfo.displayName.charAt(0)}</AvatarFallback>
+                                                        </Avatar>
+                                                    </TooltipTrigger>
+                                                    <TooltipContent>
+                                                        <p>{senderInfo.displayName}</p>
+                                                    </TooltipContent>
+                                                </Tooltip>
+                                            </TooltipProvider>
+                                        )}
                                         <div className={cn(
-                                            "rounded-lg px-3 py-2 max-w-sm sm:max-w-md break-words",
+                                            "rounded-lg px-3 py-2 max-w-sm sm:max-w-md break-words flex flex-col",
                                             msg.senderId === user?.uid ? "bg-primary text-primary-foreground" : "bg-muted"
                                         )}>
+                                            {chat.isGroupChat && msg.senderId !== user?.uid && senderInfo && (
+                                                <p className="text-xs font-bold mb-1">{senderInfo.displayName}</p>
+                                            )}
                                             {msg.imageUrl && <Image src={msg.imageUrl} alt="Uploaded image" width={300} height={200} className="rounded-md object-cover" />}
                                             {msg.videoUrl && <video src={msg.videoUrl} controls className="rounded-md max-w-full" />}
-                                            {msg.text && <p className={cn((msg.imageUrl || msg.videoUrl) && 'mt-2')}>{msg.text}</p>}
+                                            {msg.text && <p className={cn("text-sm", (msg.imageUrl || msg.videoUrl) && 'mt-2')}>{msg.text}</p>}
+                                            {msg.createdAt && (
+                                                <p className={cn(
+                                                    "text-xs mt-1 self-end",
+                                                    msg.senderId === user?.uid ? "text-primary-foreground/70" : "text-muted-foreground/70"
+                                                )}>
+                                                    {format(msg.createdAt.toDate(), 'p')}
+                                                </p>
+                                            )}
                                         </div>
                                     </div>
-                                ))}
+                                )})}
                             </div>
                         ) : (
                             <div className="flex justify-center items-center h-full">

@@ -92,6 +92,7 @@ export function CampaignCard({ campaign, userId, isJoined, allCampaigns }: { cam
             const participantData: { [key: string]: any; } = {
                 userId: user.uid,
                 displayName: user.displayName || 'Anonymous',
+                photoURL: user.photoURL || null,
                 joinedAt: serverTimestamp()
             };
             if (user.email) {
@@ -173,6 +174,7 @@ export function CampaignCard({ campaign, userId, isJoined, allCampaigns }: { cam
               campaignTitle: campaign.title,
               lastUpdatedAt: serverTimestamp(),
               hasMessages: false,
+              isGroupChat: false,
           };
           const chatDocRef = await addDoc(chatsRef, newChatData);
           chatId = chatDocRef.id;
@@ -542,5 +544,3 @@ export function CampaignCard({ campaign, userId, isJoined, allCampaigns }: { cam
     </>
   );
 }
-
-    

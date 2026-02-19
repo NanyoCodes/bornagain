@@ -8,9 +8,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Mail } from 'lucide-react';
+import { Loader2, Mail, MessageSquare } from 'lucide-react';
 import { useCollection, useFirestore, useUser } from '@/firebase';
-import { collection, doc, updateDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, doc, updateDoc, serverTimestamp, getDocs, where, limit, addDoc } from 'firebase/firestore';
 import type { Campaign, CampaignParticipant } from '@/lib/types';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
@@ -38,6 +38,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { query } from 'firebase/firestore';
+import { useRouter } from 'next/navigation';
 
 
 const formSchema = z.object({
@@ -107,6 +108,8 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { user } = useUser();
   const firestore = useFirestore();
+  const router = useRouter();
+  const [isChatLoading, setIsChatLoading] = useState(false);
 
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -130,6 +133,62 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
       lastUpdateReason: "",
     },
   });
+
+  const handleStartGroupChat = async () => {
+    if (!user || !firestore) return;
+    setIsChatLoading(true);
+    try {
+        const participantsRef = collection(firestore, 'campaigns', campaign.id, 'participants');
+        const participantsSnapshot = await getDocs(participantsRef);
+        const participants = participantsSnapshot.docs.map(doc => doc.data() as CampaignParticipant & { id: string });
+
+        if (participants.length <= 1) {
+            toast({ variant: 'destructive', title: 'Not enough participants', description: 'You need at least one other participant to start a group chat.' });
+            setIsChatLoading(false);
+            return;
+        }
+
+        const participantIds = participants.map(p => p.id);
+        const participantInfo: { [key: string]: any } = {};
+        participants.forEach(p => {
+            participantInfo[p.id] = {
+                displayName: p.displayName,
+                photoURL: p.photoURL || '',
+            };
+        });
+        
+        const chatsRef = collection(firestore, 'chats');
+        const q = query(chatsRef, where('campaignId', '==', campaign.id), where('isGroupChat', '==', true), limit(1));
+        const querySnapshot = await getDocs(q);
+        
+        let chatId: string;
+
+        if (!querySnapshot.empty) {
+            chatId = querySnapshot.docs[0].id;
+        } else {
+            const newChatData = {
+                participantIds,
+                participantInfo,
+                campaignId: campaign.id,
+                campaignTitle: campaign.title,
+                lastUpdatedAt: serverTimestamp(),
+                hasMessages: false,
+                isGroupChat: true,
+            };
+            const chatDocRef = await addDoc(chatsRef, newChatData);
+            chatId = chatDocRef.id;
+        }
+
+        router.push(`/dashboard/chats/${chatId}`);
+
+    } catch (error) {
+        console.error("Error starting group chat:", error);
+        toast({ variant: 'destructive', title: 'Chat Error', description: 'Could not start the group chat.' });
+    } finally {
+        setIsChatLoading(false);
+    }
+  };
+
 
     const handleDeleteCampaign = async () => {
     if (!user || !firestore) return;
@@ -398,6 +457,19 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
         <ParticipantList campaignId={campaign.id} />
 
         <Separator />
+
+        <Card>
+            <CardHeader>
+                <CardTitle>Group Communication</CardTitle>
+                <CardDescription>Start a group chat with all campaign participants.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <Button onClick={handleStartGroupChat} disabled={isChatLoading}>
+                    {isChatLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <MessageSquare className="mr-2 h-4 w-4" />}
+                    Start Group Chat
+                </Button>
+            </CardContent>
+        </Card>
 
          <Card className="border-destructive mt-6">
             <CardHeader>

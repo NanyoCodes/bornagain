@@ -74,6 +74,7 @@ export type CampaignParticipant = {
   userId: string;
   displayName: string;
   email?: string;
+  photoURL?: string;
   joinedAt: Timestamp;
 };
 
@@ -121,6 +122,7 @@ export type Chat = {
   campaignTitle: string;
   lastUpdatedAt: Timestamp;
   hasMessages?: boolean;
+  isGroupChat?: boolean;
 };
 
 export type ChatMessage = {

@@ -278,6 +278,10 @@
           "type": "string",
           "format": "email"
         },
+        "photoURL": {
+          "type": "string",
+          "format": "uri"
+        },
         "joinedAt": {
           "type": "object"
         }
@@ -285,13 +289,12 @@
       "required": [
         "userId",
         "displayName",
-        "email",
         "joinedAt"
       ]
     },
     "Chat": {
       "title": "Chat",
-      "description": "A private chat session between a user and a campaign organizer.",
+      "description": "A chat session for a campaign, which can be a group chat among participants or a private one-on-one chat.",
       "type": "object",
       "properties": {
         "participantIds": {
@@ -308,6 +311,10 @@
         },
         "campaignTitle": {
           "type": "string"
+        },
+        "isGroupChat": {
+          "type": "boolean",
+          "description": "Indicates if this is a group chat for the whole campaign."
         },
         "lastUpdatedAt": {
           "type": "object"

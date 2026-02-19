@@ -158,6 +158,7 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
         const participantPayload: { [key: string]: any; } = {
             userId: user.uid,
             displayName: user.displayName || 'Anonymous',
+            photoURL: user.photoURL || null,
             joinedAt: serverTimestamp()
         };
         if (user.email) {

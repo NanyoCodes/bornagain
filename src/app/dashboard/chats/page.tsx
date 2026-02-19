@@ -12,13 +12,37 @@ import { formatDistanceToNow } from 'date-fns';
 import { useMemo } from 'react';
 
 function ChatListItem({ chat, currentUserId }: { chat: Chat, currentUserId: string }) {
+    const lastUpdatedAt = chat.lastUpdatedAt?.toDate ? chat.lastUpdatedAt.toDate() : new Date();
+
+    if (chat.isGroupChat) {
+        return (
+            <Link href={`/dashboard/chats/${chat.id}`} className="block hover:bg-muted/50 transition-colors">
+                <div className="flex items-center gap-4 p-4">
+                    <Avatar className="h-12 w-12">
+                        <AvatarFallback>{chat.participantIds.length}</AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 min-w-0">
+                        <div className="flex justify-between items-start">
+                            <div className="font-semibold truncate">{chat.campaignTitle} (Group)</div>
+                            <div className="text-xs text-muted-foreground whitespace-nowrap">
+                                {formatDistanceToNow(lastUpdatedAt, { addSuffix: true })}
+                            </div>
+                        </div>
+                        <p className="text-sm text-muted-foreground truncate">{chat.participantIds.length} participants</p>
+                        <p className="text-sm text-muted-foreground truncate mt-1">
+                            {chat.hasMessages ? 'Click to view messages' : 'No messages yet.'}
+                        </p>
+                    </div>
+                </div>
+            </Link>
+        )
+    }
+    
     const otherParticipantId = chat.participantIds.find(id => id !== currentUserId);
     if (!otherParticipantId) return null;
 
     const otherParticipantInfo = chat.participantInfo[otherParticipantId];
     if (!otherParticipantInfo) return null;
-    
-    const lastUpdatedAt = chat.lastUpdatedAt?.toDate ? chat.lastUpdatedAt.toDate() : new Date();
 
     return (
         <Link href={`/dashboard/chats/${chat.id}`} className="block hover:bg-muted/50 transition-colors">
@@ -34,7 +58,7 @@ function ChatListItem({ chat, currentUserId }: { chat: Chat, currentUserId: stri
                             {formatDistanceToNow(lastUpdatedAt, { addSuffix: true })}
                         </div>
                     </div>
-                    <p className="text-sm text-muted-foreground truncate">{chat.campaignTitle}</p>
+                    <p className="text-sm text-muted-foreground truncate">Re: {chat.campaignTitle}</p>
                     <p className="text-sm text-muted-foreground truncate mt-1">
                         {chat.hasMessages ? 'Click to view messages' : 'No messages yet.'}
                     </p>
