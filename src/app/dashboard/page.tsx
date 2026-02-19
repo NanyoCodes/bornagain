@@ -18,7 +18,7 @@ import { JoinedCampaignsList, TestimoniesList, CampaignsCreatedList, SoulsWonLis
 function RecentTestimonies() {
   const firestore = useFirestore();
   const { user, loading: userLoading } = useUser();
-  const testimoniesQuery = useMemo(() => !userLoading && user && firestore ? query(collection(firestore, 'testimonies'), orderBy('createdAt', 'desc'), limit(3)) : null, [userLoading, user, firestore]);
+  const testimoniesQuery = useMemo(() => !userLoading && user?.uid && firestore ? query(collection(firestore, 'testimonies'), orderBy('createdAt', 'desc'), limit(3)) : null, [userLoading, user, firestore]);
   const { data: testimonies, loading: testimoniesLoading } = useCollection<Testimony>(testimoniesQuery);
   const loading = userLoading || testimoniesLoading;
 
