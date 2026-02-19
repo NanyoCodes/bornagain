@@ -47,6 +47,12 @@
       "description": "Image for evangelism event",
       "imageUrl": "https://images.unsplash.com/photo-1531537571171-a707bf2683da?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxwZW9wbGUlMjBsaXN0ZW5pbmd8ZW58MHx8fHwxNzcxMzQxNTQyfDA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "people listening"
+    },
+    {
+      "id": "auth-hero",
+      "description": "A group of joyful people outdoors",
+      "imageUrl": "https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxqb3lmdWwlMjBwZW9wbGV8ZW58MHx8fHwxNzcyNTYxNzYxfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "joyful people"
     }
   ]
 }
