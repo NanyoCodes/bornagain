@@ -19,13 +19,10 @@ import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { Testimony, TestimonyCategory } from "@/lib/types";
-import { useFirestore, useUser, useStorage } from "@/firebase";
+import { useFirestore, useUser } from "@/firebase";
 import { doc, updateDoc, serverTimestamp } from "firebase/firestore";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
-import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-import { Input } from "../ui/input";
-import Image from "next/image";
 
 const testimonyCategories: TestimonyCategory[] = ['Healing', 'Financial Breakthrough', 'Salvation', 'Relationships', 'Deliverance', 'General'];
 
@@ -42,11 +39,9 @@ type EditTestimonyFormProps = {
 export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimonyFormProps) {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [file, setFile] = useState<File | null>(null);
 
   const { user } = useUser();
   const firestore = useFirestore();
-  const storage = useStorage();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -58,7 +53,7 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
 
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    if (!user || !storage || !firestore) {
+    if (!user || !firestore) {
       toast({ variant: 'destructive', title: 'Authentication Error', description: 'Please log in again.' });
       return;
     }
@@ -70,34 +65,11 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
     setIsSubmitting(true);
     
     try {
-        let mediaUrl: string | null = testimony.mediaUrl || null;
-        if (file) {
-            const storageRef = ref(storage, `testimonies/${user.uid}/${Date.now()}_${file.name}`);
-            const uploadTask = uploadBytesResumable(storageRef, file);
-
-            mediaUrl = await new Promise<string>((resolve, reject) => {
-              uploadTask.on('state_changed',
-                (snapshot) => { /* Optional: Handle progress */ },
-                (error) => {
-                  console.error("Upload failed:", error);
-                  reject(error);
-                },
-                () => {
-                  getDownloadURL(uploadTask.snapshot.ref).then(resolve).catch(reject);
-                }
-              );
-            });
-        }
-
         const testimonyUpdate: { [key: string]: any } = {
             category: values.category,
             content: values.content,
             updatedAt: serverTimestamp(),
-            mediaUrl: mediaUrl,
         };
-        if (mediaUrl) {
-            testimonyUpdate.mediaType = 'image';
-        }
 
         const testimonyRef = doc(firestore, "testimonies", testimony.id);
         await updateDoc(testimonyRef, testimonyUpdate).catch((serverError) => {
@@ -163,18 +135,6 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
             </FormItem>
           )}
         />
-        
-        <FormItem>
-            <FormLabel>Update Photo (Optional)</FormLabel>
-            {testimony.mediaUrl && !file && (
-                <div className="relative w-full aspect-video rounded-md overflow-hidden my-2">
-                    <Image src={testimony.mediaUrl} alt="Current testimony photo" fill className="object-cover"/>
-                </div>
-            )}
-            <FormControl>
-                <Input type="file" accept="image/*" onChange={(e) => setFile(e.target.files?.[0] || null)} disabled={isSubmitting}/>
-            </FormControl>
-        </FormItem>
 
         <Button type="submit" className="w-full" disabled={isSubmitting}>
           {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

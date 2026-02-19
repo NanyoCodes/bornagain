@@ -19,12 +19,10 @@ import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import type { TestimonyCategory } from "@/lib/types";
-import { useUser, useFirestore, useStorage } from "@/firebase";
+import { useUser, useFirestore } from "@/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { errorEmitter } from "@/firebase/error-emitter";
-import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-import { Input } from "../ui/input";
 
 
 const testimonyCategories: TestimonyCategory[] = ['Healing', 'Financial Breakthrough', 'Salvation', 'Relationships', 'Deliverance', 'General'];
@@ -41,11 +39,9 @@ type CreateTestimonyFormProps = {
 export function CreateTestimonyForm({ onTestimonyCreated }: CreateTestimonyFormProps) {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [file, setFile] = useState<File | null>(null);
   
   const { user } = useUser();
   const firestore = useFirestore();
-  const storage = useStorage();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -55,7 +51,7 @@ export function CreateTestimonyForm({ onTestimonyCreated }: CreateTestimonyFormP
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    if (!user || !storage || !firestore) {
+    if (!user || !firestore) {
       toast({ variant: 'destructive', title: 'Not Authenticated', description: 'You must be logged in to share a testimony.'});
       return;
     }
@@ -63,28 +59,6 @@ export function CreateTestimonyForm({ onTestimonyCreated }: CreateTestimonyFormP
     setIsSubmitting(true);
     
     try {
-      let mediaUrl: string | null = null;
-      let mediaType: 'image' | null = null;
-
-      if (file) {
-        const storageRef = ref(storage, `testimonies/${user.uid}/${Date.now()}_${file.name}`);
-        const uploadTask = uploadBytesResumable(storageRef, file);
-
-        mediaUrl = await new Promise<string>((resolve, reject) => {
-          uploadTask.on('state_changed',
-            (snapshot) => { /* Optional: Handle progress */ },
-            (error) => {
-              console.error("Upload failed:", error);
-              reject(error);
-            },
-            () => {
-              getDownloadURL(uploadTask.snapshot.ref).then(resolve).catch(reject);
-            }
-          );
-        });
-        mediaType = 'image';
-      }
-
       const testimonyCollectionRef = collection(firestore, "testimonies");
       const testimonyData: any = {
           authorId: user.uid,
@@ -93,8 +67,6 @@ export function CreateTestimonyForm({ onTestimonyCreated }: CreateTestimonyFormP
           content: values.content,
           createdAt: serverTimestamp(),
           category: values.category as TestimonyCategory,
-          mediaUrl: mediaUrl,
-          mediaType: mediaType,
       };
       
       await addDoc(testimonyCollectionRef, testimonyData).catch((serverError) => {
@@ -171,13 +143,6 @@ export function CreateTestimonyForm({ onTestimonyCreated }: CreateTestimonyFormP
           )}
         />
         
-        <FormItem>
-            <FormLabel>Add a Photo (Optional)</FormLabel>
-            <FormControl>
-                <Input type="file" accept="image/*" onChange={(e) => setFile(e.target.files?.[0] || null)} disabled={isSubmitting}/>
-            </FormControl>
-        </FormItem>
-
         <Button type="submit" className="w-full" disabled={isSubmitting}>
           {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           {isSubmitting ? 'Submitting...' : 'Submit Testimony'}

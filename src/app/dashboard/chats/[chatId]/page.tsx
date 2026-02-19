@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect, useRef, useMemo } from 'react';
-import { useUser, useFirestore, useCollection, useDoc, useStorage } from '@/firebase';
+import { useUser, useFirestore, useCollection, useDoc } from '@/firebase';
 import {
   collection,
   query,
@@ -13,13 +13,8 @@ import {
   updateDoc,
   writeBatch,
 } from 'firebase/firestore';
-import {
-    ref,
-    uploadBytesResumable,
-    getDownloadURL,
-} from 'firebase/storage';
 import type { Chat, ChatMessage } from '@/lib/types';
-import { Loader2, Send, ArrowLeft, Paperclip } from 'lucide-react';
+import { Loader2, Send, ArrowLeft } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -28,7 +23,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import Link from 'next/link';
-import Image from 'next/image';
 import { useToast } from '@/hooks/use-toast';
 import { format, isSameDay } from 'date-fns';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -37,7 +31,6 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 export default function ChatPage() {
     const { user, loading: userLoading } = useUser();
     const firestore = useFirestore();
-    const storage = useStorage();
     const params = useParams();
     const router = useRouter();
     const { toast } = useToast();
@@ -46,7 +39,6 @@ export default function ChatPage() {
     const [newMessage, setNewMessage] = useState('');
     const [isSending, setIsSending] = useState(false);
     const scrollAreaRef = useRef<HTMLDivElement>(null);
-    const fileInputRef = useRef<HTMLInputElement>(null);
 
     const chatDocRef = useMemo(() => !userLoading && user && firestore && chatId ? doc(firestore, 'chats', chatId) : null, [userLoading, user, firestore, chatId]);
     const { data: chat, loading: loadingChat } = useDoc<Chat>(chatDocRef);
@@ -82,79 +74,6 @@ export default function ChatPage() {
             }
         }
     }, [messageGroups]);
-
-    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file || !user || !firestore || !storage || !chatId || !chat) return;
-
-        setIsSending(true);
-
-        try {
-            const storageRef = ref(storage, `chat_media/${chatId}/${Date.now()}_${file.name}`);
-            const uploadTask = uploadBytesResumable(storageRef, file);
-
-            const downloadURL = await new Promise<string>((resolve, reject) => {
-              uploadTask.on('state_changed',
-                (snapshot) => { /* Optional: handle progress updates */ },
-                (error) => {
-                  console.error("Upload failed:", error);
-                  reject(error);
-                },
-                () => {
-                  getDownloadURL(uploadTask.snapshot.ref).then(resolve).catch(reject);
-                }
-              );
-            });
-
-            const messagesRef = collection(firestore, 'chats', chatId, 'messages');
-            const messageData: Partial<ChatMessage> = {
-                senderId: user.uid,
-                createdAt: serverTimestamp(),
-            };
-
-            if (file.type.startsWith('image/')) {
-                messageData.imageUrl = downloadURL;
-            } else if (file.type.startsWith('video/')) {
-                messageData.videoUrl = downloadURL;
-            }
-
-            await addDoc(messagesRef, messageData);
-            const chatRef = doc(firestore, 'chats', chatId);
-            await updateDoc(chatRef, {
-                lastUpdatedAt: serverTimestamp(),
-                hasMessages: true,
-            });
-            
-            const otherParticipantIds = chat.participantIds.filter(id => id !== user.uid);
-            if (otherParticipantIds.length > 0) {
-                const batch = writeBatch(firestore);
-                otherParticipantIds.forEach(participantId => {
-                    const notificationsCollectionRef = collection(firestore, 'users', participantId, 'notifications');
-                    const notificationRef = doc(notificationsCollectionRef);
-                    batch.set(notificationRef, {
-                        userId: participantId,
-                        type: 'new_chat_message',
-                        title: chat.isGroupChat 
-                            ? `New File in ${chat.campaignTitle}`
-                            : `New File from ${user.displayName || 'User'}`,
-                        message: `Sent by ${user.displayName || 'User'}`,
-                        link: `/dashboard/chats/${chatId}`,
-                        isRead: false,
-                        createdAt: serverTimestamp()
-                    });
-                });
-                await batch.commit();
-            }
-
-        } catch (error) {
-            console.error("Error sending file message:", error);
-            toast({ variant: "destructive", title: "Upload failed", description: "Could not upload the file." });
-        } finally {
-            setIsSending(false);
-            if (fileInputRef.current) fileInputRef.current.value = "";
-        }
-    };
-
 
     const handleSendMessage = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -314,9 +233,7 @@ export default function ChatPage() {
                                                     {chat.isGroupChat && msg.senderId !== user?.uid && senderInfo && (
                                                         <p className="text-xs font-bold mb-1">{senderInfo.displayName}</p>
                                                     )}
-                                                    {msg.imageUrl && <Image src={msg.imageUrl} alt="Uploaded image" width={300} height={200} className="rounded-md object-cover" />}
-                                                    {msg.videoUrl && <video src={msg.videoUrl} controls className="rounded-md max-w-full" />}
-                                                    {msg.text && <p className={cn("text-sm", (msg.imageUrl || msg.videoUrl) && 'mt-2')}>{msg.text}</p>}
+                                                    {msg.text && <p className="text-sm">{msg.text}</p>}
                                                     {msg.createdAt && (
                                                         <p className={cn(
                                                             "text-xs mt-1 self-end",
@@ -342,10 +259,6 @@ export default function ChatPage() {
 
                 <CardFooter className="p-2 border-t bg-background flex flex-col items-stretch gap-1">
                     <form onSubmit={handleSendMessage} className="flex gap-2 w-full items-center p-2">
-                        <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" accept="image/*,video/*" disabled={isSending} />
-                        <Button type="button" size="icon" variant="ghost" onClick={() => fileInputRef.current?.click()} disabled={isSending}>
-                            {isSending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Paperclip className="h-4 w-4" />}
-                        </Button>
                         <Input
                             value={newMessage}
                             onChange={(e) => setNewMessage(e.target.value)}

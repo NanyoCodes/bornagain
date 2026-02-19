@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
 import { CalendarIcon, Loader2, Mail, MessageSquare } from 'lucide-react';
-import { useCollection, useFirestore, useUser, useStorage } from '@/firebase';
+import { useCollection, useFirestore, useUser } from '@/firebase';
 import { collection, doc, updateDoc, serverTimestamp, getDocs, where, limit, addDoc } from 'firebase/firestore';
 import type { Campaign, CampaignParticipant } from '@/lib/types';
 import { errorEmitter } from '@/firebase/error-emitter';
@@ -39,8 +39,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import { query } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
-import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-import Image from "next/image";
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import { cn } from '@/lib/utils';
 import { Calendar } from '../ui/calendar';
@@ -114,12 +112,10 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { user } = useUser();
   const firestore = useFirestore();
-  const storage = useStorage();
   const router = useRouter();
 
   const [isChatLoading, setIsChatLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [file, setFile] = useState<File | null>(null);
 
   const locationParts = campaign.location.split(',');
   const city = locationParts[0]?.trim() || '';
@@ -237,7 +233,7 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
 
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    if (!user || !storage || !firestore) {
+    if (!user || !firestore) {
       toast({ variant: 'destructive', title: 'Authentication Error', description: 'Please log in again.' });
       return;
     }
@@ -249,25 +245,6 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
     setIsSubmitting(true);
     
     try {
-        let imageUrl: string | null = campaign.imageUrl || null;
-        if (file) {
-            const storageRef = ref(storage, `campaigns/${user.uid}/${Date.now()}_${file.name}`);
-            const uploadTask = uploadBytesResumable(storageRef, file);
-            
-            imageUrl = await new Promise<string>((resolve, reject) => {
-              uploadTask.on('state_changed',
-                (snapshot) => { /* Optional: Handle progress */ },
-                (error) => {
-                  console.error("Upload failed:", error);
-                  reject(error);
-                },
-                () => {
-                  getDownloadURL(uploadTask.snapshot.ref).then(resolve).catch(reject);
-                }
-              );
-            });
-        }
-        
         const campaignRef = doc(firestore, 'campaigns', campaign.id);
         const updateData: { [key: string]: any } = {
             title: values.title,
@@ -280,7 +257,6 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
             endTime: values.endTime,
             scripture: values.scripture,
             lastUpdateReason: values.lastUpdateReason,
-            imageUrl: imageUrl,
         };
 
         await updateDoc(campaignRef, updateData).catch((serverError) => {
@@ -342,17 +318,6 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
                     </FormItem>
                   )}
                 />
-                 <FormItem>
-                    <FormLabel>Campaign Image</FormLabel>
-                    {campaign.imageUrl && !file && (
-                        <div className="relative w-full aspect-video rounded-md overflow-hidden my-2">
-                            <Image src={campaign.imageUrl} alt="Current campaign image" fill className="object-cover"/>
-                        </div>
-                    )}
-                    <FormControl>
-                        <Input type="file" accept="image/*" onChange={(e) => setFile(e.target.files?.[0] || null)} disabled={isSubmitting}/>
-                    </FormControl>
-                </FormItem>
                 <FormField
                   control={form.control}
                   name="description"

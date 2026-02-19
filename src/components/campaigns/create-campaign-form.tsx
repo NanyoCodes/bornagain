@@ -23,12 +23,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useUser, useFirestore, useStorage } from "@/firebase";
+import { useUser, useFirestore } from "@/firebase";
 import { collection, serverTimestamp, doc, writeBatch } from "firebase/firestore";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { format } from "date-fns";
-import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { cn } from "@/lib/utils";
 import { Calendar } from "../ui/calendar";
@@ -68,7 +67,6 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
   const { toast } = useToast();
   const { user } = useUser();
   const firestore = useFirestore();
-  const storage = useStorage();
 
   const [isGenerating, setIsGenerating] = useState(false);
   const [ideas, setIdeas] = useState<CampaignIdeas | null>(null);
@@ -76,7 +74,6 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
   const [customName, setCustomName] = useState('');
   const [finalDescription, setFinalDescription] = useState('');
   const [isCreating, setIsCreating] = useState(false);
-  const [file, setFile] = useState<File | null>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -123,7 +120,7 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
         toast({ variant: 'destructive', title: 'Missing Name', description: 'Please select or enter a campaign name.' });
         return;
     }
-    if (!user || !firestore || !storage) {
+    if (!user || !firestore) {
         toast({ variant: 'destructive', title: 'Not Authenticated', description: 'You must be logged in to create a campaign.' });
         return;
     }
@@ -131,25 +128,6 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
     setIsCreating(true);
 
     try {
-        let imageUrl: string | null = null;
-        if (file) {
-            const storageRef = ref(storage, `campaigns/${user.uid}/${Date.now()}_${file.name}`);
-            const uploadTask = uploadBytesResumable(storageRef, file);
-            
-            imageUrl = await new Promise<string>((resolve, reject) => {
-              uploadTask.on('state_changed',
-                (snapshot) => { /* Optional: Handle progress */ },
-                (error) => {
-                  console.error("Upload failed:", error);
-                  reject(error);
-                },
-                () => {
-                  getDownloadURL(uploadTask.snapshot.ref).then(resolve).catch(reject);
-                }
-              );
-            });
-        }
-
         const campaignData = {
             title: finalName,
             description: finalDescription,
@@ -165,7 +143,7 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
             organizerName: user.displayName || 'Anonymous',
             status: 'active' as const,
             scripture: form.getValues('scripture'),
-            imageUrl: imageUrl,
+            imageUrl: null,
         };
         
         const batch = writeBatch(firestore);
@@ -461,10 +439,6 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
               <div>
                 <h3 className="text-lg font-semibold mb-2">Suggested Description</h3>
                 <Textarea value={finalDescription} onChange={(e) => setFinalDescription(e.target.value)} rows={5} className="text-base" />
-              </div>
-              <div className="space-y-2">
-                  <Label>Campaign Image (Optional)</Label>
-                  <Input type="file" accept="image/*" onChange={(e) => setFile(e.target.files?.[0] || null)} disabled={isCreating}/>
               </div>
               <Button className="w-full" onClick={handleCreateCampaign} disabled={isCreating}>
                 {isCreating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
