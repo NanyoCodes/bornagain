@@ -291,7 +291,7 @@
     },
     "Chat": {
       "title": "Chat",
-      "description": "A private chat session between a user and a campaign owner.",
+      "description": "A private chat session between a user and a campaign organizer.",
       "type": "object",
       "properties": {
         "participantIds": {

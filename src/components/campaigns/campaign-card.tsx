@@ -365,7 +365,7 @@ export function CampaignCard({ campaign, userId, isJoined, allCampaigns }: { cam
                     {isChatLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <MessageSquare className="h-4 w-4" />}
                 </Button>
             </TooltipTrigger>
-            <TooltipContent><p>Chat with Owner</p></TooltipContent>
+            <TooltipContent><p>Chat with Organizer</p></TooltipContent>
         </Tooltip>
        </TooltipProvider>
       {shareButton}
@@ -381,7 +381,7 @@ export function CampaignCard({ campaign, userId, isJoined, allCampaigns }: { cam
                          {isChatLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <MessageSquare className="h-4 w-4" />}
                     </Button>
                 </TooltipTrigger>
-                <TooltipContent><p>Chat with Owner</p></TooltipContent>
+                <TooltipContent><p>Chat with Organizer</p></TooltipContent>
             </Tooltip>
         </TooltipProvider>
         {shareButton}
@@ -474,5 +474,3 @@ export function CampaignCard({ campaign, userId, isJoined, allCampaigns }: { cam
     </>
   );
 }
-
-    

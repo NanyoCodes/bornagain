@@ -76,7 +76,7 @@ export default function ChatsPage() {
                     Chats
                 </h1>
                 <p className="text-muted-foreground">
-                    Your conversations with campaign owners and participants.
+                    Your conversations with campaign organizers and participants.
                 </p>
             </div>
 
