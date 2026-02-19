@@ -40,16 +40,17 @@ service cloud.firestore {
       allow create: if request.auth != null;
       allow update: if request.auth != null && (
         // Case 1: A user is joining the campaign.
-        // This is only allowed to increment the participant count by 1.
+        // This is only allowed to increment the participant count by 1, and no other fields can be changed.
         (
-          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participants']) &&
+          request.resource.data.diff(resource.data).affectedKeys().size() == 1 &&
+          'participants' in request.resource.data.diff(resource.data).affectedKeys() &&
           request.resource.data.participants == resource.data.participants + 1
         ) ||
         // Case 2: The organizer is updating the campaign (including soft-deleting).
         // They can change anything except for the participant count.
         (
           request.auth.uid == resource.data.organizerId &&
-          !request.resource.data.diff(resource.data).affectedKeys().hasAny(['participants'])
+          !('participants' in request.resource.data.diff(resource.data).affectedKeys())
         )
       );
       allow delete: if false; // Hard deletes are disallowed.
