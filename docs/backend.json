@@ -330,13 +330,22 @@
         "text": {
           "type": "string"
         },
+        "imageUrl": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL of an image sent in the chat."
+        },
+        "videoUrl": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL of a video sent in the chat."
+        },
         "createdAt": {
           "type": "object"
         }
       },
       "required": [
         "senderId",
-        "text",
         "createdAt"
       ]
     }

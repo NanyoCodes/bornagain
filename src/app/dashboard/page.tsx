@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatDistanceToNow, isSameMonth, startOfDay, differenceInCalendarDays } from "date-fns";
 import Link from "next/link";
-import { ArrowUpRight, Newspaper, Target, TrendingUp, UserCheck2 } from "lucide-react";
+import { ArrowUpRight, Newspaper, Target, TrendingUp, UserCheck2, Megaphone } from "lucide-react";
 import { useCollection, useFirestore, useUser, useDoc } from "@/firebase";
 import { collection, query, orderBy, limit, where, doc, updateDoc, serverTimestamp } from "firebase/firestore";
 import type { Testimony, Campaign, Soul, JoinedCampaign, UserProfile } from "@/lib/types";
@@ -113,6 +113,58 @@ function ActiveCampaigns() {
   )
 }
 
+function MyOrganizedCampaigns() {
+  const firestore = useFirestore();
+  const { user, loading: userLoading } = useUser();
+  const myCampaignsQuery = !userLoading && user?.uid && firestore ? query(collection(firestore, 'campaigns'), where('organizerId', '==', user.uid), orderBy('createdAt', 'desc'), limit(2)) : null;
+  const { data: myCampaigns, loading: myCampaignsLoading } = useCollection<Campaign>(myCampaignsQuery);
+  const loading = userLoading || myCampaignsLoading;
+
+  return (
+    <Card>
+      <CardHeader className="flex flex-row items-center">
+        <CardTitle>My Campaigns</CardTitle>
+        <Button asChild size="sm" className="ml-auto gap-1">
+          <Link href="/dashboard/campaigns">
+            View All
+            <ArrowUpRight className="h-4 w-4" />
+          </Link>
+        </Button>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {loading && (
+          <div className="space-y-4">
+            {[...Array(2)].map((_, i) => (
+              <div key={i} className="flex items-center gap-4">
+                <div className="grid gap-1 flex-1">
+                  <Skeleton className="h-4 w-3/4" />
+                  <Skeleton className="h-4 w-1/2" />
+                </div>
+                <Skeleton className="h-4 w-16" />
+              </div>
+            ))}
+          </div>
+        )}
+        {!loading && myCampaigns?.map(campaign => (
+          <div key={campaign.id} className="flex items-center gap-4">
+            <div className="grid gap-1">
+              <p className="text-sm font-medium">{campaign.title}</p>
+              <p className="text-sm text-muted-foreground">{campaign.location}</p>
+            </div>
+            <div className="ml-auto font-medium">{campaign.participants} joined</div>
+          </div>
+        ))}
+        {!loading && (!myCampaigns || myCampaigns.length === 0) && (
+          <div className="text-center py-4">
+            <p className="text-sm text-muted-foreground">You haven't created any campaigns yet.</p>
+            <Button variant="link" asChild><Link href="/dashboard/campaigns">Create One</Link></Button>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
 
 export default function DashboardPage() {
   const { user, loading: userLoading } = useUser();
@@ -157,6 +209,10 @@ export default function DashboardPage() {
   
   const joinedCampaignsQuery = !userLoading && user?.uid && firestore ? query(collection(firestore, `users/${user.uid}/joinedCampaigns`)) : null;
   const { data: joinedCampaigns } = useCollection<JoinedCampaign>(joinedCampaignsQuery);
+  
+  const allMyCampaignsQuery = !userLoading && user?.uid && firestore ? query(collection(firestore, 'campaigns'), where('organizerId', '==', user.uid)) : null;
+  const { data: allMyCampaigns } = useCollection<Campaign>(allMyCampaignsQuery);
+
 
   const testimoniesThisMonth = useMemo(() => {
     if (!myTestimonies) return 0;
@@ -185,11 +241,21 @@ export default function DashboardPage() {
     }).length;
   }, [joinedCampaigns, now]);
 
+   const campaignsCreatedThisMonth = useMemo(() => {
+    if (!allMyCampaigns) return 0;
+    return allMyCampaigns.filter(c => {
+      if (!c.createdAt) return false;
+      const createdDate = c.createdAt.toDate ? c.createdAt.toDate() : new Date(c.createdAt as any);
+      return isSameMonth(createdDate, now);
+    }).length;
+  }, [allMyCampaigns, now]);
+
+
   const currentStreak = userProfile?.currentStreak || 0;
 
   const stats = [
     { title: "Testimonies Shared", value: myTestimonies?.length ?? 0, icon: Newspaper, change: `${testimoniesThisMonth} this month` },
-    { title: "Campaigns Joined", value: joinedCampaigns?.length ?? 0, icon: Target, change: `${campaignsJoinedThisMonth} this month` },
+    { title: "Campaigns Created", value: allMyCampaigns?.length ?? 0, icon: Megaphone, change: `${campaignsCreatedThisMonth} this month` },
     { title: "Souls Won", value: soulsWon?.length ?? 0, icon: UserCheck2, change: `${soulsWonThisMonth} this month` },
     { title: "Current Streak", value: `${currentStreak} day${currentStreak === 1 ? '' : 's'}`, icon: TrendingUp, change: "Keep going!" },
   ];
@@ -221,7 +287,10 @@ export default function DashboardPage() {
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <RecentTestimonies />
-        <ActiveCampaigns />
+        <div className="space-y-6 lg:col-span-1">
+          <ActiveCampaigns />
+          <MyOrganizedCampaigns />
+        </div>
       </div>
 
     </div>

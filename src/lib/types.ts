@@ -125,6 +125,8 @@ export type Chat = {
 export type ChatMessage = {
   id: string;
   senderId: string;
-  text: string;
+  text?: string;
+  imageUrl?: string;
+  videoUrl?: string;
   createdAt: Timestamp;
 };
