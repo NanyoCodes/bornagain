@@ -170,28 +170,27 @@ export function CampaignCard({ campaign, userId, isJoined, allCampaigns }: { cam
   }
 
 
-  const handleShare = async () => {
+  const handleShare = (platform: "link" | "facebook" | "twitter") => {
     const url = typeof window !== "undefined" ? window.location.origin + '/dashboard/campaigns' : '';
     const text = `Join the '${campaign.title}' campaign on Testify Global!`;
+    let shareUrl = "";
 
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: `Join the "${campaign.title}" campaign`,
-          text: text,
-          url: url,
+    switch (platform) {
+      case "facebook":
+        shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}&quote=${encodeURIComponent(text)}`;
+        window.open(shareUrl, "_blank");
+        break;
+      case "twitter":
+        shareUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`;
+        window.open(shareUrl, "_blank");
+        break;
+      case "link":
+        navigator.clipboard.writeText(`${text} ${url}`);
+        toast({
+          title: 'Link Copied!',
+          description: 'Campaign link has been copied to your clipboard.',
         });
-        toast({ title: 'Campaign shared!' });
-      } catch (error) {
-        console.log('Error sharing:', error); // Silently fail on user cancellation
-      }
-    } else {
-      // Fallback for desktop browsers
-      navigator.clipboard.writeText(`${text} ${url}`);
-      toast({
-        title: 'Link Copied!',
-        description: 'Campaign link has been copied to your clipboard.',
-      });
+        break;
     }
   };
 
@@ -287,19 +286,25 @@ export function CampaignCard({ campaign, userId, isJoined, allCampaigns }: { cam
   );
 
   const shareButton = (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button variant="outline" size="icon" onClick={handleShare}>
-            <Share2 className="h-4 w-4" />
-            <span className="sr-only">Share</span>
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent>
-          <p>Share Campaign</p>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+    <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+            <Button variant="outline" size="icon">
+                <Share2 className="h-4 w-4" />
+                <span className="sr-only">Share Campaign</span>
+            </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+            <DropdownMenuItem onSelect={() => handleShare('link')}>
+                Copy Link
+            </DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => handleShare('facebook')}>
+                Share on Facebook
+            </DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => handleShare('twitter')}>
+                Share on Twitter (X)
+            </DropdownMenuItem>
+        </DropdownMenuContent>
+    </DropdownMenu>
   );
 
 
