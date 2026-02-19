@@ -22,7 +22,7 @@ import type { Campaign, Soul } from "@/lib/types";
 import { Textarea } from "@/components/ui/textarea";
 import { format } from "date-fns";
 import { useFirestore, useUser, useCollection } from "@/firebase";
-import { collection, addDoc, query, orderBy } from "firebase/firestore";
+import { collection, addDoc, query, orderBy, serverTimestamp } from "firebase/firestore";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
@@ -48,11 +48,11 @@ type LogSoulFormProps = {
 
 export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps) {
   const { toast } = useToast();
-  const { user } = useUser();
+  const { user, loading: authLoading } = useUser();
   const firestore = useFirestore();
   const [isLoading, setIsLoading] = useState(false);
 
-  const campaignsQuery = useMemo(() => user?.uid && firestore ? query(collection(firestore, 'campaigns'), orderBy('createdAt', 'desc')) : null, [user, firestore]);
+  const campaignsQuery = useMemo(() => !authLoading && user?.uid && firestore ? query(collection(firestore, 'campaigns'), orderBy('createdAt', 'desc')) : null, [authLoading, user, firestore]);
   const { data: campaigns, loading: loadingCampaigns } = useCollection<Campaign>(campaignsQuery);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -86,7 +86,7 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps)
         sourceDetails: values.sourceDetails,
         wonAt: values.wonAt as any, // Firestore will convert it
         status: "New",
-        followUpLog: values.initialNote ? [{ date: new Date() as any, note: values.initialNote }] : [],
+        followUpLog: values.initialNote ? [{ date: serverTimestamp() as any, note: values.initialNote }] : [],
         attendingChurch: false,
         inBibleStudy: false,
         attendingPrayer: false,
@@ -284,5 +284,3 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps)
     </Form>
   );
 }
-
-    

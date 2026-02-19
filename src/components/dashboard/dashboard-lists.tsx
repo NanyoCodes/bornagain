@@ -2,7 +2,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { useCollection, useFirestore } from '@/firebase';
+import { useCollection, useFirestore, useUser } from '@/firebase';
 import { collection, query, where, documentId, orderBy } from 'firebase/firestore';
 import type { Campaign, JoinedCampaign, Testimony, Soul } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -79,9 +79,9 @@ function ListItem({ href, title, subtitle }: { href: string; title: string; subt
             <p className="font-medium text-sm">{title}</p>
             <p className="text-xs text-muted-foreground">{subtitle}</p>
           </div>
-          <Button asChild size="icon" variant="ghost">
+          <Button asChild size="sm" variant="ghost">
             <Link href={href}>
-              <ArrowRight className="h-4 w-4" />
+                <ArrowRight className="h-4 w-4" />
             </Link>
           </Button>
         </div>
@@ -106,23 +106,24 @@ function ListSkeleton() {
 
 export function JoinedCampaignsList({ userId }: { userId: string }) {
   const firestore = useFirestore();
+  const { loading: authLoading } = useUser();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterDate, setFilterDate] = useState<Date>();
 
   const joinedIdsQuery = useMemo(() => 
-    firestore ? query(collection(firestore, `users/${userId}/joinedCampaigns`)) : null,
-  [userId, firestore]);
+    !authLoading && firestore ? query(collection(firestore, `users/${userId}/joinedCampaigns`)) : null,
+  [authLoading, userId, firestore]);
   const { data: joinedCampaignsDocs, loading: joinedIdsLoading } = useCollection<JoinedCampaign>(joinedIdsQuery);
 
   const joinedCampaignIds = useMemo(() => joinedCampaignsDocs?.map(j => j.id) ?? [], [joinedCampaignsDocs]);
 
   const joinedQuery = useMemo(() => {
-    if (!firestore || !userId || joinedCampaignIds.length === 0) return null;
+    if (authLoading || !firestore || !userId || joinedCampaignIds.length === 0) return null;
     return query(collection(firestore, 'campaigns'), where(documentId(), 'in', joinedCampaignIds));
-  }, [firestore, userId, joinedCampaignIds]);
+  }, [authLoading, firestore, userId, joinedCampaignIds]);
 
   const { data: campaigns, loading: joinedLoading } = useCollection<Campaign>(joinedQuery);
-  const loading = joinedIdsLoading || (joinedCampaignIds.length > 0 && !!joinedQuery && joinedLoading);
+  const loading = authLoading || joinedIdsLoading || (joinedCampaignIds.length > 0 && !!joinedQuery && joinedLoading);
 
   const enrichedCampaigns = useMemo(() => {
     if (!campaigns || !joinedCampaignsDocs) return [];
@@ -199,10 +200,11 @@ export function JoinedCampaignsList({ userId }: { userId: string }) {
 
 export function TestimoniesList({ userId }: { userId: string }) {
   const firestore = useFirestore();
+  const { loading: authLoading } = useUser();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterDate, setFilterDate] = useState<Date>();
 
-  const testimoniesQuery = useMemo(() => firestore && userId ? query(collection(firestore, 'testimonies'), where('authorId', '==', userId), orderBy('createdAt', 'desc')) : null, [userId, firestore]);
+  const testimoniesQuery = useMemo(() => !authLoading && firestore && userId ? query(collection(firestore, 'testimonies'), where('authorId', '==', userId), orderBy('createdAt', 'desc')) : null, [authLoading, userId, firestore]);
   const { data: testimonies, loading } = useCollection<Testimony>(testimoniesQuery);
 
   const filteredTestimonies = useMemo(() => {
@@ -222,7 +224,7 @@ export function TestimoniesList({ userId }: { userId: string }) {
     });
   }, [testimonies, searchTerm, filterDate]);
 
-  if (loading) return <ListSkeleton />;
+  if (loading || authLoading) return <ListSkeleton />;
   if (!testimonies || testimonies.length === 0) return <p className="text-sm text-muted-foreground text-center py-4">You haven't shared any testimonies.</p>;
 
   return (
@@ -252,10 +254,11 @@ export function TestimoniesList({ userId }: { userId: string }) {
 
 export function CampaignsCreatedList({ userId }: { userId: string }) {
   const firestore = useFirestore();
+  const { loading: authLoading } = useUser();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterDate, setFilterDate] = useState<Date>();
 
-  const campaignsQuery = useMemo(() => firestore && userId ? query(collection(firestore, 'campaigns'), where('organizerId', '==', userId), orderBy('createdAt', 'desc')) : null, [userId, firestore]);
+  const campaignsQuery = useMemo(() => !authLoading && firestore && userId ? query(collection(firestore, 'campaigns'), where('organizerId', '==', userId), orderBy('createdAt', 'desc')) : null, [authLoading, userId, firestore]);
   const { data: campaigns, loading } = useCollection<Campaign>(campaignsQuery);
   
   const activeCampaigns = useMemo(() => campaigns?.filter(c => c.status !== 'deleted') ?? [], [campaigns]);
@@ -278,7 +281,7 @@ export function CampaignsCreatedList({ userId }: { userId: string }) {
   }, [activeCampaigns, searchTerm, filterDate]);
 
 
-  if (loading) return <ListSkeleton />;
+  if (loading || authLoading) return <ListSkeleton />;
   
   if (activeCampaigns.length === 0) return <p className="text-sm text-muted-foreground text-center py-4">You haven't created any campaigns.</p>;
 
@@ -309,10 +312,11 @@ export function CampaignsCreatedList({ userId }: { userId: string }) {
 
 export function SoulsWonList({ userId }: { userId: string }) {
   const firestore = useFirestore();
+  const { loading: authLoading } = useUser();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterDate, setFilterDate] = useState<Date>();
 
-  const soulsQuery = useMemo(() => firestore && userId ? query(collection(firestore, `users/${userId}/souls`), orderBy('wonAt', 'desc')) : null, [userId, firestore]);
+  const soulsQuery = useMemo(() => !authLoading && firestore && userId ? query(collection(firestore, `users/${userId}/souls`), orderBy('wonAt', 'desc')) : null, [authLoading, userId, firestore]);
   const { data: souls, loading } = useCollection<Soul>(soulsQuery);
 
   const filteredSouls = useMemo(() => {
@@ -333,7 +337,7 @@ export function SoulsWonList({ userId }: { userId: string }) {
     });
   }, [souls, searchTerm, filterDate]);
 
-  if (loading) return <ListSkeleton />;
+  if (loading || authLoading) return <ListSkeleton />;
   if (!souls || souls.length === 0) return <p className="text-sm text-muted-foreground text-center py-4">You haven't logged any souls won.</p>;
 
   return (

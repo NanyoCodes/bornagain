@@ -51,7 +51,7 @@ const navItems = [
 ];
 
 function AppHeader() {
-  const { user } = useUser();
+  const { user, loading: authLoading } = useUser();
   const pathname = usePathname();
   const auth = useAuth();
   const firestore = useFirestore();
@@ -60,9 +60,9 @@ function AppHeader() {
   const { searchTerm, setSearchTerm, searchPlaceholder, isSearchVisible } = useSearch();
   const [showMobileSearch, setShowMobileSearch] = useState(false);
   
-  const notificationsQuery = useMemo(() => user?.uid && firestore 
+  const notificationsQuery = useMemo(() => !authLoading && user?.uid && firestore 
     ? query(collection(firestore, `users/${user.uid}/notifications`), orderBy('createdAt', 'desc'), limit(10)) 
-    : null, [user, firestore]);
+    : null, [authLoading, user, firestore]);
   const { data: notifications, loading: notificationsLoading } = useCollection<Notification>(notificationsQuery);
   const unreadCount = useMemo(() => notifications?.filter(n => !n.isRead).length ?? 0, [notifications]);
 

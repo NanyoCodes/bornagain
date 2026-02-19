@@ -22,7 +22,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 export default function SoulsWonPage() {
-  const { user } = useUser();
+  const { user, loading: authLoading } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
   const [isLogDialogOpen, setIsLogDialogOpen] = useState(false);
@@ -34,10 +34,10 @@ export default function SoulsWonPage() {
   }, []);
 
   // Fetch souls for the current user
-  const soulsQuery = useMemo(() => user?.uid && firestore ? query(collection(firestore, `users/${user.uid}/souls`), orderBy("wonAt", "desc")) : null, [user, firestore]);
+  const soulsQuery = useMemo(() => !authLoading && user?.uid && firestore ? query(collection(firestore, `users/${user.uid}/souls`), orderBy("wonAt", "desc")) : null, [authLoading, user, firestore]);
   const { data: souls, loading: loadingSouls } = useCollection<Soul>(soulsQuery);
 
-  const loading = loadingSouls;
+  const loading = authLoading || loadingSouls;
 
   const handleSoulLogged = () => {
     setIsLogDialogOpen(false);

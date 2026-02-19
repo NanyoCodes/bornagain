@@ -36,12 +36,12 @@ export default function TestimoniesPage() {
   const isMobile = useIsMobile();
   const { searchTerm, setSearchPlaceholder, setIsSearchVisible, setSearchTerm } = useSearch();
 
-  const { user } = useUser();
+  const { user, loading: authLoading } = useUser();
   const firestore = useFirestore();
 
-  const testimoniesQuery = useMemo(() => user?.uid && firestore 
+  const testimoniesQuery = useMemo(() => !authLoading && firestore 
     ? query(collection(firestore, "testimonies"), orderBy("createdAt", "desc"))
-    : null, [user, firestore]);
+    : null, [authLoading, firestore]);
 
   const { data: testimonies, loading } = useCollection<Testimony>(testimoniesQuery);
 
@@ -127,7 +127,7 @@ export default function TestimoniesPage() {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {loading && (
+        {(loading || authLoading) && (
           [...Array(3)].map((_, i) => (
             <Card key={i}>
               <CardHeader>
@@ -151,10 +151,10 @@ export default function TestimoniesPage() {
             </Card>
           ))
         )}
-        {!loading && filteredTestimonies?.map((testimony) => (
+        {!(loading || authLoading) && filteredTestimonies?.map((testimony) => (
           <TestimonyCard key={testimony.id} testimony={testimony} />
         ))}
-         {!loading && filteredTestimonies?.length === 0 && (
+         {!(loading || authLoading) && filteredTestimonies?.length === 0 && (
           <p className="text-muted-foreground col-span-full text-center">No testimonies found.</p>
         )}
       </div>

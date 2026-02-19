@@ -47,7 +47,7 @@ function CampaignSkeletons() {
 }
 
 export default function CampaignsPage() {
-  const { user } = useUser();
+  const { user, loading: authLoading } = useUser();
   const firestore = useFirestore();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -67,16 +67,16 @@ export default function CampaignsPage() {
     };
   }, [setIsSearchVisible, setSearchPlaceholder, setSearchTerm]);
 
-  const userDocRef = useMemo(() => user?.uid && firestore ? doc(firestore, 'users', user.uid) : null, [user, firestore]);
+  const userDocRef = useMemo(() => !authLoading && user?.uid && firestore ? doc(firestore, 'users', user.uid) : null, [authLoading, user, firestore]);
   const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userDocRef);
 
-  const campaignsQuery = useMemo(() => user?.uid && firestore ? query(collection(firestore, 'campaigns'), orderBy('createdAt', 'desc')) : null, [user, firestore]);
+  const campaignsQuery = useMemo(() => !authLoading && firestore ? query(collection(firestore, 'campaigns'), orderBy('createdAt', 'desc')) : null, [authLoading, firestore]);
   const { data: campaigns, loading: campaignsLoading } = useCollection<Campaign>(campaignsQuery);
 
-  const joinedCampaignsQuery = useMemo(() => user?.uid && firestore ? query(collection(firestore, `users/${user.uid}/joinedCampaigns`)) : null, [user, firestore]);
+  const joinedCampaignsQuery = useMemo(() => !authLoading && user?.uid && firestore ? query(collection(firestore, `users/${user.uid}/joinedCampaigns`)) : null, [authLoading, user, firestore]);
   const { data: joinedCampaigns, loading: joinedCampaignsLoading } = useCollection<JoinedCampaign>(joinedCampaignsQuery);
   
-  const loading = profileLoading || campaignsLoading || joinedCampaignsLoading;
+  const loading = authLoading || profileLoading || campaignsLoading || joinedCampaignsLoading;
 
   const joinedCampaignIds = useMemo(() => {
     if (!joinedCampaigns) return new Set();
