@@ -133,10 +133,25 @@ export default function CampaignsPage() {
       const endDate = safeToDate(campaign.endDate);
       if (!startDate || !endDate) return 3; // Past
       
-      endDate.setHours(23, 59, 59, 999);
+      const endDateTime = new Date(endDate);
+      if (campaign.endTime && /^\d{2}:\d{2}$/.test(campaign.endTime)) {
+        const [hours, minutes] = campaign.endTime.split(':').map(Number);
+        endDateTime.setHours(hours, minutes, 59, 999);
+      } else {
+        endDateTime.setHours(23, 59, 59, 999);
+      }
 
-      if (endDate < now) return 3; // Past
-      if (startDate > now) return 2; // Upcoming
+      if (endDateTime < now) return 3; // Past
+
+      const startDateTime = new Date(startDate);
+      if (campaign.startTime && /^\d{2}:\d{2}$/.test(campaign.startTime)) {
+        const [hours, minutes] = campaign.startTime.split(':').map(Number);
+        startDateTime.setHours(hours, minutes, 0, 0);
+      } else {
+        startDateTime.setHours(0, 0, 0, 0);
+      }
+
+      if (startDateTime > now) return 2; // Upcoming
       return 1; // Ongoing
     };
 

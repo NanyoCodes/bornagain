@@ -285,11 +285,25 @@ export function CampaignCard({ campaign, userId, isJoined, allCampaigns }: { cam
     const now = new Date();
     if (!startDate || !endDate) return "Past";
     
-    const endOfDay = new Date(endDate);
-    endOfDay.setHours(23, 59, 59, 999);
+    const endDateTime = new Date(endDate);
+    if (campaign.endTime && /^\d{2}:\d{2}$/.test(campaign.endTime)) {
+        const [hours, minutes] = campaign.endTime.split(':').map(Number);
+        endDateTime.setHours(hours, minutes, 59, 999);
+    } else {
+        endDateTime.setHours(23, 59, 59, 999);
+    }
 
-    if (endOfDay < now) return "Past";
-    if (startDate > now) return "Upcoming";
+    if (endDateTime < now) return "Past";
+    
+    const startDateTime = new Date(startDate);
+    if (campaign.startTime && /^\d{2}:\d{2}$/.test(campaign.startTime)) {
+        const [hours, minutes] = campaign.startTime.split(':').map(Number);
+        startDateTime.setHours(hours, minutes, 0, 0);
+    } else {
+        startDateTime.setHours(0,0,0,0);
+    }
+
+    if (startDateTime > now) return "Upcoming";
     return "Ongoing";
   };
   const status = getStatus();
@@ -298,7 +312,14 @@ export function CampaignCard({ campaign, userId, isJoined, allCampaigns }: { cam
     const createdAtDate = safeToDate(campaign.createdAt);
     if (!createdAtDate) return '';
     if (status === 'Past' && endDate) {
-        return `Ended ${formatDistanceToNow(endDate, { addSuffix: true })}`;
+        const endDateTime = new Date(endDate);
+        if (campaign.endTime && /^\d{2}:\d{2}$/.test(campaign.endTime)) {
+            const [hours, minutes] = campaign.endTime.split(':').map(Number);
+            endDateTime.setHours(hours, minutes, 59, 999);
+        } else {
+            endDateTime.setHours(23, 59, 59, 999);
+        }
+        return `Ended ${formatDistanceToNow(endDateTime, { addSuffix: true })}`;
     }
     return `Created ${formatDistanceToNow(createdAtDate, { addSuffix: true })}`;
   })();
