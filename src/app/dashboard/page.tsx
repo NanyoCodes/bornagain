@@ -71,7 +71,7 @@ function RecentTestimonies() {
 function ActiveCampaigns() {
   const firestore = useFirestore();
   const { user, loading: userLoading } = useUser();
-  const campaignsQuery = useMemo(() => !userLoading && user && firestore ? query(collection(firestore, 'campaigns'), orderBy('createdAt', 'desc'), limit(2)) : null, [userLoading, user, firestore]);
+  const campaignsQuery = useMemo(() => !userLoading && user?.uid && firestore ? query(collection(firestore, 'campaigns'), orderBy('createdAt', 'desc'), limit(2)) : null, [userLoading, user, firestore]);
   const { data: campaigns, loading: campaignsLoading } = useCollection<Campaign>(campaignsQuery);
   const loading = userLoading || campaignsLoading;
 
