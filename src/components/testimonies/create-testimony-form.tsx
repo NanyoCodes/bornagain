@@ -62,10 +62,10 @@ export function CreateTestimonyForm({ onTestimonyCreated }: CreateTestimonyFormP
 
     setIsSubmitting(true);
     
-    let mediaUrl: string | null = null;
-    let mediaType: 'image' | null = null;
-
     try {
+      let mediaUrl: string | null = null;
+      let mediaType: 'image' | null = null;
+
       if (file) {
         const storageRef = ref(storage, `testimonies/${user.uid}/${Date.now()}_${file.name}`);
         const uploadResult = await uploadBytes(storageRef, file);
@@ -174,3 +174,5 @@ export function CreateTestimonyForm({ onTestimonyCreated }: CreateTestimonyFormP
     </Form>
   );
 }
+
+    

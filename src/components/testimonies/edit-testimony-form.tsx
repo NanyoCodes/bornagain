@@ -69,9 +69,8 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
 
     setIsSubmitting(true);
     
-    let mediaUrl: string | null = testimony.mediaUrl || null;
-    
     try {
+        let mediaUrl: string | null = testimony.mediaUrl || null;
         if (file) {
             const storageRef = ref(storage, `testimonies/${user.uid}/${Date.now()}_${file.name}`);
             const uploadResult = await uploadBytes(storageRef, file);
@@ -173,3 +172,5 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
     </Form>
   );
 }
+
+    

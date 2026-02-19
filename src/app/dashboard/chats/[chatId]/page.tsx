@@ -332,7 +332,7 @@ export default function ChatPage() {
                     <form onSubmit={handleSendMessage} className="flex gap-2 w-full items-center p-2">
                         <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" accept="image/*,video/*" disabled={isSending} />
                         <Button type="button" size="icon" variant="ghost" onClick={() => fileInputRef.current?.click()} disabled={isSending}>
-                            <Paperclip className="h-4 w-4" />
+                            {isSending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Paperclip className="h-4 w-4" />}
                         </Button>
                         <Input
                             value={newMessage}
@@ -350,3 +350,5 @@ export default function ChatPage() {
         </div>
     )
 }
+
+    

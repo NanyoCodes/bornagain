@@ -17,7 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
-import { Loader2, Sparkles } from "lucide-react";
+import { CalendarIcon, Loader2, Sparkles } from "lucide-react";
 import { generateCampaignIdeas } from "@/ai/flows/generate-campaign-ideas";
 import { Card, CardContent } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -29,6 +29,9 @@ import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { format } from "date-fns";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { cn } from "@/lib/utils";
+import { Calendar } from "../ui/calendar";
 
 const formSchema = z.object({
   goal: z.string({
@@ -36,10 +39,10 @@ const formSchema = z.object({
   }),
   city: z.string().min(2, "City is too short.").max(50, "City is too long."),
   country: z.string().min(2, "Country is too short.").max(50, "Country is too long."),
-  startDate: z.coerce.date({
+  startDate: z.date({
     required_error: "A start date is required.",
   }),
-  endDate: z.coerce.date({
+  endDate: z.date({
     required_error: "An end date is required.",
   }),
   startTime: z.string().min(1, "A start time is required."),
@@ -287,17 +290,39 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
                 control={form.control}
                 name="startDate"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem className="flex flex-col">
                     <FormLabel>Start Date</FormLabel>
-                    <FormControl>
-                        <Input 
-                        type="date"
-                        className="text-base"
-                        value={field.value ? format(new Date(field.value), 'yyyy-MM-dd') : ''}
-                        onChange={field.onChange}
-                        min={format(new Date(), 'yyyy-MM-dd')}
-                        />
-                    </FormControl>
+                    <Popover>
+                        <PopoverTrigger asChild>
+                            <FormControl>
+                                <Button
+                                    variant={"outline"}
+                                    className={cn(
+                                        "w-full pl-3 text-left font-normal",
+                                        !field.value && "text-muted-foreground"
+                                    )}
+                                >
+                                    {field.value ? (
+                                        format(field.value, "PPP")
+                                    ) : (
+                                        <span>Pick a date</span>
+                                    )}
+                                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                </Button>
+                            </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                                mode="single"
+                                selected={field.value}
+                                onSelect={field.onChange}
+                                disabled={(date) =>
+                                    date < new Date(new Date().setHours(0, 0, 0, 0))
+                                }
+                                initialFocus
+                            />
+                        </PopoverContent>
+                    </Popover>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -306,17 +331,39 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
                 control={form.control}
                 name="endDate"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem className="flex flex-col">
                     <FormLabel>End Date</FormLabel>
-                    <FormControl>
-                        <Input 
-                        type="date"
-                        className="text-base"
-                        value={field.value ? format(new Date(field.value), 'yyyy-MM-dd') : ''}
-                        onChange={field.onChange}
-                        min={form.watch('startDate') ? format(new Date(form.watch('startDate')), 'yyyy-MM-dd') : format(new Date(), 'yyyy-MM-dd')}
-                        />
-                    </FormControl>
+                    <Popover>
+                        <PopoverTrigger asChild>
+                            <FormControl>
+                                <Button
+                                    variant={"outline"}
+                                    className={cn(
+                                        "w-full pl-3 text-left font-normal",
+                                        !field.value && "text-muted-foreground"
+                                    )}
+                                >
+                                    {field.value ? (
+                                        format(field.value, "PPP")
+                                    ) : (
+                                        <span>Pick a date</span>
+                                    )}
+                                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                </Button>
+                            </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                                mode="single"
+                                selected={field.value}
+                                onSelect={field.onChange}
+                                disabled={(date) =>
+                                    date < (form.watch('startDate') || new Date(new Date().setHours(0, 0, 0, 0)))
+                                }
+                                initialFocus
+                            />
+                        </PopoverContent>
+                    </Popover>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -418,3 +465,5 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
     </>
   );
 }
+
+    
