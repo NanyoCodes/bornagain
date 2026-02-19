@@ -24,7 +24,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useUser, useFirestore } from "@/firebase";
-import { collection, addDoc, serverTimestamp, doc, setDoc } from "firebase/firestore";
+import { collection, serverTimestamp, doc, writeBatch } from "firebase/firestore";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { format } from "date-fns";
@@ -122,7 +122,7 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
     
     setIsCreating(true);
 
-    const campaignData: any = {
+    const campaignData = {
       title: finalName,
       description: finalDescription,
       goal: form.getValues('goal'),
@@ -135,37 +135,46 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
       createdAt: serverTimestamp(),
       organizerId: user.uid,
       organizerName: user.displayName || 'Anonymous',
-      status: 'active',
+      status: 'active' as const,
       scripture: form.getValues('scripture'),
     };
     
     try {
-        const campaignCollectionRef = collection(firestore, 'campaigns');
-        const campaignDocRef = await addDoc(campaignCollectionRef, campaignData).catch((serverError) => {
-            const permissionError = new FirestorePermissionError({
-            path: campaignCollectionRef.path,
-            operation: 'create',
-            requestResourceData: campaignData,
-            });
-            errorEmitter.emit('permission-error', permissionError);
-            throw permissionError; // Re-throw to be caught by the outer catch
-        });
+        const batch = writeBatch(firestore);
 
-        // Also add the 'joinedCampaigns' record for the creator
+        // 1. Create the new campaign document ref
+        const campaignDocRef = doc(collection(firestore, 'campaigns'));
+        batch.set(campaignDocRef, campaignData);
+
+        // 2. Add the 'joinedCampaigns' record for the creator
         const joinedRef = doc(firestore, 'users', user.uid, 'joinedCampaigns', campaignDocRef.id);
-        await setDoc(joinedRef, {
+        batch.set(joinedRef, {
             campaignId: campaignDocRef.id,
             joinedAt: serverTimestamp(),
-        }).catch((serverError) => {
-            const permissionError = new FirestorePermissionError({
-                path: joinedRef.path,
-                operation: 'create',
-                requestResourceData: { campaignId: campaignDocRef.id },
-            });
-            errorEmitter.emit('permission-error', permissionError);
-            // Don't rethrow, creating the campaign is the main success
         });
 
+        // 3. Add the creator to the campaign's participants subcollection
+        const participantRef = doc(firestore, 'campaigns', campaignDocRef.id, 'participants', user.uid);
+        const participantPayload: { [key: string]: any; } = {
+            userId: user.uid,
+            displayName: user.displayName || 'Anonymous',
+            joinedAt: serverTimestamp()
+        };
+        if (user.email) {
+            participantPayload.email = user.email;
+        }
+        batch.set(participantRef, participantPayload);
+
+
+        await batch.commit().catch((serverError) => {
+            const permissionError = new FirestorePermissionError({
+            path: `BATCH_WRITE:CREATE_CAMPAIGN:${campaignDocRef.id}`,
+            operation: 'write',
+            requestResourceData: { action: 'User creating campaign', userId: user.uid }
+            });
+            errorEmitter.emit('permission-error', permissionError);
+            throw permissionError;
+        });
       
       toast({ title: 'Campaign Created!', description: `The "${finalName}" campaign is now ready.` });
       onCampaignCreated();

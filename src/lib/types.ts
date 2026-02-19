@@ -73,7 +73,7 @@ export type CampaignParticipant = {
   id: string;
   userId: string;
   displayName: string;
-  email: string;
+  email?: string;
   joinedAt: Timestamp;
 };
 

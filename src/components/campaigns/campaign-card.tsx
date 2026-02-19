@@ -89,12 +89,14 @@ export function CampaignCard({ campaign, userId, isJoined, allCampaigns }: { cam
             };
             transaction.set(joinedRef, joinData);
 
-            const participantData = {
+            const participantData: { [key: string]: any; } = {
                 userId: user.uid,
-                displayName: user.displayName,
-                email: user.email,
+                displayName: user.displayName || 'Anonymous',
                 joinedAt: serverTimestamp()
             };
+            if (user.email) {
+                participantData.email = user.email;
+            }
             transaction.set(participantRef, participantData);
             
             if (user.uid !== campaign.organizerId) {

@@ -86,9 +86,11 @@ function ParticipantList({ campaignId }: { campaignId: string }) {
                 {participants.map(p => (
                     <div key={p.id} className="flex items-center justify-between">
                         <span className='font-medium'>{p.displayName}</span>
-                        <a href={`mailto:${p.email}`} className="text-sm text-muted-foreground hover:text-primary flex items-center gap-1.5">
-                           <Mail className="h-4 w-4" /> {p.email}
-                        </a>
+                        {p.email && (
+                            <a href={`mailto:${p.email}`} className="text-sm text-muted-foreground hover:text-primary flex items-center gap-1.5">
+                               <Mail className="h-4 w-4" /> {p.email}
+                            </a>
+                        )}
                     </div>
                 ))}
             </div>
