@@ -31,7 +31,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/hooks/use-toast';
-import { format } from 'date-fns';
+import { format, isSameDay } from 'date-fns';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 
@@ -57,15 +57,33 @@ export default function ChatPage() {
     const { data: messages, loading: loadingMessages } = useCollection<ChatMessage>(messagesQuery);
     
     const loading = userLoading || loadingChat || loadingMessages;
+
+    const messageGroups = useMemo(() => {
+        if (!messages) return [];
+        const groups: { date: Date; messages: ChatMessage[] }[] = [];
+        messages.forEach(message => {
+            if (!message.createdAt) return;
+            const messageDate = message.createdAt.toDate();
+            const lastGroup = groups[groups.length - 1];
+            if (lastGroup && isSameDay(lastGroup.date, messageDate)) {
+                lastGroup.messages.push(message);
+            } else {
+                groups.push({ date: messageDate, messages: [message] });
+            }
+        });
+        return groups;
+    }, [messages]);
     
     useEffect(() => {
         if (scrollAreaRef.current) {
             const scrollableView = scrollAreaRef.current.querySelector('div[data-radix-scroll-area-viewport]');
             if (scrollableView) {
-                scrollableView.scrollTop = scrollableView.scrollHeight;
+                setTimeout(() => {
+                     scrollableView.scrollTop = scrollableView.scrollHeight;
+                }, 100);
             }
         }
-    }, [messages]);
+    }, [messageGroups]);
 
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -262,52 +280,63 @@ export default function ChatPage() {
             <Card className="flex flex-col flex-grow">
                 <CardContent className="p-0 flex-grow flex flex-col">
                     <ScrollArea className="flex-grow p-4" ref={scrollAreaRef}>
-                        {messages && messages.length > 0 ? (
-                            <div className="space-y-4">
-                                {messages.map(msg => {
-                                    const senderInfo = chat.participantInfo[msg.senderId];
-                                    return (
-                                    <div key={msg.id} className={cn(
-                                        "flex items-end gap-2 w-full",
-                                        msg.senderId === user?.uid ? "justify-end" : "justify-start"
-                                    )}>
-                                        {msg.senderId !== user?.uid && senderInfo && (
-                                            <TooltipProvider>
-                                                <Tooltip>
-                                                    <TooltipTrigger asChild>
-                                                        <Avatar className="h-8 w-8">
-                                                            <AvatarImage src={senderInfo.photoURL} />
-                                                            <AvatarFallback>{senderInfo.displayName.charAt(0)}</AvatarFallback>
-                                                        </Avatar>
-                                                    </TooltipTrigger>
-                                                    <TooltipContent>
-                                                        <p>{senderInfo.displayName}</p>
-                                                    </TooltipContent>
-                                                </Tooltip>
-                                            </TooltipProvider>
-                                        )}
-                                        <div className={cn(
-                                            "rounded-lg px-3 py-2 max-w-sm sm:max-w-md break-words flex flex-col",
-                                            msg.senderId === user?.uid ? "bg-primary text-primary-foreground" : "bg-muted"
-                                        )}>
-                                            {chat.isGroupChat && msg.senderId !== user?.uid && senderInfo && (
-                                                <p className="text-xs font-bold mb-1">{senderInfo.displayName}</p>
-                                            )}
-                                            {msg.imageUrl && <Image src={msg.imageUrl} alt="Uploaded image" width={300} height={200} className="rounded-md object-cover" />}
-                                            {msg.videoUrl && <video src={msg.videoUrl} controls className="rounded-md max-w-full" />}
-                                            {msg.text && <p className={cn("text-sm", (msg.imageUrl || msg.videoUrl) && 'mt-2')}>{msg.text}</p>}
-                                            {msg.createdAt && (
-                                                <p className={cn(
-                                                    "text-xs mt-1 self-end",
-                                                    msg.senderId === user?.uid ? "text-primary-foreground/70" : "text-muted-foreground/70"
-                                                )}>
-                                                    {format(msg.createdAt.toDate(), 'p')}
-                                                </p>
-                                            )}
+                        {messageGroups.length > 0 ? (
+                           <div className="space-y-2">
+                                {messageGroups.map((group) => (
+                                <div key={group.date.toISOString()} className="relative">
+                                    <div className="sticky top-0 z-10 flex justify-center my-4">
+                                        <div className="px-3 py-1 text-xs text-muted-foreground bg-muted/80 backdrop-blur-sm rounded-full">
+                                            {format(group.date, 'PPP')}
                                         </div>
                                     </div>
-                                )})}
-                            </div>
+                                    <div className="space-y-4">
+                                        {group.messages.map(msg => {
+                                            const senderInfo = chat.participantInfo[msg.senderId];
+                                            return (
+                                            <div key={msg.id} className={cn(
+                                                "flex items-end gap-2 w-full",
+                                                msg.senderId === user?.uid ? "justify-end" : "justify-start"
+                                            )}>
+                                                {msg.senderId !== user?.uid && senderInfo && (
+                                                    <TooltipProvider>
+                                                        <Tooltip>
+                                                            <TooltipTrigger asChild>
+                                                                <Avatar className="h-8 w-8">
+                                                                    <AvatarImage src={senderInfo.photoURL} />
+                                                                    <AvatarFallback>{senderInfo.displayName.charAt(0)}</AvatarFallback>
+                                                                </Avatar>
+                                                            </TooltipTrigger>
+                                                            <TooltipContent>
+                                                                <p>{senderInfo.displayName}</p>
+                                                            </TooltipContent>
+                                                        </Tooltip>
+                                                    </TooltipProvider>
+                                                )}
+                                                <div className={cn(
+                                                    "rounded-lg px-3 py-2 max-w-sm sm:max-w-md break-words flex flex-col",
+                                                    msg.senderId === user?.uid ? "bg-primary text-primary-foreground" : "bg-muted"
+                                                )}>
+                                                    {chat.isGroupChat && msg.senderId !== user?.uid && senderInfo && (
+                                                        <p className="text-xs font-bold mb-1">{senderInfo.displayName}</p>
+                                                    )}
+                                                    {msg.imageUrl && <Image src={msg.imageUrl} alt="Uploaded image" width={300} height={200} className="rounded-md object-cover" />}
+                                                    {msg.videoUrl && <video src={msg.videoUrl} controls className="rounded-md max-w-full" />}
+                                                    {msg.text && <p className={cn("text-sm", (msg.imageUrl || msg.videoUrl) && 'mt-2')}>{msg.text}</p>}
+                                                    {msg.createdAt && (
+                                                        <p className={cn(
+                                                            "text-xs mt-1 self-end",
+                                                            msg.senderId === user?.uid ? "text-primary-foreground/70" : "text-muted-foreground/70"
+                                                        )}>
+                                                            {format(msg.createdAt.toDate(), 'p')}
+                                                        </p>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        )})}
+                                    </div>
+                                </div>
+                            ))}
+                           </div>
                         ) : (
                             <div className="flex justify-center items-center h-full">
                                 <p className="text-muted-foreground text-sm">Send a message to start the conversation.</p>

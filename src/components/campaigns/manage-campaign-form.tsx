@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -139,8 +140,18 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
     try {
         const participantsRef = collection(firestore, 'campaigns', campaign.id, 'participants');
         const participantsSnapshot = await getDocs(participantsRef);
-        const participants = participantsSnapshot.docs.map(doc => doc.data() as CampaignParticipant & { id: string });
+        const participants = participantsSnapshot.docs.map(doc => ({ ...(doc.data() as Omit<CampaignParticipant, 'id'>), id: doc.id }));
 
+        if (participants.length === 0) {
+            participants.push({
+                id: user.uid,
+                userId: user.uid,
+                displayName: user.displayName || 'Organizer',
+                photoURL: user.photoURL || '',
+                joinedAt: serverTimestamp() as any,
+            });
+        }
+        
         const participantIds = participants.map(p => p.id);
         const participantInfo: { [key: string]: any } = {};
         participants.forEach(p => {
@@ -151,7 +162,7 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
         });
         
         const chatsRef = collection(firestore, 'chats');
-        const q = query(chatsRef, where('campaignId', '==', campaign.id), where('isGroupChat', '==', true), limit(1));
+        const q = query(chatsRef, where('campaignId', '==', campaign.id), where('isGroupChat', '==', true), where('participantIds', 'array-contains', user.uid), limit(1));
         const querySnapshot = await getDocs(q);
         
         let chatId: string;
