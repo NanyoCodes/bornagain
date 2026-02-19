@@ -170,22 +170,27 @@ export function CampaignCard({ campaign, userId, isJoined, allCampaigns }: { cam
   }
 
 
-  const handleShare = (platform: "link" | "facebook" | "twitter") => {
+  const handleShare = (platform: "link" | "facebook" | "twitter" | "whatsapp") => {
     const url = typeof window !== "undefined" ? window.location.origin + '/dashboard/campaigns' : '';
-    const text = `Join the '${campaign.title}' campaign on Testify Global!`;
+    const titleText = `Join the '${campaign.title}' campaign on Testify Global!`;
+    const shareTextWithUrl = `${titleText} ${url}`;
     let shareUrl = "";
 
     switch (platform) {
       case "facebook":
-        shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}&quote=${encodeURIComponent(text)}`;
+        shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}&quote=${encodeURIComponent(titleText)}`;
         window.open(shareUrl, "_blank");
         break;
       case "twitter":
-        shareUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`;
+        shareUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(titleText)}`;
+        window.open(shareUrl, "_blank");
+        break;
+      case "whatsapp":
+        shareUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareTextWithUrl)}`;
         window.open(shareUrl, "_blank");
         break;
       case "link":
-        navigator.clipboard.writeText(`${text} ${url}`);
+        navigator.clipboard.writeText(shareTextWithUrl);
         toast({
           title: 'Link Copied!',
           description: 'Campaign link has been copied to your clipboard.',
@@ -296,6 +301,9 @@ export function CampaignCard({ campaign, userId, isJoined, allCampaigns }: { cam
         <DropdownMenuContent align="end">
             <DropdownMenuItem onSelect={() => handleShare('link')}>
                 Copy Link
+            </DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => handleShare('whatsapp')}>
+                Share on WhatsApp
             </DropdownMenuItem>
             <DropdownMenuItem onSelect={() => handleShare('facebook')}>
                 Share on Facebook
@@ -466,3 +474,5 @@ export function CampaignCard({ campaign, userId, isJoined, allCampaigns }: { cam
     </>
   );
 }
+
+    
