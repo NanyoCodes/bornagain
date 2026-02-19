@@ -40,10 +40,10 @@ export default function UserProfilePage() {
 
   const isOwnProfile = currentUser?.uid === userId;
 
-  const userDocRef = useMemo(() => !authLoading && userId && firestore ? doc(firestore, 'users', userId) : null, [authLoading, userId, firestore]);
+  const userDocRef = useMemo(() => !authLoading && currentUser && userId && firestore ? doc(firestore, 'users', userId) : null, [authLoading, currentUser, userId, firestore]);
   const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userDocRef);
 
-  const testimoniesQuery = useMemo(() => !authLoading && userId && firestore ? query(collection(firestore, 'testimonies'), where('authorId', '==', userId)) : null, [authLoading, userId, firestore]);
+  const testimoniesQuery = useMemo(() => !authLoading && currentUser && userId && firestore ? query(collection(firestore, 'testimonies'), where('authorId', '==', userId)) : null, [authLoading, currentUser, userId, firestore]);
   const { data: testimonies, loading: testimoniesLoading } = useCollection<Testimony>(testimoniesQuery);
 
   const soulsQuery = useMemo(() => !authLoading && isOwnProfile && firestore ? query(collection(firestore, `users/${userId}/souls`)) : null, [authLoading, isOwnProfile, firestore, userId]);

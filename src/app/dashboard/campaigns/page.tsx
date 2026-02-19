@@ -70,7 +70,7 @@ export default function CampaignsPage() {
   const userDocRef = useMemo(() => !authLoading && user?.uid && firestore ? doc(firestore, 'users', user.uid) : null, [authLoading, user, firestore]);
   const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userDocRef);
 
-  const campaignsQuery = useMemo(() => !authLoading && firestore ? query(collection(firestore, 'campaigns'), orderBy('createdAt', 'desc')) : null, [authLoading, firestore]);
+  const campaignsQuery = useMemo(() => !authLoading && user && firestore ? query(collection(firestore, 'campaigns'), orderBy('createdAt', 'desc')) : null, [authLoading, user, firestore]);
   const { data: campaigns, loading: campaignsLoading } = useCollection<Campaign>(campaignsQuery);
 
   const joinedCampaignsQuery = useMemo(() => !authLoading && user?.uid && firestore ? query(collection(firestore, `users/${user.uid}/joinedCampaigns`)) : null, [authLoading, user, firestore]);
