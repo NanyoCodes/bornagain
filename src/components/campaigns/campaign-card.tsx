@@ -23,7 +23,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useFirestore, useUser } from "@/firebase";
-import { collection, serverTimestamp, setDoc, updateDoc, increment, query, where, limit, getDocs, addDoc, doc } from "firebase/firestore";
+import { collection, serverTimestamp, updateDoc, increment, query, where, limit, getDocs, addDoc, doc, writeBatch } from "firebase/firestore";
 import { useState, useRef, useEffect } from "react";
 import { ManageCampaignForm } from "./manage-campaign-form";
 import { errorEmitter } from "@/firebase/error-emitter";
@@ -42,6 +42,7 @@ export function CampaignCard({ campaign, userId, isJoined, allCampaigns }: { cam
   const [isManageOpen, setIsManageOpen] = useState(false);
   const [isLogSoulOpen, setIsLogSoulOpen] = useState(false);
   const [isChatLoading, setIsChatLoading] = useState(false);
+  const [isJoining, setIsJoining] = useState(false);
 
   const descriptionRef = useRef<HTMLParagraphElement>(null);
   const [isDescriptionTruncated, setIsDescriptionTruncated] = useState(false);
@@ -67,9 +68,19 @@ export function CampaignCard({ campaign, userId, isJoined, allCampaigns }: { cam
   const handleJoin = async () => {
     if (!user || !firestore) return;
 
+    setIsJoining(true);
+
     const campaignRef = doc(firestore, 'campaigns', campaign.id);
     const joinedRef = doc(firestore, 'users', user.uid, 'joinedCampaigns', campaign.id);
     const participantRef = doc(firestore, 'campaigns', campaign.id, 'participants', user.uid);
+
+    const batch = writeBatch(firestore);
+
+    const joinData = {
+        campaignId: campaign.id,
+        joinedAt: serverTimestamp(),
+    };
+    batch.set(joinedRef, joinData);
 
     const participantData = {
         userId: user.uid,
@@ -77,59 +88,47 @@ export function CampaignCard({ campaign, userId, isJoined, allCampaigns }: { cam
         email: user.email,
         joinedAt: serverTimestamp()
     };
+    batch.set(participantRef, participantData);
+
+    const incrementData = {
+        participants: increment(1)
+    };
+    batch.update(campaignRef, incrementData);
+
+    // Add a notification for the campaign organizer
+    if (user.uid !== campaign.organizerId) {
+        const notificationRef = doc(collection(firestore, `users/${campaign.organizerId}/notifications`));
+        const notificationData = {
+            userId: campaign.organizerId,
+            type: 'campaign_join',
+            title: 'New Participant!',
+            message: `${user.displayName || 'A new user'} has joined your campaign: "${campaign.title}"`,
+            link: `/dashboard/campaigns`,
+            isRead: false,
+            createdAt: serverTimestamp(),
+        };
+        batch.set(notificationRef, notificationData);
+    }
 
     try {
-      // Write to the user's private subcollection
-      await setDoc(joinedRef, {
-        campaignId: campaign.id,
-        joinedAt: serverTimestamp(),
-      }).catch((serverError) => {
-          const permissionError = new FirestorePermissionError({ path: joinedRef.path, operation: 'create', requestResourceData: { campaignId: campaign.id } });
-          errorEmitter.emit('permission-error', permissionError);
-          throw permissionError;
-      });
-
-      // Write to the campaign's public participant list
-      await setDoc(participantRef, participantData).catch((serverError) => {
-          const permissionError = new FirestorePermissionError({ path: participantRef.path, operation: 'create', requestResourceData: participantData });
-          errorEmitter.emit('permission-error', permissionError);
-          throw permissionError;
-      });
-
-      // Increment the participant count
-      await updateDoc(campaignRef, {
-        participants: increment(1)
-      }).catch((serverError) => {
-          const permissionError = new FirestorePermissionError({ path: campaignRef.path, operation: 'update', requestResourceData: { participants: 'increment(1)' } });
-          errorEmitter.emit('permission-error', permissionError);
-          throw permissionError;
-      });
-      
-      // Add a notification for the campaign organizer
-      if (user.uid !== campaign.organizerId) {
-          const notificationRef = collection(firestore, `users/${campaign.organizerId}/notifications`);
-          const notificationData = {
-              userId: campaign.organizerId,
-              type: 'campaign_join',
-              title: 'New Participant!',
-              message: `${user.displayName || 'A new user'} has joined your campaign: "${campaign.title}"`,
-              link: `/dashboard/campaigns`,
-              isRead: false,
-              createdAt: serverTimestamp(),
-          };
-          await addDoc(notificationRef, notificationData);
-      }
-
-
-      toast({
-        title: "Campaign Joined!",
-        description: `You have successfully joined the "${campaign.title}" campaign.`,
-      });
-    } catch (error: any) {
-      console.error("Join campaign error:", error);
-      if (error.name !== 'FirestorePermissionError') {
-        toast({ variant: 'destructive', title: "Error", description: "Could not join the campaign. Please try again." });
-      }
+        await batch.commit();
+        toast({
+            title: "Campaign Joined!",
+            description: `You have successfully joined the "${campaign.title}" campaign.`,
+        });
+    } catch (serverError) {
+        const permissionError = new FirestorePermissionError({
+            path: `BATCH_WRITE:JOIN_CAMPAIGN:${campaign.id}`,
+            operation: 'write',
+            requestResourceData: {
+                action: 'User joining campaign',
+                userId: user.uid,
+                campaignId: campaign.id
+            }
+        });
+        errorEmitter.emit('permission-error', permissionError);
+    } finally {
+        setIsJoining(false);
     }
   };
   
@@ -427,7 +426,10 @@ export function CampaignCard({ campaign, userId, isJoined, allCampaigns }: { cam
             </Tooltip>
         </TooltipProvider>
         {shareButton}
-        <Button onClick={handleJoin} disabled={!userId}>Join Campaign</Button>
+        <Button onClick={handleJoin} disabled={!userId || isJoining}>
+            {isJoining && <Loader2 className="animate-spin" />}
+            {isJoining ? 'Joining...' : 'Join Campaign'}
+        </Button>
     </div>
   );
 
@@ -516,3 +518,5 @@ export function CampaignCard({ campaign, userId, isJoined, allCampaigns }: { cam
     </>
   );
 }
+
+    
