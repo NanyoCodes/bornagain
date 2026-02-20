@@ -416,7 +416,6 @@
     "providers": [
       "email",
       "google.com",
-      "facebook.com",
       "phone"
     ]
   },

@@ -11,7 +11,6 @@ import { useAuth, useFirestore } from '@/firebase';
 import {
   signInWithPopup,
   GoogleAuthProvider,
-  FacebookAuthProvider,
   AuthError,
 } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
@@ -29,7 +28,7 @@ export default function SignUpPage() {
   const router = useRouter();
   const { toast } = useToast();
 
-  const handleSocialLogin = async (provider: 'google' | 'facebook') => {
+  const handleSocialLogin = async (provider: 'google') => {
     if (!auth || !firestore) {
       toast({
         variant: 'destructive',
@@ -38,8 +37,7 @@ export default function SignUpPage() {
       });
       return;
     }
-    const authProvider =
-      provider === 'google' ? new GoogleAuthProvider() : new FacebookAuthProvider();
+    const authProvider = new GoogleAuthProvider();
     try {
       const result = await signInWithPopup(auth, authProvider);
       const user = result.user;
@@ -133,20 +131,13 @@ export default function SignUpPage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4">
             <Button
               variant="outline"
               className="w-full h-9"
               onClick={() => handleSocialLogin('google')}
             >
               <Icons.google className="mr-2 h-4 w-4" /> Google
-            </Button>
-            <Button
-              variant="outline"
-              className="w-full h-9"
-              onClick={() => handleSocialLogin('facebook')}
-            >
-              <Icons.facebook className="mr-2 h-4 w-4 text-[#1877F2]" /> Facebook
             </Button>
           </div>
         </div>
