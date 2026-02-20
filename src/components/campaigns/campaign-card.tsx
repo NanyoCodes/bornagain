@@ -196,7 +196,7 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
 
   const handleShare = async () => {
     const shareData = {
-      title: `Join the '${campaign.title}' campaign on Testify Global!`,
+      title: `Join the '${campaign.title}' campaign on Testify!`,
       text: `Join me in the '${campaign.title}' evangelism campaign. Let's make an impact together!`,
       url: window.location.href,
     };
@@ -216,7 +216,7 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
 
   const handleShareDropdown = (platform: "link" | "facebook" | "twitter" | "whatsapp") => {
     const url = typeof window !== "undefined" ? window.location.origin + '/dashboard/campaigns' : '';
-    const titleText = `Join the '${campaign.title}' campaign on Testify Global!`;
+    const titleText = `Join the '${campaign.title}' campaign on Testify!`;
     const shareTextWithUrl = `${titleText} ${url}`;
     let shareUrl = "";
 

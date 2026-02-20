@@ -131,7 +131,7 @@ export default function ChatPage() {
                     const mailRef = doc(mailCollectionRef);
                     const subject = chat.isGroupChat
                         ? `New Message in "${chat.campaignTitle}" Group Chat`
-                        : `New Message from ${user.displayName || 'User'} | Testify Global`;
+                        : `New Message from ${user.displayName || 'User'} | Testify`;
 
                     const html = `
                         <p>Hi ${recipientInfo?.displayName || 'there'},</p>
@@ -141,7 +141,7 @@ export default function ChatPage() {
                         <a href="${link}" style="display: inline-block; padding: 10px 20px; font-size: 16px; color: #ffffff; background-color: #3b82f6; text-decoration: none; border-radius: 5px;">View Chat</a>
                         <br><br>
                         <p>God bless,</p>
-                        <p>The Testify Global Team</p>
+                        <p>The Testify Team</p>
                     `;
 
                     batch.set(mailRef, {

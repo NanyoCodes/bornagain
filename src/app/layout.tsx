@@ -7,7 +7,7 @@ import { FirebaseClientProvider } from '@/firebase/client-provider';
 export const metadata: Metadata = {
   title: 'Testify',
   description:
-    'A global platform for believers to share testimonies, organize soul-winning campaigns, and track evangelism progress.',
+    'A platform for believers to share testimonies, organize soul-winning campaigns, and track evangelism progress.',
 };
 
 export default function RootLayout({

@@ -1,6 +1,7 @@
+
 'use server';
 /**
- * @fileOverview This file implements a Genkit flow for moderating user-generated content (testimonies and campaign descriptions) on the Testify Global platform.
+ * @fileOverview This file implements a Genkit flow for moderating user-generated content (testimonies and campaign descriptions) on the Testify platform.
  *
  * - moderateContent - A function that handles the content moderation process.
  * - ModerateContentInput - The input type for the moderateContent function.
@@ -31,7 +32,7 @@ const prompt = ai.definePrompt({
   name: 'moderateContentPrompt',
   input: { schema: ModerateContentInputSchema },
   output: { schema: ModerateContentOutputSchema },
-  prompt: `You are an AI content moderator for "Testify Global", a faith-based platform for believers to share testimonies and organize soul-winning campaigns. Your mission is to ensure all user-generated content aligns with the platform's mission to "Encourage believers, Organize evangelism efforts, Track progress, Connect the global body of Christ, and Glorify God through technology."
+  prompt: `You are an AI content moderator for "Testify", a faith-based platform for believers to share testimonies and organize soul-winning campaigns. Your mission is to ensure all user-generated content aligns with the platform's mission to "Encourage believers, Organize evangelism efforts, Track progress, Connect the global body of Christ, and Glorify God through technology."
 
 Guidelines for appropriate content:
 1.  **Faith-Based & On-Topic**: Content must be related to Christian faith, personal testimonies of God's work, or soul-winning campaign descriptions.

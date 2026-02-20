@@ -38,7 +38,7 @@ export function WelcomePopup({ isOpen, onClose, userName }: WelcomePopupProps) {
           )}
           <DialogTitle className="text-2xl font-bold font-headline">Welcome, {userName || 'User'}!</DialogTitle>
           <DialogDescription className="text-balance pt-2 text-base">
-            We're so glad you've joined Testify Global. You're now part of a global community of believers sharing what God is doing.
+            We're so glad you've joined Testify. You're now part of a global community of believers sharing what God is doing.
           </DialogDescription>
         </DialogHeader>
         <div className="text-center text-sm text-muted-foreground px-4 py-2">

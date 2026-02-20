@@ -91,7 +91,7 @@ export function TestimonyCard({ testimony }: { testimony: Testimony }) {
   
   const handleShare = (platform: "link" | "facebook" | "twitter") => {
     const url = typeof window !== "undefined" ? `${window.location.origin}/dashboard/testimonies` : '';
-    const text = `Read this inspiring testimony by ${testimony.authorName} on Testify Global!`;
+    const text = `Read this inspiring testimony by ${testimony.authorName} on Testify!`;
     let shareUrl = "";
 
     switch (platform) {
