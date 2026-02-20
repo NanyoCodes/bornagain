@@ -85,9 +85,9 @@ export default function LoginPage() {
   };
 
   return (
-    <main className="relative w-full h-screen overflow-hidden bg-muted">
+    <main className="relative w-full h-screen overflow-hidden bg-gradient-to-br from-background to-muted">
       {/* --- BACKGROUND & QUOTE SECTION --- */}
-      <div className="absolute top-0 left-0 right-0 h-[35%] lg:h-full lg:w-1/2">
+      <div className="absolute top-0 left-0 right-0 h-[35%] lg:h-full lg:w-2/5">
         <div className="relative w-full h-full">
           {authHero && (
             <Image
@@ -101,21 +101,19 @@ export default function LoginPage() {
           )}
           <div className="absolute inset-0 bg-black/60" />
           <div className="relative z-10 flex items-center justify-center h-full p-8 text-white">
-            <div className="max-w-md text-center">
-              <blockquote className="space-y-2 font-headline">
-                <p className="text-2xl sm:text-3xl lg:text-4xl font-bold">This is more than an app.</p>
-                <p className="text-2xl sm:text-3xl lg:text-4xl font-bold">This is a movement.</p>
-                <cite className="block text-3xl sm:text-4xl lg:text-5xl font-extrabold not-italic mt-4">A digital revival.</cite>
-              </blockquote>
-            </div>
+            <blockquote className="space-y-2 font-headline [text-shadow:_0_2px_4px_rgb(0_0_0_/_40%)]">
+              <p className="text-2xl sm:text-3xl lg:text-4xl font-bold">This is more than an app.</p>
+              <p className="text-2xl sm:text-3xl lg:text-4xl font-bold">This is a movement.</p>
+              <cite className="block text-3xl sm:text-4xl lg:text-5xl font-extrabold not-italic mt-4">A digital revival.</cite>
+            </blockquote>
           </div>
         </div>
       </div>
 
       {/* --- FORM SECTION --- */}
-      <div className="absolute bottom-0 left-0 right-0 h-[65%] lg:h-full lg:left-1/2 lg:w-1/2 flex flex-col justify-end">
+      <div className="absolute bottom-0 left-0 right-0 h-auto lg:h-full lg:left-2/5 lg:w-3/5 flex flex-col justify-end">
         <div className="w-full bg-card p-6 sm:p-8 rounded-t-3xl lg:rounded-none h-full flex items-center justify-center">
-          <div className="mx-auto grid w-full max-w-sm gap-4 pb-24">
+          <div className="mx-auto grid w-full max-w-md gap-4 pb-24">
             <div className="grid gap-2 text-center">
               {logo && (
                 <Image
