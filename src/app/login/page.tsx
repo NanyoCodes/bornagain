@@ -1,3 +1,4 @@
+
 'use client';
 
 import Image from 'next/image';
@@ -86,7 +87,7 @@ export default function LoginPage() {
   return (
     <main className="relative w-full h-screen overflow-hidden bg-muted">
       {/* --- BACKGROUND & QUOTE SECTION --- */}
-      <div className="absolute top-0 left-0 right-0 h-[40%] lg:h-full lg:w-1/2">
+      <div className="absolute top-0 left-0 right-0 h-[35%] lg:h-full lg:w-1/2">
         <div className="relative w-full h-full">
           {authHero && (
             <Image
@@ -112,7 +113,7 @@ export default function LoginPage() {
       </div>
 
       {/* --- FORM SECTION --- */}
-      <div className="absolute bottom-0 left-0 right-0 h-[65%] lg:h-full lg:left-1/2 lg:w-1/2 flex flex-col justify-end">
+      <div className="absolute bottom-0 left-0 right-0 h-[70%] lg:h-full lg:left-1/2 lg:w-1/2 flex flex-col justify-end">
         <div className="w-full bg-card p-6 sm:p-8 rounded-t-3xl lg:rounded-none h-full flex items-center justify-center">
           <div className="mx-auto grid w-full max-w-sm gap-4">
             <div className="grid gap-2 text-center">
