@@ -155,7 +155,7 @@ function MyCampaigns() {
         </div>
         <Button asChild size="sm" className="gap-1 w-full sm:w-auto shrink-0">
           <Link href="/dashboard/campaigns">
-            <span>View All</span>
+            <span className="hidden sm:inline">View All</span>
             <ArrowRight className="h-4 w-4" />
           </Link>
         </Button>

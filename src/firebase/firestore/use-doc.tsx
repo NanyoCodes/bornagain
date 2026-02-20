@@ -59,7 +59,7 @@ export function useDoc<T>(
     );
 
     return () => unsubscribe();
-  }, [docRef, options?.snapshotOptions]); // Depend only on the ref and options
+  }, [docRef, user, options?.snapshotOptions]); // Depend on user now
 
   return { data, loading, error };
 }

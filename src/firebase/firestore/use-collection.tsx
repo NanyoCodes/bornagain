@@ -66,7 +66,7 @@ export function useCollection<T extends { id: string }>(
     );
 
     return () => unsubscribe();
-  }, [query, options?.snapshotOptions]); // Depend only on query and options
+  }, [query, user, options?.snapshotOptions]); // Depend on user now
 
   return { data, loading, error };
 }
