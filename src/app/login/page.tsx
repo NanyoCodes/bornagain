@@ -84,84 +84,91 @@ export default function LoginPage() {
   };
 
   return (
-    <main className="relative w-full min-h-screen flex items-center justify-center p-4">
-       {authHero && (
-        <Image
-          src={authHero.imageUrl}
-          alt={authHero.description}
-          fill
-          className="object-cover"
-          data-ai-hint={authHero.imageHint}
-          priority
-        />
-      )}
-      <div className="absolute inset-0 bg-black/50" />
-
-      <div className="relative z-10 w-full max-w-md space-y-8">
-        <div className="text-center text-white">
-          <blockquote className="space-y-2 font-headline">
-            <p className="text-3xl lg:text-4xl font-bold">This is more than an app.</p>
-            <p className="text-3xl lg:text-4xl font-bold">This is a movement.</p>
-            <cite className="block text-4xl lg:text-5xl font-extrabold not-italic mt-4">A digital revival.</cite>
-          </blockquote>
+    <main className="relative w-full min-h-screen bg-muted">
+      {/* --- BACKGROUND & QUOTE SECTION --- */}
+      <div className="absolute top-0 left-0 right-0 h-[40%] lg:h-full lg:w-1/2">
+        <div className="relative w-full h-full">
+          {authHero && (
+            <Image
+              src={authHero.imageUrl}
+              alt={authHero.description}
+              fill
+              className="object-cover"
+              data-ai-hint={authHero.imageHint}
+              priority
+            />
+          )}
+          <div className="absolute inset-0 bg-black/60" />
+          <div className="relative z-10 flex items-center justify-center h-full p-8 text-white">
+            <div className="max-w-md text-center">
+              <blockquote className="space-y-2 font-headline">
+                <p className="text-3xl lg:text-4xl font-bold">This is more than an app.</p>
+                <p className="text-3xl lg:text-4xl font-bold">This is a movement.</p>
+                <cite className="block text-4xl lg:text-5xl font-extrabold not-italic mt-4">A digital revival.</cite>
+              </blockquote>
+            </div>
+          </div>
         </div>
-        
-        <div className="bg-card p-6 sm:p-8 rounded-lg shadow-2xl">
-            <div className="mx-auto grid w-full max-w-sm gap-4">
+      </div>
+
+      {/* --- FORM SECTION --- */}
+      <div className="absolute bottom-0 left-0 right-0 h-[65%] lg:h-full lg:left-1/2 lg:w-1/2 flex flex-col justify-end">
+        <div className="w-full bg-card p-6 sm:p-8 rounded-t-3xl lg:rounded-none h-full flex items-center justify-center overflow-y-auto">
+          <div className="mx-auto grid w-full max-w-sm gap-4">
             <div className="grid gap-2 text-center">
-                {logo && (
+              {logo && (
                 <Image
-                    src={logo.imageUrl}
-                    alt={logo.description}
-                    width={80}
-                    height={80}
-                    className="mx-auto mb-2 rounded-full"
-                    data-ai-hint={logo.imageHint}
+                  src={logo.imageUrl}
+                  alt={logo.description}
+                  width={80}
+                  height={80}
+                  className="mx-auto mb-2 rounded-full"
+                  data-ai-hint={logo.imageHint}
                 />
-                )}
-                <h1 className="text-2xl font-bold tracking-tight text-card-foreground">Sign in to your account</h1>
-                <p className="text-balance text-muted-foreground text-sm">
-                Don't have an account?{' '}
+              )}
+              <h1 className="text-2xl font-bold tracking-tight text-card-foreground">Sign in to your account</h1>
+              <p className="text-balance text-muted-foreground text-sm">
+                Don&apos;t have an account?{' '}
                 <Link href="/" className="underline">
-                    Sign up
+                  Sign up
                 </Link>
-                </p>
+              </p>
             </div>
 
             <Tabs defaultValue="email" className="w-full">
-                <TabsList className="grid w-full grid-cols-2">
+              <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="email">Email</TabsTrigger>
                 <TabsTrigger value="phone">Phone</TabsTrigger>
-                </TabsList>
-                <TabsContent value="email" className="pt-4">
+              </TabsList>
+              <TabsContent value="email" className="pt-4">
                 <LoginForm />
-                </TabsContent>
-                <TabsContent value="phone" className="pt-4">
+              </TabsContent>
+              <TabsContent value="phone" className="pt-4">
                 <PhoneAuthForm />
-                </TabsContent>
+              </TabsContent>
             </Tabs>
 
             <div className="relative my-1">
-                <div className="absolute inset-0 flex items-center">
+              <div className="absolute inset-0 flex items-center">
                 <span className="w-full border-t" />
-                </div>
-                <div className="relative flex justify-center text-xs uppercase">
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
                 <span className="bg-card px-2 text-muted-foreground">
-                    Or Sign In With
+                  Or Sign In With
                 </span>
-                </div>
+              </div>
             </div>
 
             <div className="grid grid-cols-1 gap-4">
-                <Button
+              <Button
                 variant="outline"
                 className="w-full h-9"
                 onClick={() => handleSocialLogin('google')}
-                >
+              >
                 <Icons.google className="mr-2 h-4 w-4" /> Google
-                </Button>
+              </Button>
             </div>
-            </div>
+          </div>
         </div>
       </div>
     </main>

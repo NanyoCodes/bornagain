@@ -84,29 +84,36 @@ export default function SignUpPage() {
   };
 
   return (
-    <main className="relative w-full min-h-screen flex items-center justify-center p-4">
-      {authHero && (
-        <Image
-          src={authHero.imageUrl}
-          alt={authHero.description}
-          fill
-          className="object-cover"
-          data-ai-hint={authHero.imageHint}
-          priority
-        />
-      )}
-      <div className="absolute inset-0 bg-black/50" />
-      
-      <div className="relative z-10 w-full max-w-md space-y-8">
-        <div className="text-center text-white">
-          <blockquote className="space-y-2 font-headline">
-            <p className="text-3xl lg:text-4xl font-bold">This is more than an app.</p>
-            <p className="text-3xl lg:text-4xl font-bold">This is a movement.</p>
-            <cite className="block text-4xl lg:text-5xl font-extrabold not-italic mt-4">A digital revival.</cite>
-          </blockquote>
+    <main className="relative w-full min-h-screen bg-muted">
+      {/* --- BACKGROUND & QUOTE SECTION --- */}
+      <div className="absolute top-0 left-0 right-0 h-[40%] lg:h-full lg:w-1/2">
+        <div className="relative w-full h-full">
+          {authHero && (
+            <Image
+              src={authHero.imageUrl}
+              alt={authHero.description}
+              fill
+              className="object-cover"
+              data-ai-hint={authHero.imageHint}
+              priority
+            />
+          )}
+          <div className="absolute inset-0 bg-black/60" />
+          <div className="relative z-10 flex items-center justify-center h-full p-8 text-white">
+            <div className="max-w-md text-center">
+              <blockquote className="space-y-2 font-headline">
+                <p className="text-3xl lg:text-4xl font-bold">This is more than an app.</p>
+                <p className="text-3xl lg:text-4xl font-bold">This is a movement.</p>
+                <cite className="block text-4xl lg:text-5xl font-extrabold not-italic mt-4">A digital revival.</cite>
+              </blockquote>
+            </div>
+          </div>
         </div>
+      </div>
 
-        <div className="bg-card p-6 sm:p-8 rounded-lg shadow-2xl">
+      {/* --- FORM SECTION --- */}
+      <div className="absolute bottom-0 left-0 right-0 h-[65%] lg:h-full lg:left-1/2 lg:w-1/2 flex flex-col justify-end">
+        <div className="w-full bg-card p-6 sm:p-8 rounded-t-3xl lg:rounded-none h-full flex items-center justify-center overflow-y-auto">
           <div className="mx-auto grid w-full max-w-sm gap-4">
             <div className="grid gap-2 text-center">
               {logo && (
