@@ -84,8 +84,28 @@ export default function LoginPage() {
   };
 
   return (
-    <main className="w-full lg:grid lg:min-h-screen lg:grid-cols-2">
-      <div className="flex items-center justify-center p-6 sm:p-12">
+    <main className="w-full min-h-screen flex flex-col lg:flex-row">
+      <div className="relative w-full lg:w-1/2 h-80 lg:h-screen">
+        {authHero && (
+          <Image
+            src={authHero.imageUrl}
+            alt={authHero.description}
+            fill
+            className="object-cover"
+            data-ai-hint={authHero.imageHint}
+            priority
+          />
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent" />
+        <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
+          <blockquote className="space-y-2">
+            <p className="text-3xl lg:text-4xl font-bold">This is more than an app.</p>
+            <p className="text-3xl lg:text-4xl font-bold">This is a movement.</p>
+            <cite className="block text-4xl lg:text-5xl font-extrabold not-italic mt-4">A digital revival.</cite>
+          </blockquote>
+        </div>
+      </div>
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12">
         <div className="mx-auto grid w-full max-w-xs gap-4">
           <div className="grid gap-2 text-center">
             {logo && (
@@ -140,27 +160,6 @@ export default function LoginPage() {
               <Icons.google className="mr-2 h-4 w-4" /> Google
             </Button>
           </div>
-        </div>
-      </div>
-      <div className="hidden bg-muted lg:block relative">
-        {authHero && (
-          <Image
-            src={authHero.imageUrl}
-            alt={authHero.description}
-            width="1920"
-            height="1080"
-            className="h-full w-full object-cover"
-            data-ai-hint={authHero.imageHint}
-            priority
-          />
-        )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent" />
-        <div className="absolute bottom-20 left-10 right-10 text-white">
-          <blockquote className="space-y-2">
-            <p className="text-4xl font-bold">This is more than an app.</p>
-            <p className="text-4xl font-bold">This is a movement.</p>
-            <cite className="block text-5xl font-extrabold not-italic mt-4">A digital revival.</cite>
-          </blockquote>
         </div>
       </div>
     </main>
