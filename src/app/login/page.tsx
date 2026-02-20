@@ -86,7 +86,7 @@ export default function LoginPage() {
         <div className="mx-auto grid w-full max-w-xs gap-4">
           <div className="grid gap-2 text-center">
             {logo && (
-              <Image src={logo.imageUrl} alt={logo.description} width={64} height={64} className="mx-auto mb-2 rounded-full" data-ai-hint={logo.imageHint} />
+              <Image src={logo.imageUrl} alt={logo.description} width={80} height={80} className="mx-auto mb-2 rounded-full" data-ai-hint={logo.imageHint} />
             )}
             <h1 className="text-2xl font-bold tracking-tight">Sign in to your account</h1>
             <p className="text-balance text-muted-foreground text-sm">
