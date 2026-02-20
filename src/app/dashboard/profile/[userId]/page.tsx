@@ -41,15 +41,15 @@ export default function UserProfilePage() {
   const isOwnProfile = currentUser?.uid === userId;
 
   const userDocRef = useMemo(() => {
-    if (authLoading || !currentUser || !userId || !firestore) return null;
+    if (authLoading || !currentUser?.uid || !userId || !firestore) return null;
     return doc(firestore, 'users', userId);
-  }, [authLoading, currentUser, userId, firestore]);
+  }, [authLoading, currentUser?.uid, userId, firestore]);
   const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userDocRef);
 
   const testimoniesQuery = useMemo(() => {
-    if (authLoading || !currentUser || !userId || !firestore) return null;
+    if (authLoading || !currentUser?.uid || !userId || !firestore) return null;
     return query(collection(firestore, 'testimonies'), where('authorId', '==', userId));
-  }, [authLoading, currentUser, userId, firestore]);
+  }, [authLoading, currentUser?.uid, userId, firestore]);
   const { data: testimonies, loading: testimoniesLoading } = useCollection<Testimony>(testimoniesQuery);
 
   const soulsQuery = useMemo(() => {

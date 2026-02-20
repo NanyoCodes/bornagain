@@ -119,9 +119,9 @@ export function JoinedCampaignsList({ userId }: { userId: string }) {
   const joinedCampaignIds = useMemo(() => joinedCampaignsDocs?.map(j => j.id) ?? [], [joinedCampaignsDocs]);
 
   const joinedQuery = useMemo(() => {
-    if (authLoading || !user || !firestore || joinedCampaignIds.length === 0) return null;
+    if (authLoading || !user?.uid || !firestore || joinedCampaignIds.length === 0) return null;
     return query(collection(firestore, 'campaigns'), where(documentId(), 'in', joinedCampaignIds));
-  }, [authLoading, user, firestore, joinedCampaignIds]);
+  }, [authLoading, user?.uid, firestore, joinedCampaignIds]);
 
   const { data: campaigns, loading: joinedLoading } = useCollection<Campaign>(joinedQuery);
   const loading = authLoading || joinedIdsLoading || (joinedCampaignIds.length > 0 && !!joinedQuery && joinedLoading);

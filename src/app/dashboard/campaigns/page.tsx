@@ -74,9 +74,9 @@ export default function CampaignsPage() {
   const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userDocRef);
 
   const campaignsQuery = useMemo(() => {
-    if (authLoading || !user || !firestore) return null;
+    if (authLoading || !user?.uid || !firestore) return null;
     return query(collection(firestore, 'campaigns'), orderBy('createdAt', 'desc'));
-  }, [authLoading, user, firestore]);
+  }, [authLoading, user?.uid, firestore]);
   const { data: campaigns, loading: campaignsLoading } = useCollection<Campaign>(campaignsQuery);
 
   const joinedCampaignsQuery = useMemo(() => {
