@@ -142,7 +142,7 @@ export default function SignUpPage() {
           </div>
         </div>
       </div>
-      <div className="hidden bg-muted lg:block">
+      <div className="hidden bg-muted lg:block relative">
         {authHero && (
           <Image
             src={authHero.imageUrl}
@@ -154,6 +154,14 @@ export default function SignUpPage() {
             priority
           />
         )}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent" />
+        <div className="absolute bottom-20 left-10 right-10 text-white">
+          <blockquote className="space-y-2">
+            <p className="text-4xl font-bold">This is more than an app.</p>
+            <p className="text-4xl font-bold">This is a movement.</p>
+            <cite className="block text-5xl font-extrabold not-italic mt-4">A digital revival.</cite>
+          </blockquote>
+        </div>
       </div>
     </main>
   );
