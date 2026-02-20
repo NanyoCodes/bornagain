@@ -14,7 +14,6 @@ interface UseCollectionOptions {
 
 function getQueryPath(q: Query<DocumentData>): string {
     // This is a hack to get the path from a query.
-    // It uses internal properties of the Firestore SDK.
     // This might break in future versions of the SDK.
     return (q as any)._query?.path?.canonicalString() ?? '';
 }
@@ -23,17 +22,28 @@ export function useCollection<T extends { id: string }>(
   query: Query<DocumentData> | null,
   options?: UseCollectionOptions
 ) {
-  const { user } = useUser();
+  const { user, loading: authLoading } = useUser(); // Get auth loading state
   const [data, setData] = useState<T[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<FirestoreError | null>(null);
 
   useEffect(() => {
-    // If there's no query or no authenticated user, don't proceed.
-    // The calling component is responsible for creating the query only when ready.
-    if (!query || !user) {
+    // Wait until authentication is resolved and a query is provided.
+    if (authLoading || !query) {
+      // If auth is loading, we are definitely in a loading state.
+      // If there's no query, we are not loading data for that query.
+      setLoading(authLoading);
       setData(null);
+      return;
+    }
+
+    // At this point, auth is resolved. If there is no user, they are logged out.
+    // Don't attempt to fetch data that requires authentication.
+    if (!user) {
       setLoading(false);
+      setData(null);
+      // We can optionally set an error here, but for now, just returning is fine
+      // as components should handle the null data state.
       return;
     }
 
@@ -66,7 +76,7 @@ export function useCollection<T extends { id: string }>(
     );
 
     return () => unsubscribe();
-  }, [query, user, options?.snapshotOptions]); // Depend on user now
+  }, [query, user, authLoading, options?.snapshotOptions]); // Add authLoading to dependencies
 
   return { data, loading, error };
 }

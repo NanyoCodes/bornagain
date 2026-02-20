@@ -16,17 +16,23 @@ export function useDoc<T>(
   docRef: DocumentReference<DocumentData> | null,
   options?: UseDocOptions
 ) {
-  const { user } = useUser();
+  const { user, loading: authLoading } = useUser(); // Get auth loading state
   const [data, setData] = useState<T | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<FirestoreError | null>(null);
 
   useEffect(() => {
-    // If there's no docRef or no authenticated user, don't proceed.
-    // The calling component is responsible for creating the ref only when ready.
-    if (!docRef || !user) {
+    // Wait until authentication is resolved and a docRef is provided.
+    if (authLoading || !docRef) {
+      setLoading(authLoading);
       setData(null);
+      return;
+    }
+
+    // At this point, auth is resolved. If there is no user, they are logged out.
+    if (!user) {
       setLoading(false);
+      setData(null);
       return;
     }
 
@@ -59,7 +65,7 @@ export function useDoc<T>(
     );
 
     return () => unsubscribe();
-  }, [docRef, user, options?.snapshotOptions]); // Depend on user now
+  }, [docRef, user, authLoading, options?.snapshotOptions]); // Add authLoading to dependencies
 
   return { data, loading, error };
 }
