@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useMemo, useState } from 'react';
@@ -7,12 +8,10 @@ import type { Campaign, JoinedCampaign, Testimony, Soul } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { ArrowRight, CalendarIcon, XCircle } from 'lucide-react';
+import { ArrowRight, XCircle } from 'lucide-react';
 import { format, isSameMonth } from 'date-fns';
 import { Input } from '@/components/ui/input';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Calendar } from '@/components/ui/calendar';
-import { cn } from '@/lib/utils';
+import { Label } from '@/components/ui/label';
 
 function FilterControls({
   searchTerm,
@@ -27,6 +26,18 @@ function FilterControls({
   setFilterDate: (date: Date | undefined) => void;
   searchPlaceholder: string;
 }) {
+  const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+    if (value) {
+      // Value is "YYYY-MM", adding a day to avoid timezone issues where it might become the previous month.
+      setFilterDate(new Date(value + "-02"));
+    } else {
+      setFilterDate(undefined);
+    }
+  };
+
+  const dateValue = filterDate ? format(filterDate, "yyyy-MM") : "";
+
   return (
     <div className="flex flex-col sm:flex-row gap-2 mb-4">
       <Input
@@ -35,31 +46,16 @@ function FilterControls({
         onChange={(e) => setSearchTerm(e.target.value)}
         className="flex-grow"
       />
-      <Popover>
-        <PopoverTrigger asChild>
-          <Button
-            variant={"outline"}
-            className={cn(
-              "w-full sm:w-[240px] justify-start text-left font-normal",
-              !filterDate && "text-muted-foreground"
-            )}
-          >
-            <CalendarIcon className="mr-2 h-4 w-4" />
-            {filterDate ? format(filterDate, "MMMM yyyy") : <span>Filter by month</span>}
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-auto p-0" align="start">
-          <Calendar
-            mode="single"
-            selected={filterDate}
-            onSelect={setFilterDate}
-            captionLayout="dropdown-buttons"
-            fromYear={2020}
-            toYear={new Date().getFullYear() + 1}
-            initialFocus
-          />
-        </PopoverContent>
-      </Popover>
+      <div className="relative w-full sm:w-[240px]">
+        <Label htmlFor="month-filter" className="sr-only">Filter by month</Label>
+        <Input
+          id="month-filter"
+          type="month"
+          value={dateValue}
+          onChange={handleDateChange}
+          className="w-full"
+        />
+      </div>
       {filterDate && (
         <Button variant="ghost" size="icon" onClick={() => setFilterDate(undefined)}>
           <XCircle className="h-5 w-5 text-muted-foreground" />
@@ -225,8 +221,13 @@ export function TestimoniesList({ userId }: { userId: string }) {
     });
   }, [testimonies, searchTerm, filterDate]);
 
-  if (loading) return <ListSkeleton />;
-  if (!testimonies || testimonies.length === 0) return <p className="text-sm text-muted-foreground text-center py-4">You haven't shared any testimonies.</p>;
+  if (loading) {
+    return <ListSkeleton />;
+  }
+
+  if (!testimonies || testimonies.length === 0) {
+    return <p className="text-sm text-muted-foreground text-center py-4">You haven't shared any testimonies.</p>;
+  }
 
   return (
     <div className="space-y-2">
@@ -284,9 +285,13 @@ export function CampaignsCreatedList({ userId }: { userId: string }) {
   }, [activeCampaigns, searchTerm, filterDate]);
 
 
-  if (loading) return <ListSkeleton />;
-  
-  if (activeCampaigns.length === 0) return <p className="text-sm text-muted-foreground text-center py-4">You haven't created any campaigns.</p>;
+  if (loading) {
+    return <ListSkeleton />;
+  }
+
+  if (activeCampaigns.length === 0) {
+    return <p className="text-sm text-muted-foreground text-center py-4">You haven't created any campaigns.</p>;
+  }
 
   return (
     <div className="space-y-2">
@@ -342,8 +347,13 @@ export function SoulsWonList({ userId }: { userId: string }) {
     });
   }, [souls, searchTerm, filterDate]);
 
-  if (loading) return <ListSkeleton />;
-  if (!souls || souls.length === 0) return <p className="text-sm text-muted-foreground text-center py-4">You haven't logged any souls won.</p>;
+  if (loading) {
+    return <ListSkeleton />;
+  }
+
+  if (!souls || souls.length === 0) {
+    return <p className="text-sm text-muted-foreground text-center py-4">You haven't logged any souls won.</p>;
+  }
 
   return (
     <div className="space-y-2">

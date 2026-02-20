@@ -7,7 +7,7 @@ import { Bar, BarChart, CartesianGrid, ResponsiveContainer, XAxis, YAxis, Toolti
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartContainer, ChartTooltipContent } from "@/components/ui/chart";
 import { Button } from "@/components/ui/button";
-import { CalendarIcon, Edit, PlusCircle, Trophy, TrendingUp, UserCheck2 } from "lucide-react";
+import { Edit, PlusCircle, Trophy, TrendingUp, UserCheck2 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -20,8 +20,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
 import { format, isSameMonth } from "date-fns";
 import { useCollection, useFirestore, useUser, useDoc } from "@/firebase";
 import type { Soul, UserProfile } from "@/lib/types";
@@ -58,6 +56,16 @@ export default function ProgressPage() {
   
   const [newGoal, setNewGoal] = useState(monthlyGoal);
   const [newGoalDate, setNewGoalDate] = useState(goalDate);
+
+  const handleGoalDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+    if (value) {
+      // Value is "YYYY-MM", adding a day to avoid timezone issues.
+      setNewGoalDate(new Date(value + "-02"));
+    }
+  };
+
+  const newGoalDateValue = newGoalDate ? format(newGoalDate, "yyyy-MM") : "";
 
   const soulsThisMonth = useMemo(() => {
     if (!souls) return 0;
@@ -191,30 +199,16 @@ export default function ProgressPage() {
                       />
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">
-                      <Label className="text-right">
+                      <Label htmlFor="goal-month" className="text-right">
                           For Month
                       </Label>
-                      <Popover>
-                          <PopoverTrigger asChild>
-                              <Button
-                              variant={"outline"}
-                              className="col-span-3 font-normal"
-                              >
-                              <span>{format(newGoalDate, "MMMM yyyy")}</span>
-                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                              </Button>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-auto p-0" align="start" onPointerDownOutside={(e) => e.preventDefault()}>
-                              <Calendar
-                                captionLayout="dropdown-buttons"
-                                fromYear={2020}
-                                toYear={2030}
-                                mode="single"
-                                selected={newGoalDate}
-                                onSelect={(date) => date && setNewGoalDate(date)}
-                              />
-                          </PopoverContent>
-                      </Popover>
+                      <Input
+                          id="goal-month"
+                          type="month"
+                          value={newGoalDateValue}
+                          onChange={handleGoalDateChange}
+                          className="col-span-3"
+                      />
                     </div>
                   </div>
                   <DialogFooter>
