@@ -60,8 +60,8 @@ export default function ProgressPage() {
   const handleGoalDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
     if (value) {
-      // Value is "YYYY-MM", adding a day to avoid timezone issues.
-      setNewGoalDate(new Date(value + "-02"));
+      const [year, month] = value.split('-').map(Number);
+      setNewGoalDate(new Date(year, month - 1, 1));
     }
   };
 

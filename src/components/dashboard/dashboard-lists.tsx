@@ -29,8 +29,8 @@ function FilterControls({
   const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
     if (value) {
-      // Value is "YYYY-MM", adding a day to avoid timezone issues where it might become the previous month.
-      setFilterDate(new Date(value + "-02"));
+      const [year, month] = value.split('-').map(Number);
+      setFilterDate(new Date(year, month - 1, 1));
     } else {
       setFilterDate(undefined);
     }
