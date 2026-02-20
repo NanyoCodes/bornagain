@@ -47,10 +47,12 @@ function ChatListItem({ chat, currentUserId }: { chat: Chat, currentUserId: stri
     return (
         <Link href={`/dashboard/chats/${chat.id}`} className="block hover:bg-muted/50 transition-colors">
             <div className="flex items-center gap-4 p-4">
-                <Avatar className="h-12 w-12">
-                    <AvatarImage src={otherParticipantInfo.photoURL} alt={otherParticipantInfo.displayName} />
-                    <AvatarFallback>{otherParticipantInfo.displayName?.charAt(0) ?? 'U'}</AvatarFallback>
-                </Avatar>
+                <Link href={`/dashboard/profile/${otherParticipantId}`} onClick={(e) => e.stopPropagation()} className="relative z-10">
+                    <Avatar className="h-12 w-12">
+                        <AvatarImage src={otherParticipantInfo.photoURL} alt={otherParticipantInfo.displayName} />
+                        <AvatarFallback>{otherParticipantInfo.displayName?.charAt(0) ?? 'U'}</AvatarFallback>
+                    </Avatar>
+                </Link>
                 <div className="flex-1 min-w-0">
                     <div className="flex justify-between items-start">
                         <div className="font-semibold truncate">{otherParticipantInfo.displayName}</div>
@@ -74,12 +76,12 @@ export default function ChatsPage() {
     const firestore = useFirestore();
 
     const chatsQuery = useMemo(() => {
-        if (userLoading || !user?.uid || !firestore) return null;
+        if (!user?.uid) return null;
         return query(
             collection(firestore, 'chats'),
             where('participantIds', 'array-contains', user.uid)
         );
-    }, [userLoading, user?.uid, firestore]);
+    }, [user?.uid, firestore]);
 
     const { data: allChats, loading: chatsLoading } = useCollection<Chat>(chatsQuery);
 

@@ -216,8 +216,8 @@ export default function ChatPage() {
                             <p className="text-sm text-muted-foreground">{chat.participantIds.length} participants</p>
                         </div>
                     </div>
-                ) : otherParticipantInfo ? (
-                    <div className="flex items-center gap-3">
+                ) : otherParticipantInfo && otherParticipantId ? (
+                    <Link href={`/dashboard/profile/${otherParticipantId}`} className="flex items-center gap-3 hover:bg-muted/50 p-2 rounded-lg -mx-2 transition-colors">
                          <Avatar>
                             <AvatarImage src={otherParticipantInfo.photoURL} />
                             <AvatarFallback>{otherParticipantInfo.displayName.charAt(0)}</AvatarFallback>
@@ -226,7 +226,7 @@ export default function ChatPage() {
                             <h2 className="font-semibold">{otherParticipantInfo.displayName}</h2>
                             <p className="text-sm text-muted-foreground">Regarding: {chat.campaignTitle}</p>
                         </div>
-                    </div>
+                    </Link>
                 ) : null}
             </div>
 
@@ -254,10 +254,12 @@ export default function ChatPage() {
                                                     <TooltipProvider>
                                                         <Tooltip>
                                                             <TooltipTrigger asChild>
-                                                                <Avatar className="h-8 w-8">
-                                                                    <AvatarImage src={senderInfo.photoURL} />
-                                                                    <AvatarFallback>{senderInfo.displayName.charAt(0)}</AvatarFallback>
-                                                                </Avatar>
+                                                                <Link href={`/dashboard/profile/${msg.senderId}`}>
+                                                                    <Avatar className="h-8 w-8">
+                                                                        <AvatarImage src={senderInfo.photoURL} />
+                                                                        <AvatarFallback>{senderInfo.displayName.charAt(0)}</AvatarFallback>
+                                                                    </Avatar>
+                                                                </Link>
                                                             </TooltipTrigger>
                                                             <TooltipContent>
                                                                 <p>{senderInfo.displayName}</p>
@@ -270,7 +272,9 @@ export default function ChatPage() {
                                                     msg.senderId === user?.uid ? "bg-primary text-primary-foreground" : "bg-muted"
                                                 )}>
                                                     {chat.isGroupChat && msg.senderId !== user?.uid && senderInfo && (
-                                                        <p className="text-xs font-bold mb-1">{senderInfo.displayName}</p>
+                                                        <Link href={`/dashboard/profile/${msg.senderId}`} className="text-xs font-bold mb-1 hover:underline">
+                                                          {senderInfo.displayName}
+                                                        </Link>
                                                     )}
                                                     {msg.text && <p className="text-sm">{msg.text}</p>}
                                                     {msg.createdAt && (
