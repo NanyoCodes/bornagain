@@ -71,9 +71,9 @@ function ParticipantList({ campaignId }: { campaignId: string }) {
   const firestore = useFirestore();
   const { user, loading: authLoading } = useUser();
   const participantsQuery = useMemo(() => {
-    if (authLoading || !user?.uid || !firestore) return null;
+    if (!user?.uid || !firestore) return null;
     return query(collection(firestore, 'campaigns', campaignId, 'participants'));
-  }, [authLoading, user?.uid, firestore, campaignId]);
+  }, [user?.uid, firestore, campaignId]);
   const { data: participants, loading } = useCollection<CampaignParticipant>(participantsQuery);
 
   if (loading || authLoading) {
@@ -165,6 +165,7 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
             participantInfo[p.id] = {
                 displayName: p.displayName,
                 photoURL: p.photoURL || '',
+                email: p.email || '',
             };
         });
         

@@ -381,6 +381,31 @@
         }
       },
       "required": ["userId", "type", "title", "message", "isRead", "createdAt"]
+    },
+    "Mail": {
+      "title": "Mail",
+      "description": "An email to be sent by the Trigger Email extension.",
+      "type": "object",
+      "properties": {
+        "to": {
+          "type": "string"
+        },
+        "message": {
+          "type": "object",
+          "properties": {
+            "subject": {
+              "type": "string"
+            },
+            "html": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "required": [
+        "to",
+        "message"
+      ]
     }
   },
   "auth": {
@@ -445,6 +470,12 @@
         "$ref": "#/entities/ChatMessage"
       },
       "description": "Stores messages for a specific chat session."
+    },
+    "/mail/{mailId}": {
+      "schema": {
+        "$ref": "#/entities/Mail"
+      },
+      "description": "Emails to be sent by the Trigger Email extension."
     }
   }
 }

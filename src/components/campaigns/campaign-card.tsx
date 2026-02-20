@@ -4,7 +4,7 @@
 import Link from "next/link";
 import { format, formatDistanceToNow, parse, isSameDay } from "date-fns";
 import { CalendarDays, MapPin, Users, Share2, Edit, MoreVertical, Loader2, MessageSquare } from "lucide-react";
-import type { Campaign } from "@/lib/types";
+import type { Campaign, JoinedCampaign, UserProfile } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -23,7 +23,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useFirestore, useUser } from "@/firebase";
-import { collection, serverTimestamp, query, where, limit, getDocs, addDoc, doc, runTransaction } from "firebase/firestore";
+import { collection, serverTimestamp, query, where, limit, getDocs, addDoc, doc, runTransaction, getDoc } from "firebase/firestore";
 import { useState, useRef, useEffect } from "react";
 import { ManageCampaignForm } from "./manage-campaign-form";
 import { errorEmitter } from "@/firebase/error-emitter";
@@ -158,16 +158,20 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
       if (!querySnapshot.empty) {
         chatId = querySnapshot.docs[0].id;
       } else {
+         const organizerDoc = await getDoc(doc(firestore, "users", campaign.organizerId));
+         const organizerProfile = organizerDoc.data() as UserProfile | undefined;
          const newChatData = {
               participantIds,
               participantInfo: {
                   [user.uid]: {
                       displayName: user.displayName || 'User',
                       photoURL: user.photoURL || '',
+                      email: user.email || '',
                   },
                   [campaign.organizerId]: {
                       displayName: campaign.organizerName,
-                      photoURL: '', 
+                      photoURL: organizerProfile?.photoURL || '', 
+                      email: organizerProfile?.email || '',
                   },
               },
               campaignId: campaign.id,

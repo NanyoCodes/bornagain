@@ -112,6 +112,7 @@ export type ChatParticipantInfo = {
   [key: string]: {
     displayName: string;
     photoURL?: string;
+    email?: string;
   }
 };
 

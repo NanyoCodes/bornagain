@@ -41,15 +41,15 @@ export default function ChatPage() {
     const scrollAreaRef = useRef<HTMLDivElement>(null);
 
     const chatDocRef = useMemo(() => {
-        if (userLoading || !user?.uid || !firestore || !chatId) return null;
+        if (!user?.uid || !firestore || !chatId) return null;
         return doc(firestore, 'chats', chatId);
-    }, [userLoading, user?.uid, firestore, chatId]);
+    }, [user?.uid, firestore, chatId]);
     const { data: chat, loading: loadingChat } = useDoc<Chat>(chatDocRef);
     
     const messagesQuery = useMemo(() => {
-        if (userLoading || !user?.uid || !firestore || !chatId) return null;
+        if (!user?.uid || !firestore || !chatId) return null;
         return query(collection(firestore, 'chats', chatId, 'messages'), orderBy('createdAt', 'asc'));
-    }, [userLoading, user?.uid, firestore, chatId]);
+    }, [user?.uid, firestore, chatId]);
     const { data: messages, loading: loadingMessages } = useCollection<ChatMessage>(messagesQuery);
     
     const loading = userLoading || loadingChat || loadingMessages;
@@ -104,9 +104,14 @@ export default function ChatPage() {
             const otherParticipantIds = chat.participantIds.filter(id => id !== user.uid);
             if (otherParticipantIds.length > 0) {
                 const batch = writeBatch(firestore);
+                const link = `${window.location.origin}/dashboard/chats/${chatId}`;
+
                 otherParticipantIds.forEach(participantId => {
+                    const recipientInfo = chat.participantInfo[participantId];
                     const notificationsCollectionRef = collection(firestore, 'users', participantId, 'notifications');
                     const notificationRef = doc(notificationsCollectionRef);
+                    
+                    // In-app notification
                     batch.set(notificationRef, {
                         userId: participantId,
                         type: 'new_chat_message',
@@ -120,6 +125,31 @@ export default function ChatPage() {
                         isRead: false,
                         createdAt: serverTimestamp()
                     });
+
+                    // Email notification
+                    if (recipientInfo && recipientInfo.email) {
+                        const mailCollectionRef = collection(firestore, 'mail');
+                        const mailRef = doc(mailCollectionRef);
+                        const subject = chat.isGroupChat
+                            ? `New Message in "${chat.campaignTitle}" Group Chat`
+                            : `New Message from ${user.displayName || 'User'} | Testify Global`;
+
+                        const html = `
+                            <p>Hi ${recipientInfo.displayName || 'there'},</p>
+                            <p>You have a new message from <strong>${user.displayName || 'a user'}</strong> in the chat for the campaign "<strong>${chat.campaignTitle}</strong>".</p>
+                            <p><em>${newMessage}</em></p>
+                            <p>You can view the full conversation and reply by clicking the button below:</p>
+                            <a href="${link}" style="display: inline-block; padding: 10px 20px; font-size: 16px; color: #ffffff; background-color: #3b82f6; text-decoration: none; border-radius: 5px;">View Chat</a>
+                            <br><br>
+                            <p>God bless,</p>
+                            <p>The Testify Global Team</p>
+                        `;
+
+                        batch.set(mailRef, {
+                            to: recipientInfo.email,
+                            message: { subject, html },
+                        });
+                    }
                 });
                 await batch.commit();
             }
@@ -127,6 +157,11 @@ export default function ChatPage() {
             setNewMessage('');
         } catch (error) {
             console.error("Error sending message:", error);
+            toast({
+              variant: "destructive",
+              title: "Error Sending Message",
+              description: "Could not send your message. Please try again.",
+            });
         } finally {
             setIsSending(false);
         }
