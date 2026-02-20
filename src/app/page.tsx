@@ -99,7 +99,7 @@ export default function SignUpPage() {
       
       <div className="relative z-10 w-full max-w-md space-y-8">
         <div className="text-center text-white">
-          <blockquote className="space-y-2">
+          <blockquote className="space-y-2 font-headline">
             <p className="text-3xl lg:text-4xl font-bold">This is more than an app.</p>
             <p className="text-3xl lg:text-4xl font-bold">This is a movement.</p>
             <cite className="block text-4xl lg:text-5xl font-extrabold not-italic mt-4">A digital revival.</cite>
