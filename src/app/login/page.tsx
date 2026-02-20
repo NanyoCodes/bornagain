@@ -84,82 +84,84 @@ export default function LoginPage() {
   };
 
   return (
-    <main className="w-full min-h-screen flex flex-col lg:flex-row">
-      <div className="relative w-full lg:w-1/2 h-80 lg:h-screen">
-        {authHero && (
-          <Image
-            src={authHero.imageUrl}
-            alt={authHero.description}
-            fill
-            className="object-cover"
-            data-ai-hint={authHero.imageHint}
-            priority
-          />
-        )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent" />
-        <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
+    <main className="relative w-full min-h-screen flex items-center justify-center p-4">
+       {authHero && (
+        <Image
+          src={authHero.imageUrl}
+          alt={authHero.description}
+          fill
+          className="object-cover"
+          data-ai-hint={authHero.imageHint}
+          priority
+        />
+      )}
+      <div className="absolute inset-0 bg-black/60" />
+
+      <div className="relative z-10 w-full max-w-md space-y-8">
+        <div className="text-center text-white">
           <blockquote className="space-y-2">
             <p className="text-3xl lg:text-4xl font-bold">This is more than an app.</p>
             <p className="text-3xl lg:text-4xl font-bold">This is a movement.</p>
             <cite className="block text-4xl lg:text-5xl font-extrabold not-italic mt-4">A digital revival.</cite>
           </blockquote>
         </div>
-      </div>
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12">
-        <div className="mx-auto grid w-full max-w-xs gap-4">
-          <div className="grid gap-2 text-center">
-            {logo && (
-              <Image
-                src={logo.imageUrl}
-                alt={logo.description}
-                width={120}
-                height={120}
-                className="mx-auto mb-2 rounded-full"
-                data-ai-hint={logo.imageHint}
-              />
-            )}
-            <h1 className="text-2xl font-bold tracking-tight">Sign in to your account</h1>
-            <p className="text-balance text-muted-foreground text-sm">
-              Don't have an account?{' '}
-              <Link href="/" className="underline">
-                Sign up
-              </Link>
-            </p>
-          </div>
-
-          <Tabs defaultValue="email" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="email">Email</TabsTrigger>
-              <TabsTrigger value="phone">Phone</TabsTrigger>
-            </TabsList>
-            <TabsContent value="email" className="pt-4">
-              <LoginForm />
-            </TabsContent>
-            <TabsContent value="phone" className="pt-4">
-              <PhoneAuthForm />
-            </TabsContent>
-          </Tabs>
-
-          <div className="relative my-1">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t" />
+        
+        <div className="bg-card p-6 sm:p-8 rounded-lg shadow-2xl">
+            <div className="mx-auto grid w-full max-w-sm gap-4">
+            <div className="grid gap-2 text-center">
+                {logo && (
+                <Image
+                    src={logo.imageUrl}
+                    alt={logo.description}
+                    width={80}
+                    height={80}
+                    className="mx-auto mb-2 rounded-full"
+                    data-ai-hint={logo.imageHint}
+                />
+                )}
+                <h1 className="text-2xl font-bold tracking-tight text-card-foreground">Sign in to your account</h1>
+                <p className="text-balance text-muted-foreground text-sm">
+                Don't have an account?{' '}
+                <Link href="/" className="underline">
+                    Sign up
+                </Link>
+                </p>
             </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">
-                Or Sign In With
-              </span>
-            </div>
-          </div>
 
-          <div className="grid grid-cols-1 gap-4">
-            <Button
-              variant="outline"
-              className="w-full h-9"
-              onClick={() => handleSocialLogin('google')}
-            >
-              <Icons.google className="mr-2 h-4 w-4" /> Google
-            </Button>
-          </div>
+            <Tabs defaultValue="email" className="w-full">
+                <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="email">Email</TabsTrigger>
+                <TabsTrigger value="phone">Phone</TabsTrigger>
+                </TabsList>
+                <TabsContent value="email" className="pt-4">
+                <LoginForm />
+                </TabsContent>
+                <TabsContent value="phone" className="pt-4">
+                <PhoneAuthForm />
+                </TabsContent>
+            </Tabs>
+
+            <div className="relative my-1">
+                <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-card px-2 text-muted-foreground">
+                    Or Sign In With
+                </span>
+                </div>
+            </div>
+
+            <div className="grid grid-cols-1 gap-4">
+                <Button
+                variant="outline"
+                className="w-full h-9"
+                onClick={() => handleSocialLogin('google')}
+                >
+                <Icons.google className="mr-2 h-4 w-4" /> Google
+                </Button>
+            </div>
+            </div>
         </div>
       </div>
     </main>
