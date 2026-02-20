@@ -127,29 +127,27 @@ export default function ChatPage() {
                     });
 
                     // Email notification
-                    if (recipientInfo && recipientInfo.email) {
-                        const mailCollectionRef = collection(firestore, 'mail');
-                        const mailRef = doc(mailCollectionRef);
-                        const subject = chat.isGroupChat
-                            ? `New Message in "${chat.campaignTitle}" Group Chat`
-                            : `New Message from ${user.displayName || 'User'} | Testify Global`;
+                    const mailCollectionRef = collection(firestore, 'mail');
+                    const mailRef = doc(mailCollectionRef);
+                    const subject = chat.isGroupChat
+                        ? `New Message in "${chat.campaignTitle}" Group Chat`
+                        : `New Message from ${user.displayName || 'User'} | Testify Global`;
 
-                        const html = `
-                            <p>Hi ${recipientInfo.displayName || 'there'},</p>
-                            <p>You have a new message from <strong>${user.displayName || 'a user'}</strong> in the chat for the campaign "<strong>${chat.campaignTitle}</strong>".</p>
-                            <p><em>${newMessage}</em></p>
-                            <p>You can view the full conversation and reply by clicking the button below:</p>
-                            <a href="${link}" style="display: inline-block; padding: 10px 20px; font-size: 16px; color: #ffffff; background-color: #3b82f6; text-decoration: none; border-radius: 5px;">View Chat</a>
-                            <br><br>
-                            <p>God bless,</p>
-                            <p>The Testify Global Team</p>
-                        `;
+                    const html = `
+                        <p>Hi ${recipientInfo?.displayName || 'there'},</p>
+                        <p>You have a new message from <strong>${user.displayName || 'a user'}</strong> in the chat for the campaign "<strong>${chat.campaignTitle}</strong>".</p>
+                        <p><em>${newMessage}</em></p>
+                        <p>You can view the full conversation and reply by clicking the button below:</p>
+                        <a href="${link}" style="display: inline-block; padding: 10px 20px; font-size: 16px; color: #ffffff; background-color: #3b82f6; text-decoration: none; border-radius: 5px;">View Chat</a>
+                        <br><br>
+                        <p>God bless,</p>
+                        <p>The Testify Global Team</p>
+                    `;
 
-                        batch.set(mailRef, {
-                            to: recipientInfo.email,
-                            message: { subject, html },
-                        });
-                    }
+                    batch.set(mailRef, {
+                        toUids: [participantId],
+                        message: { subject, html },
+                    });
                 });
                 await batch.commit();
             }
