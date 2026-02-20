@@ -88,11 +88,11 @@ function ActiveCampaigns() {
 
   return (
     <Card>
-        <CardHeader className="flex flex-row items-center">
+        <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>Active Campaigns</CardTitle>
-            <Button asChild size="sm" className="ml-auto gap-1">
+            <Button asChild size="sm" className="ml-auto gap-1 shrink-0">
             <Link href="/dashboard/campaigns">
-              View All
+              <span className="hidden sm:inline">View All</span>
               <ArrowRight className="h-4 w-4" />
             </Link>
           </Button>
@@ -113,11 +113,11 @@ function ActiveCampaigns() {
             )}
             {!loading && !authLoading && campaigns.map(campaign => (
               <div key={campaign.id} className="flex items-center gap-4">
-                <div className="grid gap-1">
-                  <p className="text-sm font-medium">{campaign.title}</p>
-                  <p className="text-sm text-muted-foreground">{campaign.location}</p>
+                <div className="grid gap-1 min-w-0">
+                  <p className="text-sm font-medium truncate">{campaign.title}</p>
+                  <p className="text-sm text-muted-foreground truncate">{campaign.location}</p>
                 </div>
-                <div className="ml-auto font-medium">{campaign.participants} joined</div>
+                <div className="ml-auto font-medium text-right shrink-0">{campaign.participants} joined</div>
               </div>
             ))}
             {!loading && !authLoading && campaigns.length === 0 && (
@@ -148,14 +148,14 @@ function MyCampaigns() {
 
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center">
-        <div className="grid gap-2">
+      <CardHeader className="flex flex-col sm:flex-row sm:items-center gap-4">
+        <div className="grid gap-2 flex-grow">
             <CardTitle>My Campaigns</CardTitle>
-            <CardDescription>Campaigns you've created as an organizer.</CardDescription>
+            <CardDescription>Campaigns you've created.</CardDescription>
         </div>
-        <Button asChild size="sm" className="ml-auto gap-1">
+        <Button asChild size="sm" className="gap-1 w-full sm:w-auto shrink-0">
           <Link href="/dashboard/campaigns">
-            View All
+            <span>View All</span>
             <ArrowRight className="h-4 w-4" />
           </Link>
         </Button>
@@ -176,11 +176,11 @@ function MyCampaigns() {
         )}
         {!loading && !authLoading && myCampaigns.map(campaign => (
           <div key={campaign.id} className="flex items-center gap-4">
-            <div className="grid gap-1">
-              <p className="text-sm font-medium">{campaign.title}</p>
-              <p className="text-sm text-muted-foreground">{campaign.location}</p>
+            <div className="grid gap-1 min-w-0">
+              <p className="text-sm font-medium truncate">{campaign.title}</p>
+              <p className="text-sm text-muted-foreground truncate">{campaign.location}</p>
             </div>
-            <div className="ml-auto font-medium">{campaign.participants} joined</div>
+            <div className="ml-auto font-medium text-right shrink-0">{campaign.participants} joined</div>
           </div>
         ))}
         {!loading && !authLoading && (!myCampaigns || myCampaigns.length === 0) && (

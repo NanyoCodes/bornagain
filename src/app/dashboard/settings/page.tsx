@@ -124,7 +124,7 @@ function NotificationSettingsForm({ userProfile, userId }: { userProfile: UserPr
       newCampaignsInArea: userProfile.notificationSettings?.newCampaignsInArea ?? false,
       weeklyDigest: userProfile.notificationSettings?.weeklyDigest ?? false,
     });
-  }, [userProfile, form]);
+  }, [userProfile, form.reset]);
 
   async function onSubmit(values: z.infer<typeof notificationFormSchema>) {
     setIsSubmitting(true);
@@ -210,7 +210,7 @@ function PrivacySettingsForm({ userProfile, userId }: { userProfile: UserProfile
       profileVisibility: userProfile.privacySettings?.profileVisibility ?? 'public',
       showLocation: userProfile.privacySettings?.showLocation ?? true,
     });
-  }, [userProfile, form]);
+  }, [userProfile, form.reset]);
 
   async function onSubmit(values: z.infer<typeof privacyFormSchema>) {
     setIsSubmitting(true);
