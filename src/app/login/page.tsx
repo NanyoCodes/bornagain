@@ -111,9 +111,9 @@ export default function LoginPage() {
       </div>
 
       {/* --- FORM SECTION --- */}
-      <div className="absolute bottom-0 left-0 right-0 h-auto lg:h-full lg:left-2/5 lg:w-3/5 flex flex-col justify-end">
-        <div className="w-full bg-card p-6 sm:p-8 rounded-t-3xl lg:rounded-none h-full flex items-center justify-center">
-          <div className="mx-auto grid w-full max-w-md gap-4 pb-24">
+      <div className="absolute bottom-0 left-0 right-0 h-[70%] lg:h-full lg:left-2/5 lg:w-3/5">
+        <div className="w-full h-full bg-card p-6 sm:p-8 rounded-t-3xl lg:rounded-none overflow-y-auto">
+          <div className="mx-auto grid w-full max-w-md gap-4 pt-8 pb-16">
             <div className="grid gap-2 text-center">
               {logo && (
                 <Image
