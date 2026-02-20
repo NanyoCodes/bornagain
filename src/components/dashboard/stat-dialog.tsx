@@ -70,7 +70,7 @@ export function StatDialog({ title, value, change, icon: Icon, dialogTitle, dial
                 </CardHeader>
                 <CardContent>
                     <div className="text-2xl font-bold"><Skeleton className="h-8 w-12" /></div>
-                    <p className="text-xs text-muted-foreground"><Skeleton className="h-4 w-24" /></p>
+                    <div className="text-xs text-muted-foreground"><Skeleton className="h-4 w-24" /></div>
                 </CardContent>
             </Card>
         );
