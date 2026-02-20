@@ -212,7 +212,12 @@ export default function ChatPage() {
                             <AvatarFallback>{chat.participantIds.length}</AvatarFallback>
                         </Avatar>
                         <div>
-                            <h2 className="font-semibold">{chat.campaignTitle} (Group)</h2>
+                            <h2 className="font-semibold">
+                                <Link href={`/dashboard/campaigns#${chat.campaignId}`} className="hover:underline">
+                                    {chat.campaignTitle}
+                                </Link>
+                                 (Group)
+                            </h2>
                             <p className="text-sm text-muted-foreground">{chat.participantIds.length} participants</p>
                         </div>
                     </div>
@@ -224,7 +229,9 @@ export default function ChatPage() {
                         </Avatar>
                         <div>
                             <h2 className="font-semibold">{otherParticipantInfo.displayName}</h2>
-                            <p className="text-sm text-muted-foreground">Regarding: {chat.campaignTitle}</p>
+                            <p className="text-sm text-muted-foreground">
+                                Regarding: <Link href={`/dashboard/campaigns#${chat.campaignId}`} onClick={(e) => e.stopPropagation()} className="hover:underline">{chat.campaignTitle}</Link>
+                            </p>
                         </div>
                     </Link>
                 ) : null}

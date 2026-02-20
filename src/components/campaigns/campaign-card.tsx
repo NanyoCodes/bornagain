@@ -465,7 +465,7 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
 
   return (
     <>
-        <Card className="flex flex-col h-full overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300">
+        <Card id={campaign.id} className="flex flex-col h-full overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 scroll-mt-20">
         <CardHeader className="p-6 flex flex-row items-start justify-between gap-4">
             <div className="flex-1 min-w-0">
                 <CardTitle className="font-bold text-xl truncate">{campaign.title}</CardTitle>

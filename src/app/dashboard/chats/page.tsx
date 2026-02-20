@@ -23,7 +23,12 @@ function ChatListItem({ chat, currentUserId }: { chat: Chat, currentUserId: stri
                     </Avatar>
                     <div className="flex-1 min-w-0">
                         <div className="flex justify-between items-start">
-                            <div className="font-semibold truncate">{chat.campaignTitle} (Group)</div>
+                            <div className="font-semibold truncate">
+                                <Link href={`/dashboard/campaigns#${chat.campaignId}`} onClick={(e) => e.stopPropagation()} className="hover:underline">
+                                    {chat.campaignTitle}
+                                </Link>
+                                 (Group)
+                            </div>
                             <div className="text-xs text-muted-foreground whitespace-nowrap">
                                 {formatDistanceToNow(lastUpdatedAt, { addSuffix: true })}
                             </div>
@@ -60,7 +65,9 @@ function ChatListItem({ chat, currentUserId }: { chat: Chat, currentUserId: stri
                             {formatDistanceToNow(lastUpdatedAt, { addSuffix: true })}
                         </div>
                     </div>
-                    <p className="text-sm text-muted-foreground truncate">Re: {chat.campaignTitle}</p>
+                    <p className="text-sm text-muted-foreground truncate">
+                        Re: <Link href={`/dashboard/campaigns#${chat.campaignId}`} onClick={(e) => e.stopPropagation()} className="hover:underline">{chat.campaignTitle}</Link>
+                    </p>
                     <p className="text-sm text-muted-foreground truncate mt-1">
                         {chat.hasMessages ? 'Click to view messages' : 'No messages yet.'}
                     </p>
