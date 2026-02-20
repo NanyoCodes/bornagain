@@ -94,8 +94,8 @@ export default function LoginPage() {
               <Image
                 src={logo.imageUrl}
                 alt={logo.description}
-                width={80}
-                height={80}
+                width={120}
+                height={120}
                 className="mx-auto mb-2 rounded-full"
                 data-ai-hint={logo.imageHint}
               />
