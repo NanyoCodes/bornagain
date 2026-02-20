@@ -95,7 +95,7 @@ export default function SignUpPage() {
           priority
         />
       )}
-      <div className="absolute inset-0 bg-black/60" />
+      <div className="absolute inset-0 bg-black/50" />
       
       <div className="relative z-10 w-full max-w-md space-y-8">
         <div className="text-center text-white">
