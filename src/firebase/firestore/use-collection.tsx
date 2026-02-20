@@ -23,15 +23,15 @@ export function useCollection<T extends { id: string }>(
   query: Query<DocumentData> | null,
   options?: UseCollectionOptions
 ) {
-  const { user, loading: authLoading } = useUser();
+  const { user } = useUser();
   const [data, setData] = useState<T[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<FirestoreError | null>(null);
 
   useEffect(() => {
-    // This guard ensures that we do not attempt to subscribe to a query
-    // until the user is fully authenticated.
-    if (!query || authLoading || !user) {
+    // If there's no query or no authenticated user, don't proceed.
+    // The calling component is responsible for creating the query only when ready.
+    if (!query || !user) {
       setData(null);
       setLoading(false);
       return;
@@ -66,7 +66,7 @@ export function useCollection<T extends { id: string }>(
     );
 
     return () => unsubscribe();
-  }, [query, options?.snapshotOptions, authLoading, user]);
+  }, [query, options?.snapshotOptions]); // Depend only on query and options
 
   return { data, loading, error };
 }

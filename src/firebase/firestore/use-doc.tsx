@@ -16,15 +16,15 @@ export function useDoc<T>(
   docRef: DocumentReference<DocumentData> | null,
   options?: UseDocOptions
 ) {
-  const { user, loading: authLoading } = useUser();
+  const { user } = useUser();
   const [data, setData] = useState<T | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<FirestoreError | null>(null);
 
   useEffect(() => {
-    // This guard ensures that we do not attempt to subscribe to a document
-    // until the user is fully authenticated.
-    if (!docRef || authLoading || !user) {
+    // If there's no docRef or no authenticated user, don't proceed.
+    // The calling component is responsible for creating the ref only when ready.
+    if (!docRef || !user) {
       setData(null);
       setLoading(false);
       return;
@@ -59,7 +59,7 @@ export function useDoc<T>(
     );
 
     return () => unsubscribe();
-  }, [docRef, options?.snapshotOptions, authLoading, user]);
+  }, [docRef, options?.snapshotOptions]); // Depend only on the ref and options
 
   return { data, loading, error };
 }
