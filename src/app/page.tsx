@@ -115,7 +115,7 @@ export default function SignUpPage() {
       {/* --- FORM SECTION --- */}
       <div className="absolute bottom-0 left-0 right-0 h-[65%] lg:h-full lg:left-1/2 lg:w-1/2 flex flex-col justify-end">
         <div className="w-full bg-card p-6 sm:p-8 rounded-t-3xl lg:rounded-none h-full flex items-center justify-center">
-          <div className="mx-auto grid w-full max-w-sm gap-4 pb-4">
+          <div className="mx-auto grid w-full max-w-sm gap-4 pb-12">
             <div className="grid gap-2 text-center">
               {logo && (
                 <Image
