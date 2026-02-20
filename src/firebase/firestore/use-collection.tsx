@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -22,35 +21,31 @@ export function useCollection<T extends { id: string }>(
   query: Query<DocumentData> | null,
   options?: UseCollectionOptions
 ) {
-  const { user, loading: authLoading } = useUser(); // Get auth loading state
+  const { user, loading: authLoading } = useUser();
   const [data, setData] = useState<T[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<FirestoreError | null>(null);
 
   useEffect(() => {
-    // Wait until authentication is resolved and a query is provided.
-    if (authLoading || !query) {
-      // If auth is loading, we are definitely in a loading state.
-      // If there's no query, we are not loading data for that query.
-      setLoading(authLoading);
-      setData(null);
+    // While authentication is loading, we are in a loading state.
+    if (authLoading) {
+      setLoading(true);
       return;
     }
-
-    // At this point, auth is resolved. If there is no user, they are logged out.
-    // Don't attempt to fetch data that requires authentication.
-    if (!user) {
+    
+    // Once authentication is resolved, if there's no user or no query,
+    // we can stop loading and conclude there's no data.
+    if (!user || !query) {
       setLoading(false);
       setData(null);
-      // We can optionally set an error here, but for now, just returning is fine
-      // as components should handle the null data state.
       return;
     }
 
+    // If we have a user and a query, start fetching data.
     setLoading(true);
 
     const unsubscribe = onSnapshot(
-        query,
+      query,
       (snapshot) => {
         const result: T[] = [];
         snapshot.forEach((doc) => {
@@ -71,12 +66,13 @@ export function useCollection<T extends { id: string }>(
         errorEmitter.emit('permission-error', permissionError);
         
         setError(err);
+        setData(null); // Clear data on error
         setLoading(false);
       }
     );
 
     return () => unsubscribe();
-  }, [query, user, authLoading, options?.snapshotOptions]); // Add authLoading to dependencies
+  }, [query, user, authLoading, options?.snapshotOptions]);
 
   return { data, loading, error };
 }

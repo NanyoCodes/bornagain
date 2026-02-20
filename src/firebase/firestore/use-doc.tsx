@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -16,26 +15,27 @@ export function useDoc<T>(
   docRef: DocumentReference<DocumentData> | null,
   options?: UseDocOptions
 ) {
-  const { user, loading: authLoading } = useUser(); // Get auth loading state
+  const { user, loading: authLoading } = useUser();
   const [data, setData] = useState<T | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<FirestoreError | null>(null);
 
   useEffect(() => {
-    // Wait until authentication is resolved and a docRef is provided.
-    if (authLoading || !docRef) {
-      setLoading(authLoading);
-      setData(null);
+    // While authentication is loading, we are in a loading state.
+    if (authLoading) {
+      setLoading(true);
       return;
     }
 
-    // At this point, auth is resolved. If there is no user, they are logged out.
-    if (!user) {
+    // Once authentication is resolved, if there's no user or no docRef,
+    // we can stop loading and conclude there's no data.
+    if (!user || !docRef) {
       setLoading(false);
       setData(null);
       return;
     }
 
+    // If we have a user and a docRef, start fetching data.
     setLoading(true);
 
     const unsubscribe = onSnapshot(
@@ -60,12 +60,13 @@ export function useDoc<T>(
         errorEmitter.emit('permission-error', permissionError);
         
         setError(err);
+        setData(null); // Clear data on error
         setLoading(false);
       }
     );
 
     return () => unsubscribe();
-  }, [docRef, user, authLoading, options?.snapshotOptions]); // Add authLoading to dependencies
+  }, [docRef, user, authLoading, options?.snapshotOptions]);
 
   return { data, loading, error };
 }
