@@ -77,13 +77,48 @@ function ActiveCampaigns() {
   const { user, loading: authLoading } = useUser();
   const campaignsQuery = useMemo(() => {
     if (authLoading || !user?.uid || !firestore) return null;
-    return query(collection(firestore, 'campaigns'), orderBy('createdAt', 'desc'), limit(5));
+    // Fetch more campaigns initially to ensure we can find 2 active ones.
+    return query(collection(firestore, 'campaigns'), orderBy('createdAt', 'desc'), limit(10));
   }, [authLoading, user?.uid, firestore]);
   const { data: recentCampaigns, loading } = useCollection<Campaign>(campaignsQuery);
 
+  const safeToDate = (value: any): Date | null => {
+    if (!value) return null;
+    if (value instanceof Date) return value;
+    if (typeof value.toDate === 'function') return value.toDate();
+    try {
+      const d = new Date(value);
+      if (!isNaN(d.getTime())) return d;
+    } catch (e) {}
+    try {
+      if (typeof value === 'object' && value.seconds) {
+         const d = new Date(value.seconds * 1000);
+         if(!isNaN(d.getTime())) return d;
+      }
+    } catch(e) {}
+    return null;
+  };
+
+  const isPast = (campaign: Campaign): boolean => {
+    const now = new Date();
+    const endDate = safeToDate(campaign.endDate);
+    if (!endDate) return true; // Treat campaigns without an end date as past
+
+    const endDateTime = new Date(endDate);
+    if (campaign.endTime && /^\d{2}:\d{2}$/.test(campaign.endTime)) {
+        const [hours, minutes] = campaign.endTime.split(':').map(Number);
+        endDateTime.setHours(hours, minutes, 59, 999);
+    } else {
+        endDateTime.setHours(23, 59, 59, 999);
+    }
+
+    return endDateTime < now;
+  };
+
   const campaigns = useMemo(() => {
     if (!recentCampaigns) return [];
-    return recentCampaigns.filter(c => c.status !== 'deleted').slice(0, 2);
+    // Filter out deleted and past campaigns, then take the first 2.
+    return recentCampaigns.filter(c => c.status !== 'deleted' && !isPast(c)).slice(0, 2);
   }, [recentCampaigns]);
 
   return (
