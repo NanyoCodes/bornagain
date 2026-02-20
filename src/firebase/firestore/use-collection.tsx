@@ -6,6 +6,7 @@ import type { Query, DocumentData, SnapshotOptions, FirestoreError } from 'fireb
 import { onSnapshot } from 'firebase/firestore';
 import { errorEmitter } from '../error-emitter';
 import { FirestorePermissionError } from '../errors';
+import { useUser } from '../auth/use-user';
 
 interface UseCollectionOptions {
   snapshotOptions?: SnapshotOptions;
@@ -22,13 +23,16 @@ export function useCollection<T extends { id: string }>(
   query: Query<DocumentData> | null,
   options?: UseCollectionOptions
 ) {
+  const { user, loading: authLoading } = useUser();
   const [data, setData] = useState<T[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<FirestoreError | null>(null);
 
   useEffect(() => {
-    if (!query) {
-      setData([]);
+    // This guard ensures that we do not attempt to subscribe to a query
+    // until the user is fully authenticated.
+    if (!query || authLoading || !user) {
+      setData(null);
       setLoading(false);
       return;
     }
@@ -62,7 +66,7 @@ export function useCollection<T extends { id: string }>(
     );
 
     return () => unsubscribe();
-  }, [query, options?.snapshotOptions]);
+  }, [query, options?.snapshotOptions, authLoading, user]);
 
   return { data, loading, error };
 }
