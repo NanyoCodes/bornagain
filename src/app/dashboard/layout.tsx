@@ -294,7 +294,7 @@ export default function DashboardLayout({
   const [showWelcomePopup, setShowWelcomePopup] = useState(false);
 
   useEffect(() => {
-    if (!loading && user) {
+    if (!loading && user?.uid) {
       // Check if it's a new user to show the welcome popup
       const welcomePopupShown = sessionStorage.getItem('welcomePopupShown');
       if (!welcomePopupShown && user.metadata.creationTime && user.metadata.lastSignInTime) {
@@ -312,7 +312,7 @@ export default function DashboardLayout({
     }
   }, [user, loading, router]);
 
-  if (loading || !user) {
+  if (loading || !user?.uid) {
     return (
       <div className="flex min-h-screen w-full flex-col items-center justify-center bg-background">
         <Loader2 className="h-12 w-12 animate-spin text-primary" />
