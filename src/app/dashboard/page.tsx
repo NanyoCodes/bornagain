@@ -183,12 +183,12 @@ function MyCampaigns() {
 
   return (
     <Card>
-      <CardHeader className="flex flex-col sm:flex-row sm:items-center gap-4">
-        <div className="grid gap-2 flex-grow">
+      <CardHeader className="flex flex-row items-center">
+        <div className="grid gap-2">
             <CardTitle>My Campaigns</CardTitle>
             <CardDescription>Campaigns you've created.</CardDescription>
         </div>
-        <Button asChild size="sm" className="gap-1 w-full sm:w-auto shrink-0">
+        <Button asChild size="sm" className="ml-auto gap-1 shrink-0">
           <Link href="/dashboard/campaigns">
             <span className="hidden sm:inline">View All</span>
             <ArrowRight className="h-4 w-4" />
@@ -242,7 +242,7 @@ export default function DashboardPage() {
   const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userDocRef);
 
   useEffect(() => {
-    if (profileLoading || !user || !userProfile || !firestore) {
+    if (authLoading || profileLoading || !user || !userProfile || !firestore) {
       return;
     }
 
@@ -270,7 +270,7 @@ export default function DashboardPage() {
         console.error("Failed to update streak:", error);
     });
 
-  }, [profileLoading, user, userProfile, firestore]);
+  }, [authLoading, profileLoading, user, userProfile, firestore]);
 
   const testimoniesQuery = useMemo(() => {
     if (authLoading || !user?.uid || !firestore) return null;

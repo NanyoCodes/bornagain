@@ -363,7 +363,7 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
               if (navigator.share) {
                 handleShare();
               }
-            }}>
+            }} disabled={status === 'Past'}>
                 <Share2 className="h-4 w-4" />
                 <span className="sr-only">Share Campaign</span>
             </Button>
@@ -431,7 +431,7 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
        <TooltipProvider>
         <Tooltip>
             <TooltipTrigger asChild>
-                <Button onClick={handleInitiateChat} variant="outline" size="icon" disabled={isChatLoading}>
+                <Button onClick={handleInitiateChat} variant="outline" size="icon" disabled={isChatLoading || status === 'Past'}>
                     {isChatLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <MessageSquare className="h-4 w-4" />}
                 </Button>
             </TooltipTrigger>
@@ -447,7 +447,7 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
         <TooltipProvider>
             <Tooltip>
                 <TooltipTrigger asChild>
-                    <Button onClick={handleInitiateChat} variant="outline" size="icon" disabled={!userId || isChatLoading}>
+                    <Button onClick={handleInitiateChat} variant="outline" size="icon" disabled={!userId || isChatLoading || status === 'Past'}>
                          {isChatLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <MessageSquare className="h-4 w-4" />}
                     </Button>
                 </TooltipTrigger>
@@ -455,7 +455,7 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
             </Tooltip>
         </TooltipProvider>
         {shareButton}
-        <Button onClick={handleJoin} disabled={!userId || isJoining}>
+        <Button onClick={handleJoin} disabled={!userId || isJoining || status === 'Past'}>
             {isJoining && <Loader2 className="h-4 w-4 animate-spin" />}
             {isJoining ? 'Joining...' : 'Join Campaign'}
         </Button>
