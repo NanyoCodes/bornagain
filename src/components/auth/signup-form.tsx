@@ -89,8 +89,8 @@ export function SignUpForm() {
       });
 
       toast({
-        title: "Account Created",
-        description: "Welcome to Testify! You have been logged in.",
+        title: "Success",
+        description: "You are now logged in.",
       });
       router.push("/dashboard");
 

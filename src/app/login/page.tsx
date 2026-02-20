@@ -61,8 +61,8 @@ export default function LoginPage() {
       });
 
       toast({
-        title: 'Login Successful',
-        description: 'Welcome back!',
+        title: 'Success',
+        description: 'You are now logged in.',
       });
       router.push('/dashboard');
     } catch (error) {
@@ -113,7 +113,7 @@ export default function LoginPage() {
       {/* --- FORM SECTION --- */}
       <div className="absolute bottom-0 left-0 right-0 h-[70%] lg:h-full lg:left-2/5 lg:w-3/5">
         <div className="w-full h-full bg-card p-6 sm:p-8 rounded-t-3xl lg:rounded-none overflow-y-auto">
-          <div className="mx-auto grid w-full max-w-md gap-4 pt-8 pb-16">
+          <div className="mx-auto grid w-full max-w-md gap-4 pt-8 pb-24">
             <div className="grid gap-2 text-center">
               {logo && (
                 <Image
@@ -153,7 +153,7 @@ export default function LoginPage() {
               </div>
               <div className="relative flex justify-center text-xs uppercase">
                 <span className="bg-card px-2 text-muted-foreground">
-                  Or Sign In With
+                  Or Continue With
                 </span>
               </div>
             </div>

@@ -154,7 +154,7 @@ export function PhoneAuthForm() {
         throw permissionError;
       });
 
-      toast({ title: "Login Successful", description: "Welcome!" });
+      toast({ title: "Success", description: "You are now logged in." });
       router.push("/dashboard");
     } catch (error) {
       const authError = error as AuthError;

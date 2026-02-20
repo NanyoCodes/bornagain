@@ -163,8 +163,8 @@ export function LoginForm() {
       });
 
       toast({
-        title: "Login Successful",
-        description: "Welcome back!",
+        title: "Success",
+        description: "You are now logged in.",
       });
       router.push("/dashboard");
     } catch (error) {
