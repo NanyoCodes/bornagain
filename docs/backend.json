@@ -147,6 +147,10 @@
         "participants": {
           "type": "number"
         },
+        "maxParticipants": {
+          "type": "number",
+          "description": "The maximum number of participants allowed in the campaign."
+        },
         "createdAt": {
           "type": "object"
         },

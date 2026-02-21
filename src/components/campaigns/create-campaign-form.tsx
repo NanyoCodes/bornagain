@@ -47,6 +47,7 @@ const formSchema = z.object({
   targetAudience: z.string().min(3, "Target audience is too short.").max(100, "Target audience is too long."),
   scripture: z.string().min(3, "Scripture is too short.").max(100, "Scripture is too long."),
   scriptureTestimony: z.string().max(500, "Caption is too long.").optional(),
+  maxParticipants: z.number().optional(),
 }).refine((data) => data.endDate >= data.startDate, {
     message: "End date cannot be before start date.",
     path: ["endDate"],
@@ -128,22 +129,24 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
     setIsCreating(true);
 
     try {
+        const values = form.getValues();
         const campaignData = {
             title: finalName,
             description: finalDescription,
-            goal: form.getValues('goal'),
-            location: `${form.getValues('city')}, ${form.getValues('country')}`,
-            startDate: form.getValues('startDate'),
-            endDate: form.getValues('endDate'),
-            startTime: form.getValues('startTime'),
-            endTime: form.getValues('endTime'),
+            goal: values.goal,
+            location: `${values.city}, ${values.country}`,
+            startDate: values.startDate,
+            endDate: values.endDate,
+            startTime: values.startTime,
+            endTime: values.endTime,
             participants: 1,
+            maxParticipants: values.maxParticipants || null,
             createdAt: serverTimestamp(),
             organizerId: user.uid,
             organizerName: user.displayName || 'Anonymous',
             status: 'active' as const,
-            scripture: form.getValues('scripture'),
-            scriptureTestimony: form.getValues('scriptureTestimony'),
+            scripture: values.scripture,
+            scriptureTestimony: values.scriptureTestimony,
             imageUrl: null,
         };
         
@@ -374,6 +377,27 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
                 )}
               />
            </div>
+            <FormField
+              control={form.control}
+              name="maxParticipants"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Max Participants (Optional)</FormLabel>
+                  <FormControl>
+                    <Input 
+                      type="number" 
+                      placeholder="e.g., 20" 
+                      {...field} 
+                      className="text-base"
+                      onChange={e => field.onChange(e.target.value === '' ? undefined : parseInt(e.target.value, 10))}
+                      value={field.value ?? ''}
+                    />
+                  </FormControl>
+                  <FormDescription>Leave blank for unlimited participants.</FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
            <p className="text-sm text-muted-foreground">
             Provide some keywords and let our AI assistant brainstorm for you.
            </p>

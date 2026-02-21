@@ -175,7 +175,12 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
                 throw "Campaign does not exist!";
             }
             
-            const newParticipantCount = (campaignDoc.data().participants || 0) + 1;
+            const currentCampaign = campaignDoc.data() as Campaign;
+            if (currentCampaign.maxParticipants && currentCampaign.participants >= currentCampaign.maxParticipants) {
+                throw new Error("This campaign is already full.");
+            }
+
+            const newParticipantCount = (currentCampaign.participants || 0) + 1;
             transaction.update(campaignRef, { participants: newParticipantCount });
 
             const joinData = {
@@ -215,17 +220,21 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
             description: `You have successfully joined the "${campaign.title}" campaign.`,
         });
 
-    } catch (serverError) {
-        const permissionError = new FirestorePermissionError({
-            path: `TRANSACTION:JOIN_CAMPAIGN:${campaign.id}`,
-            operation: 'write',
-            requestResourceData: {
-                action: 'User joining campaign',
-                userId: user.uid,
-                campaignId: campaign.id
-            }
-        });
-        errorEmitter.emit('permission-error', permissionError);
+    } catch (error: any) {
+        if (error.name === 'FirestoreError' && error.code === 'aborted') {
+            toast({ variant: 'destructive', title: "Join Failed", description: error.message });
+        } else {
+            const permissionError = new FirestorePermissionError({
+                path: `TRANSACTION:JOIN_CAMPAIGN:${campaign.id}`,
+                operation: 'write',
+                requestResourceData: {
+                    action: 'User joining campaign',
+                    userId: user.uid,
+                    campaignId: campaign.id
+                }
+            });
+            errorEmitter.emit('permission-error', permissionError);
+        }
     } finally {
         setIsJoining(false);
     }
@@ -480,6 +489,8 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
     </DropdownMenu>
   );
 
+  const isFull = campaign.maxParticipants && campaign.participants >= campaign.maxParticipants;
+
 
   const renderOwnerActions = () => (
     <div className="flex items-center gap-2">
@@ -550,9 +561,11 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
             </Tooltip>
         </TooltipProvider>
         {shareButton}
-        <Button onClick={handleJoin} disabled={!userId || isJoining || status === 'Past'}>
-            {isJoining && <Loader2 className="h-4 w-4 animate-spin" />}
-            {isJoining ? 'Joining...' : 'Join Campaign'}
+        <Button onClick={handleJoin} disabled={!userId || isJoining || status === 'Past' || isFull}>
+            {isJoining ? <Loader2 className="h-4 w-4 animate-spin" />
+             : isFull ? 'Campaign Full'
+             : 'Join Campaign'
+            }
         </Button>
     </div>
   );
@@ -628,7 +641,10 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
             <ParticipantsDialog campaign={campaign}>
               <div className="flex items-center gap-2 text-sm text-muted-foreground cursor-pointer hover:text-primary transition-colors">
                 <Users className="h-4 w-4" />
-                <span>{campaign.participants} participant{campaign.participants === 1 ? '' : 's'}</span>
+                <span>
+                    {campaign.participants}
+                    {campaign.maxParticipants ? ` / ${campaign.maxParticipants}` : ''} participant{campaign.participants === 1 ? '' : 's'}
+                </span>
               </div>
             </ParticipantsDialog>
 
@@ -652,7 +668,3 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
     </>
   );
 }
-
-    
-
-    

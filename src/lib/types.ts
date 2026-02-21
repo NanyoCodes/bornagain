@@ -54,6 +54,7 @@ export type Campaign = {
   startTime: string;
   endTime: string;
   participants: number;
+  maxParticipants?: number;
   createdAt: Timestamp;
   organizerId: string;
   organizerName: string;

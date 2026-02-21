@@ -8,9 +8,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Mail, MessageSquare } from 'lucide-react';
+import { Loader2, Mail, MessageSquare, Trash2, X } from 'lucide-react';
 import { useCollection, useFirestore, useUser } from '@/firebase';
-import { collection, doc, updateDoc, serverTimestamp, getDocs, where, limit, addDoc, setDoc } from 'firebase/firestore';
+import { collection, doc, updateDoc, serverTimestamp, getDocs, where, limit, addDoc, setDoc, runTransaction } from 'firebase/firestore';
 import type { Campaign, CampaignParticipant } from '@/lib/types';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
@@ -52,6 +52,7 @@ const formSchema = z.object({
   endTime: z.string().min(1, "An end time is required."),
   scripture: z.string().max(100, "Scripture is too long.").optional(),
   scriptureTestimony: z.string().max(500, "Caption is too long.").optional(),
+  maxParticipants: z.number().optional(),
   lastUpdateReason: z.string().min(10, { message: "Please provide a reason of at least 10 characters." }),
 }).refine((data) => data.endDate >= data.startDate, {
     message: "End date cannot be before start date.",
@@ -64,18 +65,52 @@ type ManageCampaignFormProps = {
   onCampaignUpdated: () => void;
 };
 
-function ParticipantList({ campaignId, organizerId }: { campaignId: string, organizerId: string }) {
+function ParticipantList({ campaign }: { campaign: Campaign }) {
   const firestore = useFirestore();
-  
+  const { user } = useUser();
+  const { toast } = useToast();
+  const [isRemoving, setIsRemoving] = useState<string | null>(null);
+
   const participantsQuery = useMemo(() => {
-    if (!firestore || !campaignId) return null;
-    return query(collection(firestore, 'campaigns', campaignId, 'participants'));
-  }, [firestore, campaignId]);
+    if (!firestore || !campaign.id) return null;
+    return query(collection(firestore, 'campaigns', campaign.id, 'participants'), orderBy('joinedAt', 'asc'));
+  }, [firestore, campaign.id]);
   
   const { data: participants, loading } = useCollection<CampaignParticipant>(participantsQuery);
   
-  const organizer = useMemo(() => participants?.find(p => p.id === organizerId), [participants, organizerId]);
-  const otherParticipants = useMemo(() => participants?.filter(p => p.id !== organizerId), [participants, organizerId]);
+  const organizer = useMemo(() => participants?.find(p => p.id === campaign.organizerId), [participants, campaign.organizerId]);
+  const otherParticipants = useMemo(() => participants?.filter(p => p.id !== campaign.organizerId), [participants, campaign.organizerId]);
+
+  const handleRemove = async (participantId: string) => {
+    if (!user || !firestore || user.uid !== campaign.organizerId) return;
+    setIsRemoving(participantId);
+
+    const campaignRef = doc(firestore, 'campaigns', campaign.id);
+    const participantRef = doc(firestore, 'campaigns', campaign.id, 'participants', participantId);
+    const joinedRef = doc(firestore, 'users', participantId, 'joinedCampaigns', campaign.id);
+
+    try {
+        await runTransaction(firestore, async (transaction) => {
+            const campaignDoc = await transaction.get(campaignRef);
+            if (!campaignDoc.exists()) {
+                throw new Error("Campaign does not exist!");
+            }
+            
+            const newParticipantCount = Math.max(0, (campaignDoc.data().participants || 0) - 1);
+            
+            transaction.update(campaignRef, { participants: newParticipantCount });
+            transaction.delete(participantRef);
+            transaction.delete(joinedRef);
+        });
+
+        toast({ title: 'Participant Removed', description: 'The user has been removed from the campaign.' });
+    } catch (error: any) {
+        console.error("Error removing participant:", error);
+        toast({ variant: 'destructive', title: 'Error', description: error.message || 'Could not remove participant.' });
+    } finally {
+        setIsRemoving(null);
+    }
+  };
 
   if (loading) {
     return (
@@ -89,33 +124,56 @@ function ParticipantList({ campaignId, organizerId }: { campaignId: string, orga
 
   return (
     <div className="space-y-4">
+      <h3 className="text-lg font-semibold">Participants ({participants?.length || 0} / {campaign.maxParticipants || 'Unlimited'})</h3>
         {organizer && (
             <div className="space-y-3">
-                <h3 className="text-lg font-semibold">Organizer</h3>
-                <div className="flex items-center justify-between border rounded-lg p-4 bg-muted/50">
+                <h4 className="text-sm font-semibold text-muted-foreground">ORGANIZER</h4>
+                <div className="flex items-center justify-between border rounded-lg p-3 bg-muted/50">
                     <span className='font-medium'>{organizer.displayName}</span>
                     <span className="text-sm text-muted-foreground">You</span>
                 </div>
             </div>
         )}
         
-        <h3 className="text-lg font-semibold">Participants ({otherParticipants?.length || 0})</h3>
-        
-        {otherParticipants && otherParticipants.length > 0 ? (
-            <div className="space-y-3 max-h-60 overflow-y-auto pr-2 border rounded-lg p-4">
+        {otherParticipants && otherParticipants.length > 0 && (
+          <div className="space-y-3">
+            <h4 className="text-sm font-semibold text-muted-foreground">MEMBERS ({otherParticipants.length})</h4>
+            <div className="space-y-2 max-h-60 overflow-y-auto pr-2 border rounded-lg p-2">
                 {otherParticipants.map(p => (
-                    <div key={p.id} className="flex items-center justify-between">
-                        <span className='font-medium'>{p.displayName}</span>
-                        {p.email && (
-                            <a href={`mailto:${p.email}`} className="text-sm text-muted-foreground hover:text-primary flex items-center gap-1.5">
-                               <Mail className="h-4 w-4" /> {p.email}
-                            </a>
-                        )}
+                    <div key={p.id} className="flex items-center justify-between p-2 hover:bg-muted/50 rounded-md">
+                        <div>
+                          <p className='font-medium'>{p.displayName}</p>
+                          {p.email && <p className="text-xs text-muted-foreground">{p.email}</p>}
+                        </div>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button variant="ghost" size="icon" disabled={isRemoving === p.id}>
+                                {isRemoving === p.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <X className="h-4 w-4 text-destructive" />}
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Remove {p.displayName}?</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                Are you sure you want to remove this participant? They will be notified and this action cannot be undone.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction onClick={() => handleRemove(p.id)} className="bg-destructive hover:bg-destructive/90">
+                                Remove Participant
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
                     </div>
                 ))}
             </div>
-        ) : (
-            <p className="text-sm text-muted-foreground">No other participants have joined this campaign yet.</p>
+          </div>
+        )}
+
+        {otherParticipants?.length === 0 && (
+            <p className="text-sm text-muted-foreground text-center py-4 border rounded-lg">No other participants have joined yet.</p>
         )}
     </div>
   )
@@ -150,6 +208,7 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
       endTime: campaign.endTime || "12:00",
       scripture: campaign.scripture || "",
       scriptureTestimony: campaign.scriptureTestimony || "",
+      maxParticipants: campaign.maxParticipants || undefined,
       lastUpdateReason: "",
     },
   });
@@ -190,6 +249,7 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
             campaignTitle: campaign.title,
             lastUpdatedAt: serverTimestamp(),
             isGroupChat: true,
+            hasMessages: false,
         };
 
         await setDoc(chatDocRef, chatData, { merge: true });
@@ -264,6 +324,7 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
             endTime: values.endTime,
             scripture: values.scripture,
             scriptureTestimony: values.scriptureTestimony,
+            maxParticipants: values.maxParticipants || null,
             lastUpdateReason: values.lastUpdateReason,
         };
 
@@ -477,6 +538,27 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
                     )}
                   />
                 </div>
+                 <FormField
+                    control={form.control}
+                    name="maxParticipants"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>Max Participants (Optional)</FormLabel>
+                        <FormControl>
+                            <Input 
+                            type="number" 
+                            placeholder="e.g., 20" 
+                            {...field} 
+                            className="text-base"
+                            onChange={e => field.onChange(e.target.value === '' ? undefined : parseInt(e.target.value, 10))}
+                            value={field.value ?? ''}
+                            />
+                        </FormControl>
+                        <FormDescription>Leave blank for unlimited participants.</FormDescription>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                />
                 <FormField
                   control={form.control}
                   name="lastUpdateReason"
@@ -500,7 +582,7 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
 
         <Separator />
 
-        <ParticipantList campaignId={campaign.id} organizerId={campaign.organizerId} />
+        <ParticipantList campaign={campaign} />
 
         <Separator />
 
@@ -519,7 +601,7 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
 
          <Card className="border-destructive mt-6">
             <CardHeader>
-                <CardTitle className="text-destructive">Delete Campaign</CardTitle>
+                <CardTitle className="flex items-center gap-2 text-destructive"><Trash2 className="h-5 w-5" /> Delete Campaign</CardTitle>
                 <CardDescription>This action cannot be undone and will permanently remove the campaign from public view.</CardDescription>
             </CardHeader>
             <CardContent>
@@ -536,7 +618,7 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
                         </AlertDialogHeader>
                         <AlertDialogFooter>
                             <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
-                            <AlertDialogAction onClick={handleDeleteCampaign} disabled={isDeleting}>
+                            <AlertDialogAction onClick={handleDeleteCampaign} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90">
                                 {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                 Confirm Deletion
                             </AlertDialogAction>
@@ -548,5 +630,3 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
     </div>
   );
 }
-
-    
