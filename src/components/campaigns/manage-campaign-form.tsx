@@ -10,7 +10,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDes
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Mail, MessageSquare } from 'lucide-react';
 import { useCollection, useFirestore, useUser } from '@/firebase';
-import { collection, doc, updateDoc, serverTimestamp, getDocs, where, limit, addDoc } from 'firebase/firestore';
+import { collection, doc, updateDoc, serverTimestamp, getDocs, where, limit, addDoc, setDoc } from 'firebase/firestore';
 import type { Campaign, CampaignParticipant } from '@/lib/types';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
@@ -160,7 +160,7 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
     try {
         const participantsRef = collection(firestore, 'campaigns', campaign.id, 'participants');
         const participantsSnapshot = await getDocs(participantsRef);
-        const participants = participantsSnapshot.docs.map(doc => ({ ...(doc.data() as Omit<CampaignParticipant, 'id'>), id: doc.id }));
+        const participants = participantsSnapshot.docs.map(pDoc => ({ ...(pDoc.data() as Omit<CampaignParticipant, 'id'>), id: pDoc.id }));
 
         if (participants.length <= 1) {
             toast({
@@ -181,29 +181,20 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
             };
         });
         
-        const chatsRef = collection(firestore, 'chats');
-        const q = query(chatsRef, where('campaignId', '==', campaign.id), where('isGroupChat', '==', true), where('participantIds', 'array-contains', user.uid), limit(1));
-        const querySnapshot = await getDocs(q);
-        
-        let chatId: string;
+        const chatDocRef = doc(firestore, 'chats', campaign.id);
 
-        if (!querySnapshot.empty) {
-            chatId = querySnapshot.docs[0].id;
-        } else {
-            const newChatData = {
-                participantIds,
-                participantInfo,
-                campaignId: campaign.id,
-                campaignTitle: campaign.title,
-                lastUpdatedAt: serverTimestamp(),
-                hasMessages: false,
-                isGroupChat: true,
-            };
-            const chatDocRef = await addDoc(chatsRef, newChatData);
-            chatId = chatDocRef.id;
-        }
+        const chatData = {
+            participantIds,
+            participantInfo,
+            campaignId: campaign.id,
+            campaignTitle: campaign.title,
+            lastUpdatedAt: serverTimestamp(),
+            isGroupChat: true,
+        };
 
-        router.push(`/dashboard/chats/${chatId}`);
+        await setDoc(chatDocRef, chatData, { merge: true });
+
+        router.push(`/dashboard/chats/${campaign.id}`);
 
     } catch (error) {
         console.error("Error starting group chat:", error);
@@ -557,3 +548,5 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
     </div>
   );
 }
+
+    

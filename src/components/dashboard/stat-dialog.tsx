@@ -55,12 +55,6 @@ export function StatDialog({ title, value, change, icon: Icon, dialogTitle, dial
         </Card>
     );
 
-    const dialogContent = (
-        <div className="max-h-[60vh] overflow-y-auto pr-4 mt-4">
-            {children}
-        </div>
-    );
-
     if (!mounted) {
         return (
              <Card>
@@ -86,7 +80,7 @@ export function StatDialog({ title, value, change, icon: Icon, dialogTitle, dial
                         <SheetDescription>{dialogDescription}</SheetDescription>
                     </SheetHeader>
                     <div className="max-h-[calc(90vh-80px)] overflow-y-auto mt-4">
-                        {children}
+                        {isOpen && children}
                     </div>
                 </SheetContent>
             </Sheet>
@@ -103,8 +97,12 @@ export function StatDialog({ title, value, change, icon: Icon, dialogTitle, dial
                     <DialogTitle>{dialogTitle}</DialogTitle>
                     <DialogDescription>{dialogDescription}</DialogDescription>
                 </DialogHeader>
-                {dialogContent}
+                <div className="max-h-[60vh] overflow-y-auto pr-4 mt-4">
+                  {isOpen && children}
+                </div>
             </DialogContent>
         </Dialog>
     )
 }
+
+    
