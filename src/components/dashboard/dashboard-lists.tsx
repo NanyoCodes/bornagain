@@ -9,7 +9,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { ArrowRight, XCircle } from 'lucide-react';
-import { format, isSameMonth } from 'date-fns';
+import { format, isSameDay } from 'date-fns';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
@@ -29,14 +29,14 @@ function FilterControls({
   const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
     if (value) {
-      const [year, month] = value.split('-').map(Number);
-      setFilterDate(new Date(year, month - 1, 1));
+      const [year, month, day] = value.split('-').map(Number);
+      setFilterDate(new Date(year, month - 1, day));
     } else {
       setFilterDate(undefined);
     }
   };
 
-  const dateValue = filterDate ? format(filterDate, "yyyy-MM") : "";
+  const dateValue = filterDate ? format(filterDate, "yyyy-MM-dd") : "";
 
   return (
     <div className="flex flex-col sm:flex-row gap-2 mb-4">
@@ -47,10 +47,10 @@ function FilterControls({
         className="flex-grow"
       />
       <div className="relative w-full sm:w-[240px]">
-        <Label htmlFor="month-filter" className="sr-only">Filter by month</Label>
+        <Label htmlFor="date-filter" className="sr-only">Filter by date</Label>
         <Input
-          id="month-filter"
-          type="month"
+          id="date-filter"
+          type="date"
           value={dateValue}
           onChange={handleDateChange}
           className="w-full"
@@ -152,7 +152,7 @@ export function JoinedCampaignsList({ userId }: { userId: string }) {
             : true;
         
         const matchesDate = filterDate && campaign.joinedAt ?
-            isSameMonth(campaign.joinedAt.toDate(), filterDate)
+            isSameDay(campaign.joinedAt.toDate(), filterDate)
             : true;
 
         return matchesSearch && matchesDate;
@@ -214,7 +214,7 @@ export function TestimoniesList({ userId }: { userId: string }) {
         : true;
       
       const matchesDate = filterDate && testimony.createdAt ?
-        isSameMonth(testimony.createdAt.toDate(), filterDate)
+        isSameDay(testimony.createdAt.toDate(), filterDate)
         : true;
 
       return matchesSearch && matchesDate;
@@ -277,7 +277,7 @@ export function CampaignsCreatedList({ userId }: { userId: string }) {
         : true;
       
       const matchesDate = filterDate && campaign.createdAt ?
-        isSameMonth(campaign.createdAt.toDate(), filterDate)
+        isSameDay(campaign.createdAt.toDate(), filterDate)
         : true;
 
       return matchesSearch && matchesDate;
@@ -340,7 +340,7 @@ export function SoulsWonList({ userId }: { userId: string }) {
         : true;
       
       const matchesDate = filterDate && soul.wonAt ?
-        isSameMonth(soul.wonAt.toDate(), filterDate)
+        isSameDay(soul.wonAt.toDate(), filterDate)
         : true;
 
       return matchesSearch && matchesDate;
