@@ -21,8 +21,8 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
                 <Image
                 src={logo.imageUrl}
                 alt={logo.description}
-                width={40}
-                height={40}
+                width={50}
+                height={50}
                 className="rounded-lg"
                 data-ai-hint={logo.imageHint}
                 />

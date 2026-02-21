@@ -76,7 +76,7 @@ export default function SignUpPage() {
         toast({
           variant: 'destructive',
           title: 'Sign Up Failed',
-          description: 'You are now logged in.',
+          description: 'An unexpected error occurred.',
         });
       }
     }
@@ -89,8 +89,8 @@ export default function SignUpPage() {
             <Image
                 src={logo.imageUrl}
                 alt={logo.description}
-                width={40}
-                height={40}
+                width={50}
+                height={50}
                 className="mb-2 rounded-lg"
                 data-ai-hint={logo.imageHint}
             />
