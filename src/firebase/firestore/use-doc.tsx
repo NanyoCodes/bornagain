@@ -21,17 +21,21 @@ export function useDoc<T>(
   const [error, setError] = useState<FirestoreError | null>(null);
 
   useEffect(() => {
+    // While authentication is loading, we are in a loading state.
     if (authLoading) {
       setLoading(true);
       return;
     }
 
+    // If authentication is finished but there is no user, or if no docRef is provided,
+    // we should not fetch data.
     if (!user || !docRef) {
       setLoading(false);
       setData(null);
       return;
     }
 
+    // A user and docRef are available, so we can attempt to fetch data.
     setLoading(true);
     const unsubscribe = onSnapshot(
       docRef,
@@ -55,13 +59,14 @@ export function useDoc<T>(
         errorEmitter.emit('permission-error', permissionError);
         
         setError(err);
-        setData(null); // Clear data on error
+        setData(null);
         setLoading(false);
       }
     );
 
+    // Clean up the listener when the component unmounts or dependencies change.
     return () => unsubscribe();
-  }, [docRef, user?.uid, authLoading, options?.snapshotOptions]);
+  }, [user?.uid, docRef, authLoading, options?.snapshotOptions]);
 
   return { data, loading, error };
 }

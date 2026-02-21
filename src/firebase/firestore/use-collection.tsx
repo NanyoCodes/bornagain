@@ -11,12 +11,6 @@ interface UseCollectionOptions {
   snapshotOptions?: SnapshotOptions;
 }
 
-function getQueryPath(q: Query<DocumentData>): string {
-    // This is a hack to get the path from a query.
-    // This might break in future versions of the SDK.
-    return (q as any)._query?.path?.canonicalString() ?? '';
-}
-
 export function useCollection<T extends { id: string }>(
   query: Query<DocumentData> | null,
   options?: UseCollectionOptions
@@ -27,47 +21,51 @@ export function useCollection<T extends { id: string }>(
   const [error, setError] = useState<FirestoreError | null>(null);
 
   useEffect(() => {
+    // While authentication is loading, we are in a loading state.
     if (authLoading) {
       setLoading(true);
       return;
     }
 
+    // If authentication is finished but there is no user, or if no query is provided,
+    // we should not fetch data.
     if (!user || !query) {
       setLoading(false);
       setData(null);
       return;
     }
-    
+
+    // A user and query are available, so we can attempt to fetch data.
     setLoading(true);
+    
     const unsubscribe = onSnapshot(
       query,
       (snapshot) => {
-        const result: T[] = [];
-        snapshot.forEach((doc) => {
-          result.push({
-            id: doc.id,
-            ...doc.data(options?.snapshotOptions),
-          } as T);
-        });
+        const result: T[] = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(options?.snapshotOptions),
+        } as T));
         setData(result);
         setLoading(false);
         setError(null);
       },
       (err) => {
+        // This is the error path.
         const permissionError = new FirestorePermissionError({
-          path: getQueryPath(query),
+          path: (query as any)._query?.path?.canonicalString() ?? 'unknown',
           operation: 'list',
         });
         errorEmitter.emit('permission-error', permissionError);
         
         setError(err);
-        setData(null); // Clear data on error
+        setData(null);
         setLoading(false);
       }
     );
 
+    // Clean up the listener when the component unmounts or dependencies change.
     return () => unsubscribe();
-  }, [query, user?.uid, authLoading, options?.snapshotOptions]);
+  }, [user?.uid, query, authLoading, options?.snapshotOptions]);
 
   return { data, loading, error };
 }
