@@ -63,31 +63,47 @@ type ManageCampaignFormProps = {
   onCampaignUpdated: () => void;
 };
 
-function ParticipantList({ campaignId }: { campaignId: string }) {
+function ParticipantList({ campaignId, organizerId }: { campaignId: string, organizerId: string }) {
   const firestore = useFirestore();
   const { user, loading: authLoading } = useUser();
+
   const participantsQuery = useMemo(() => {
     if (authLoading || !user?.uid || !firestore) return null;
     return query(collection(firestore, 'campaigns', campaignId, 'participants'));
   }, [authLoading, user?.uid, firestore, campaignId]);
+  
   const { data: participants, loading } = useCollection<CampaignParticipant>(participantsQuery);
+  
+  const organizer = useMemo(() => participants?.find(p => p.id === organizerId), [participants, organizerId]);
+  const otherParticipants = useMemo(() => participants?.filter(p => p.id !== organizerId), [participants, organizerId]);
 
   if (loading || authLoading) {
     return (
-        <div className="space-y-2">
-            <Skeleton className="h-5 w-32" />
-            <Skeleton className="h-8 w-full" />
-            <Skeleton className="h-8 w-full" />
+        <div className="space-y-4">
+            <Skeleton className="h-6 w-32" />
+            <Skeleton className="h-12 w-full" />
+            <Skeleton className="h-20 w-full" />
         </div>
     )
   }
 
   return (
     <div className="space-y-4">
-        <h3 className="text-lg font-semibold">Participants ({participants?.length || 0})</h3>
-        {participants && participants.length > 0 ? (
+        {organizer && (
+            <div className="space-y-3">
+                <h3 className="text-lg font-semibold">Organizer</h3>
+                <div className="flex items-center justify-between border rounded-lg p-4 bg-muted/50">
+                    <span className='font-medium'>{organizer.displayName}</span>
+                    <span className="text-sm text-muted-foreground">You</span>
+                </div>
+            </div>
+        )}
+        
+        <h3 className="text-lg font-semibold">Participants ({otherParticipants?.length || 0})</h3>
+        
+        {otherParticipants && otherParticipants.length > 0 ? (
             <div className="space-y-3 max-h-60 overflow-y-auto pr-2 border rounded-lg p-4">
-                {participants.map(p => (
+                {otherParticipants.map(p => (
                     <div key={p.id} className="flex items-center justify-between">
                         <span className='font-medium'>{p.displayName}</span>
                         {p.email && (
@@ -99,7 +115,7 @@ function ParticipantList({ campaignId }: { campaignId: string }) {
                 ))}
             </div>
         ) : (
-            <p className="text-sm text-muted-foreground">No one has joined this campaign yet.</p>
+            <p className="text-sm text-muted-foreground">No other participants have joined this campaign yet.</p>
         )}
     </div>
   )
@@ -145,14 +161,13 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
         const participantsSnapshot = await getDocs(participantsRef);
         const participants = participantsSnapshot.docs.map(doc => ({ ...(doc.data() as Omit<CampaignParticipant, 'id'>), id: doc.id }));
 
-        if (participants.length === 0) {
-            participants.push({
-                id: user.uid,
-                userId: user.uid,
-                displayName: user.displayName || 'Organizer',
-                photoURL: user.photoURL || '',
-                joinedAt: serverTimestamp() as any,
+        if (participants.length <= 1) {
+            toast({
+                title: "No Other Participants",
+                description: "You can start a group chat once other users have joined the campaign.",
             });
+            setIsChatLoading(false);
+            return;
         }
         
         const participantIds = participants.map(p => p.id);
@@ -476,7 +491,7 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
 
         <Separator />
 
-        <ParticipantList campaignId={campaign.id} />
+        <ParticipantList campaignId={campaign.id} organizerId={campaign.organizerId} />
 
         <Separator />
 
