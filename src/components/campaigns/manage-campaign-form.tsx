@@ -8,9 +8,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Mail, MessageSquare, Trash2, X } from 'lucide-react';
+import { Loader2, MessageSquare, Trash2, X } from 'lucide-react';
 import { useCollection, useFirestore, useUser } from '@/firebase';
-import { collection, doc, updateDoc, serverTimestamp, getDocs, where, limit, addDoc, setDoc, runTransaction, query, orderBy } from 'firebase/firestore';
+import { collection, doc, updateDoc, serverTimestamp, getDoc, where, limit, addDoc, setDoc, runTransaction, query, orderBy } from 'firebase/firestore';
 import type { Campaign, CampaignParticipant } from '@/lib/types';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
@@ -190,7 +190,6 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
     }
   };
 
-
   const defaultValues = useMemo(() => {
       const locationParts = campaign.location.split(',');
       const city = locationParts[0]?.trim() || '';
@@ -220,7 +219,6 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues,
   });
 
   useEffect(() => {

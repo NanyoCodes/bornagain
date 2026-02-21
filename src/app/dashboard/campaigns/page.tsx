@@ -53,9 +53,15 @@ export default function CampaignsPage() {
   const [mounted, setMounted] = useState(false);
   const isMobile = useIsMobile();
   const { searchTerm, setSearchPlaceholder, setIsSearchVisible, setSearchTerm } = useSearch();
+  const [now, setNow] = useState(new Date());
 
   useEffect(() => {
     setMounted(true);
+    // Update the 'now' state every minute to re-evaluate campaign statuses
+    const interval = setInterval(() => {
+      setNow(new Date());
+    }, 60000);
+    return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
@@ -134,7 +140,6 @@ export default function CampaignsPage() {
 
     if (!filtered || !mounted) return filtered || [];
 
-    const now = new Date();
     const userLocation = userProfile?.location?.toLowerCase().trim();
 
     const getStatus = (campaign: Campaign): number => {
@@ -191,7 +196,7 @@ export default function CampaignsPage() {
       return 0;
     });
 
-  }, [campaigns, searchTerm, userProfile, mounted]);
+  }, [campaigns, searchTerm, userProfile, mounted, now]);
 
   const triggerButton = (
     <Button disabled={!user}>
