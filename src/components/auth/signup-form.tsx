@@ -18,7 +18,7 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { Loader2, User, Mail, Lock } from "lucide-react";
-import { createUserWithEmailAndPassword, updateProfile, AuthError } from "firebase/auth";
+import { createUserWithEmailAndPassword, updateProfile, AuthError, sendEmailVerification } from "firebase/auth";
 import { useAuth, useFirestore } from "@/firebase";
 import { doc, setDoc } from "firebase/firestore";
 import { errorEmitter } from "@/firebase/error-emitter";
@@ -70,6 +70,8 @@ export function SignUpForm() {
       await updateProfile(user, {
         displayName: values.name,
       });
+      
+      await sendEmailVerification(user);
 
       const userDocRef = doc(firestore, "users", user.uid);
       const userData = {
@@ -89,17 +91,17 @@ export function SignUpForm() {
       });
 
       toast({
-        title: "Success",
-        description: "You are now logged in.",
+        title: "Account Created!",
+        description: "A verification email has been sent to your inbox. Please verify your account before logging in.",
       });
-      router.push("/dashboard");
+      router.push("/login");
 
     } catch (error) {
       const authError = error as AuthError;
       toast({
         variant: "destructive",
         title: "Sign Up Failed",
-        description: "An unexpected error occurred.",
+        description: authError.code === 'auth/email-already-in-use' ? 'An account with this email already exists.' : "An unexpected error occurred.",
       });
     } finally {
       setIsLoading(false);

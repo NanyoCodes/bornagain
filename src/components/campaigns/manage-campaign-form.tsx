@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -64,52 +64,18 @@ type ManageCampaignFormProps = {
   onCampaignUpdated: () => void;
 };
 
-function ParticipantList({ campaign }: { campaign: Campaign }) {
-  const firestore = useFirestore();
-  const { user } = useUser();
-  const { toast } = useToast();
-  const [isRemoving, setIsRemoving] = useState<string | null>(null);
+function ParticipantList({ campaign, participants, loading, onRemove }: { campaign: Campaign, participants: CampaignParticipant[], loading: boolean, onRemove: (participantId: string) => Promise<void> }) {
+    const { user } = useUser();
+    const [isRemoving, setIsRemoving] = useState<string | null>(null);
 
-  const participantsQuery = useMemo(() => {
-    if (!firestore || !campaign.id || !user) return null;
-    return query(collection(firestore, 'campaigns', campaign.id, 'participants'), orderBy('joinedAt', 'asc'));
-  }, [firestore, campaign.id, user]);
-  
-  const { data: participants, loading } = useCollection<CampaignParticipant>(participantsQuery);
-  
-  const organizer = useMemo(() => participants?.find(p => p.id === campaign.organizerId), [participants, campaign.organizerId]);
-  const otherParticipants = useMemo(() => participants?.filter(p => p.id !== campaign.organizerId), [participants, campaign.organizerId]);
+    const organizer = useMemo(() => participants?.find(p => p.id === campaign.organizerId), [participants, campaign.organizerId]);
+    const otherParticipants = useMemo(() => participants?.filter(p => p.id !== campaign.organizerId), [participants, campaign.organizerId]);
 
-  const handleRemove = async (participantId: string) => {
-    if (!user || !firestore || user.uid !== campaign.organizerId) return;
-    setIsRemoving(participantId);
-
-    const campaignRef = doc(firestore, 'campaigns', campaign.id);
-    const participantRef = doc(firestore, 'campaigns', campaign.id, 'participants', participantId);
-    const joinedRef = doc(firestore, 'users', participantId, 'joinedCampaigns', campaign.id);
-
-    try {
-        await runTransaction(firestore, async (transaction) => {
-            const campaignDoc = await transaction.get(campaignRef);
-            if (!campaignDoc.exists()) {
-                throw new Error("Campaign does not exist!");
-            }
-            
-            const newParticipantCount = Math.max(0, (campaignDoc.data().participants || 0) - 1);
-            
-            transaction.update(campaignRef, { participants: newParticipantCount });
-            transaction.delete(participantRef);
-            transaction.delete(joinedRef);
-        });
-
-        toast({ title: 'Participant Removed', description: 'The user has been removed from the campaign.' });
-    } catch (error: any) {
-        console.error("Error removing participant:", error);
-        toast({ variant: 'destructive', title: 'Error', description: error.message || 'Could not remove participant.' });
-    } finally {
+    const handleRemoveClick = async (participantId: string) => {
+        setIsRemoving(participantId);
+        await onRemove(participantId);
         setIsRemoving(null);
     }
-  };
 
   if (loading) {
     return (
@@ -159,7 +125,7 @@ function ParticipantList({ campaign }: { campaign: Campaign }) {
                             </AlertDialogHeader>
                             <AlertDialogFooter>
                               <AlertDialogCancel>Cancel</AlertDialogCancel>
-                              <AlertDialogAction onClick={() => handleRemove(p.id)} className="bg-destructive hover:bg-destructive/90">
+                              <AlertDialogAction onClick={() => handleRemoveClick(p.id)} className="bg-destructive hover:bg-destructive/90">
                                 Remove Participant
                               </AlertDialogAction>
                             </AlertDialogFooter>
@@ -189,46 +155,87 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
   const [isChatLoading, setIsChatLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const locationParts = campaign.location.split(',');
-  const city = locationParts[0]?.trim() || '';
-  const country = locationParts[1]?.trim() || '';
+  const participantsQuery = useMemo(() => {
+    if (!firestore || !campaign.id || !user) return null;
+    return query(collection(firestore, 'campaigns', campaign.id, 'participants'), orderBy('joinedAt', 'asc'));
+  }, [firestore, campaign.id, user]);
+  
+  const { data: participants, loading: participantsLoading } = useCollection<CampaignParticipant>(participantsQuery);
+  
+  const handleRemoveParticipant = async (participantId: string) => {
+    if (!user || !firestore || user.uid !== campaign.organizerId) return;
+    
+    const campaignRef = doc(firestore, 'campaigns', campaign.id);
+    const participantRef = doc(firestore, 'campaigns', campaign.id, 'participants', participantId);
+    const joinedRef = doc(firestore, 'users', participantId, 'joinedCampaigns', campaign.id);
+
+    try {
+        await runTransaction(firestore, async (transaction) => {
+            const campaignDoc = await transaction.get(campaignRef);
+            if (!campaignDoc.exists()) {
+                throw new Error("Campaign does not exist!");
+            }
+            
+            const newParticipantCount = Math.max(0, (campaignDoc.data().participants || 0) - 1);
+            
+            transaction.update(campaignRef, { participants: newParticipantCount });
+            transaction.delete(participantRef);
+            transaction.delete(joinedRef);
+        });
+
+        toast({ title: 'Participant Removed', description: 'The user has been removed from the campaign.' });
+    } catch (error: any) {
+        console.error("Error removing participant:", error);
+        toast({ variant: 'destructive', title: 'Error', description: error.message || 'Could not remove participant.' });
+    }
+  };
+
+
+  const defaultValues = useMemo(() => {
+      const locationParts = campaign.location.split(',');
+      const city = locationParts[0]?.trim() || '';
+      const country = locationParts[1]?.trim() || '';
+      return {
+        title: campaign.title || "",
+        description: campaign.description || "",
+        goal: campaign.goal || "",
+        city: city,
+        country: country,
+        startDate: campaign.startDate?.toDate ? campaign.startDate.toDate() : new Date(),
+        endDate: campaign.endDate?.toDate ? campaign.endDate.toDate() : new Date(),
+        startTime: campaign.startTime || "10:00",
+        endTime: campaign.endTime || "12:00",
+        scripture: campaign.scripture || "",
+        scriptureTestimony: campaign.scriptureTestimony || "",
+        maxParticipants: campaign.maxParticipants || undefined,
+        lastUpdateReason: "",
+      }
+  }, [campaign]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      title: campaign.title || "",
-      description: campaign.description || "",
-      goal: campaign.goal || "",
-      city: city,
-      country: country,
-      startDate: campaign.startDate?.toDate ? campaign.startDate.toDate() : new Date(),
-      endDate: campaign.endDate?.toDate ? campaign.endDate.toDate() : new Date(),
-      startTime: campaign.startTime || "10:00",
-      endTime: campaign.endTime || "12:00",
-      scripture: campaign.scripture || "",
-      scriptureTestimony: campaign.scriptureTestimony || "",
-      maxParticipants: campaign.maxParticipants || undefined,
-      lastUpdateReason: "",
-    },
+    defaultValues,
   });
+
+  useEffect(() => {
+    form.reset(defaultValues)
+  }, [defaultValues, form]);
+
 
   const handleStartGroupChat = async () => {
     if (!user || !firestore) return;
     setIsChatLoading(true);
+    
+    if (!participants || participants.length <= 1) {
+        toast({
+            title: "Not Enough Participants",
+            description: "A group chat requires at least one other participant.",
+        });
+        setIsChatLoading(false);
+        return;
+    }
+    
     try {
-        const participantsRef = collection(firestore, 'campaigns', campaign.id, 'participants');
-        const participantsSnapshot = await getDocs(participantsRef);
-        const participants = participantsSnapshot.docs.map(pDoc => ({ ...(pDoc.data() as Omit<CampaignParticipant, 'id'>), id: pDoc.id }));
-
-        if (participants.length <= 1) {
-            toast({
-                title: "No Other Participants",
-                description: "You can start a group chat once other users have joined the campaign.",
-            });
-            setIsChatLoading(false);
-            return;
-        }
-        
         const participantIds = participants.map(p => p.id);
         const participantInfo: { [key: string]: any } = {};
         participants.forEach(p => {
@@ -581,7 +588,7 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
 
         <Separator />
 
-        <ParticipantList campaign={campaign} />
+        <ParticipantList campaign={campaign} participants={participants || []} loading={participantsLoading} onRemove={handleRemoveParticipant} organizerId={campaign.organizerId} />
 
         <Separator />
 
@@ -591,10 +598,11 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
                 <CardDescription>Start a group chat with all campaign participants.</CardDescription>
             </CardHeader>
             <CardContent>
-                <Button onClick={handleStartGroupChat} disabled={isChatLoading}>
+                <Button onClick={handleStartGroupChat} disabled={isChatLoading || participantsLoading || !participants || participants.length <= 1}>
                     {isChatLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <MessageSquare className="mr-2 h-4 w-4" />}
                     Start Group Chat
                 </Button>
+                 {participants && participants.length <= 1 && <p className="text-xs text-muted-foreground mt-2">You need at least one other participant to start a group chat.</p>}
             </CardContent>
         </Card>
 

@@ -18,7 +18,7 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import React, { useState } from "react";
 import { Loader2, Mail, Lock } from "lucide-react";
-import { signInWithEmailAndPassword, sendPasswordResetEmail, AuthError } from "firebase/auth";
+import { signInWithEmailAndPassword, sendPasswordResetEmail, AuthError, signOut } from "firebase/auth";
 import { useAuth, useFirestore } from "@/firebase";
 import { doc, setDoc } from "firebase/firestore";
 import { errorEmitter } from "@/firebase/error-emitter";
@@ -144,6 +144,17 @@ export function LoginForm() {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, values.email, values.password);
       const user = userCredential.user;
+
+      if (!user.emailVerified && user.providerData.some(p => p.providerId === 'password')) {
+        toast({
+            variant: "destructive",
+            title: "Email Not Verified",
+            description: "Please check your inbox and verify your email address before logging in.",
+        });
+        await signOut(auth);
+        setIsLoading(false);
+        return;
+      }
 
       const userDocRef = doc(firestore, "users", user.uid);
       const userData = {
