@@ -569,11 +569,18 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
                 )}
             </div>
             
-            {campaign.scripture && (
+            {campaign.scriptureTestimony ? (
                 <blockquote className="mt-4 border-l-2 pl-4 italic text-muted-foreground">
-                    &ldquo;My Testimony from {campaign.scripture}&rdquo;
+                    &ldquo;{campaign.scriptureTestimony}&rdquo;
+                    {campaign.scripture && (
+                        <footer className="text-right text-xs not-italic mt-1">- Inspired by {campaign.scripture}</footer>
+                    )}
                 </blockquote>
-            )}
+            ) : campaign.scripture ? (
+                <div className="mt-4 text-sm text-muted-foreground">
+                    <span className="font-semibold">Inspirational Scripture:</span> {campaign.scripture}
+                </div>
+            ) : null}
 
             <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                 <div className="rounded-lg border p-3 flex items-start gap-3">

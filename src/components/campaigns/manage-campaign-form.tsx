@@ -6,7 +6,7 @@ import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/components/ui/button';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Mail, MessageSquare } from 'lucide-react';
 import { useCollection, useFirestore, useUser } from '@/firebase';
@@ -51,6 +51,7 @@ const formSchema = z.object({
   startTime: z.string().min(1, "A start time is required."),
   endTime: z.string().min(1, "An end time is required."),
   scripture: z.string().max(100, "Scripture is too long.").optional(),
+  scriptureTestimony: z.string().max(500, "Caption is too long.").optional(),
   lastUpdateReason: z.string().min(10, { message: "Please provide a reason of at least 10 characters." }),
 }).refine((data) => data.endDate >= data.startDate, {
     message: "End date cannot be before start date.",
@@ -148,6 +149,7 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
       startTime: campaign.startTime || "10:00",
       endTime: campaign.endTime || "12:00",
       scripture: campaign.scripture || "",
+      scriptureTestimony: campaign.scriptureTestimony || "",
       lastUpdateReason: "",
     },
   });
@@ -270,6 +272,7 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
             startTime: values.startTime,
             endTime: values.endTime,
             scripture: values.scripture,
+            scriptureTestimony: values.scriptureTestimony,
             lastUpdateReason: values.lastUpdateReason,
         };
 
@@ -386,6 +389,22 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
                     </FormItem>
                     )}
                 />
+                 <FormField
+                    control={form.control}
+                    name="scriptureTestimony"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>Scripture Caption (Optional)</FormLabel>
+                        <FormControl>
+                            <Textarea placeholder="Your short testimony or caption related to the scripture..." {...field} value={field.value ?? ''} className="text-base" />
+                        </FormControl>
+                        <FormDescription>
+                            This will be displayed with the scripture on the campaign card.
+                        </FormDescription>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                    />
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <FormField
                     control={form.control}
@@ -538,5 +557,3 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
     </div>
   );
 }
-
-    

@@ -12,6 +12,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -45,6 +46,7 @@ const formSchema = z.object({
   endTime: z.string().min(1, "An end time is required."),
   targetAudience: z.string().min(3, "Target audience is too short.").max(100, "Target audience is too long."),
   scripture: z.string().min(3, "Scripture is too short.").max(100, "Scripture is too long."),
+  scriptureTestimony: z.string().max(500, "Caption is too long.").optional(),
 }).refine((data) => data.endDate >= data.startDate, {
     message: "End date cannot be before start date.",
     path: ["endDate"],
@@ -79,6 +81,7 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
       country: "",
       targetAudience: "",
       scripture: "",
+      scriptureTestimony: "",
       startTime: "10:00",
       endTime: "12:00",
     },
@@ -140,6 +143,7 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
             organizerName: user.displayName || 'Anonymous',
             status: 'active' as const,
             scripture: form.getValues('scripture'),
+            scriptureTestimony: form.getValues('scriptureTestimony'),
             imageUrl: null,
         };
         
@@ -272,6 +276,22 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
               </FormItem>
             )}
           />
+           <FormField
+              control={form.control}
+              name="scriptureTestimony"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Scripture Caption (Optional)</FormLabel>
+                  <FormControl>
+                    <Textarea placeholder="Your short testimony or caption related to the scripture..." {...field} className="text-base" />
+                  </FormControl>
+                  <FormDescription>
+                    This will be displayed with the scripture on the campaign card.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
                 control={form.control}

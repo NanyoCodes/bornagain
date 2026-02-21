@@ -179,6 +179,10 @@
         "scripture": {
           "type": "string",
           "description": "An inspirational scripture for the campaign."
+        },
+        "scriptureTestimony": {
+          "type": "string",
+          "description": "The organizer's personal testimony or caption related to the scripture."
         }
       },
       "required": [

@@ -62,6 +62,7 @@ export type Campaign = {
   deletionReason?: string;
   deletedAt?: Timestamp;
   scripture?: string;
+  scriptureTestimony?: string;
 };
 
 export type JoinedCampaign = {
