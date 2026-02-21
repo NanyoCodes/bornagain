@@ -503,11 +503,13 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
        <TooltipProvider>
         <Tooltip>
             <TooltipTrigger asChild>
-                <Button onClick={handleInitiateChat} variant="outline" size="icon" disabled={isChatLoading || status === 'Past'}>
-                    {isChatLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <MessageSquare className="h-4 w-4" />}
+                <Button asChild variant="outline" size="icon" disabled={status === 'Past'}>
+                    <Link href={`/dashboard/chats/${campaign.id}`}>
+                        <Users className="h-4 w-4" />
+                    </Link>
                 </Button>
             </TooltipTrigger>
-            <TooltipContent><p>Chat with Organizer</p></TooltipContent>
+            <TooltipContent><p>Group Chat</p></TooltipContent>
         </Tooltip>
        </TooltipProvider>
       {shareButton}
@@ -629,5 +631,7 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
     </>
   );
 }
+
+    
 
     
