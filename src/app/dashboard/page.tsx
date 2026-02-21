@@ -19,9 +19,9 @@ function RecentTestimonies() {
   const firestore = useFirestore();
   const { user, loading: authLoading } = useUser();
   const testimoniesQuery = useMemo(() => {
-    if (!user || !firestore) return null;
+    if (authLoading || !user || !firestore) return null;
     return query(collection(firestore, 'testimonies'), orderBy('createdAt', 'desc'), limit(3));
-  }, [user, firestore]);
+  }, [user, firestore, authLoading]);
   const { data: testimonies, loading } = useCollection<Testimony>(testimoniesQuery);
 
   return (
@@ -76,10 +76,10 @@ function ActiveCampaigns() {
   const firestore = useFirestore();
   const { user, loading: authLoading } = useUser();
   const campaignsQuery = useMemo(() => {
-    if (!user || !firestore) return null;
+    if (authLoading || !user || !firestore) return null;
     // Fetch more campaigns initially to ensure we can find 2 active ones.
     return query(collection(firestore, 'campaigns'), orderBy('createdAt', 'desc'), limit(10));
-  }, [user, firestore]);
+  }, [user, firestore, authLoading]);
   const { data: recentCampaigns, loading } = useCollection<Campaign>(campaignsQuery);
 
   const safeToDate = (value: any): Date | null => {
@@ -170,9 +170,9 @@ function MyCampaigns() {
   const { user, loading: authLoading } = useUser();
 
   const organizedQuery = useMemo(() => {
-    if (!user || !firestore) return null;
+    if (authLoading || !user?.uid || !firestore) return null;
     return query(collection(firestore, 'campaigns'), where('organizerId', '==', user.uid), orderBy('createdAt', 'desc'), limit(3));
-  }, [user, firestore]);
+  }, [user, firestore, authLoading]);
   const { data: organizedCampaigns, loading } = useCollection<Campaign>(organizedQuery);
 
   const myCampaigns = useMemo(() => {
@@ -236,9 +236,9 @@ export default function DashboardPage() {
   const now = useMemo(() => new Date(), []);
   
   const userDocRef = useMemo(() => {
-    if (!user || !firestore) return null;
+    if (authLoading || !user?.uid || !firestore) return null;
     return doc(firestore, 'users', user.uid);
-  }, [user, firestore]);
+  }, [user, firestore, authLoading]);
   const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userDocRef);
 
   useEffect(() => {
@@ -273,21 +273,21 @@ export default function DashboardPage() {
   }, [authLoading, profileLoading, user, userProfile, firestore]);
 
   const testimoniesQuery = useMemo(() => {
-    if (!user || !firestore) return null;
+    if (authLoading || !user?.uid || !firestore) return null;
     return query(collection(firestore, 'testimonies'), where('authorId', '==', user.uid));
-  }, [user, firestore]);
+  }, [user, firestore, authLoading]);
   const { data: myTestimonies } = useCollection<Testimony>(testimoniesQuery);
 
   const soulsQuery = useMemo(() => {
-    if (!user || !firestore) return null;
+    if (authLoading || !user?.uid || !firestore) return null;
     return query(collection(firestore, `users/${user.uid}/souls`));
-  }, [user, firestore]);
+  }, [user, firestore, authLoading]);
   const { data: soulsWon } = useCollection<Soul>(soulsQuery);
   
   const allMyCampaignsQuery = useMemo(() => {
-    if (!user || !firestore) return null;
+    if (authLoading || !user?.uid || !firestore) return null;
     return query(collection(firestore, 'campaigns'), where('organizerId', '==', user.uid));
-  }, [user, firestore]);
+  }, [user, firestore, authLoading]);
   const { data: allMyCampaigns } = useCollection<Campaign>(allMyCampaignsQuery);
 
   const activeMyCampaigns = useMemo(() => {
@@ -298,17 +298,17 @@ export default function DashboardPage() {
   const myCreatedCampaignIds = useMemo(() => new Set(allMyCampaigns?.map(c => c.id)), [allMyCampaigns]);
 
   const joinedCampaignsQuery = useMemo(() => {
-    if (!user || !firestore) return null;
+    if (authLoading || !user?.uid || !firestore) return null;
     return query(collection(firestore, `users/${user.uid}/joinedCampaigns`));
-  }, [user, firestore]);
+  }, [user, firestore, authLoading]);
   const { data: joinedCampaignsDocs, loading: joinedLoading } = useCollection<JoinedCampaign>(joinedCampaignsQuery);
 
   const joinedCampaignsIds = useMemo(() => joinedCampaignsDocs?.map(c => c.id), [joinedCampaignsDocs]);
 
   const joinedCampaignsFullQuery = useMemo(() => {
-    if (!user || !firestore || !joinedCampaignsIds || joinedCampaignsIds.length === 0) return null;
+    if (authLoading || !user?.uid || !firestore || !joinedCampaignsIds || joinedCampaignsIds.length === 0) return null;
     return query(collection(firestore, 'campaigns'), where(documentId(), 'in', joinedCampaignsIds));
-  }, [user, firestore, joinedCampaignsIds]);
+  }, [user, firestore, joinedCampaignsIds, authLoading]);
   const { data: joinedCampaignsFull, loading: joinedFullLoading } = useCollection<Campaign>(joinedCampaignsFullQuery);
 
 

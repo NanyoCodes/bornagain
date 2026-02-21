@@ -71,9 +71,9 @@ function ParticipantList({ campaignId }: { campaignId: string }) {
   const firestore = useFirestore();
   const { user, loading: authLoading } = useUser();
   const participantsQuery = useMemo(() => {
-    if (!user?.uid || !firestore) return null;
+    if (authLoading || !user?.uid || !firestore) return null;
     return query(collection(firestore, 'campaigns', campaignId, 'participants'));
-  }, [user?.uid, firestore, campaignId]);
+  }, [authLoading, user?.uid, firestore, campaignId]);
   const { data: participants, loading } = useCollection<CampaignParticipant>(participantsQuery);
 
   if (loading || authLoading) {
@@ -370,7 +370,7 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
                     <FormItem>
                         <FormLabel>Inspirational Scripture</FormLabel>
                         <FormControl>
-                        <Input placeholder="e.g., John 3:16" {...field} className="text-base" />
+                        <Input placeholder="e.g., John 3:16" {...field} value={field.value ?? ''} className="text-base" />
                         </FormControl>
                         <FormMessage />
                     </FormItem>
