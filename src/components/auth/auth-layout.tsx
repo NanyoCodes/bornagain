@@ -1,3 +1,4 @@
+
 'use client';
 
 import Image from 'next/image';
@@ -8,22 +9,20 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
   const logo = PlaceHolderImages.find((img) => img.id === 'logo');
 
   return (
-    <div className="w-full lg:grid lg:grid-cols-5 min-h-screen">
-      {/* Form Panel */}
-      <div className="lg:col-span-2 flex flex-col justify-center py-12 px-6 sm:px-10 lg:px-8">
-        <div className="mx-auto w-full max-w-md">
+    <div className="w-full lg:grid lg:grid-cols-2 min-h-screen">
+      <div className="flex items-center justify-center p-8 sm:p-12">
+        <div className="w-full max-w-xs">
             {children}
         </div>
       </div>
-      {/* Image Panel */}
-      <div className="hidden lg:col-span-3 bg-gradient-to-br from-slate-900 to-slate-800 lg:flex flex-col items-start justify-center p-12 md:p-24 text-white relative overflow-hidden">
+      <div className="hidden lg:flex flex-col items-start justify-center p-12 md:p-24 text-white relative overflow-hidden bg-gradient-to-br from-slate-900 to-slate-800">
         <Link href="/" className="flex items-center gap-4 mb-8 z-10">
             {logo && (
                 <Image
                 src={logo.imageUrl}
                 alt={logo.description}
-                width={50}
-                height={50}
+                width={60}
+                height={60}
                 className="rounded-lg"
                 data-ai-hint={logo.imageHint}
                 />
