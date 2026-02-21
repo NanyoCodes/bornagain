@@ -8,7 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
-import { CalendarIcon, Loader2, Mail, MessageSquare } from 'lucide-react';
+import { Loader2, Mail, MessageSquare } from 'lucide-react';
 import { useCollection, useFirestore, useUser } from '@/firebase';
 import { collection, doc, updateDoc, serverTimestamp, getDocs, where, limit, addDoc } from 'firebase/firestore';
 import type { Campaign, CampaignParticipant } from '@/lib/types';
@@ -39,10 +39,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import { query } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
-import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
-import { cn } from '@/lib/utils';
-import { Calendar } from '../ui/calendar';
-
 
 const formSchema = z.object({
   title: z.string().min(3, "Title is too short.").max(100, "Title is too long."),
@@ -381,36 +377,23 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
                     control={form.control}
                     name="startDate"
                     render={({ field }) => (
-                      <FormItem className="flex flex-col">
+                      <FormItem>
                         <FormLabel>Start Date</FormLabel>
-                        <Popover>
-                            <PopoverTrigger asChild>
-                                <FormControl>
-                                    <Button
-                                        variant={"outline"}
-                                        className={cn(
-                                            "w-full pl-3 text-left font-normal",
-                                            !field.value && "text-muted-foreground"
-                                        )}
-                                    >
-                                        {field.value ? (
-                                            format(field.value, "PPP")
-                                        ) : (
-                                            <span>Pick a date</span>
-                                        )}
-                                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                    </Button>
-                                </FormControl>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0" align="start">
-                                <Calendar
-                                    mode="single"
-                                    selected={field.value}
-                                    onSelect={field.onChange}
-                                    initialFocus
-                                />
-                            </PopoverContent>
-                        </Popover>
+                        <FormControl>
+                            <Input
+                                type="date"
+                                value={field.value ? format(field.value, "yyyy-MM-dd") : ""}
+                                onChange={(e) => {
+                                    if (e.target.value) {
+                                        const [year, month, day] = e.target.value.split('-').map(Number);
+                                        field.onChange(new Date(year, month - 1, day));
+                                    } else {
+                                        field.onChange(undefined);
+                                    }
+                                }}
+                                className="text-base"
+                            />
+                        </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -419,39 +402,24 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
                     control={form.control}
                     name="endDate"
                     render={({ field }) => (
-                      <FormItem className="flex flex-col">
+                      <FormItem>
                         <FormLabel>End Date</FormLabel>
-                         <Popover>
-                            <PopoverTrigger asChild>
-                                <FormControl>
-                                    <Button
-                                        variant={"outline"}
-                                        className={cn(
-                                            "w-full pl-3 text-left font-normal",
-                                            !field.value && "text-muted-foreground"
-                                        )}
-                                    >
-                                        {field.value ? (
-                                            format(field.value, "PPP")
-                                        ) : (
-                                            <span>Pick a date</span>
-                                        )}
-                                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                    </Button>
-                                </FormControl>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0" align="start">
-                                <Calendar
-                                    mode="single"
-                                    selected={field.value}
-                                    onSelect={field.onChange}
-                                    disabled={(date) =>
-                                        date < (form.watch('startDate') || new Date(new Date().setHours(0, 0, 0, 0)))
+                         <FormControl>
+                            <Input
+                                type="date"
+                                value={field.value ? format(field.value, "yyyy-MM-dd") : ""}
+                                onChange={(e) => {
+                                    if (e.target.value) {
+                                        const [year, month, day] = e.target.value.split('-').map(Number);
+                                        field.onChange(new Date(year, month - 1, day));
+                                    } else {
+                                        field.onChange(undefined);
                                     }
-                                    initialFocus
-                                />
-                            </PopoverContent>
-                        </Popover>
+                                }}
+                                className="text-base"
+                                min={form.watch('startDate') ? format(form.watch('startDate'), "yyyy-MM-dd") : undefined}
+                            />
+                        </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}

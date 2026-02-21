@@ -52,7 +52,8 @@ function RecentTestimonies() {
               ))}
             </div>
            )}
-           {!loading && !authLoading && testimonies?.map(testimony => (
+           {!(loading || authLoading) && testimonies && testimonies.length > 0 ? (
+            testimonies.map(testimony => (
              <div key={testimony.id} className="flex items-start gap-4">
                 <Avatar className="h-9 w-9">
                   <AvatarImage src={testimony.authorAvatarUrl ?? undefined} alt="Avatar" />
@@ -66,7 +67,12 @@ function RecentTestimonies() {
                   {testimony.createdAt ? formatDistanceToNow(new Date(testimony.createdAt.seconds * 1000), { addSuffix: true }) : 'just now'}
                 </div>
              </div>
-           ))}
+            ))
+           ) : !(loading || authLoading) && (
+            <div className="text-center text-muted-foreground py-4 text-sm">
+                No recent testimonies have been shared yet.
+            </div>
+           )}
         </CardContent>
     </Card>
   );
