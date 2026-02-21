@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -6,6 +5,7 @@ import type { Query, DocumentData, SnapshotOptions, FirestoreError } from 'fireb
 import { onSnapshot } from 'firebase/firestore';
 import { errorEmitter } from '../error-emitter';
 import { FirestorePermissionError } from '../errors';
+import { useUser } from '../auth/use-user';
 
 interface UseCollectionOptions {
   snapshotOptions?: SnapshotOptions;
@@ -15,13 +15,18 @@ export function useCollection<T extends { id: string }>(
   query: Query<DocumentData> | null,
   options?: UseCollectionOptions
 ) {
+  const { user, loading: authLoading } = useUser();
   const [data, setData] = useState<T[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<FirestoreError | null>(null);
 
   useEffect(() => {
-    // If no query is provided (e.g., waiting for auth), do nothing.
-    if (!query) {
+    if (authLoading) {
+      setLoading(true);
+      return;
+    }
+    
+    if (!query || !user) {
       setLoading(false);
       setData(null);
       return;
@@ -56,7 +61,7 @@ export function useCollection<T extends { id: string }>(
 
     // Clean up the listener when the component unmounts or dependencies change.
     return () => unsubscribe();
-  }, [query, options?.snapshotOptions]);
+  }, [query, authLoading, user, options?.snapshotOptions]);
 
   return { data, loading, error };
 }
