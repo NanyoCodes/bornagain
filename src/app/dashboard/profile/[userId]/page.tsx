@@ -47,9 +47,9 @@ export default function UserProfilePage() {
   const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userDocRef);
 
   const testimoniesQuery = useMemo(() => {
-    if (!userId || !firestore) return null;
+    if (!userId || !firestore || !currentUser) return null;
     return query(collection(firestore, 'testimonies'), where('authorId', '==', userId));
-  }, [userId, firestore]);
+  }, [userId, firestore, currentUser]);
   const { data: testimonies, loading: testimoniesLoading } = useCollection<Testimony>(testimoniesQuery);
 
   const soulsQuery = useMemo(() => {
