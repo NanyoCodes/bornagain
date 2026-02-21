@@ -197,7 +197,9 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
       
       const safeToDate = (value: any): Date => {
           if (value?.toDate) return value.toDate();
-          return new Date();
+          if (value instanceof Date) return value;
+          // Return a default, stable date if value is missing to avoid re-renders
+          return new Date(); 
       }
 
       return {
@@ -583,7 +585,7 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
                   )}
                 />
 
-                <Button type="submit" className="w-full" disabled={isSubmitting}>
+                <Button type="submit" className="w-full" disabled={isSubmitting || !form.formState.isDirty}>
                 {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {isSubmitting ? 'Saving...' : 'Save Changes'}
                 </Button>
@@ -641,3 +643,5 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
     </div>
   );
 }
+
+    
