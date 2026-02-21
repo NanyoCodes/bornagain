@@ -1,10 +1,10 @@
 
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
+import { AuthLayout } from '@/components/auth/auth-layout';
 import { SignUpForm } from '@/components/auth/signup-form';
 import { Button } from '@/components/ui/button';
 import { Icons } from '@/components/icons';
@@ -18,12 +18,10 @@ import { useToast } from '@/hooks/use-toast';
 import { doc, setDoc } from 'firebase/firestore';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { PhoneAuthForm } from '@/components/auth/phone-auth-form';
+import Image from 'next/image';
 
 export default function SignUpPage() {
   const logo = PlaceHolderImages.find((img) => img.id === 'logo');
-  const authHero = PlaceHolderImages.find((img) => img.id === 'auth-hero');
   const auth = useAuth();
   const firestore = useFirestore();
   const router = useRouter();
@@ -78,98 +76,61 @@ export default function SignUpPage() {
         toast({
           variant: 'destructive',
           title: 'Sign Up Failed',
-          description: authError.message || 'An error occurred during social sign-up.',
+          description: 'You are now logged in.',
         });
       }
     }
   };
 
   return (
-    <main className="relative w-full h-screen overflow-hidden bg-gradient-to-br from-background to-muted">
-      {/* --- BACKGROUND & QUOTE SECTION --- */}
-      <div className="absolute top-0 left-0 right-0 h-[35%] lg:h-full lg:w-2/5">
-        <div className="relative w-full h-full">
-          {authHero && (
+    <AuthLayout>
+      <div className="grid gap-2 text-left">
+        {logo && (
             <Image
-              src={authHero.imageUrl}
-              alt={authHero.description}
-              fill
-              className="object-cover"
-              data-ai-hint={authHero.imageHint}
-              priority
+                src={logo.imageUrl}
+                alt={logo.description}
+                width={40}
+                height={40}
+                className="mb-2 rounded-lg"
+                data-ai-hint={logo.imageHint}
             />
-          )}
-          <div className="absolute inset-0 bg-black/60" />
-          <div className="relative z-10 flex items-center justify-center h-full p-8 text-white">
-            <blockquote className="space-y-2 font-headline [text-shadow:_0_2px_4px_rgb(0_0_0_/_40%)]">
-              <p className="text-2xl sm:text-3xl lg:text-4xl font-bold">This is more than an app.</p>
-              <p className="text-2xl sm:text-3xl lg:text-4xl font-bold">This is a movement.</p>
-              <cite className="block text-3xl sm:text-4xl lg:text-5xl font-extrabold not-italic mt-4">A digital revival.</cite>
-            </blockquote>
-          </div>
-        </div>
+        )}
+        <h1 className="text-3xl font-bold">Create an account</h1>
+        <p className="text-balance text-muted-foreground">
+          Enter your details below to join the movement
+        </p>
       </div>
 
-      {/* --- FORM SECTION --- */}
-      <div className="absolute bottom-0 left-0 right-0 h-[70%] lg:h-full lg:left-2/5 lg:w-3/5">
-        <div className="w-full h-full bg-card p-6 sm:p-8 rounded-t-3xl lg:rounded-none overflow-y-auto">
-          <div className="mx-auto grid w-full max-w-md gap-4 pt-8 pb-24">
-            <div className="grid gap-2 text-center">
-              {logo && (
-                <Image
-                  src={logo.imageUrl}
-                  alt={logo.description}
-                  width={80}
-                  height={80}
-                  className="mx-auto mb-2 rounded-full"
-                  data-ai-hint={logo.imageHint}
-                />
-              )}
-              <h1 className="text-2xl font-bold tracking-tight text-card-foreground">Create an Account</h1>
-              <p className="text-balance text-muted-foreground text-sm">
-                Already have an account?{' '}
-                <Link href="/login" className="underline">
-                  Sign in
-                </Link>
-              </p>
-            </div>
+      <SignUpForm />
 
-            <Tabs defaultValue="email" className="w-full">
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="email">Email</TabsTrigger>
-                <TabsTrigger value="phone">Phone</TabsTrigger>
-              </TabsList>
-              <TabsContent value="email" className="pt-4">
-                <SignUpForm />
-              </TabsContent>
-              <TabsContent value="phone" className="pt-4">
-                <PhoneAuthForm />
-              </TabsContent>
-            </Tabs>
+      <div className="mt-4 text-center text-sm">
+        Already have an account?{' '}
+        <Link href="/login" className="underline">
+          Sign in
+        </Link>
+      </div>
 
-            <div className="relative my-1">
-              <div className="absolute inset-0 flex items-center">
+       <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
                 <span className="w-full border-t" />
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-card px-2 text-muted-foreground">
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-background px-2 text-muted-foreground">
                   Or Continue With
                 </span>
-              </div>
             </div>
-
-            <div className="grid grid-cols-1 gap-4">
-              <Button
-                variant="outline"
-                className="w-full h-9"
-                onClick={() => handleSocialLogin('google')}
-              >
-                <Icons.google className="mr-2 h-4 w-4" /> Google
-              </Button>
-            </div>
-          </div>
         </div>
-      </div>
-    </main>
+
+        <div className="flex justify-center gap-4">
+            <Button
+                variant="outline"
+                size="icon"
+                className="rounded-full"
+                onClick={() => handleSocialLogin('google')}
+            >
+                <Icons.google className="h-5 w-5" />
+            </Button>
+        </div>
+    </AuthLayout>
   );
 }

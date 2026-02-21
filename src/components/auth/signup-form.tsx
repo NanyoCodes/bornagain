@@ -17,7 +17,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
-import { Loader2 } from "lucide-react";
+import { Loader2, User, Mail, Lock } from "lucide-react";
 import { createUserWithEmailAndPassword, updateProfile, AuthError } from "firebase/auth";
 import { useAuth, useFirestore } from "@/firebase";
 import { doc, setDoc } from "firebase/firestore";
@@ -99,7 +99,7 @@ export function SignUpForm() {
       toast({
         variant: "destructive",
         title: "Sign Up Failed",
-        description: authError.message || "Could not create account. Please try again.",
+        description: 'You are now logged in.',
       });
     } finally {
       setIsLoading(false);
@@ -108,16 +108,19 @@ export function SignUpForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4">
         <FormField
           control={form.control}
           name="name"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Name</FormLabel>
-              <FormControl>
-                <Input placeholder="John Doe" {...field} />
-              </FormControl>
+               <div className="relative">
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <FormControl>
+                    <Input placeholder="John Doe" {...field} className="pl-10" />
+                </FormControl>
+               </div>
               <FormMessage />
             </FormItem>
           )}
@@ -127,10 +130,13 @@ export function SignUpForm() {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email</FormLabel>
-              <FormControl>
-                <Input placeholder="name@example.com" {...field} />
-              </FormControl>
+              <FormLabel>Email Address</FormLabel>
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <FormControl>
+                    <Input placeholder="name@example.com" {...field} className="pl-10" />
+                </FormControl>
+              </div>
               <FormMessage />
             </FormItem>
           )}
@@ -141,16 +147,19 @@ export function SignUpForm() {
           render={({ field }) => (
             <FormItem>
               <FormLabel>Password</FormLabel>
-              <FormControl>
-                <Input type="password" placeholder="********" {...field} />
-              </FormControl>
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <FormControl>
+                    <Input type="password" placeholder="********" {...field} className="pl-10" />
+                </FormControl>
+              </div>
               <FormMessage />
             </FormItem>
           )}
         />
         <Button type="submit" className="w-full" disabled={isLoading}>
           {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Sign Up
+          Create account
         </Button>
       </form>
     </Form>

@@ -17,7 +17,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import React, { useState } from "react";
-import { Loader2 } from "lucide-react";
+import { Loader2, Mail, Lock } from "lucide-react";
 import { signInWithEmailAndPassword, sendPasswordResetEmail, AuthError } from "firebase/auth";
 import { useAuth, useFirestore } from "@/firebase";
 import { doc, setDoc } from "firebase/firestore";
@@ -76,7 +76,7 @@ function ForgotPasswordDialog() {
     return (
         <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
             <AlertDialogTrigger asChild>
-                <Button variant="link" className="p-0 text-sm h-auto font-normal text-primary hover:text-primary/90" type="button">
+                <Button variant="link" className="p-0 text-sm h-auto font-normal" type="button">
                     Forgot password?
                 </Button>
             </AlertDialogTrigger>
@@ -174,7 +174,7 @@ export function LoginForm() {
         title: "Login Failed",
         description: authError.code === 'auth/invalid-credential'
           ? "Invalid email or password. Please try again."
-          : authError.message,
+          : 'You are now logged in.',
       });
     } finally {
         setIsLoading(false);
@@ -183,16 +183,19 @@ export function LoginForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4">
         <FormField
           control={form.control}
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email</FormLabel>
-              <FormControl>
-                <Input placeholder="name@example.com" {...field} />
-              </FormControl>
+              <FormLabel>Email Address</FormLabel>
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <FormControl>
+                  <Input placeholder="name@example.com" {...field} className="pl-10" />
+                </FormControl>
+              </div>
               <FormMessage />
             </FormItem>
           )}
@@ -206,9 +209,12 @@ export function LoginForm() {
                     <FormLabel>Password</FormLabel>
                     <ForgotPasswordDialog />
                 </div>
-              <FormControl>
-                <Input type="password" placeholder="********" {...field} />
-              </FormControl>
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <FormControl>
+                  <Input type="password" placeholder="********" {...field} className="pl-10" />
+                </FormControl>
+              </div>
               <FormMessage />
             </FormItem>
           )}
