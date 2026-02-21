@@ -9,12 +9,14 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
   const logo = PlaceHolderImages.find((img) => img.id === 'logo');
 
   return (
-    <div className="min-h-screen w-full lg:grid lg:grid-cols-5">
-      <div className="lg:col-span-2 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 h-[70vh] sm:h-auto overflow-y-auto">
-        <div className="mx-auto w-full max-w-sm space-y-4">
+    <div className="w-full lg:grid lg:grid-cols-5 min-h-screen">
+      {/* Form Panel */}
+      <div className="lg:col-span-2 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto w-full max-w-sm">
             {children}
         </div>
       </div>
+      {/* Image Panel */}
       <div className="hidden lg:col-span-3 bg-gradient-to-br from-slate-900 to-slate-800 lg:flex flex-col items-start justify-center p-12 md:p-24 text-white relative overflow-hidden">
         <Link href="/" className="flex items-center gap-4 mb-8 z-10">
             {logo && (

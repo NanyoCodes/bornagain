@@ -84,53 +84,55 @@ export default function LoginPage() {
 
   return (
     <AuthLayout>
-       <div className="grid gap-2 text-left">
-         {logo && (
-            <Image
-                src={logo.imageUrl}
-                alt={logo.description}
-                width={50}
-                height={50}
-                className="mb-2 rounded-lg"
-                data-ai-hint={logo.imageHint}
-            />
-        )}
-        <h1 className="text-3xl font-bold">Sign In</h1>
-        <p className="text-balance text-muted-foreground">
-            Enter your credentials to access your account
-        </p>
-      </div>
-      
-      <LoginForm />
+       <div className="space-y-6">
+        <div className="grid gap-2 text-left">
+          {logo && (
+              <Image
+                  src={logo.imageUrl}
+                  alt={logo.description}
+                  width={50}
+                  height={50}
+                  className="mb-2 rounded-lg"
+                  data-ai-hint={logo.imageHint}
+              />
+          )}
+          <h1 className="text-3xl font-bold">Sign In</h1>
+          <p className="text-balance text-muted-foreground">
+              Enter your credentials to access your account
+          </p>
+        </div>
+        
+        <LoginForm />
 
-      <div className="mt-4 text-center text-sm">
-        Don&apos;t have an account?{' '}
-        <Link href="/" className="underline">
-          Sign up
-        </Link>
-      </div>
-
-       <div className="relative my-6">
-            <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-background px-2 text-muted-foreground">
-                  Or Continue With
-                </span>
-            </div>
+        <div className="text-center text-sm">
+          Don&apos;t have an account?{' '}
+          <Link href="/" className="underline">
+            Sign up
+          </Link>
         </div>
 
-        <div className="flex justify-center gap-4">
-            <Button
-                variant="outline"
-                size="icon"
-                className="rounded-full"
-                onClick={() => handleSocialLogin('google')}
-            >
-                <Icons.google className="h-5 w-5" />
-            </Button>
-        </div>
+        <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-background px-2 text-muted-foreground">
+                    Or Continue With
+                  </span>
+              </div>
+          </div>
+
+          <div className="flex justify-center gap-4">
+              <Button
+                  variant="outline"
+                  size="icon"
+                  className="rounded-full"
+                  onClick={() => handleSocialLogin('google')}
+              >
+                  <Icons.google className="h-5 w-5" />
+              </Button>
+          </div>
+      </div>
     </AuthLayout>
   );
 }
