@@ -21,23 +21,18 @@ export function useDoc<T>(
   const [error, setError] = useState<FirestoreError | null>(null);
 
   useEffect(() => {
-    // While authentication is loading, we are in a loading state.
     if (authLoading) {
       setLoading(true);
       return;
     }
 
-    // Once authentication is resolved, if there's no user or no docRef,
-    // we can stop loading and conclude there's no data.
     if (!user || !docRef) {
       setLoading(false);
       setData(null);
       return;
     }
 
-    // If we have a user and a docRef, start fetching data.
     setLoading(true);
-
     const unsubscribe = onSnapshot(
       docRef,
       (doc) => {
@@ -66,7 +61,7 @@ export function useDoc<T>(
     );
 
     return () => unsubscribe();
-  }, [docRef, authLoading, options?.snapshotOptions]);
+  }, [docRef, user?.uid, authLoading, options?.snapshotOptions]);
 
   return { data, loading, error };
 }

@@ -27,23 +27,18 @@ export function useCollection<T extends { id: string }>(
   const [error, setError] = useState<FirestoreError | null>(null);
 
   useEffect(() => {
-    // While authentication is loading, we are in a loading state.
     if (authLoading) {
       setLoading(true);
       return;
     }
-    
-    // Once authentication is resolved, if there's no user or no query,
-    // we can stop loading and conclude there's no data.
+
     if (!user || !query) {
       setLoading(false);
       setData(null);
       return;
     }
-
-    // If we have a user and a query, start fetching data.
+    
     setLoading(true);
-
     const unsubscribe = onSnapshot(
       query,
       (snapshot) => {
@@ -72,7 +67,7 @@ export function useCollection<T extends { id: string }>(
     );
 
     return () => unsubscribe();
-  }, [query, authLoading, options?.snapshotOptions]);
+  }, [query, user?.uid, authLoading, options?.snapshotOptions]);
 
   return { data, loading, error };
 }
