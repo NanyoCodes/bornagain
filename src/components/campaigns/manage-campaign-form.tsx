@@ -10,7 +10,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDes
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Mail, MessageSquare, Trash2, X } from 'lucide-react';
 import { useCollection, useFirestore, useUser } from '@/firebase';
-import { collection, doc, updateDoc, serverTimestamp, getDocs, where, limit, addDoc, setDoc, runTransaction } from 'firebase/firestore';
+import { collection, doc, updateDoc, serverTimestamp, getDocs, where, limit, addDoc, setDoc, runTransaction, query, orderBy } from 'firebase/firestore';
 import type { Campaign, CampaignParticipant } from '@/lib/types';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
@@ -37,7 +37,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { query } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
 
 const formSchema = z.object({
