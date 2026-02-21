@@ -25,7 +25,7 @@ import {
 import type { Testimony } from "@/lib/types";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useCollection, useFirestore } from "@/firebase";
+import { useCollection, useFirestore, useUser } from "@/firebase";
 import { collection, query, orderBy } from "firebase/firestore";
 import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card";
 import { useSearch } from "@/context/search-context";
@@ -37,11 +37,12 @@ export default function TestimoniesPage() {
   const { searchTerm, setSearchPlaceholder, setIsSearchVisible, setSearchTerm } = useSearch();
 
   const firestore = useFirestore();
+  const { user } = useUser();
 
   const testimoniesQuery = useMemo(() => {
-    if (!firestore) return null;
+    if (!firestore || !user) return null;
     return query(collection(firestore, "testimonies"), orderBy("createdAt", "desc"));
-  }, [firestore]);
+  }, [firestore, user]);
 
   const { data: testimonies, loading } = useCollection<Testimony>(testimoniesQuery);
 

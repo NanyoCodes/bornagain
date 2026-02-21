@@ -72,9 +72,9 @@ function ParticipantList({ campaign }: { campaign: Campaign }) {
   const [isRemoving, setIsRemoving] = useState<string | null>(null);
 
   const participantsQuery = useMemo(() => {
-    if (!firestore || !campaign.id) return null;
+    if (!firestore || !campaign.id || !user) return null;
     return query(collection(firestore, 'campaigns', campaign.id, 'participants'), orderBy('joinedAt', 'asc'));
-  }, [firestore, campaign.id]);
+  }, [firestore, campaign.id, user]);
   
   const { data: participants, loading } = useCollection<CampaignParticipant>(participantsQuery);
   

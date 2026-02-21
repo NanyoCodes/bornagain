@@ -37,13 +37,14 @@ import { Skeleton } from "../ui/skeleton";
 
 function ParticipantsDialog({ campaign, children }: { campaign: Campaign; children: React.ReactNode; }) {
   const firestore = useFirestore();
+  const { user } = useUser();
   const [isOpen, setIsOpen] = useState(false);
 
   const participantsQuery = useMemo(() => {
-    // Only create query when dialog is open to avoid unnecessary fetches
-    if (!isOpen || !firestore) return null;
+    // Only create query when dialog is open and user is organizer to avoid unnecessary fetches/permission errors
+    if (!isOpen || !firestore || !user || user.uid !== campaign.organizerId) return null;
     return query(collection(firestore, 'campaigns', campaign.id, 'participants'));
-  }, [isOpen, firestore, campaign.id]);
+  }, [isOpen, firestore, campaign.id, user, campaign.organizerId]);
 
   const { data: participants, loading } = useCollection<CampaignParticipant>(participantsQuery);
   
@@ -57,9 +58,11 @@ function ParticipantsDialog({ campaign, children }: { campaign: Campaign; childr
         <DialogHeader>
           <DialogTitle>Participants for "{campaign.title}"</DialogTitle>
           <DialogDescription>
-            {loading ? 'Loading...' : `${participants?.length || 0} people have joined this campaign.`}
+            {loading ? 'Loading...' : `${campaign.participants || 0} people have joined this campaign.`}
             <br/>
-            <span className="text-xs">Note: Only the campaign organizer can see the full participant list.</span>
+             {user?.uid !== campaign.organizerId && (
+                <span className="text-xs">Note: Only the campaign organizer can see the full participant list.</span>
+             )}
           </DialogDescription>
         </DialogHeader>
         <div className="max-h-[60vh] overflow-y-auto pr-4">
@@ -95,8 +98,11 @@ function ParticipantsDialog({ campaign, children }: { campaign: Campaign; childr
                 )}
             </div>
           )}
-           {!loading && (!participants || participants.length === 0) && (
-            <p className="text-center text-muted-foreground py-4">Could not load participants. You may not have permission to view this list.</p>
+           {!loading && (!participants || participants.length === 0) && user?.uid === campaign.organizerId && (
+                <p className="text-center text-muted-foreground py-4">No other participants yet.</p>
+           )}
+           {!loading && !participants && user?.uid !== campaign.organizerId && (
+            <p className="text-center text-muted-foreground py-4">You do not have permission to view the participant list.</p>
            )}
         </div>
       </DialogContent>

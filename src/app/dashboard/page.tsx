@@ -16,11 +16,12 @@ import { StatDialog } from "@/components/dashboard/stat-dialog";
 import { JoinedCampaignsList, TestimoniesList, CampaignsCreatedList, SoulsWonList } from "@/components/dashboard/dashboard-lists";
 
 function RecentTestimonies() {
+  const { user } = useUser();
   const firestore = useFirestore();
   const testimoniesQuery = useMemo(() => {
-    if (!firestore) return null;
+    if (!firestore || !user) return null;
     return query(collection(firestore, 'testimonies'), orderBy('createdAt', 'desc'), limit(3));
-  }, [firestore]);
+  }, [firestore, user]);
   const { data: testimonies, loading } = useCollection<Testimony>(testimoniesQuery);
 
   return (
@@ -78,12 +79,13 @@ function RecentTestimonies() {
 }
 
 function ActiveCampaigns() {
+  const { user } = useUser();
   const firestore = useFirestore();
   const campaignsQuery = useMemo(() => {
-    if (!firestore) return null;
+    if (!firestore || !user) return null;
     // Fetch more campaigns initially to ensure we can find 2 active ones.
     return query(collection(firestore, 'campaigns'), orderBy('createdAt', 'desc'), limit(10));
-  }, [firestore]);
+  }, [firestore, user]);
   const { data: recentCampaigns, loading } = useCollection<Campaign>(campaignsQuery);
 
   const safeToDate = (value: any): Date | null => {
