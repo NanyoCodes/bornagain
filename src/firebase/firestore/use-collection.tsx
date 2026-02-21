@@ -72,7 +72,7 @@ export function useCollection<T extends { id: string }>(
     );
 
     return () => unsubscribe();
-  }, [query, user, authLoading, options?.snapshotOptions]);
+  }, [query, authLoading, options?.snapshotOptions]);
 
   return { data, loading, error };
 }

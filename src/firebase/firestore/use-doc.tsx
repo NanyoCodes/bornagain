@@ -66,7 +66,7 @@ export function useDoc<T>(
     );
 
     return () => unsubscribe();
-  }, [docRef, user, authLoading, options?.snapshotOptions]);
+  }, [docRef, authLoading, options?.snapshotOptions]);
 
   return { data, loading, error };
 }
