@@ -2,7 +2,7 @@
 'use client';
 
 import { useCollection, useFirestore, useUser } from '@/firebase';
-import { collection, query, where, orderBy } from 'firebase/firestore';
+import { collection, query, where } from 'firebase/firestore';
 import type { Chat } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -83,12 +83,12 @@ export default function ChatsPage() {
     const firestore = useFirestore();
 
     const chatsQuery = useMemo(() => {
-        if (!user?.uid) return null;
+        if (userLoading || !user?.uid) return null;
         return query(
             collection(firestore, 'chats'),
             where('participantIds', 'array-contains', user.uid)
         );
-    }, [user?.uid, firestore]);
+    }, [userLoading, user?.uid, firestore]);
 
     const { data: allChats, loading: chatsLoading } = useCollection<Chat>(chatsQuery);
 

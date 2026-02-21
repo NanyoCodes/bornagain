@@ -322,7 +322,7 @@ export default function DashboardPage() {
             dialogTitle="My Testimonies"
             dialogDescription="A list of all the testimonies you have shared."
         >
-            {user && <TestimoniesList userId={user.uid} />}
+            {!authLoading && user && <TestimoniesList userId={user.uid} />}
         </StatDialog>
 
         <StatDialog
@@ -333,7 +333,7 @@ export default function DashboardPage() {
             dialogTitle="My Created Campaigns"
             dialogDescription="A list of all the campaigns you have organized."
         >
-            {user && <CampaignsCreatedList userId={user.uid} />}
+            {!authLoading && user && <CampaignsCreatedList userId={user.uid} />}
         </StatDialog>
         
         <StatDialog
@@ -344,7 +344,7 @@ export default function DashboardPage() {
             dialogTitle="My Joined Campaigns"
             dialogDescription="A list of all the campaigns you have joined."
         >
-            {user && <JoinedCampaignsList userId={user.uid} />}
+            {!authLoading && user && <JoinedCampaignsList userId={user.uid} />}
         </StatDialog>
 
         <StatDialog
@@ -355,7 +355,7 @@ export default function DashboardPage() {
             dialogTitle="My Souls Won"
             dialogDescription="A list of all the souls you have won for Christ."
         >
-            {user && <SoulsWonList userId={user.uid} />}
+            {!authLoading && user && <SoulsWonList userId={user.uid} />}
         </StatDialog>
         
         <Card>
