@@ -159,7 +159,6 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
         }
     } catch (error) {
         console.error("Error checking for group chat:", error);
-        toast({ variant: 'destructive', title: "Error", description: "Could not access group chat." });
     } finally {
         setIsCheckingChat(false);
     }
@@ -674,3 +673,5 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
     </>
   );
 }
+
+    
