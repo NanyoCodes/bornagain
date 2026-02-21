@@ -44,10 +44,10 @@ import { WelcomePopup } from "@/components/auth/welcome-popup";
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: Home },
-  { href: "/dashboard/testimonies", label: "Testimonies", icon: Newspaper },
-  { href: "/dashboard/campaigns", label: "Campaigns", icon: Target },
-  { href: "/dashboard/progress", label: "Progress", icon: TrendingUp },
   { href: "/dashboard/souls-won", label: "Souls Won", icon: UserPlus },
+  { href: "/dashboard/campaigns", label: "Campaigns", icon: Target },
+  { href: "/dashboard/testimonies", label: "Testimonies", icon: Newspaper },
+  { href: "/dashboard/progress", label: "Progress", icon: TrendingUp },
 ];
 
 function AppHeader() {
