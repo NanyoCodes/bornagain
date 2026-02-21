@@ -96,7 +96,7 @@ export default function SignUpPage() {
                   data-ai-hint={logo.imageHint}
               />
           )}
-          <h1 className="text-3xl font-bold">Create an account</h1>
+          <h1 className="text-2xl md:text-3xl font-bold">Create an account</h1>
           <p className="text-balance text-muted-foreground">
             Enter your details below to join the movement
           </p>

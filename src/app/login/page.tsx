@@ -96,7 +96,7 @@ export default function LoginPage() {
                   data-ai-hint={logo.imageHint}
               />
           )}
-          <h1 className="text-3xl font-bold">Sign In</h1>
+          <h1 className="text-2xl md:text-3xl font-bold">Sign In</h1>
           <p className="text-balance text-muted-foreground">
               Enter your credentials to access your account
           </p>

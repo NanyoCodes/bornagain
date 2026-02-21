@@ -174,7 +174,7 @@ export function LoginForm() {
         title: "Login Failed",
         description: authError.code === 'auth/invalid-credential'
           ? "Invalid email or password. Please try again."
-          : 'You are now logged in.',
+          : "An unexpected error occurred.",
       });
     } finally {
         setIsLoading(false);

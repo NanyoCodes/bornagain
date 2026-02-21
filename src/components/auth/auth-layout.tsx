@@ -1,4 +1,3 @@
-
 'use client';
 
 import Image from 'next/image';
@@ -11,8 +10,8 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="w-full lg:grid lg:grid-cols-5 min-h-screen">
       {/* Form Panel */}
-      <div className="lg:col-span-2 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
-        <div className="mx-auto w-full max-w-sm">
+      <div className="lg:col-span-2 flex flex-col justify-center py-12 px-6 sm:px-10 lg:px-8">
+        <div className="mx-auto w-full max-w-md">
             {children}
         </div>
       </div>

@@ -99,7 +99,7 @@ export function SignUpForm() {
       toast({
         variant: "destructive",
         title: "Sign Up Failed",
-        description: 'You are now logged in.',
+        description: "An unexpected error occurred.",
       });
     } finally {
       setIsLoading(false);
