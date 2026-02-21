@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -5,7 +6,6 @@ import type { Query, DocumentData, SnapshotOptions, FirestoreError } from 'fireb
 import { onSnapshot } from 'firebase/firestore';
 import { errorEmitter } from '../error-emitter';
 import { FirestorePermissionError } from '../errors';
-import { useUser } from '../auth/use-user';
 
 interface UseCollectionOptions {
   snapshotOptions?: SnapshotOptions;
@@ -15,27 +15,18 @@ export function useCollection<T extends { id: string }>(
   query: Query<DocumentData> | null,
   options?: UseCollectionOptions
 ) {
-  const { user, loading: authLoading } = useUser();
   const [data, setData] = useState<T[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<FirestoreError | null>(null);
 
   useEffect(() => {
-    // While authentication is loading, we are in a loading state.
-    if (authLoading) {
-      setLoading(true);
-      return;
-    }
-
-    // If authentication is finished but there is no user, or if no query is provided,
-    // we should not fetch data.
-    if (!user || !query) {
+    // If no query is provided (e.g., waiting for auth), do nothing.
+    if (!query) {
       setLoading(false);
       setData(null);
       return;
     }
 
-    // A user and query are available, so we can attempt to fetch data.
     setLoading(true);
     
     const unsubscribe = onSnapshot(
@@ -52,7 +43,7 @@ export function useCollection<T extends { id: string }>(
       (err) => {
         // This is the error path.
         const permissionError = new FirestorePermissionError({
-          path: (query as any)._query?.path?.canonicalString() ?? 'unknown',
+          path: (query as any)._query?.path?.canonicalString() ?? 'unknown collection',
           operation: 'list',
         });
         errorEmitter.emit('permission-error', permissionError);
@@ -65,7 +56,7 @@ export function useCollection<T extends { id: string }>(
 
     // Clean up the listener when the component unmounts or dependencies change.
     return () => unsubscribe();
-  }, [user?.uid, query, authLoading, options?.snapshotOptions]);
+  }, [query, options?.snapshotOptions]);
 
   return { data, loading, error };
 }
