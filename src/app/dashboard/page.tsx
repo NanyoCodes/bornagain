@@ -16,12 +16,12 @@ import { StatDialog } from "@/components/dashboard/stat-dialog";
 import { JoinedCampaignsList, TestimoniesList, CampaignsCreatedList, SoulsWonList } from "@/components/dashboard/dashboard-lists";
 
 function RecentTestimonies() {
-  const firestore = useFirestore();
   const { user, loading: authLoading } = useUser();
+  const firestore = useFirestore();
   const testimoniesQuery = useMemo(() => {
     if (authLoading || !user?.uid || !firestore) return null;
     return query(collection(firestore, 'testimonies'), orderBy('createdAt', 'desc'), limit(3));
-  }, [user?.uid, firestore, authLoading]);
+  }, [authLoading, user?.uid, firestore]);
   const { data: testimonies, loading } = useCollection<Testimony>(testimoniesQuery);
 
   return (
@@ -73,13 +73,13 @@ function RecentTestimonies() {
 }
 
 function ActiveCampaigns() {
-  const firestore = useFirestore();
   const { user, loading: authLoading } = useUser();
+  const firestore = useFirestore();
   const campaignsQuery = useMemo(() => {
     if (authLoading || !user?.uid || !firestore) return null;
     // Fetch more campaigns initially to ensure we can find 2 active ones.
     return query(collection(firestore, 'campaigns'), orderBy('createdAt', 'desc'), limit(10));
-  }, [user?.uid, firestore, authLoading]);
+  }, [authLoading, user?.uid, firestore]);
   const { data: recentCampaigns, loading } = useCollection<Campaign>(campaignsQuery);
 
   const safeToDate = (value: any): Date | null => {
@@ -165,70 +165,6 @@ function ActiveCampaigns() {
   )
 }
 
-function MyCampaigns() {
-  const firestore = useFirestore();
-  const { user, loading: authLoading } = useUser();
-
-  const organizedQuery = useMemo(() => {
-    if (authLoading || !user?.uid || !firestore) return null;
-    return query(collection(firestore, 'campaigns'), where('organizerId', '==', user.uid), orderBy('createdAt', 'desc'), limit(3));
-  }, [user?.uid, firestore, authLoading]);
-  const { data: organizedCampaigns, loading } = useCollection<Campaign>(organizedQuery);
-
-  const myCampaigns = useMemo(() => {
-    return (organizedCampaigns || [])
-      .filter(c => c.status !== 'deleted')
-      .slice(0, 3);
-  }, [organizedCampaigns]);
-
-  return (
-    <Card>
-      <CardHeader className="flex flex-row items-center">
-        <div className="grid gap-2">
-            <CardTitle>My Campaigns</CardTitle>
-            <CardDescription>Campaigns you've created.</CardDescription>
-        </div>
-        <Button asChild size="sm" className="ml-auto gap-1 shrink-0">
-          <Link href="/dashboard/campaigns">
-            <span className="hidden sm:inline">View All</span>
-            <ArrowRight className="h-4 w-4" />
-          </Link>
-        </Button>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {(loading || authLoading) && (
-          <div className="space-y-4">
-            {[...Array(2)].map((_, i) => (
-              <div key={i} className="flex items-center gap-4">
-                <div className="grid gap-1 flex-1">
-                  <Skeleton className="h-4 w-3/4" />
-                  <Skeleton className="h-4 w-1/2" />
-                </div>
-                <Skeleton className="h-4 w-16" />
-              </div>
-            ))}
-          </div>
-        )}
-        {!loading && !authLoading && myCampaigns.map(campaign => (
-          <div key={campaign.id} className="flex items-center gap-4">
-            <div className="grid gap-1 min-w-0">
-              <p className="text-sm font-medium truncate">{campaign.title}</p>
-              <p className="text-sm text-muted-foreground truncate">{campaign.location}</p>
-            </div>
-            <div className="ml-auto font-medium text-right shrink-0">{campaign.participants} joined</div>
-          </div>
-        ))}
-        {!loading && !authLoading && (!myCampaigns || myCampaigns.length === 0) && (
-          <div className="text-center py-4">
-            <p className="text-sm text-muted-foreground">You haven't created any campaigns yet.</p>
-            <Button variant="link" asChild><Link href="/dashboard/campaigns">Create One</Link></Button>
-          </div>
-        )}
-      </CardContent>
-    </Card>
-  );
-}
-
 
 export default function DashboardPage() {
   const { user, loading: authLoading } = useUser();
@@ -238,7 +174,7 @@ export default function DashboardPage() {
   const userDocRef = useMemo(() => {
     if (authLoading || !user?.uid || !firestore) return null;
     return doc(firestore, 'users', user.uid);
-  }, [user?.uid, firestore, authLoading]);
+  }, [authLoading, user?.uid, firestore]);
   const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userDocRef);
 
   useEffect(() => {
@@ -275,19 +211,19 @@ export default function DashboardPage() {
   const testimoniesQuery = useMemo(() => {
     if (authLoading || !user?.uid || !firestore) return null;
     return query(collection(firestore, 'testimonies'), where('authorId', '==', user.uid));
-  }, [user?.uid, firestore, authLoading]);
+  }, [authLoading, user?.uid, firestore]);
   const { data: myTestimonies } = useCollection<Testimony>(testimoniesQuery);
 
   const soulsQuery = useMemo(() => {
     if (authLoading || !user?.uid || !firestore) return null;
     return query(collection(firestore, `users/${user.uid}/souls`));
-  }, [user?.uid, firestore, authLoading]);
+  }, [authLoading, user?.uid, firestore]);
   const { data: soulsWon } = useCollection<Soul>(soulsQuery);
   
   const allMyCampaignsQuery = useMemo(() => {
     if (authLoading || !user?.uid || !firestore) return null;
     return query(collection(firestore, 'campaigns'), where('organizerId', '==', user.uid));
-  }, [user?.uid, firestore, authLoading]);
+  }, [authLoading, user?.uid, firestore]);
   const { data: allMyCampaigns } = useCollection<Campaign>(allMyCampaignsQuery);
 
   const activeMyCampaigns = useMemo(() => {
@@ -300,7 +236,7 @@ export default function DashboardPage() {
   const joinedCampaignsQuery = useMemo(() => {
     if (authLoading || !user?.uid || !firestore) return null;
     return query(collection(firestore, `users/${user.uid}/joinedCampaigns`));
-  }, [user?.uid, firestore, authLoading]);
+  }, [authLoading, user?.uid, firestore]);
   const { data: joinedCampaignsDocs, loading: joinedLoading } = useCollection<JoinedCampaign>(joinedCampaignsQuery);
 
   const joinedCampaignsIds = useMemo(() => joinedCampaignsDocs?.map(c => c.id), [joinedCampaignsDocs]);
@@ -308,7 +244,7 @@ export default function DashboardPage() {
   const joinedCampaignsFullQuery = useMemo(() => {
     if (authLoading || !user?.uid || !firestore || !joinedCampaignsIds || joinedCampaignsIds.length === 0) return null;
     return query(collection(firestore, 'campaigns'), where(documentId(), 'in', joinedCampaignsIds));
-  }, [user?.uid, firestore, joinedCampaignsIds, authLoading]);
+  }, [authLoading, user?.uid, firestore, joinedCampaignsIds]);
   const { data: joinedCampaignsFull, loading: joinedFullLoading } = useCollection<Campaign>(joinedCampaignsFullQuery);
 
 
@@ -432,7 +368,6 @@ export default function DashboardPage() {
         <RecentTestimonies />
         <div className="space-y-6 lg:col-span-1">
           <ActiveCampaigns />
-          <MyCampaigns />
         </div>
       </div>
 
