@@ -8,10 +8,10 @@ import { formatDistanceToNow, isSameMonth, startOfDay, differenceInCalendarDays,
 import Link from "next/link";
 import { ArrowRight, Newspaper, Target, TrendingUp, UserCheck2, Megaphone, CheckSquare } from "lucide-react";
 import { useCollection, useFirestore, useUser, useDoc } from "@/firebase";
-import { collection, query, orderBy, limit, where, doc, updateDoc, serverTimestamp, documentId } from "firebase/firestore";
+import { collection, query, orderBy, limit, where, doc, updateDoc, serverTimestamp, documentId, getDocs } from "firebase/firestore";
 import type { Testimony, Campaign, Soul, JoinedCampaign, UserProfile } from "@/lib/types";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useMemo, useEffect } from "react";
+import { useMemo, useEffect, useState } from "react";
 import { StatDialog } from "@/components/dashboard/stat-dialog";
 import { JoinedCampaignsList, TestimoniesList, CampaignsCreatedList, SoulsWonList } from "@/components/dashboard/dashboard-lists";
 
@@ -233,8 +233,7 @@ export default function DashboardPage() {
   const { data: allMyCampaigns } = useCollection<Campaign>(allMyCampaignsQuery);
 
   const activeMyCampaigns = useMemo(() => {
-    if (!allMyCampaigns) return [];
-    return allMyCampaigns.filter(c => c.status !== 'deleted');
+    return (allMyCampaigns || []).filter(c => c.status !== 'deleted');
   }, [allMyCampaigns]);
 
   const myCreatedCampaignIds = useMemo(() => new Set(allMyCampaigns?.map(c => c.id)), [allMyCampaigns]);
@@ -247,11 +246,54 @@ export default function DashboardPage() {
 
   const joinedCampaignsIds = useMemo(() => joinedCampaignsDocs?.map(c => c.id), [joinedCampaignsDocs]);
 
-  const joinedCampaignsFullQuery = useMemo(() => {
-    if (!user?.uid || !firestore || !joinedCampaignsIds || joinedCampaignsIds.length === 0) return null;
-    return query(collection(firestore, 'campaigns'), where(documentId(), 'in', joinedCampaignsIds));
-  }, [user?.uid, firestore, joinedCampaignsIds]);
-  const { data: joinedCampaignsFull } = useCollection<Campaign>(joinedCampaignsFullQuery);
+  const [joinedCampaignsFull, setJoinedCampaignsFull] = useState<Campaign[] | null>(null);
+  const [joinedCampaignsFullLoading, setJoinedCampaignsFullLoading] = useState(true);
+
+  useEffect(() => {
+    if (!firestore || !joinedCampaignsIds) {
+      setJoinedCampaignsFullLoading(false);
+      return;
+    }
+    if (joinedCampaignsIds.length === 0) {
+      setJoinedCampaignsFull([]);
+      setJoinedCampaignsFullLoading(false);
+      return;
+    }
+
+    const fetchJoinedCampaigns = async () => {
+      setJoinedCampaignsFullLoading(true);
+      try {
+        const chunks = [];
+        for (let i = 0; i < joinedCampaignsIds.length; i += 30) {
+          chunks.push(joinedCampaignsIds.slice(i, i + 30));
+        }
+
+        const campaignPromises = chunks.map(chunk => {
+          if (chunk.length === 0) return Promise.resolve(null);
+          const q = query(collection(firestore, 'campaigns'), where(documentId(), 'in', chunk));
+          return getDocs(q);
+        });
+
+        const campaignSnapshots = await Promise.all(campaignPromises);
+        const campaigns: Campaign[] = [];
+        campaignSnapshots.forEach(snapshot => {
+          if (snapshot) {
+            snapshot.docs.forEach(doc => {
+              campaigns.push({ id: doc.id, ...doc.data() } as Campaign);
+            });
+          }
+        });
+        setJoinedCampaignsFull(campaigns);
+      } catch (e) {
+        console.error("Error fetching joined campaigns in chunks:", e);
+        setJoinedCampaignsFull(null);
+      } finally {
+        setJoinedCampaignsFullLoading(false);
+      }
+    };
+
+    fetchJoinedCampaigns();
+  }, [firestore, joinedCampaignsIds]);
 
 
   const campaignsJoinedThisMonth = useMemo(() => {
