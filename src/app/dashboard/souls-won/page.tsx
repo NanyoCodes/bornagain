@@ -20,6 +20,7 @@ import { useCollection, useFirestore, useUser } from "@/firebase";
 import { collection, query, orderBy, doc, updateDoc } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useSearch } from "@/context/search-context";
 
 export default function SoulsWonPage() {
   const { user, loading: authLoading } = useUser();
@@ -28,10 +29,17 @@ export default function SoulsWonPage() {
   const [isLogDialogOpen, setIsLogDialogOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const isMobile = useIsMobile();
+  const { searchTerm, setSearchPlaceholder, setIsSearchVisible, setSearchTerm } = useSearch();
 
   useEffect(() => {
     setMounted(true);
-  }, []);
+    setIsSearchVisible(true);
+    setSearchPlaceholder("Search by name, source, contact...");
+    return () => {
+      setIsSearchVisible(false);
+      setSearchTerm("");
+    };
+  }, [setMounted, setIsSearchVisible, setSearchPlaceholder, setSearchTerm]);
 
   const soulsQuery = useMemo(() => {
     if (authLoading || !user?.uid || !firestore) return null;
@@ -40,13 +48,26 @@ export default function SoulsWonPage() {
   const { data: souls, loading: loadingSouls } = useCollection<Soul>(soulsQuery);
 
   const loading = authLoading || loadingSouls;
+  
+  const filteredSouls = useMemo(() => {
+    if (!souls) return [];
+    if (!searchTerm) return souls;
+    const term = searchTerm.toLowerCase();
+    return souls.filter(soul => 
+      soul.name.toLowerCase().includes(term) ||
+      (soul.contact && soul.contact.toLowerCase().includes(term)) ||
+      soul.source.toLowerCase().includes(term) ||
+      (soul.sourceDetails && soul.sourceDetails.toLowerCase().includes(term)) ||
+      (soul.church && soul.church.toLowerCase().includes(term))
+    );
+  }, [souls, searchTerm]);
 
   const handleSoulLogged = () => {
     setIsLogDialogOpen(false);
   };
 
   const handleUpdateSoul = async (soulId: string, data: Partial<Soul>) => {
-    if (!user) return;
+    if (!user || !firestore) return;
     const soulRef = doc(firestore, `users/${user.uid}/souls`, soulId);
     try {
       await updateDoc(soulRef, data);
@@ -108,7 +129,7 @@ export default function SoulsWonPage() {
       </div>
       
       <SoulsWonTable 
-        souls={souls || []} 
+        souls={filteredSouls || []} 
         onUpdateSoul={handleUpdateSoul} 
         loading={loading}
       />

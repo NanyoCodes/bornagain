@@ -415,7 +415,7 @@ export function SoulsWonTable({ souls, onUpdateSoul, loading }: SoulsWonTablePro
             ) : (
                 <Card>
                     <CardContent className="h-24 text-center flex items-center justify-center">
-                        <p>No souls logged yet.</p>
+                        <p>No records found.</p>
                     </CardContent>
                 </Card>
             )}
@@ -535,7 +535,7 @@ export function SoulsWonTable({ souls, onUpdateSoul, loading }: SoulsWonTablePro
                   colSpan={6}
                   className="h-24 text-center"
                 >
-                  No souls logged yet.
+                  No records found.
                 </TableCell>
               </TableRow>
             )}
@@ -545,4 +545,3 @@ export function SoulsWonTable({ souls, onUpdateSoul, loading }: SoulsWonTablePro
     </Card>
   );
 }
-
