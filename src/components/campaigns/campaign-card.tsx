@@ -4,7 +4,7 @@
 import Link from "next/link";
 import { format, formatDistanceToNow, parse, isSameDay } from "date-fns";
 import { CalendarDays, MapPin, Users, Share2, Edit, MoreVertical, Loader2, MessageSquare } from "lucide-react";
-import type { Campaign, JoinedCampaign, UserProfile } from "@/lib/types";
+import type { Campaign, CampaignParticipant, UserProfile } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -22,9 +22,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { useFirestore, useUser } from "@/firebase";
+import { useCollection, useFirestore, useUser } from "@/firebase";
 import { collection, serverTimestamp, query, where, limit, getDocs, addDoc, doc, runTransaction, getDoc } from "firebase/firestore";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { ManageCampaignForm } from "./manage-campaign-form";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
@@ -32,6 +32,78 @@ import { LogSoulForm } from "../souls/log-soul-form";
 import { Badge } from "../ui/badge";
 import { useRouter } from "next/navigation";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip";
+import { Skeleton } from "../ui/skeleton";
+
+
+function ParticipantsDialog({ campaign, children }: { campaign: Campaign; children: React.ReactNode; }) {
+  const firestore = useFirestore();
+  const [isOpen, setIsOpen] = useState(false);
+
+  const participantsQuery = useMemo(() => {
+    // Only create query when dialog is open to avoid unnecessary fetches
+    if (!isOpen || !firestore) return null;
+    return query(collection(firestore, 'campaigns', campaign.id, 'participants'));
+  }, [isOpen, firestore, campaign.id]);
+
+  const { data: participants, loading } = useCollection<CampaignParticipant>(participantsQuery);
+  
+  const organizer = useMemo(() => participants?.find(p => p.id === campaign.organizerId), [participants, campaign.organizerId]);
+  const otherParticipants = useMemo(() => participants?.filter(p => p.id !== campaign.organizerId), [participants, campaign.organizerId]);
+
+  return (
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger asChild>{children}</DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Participants for "{campaign.title}"</DialogTitle>
+          <DialogDescription>
+            {loading ? 'Loading...' : `${participants?.length || 0} people have joined this campaign.`}
+            <br/>
+            <span className="text-xs">Note: Only the campaign organizer can see the full participant list.</span>
+          </DialogDescription>
+        </DialogHeader>
+        <div className="max-h-[60vh] overflow-y-auto pr-4">
+          {loading && (
+            <div className="space-y-2">
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-10 w-full" />
+            </div>
+          )}
+          {!loading && participants && (
+             <div className="space-y-4">
+                {organizer && (
+                    <div className="space-y-3">
+                        <h3 className="text-sm font-semibold text-muted-foreground">ORGANIZER</h3>
+                        <div className="flex items-center justify-between rounded-lg p-3 bg-muted/50">
+                            <span className='font-medium'>{organizer.displayName}</span>
+                        </div>
+                    </div>
+                )}
+                {otherParticipants && otherParticipants.length > 0 && (
+                  <div className="space-y-3">
+                    <h3 className="text-sm font-semibold text-muted-foreground">PARTICIPANTS ({otherParticipants.length})</h3>
+                    <div className="space-y-2">
+                      {otherParticipants.map(p => (
+                        <div key={p.id} className="flex items-center justify-between p-3 border rounded-lg">
+                          <span className='font-medium'>{p.displayName}</span>
+                           {p.email && <span className="text-sm text-muted-foreground">{p.email}</span>}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+            </div>
+          )}
+           {!loading && (!participants || participants.length === 0) && (
+            <p className="text-center text-muted-foreground py-4">Could not load participants. You may not have permission to view this list.</p>
+           )}
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 
 export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaign; userId?: string, isJoined: boolean }) {
   const { toast } = useToast();
@@ -523,10 +595,13 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
 
         </CardContent>
         <CardFooter className="p-6 pt-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mt-auto border-t bg-muted/50">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Users className="h-4 w-4" />
-            <span>{campaign.participants} participant{campaign.participants === 1 ? '' : 's'}</span>
-            </div>
+            <ParticipantsDialog campaign={campaign}>
+              <div className="flex items-center gap-2 text-sm text-muted-foreground cursor-pointer hover:text-primary transition-colors">
+                <Users className="h-4 w-4" />
+                <span>{campaign.participants} participant{campaign.participants === 1 ? '' : 's'}</span>
+              </div>
+            </ParticipantsDialog>
+
             {isOwner
             ? renderOwnerActions()
             : isJoined
@@ -547,3 +622,5 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
     </>
   );
 }
+
+    

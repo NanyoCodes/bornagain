@@ -65,19 +65,18 @@ type ManageCampaignFormProps = {
 
 function ParticipantList({ campaignId, organizerId }: { campaignId: string, organizerId: string }) {
   const firestore = useFirestore();
-  const { user, loading: authLoading } = useUser();
-
+  
   const participantsQuery = useMemo(() => {
-    if (authLoading || !user?.uid || !firestore) return null;
+    if (!firestore || !campaignId) return null;
     return query(collection(firestore, 'campaigns', campaignId, 'participants'));
-  }, [authLoading, user?.uid, firestore, campaignId]);
+  }, [firestore, campaignId]);
   
   const { data: participants, loading } = useCollection<CampaignParticipant>(participantsQuery);
   
   const organizer = useMemo(() => participants?.find(p => p.id === organizerId), [participants, organizerId]);
   const otherParticipants = useMemo(() => participants?.filter(p => p.id !== organizerId), [participants, organizerId]);
 
-  if (loading || authLoading) {
+  if (loading) {
     return (
         <div className="space-y-4">
             <Skeleton className="h-6 w-32" />
@@ -539,3 +538,5 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
     </div>
   );
 }
+
+    
