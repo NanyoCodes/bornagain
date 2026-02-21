@@ -61,7 +61,7 @@ export function useCollection<T extends { id: string }>(
 
     // Clean up the listener when the component unmounts or dependencies change.
     return () => unsubscribe();
-  }, [query, authLoading, user, options?.snapshotOptions]);
+  }, [query, authLoading, user?.uid, options?.snapshotOptions]);
 
   return { data, loading, error };
 }

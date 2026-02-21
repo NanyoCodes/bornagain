@@ -62,7 +62,7 @@ export function useDoc<T>(
 
     // Clean up the listener when the component unmounts or dependencies change.
     return () => unsubscribe();
-  }, [docRef, authLoading, user, options?.snapshotOptions]);
+  }, [docRef, authLoading, user?.uid, options?.snapshotOptions]);
 
   return { data, loading, error };
 }
