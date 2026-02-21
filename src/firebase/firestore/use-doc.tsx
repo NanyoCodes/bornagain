@@ -5,7 +5,6 @@ import type { DocumentReference, DocumentData, SnapshotOptions, FirestoreError }
 import { onSnapshot } from 'firebase/firestore';
 import { errorEmitter } from '../error-emitter';
 import { FirestorePermissionError } from '../errors';
-import { useUser } from '../auth/use-user';
 
 interface UseDocOptions {
   snapshotOptions?: SnapshotOptions;
@@ -15,18 +14,12 @@ export function useDoc<T>(
   docRef: DocumentReference<DocumentData> | null,
   options?: UseDocOptions
 ) {
-  const { user, loading: authLoading } = useUser();
   const [data, setData] = useState<T | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<FirestoreError | null>(null);
 
   useEffect(() => {
-    if (authLoading) {
-        setLoading(true);
-        return;
-    }
-
-    if (!docRef || !user) {
+    if (!docRef) {
       setLoading(false);
       setData(null);
       return;
@@ -62,7 +55,7 @@ export function useDoc<T>(
 
     // Clean up the listener when the component unmounts or dependencies change.
     return () => unsubscribe();
-  }, [docRef, authLoading, user?.uid, options?.snapshotOptions]);
+  }, [docRef, options?.snapshotOptions]);
 
   return { data, loading, error };
 }
