@@ -48,14 +48,14 @@ type LogSoulFormProps = {
 
 export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps) {
   const { toast } = useToast();
-  const { user, loading: authLoading } = useUser();
+  const { user } = useUser();
   const firestore = useFirestore();
   const [isLoading, setIsLoading] = useState(false);
 
   const campaignsQuery = useMemo(() => {
-    if (authLoading || !user?.uid || !firestore) return null;
+    if (!user?.uid || !firestore) return null;
     return query(collection(firestore, 'campaigns'), orderBy('createdAt', 'desc'));
-  }, [authLoading, user?.uid, firestore]);
+  }, [user?.uid, firestore]);
   const { data: campaigns, loading: loadingCampaigns } = useCollection<Campaign>(campaignsQuery);
 
   const form = useForm<z.infer<typeof formSchema>>({

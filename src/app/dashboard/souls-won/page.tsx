@@ -23,7 +23,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useSearch } from "@/context/search-context";
 
 export default function SoulsWonPage() {
-  const { user, loading: authLoading } = useUser();
+  const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
   const [isLogDialogOpen, setIsLogDialogOpen] = useState(false);
@@ -42,13 +42,11 @@ export default function SoulsWonPage() {
   }, [setMounted, setIsSearchVisible, setSearchPlaceholder, setSearchTerm]);
 
   const soulsQuery = useMemo(() => {
-    if (authLoading || !user?.uid || !firestore) return null;
+    if (!user?.uid || !firestore) return null;
     return query(collection(firestore, `users/${user.uid}/souls`), orderBy("wonAt", "desc"));
-  }, [authLoading, user?.uid, firestore]);
-  const { data: souls, loading: loadingSouls } = useCollection<Soul>(soulsQuery);
+  }, [user?.uid, firestore]);
+  const { data: souls, loading } = useCollection<Soul>(soulsQuery);
 
-  const loading = authLoading || loadingSouls;
-  
   const filteredSouls = useMemo(() => {
     if (!souls) return [];
     if (!searchTerm) return souls;

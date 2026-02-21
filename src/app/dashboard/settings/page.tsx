@@ -402,17 +402,15 @@ function SettingsSkeleton() {
 }
 
 export default function SettingsPage() {
-  const { user, loading: userLoading } = useUser();
+  const { user } = useUser();
   const firestore = useFirestore();
   
   const userDocRef = useMemo(() => {
-    if (userLoading || !user?.uid || !firestore) return null;
+    if (!user?.uid || !firestore) return null;
     return doc(firestore, 'users', user.uid);
-  }, [userLoading, user?.uid, firestore]);
-  const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userDocRef);
+  }, [user?.uid, firestore]);
+  const { data: userProfile, loading } = useDoc<UserProfile>(userDocRef);
   
-  const loading = userLoading || profileLoading;
-
   return (
     <div className="space-y-8 max-w-3xl mx-auto">
       <div className="space-y-2">

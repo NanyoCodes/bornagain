@@ -79,18 +79,18 @@ function ChatListItem({ chat, currentUserId }: { chat: Chat, currentUserId: stri
 
 
 export default function ChatsPage() {
-    const { user, loading: userLoading } = useUser();
+    const { user } = useUser();
     const firestore = useFirestore();
 
     const chatsQuery = useMemo(() => {
-        if (userLoading || !user?.uid) return null;
+        if (!user?.uid) return null;
         return query(
             collection(firestore, 'chats'),
             where('participantIds', 'array-contains', user.uid)
         );
-    }, [userLoading, user?.uid, firestore]);
+    }, [user?.uid, firestore]);
 
-    const { data: allChats, loading: chatsLoading } = useCollection<Chat>(chatsQuery);
+    const { data: allChats, loading } = useCollection<Chat>(chatsQuery);
 
     const chats = useMemo(() => {
         if (!allChats) return [];
@@ -102,8 +102,6 @@ export default function ChatsPage() {
                 return dateB - dateA;
             });
     }, [allChats]);
-
-    const loading = userLoading || chatsLoading;
 
     return (
         <div className="space-y-8">

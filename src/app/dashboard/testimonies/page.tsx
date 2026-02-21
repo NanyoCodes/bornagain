@@ -25,7 +25,7 @@ import {
 import type { Testimony } from "@/lib/types";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useCollection, useFirestore, useUser } from "@/firebase";
+import { useCollection, useFirestore } from "@/firebase";
 import { collection, query, orderBy } from "firebase/firestore";
 import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card";
 import { useSearch } from "@/context/search-context";
@@ -36,13 +36,12 @@ export default function TestimoniesPage() {
   const isMobile = useIsMobile();
   const { searchTerm, setSearchPlaceholder, setIsSearchVisible, setSearchTerm } = useSearch();
 
-  const { user, loading: authLoading } = useUser();
   const firestore = useFirestore();
 
   const testimoniesQuery = useMemo(() => {
-    if (authLoading || !user?.uid || !firestore) return null;
+    if (!firestore) return null;
     return query(collection(firestore, "testimonies"), orderBy("createdAt", "desc"));
-  }, [authLoading, user?.uid, firestore]);
+  }, [firestore]);
 
   const { data: testimonies, loading } = useCollection<Testimony>(testimoniesQuery);
 
@@ -128,7 +127,7 @@ export default function TestimoniesPage() {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {(loading || authLoading) && (
+        {loading && (
           [...Array(3)].map((_, i) => (
             <Card key={i}>
               <CardHeader>
@@ -152,10 +151,10 @@ export default function TestimoniesPage() {
             </Card>
           ))
         )}
-        {!(loading || authLoading) && filteredTestimonies?.map((testimony) => (
+        {!loading && filteredTestimonies?.map((testimony) => (
           <TestimonyCard key={testimony.id} testimony={testimony} />
         ))}
-         {!(loading || authLoading) && filteredTestimonies?.length === 0 && (
+         {!loading && filteredTestimonies?.length === 0 && (
           <p className="text-muted-foreground col-span-full text-center">No testimonies found.</p>
         )}
       </div>

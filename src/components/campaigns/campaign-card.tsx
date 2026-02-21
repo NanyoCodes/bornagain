@@ -115,6 +115,7 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
   const [isLogSoulOpen, setIsLogSoulOpen] = useState(false);
   const [isChatLoading, setIsChatLoading] = useState(false);
   const [isJoining, setIsJoining] = useState(false);
+  const [isCheckingChat, setIsCheckingChat] = useState(false);
 
   const descriptionRef = useRef<HTMLParagraphElement>(null);
   const [isDescriptionTruncated, setIsDescriptionTruncated] = useState(false);
@@ -135,6 +136,28 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
       return () => window.removeEventListener('resize', checkTruncation);
     }
   }, [campaign.description]);
+
+  const handleViewGroupChat = async () => {
+    if (!firestore || !campaign.id) return;
+    setIsCheckingChat(true);
+    const chatRef = doc(firestore, 'chats', campaign.id);
+    try {
+        const chatDoc = await getDoc(chatRef);
+        if (chatDoc.exists()) {
+            router.push(`/dashboard/chats/${campaign.id}`);
+        } else {
+            toast({
+                title: "Group Chat Not Started",
+                description: "The organizer has not started the group chat for this campaign yet.",
+            });
+        }
+    } catch (error) {
+        console.error("Error checking for group chat:", error);
+        toast({ variant: 'destructive', title: "Error", description: "Could not access group chat." });
+    } finally {
+        setIsCheckingChat(false);
+    }
+  };
 
 
   const handleJoin = async () => {
@@ -503,10 +526,8 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
        <TooltipProvider>
         <Tooltip>
             <TooltipTrigger asChild>
-                <Button asChild variant="outline" size="icon" disabled={status === 'Past'}>
-                    <Link href={`/dashboard/chats/${campaign.id}`}>
-                        <Users className="h-4 w-4" />
-                    </Link>
+                <Button onClick={handleViewGroupChat} variant="outline" size="icon" disabled={status === 'Past' || isCheckingChat}>
+                    {isCheckingChat ? <Loader2 className="h-4 w-4 animate-spin" /> : <Users className="h-4 w-4" />}
                 </Button>
             </TooltipTrigger>
             <TooltipContent><p>Group Chat</p></TooltipContent>

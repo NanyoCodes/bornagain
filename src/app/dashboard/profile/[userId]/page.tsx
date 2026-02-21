@@ -28,7 +28,7 @@ export default function UserProfilePage() {
   const params = useParams();
   const userId = params.userId as string;
 
-  const { user: currentUser, loading: authLoading } = useUser();
+  const { user: currentUser } = useUser();
   const firestore = useFirestore();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -41,30 +41,30 @@ export default function UserProfilePage() {
   const isOwnProfile = currentUser?.uid === userId;
 
   const userDocRef = useMemo(() => {
-    if (authLoading || !currentUser?.uid || !userId || !firestore) return null;
+    if (!userId || !firestore) return null;
     return doc(firestore, 'users', userId);
-  }, [authLoading, currentUser?.uid, userId, firestore]);
+  }, [userId, firestore]);
   const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userDocRef);
 
   const testimoniesQuery = useMemo(() => {
-    if (authLoading || !currentUser?.uid || !userId || !firestore) return null;
+    if (!userId || !firestore) return null;
     return query(collection(firestore, 'testimonies'), where('authorId', '==', userId));
-  }, [authLoading, currentUser?.uid, userId, firestore]);
+  }, [userId, firestore]);
   const { data: testimonies, loading: testimoniesLoading } = useCollection<Testimony>(testimoniesQuery);
 
   const soulsQuery = useMemo(() => {
-    if (authLoading || !isOwnProfile || !firestore) return null;
+    if (!isOwnProfile || !firestore) return null;
     return query(collection(firestore, `users/${userId}/souls`));
-  }, [authLoading, isOwnProfile, firestore, userId]);
+  }, [isOwnProfile, firestore, userId]);
   const { data: soulsWon, loading: soulsLoading } = useCollection<Soul>(soulsQuery);
 
   const joinedCampaignsQuery = useMemo(() => {
-    if (authLoading || !isOwnProfile || !firestore) return null;
+    if (!isOwnProfile || !firestore) return null;
     return query(collection(firestore, `users/${userId}/joinedCampaigns`));
-  }, [authLoading, isOwnProfile, firestore, userId]);
+  }, [isOwnProfile, firestore, userId]);
   const { data: joinedCampaigns, loading: campaignsLoading } = useCollection<JoinedCampaign>(joinedCampaignsQuery);
 
-  const loading = authLoading || profileLoading || testimoniesLoading || (isOwnProfile && (soulsLoading || campaignsLoading));
+  const loading = profileLoading || testimoniesLoading || (isOwnProfile && (soulsLoading || campaignsLoading));
 
   if (loading) {
     return <div className="flex items-center justify-center h-full"><Loader2 className="h-8 w-8 animate-spin" /></div>;
