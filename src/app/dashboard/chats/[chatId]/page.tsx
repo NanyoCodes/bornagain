@@ -222,18 +222,24 @@ export default function ChatPage() {
                         </div>
                     </div>
                 ) : otherParticipantInfo && otherParticipantId ? (
-                    <Link href={`/dashboard/profile/${otherParticipantId}`} className="flex items-center gap-3 hover:bg-muted/50 p-2 rounded-lg -mx-2 transition-colors">
-                         <Avatar>
-                            <AvatarImage src={otherParticipantInfo.photoURL} />
-                            <AvatarFallback>{otherParticipantInfo.displayName.charAt(0)}</AvatarFallback>
-                        </Avatar>
+                    <div className="flex items-center gap-3">
+                        <Link href={`/dashboard/profile/${otherParticipantId}`}>
+                            <Avatar>
+                                <AvatarImage src={otherParticipantInfo.photoURL} />
+                                <AvatarFallback>{otherParticipantInfo.displayName.charAt(0)}</AvatarFallback>
+                            </Avatar>
+                        </Link>
                         <div>
-                            <h2 className="font-semibold">{otherParticipantInfo.displayName}</h2>
+                            <h2 className="font-semibold">
+                                <Link href={`/dashboard/profile/${otherParticipantId}`} className="hover:underline">
+                                    {otherParticipantInfo.displayName}
+                                </Link>
+                            </h2>
                             <p className="text-sm text-muted-foreground">
-                                Regarding: <Link href={`/dashboard/campaigns#${chat.campaignId}`} onClick={(e) => e.stopPropagation()} className="hover:underline">{chat.campaignTitle}</Link>
+                                Regarding: <Link href={`/dashboard/campaigns#${chat.campaignId}`} className="hover:underline">{chat.campaignTitle}</Link>
                             </p>
                         </div>
-                    </Link>
+                    </div>
                 ) : null}
             </div>
 
@@ -325,3 +331,5 @@ export default function ChatPage() {
         </div>
     )
 }
+
+    
