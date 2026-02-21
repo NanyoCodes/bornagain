@@ -190,42 +190,37 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
     }
   };
 
-  const defaultValues = useMemo(() => {
-      const locationParts = campaign.location.split(',');
-      const city = locationParts[0]?.trim() || '';
-      const country = locationParts[1]?.trim() || '';
-      
-      const safeToDate = (value: any): Date => {
-          if (value?.toDate) return value.toDate();
-          if (value instanceof Date) return value;
-          // Return a default, stable date if value is missing to avoid re-renders
-          return new Date(); 
-      }
-
-      return {
-        title: campaign.title || "",
-        description: campaign.description || "",
-        goal: campaign.goal || "",
-        city: city,
-        country: country,
-        startDate: safeToDate(campaign.startDate),
-        endDate: safeToDate(campaign.endDate),
-        startTime: campaign.startTime || "",
-        endTime: campaign.endTime || "",
-        scripture: campaign.scripture || "",
-        scriptureTestimony: campaign.scriptureTestimony || "",
-        maxParticipants: campaign.maxParticipants || undefined,
-        lastUpdateReason: "",
-      }
-  }, [campaign]);
-
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
   });
 
   useEffect(() => {
-    form.reset(defaultValues);
-  }, [defaultValues, form]);
+    const locationParts = campaign.location.split(',');
+    const city = locationParts[0]?.trim() || '';
+    const country = locationParts[1]?.trim() || '';
+    
+    const safeToDate = (value: any): Date => {
+        if (value?.toDate) return value.toDate();
+        if (value instanceof Date) return value;
+        return new Date(); 
+    }
+
+    form.reset({
+      title: campaign.title || "",
+      description: campaign.description || "",
+      goal: campaign.goal || "",
+      city: city,
+      country: country,
+      startDate: safeToDate(campaign.startDate),
+      endDate: safeToDate(campaign.endDate),
+      startTime: campaign.startTime || "",
+      endTime: campaign.endTime || "",
+      scripture: campaign.scripture || "",
+      scriptureTestimony: campaign.scriptureTestimony || "",
+      maxParticipants: campaign.maxParticipants || undefined,
+      lastUpdateReason: "",
+    });
+  }, [campaign, form]);
 
 
   const handleStartGroupChat = async () => {
@@ -643,5 +638,3 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
     </div>
   );
 }
-
-    

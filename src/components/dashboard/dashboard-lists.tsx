@@ -1,9 +1,9 @@
 
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { useCollection, useFirestore } from '@/firebase';
-import { collection, query, where, documentId, orderBy } from 'firebase/firestore';
+import { collection, query, where, documentId, orderBy, getDocs } from 'firebase/firestore';
 import type { Campaign, JoinedCampaign, Testimony, Soul } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
@@ -103,6 +103,8 @@ export function JoinedCampaignsList({ userId }: { userId: string }) {
   const firestore = useFirestore();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterDate, setFilterDate] = useState<Date>();
+  const [campaigns, setCampaigns] = useState<(Campaign & { joinedAt: any })[] | null>(null);
+  const [loading, setLoading] = useState(true);
 
   const joinedIdsQuery = useMemo(() => {
     if (!userId || !firestore) return null;
@@ -112,38 +114,61 @@ export function JoinedCampaignsList({ userId }: { userId: string }) {
 
   const joinedCampaignIds = useMemo(() => joinedCampaignsDocs?.map(j => j.id) ?? [], [joinedCampaignsDocs]);
 
-  const joinedQuery = useMemo(() => {
-    if (!userId || !firestore || joinedCampaignIds.length === 0) return null;
-    return query(collection(firestore, 'campaigns'), where(documentId(), 'in', joinedCampaignIds));
-  }, [userId, firestore, joinedCampaignIds]);
+  useEffect(() => {
+    if (joinedIdsLoading) return;
+    if (!firestore || joinedCampaignIds.length === 0) {
+        setCampaigns([]);
+        setLoading(false);
+        return;
+    }
 
-  const { data: campaigns, loading: joinedLoading } = useCollection<Campaign>(joinedQuery);
-  const loading = joinedIdsLoading || (joinedCampaignIds.length > 0 && joinedLoading);
-
-  const enrichedCampaigns = useMemo(() => {
-    if (!campaigns || !joinedCampaignsDocs) return [];
-    
-    const campaignMap = new Map(campaigns.map(c => [c.id, c]));
-    
-    return joinedCampaignsDocs
-        .map(jcd => {
-            const campaign = campaignMap.get(jcd.id);
-            if (!campaign || campaign.status === 'deleted' || campaign.organizerId === userId) {
-                return null;
+    const fetchCampaigns = async () => {
+        setLoading(true);
+        try {
+            const chunks = [];
+            for (let i = 0; i < joinedCampaignIds.length; i += 30) {
+                chunks.push(joinedCampaignIds.slice(i, i + 30));
             }
-            return {
-                ...campaign,
-                joinedAt: jcd.joinedAt,
-            };
-        })
-        .filter((c): c is (Campaign & { joinedAt: any }) => !!c);
 
-  }, [campaigns, joinedCampaignsDocs, userId]);
+            const campaignPromises = chunks.map(chunk => {
+                const q = query(collection(firestore, 'campaigns'), where(documentId(), 'in', chunk));
+                return getDocs(q);
+            });
+
+            const campaignSnapshots = await Promise.all(campaignPromises);
+            const fetchedCampaigns: Campaign[] = [];
+            campaignSnapshots.forEach(snapshot => {
+                snapshot.docs.forEach(doc => {
+                    fetchedCampaigns.push({ id: doc.id, ...doc.data() } as Campaign);
+                });
+            });
+
+            const campaignMap = new Map(fetchedCampaigns.map(c => [c.id, c]));
+            const enriched = joinedCampaignsDocs?.map(jcd => {
+                const campaign = campaignMap.get(jcd.id);
+                if (!campaign || campaign.status === 'deleted' || campaign.organizerId === userId) {
+                    return null;
+                }
+                return { ...campaign, joinedAt: jcd.joinedAt };
+            }).filter((c): c is (Campaign & { joinedAt: any }) => !!c) ?? [];
+
+            setCampaigns(enriched);
+        } catch (e) {
+            console.error("Error fetching joined campaigns list:", e);
+            setCampaigns(null);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    fetchCampaigns();
+  }, [firestore, userId, joinedCampaignsDocs, joinedCampaignIds, joinedIdsLoading]);
+
 
   const filteredCampaigns = useMemo(() => {
-    if (!enrichedCampaigns) return [];
+    if (!campaigns) return [];
 
-    return enrichedCampaigns.filter(campaign => {
+    return campaigns.filter(campaign => {
         const searchLower = searchTerm.toLowerCase();
         const matchesSearch = searchTerm ?
             campaign.title.toLowerCase().includes(searchLower) ||
@@ -157,14 +182,14 @@ export function JoinedCampaignsList({ userId }: { userId: string }) {
 
         return matchesSearch && matchesDate;
     });
-  }, [enrichedCampaigns, searchTerm, filterDate]);
+  }, [campaigns, searchTerm, filterDate]);
 
 
   if (loading) {
     return <ListSkeleton />;
   }
   
-  if (enrichedCampaigns.length === 0) {
+  if (!campaigns || campaigns.length === 0) {
     return <p className="text-sm text-muted-foreground text-center py-4">You haven't joined any campaigns created by others.</p>
   }
 
@@ -379,5 +404,3 @@ export function SoulsWonList({ userId }: { userId: string }) {
     </div>
   )
 }
-
-    
