@@ -195,16 +195,22 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
       const locationParts = campaign.location.split(',');
       const city = locationParts[0]?.trim() || '';
       const country = locationParts[1]?.trim() || '';
+      
+      const safeToDate = (value: any): Date => {
+          if (value?.toDate) return value.toDate();
+          return new Date();
+      }
+
       return {
         title: campaign.title || "",
         description: campaign.description || "",
         goal: campaign.goal || "",
         city: city,
         country: country,
-        startDate: campaign.startDate?.toDate ? campaign.startDate.toDate() : new Date(),
-        endDate: campaign.endDate?.toDate ? campaign.endDate.toDate() : new Date(),
-        startTime: campaign.startTime || "10:00",
-        endTime: campaign.endTime || "12:00",
+        startDate: safeToDate(campaign.startDate),
+        endDate: safeToDate(campaign.endDate),
+        startTime: campaign.startTime || "",
+        endTime: campaign.endTime || "",
         scripture: campaign.scripture || "",
         scriptureTestimony: campaign.scriptureTestimony || "",
         maxParticipants: campaign.maxParticipants || undefined,
@@ -218,7 +224,7 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
   });
 
   useEffect(() => {
-    form.reset(defaultValues)
+    form.reset(defaultValues);
   }, [defaultValues, form]);
 
 
@@ -588,7 +594,7 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
 
         <Separator />
 
-        <ParticipantList campaign={campaign} participants={participants || []} loading={participantsLoading} onRemove={handleRemoveParticipant} organizerId={campaign.organizerId} />
+        <ParticipantList campaign={campaign} participants={participants || []} loading={participantsLoading} onRemove={handleRemoveParticipant} />
 
         <Separator />
 
