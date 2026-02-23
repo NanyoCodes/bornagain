@@ -1,175 +1,14 @@
-
 "use client";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { formatDistanceToNow, isSameMonth, startOfDay, differenceInCalendarDays, isSameDay } from "date-fns";
-import Link from "next/link";
-import { ArrowRight, Newspaper, Target, TrendingUp, UserCheck2, Megaphone, CheckSquare } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { isSameMonth, startOfDay, differenceInCalendarDays, isSameDay } from "date-fns";
+import { Newspaper, Target, TrendingUp, UserCheck2, Megaphone } from "lucide-react";
 import { useCollection, useFirestore, useUser, useDoc } from "@/firebase";
-import { collection, query, orderBy, limit, where, doc, updateDoc, serverTimestamp, documentId, getDocs } from "firebase/firestore";
+import { collection, query, orderBy, where, doc, updateDoc, serverTimestamp, documentId, getDocs } from "firebase/firestore";
 import type { Testimony, Campaign, Soul, JoinedCampaign, UserProfile } from "@/lib/types";
-import { Skeleton } from "@/components/ui/skeleton";
 import { useMemo, useEffect, useState } from "react";
 import { StatDialog } from "@/components/dashboard/stat-dialog";
 import { JoinedCampaignsList, TestimoniesList, CampaignsCreatedList, SoulsWonList } from "@/components/dashboard/dashboard-lists";
-
-function RecentTestimonies() {
-  const { user } = useUser();
-  const firestore = useFirestore();
-  const testimoniesQuery = useMemo(() => {
-    if (!firestore || !user) return null;
-    return query(collection(firestore, 'testimonies'), orderBy('createdAt', 'desc'), limit(3));
-  }, [firestore, user]);
-  const { data: testimonies, loading } = useCollection<Testimony>(testimoniesQuery);
-
-  return (
-    <Card className="lg:col-span-2">
-        <CardHeader className="flex flex-row items-center">
-          <div className="grid gap-2">
-            <CardTitle>Recent Testimonies</CardTitle>
-          </div>
-          <Button asChild size="sm" className="ml-auto gap-1">
-            <Link href="/dashboard/testimonies">
-              View All
-              <ArrowRight className="h-4 w-4" />
-            </Link>
-          </Button>
-        </CardHeader>
-        <CardContent className="space-y-4">
-           {loading && (
-            <div className="space-y-4">
-              {[...Array(3)].map((_, i) => (
-                <div key={i} className="flex items-start gap-4">
-                  <Skeleton className="h-9 w-9 rounded-full" />
-                  <div className="grid gap-1 flex-1">
-                    <Skeleton className="h-4 w-32" />
-                    <Skeleton className="h-4 w-48" />
-                  </div>
-                  <Skeleton className="h-4 w-24" />
-                </div>
-              ))}
-            </div>
-           )}
-           {!loading && testimonies && testimonies.length > 0 ? (
-            testimonies.map(testimony => (
-             <div key={testimony.id} className="flex items-start gap-4">
-                <Avatar className="h-9 w-9">
-                  <AvatarImage src={testimony.authorAvatarUrl ?? undefined} alt="Avatar" />
-                  <AvatarFallback>{testimony.authorName.charAt(0)}</AvatarFallback>
-                </Avatar>
-                <div className="grid gap-1">
-                  <p className="text-sm font-medium leading-none">{testimony.authorName}</p>
-                  <p className="text-sm text-muted-foreground truncate">{testimony.content.substring(0, 40)}</p>
-                </div>
-                <div className="ml-auto text-sm text-muted-foreground">
-                  {testimony.createdAt ? formatDistanceToNow(new Date(testimony.createdAt.seconds * 1000), { addSuffix: true }) : 'just now'}
-                </div>
-             </div>
-            ))
-           ) : !loading && (
-            <div className="text-center text-muted-foreground py-4 text-sm">
-                No recent testimonies have been shared yet.
-            </div>
-           )}
-        </CardContent>
-    </Card>
-  );
-}
-
-function ActiveCampaigns() {
-  const { user } = useUser();
-  const firestore = useFirestore();
-  const campaignsQuery = useMemo(() => {
-    if (!firestore || !user) return null;
-    // Fetch more campaigns initially to ensure we can find 2 active ones.
-    return query(collection(firestore, 'campaigns'), orderBy('createdAt', 'desc'), limit(10));
-  }, [firestore, user]);
-  const { data: recentCampaigns, loading } = useCollection<Campaign>(campaignsQuery);
-
-  const safeToDate = (value: any): Date | null => {
-    if (!value) return null;
-    if (value instanceof Date) return value;
-    if (typeof value.toDate === 'function') return value.toDate();
-    try {
-      const d = new Date(value);
-      if (!isNaN(d.getTime())) return d;
-    } catch (e) {}
-    try {
-      if (typeof value === 'object' && value.seconds) {
-         const d = new Date(value.seconds * 1000);
-         if(!isNaN(d.getTime())) return d;
-      }
-    } catch(e) {}
-    return null;
-  };
-
-  const isPast = (campaign: Campaign): boolean => {
-    const now = new Date();
-    const endDate = safeToDate(campaign.endDate);
-    if (!endDate) return true; // Treat campaigns without an end date as past
-
-    const endDateTime = new Date(endDate);
-    if (campaign.endTime && /^\d{2}:\d{2}$/.test(campaign.endTime)) {
-        const [hours, minutes] = campaign.endTime.split(':').map(Number);
-        endDateTime.setHours(hours, minutes, 59, 999);
-    } else {
-        endDateTime.setHours(23, 59, 59, 999);
-    }
-
-    return endDateTime < now;
-  };
-
-  const campaigns = useMemo(() => {
-    if (!recentCampaigns) return [];
-    // Filter out deleted and past campaigns, then take the first 2.
-    return recentCampaigns.filter(c => c.status !== 'deleted' && !isPast(c)).slice(0, 2);
-  }, [recentCampaigns]);
-
-  return (
-    <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle>Active Campaigns</CardTitle>
-            <Button asChild size="sm" className="ml-auto gap-1 shrink-0">
-            <Link href="/dashboard/campaigns">
-              <span className="hidden sm:inline">View All</span>
-              <ArrowRight className="h-4 w-4" />
-            </Link>
-          </Button>
-        </CardHeader>
-        <CardContent className="space-y-4">
-            {loading && (
-              <div className="space-y-4">
-                {[...Array(2)].map((_, i) => (
-                  <div key={i} className="flex items-center gap-4">
-                    <div className="grid gap-1 flex-1">
-                      <Skeleton className="h-4 w-3/4" />
-                      <Skeleton className="h-4 w-1/2" />
-                    </div>
-                    <Skeleton className="h-4 w-16" />
-                  </div>
-                ))}
-              </div>
-            )}
-            {!loading && campaigns.map(campaign => (
-              <div key={campaign.id} className="flex items-center gap-4">
-                <div className="grid gap-1 min-w-0">
-                  <p className="text-sm font-medium truncate">{campaign.title}</p>
-                  <p className="text-sm text-muted-foreground truncate">{campaign.location}</p>
-                </div>
-                <div className="ml-auto font-medium text-right shrink-0">{campaign.participants} joined</div>
-              </div>
-            ))}
-            {!loading && campaigns.length === 0 && (
-                <div className="text-center text-muted-foreground py-4 text-sm">
-                    No active campaigns found.
-                </div>
-            )}
-        </CardContent>
-    </Card>
-  )
-}
 
 
 export default function DashboardPage() {
@@ -411,14 +250,6 @@ export default function DashboardPage() {
             </CardContent>
         </Card>
       </div>
-
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        <RecentTestimonies />
-        <div className="space-y-6 lg:col-span-1">
-          <ActiveCampaigns />
-        </div>
-      </div>
-
     </div>
   );
 }
