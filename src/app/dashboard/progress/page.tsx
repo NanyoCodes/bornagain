@@ -7,7 +7,7 @@ import { Bar, BarChart, CartesianGrid, ResponsiveContainer, XAxis, YAxis, Toolti
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartContainer, ChartTooltipContent } from "@/components/ui/chart";
 import { Button } from "@/components/ui/button";
-import { Edit, PlusCircle, Trophy, TrendingUp, UserCheck2 } from "lucide-react";
+import { Edit, PlusCircle, UserCheck2 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -21,9 +21,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { format, isSameMonth } from "date-fns";
-import { useCollection, useFirestore, useUser, useDoc } from "@/firebase";
-import type { Soul, UserProfile } from "@/lib/types";
-import { collection, query, doc } from "firebase/firestore";
+import { useCollection, useFirestore, useUser } from "@/firebase";
+import type { Soul } from "@/lib/types";
+import { collection, query } from "firebase/firestore";
 
 
 const chartConfig = {
@@ -37,12 +37,6 @@ export default function ProgressPage() {
   const { toast } = useToast();
   const { user } = useUser();
   const firestore = useFirestore();
-
-  const userDocRef = useMemo(() => {
-    if (!user?.uid || !firestore) return null;
-    return doc(firestore, 'users', user.uid);
-  }, [user?.uid, firestore]);
-  const { data: userProfile } = useDoc<UserProfile>(userDocRef);
 
   const soulsQuery = useMemo(() => {
     if (!user?.uid || !firestore) return null;
@@ -123,13 +117,8 @@ export default function ProgressPage() {
     }
   };
 
-  const currentStreak = userProfile?.currentStreak ?? 0;
-  const longestStreak = userProfile?.longestStreak ?? 0;
-
   const otherStats = [
     { title: "Total Souls Won", value: totalSoulsWon.toString(), icon: UserCheck2, description: "All time" },
-    { title: "Longest Streak", value: `${longestStreak} day${longestStreak === 1 ? '' : 's'}`, icon: Trophy, description: "Keep it up!" },
-    { title: "Current Streak", value: `${currentStreak} day${currentStreak === 1 ? '' : 's'}`, icon: TrendingUp, description: "Don't break it!" },
   ];
 
   return (
@@ -147,7 +136,7 @@ export default function ProgressPage() {
         </Button>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-2">
         {otherStats.map((stat) => (
           <Card key={stat.title}>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
