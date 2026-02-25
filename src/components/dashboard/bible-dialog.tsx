@@ -18,10 +18,11 @@ import { useUser, useFirestore, useDoc } from '@/firebase';
 import { doc, updateDoc, arrayUnion } from 'firebase/firestore';
 import type { UserProfile } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
-import { formatDistanceToNow } from 'date-fns';
-import { Loader2 } from 'lucide-react';
+import { format, formatDistanceToNow, isSameDay } from 'date-fns';
+import { Loader2, XCircle } from 'lucide-react';
 import { Skeleton } from '../ui/skeleton';
 import { getBibleChapter, type BibleChapterOutput } from '@/ai/flows/get-bible-chapter-flow';
+import { Input } from '../ui/input';
 
 export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { isOpen: boolean; onOpenChange: (open: boolean) => void; onDisciplineCompleted: () => void; }) {
   const { toast } = useToast();
@@ -38,6 +39,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
 
   const [isScrolledToEnd, setIsScrolledToEnd] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const [filterDate, setFilterDate] = useState<Date | undefined>();
 
   const userDocRef = useMemo(() => (user ? doc(firestore, 'users', user.uid) : null), [user, firestore]);
   const { data: userProfile, loading: loadingProfile } = useDoc<UserProfile>(userDocRef);
@@ -156,6 +158,17 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
     return [...userProfile.readingHistory].reverse();
   }, [userProfile?.readingHistory]);
 
+  const filteredHistory = useMemo(() => {
+    if (!readingHistory) return [];
+    if (!filterDate) return readingHistory;
+
+    return readingHistory.filter(item => {
+        if (!item.readAt) return false;
+        const readDate = item.readAt.toDate();
+        return isSameDay(readDate, filterDate);
+    })
+  }, [readingHistory, filterDate]);
+
   const handleScroll = (event: React.UIEvent<HTMLDivElement>) => {
     if (isScrolledToEnd) return;
     const target = event.currentTarget;
@@ -229,8 +242,29 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
               </DialogFooter>
           </TabsContent>
           
-          <TabsContent value="history" className="flex-grow min-h-0">
-             <ScrollArea className="h-full">
+          <TabsContent value="history" className="flex-grow flex flex-col min-h-0 mt-4 space-y-4">
+            <div className="flex items-center gap-2">
+                <Input
+                    type="date"
+                    value={filterDate ? format(filterDate, "yyyy-MM-dd") : ""}
+                    onChange={(e) => {
+                        if (e.target.value) {
+                            const [year, month, day] = e.target.value.split('-').map(Number);
+                            setFilterDate(new Date(year, month - 1, day));
+                        } else {
+                            setFilterDate(undefined);
+                        }
+                    }}
+                    className="flex-grow"
+                />
+                {filterDate && (
+                    <Button variant="ghost" size="icon" onClick={() => setFilterDate(undefined)}>
+                        <XCircle className="h-5 w-5 text-muted-foreground" />
+                        <span className="sr-only">Clear date filter</span>
+                    </Button>
+                )}
+            </div>
+             <ScrollArea className="flex-grow border rounded-md">
                 {loadingProfile && (
                   <div className="space-y-3 p-2">
                     <Skeleton className="h-10 w-full" />
@@ -238,14 +272,14 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                     <Skeleton className="h-10 w-full" />
                   </div>
                 )}
-                {!loadingProfile && readingHistory.length === 0 && (
-                  <div className="flex items-center justify-center h-full text-muted-foreground">
-                    Your reading history is empty.
+                {!loadingProfile && filteredHistory.length === 0 && (
+                  <div className="flex items-center justify-center h-full text-muted-foreground p-4 text-center">
+                    {readingHistory.length === 0 ? 'Your reading history is empty.' : 'No entries found for this date.'}
                   </div>
                 )}
-                {!loadingProfile && readingHistory.length > 0 && (
-                  <div className="space-y-2">
-                    {readingHistory.map((item, index) => (
+                {!loadingProfile && filteredHistory.length > 0 && (
+                  <div className="space-y-2 p-2">
+                    {filteredHistory.map((item, index) => (
                       <div key={index} className="flex justify-between items-center p-3 border rounded-lg">
                         <p className="font-medium">{item.book} {item.chapter}</p>
                         <p className="text-sm text-muted-foreground">
