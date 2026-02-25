@@ -542,7 +542,7 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
        <TooltipProvider>
         <Tooltip>
             <TooltipTrigger asChild>
-                <Button onClick={handleViewGroupChat} variant="outline" size="icon" disabled={status === 'Past' || isCheckingChat}>
+                <Button onClick={handleViewGroupChat} variant="outline" size="icon" disabled={isCheckingChat}>
                     {isCheckingChat ? <Loader2 className="h-4 w-4 animate-spin" /> : <Users className="h-4 w-4" />}
                 </Button>
             </TooltipTrigger>
@@ -558,7 +558,7 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
         <TooltipProvider>
             <Tooltip>
                 <TooltipTrigger asChild>
-                    <Button onClick={handleInitiateChat} variant="outline" size="icon" disabled={!userId || isChatLoading || status === 'Past'}>
+                    <Button onClick={handleInitiateChat} variant="outline" size="icon" disabled={!userId || isChatLoading}>
                          {isChatLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <MessageSquare className="h-4 w-4" />}
                     </Button>
                 </TooltipTrigger>
