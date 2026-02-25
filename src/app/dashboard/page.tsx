@@ -1,22 +1,85 @@
 
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { isSameMonth, startOfDay, differenceInCalendarDays, isSameDay } from "date-fns";
-import { TrendingUp, UserCheck2 } from "lucide-react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { isSameDay, startOfDay, differenceInCalendarDays, format } from "date-fns";
+import { TrendingUp, UserCheck2, Trophy, ArrowRight, UserPlus } from "lucide-react";
 import { useCollection, useFirestore, useUser, useDoc } from "@/firebase";
-import { collection, query, doc, updateDoc, serverTimestamp } from "firebase/firestore";
+import { collection, query, doc, updateDoc, serverTimestamp, orderBy, limit } from "firebase/firestore";
 import type { Soul, UserProfile } from "@/lib/types";
 import { useMemo, useEffect } from "react";
-import { StatDialog } from "@/components/dashboard/stat-dialog";
-import { SoulsWonList } from "@/components/dashboard/dashboard-lists";
 import { DailyDisciplineCard } from "@/components/dashboard/daily-discipline-card";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Skeleton } from "@/components/ui/skeleton";
 
+
+function RecentSoulsList() {
+    const { user } = useUser();
+    const firestore = useFirestore();
+
+    const soulsQuery = useMemo(() => {
+        if (!user?.uid || !firestore) return null;
+        return query(collection(firestore, `users/${user.uid}/souls`), orderBy("wonAt", "desc"), limit(3));
+    }, [user?.uid, firestore]);
+    const { data: souls, loading } = useCollection<Soul>(soulsQuery);
+
+    if (loading) {
+        return (
+            <div className="space-y-4">
+                {[...Array(3)].map((_, i) => (
+                <div key={i} className="flex items-center gap-4">
+                    <Skeleton className="h-10 w-10 rounded-full" />
+                    <div className="space-y-1 flex-1">
+                        <Skeleton className="h-4 w-2/4" />
+                        <Skeleton className="h-3 w-1/4" />
+                    </div>
+                </div>
+                ))}
+            </div>
+        )
+    }
+
+    if (!souls || souls.length === 0) {
+        return (
+            <div className="text-center py-10 border-2 border-dashed rounded-lg">
+                <div className="mx-auto h-12 w-12 text-muted-foreground">
+                    <UserPlus />
+                </div>
+                <h3 className="mt-2 text-sm font-semibold">No souls logged yet</h3>
+                <p className="mt-1 text-sm text-muted-foreground">Start tracking the lives you impact.</p>
+                <Button asChild variant="secondary" size="sm" className="mt-4">
+                    <Link href="/dashboard/souls-won">
+                        Log Your First Soul
+                    </Link>
+                </Button>
+            </div>
+        )
+    }
+
+    return (
+        <div className="space-y-4">
+            {souls.map(soul => (
+                <div key={soul.id} className="flex items-center gap-4">
+                    <Avatar className="h-10 w-10 border">
+                         <AvatarFallback>{soul.name.charAt(0)}</AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1">
+                        <p className="text-sm font-medium leading-none">{soul.name}</p>
+                        <p className="text-sm text-muted-foreground">
+                            Won on {soul.wonAt ? format(soul.wonAt.toDate(), "PPP") : 'N/A'}
+                        </p>
+                    </div>
+                </div>
+            ))}
+        </div>
+    )
+}
 
 export default function DashboardPage() {
   const { user, loading: authLoading } = useUser();
   const firestore = useFirestore();
-  const now = useMemo(() => new Date(), []);
   
   const userDocRef = useMemo(() => {
     if (!user?.uid || !firestore) return null;
@@ -25,16 +88,12 @@ export default function DashboardPage() {
   const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userDocRef);
 
   useEffect(() => {
-    if (profileLoading || !user || !userProfile || !firestore) {
-      return;
-    }
+    if (profileLoading || !user || !userProfile || !firestore) return;
 
     const today = startOfDay(new Date());
     const lastLogin = userProfile.lastLogin?.toDate ? startOfDay(userProfile.lastLogin.toDate()) : null;
 
-    if (lastLogin && isSameDay(today, lastLogin)) {
-        return;
-    }
+    if (lastLogin && isSameDay(today, lastLogin)) return;
 
     let newStreak = 1;
     if (lastLogin && differenceInCalendarDays(today, lastLogin) === 1) {
@@ -59,57 +118,98 @@ export default function DashboardPage() {
     if (!user?.uid || !firestore) return null;
     return query(collection(firestore, `users/${user.uid}/souls`));
   }, [user?.uid, firestore]);
-  const { data: soulsWon } = useCollection<Soul>(soulsQuery);
-
-  const soulsWonThisMonth = useMemo(() => {
-    if (!soulsWon) return 0;
-    return soulsWon.filter(s => {
-      if (!s.wonAt) return false;
-      const wonDate = s.wonAt.toDate ? s.wonAt.toDate() : new Date(s.wonAt as any);
-      return isSameMonth(wonDate, now);
-    }).length;
-  }, [soulsWon, now]);
+  const { data: soulsWon, loading: soulsLoading } = useCollection<Soul>(soulsQuery);
 
   const soulsWonCount = soulsWon?.length ?? 0;
   const currentStreak = userProfile?.currentStreak || 0;
+  const longestStreak = userProfile?.longestStreak || 0;
+
+  const loading = authLoading || profileLoading || soulsLoading;
 
 
   return (
     <div className="space-y-8">
-      <div className="space-y-2">
-        <h1 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight font-headline">Dashboard</h1>
-        <p className="text-muted-foreground">Welcome back, {user?.displayName || 'User'}! Here's your ministry overview.</p>
-        <blockquote className="border-l-2 pl-6 italic text-muted-foreground pt-2">
-          "And they overcame him by the blood of the Lamb, and by the word of their testimony; and they loved not their lives unto the death." - Revelation 12:11
-        </blockquote>
-      </div>
-      
-      <div className="grid gap-4 md:grid-cols-2">
-        <div className="md:col-span-2">
-          <DailyDisciplineCard />
+        <div className="space-y-2">
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight font-headline">
+                Welcome back, {user?.displayName || 'User'}!
+            </h1>
+            <p className="text-muted-foreground">Here's your ministry overview.</p>
         </div>
-        <StatDialog
-            title="Souls Won"
-            value={soulsWonCount}
-            change={`${soulsWonThisMonth} this month`}
-            icon={UserCheck2}
-            dialogTitle="My Souls Won"
-            dialogDescription="A list of all the souls you have won for Christ."
-        >
-            {user && <SoulsWonList userId={user.uid} />}
-        </StatDialog>
-        
-        <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Current Streak</CardTitle>
-                <TrendingUp className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-                <div className="text-2xl font-bold">{`${currentStreak} day${currentStreak === 1 ? '' : 's'}`}</div>
-                <p className="text-xs text-muted-foreground">Keep going!</p>
-            </CardContent>
-        </Card>
-      </div>
+
+        <div className="grid gap-8 lg:grid-cols-3">
+            <div className="lg:col-span-2 space-y-8">
+                <DailyDisciplineCard />
+
+                <Card>
+                    <CardHeader className="flex flex-row items-center justify-between">
+                        <div className="space-y-1.5">
+                            <CardTitle>Recent Souls Won</CardTitle>
+                            <CardDescription>The latest additions to your follow-up list.</CardDescription>
+                        </div>
+                        <Button asChild variant="outline" size="sm">
+                           <Link href="/dashboard/souls-won">
+                                View All
+                           </Link>
+                        </Button>
+                    </CardHeader>
+                    <CardContent>
+                        <RecentSoulsList />
+                    </CardContent>
+                </Card>
+            </div>
+
+            <div className="lg:col-span-1 space-y-8">
+                 <Card>
+                    <CardHeader>
+                        <CardTitle>Statistics</CardTitle>
+                        <CardDescription>Your personal ministry impact.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-6">
+                        <div className="flex items-center gap-4">
+                            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                                <UserCheck2 className="h-6 w-6" />
+                            </div>
+                            <div>
+                                <p className="text-muted-foreground">Total Souls Won</p>
+                                {loading ? <Skeleton className="h-6 w-12 mt-1" /> : <p className="text-2xl font-bold">{soulsWonCount}</p>}
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-4">
+                            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                                <TrendingUp className="h-6 w-6" />
+                            </div>
+                            <div>
+                                <p className="text-muted-foreground">Current Streak</p>
+                                {loading ? <Skeleton className="h-6 w-12 mt-1" /> : <p className="text-2xl font-bold">{currentStreak} day{currentStreak === 1 ? '' : 's'}</p>}
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-4">
+                            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                                <Trophy className="h-6 w-6" />
+                            </div>
+                            <div>
+                                <p className="text-muted-foreground">Longest Streak</p>
+                                {loading ? <Skeleton className="h-6 w-12 mt-1" /> : <p className="text-2xl font-bold">{longestStreak} day{longestStreak === 1 ? '' : 's'}</p>}
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+                
+                 <Card className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground">
+                    <CardHeader>
+                        <CardTitle>Share Your Story</CardTitle>
+                        <CardDescription className="text-primary-foreground/80">Encourage the body of Christ with what God has done.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <Button asChild variant="secondary" className="w-full">
+                           <Link href="/dashboard/testimonies">
+                                Share Testimony <ArrowRight className="ml-2 h-4 w-4" />
+                           </Link>
+                        </Button>
+                    </CardContent>
+                </Card>
+            </div>
+        </div>
     </div>
   );
 }

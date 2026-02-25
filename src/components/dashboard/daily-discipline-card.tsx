@@ -12,6 +12,7 @@ import { isToday } from 'date-fns';
 import { Skeleton } from '../ui/skeleton';
 import { Heart, BookOpen, Share2, Megaphone } from 'lucide-react';
 import { BibleDialog } from './bible-dialog';
+import { PrayerDialog } from './prayer-dialog';
 
 const disciplines = [
   { id: 'pray', label: 'Pray', icon: <Heart className="h-5 w-5 text-muted-foreground" /> },
@@ -25,6 +26,7 @@ export function DailyDisciplineCard() {
   const firestore = useFirestore();
   const [completedToday, setCompletedToday] = useState<string[]>([]);
   const [isBibleDialogOpen, setIsBibleDialogOpen] = useState(false);
+  const [isPrayerDialogOpen, setIsPrayerDialogOpen] = useState(false);
   
   const userDocRef = useMemo(() => {
     if (!user?.uid || !firestore) return null;
@@ -76,6 +78,12 @@ export function DailyDisciplineCard() {
     }
   }
 
+  const handlePray = () => {
+    if (!completedToday.includes('pray')) {
+      handleDisciplineToggle('pray');
+    }
+  }
+
   if (loading) {
     return (
       <Card>
@@ -107,10 +115,11 @@ export function DailyDisciplineCard() {
              <div 
               key={discipline.id}
               onClick={(e) => {
-                // This div wrapper allows the whole card to be clickable for the Bible dialog
-                if (discipline.id === 'read_bible') {
-                  e.preventDefault();
-                  setIsBibleDialogOpen(true);
+                const isCompleted = completedToday.includes(discipline.id);
+                if ((discipline.id === 'read_bible' || discipline.id === 'pray') && !isCompleted) {
+                    e.preventDefault();
+                    if (discipline.id === 'read_bible') setIsBibleDialogOpen(true);
+                    if (discipline.id === 'pray') setIsPrayerDialogOpen(true);
                 }
               }}
             >
@@ -123,13 +132,7 @@ export function DailyDisciplineCard() {
                   id={discipline.id}
                   className="sr-only"
                   checked={completedToday.includes(discipline.id)}
-                  onCheckedChange={() => {
-                    // For "Read Bible", the onDisciplineCompleted from the dialog handles checking the box.
-                    // This allows unchecking it directly.
-                    if (discipline.id !== 'read_bible' || completedToday.includes('read_bible')) {
-                       handleDisciplineToggle(discipline.id)
-                    }
-                  }}
+                  onCheckedChange={() => handleDisciplineToggle(discipline.id)}
                 />
                 {discipline.icon}
                 <span className="text-sm font-medium text-center">{discipline.label}</span>
@@ -142,6 +145,11 @@ export function DailyDisciplineCard() {
         isOpen={isBibleDialogOpen}
         onOpenChange={setIsBibleDialogOpen}
         onDisciplineCompleted={handleBibleRead}
+      />
+      <PrayerDialog
+        isOpen={isPrayerDialogOpen}
+        onOpenChange={setIsPrayerDialogOpen}
+        onDisciplineCompleted={handlePray}
       />
     </>
   );
