@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -85,7 +86,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
         readingHistory: arrayUnion({
           book: chapterContent.book,
           chapter: chapterContent.chapter,
-          readAt: serverTimestamp(),
+          readAt: new Date(),
         })
       });
       
