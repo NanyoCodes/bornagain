@@ -10,6 +10,7 @@ import type { Soul, UserProfile } from "@/lib/types";
 import { useMemo, useEffect } from "react";
 import { StatDialog } from "@/components/dashboard/stat-dialog";
 import { SoulsWonList } from "@/components/dashboard/dashboard-lists";
+import { DailyDisciplineCard } from "@/components/dashboard/daily-discipline-card";
 
 
 export default function DashboardPage() {
@@ -84,6 +85,9 @@ export default function DashboardPage() {
       </div>
       
       <div className="grid gap-4 md:grid-cols-2">
+        <div className="md:col-span-2">
+          <DailyDisciplineCard />
+        </div>
         <StatDialog
             title="Souls Won"
             value={soulsWonCount}

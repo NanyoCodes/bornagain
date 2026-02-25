@@ -13,6 +13,10 @@ export type UserProfile = {
   currentStreak?: number;
   longestStreak?: number;
   lastLogin?: Timestamp;
+  dailyDiscipline?: {
+    completed: string[];
+    lastUpdated: Timestamp;
+  };
   notificationSettings?: {
     newCampaignsInArea?: boolean;
     weeklyDigest?: boolean;

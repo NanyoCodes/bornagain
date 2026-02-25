@@ -44,6 +44,21 @@
           "type": "object",
           "description": "Timestamp of the user's last daily app usage."
         },
+        "dailyDiscipline": {
+          "type": "object",
+          "description": "Tracks the user's completed daily disciplines for the current day.",
+          "properties": {
+            "completed": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "lastUpdated": {
+              "type": "object"
+            }
+          }
+        },
         "notificationSettings": {
           "type": "object",
           "description": "User's notification preferences.",
