@@ -134,7 +134,7 @@ function AppHeader() {
           href="/dashboard"
           className="flex items-center gap-2 text-lg font-semibold"
         >
-          {logo && <Image src={logo.imageUrl} alt={logo.description} width={40} height={40} data-ai-hint={logo.imageHint} />}
+          {logo && <Image src={logo.imageUrl} alt={logo.description} width={48} height={48} data-ai-hint={logo.imageHint} />}
           <span className="sr-only">Testify</span>
         </Link>
         {/* Desktop Navigation */}

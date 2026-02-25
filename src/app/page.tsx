@@ -90,8 +90,8 @@ export default function SignUpPage() {
               <Image
                   src={logo.imageUrl}
                   alt={logo.description}
-                  width={60}
-                  height={60}
+                  width={72}
+                  height={72}
                   className="mb-2 rounded-lg"
                   data-ai-hint={logo.imageHint}
               />
