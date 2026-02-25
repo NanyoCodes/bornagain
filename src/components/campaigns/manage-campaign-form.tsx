@@ -224,7 +224,7 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: defaultValues,
+    defaultValues,
   });
 
   useEffect(() => {
@@ -269,7 +269,8 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
         };
 
         await setDoc(chatDocRef, chatData, { merge: true });
-
+        
+        onCampaignUpdated();
         router.push(`/dashboard/chats/${campaign.id}`);
 
     } catch (error) {
@@ -647,5 +648,3 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
     </div>
   );
 }
-
-    
