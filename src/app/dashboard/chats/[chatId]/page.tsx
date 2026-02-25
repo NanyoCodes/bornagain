@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useLayoutEffect, useRef, useMemo } from 'react';
 import { useUser, useFirestore, useCollection, useDoc } from '@/firebase';
 import {
   collection,
@@ -70,13 +70,11 @@ export default function ChatPage() {
         return groups;
     }, [messages]);
     
-    useEffect(() => {
+    useLayoutEffect(() => {
         if (scrollAreaRef.current) {
             const scrollableView = scrollAreaRef.current.querySelector('div[data-radix-scroll-area-viewport]');
             if (scrollableView) {
-                setTimeout(() => {
-                     scrollableView.scrollTop = scrollableView.scrollHeight;
-                }, 100);
+                scrollableView.scrollTop = scrollableView.scrollHeight;
             }
         }
     }, [messageGroups]);
@@ -245,6 +243,7 @@ export default function ChatPage() {
 
             <Card className="flex flex-col flex-grow">
                 <CardContent className="p-0 flex-grow flex flex-col">
+                    <TooltipProvider>
                     <ScrollArea className="flex-grow p-4" ref={scrollAreaRef}>
                         {messageGroups.length > 0 ? (
                            <div className="space-y-2">
@@ -264,21 +263,19 @@ export default function ChatPage() {
                                                 msg.senderId === user?.uid ? "justify-end" : "justify-start"
                                             )}>
                                                 {msg.senderId !== user?.uid && senderInfo && (
-                                                    <TooltipProvider>
-                                                        <Tooltip>
-                                                            <TooltipTrigger asChild>
-                                                                <Link href={`/dashboard/profile/${msg.senderId}`}>
-                                                                    <Avatar className="h-8 w-8">
-                                                                        <AvatarImage src={senderInfo.photoURL} />
-                                                                        <AvatarFallback>{senderInfo.displayName.charAt(0)}</AvatarFallback>
-                                                                    </Avatar>
-                                                                </Link>
-                                                            </TooltipTrigger>
-                                                            <TooltipContent>
-                                                                <p>{senderInfo.displayName}</p>
-                                                            </TooltipContent>
-                                                        </Tooltip>
-                                                    </TooltipProvider>
+                                                    <Tooltip>
+                                                        <TooltipTrigger asChild>
+                                                            <Link href={`/dashboard/profile/${msg.senderId}`}>
+                                                                <Avatar className="h-8 w-8">
+                                                                    <AvatarImage src={senderInfo.photoURL} />
+                                                                    <AvatarFallback>{senderInfo.displayName.charAt(0)}</AvatarFallback>
+                                                                </Avatar>
+                                                            </Link>
+                                                        </TooltipTrigger>
+                                                        <TooltipContent>
+                                                            <p>{senderInfo.displayName}</p>
+                                                        </TooltipContent>
+                                                    </Tooltip>
                                                 )}
                                                 <div className={cn(
                                                     "rounded-lg px-3 py-2 max-w-sm sm:max-w-md break-words flex flex-col",
@@ -311,6 +308,7 @@ export default function ChatPage() {
                             </div>
                         )}
                     </ScrollArea>
+                    </TooltipProvider>
                 </CardContent>
 
                 <CardFooter className="p-2 border-t bg-background flex flex-col items-stretch gap-1">
@@ -331,5 +329,3 @@ export default function ChatPage() {
         </div>
     )
 }
-
-    
