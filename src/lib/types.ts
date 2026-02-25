@@ -1,5 +1,3 @@
-
-
 import type { Timestamp } from "firebase/firestore";
 
 export type UserProfile = {
@@ -68,6 +66,7 @@ export type Campaign = {
   deletedAt?: Timestamp;
   scripture?: string;
   scriptureTestimony?: string;
+  soulsLogged?: number;
 };
 
 export type JoinedCampaign = {
@@ -106,6 +105,7 @@ export type Soul = {
   church?: string;
   source: 'Campaign' | 'Personal' | 'Referral';
   sourceDetails?: string; // e.g., Campaign name or referrer name
+  campaignId?: string;
   wonAt: Timestamp; // ISO date string
   status: FollowUpStatus;
   followUpLog: FollowUpLogItem[];

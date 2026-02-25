@@ -22,7 +22,7 @@ import type { Campaign, Soul } from "@/lib/types";
 import { Textarea } from "@/components/ui/textarea";
 import { format } from "date-fns";
 import { useFirestore, useUser, useCollection } from "@/firebase";
-import { collection, addDoc, query, orderBy, serverTimestamp } from "firebase/firestore";
+import { collection, query, orderBy, serverTimestamp, doc, runTransaction, increment } from "firebase/firestore";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
@@ -80,6 +80,8 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps)
     
     try {
       const soulsCollectionRef = collection(firestore, `users/${user.uid}/souls`);
+      const newSoulRef = doc(soulsCollectionRef); // Create a reference for the new soul
+
       const soulData: Omit<Soul, 'id'> = {
         userId: user.uid,
         name: values.name,
@@ -94,12 +96,34 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps)
         inBibleStudy: false,
         attendingPrayer: false,
       };
+      
+      const isCampaignSource = values.source === 'Campaign';
+      let campaignId: string | undefined;
 
-      await addDoc(soulsCollectionRef, soulData).catch((serverError) => {
+      if (isCampaignSource) {
+        // Find the campaign by title from the form's sourceDetails.
+        // This relies on campaign titles being unique, which is not ideal but avoids a larger refactor.
+        const campaign = defaultCampaign || campaigns?.find(c => c.title === values.sourceDetails);
+        if (campaign) {
+            campaignId = campaign.id;
+            soulData.campaignId = campaign.id;
+        }
+      }
+
+      await runTransaction(firestore, async (transaction) => {
+        // 1. Create the new soul document
+        transaction.set(newSoulRef, soulData);
+
+        // 2. If from a campaign, increment the campaign's soul count
+        if (campaignId) {
+            const campaignRef = doc(firestore, 'campaigns', campaignId);
+            transaction.update(campaignRef, { soulsLogged: increment(1) });
+        }
+      }).catch((serverError) => {
         const permissionError = new FirestorePermissionError({
-          path: soulsCollectionRef.path,
-          operation: 'create',
-          requestResourceData: soulData,
+          path: `TRANSACTION:LOG_SOUL`,
+          operation: 'write',
+          requestResourceData: { soulData, campaignId },
         });
         errorEmitter.emit('permission-error', permissionError);
         throw permissionError;

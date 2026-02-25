@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { format, formatDistanceToNow, parse, isSameDay } from "date-fns";
-import { CalendarDays, MapPin, Users, Share2, Edit, MoreVertical, Loader2, MessageSquare } from "lucide-react";
+import { CalendarDays, MapPin, Users, Share2, Edit, MoreVertical, Loader2, MessageSquare, UserCheck2 } from "lucide-react";
 import type { Campaign, CampaignParticipant, UserProfile } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -643,15 +643,23 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
 
         </CardContent>
         <CardFooter className="p-6 pt-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mt-auto border-t bg-muted/50">
-            <ParticipantsDialog campaign={campaign}>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground cursor-pointer hover:text-primary transition-colors">
-                <Users className="h-4 w-4" />
-                <span>
-                    {campaign.participants}
-                    {campaign.maxParticipants ? ` / ${campaign.maxParticipants}` : ''} participant{campaign.participants === 1 ? '' : 's'}
-                </span>
-              </div>
-            </ParticipantsDialog>
+            <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                <ParticipantsDialog campaign={campaign}>
+                <div className="flex items-center gap-2 cursor-pointer hover:text-primary transition-colors">
+                    <Users className="h-4 w-4" />
+                    <span>
+                        {campaign.participants}
+                        {campaign.maxParticipants ? ` / ${campaign.maxParticipants}` : ''} participant{campaign.participants === 1 ? '' : 's'}
+                    </span>
+                </div>
+                </ParticipantsDialog>
+                {status === "Ongoing" && (
+                    <div className="flex items-center gap-2">
+                        <UserCheck2 className="h-4 w-4" />
+                        <span>{campaign.soulsLogged || 0} soul{campaign.soulsLogged === 1 ? '' : 's'} won</span>
+                    </div>
+                )}
+            </div>
 
             {isOwner
             ? renderOwnerActions()
@@ -673,5 +681,3 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
     </>
   );
 }
-
-    

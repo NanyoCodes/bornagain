@@ -202,6 +202,10 @@
         "scriptureTestimony": {
           "type": "string",
           "description": "The organizer's personal testimony or caption related to the scripture."
+        },
+        "soulsLogged": {
+          "type": "number",
+          "description": "The total number of souls logged for this campaign."
         }
       },
       "required": [
@@ -245,6 +249,10 @@
         },
         "sourceDetails": {
           "type": "string"
+        },
+        "campaignId": {
+          "type": "string",
+          "description": "The ID of the campaign this soul was won through."
         },
         "wonAt": {
           "type": "object"
