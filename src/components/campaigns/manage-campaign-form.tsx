@@ -190,11 +190,7 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
     }
   };
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-  });
-
-  useEffect(() => {
+  const defaultValues = useMemo(() => {
     const locationParts = campaign.location.split(',');
     const city = locationParts[0]?.trim() || '';
     const country = locationParts[1]?.trim() || '';
@@ -202,10 +198,14 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
     const safeToDate = (value: any): Date => {
         if (value?.toDate) return value.toDate();
         if (value instanceof Date) return value;
+        // Check for object with seconds and nanoseconds
+        if (value && typeof value.seconds === 'number') {
+            return new Date(value.seconds * 1000);
+        }
         return new Date(); 
     }
 
-    form.reset({
+    return {
       title: campaign.title || "",
       description: campaign.description || "",
       goal: campaign.goal || "",
@@ -217,10 +217,19 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
       endTime: campaign.endTime || "",
       scripture: campaign.scripture || "",
       scriptureTestimony: campaign.scriptureTestimony || "",
-      maxParticipants: campaign.maxParticipants || undefined,
+      maxParticipants: campaign.maxParticipants ?? undefined,
       lastUpdateReason: "",
-    });
-  }, [campaign, form]);
+    };
+  }, [campaign]);
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: defaultValues,
+  });
+
+  useEffect(() => {
+    form.reset(defaultValues);
+  }, [defaultValues, form]);
 
 
   const handleStartGroupChat = async () => {
@@ -442,7 +451,7 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
                     <FormItem>
                         <FormLabel>Inspirational Scripture</FormLabel>
                         <FormControl>
-                        <Input placeholder="e.g., John 3:16" {...field} value={field.value ?? ''} className="text-base" />
+                        <Input placeholder="e.g., John 3:16" {...field} />
                         </FormControl>
                         <FormMessage />
                     </FormItem>
@@ -455,7 +464,7 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
                         <FormItem>
                         <FormLabel>Scripture Caption (Optional)</FormLabel>
                         <FormControl>
-                            <Textarea placeholder="Your short testimony or caption related to the scripture..." {...field} value={field.value ?? ''} className="text-base" />
+                            <Textarea placeholder="Your short testimony or caption related to the scripture..." {...field} />
                         </FormControl>
                         <FormDescription>
                             This will be displayed with the scripture on the campaign card.
@@ -638,3 +647,5 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
     </div>
   );
 }
+
+    
