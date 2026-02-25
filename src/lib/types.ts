@@ -1,5 +1,11 @@
 import type { Timestamp } from "firebase/firestore";
 
+export type ReadingHistoryItem = {
+  book: string;
+  chapter: number;
+  readAt: Timestamp;
+};
+
 export type UserProfile = {
   id: string;
   displayName: string;
@@ -15,6 +21,7 @@ export type UserProfile = {
     completed: string[];
     lastUpdated: Timestamp;
   };
+  readingHistory?: ReadingHistoryItem[];
   notificationSettings?: {
     newCampaignsInArea?: boolean;
     weeklyDigest?: boolean;

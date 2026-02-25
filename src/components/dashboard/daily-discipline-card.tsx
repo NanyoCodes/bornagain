@@ -69,14 +69,6 @@ export function DailyDisciplineCard() {
     }
   };
 
-  const handleMarkBibleAsRead = () => {
-    if (!completedToday.includes('read_bible')) {
-      handleDisciplineToggle('read_bible');
-    }
-    setIsBibleDialogOpen(false);
-  };
-
-
   if (loading) {
     return (
       <Card>
@@ -110,11 +102,7 @@ export function DailyDisciplineCard() {
               onClick={(e) => {
                 if (discipline.id === 'read_bible') {
                   e.preventDefault();
-                  if (completedToday.includes('read_bible')) {
-                    handleDisciplineToggle('read_bible');
-                  } else {
-                    setIsBibleDialogOpen(true);
-                  }
+                  setIsBibleDialogOpen(true);
                 }
               }}
             >
@@ -130,6 +118,11 @@ export function DailyDisciplineCard() {
                   onCheckedChange={() => {
                     if (discipline.id !== 'read_bible') {
                        handleDisciplineToggle(discipline.id)
+                    } else {
+                        // For read_bible, we toggle off directly, but toggle on is handled by the dialog
+                        if (completedToday.includes('read_bible')) {
+                            handleDisciplineToggle('read_bible');
+                        }
                     }
                   }}
                 />
@@ -143,7 +136,11 @@ export function DailyDisciplineCard() {
        <BibleDialog 
         isOpen={isBibleDialogOpen}
         onOpenChange={setIsBibleDialogOpen}
-        onMarkAsRead={handleMarkBibleAsRead}
+        onDisciplineCompleted={() => {
+            if (!completedToday.includes('read_bible')) {
+                handleDisciplineToggle('read_bible');
+            }
+        }}
       />
     </>
   );

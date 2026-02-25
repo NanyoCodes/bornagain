@@ -1,67 +1,162 @@
 'use client';
 
+import { useState, useMemo, useEffect } from 'react';
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogFooter
 } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '../ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
+import { bibleData } from '@/lib/bible-data';
+import { useUser, useFirestore, useDoc } from '@/firebase';
+import { doc, updateDoc, arrayUnion, serverTimestamp } from 'firebase/firestore';
+import type { UserProfile } from '@/lib/types';
+import { useToast } from '@/hooks/use-toast';
+import { formatDistanceToNow } from 'date-fns';
+import { Loader2 } from 'lucide-react';
+import { Skeleton } from '../ui/skeleton';
 
-const scripture = {
-    book: "John",
-    chapter: 1,
-    verses: [
-        { verse: 1, text: "In the beginning was the Word, and the Word was with God, and the Word was God." },
-        { verse: 2, text: "He was in the beginning with God." },
-        { verse: 3, text: "All things were made through him, and without him was not any thing made that was made." },
-        { verse: 4, text: "In him was life, and the life was the light of men." },
-        { verse: 5, text: "The light shines in the darkness, and the darkness has not overcome it." },
-        { verse: 6, text: "There was a man sent from God, whose name was John." },
-        { verse: 7, text: "He came as a witness, to bear witness about the light, that all might believe through him." },
-        { verse: 8, text: "He was not the light, but came to bear witness about the light." },
-        { verse: 9, text: "The true light, which gives light to everyone, was coming into the world." },
-        { verse: 10, text: "He was in the world, and the world was made through him, yet the world did not know him." },
-        { verse: 11, text: "He came to his own, and his own people did not receive him." },
-        { verse: 12, text: "But to all who did receive him, who believed in his name, he gave the right to become children of God," },
-        { verse: 13, text: "who were born, not of blood nor of the will of the flesh nor of the will of man, but of God." },
-        { verse: 14, text: "And the Word became flesh and dwelt among us, and we have seen his glory, glory as of the only Son from the Father, full of grace and truth." },
-    ]
-};
+export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { isOpen: boolean; onOpenChange: (open: boolean) => void; onDisciplineCompleted: () => void; }) {
+  const { toast } = useToast();
+  const { user } = useUser();
+  const firestore = useFirestore();
 
+  const [selectedBookName, setSelectedBookName] = useState(bibleData[0].name);
+  const [selectedChapterNumber, setSelectedChapterNumber] = useState(1);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-export function BibleDialog({ isOpen, onOpenChange, onMarkAsRead }: { isOpen: boolean; onOpenChange: (open: boolean) => void; onMarkAsRead: () => void; }) {
+  const userDocRef = useMemo(() => (user ? doc(firestore, 'users', user.uid) : null), [user, firestore]);
+  const { data: userProfile, loading: loadingProfile } = useDoc<UserProfile>(userDocRef);
   
-  const handleMarkAsRead = () => {
-    onMarkAsRead();
-    onOpenChange(false);
-  }
+  const selectedBook = useMemo(() => bibleData.find(b => b.name === selectedBookName), [selectedBookName]);
+  const selectedChapter = useMemo(() => selectedBook?.chapters.find(c => c.chapter === selectedChapterNumber), [selectedBook, selectedChapterNumber]);
+
+  useEffect(() => {
+    // Reset to chapter 1 when book changes
+    setSelectedChapterNumber(1);
+  }, [selectedBookName]);
+
+  const handleMarkAsRead = async () => {
+    if (!user || !firestore || !selectedBook || !selectedChapter) {
+      toast({ variant: 'destructive', title: 'Error', description: 'Could not mark as read. User or selection missing.' });
+      return;
+    }
+    setIsSubmitting(true);
+    
+    try {
+      const userRef = doc(firestore, 'users', user.uid);
+      await updateDoc(userRef, {
+        readingHistory: arrayUnion({
+          book: selectedBook.name,
+          chapter: selectedChapter.chapter,
+          readAt: serverTimestamp(),
+        })
+      });
+      
+      onDisciplineCompleted();
+      toast({ title: 'Chapter Marked as Read', description: `${selectedBook.name} ${selectedChapter.chapter} has been added to your history.`});
+      onOpenChange(false);
+
+    } catch (error) {
+      console.error("Failed to mark as read:", error);
+      toast({ variant: 'destructive', title: 'Error', description: 'Could not update your reading history.' });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const readingHistory = useMemo(() => {
+    if (!userProfile?.readingHistory) return [];
+    return [...userProfile.readingHistory].reverse();
+  }, [userProfile?.readingHistory]);
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-2xl">
+      <DialogContent className="sm:max-w-3xl h-[90vh] flex flex-col">
         <DialogHeader>
           <DialogTitle>Read the Bible</DialogTitle>
-          <DialogDescription>
-            {scripture.book} Chapter {scripture.chapter}
-          </DialogDescription>
         </DialogHeader>
-        <ScrollArea className="max-h-[60vh] pr-4">
-            <div className="space-y-4 text-lg leading-relaxed font-serif">
-                {scripture.verses.map(v => (
-                    <p key={v.verse}>
-                        <sup className="text-sm font-sans text-muted-foreground mr-2">{v.verse}</sup>
-                        {v.text}
-                    </p>
-                ))}
-            </div>
-        </ScrollArea>
-        <DialogFooter>
-          <Button onClick={handleMarkAsRead}>Mark as Read</Button>
-        </DialogFooter>
+
+        <Tabs defaultValue="read" className="flex-grow flex flex-col min-h-0">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="read">Read</TabsTrigger>
+            <TabsTrigger value="history">History</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="read" className="flex-grow flex flex-col min-h-0 mt-4 space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <Select value={selectedBookName} onValueChange={setSelectedBookName}>
+                    <SelectTrigger><SelectValue placeholder="Select a book" /></SelectTrigger>
+                    <SelectContent>
+                        {bibleData.map(book => (
+                            <SelectItem key={book.name} value={book.name}>{book.name}</SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+                <Select value={String(selectedChapterNumber)} onValueChange={(val) => setSelectedChapterNumber(Number(val))}>
+                    <SelectTrigger><SelectValue placeholder="Select a chapter" /></SelectTrigger>
+                    <SelectContent>
+                        {selectedBook?.chapters.map(chapter => (
+                            <SelectItem key={chapter.chapter} value={String(chapter.chapter)}>Chapter {chapter.chapter}</SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+              </div>
+
+              <ScrollArea className="flex-grow border rounded-md p-4">
+                  <div className="space-y-4 text-lg leading-relaxed font-serif">
+                      {selectedChapter?.verses.map(v => (
+                          <p key={v.verse}>
+                              <sup className="text-sm font-sans text-muted-foreground mr-2">{v.verse}</sup>
+                              {v.text}
+                          </p>
+                      ))}
+                  </div>
+              </ScrollArea>
+              
+               <DialogFooter>
+                <Button onClick={handleMarkAsRead} disabled={isSubmitting}>
+                  {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  Mark Chapter as Read
+                </Button>
+              </DialogFooter>
+          </TabsContent>
+          
+          <TabsContent value="history" className="flex-grow min-h-0">
+             <ScrollArea className="h-full">
+                {loadingProfile && (
+                  <div className="space-y-3 p-2">
+                    <Skeleton className="h-10 w-full" />
+                    <Skeleton className="h-10 w-full" />
+                    <Skeleton className="h-10 w-full" />
+                  </div>
+                )}
+                {!loadingProfile && readingHistory.length === 0 && (
+                  <div className="flex items-center justify-center h-full text-muted-foreground">
+                    Your reading history is empty.
+                  </div>
+                )}
+                {!loadingProfile && readingHistory.length > 0 && (
+                  <div className="space-y-2">
+                    {readingHistory.map((item, index) => (
+                      <div key={index} className="flex justify-between items-center p-3 border rounded-lg">
+                        <p className="font-medium">{item.book} {item.chapter}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {item.readAt ? formatDistanceToNow(item.readAt.toDate(), { addSuffix: true }) : 'Just now'}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+             </ScrollArea>
+          </TabsContent>
+        </Tabs>
+
       </DialogContent>
     </Dialog>
   );

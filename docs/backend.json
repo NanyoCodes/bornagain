@@ -59,6 +59,29 @@
             }
           }
         },
+        "readingHistory": {
+          "type": "array",
+          "description": "A log of the user's Bible reading sessions.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "book": {
+                "type": "string"
+              },
+              "chapter": {
+                "type": "number"
+              },
+              "readAt": {
+                "type": "object"
+              }
+            },
+            "required": [
+              "book",
+              "chapter",
+              "readAt"
+            ]
+          }
+        },
         "notificationSettings": {
           "type": "object",
           "description": "User's notification preferences.",
