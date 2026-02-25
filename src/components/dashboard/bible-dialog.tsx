@@ -118,7 +118,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
       if (!completedToday.includes('read_bible')) {
         onDisciplineCompleted();
       }
-      toast({ title: 'Chapter Marked as Read', description: `${chapterContent.book} ${chapterContent.chapter} has been added to your history.`});
+      toast({ title: 'Chapter Marked as Read', description: `${''}${chapterContent.book} ${chapterContent.chapter} has been added to your history.`});
       
       const currentBookIndex = bibleData.findIndex(b => b.name === selectedBookName);
       const currentBook = bibleData[currentBookIndex];
@@ -291,7 +291,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                   </div>
                 )}
                 {!loadingProfile && filteredHistoryGroups.length === 0 && (
-                  <div className="flex items-center justify-center h-full text-muted-foreground p-4 text-center">
+                  <div className="text-muted-foreground p-8 text-center">
                     {readingHistory.length === 0 ? 'Your reading history is empty.' : 'No entries found for the selected date.'}
                   </div>
                 )}
