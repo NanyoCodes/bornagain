@@ -247,15 +247,17 @@ function ViewHistoryDialog({ soul, children }: { soul: Soul; children: React.Rea
   );
 }
 
+type ProcessedSoul = Soul & { _wonAt: Date };
+
 type SoulsWonTableProps = {
-  souls: Soul[];
+  souls: ProcessedSoul[];
   onUpdateSoul: (soulId: string, data: Partial<Soul>) => void;
   loading: boolean;
 };
 
 const statusOptions: FollowUpStatus[] = ['New', 'Contacted', 'Attending Church', 'In Bible Study', 'Established'];
 
-function SoulCard({ soul, onUpdateSoul }: { soul: Soul, onUpdateSoul: SoulsWonTableProps['onUpdateSoul'] }) {
+function SoulCard({ soul, onUpdateSoul }: { soul: ProcessedSoul, onUpdateSoul: SoulsWonTableProps['onUpdateSoul'] }) {
     const { toast } = useToast();
     const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
 
@@ -369,7 +371,7 @@ function SoulCard({ soul, onUpdateSoul }: { soul: Soul, onUpdateSoul: SoulsWonTa
             </CardContent>
             <CardFooter className="flex justify-between text-sm text-muted-foreground">
                 <span>{soul.source} {soul.sourceDetails ? `(${soul.sourceDetails})` : ''}</span>
-                <span>{soul.wonAt ? format(soul.wonAt.toDate ? soul.wonAt.toDate() : new Date(soul.wonAt as any), "PPP") : ''}</span>
+                <span>{format(soul._wonAt, "PPP")}</span>
             </CardFooter>
         </Card>
     )
@@ -538,7 +540,7 @@ export function SoulsWonTable({ souls, onUpdateSoul, loading }: SoulsWonTablePro
                     </div>
                   </TooltipProvider>
                 </TableCell>
-                <TableCell>{soul.wonAt ? format(soul.wonAt.toDate ? soul.wonAt.toDate() : new Date(soul.wonAt as any), "PPP") : ''}</TableCell>
+                <TableCell>{format(soul._wonAt, "PPP")}</TableCell>
                 <TableCell>
                   <div>{soul.source}</div>
                   {soul.sourceDetails && <div className="text-xs text-muted-foreground">{soul.sourceDetails}</div>}

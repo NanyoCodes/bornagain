@@ -47,11 +47,19 @@ export default function SoulsWonPage() {
   }, [user?.uid, firestore]);
   const { data: souls, loading } = useCollection<Soul>(soulsQuery);
 
-  const filteredSouls = useMemo(() => {
+  const processedSouls = useMemo(() => {
     if (!souls) return [];
-    if (!searchTerm) return souls;
+    return souls.map(soul => ({
+        ...soul,
+        _wonAt: soul.wonAt?.toDate ? soul.wonAt.toDate() : new Date(),
+    }));
+  }, [souls]);
+
+  const filteredSouls = useMemo(() => {
+    if (!processedSouls) return [];
+    if (!searchTerm) return processedSouls;
     const term = searchTerm.toLowerCase();
-    return souls.filter(soul => 
+    return processedSouls.filter(soul => 
       soul.name.toLowerCase().includes(term) ||
       (soul.email && soul.email.toLowerCase().includes(term)) ||
       (soul.phone && soul.phone.toLowerCase().includes(term)) ||
@@ -59,7 +67,7 @@ export default function SoulsWonPage() {
       (soul.sourceDetails && soul.sourceDetails.toLowerCase().includes(term)) ||
       (soul.church && soul.church.toLowerCase().includes(term))
     );
-  }, [souls, searchTerm]);
+  }, [processedSouls, searchTerm]);
 
   const handleSoulLogged = () => {
     setIsLogDialogOpen(false);

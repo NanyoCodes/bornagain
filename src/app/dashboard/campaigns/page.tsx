@@ -106,32 +106,34 @@ export default function CampaignsPage() {
 
   const safeToDate = (value: any): Date | null => {
     if (!value) return null;
-    if (value instanceof Date) return value;
     if (typeof value.toDate === 'function') return value.toDate();
-    try {
-      const d = new Date(value);
-      if (!isNaN(d.getTime())) return d;
-    } catch (e) {}
-    try {
-      if (typeof value === 'object' && value.seconds) {
-         const d = new Date(value.seconds * 1000);
-         if(!isNaN(d.getTime())) return d;
-      }
-    } catch(e) {}
+    if (value instanceof Date) return value;
+    if (typeof value === 'object' && typeof value.seconds === 'number') {
+      return new Date(value.seconds * 1000);
+    }
     return null;
   };
 
-  const sortedAndFilteredCampaigns = useMemo(() => {
-    const activeCampaigns = campaigns?.filter(c => c.status !== 'deleted');
+  const processedCampaigns = useMemo(() => {
+    if (!campaigns) return [];
+    return campaigns.map(c => ({
+      ...c,
+      _startDate: safeToDate(c.startDate),
+      _endDate: safeToDate(c.endDate),
+    }));
+  }, [campaigns]);
 
-    const tabFilteredCampaigns = activeCampaigns?.filter(c => {
+  const sortedAndFilteredCampaigns = useMemo(() => {
+    const activeCampaigns = processedCampaigns.filter(c => c.status !== 'deleted');
+
+    const tabFilteredCampaigns = activeCampaigns.filter(c => {
         if (!user?.uid) return true;
         if (filter === 'created') return c.organizerId === user.uid;
         if (filter === 'joined') return joinedCampaignIds.has(c.id) && c.organizerId !== user.uid;
         return true; // 'all'
     });
 
-    const filtered = tabFilteredCampaigns?.filter((campaign) => {
+    const filtered = tabFilteredCampaigns.filter((campaign) => {
       if (!searchTerm) return true;
       const term = searchTerm.toLowerCase();
 
@@ -147,16 +149,15 @@ export default function CampaignsPage() {
       return searchableFields.some(field => field && field.toLowerCase().includes(term));
     });
 
-    if (!filtered || !mounted) return filtered || [];
+    if (!filtered || !mounted) return filtered;
 
     const userLocation = userProfile?.location?.toLowerCase().trim();
 
-    const getStatus = (campaign: Campaign): number => {
-      const startDate = safeToDate(campaign.startDate);
-      const endDate = safeToDate(campaign.endDate);
-      if (!startDate || !endDate) return 3; // Past
+    const getStatus = (campaign: (typeof processedCampaigns)[0]): number => {
+      const { _startDate, _endDate } = campaign;
+      if (!_startDate || !_endDate) return 3; // Past
       
-      const endDateTime = new Date(endDate);
+      const endDateTime = new Date(_endDate);
       if (campaign.endTime && /^\d{2}:\d{2}$/.test(campaign.endTime)) {
         const [hours, minutes] = campaign.endTime.split(':').map(Number);
         endDateTime.setHours(hours, minutes, 59, 999);
@@ -166,7 +167,7 @@ export default function CampaignsPage() {
 
       if (endDateTime < now) return 3; // Past
 
-      const startDateTime = new Date(startDate);
+      const startDateTime = new Date(_startDate);
       if (campaign.startTime && /^\d{2}:\d{2}$/.test(campaign.startTime)) {
         const [hours, minutes] = campaign.startTime.split(':').map(Number);
         startDateTime.setHours(hours, minutes, 0, 0);
@@ -195,8 +196,8 @@ export default function CampaignsPage() {
         if (!isLocalA && isLocalB) return 1;
       }
 
-      const startDateA = safeToDate(a.startDate);
-      const startDateB = safeToDate(b.startDate);
+      const startDateA = a._startDate;
+      const startDateB = b._startDate;
       if (startDateA && startDateB) {
         return startDateA.getTime() - startDateB.getTime();
       }
@@ -205,7 +206,7 @@ export default function CampaignsPage() {
       return 0;
     });
 
-  }, [campaigns, searchTerm, userProfile, mounted, now, filter, user?.uid, joinedCampaignIds]);
+  }, [processedCampaigns, searchTerm, userProfile, mounted, now, filter, user?.uid, joinedCampaignIds]);
 
   const triggerButton = (
     <Button disabled={!user}>
