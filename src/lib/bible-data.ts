@@ -84,24 +84,15 @@ const bookDataStructure: { [key: string]: number } = {
   "Revelation": 22
 };
 
-function generateBibleData(): Book[] {
+// Generates only the structure (books and chapter numbers) needed for the UI.
+// The verse content is fetched dynamically.
+function generateBibleStructure(): Book[] {
   return Object.entries(bookDataStructure).map(([bookName, chapterCount]) => {
     const chapters: Chapter[] = [];
     for (let i = 1; i <= chapterCount; i++) {
-      // In a real app, this would be fetched on demand from a Bible API.
-      // We generate a few placeholder verses to demonstrate the structure.
-      const verseCount = 25; // Fixed number of placeholder verses to avoid hydration errors.
-      const verses: Verse[] = [];
-      for (let j = 1; j <= verseCount; j++) {
-        verses.push({
-          verse: j,
-          text: `This is a placeholder for ${bookName} chapter ${i}, verse ${j}. The full content would be loaded from a Bible API to ensure the application remains fast and lightweight.`
-        });
-      }
-
       chapters.push({
         chapter: i,
-        verses,
+        verses: [], // Verses are fetched on demand
       });
     }
     return {
@@ -111,4 +102,4 @@ function generateBibleData(): Book[] {
   });
 }
 
-export const bibleData: Book[] = generateBibleData();
+export const bibleData: Book[] = generateBibleStructure();

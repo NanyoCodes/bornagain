@@ -20,6 +20,7 @@ import { useToast } from '@/hooks/use-toast';
 import { formatDistanceToNow } from 'date-fns';
 import { Loader2 } from 'lucide-react';
 import { Skeleton } from '../ui/skeleton';
+import { getBibleChapter, type BibleChapterOutput } from '@/ai/flows/get-bible-chapter-flow';
 
 export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { isOpen: boolean; onOpenChange: (open: boolean) => void; onDisciplineCompleted: () => void; }) {
   const { toast } = useToast();
@@ -30,20 +31,50 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
   const [selectedChapterNumber, setSelectedChapterNumber] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // State for fetched chapter content
+  const [chapterContent, setChapterContent] = useState<BibleChapterOutput | null>(null);
+  const [isLoadingChapter, setIsLoadingChapter] = useState(true);
+  const [chapterError, setChapterError] = useState<string | null>(null);
+
   const userDocRef = useMemo(() => (user ? doc(firestore, 'users', user.uid) : null), [user, firestore]);
   const { data: userProfile, loading: loadingProfile } = useDoc<UserProfile>(userDocRef);
   
   const selectedBook = useMemo(() => bibleData.find(b => b.name === selectedBookName), [selectedBookName]);
-  const selectedChapter = useMemo(() => selectedBook?.chapters.find(c => c.chapter === selectedChapterNumber), [selectedBook, selectedChapterNumber]);
-
+  
+  // Effect to reset chapter and fetch new content when book changes
   useEffect(() => {
-    // Reset to chapter 1 when book changes
     setSelectedChapterNumber(1);
   }, [selectedBookName]);
 
+  // Effect to fetch chapter content from the API
+  useEffect(() => {
+    if (!selectedBookName || !selectedChapterNumber) return;
+
+    const fetchChapter = async () => {
+      setIsLoadingChapter(true);
+      setChapterError(null);
+      setChapterContent(null);
+
+      try {
+        const content = await getBibleChapter({
+          book: selectedBookName,
+          chapter: selectedChapterNumber,
+        });
+        setChapterContent(content);
+      } catch (error) {
+        console.error(error);
+        setChapterError("Failed to load chapter. Please check your connection or API settings.");
+      } finally {
+        setIsLoadingChapter(false);
+      }
+    };
+
+    fetchChapter();
+  }, [selectedBookName, selectedChapterNumber]);
+
   const handleMarkAsRead = async () => {
-    if (!user || !firestore || !selectedBook || !selectedChapter) {
-      toast({ variant: 'destructive', title: 'Error', description: 'Could not mark as read. User or selection missing.' });
+    if (!user || !firestore || !chapterContent) {
+      toast({ variant: 'destructive', title: 'Error', description: 'Could not mark as read. User or chapter content missing.' });
       return;
     }
     setIsSubmitting(true);
@@ -52,14 +83,14 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
       const userRef = doc(firestore, 'users', user.uid);
       await updateDoc(userRef, {
         readingHistory: arrayUnion({
-          book: selectedBook.name,
-          chapter: selectedChapter.chapter,
+          book: chapterContent.book,
+          chapter: chapterContent.chapter,
           readAt: serverTimestamp(),
         })
       });
       
       onDisciplineCompleted();
-      toast({ title: 'Chapter Marked as Read', description: `${selectedBook.name} ${selectedChapter.chapter} has been added to your history.`});
+      toast({ title: 'Chapter Marked as Read', description: `${chapterContent.book} ${chapterContent.chapter} has been added to your history.`});
       onOpenChange(false);
 
     } catch (error) {
@@ -108,19 +139,31 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                 </Select>
               </div>
 
-              <ScrollArea className="flex-grow border rounded-md p-4">
-                  <div className="space-y-4 text-lg leading-relaxed font-serif">
-                      {selectedChapter?.verses.map(v => (
-                          <p key={v.verse}>
-                              <sup className="text-sm font-sans text-muted-foreground mr-2">{v.verse}</sup>
-                              {v.text}
-                          </p>
-                      ))}
-                  </div>
+              <ScrollArea className="flex-grow border rounded-md p-4 relative">
+                  {isLoadingChapter && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-background/50">
+                        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                    </div>
+                  )}
+                  {chapterError && !isLoadingChapter && (
+                     <div className="absolute inset-0 flex items-center justify-center text-destructive">
+                        {chapterError}
+                    </div>
+                  )}
+                  {!isLoadingChapter && !chapterError && chapterContent && (
+                    <div className="space-y-4 text-lg leading-relaxed font-serif">
+                        {chapterContent.verses.map(v => (
+                            <p key={v.verse}>
+                                <sup className="text-sm font-sans text-muted-foreground mr-2">{v.verse}</sup>
+                                {v.text}
+                            </p>
+                        ))}
+                    </div>
+                  )}
               </ScrollArea>
               
                <DialogFooter>
-                <Button onClick={handleMarkAsRead} disabled={isSubmitting}>
+                <Button onClick={handleMarkAsRead} disabled={isSubmitting || isLoadingChapter || !!chapterError}>
                   {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   Mark Chapter as Read
                 </Button>
