@@ -225,10 +225,11 @@ export function TestimoniesList({ userId }: { userId: string }) {
   const [filterDate, setFilterDate] = useState<Date>();
 
   const testimoniesQuery = useMemo(() => {
-    if (!user || user.uid !== userId || !firestore) return null;
+    if (userLoading || !user || user.uid !== userId || !firestore) return null;
     return query(collection(firestore, 'testimonies'), where('authorId', '==', userId), orderBy('createdAt', 'desc'));
-  }, [userId, firestore, user]);
-  const { data: testimonies, loading } = useCollection<Testimony>(testimoniesQuery);
+  }, [userId, firestore, user, userLoading]);
+
+  const { data: testimonies, loading: testimoniesLoading } = useCollection<Testimony>(testimoniesQuery);
 
   const filteredTestimonies = useMemo(() => {
     if (!testimonies) return [];
@@ -247,8 +248,12 @@ export function TestimoniesList({ userId }: { userId: string }) {
     });
   }, [testimonies, searchTerm, filterDate]);
 
-  if (userLoading || loading) {
+  if (userLoading || testimoniesLoading) {
     return <ListSkeleton />;
+  }
+
+  if (!user) {
+    return <p className="text-sm text-muted-foreground text-center py-4">Please log in to see your testimonies.</p>;
   }
 
   if (!testimonies || testimonies.length === 0) {
@@ -287,10 +292,10 @@ export function CampaignsCreatedList({ userId }: { userId: string }) {
   const [filterDate, setFilterDate] = useState<Date>();
 
   const campaignsQuery = useMemo(() => {
-    if (!user || user.uid !== userId || !firestore) return null;
+    if (userLoading || !user || user.uid !== userId || !firestore) return null;
     return query(collection(firestore, 'campaigns'), where('organizerId', '==', userId), orderBy('createdAt', 'desc'));
-  }, [userId, firestore, user]);
-  const { data: campaigns, loading } = useCollection<Campaign>(campaignsQuery);
+  }, [userId, firestore, user, userLoading]);
+  const { data: campaigns, loading: campaignsLoading } = useCollection<Campaign>(campaignsQuery);
   
   const activeCampaigns = useMemo(() => campaigns?.filter(c => c.status !== 'deleted') ?? [], [campaigns]);
 
@@ -312,8 +317,12 @@ export function CampaignsCreatedList({ userId }: { userId: string }) {
   }, [activeCampaigns, searchTerm, filterDate]);
 
 
-  if (userLoading || loading) {
+  if (userLoading || campaignsLoading) {
     return <ListSkeleton />;
+  }
+  
+  if (!user) {
+    return <p className="text-sm text-muted-foreground text-center py-4">Please log in to see your campaigns.</p>;
   }
 
   if (activeCampaigns.length === 0) {
