@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useLayoutEffect, useRef, useMemo } from 'react';
@@ -13,7 +12,7 @@ import {
   updateDoc,
   writeBatch,
 } from 'firebase/firestore';
-import type { Chat, ChatMessage } from '@/lib/types';
+import type { Chat, ChatMessage, Campaign } from '@/lib/types';
 import { Loader2, Send, ArrowLeft } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
@@ -24,7 +23,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
-import { format, isSameDay } from 'date-fns';
+import { format, isSameDay, differenceInHours } from 'date-fns';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 
@@ -46,13 +45,53 @@ export default function ChatPage() {
     }, [user?.uid, firestore, chatId]);
     const { data: chat, loading: loadingChat } = useDoc<Chat>(chatDocRef);
     
+    const campaignDocRef = useMemo(() => {
+        if (!firestore || !chat?.campaignId) return null;
+        return doc(firestore, 'campaigns', chat.campaignId);
+    }, [firestore, chat?.campaignId]);
+    const { data: campaign, loading: loadingCampaign } = useDoc<Campaign>(campaignDocRef);
+
     const messagesQuery = useMemo(() => {
         if (!user?.uid || !firestore || !chatId) return null;
         return query(collection(firestore, 'chats', chatId, 'messages'), orderBy('createdAt', 'asc'));
     }, [user?.uid, firestore, chatId]);
     const { data: messages, loading: loadingMessages } = useCollection<ChatMessage>(messagesQuery);
     
-    const loading = userLoading || loadingChat || loadingMessages;
+    const loading = userLoading || loadingChat || loadingMessages || loadingCampaign;
+
+    const isChatFrozen = useMemo(() => {
+        if (!chat || !campaign) return false;
+        if (!chat.isGroupChat) return false;
+
+        const safeToDate = (value: any): Date | null => {
+            if (!value) return null;
+            if (value instanceof Date) return value;
+            if (typeof value.toDate === 'function') return value.toDate();
+            try {
+                if (typeof value === 'object' && value.seconds) {
+                    const d = new Date(value.seconds * 1000);
+                    if(!isNaN(d.getTime())) return d;
+                }
+            } catch(e) {}
+            return null;
+        };
+
+        const endDate = safeToDate(campaign.endDate);
+        if (!endDate) return false;
+
+        const endDateTime = new Date(endDate);
+        if (campaign.endTime && /^\d{2}:\d{2}$/.test(campaign.endTime)) {
+            const [hours, minutes] = campaign.endTime.split(':').map(Number);
+            endDateTime.setHours(hours, minutes, 59, 999);
+        } else {
+            endDateTime.setHours(23, 59, 59, 999);
+        }
+
+        const now = new Date();
+        if (endDateTime > now) return false;
+
+        return differenceInHours(now, endDateTime) > 24;
+    }, [chat, campaign]);
 
     const messageGroups = useMemo(() => {
         if (!messages) return [];
@@ -81,7 +120,7 @@ export default function ChatPage() {
 
     const handleSendMessage = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!newMessage.trim() || !user || !firestore || !chatId || isSending || !chat) return;
+        if (!newMessage.trim() || !user || !firestore || !chatId || isSending || !chat || isChatFrozen) return;
         
         setIsSending(true);
 
@@ -312,20 +351,28 @@ export default function ChatPage() {
                 </CardContent>
 
                 <CardFooter className="p-2 border-t bg-background flex flex-col items-stretch gap-1">
-                    <form onSubmit={handleSendMessage} className="flex gap-2 w-full items-center p-2">
-                        <Input
-                            value={newMessage}
-                            onChange={(e) => setNewMessage(e.target.value)}
-                            placeholder="Type a message..."
-                            disabled={isSending}
-                            autoComplete="off"
-                        />
-                        <Button type="submit" size="icon" disabled={isSending || !newMessage.trim()}>
-                            {isSending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-                        </Button>
-                    </form>
+                    {isChatFrozen ? (
+                        <div className="p-3 text-center text-sm text-muted-foreground bg-muted/50">
+                            This group chat has been frozen as the campaign ended more than 24 hours ago.
+                        </div>
+                    ) : (
+                        <form onSubmit={handleSendMessage} className="flex gap-2 w-full items-center p-2">
+                            <Input
+                                value={newMessage}
+                                onChange={(e) => setNewMessage(e.target.value)}
+                                placeholder="Type a message..."
+                                disabled={isSending}
+                                autoComplete="off"
+                            />
+                            <Button type="submit" size="icon" disabled={isSending || !newMessage.trim()}>
+                                {isSending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                            </Button>
+                        </form>
+                    )}
                 </CardFooter>
             </Card>
         </div>
     )
 }
+
+    
