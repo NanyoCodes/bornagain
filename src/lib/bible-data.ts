@@ -14,65 +14,95 @@ export type Book = {
   chapters: Chapter[];
 };
 
-// Using World English Bible (public domain)
-export const bibleData: Book[] = [
-  {
-    name: 'Genesis',
-    chapters: [
-      {
-        chapter: 1,
+// Using World English Bible (public domain) - structure only
+const bookDataStructure: { [key: string]: number } = {
+  "Genesis": 50,
+  "Exodus": 40,
+  "Leviticus": 27,
+  "Numbers": 36,
+  "Deuteronomy": 34,
+  "Joshua": 24,
+  "Judges": 21,
+  "Ruth": 4,
+  "1 Samuel": 31,
+  "2 Samuel": 24,
+  "1 Kings": 22,
+  "2 Kings": 25,
+  "1 Chronicles": 29,
+  "2 Chronicles": 36,
+  "Ezra": 10,
+  "Nehemiah": 13,
+  "Esther": 10,
+  "Job": 42,
+  "Psalms": 150,
+  "Proverbs": 31,
+  "Ecclesiastes": 12,
+  "Song of Solomon": 8,
+  "Isaiah": 66,
+  "Jeremiah": 52,
+  "Lamentations": 5,
+  "Ezekiel": 48,
+  "Daniel": 12,
+  "Hosea": 14,
+  "Joel": 3,
+  "Amos": 9,
+  "Obadiah": 1,
+  "Jonah": 4,
+  "Micah": 7,
+  "Nahum": 3,
+  "Habakkuk": 3,
+  "Zephaniah": 3,
+  "Haggai": 2,
+  "Zechariah": 14,
+  "Malachi": 4,
+  "Matthew": 28,
+  "Mark": 16,
+  "Luke": 24,
+  "John": 21,
+  "Acts": 28,
+  "Romans": 16,
+  "1 Corinthians": 16,
+  "2 Corinthians": 13,
+  "Galatians": 6,
+  "Ephesians": 6,
+  "Philippians": 4,
+  "Colossians": 4,
+  "1 Thessalonians": 5,
+  "2 Thessalonians": 3,
+  "1 Timothy": 6,
+  "2 Timothy": 4,
+  "Titus": 3,
+  "Philemon": 1,
+  "Hebrews": 13,
+  "James": 5,
+  "1 Peter": 5,
+  "2 Peter": 3,
+  "1 John": 5,
+  "2 John": 1,
+  "3 John": 1,
+  "Jude": 1,
+  "Revelation": 22
+};
+
+function generateBibleData(): Book[] {
+  return Object.entries(bookDataStructure).map(([bookName, chapterCount]) => {
+    const chapters: Chapter[] = [];
+    for (let i = 1; i <= chapterCount; i++) {
+      chapters.push({
+        chapter: i,
+        // Placeholder verse to avoid massive file size.
+        // In a real app, this would be fetched on demand.
         verses: [
-          { verse: 1, text: 'In the beginning, God created the heavens and the earth.' },
-          { verse: 2, text: 'The earth was formless and empty. Darkness was on the surface of the deep and God’s Spirit was hovering over the surface of the waters.' },
-          { verse: 3, text: 'God said, “Let there be light,” and there was light.' },
-          { verse: 4, text: 'God saw the light, and that it was good. God divided the light from the darkness.' },
-          { verse: 5, text: 'God called the light “day”, and the darkness he called “night”. There was evening and there was morning, one day.' },
+          { verse: 1, text: `This is the first verse of ${bookName} chapter ${i}. The full text would be loaded from a Bible API.` },
+          { verse: 2, text: '...' },
         ],
-      },
-    ],
-  },
-  {
-    name: 'Exodus',
-    chapters: [
-        {
-            chapter: 1,
-            verses: [
-                { verse: 1, text: 'Now these are the names of the sons of Israel, who came into Egypt (every man and his household came with Jacob):' },
-                { verse: 2, text: 'Reuben, Simeon, Levi, and Judah,' },
-                { verse: 3, text: 'Issachar, Zebulun, and Benjamin,' },
-                { verse: 4, text: 'Dan and Naphtali, Gad and Asher.' },
-                { verse: 5, text: 'All the souls who came out of Jacob’s body were seventy souls, and Joseph was in Egypt already.' },
-            ]
-        }
-    ]
-  },
-  {
-    name: 'John',
-    chapters: [
-      {
-        chapter: 1,
-        verses: [
-          { verse: 1, text: 'In the beginning was the Word, and the Word was with God, and the Word was God.' },
-          { verse: 2, text: 'The same was in the beginning with God.' },
-          { verse: 3, text: 'All things were made through him. Without him, nothing was made that has been made.' },
-          { verse: 4, text: 'In him was life, and the life was the light of men.' },
-          { verse: 5, text: 'The light shines in the darkness, and the darkness hasn’t overcome it.' },
-        ],
-      },
-      {
-        chapter: 2,
-        verses: [
-            { verse: 1, text: 'The third day, there was a wedding in Cana of Galilee. Jesus’ mother was there.' },
-            { verse: 2, text: 'Jesus also was invited, with his disciples, to the wedding.' },
-            { verse: 3, text: 'When the wine ran out, Jesus’ mother said to him, “They have no wine.”' },
-        ]
-      },
-       {
-        chapter: 3,
-        verses: [
-            { verse: 16, text: 'For God so loved the world, that he gave his one and only Son, that whoever believes in him should not perish, but have eternal life.' },
-        ]
-      }
-    ],
-  },
-];
+      });
+    }
+    return {
+      name: bookName,
+      chapters,
+    };
+  });
+}
+
+export const bibleData: Book[] = generateBibleData();
