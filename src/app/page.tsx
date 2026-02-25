@@ -122,14 +122,10 @@ export default function SignUpPage() {
               </div>
           </div>
 
-          <div className="flex justify-center gap-4">
-              <Button
-                  variant="outline"
-                  size="icon"
-                  className="rounded-full"
-                  onClick={() => handleSocialLogin('google')}
-              >
-                  <Icons.google className="h-5 w-5" />
+          <div className="grid grid-cols-1 gap-2">
+              <Button variant="outline" onClick={() => handleSocialLogin('google')}>
+                  <Icons.google className="mr-2 h-4 w-4" />
+                  Google
               </Button>
           </div>
         </div>
