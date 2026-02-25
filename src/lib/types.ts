@@ -108,7 +108,8 @@ export type Soul = {
   id: string;
   userId: string;
   name: string;
-  contact?: string;
+  email?: string;
+  phone?: string;
   church?: string;
   source: 'Campaign' | 'Personal' | 'Referral';
   sourceDetails?: string; // e.g., Campaign name or referrer name

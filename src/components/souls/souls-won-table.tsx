@@ -3,7 +3,7 @@
 
 import * as React from "react";
 import { format } from "date-fns";
-import { MoreHorizontal, Church, BookOpen, HandHelping, Check, Loader2, UserPlus } from "lucide-react";
+import { MoreHorizontal, Church, BookOpen, HandHelping, Check, Loader2, UserPlus, Edit } from "lucide-react";
 import type { Soul, FollowUpStatus, FollowUpLogItem } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import {
@@ -51,6 +51,7 @@ import * as z from "zod";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { useFirestore, useUser } from "@/firebase";
 import { doc, updateDoc, arrayUnion } from "firebase/firestore";
+import { EditSoulForm } from "./edit-soul-form";
 
 // --- LogFollowUpDialog Component Definition ---
 const followUpIdeas = [
@@ -256,6 +257,7 @@ const statusOptions: FollowUpStatus[] = ['New', 'Contacted', 'Attending Church',
 
 function SoulCard({ soul, onUpdateSoul }: { soul: Soul, onUpdateSoul: SoulsWonTableProps['onUpdateSoul'] }) {
     const { toast } = useToast();
+    const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
 
     const handleStatusChange = (soulId: string, newStatus: FollowUpStatus) => {
         onUpdateSoul(soulId, { status: newStatus });
@@ -274,26 +276,44 @@ function SoulCard({ soul, onUpdateSoul }: { soul: Soul, onUpdateSoul: SoulsWonTa
                 <div className="flex justify-between items-start">
                     <div>
                         <CardTitle>{soul.name}</CardTitle>
-                        <CardDescription>{soul.contact}</CardDescription>
+                        <CardDescription>
+                            {soul.email && <div className="truncate">{soul.email}</div>}
+                            {soul.phone && <div className="truncate">{soul.phone}</div>}
+                        </CardDescription>
                         {soul.church && <CardDescription className="flex items-center gap-1 pt-1"><Church className="h-4 w-4" /> {soul.church}</CardDescription>}
                     </div>
-                     <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button aria-haspopup="true" size="icon" variant="ghost">
-                          <MoreHorizontal className="h-4 w-4" />
-                          <span className="sr-only">Toggle menu</span>
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <LogFollowUpDialog soul={soul}>
-                            <DropdownMenuItem onSelect={(e) => e.preventDefault()}>Log Follow-up</DropdownMenuItem>
-                        </LogFollowUpDialog>
-                        <ViewHistoryDialog soul={soul}>
-                            <DropdownMenuItem onSelect={(e) => e.preventDefault()}>View History</DropdownMenuItem>
-                        </ViewHistoryDialog>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                     <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+                        <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button aria-haspopup="true" size="icon" variant="ghost">
+                            <MoreHorizontal className="h-4 w-4" />
+                            <span className="sr-only">Toggle menu</span>
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                             <DialogTrigger asChild>
+                                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                                    <Edit className="mr-2 h-4 w-4"/>
+                                    Edit
+                                </DropdownMenuItem>
+                            </DialogTrigger>
+                            <LogFollowUpDialog soul={soul}>
+                                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>Log Follow-up</DropdownMenuItem>
+                            </LogFollowUpDialog>
+                            <ViewHistoryDialog soul={soul}>
+                                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>View History</DropdownMenuItem>
+                            </ViewHistoryDialog>
+                        </DropdownMenuContent>
+                        </DropdownMenu>
+                         <DialogContent>
+                            <DialogHeader>
+                                <DialogTitle>Edit Soul Details</DialogTitle>
+                                <DialogDescription>Make changes to the record for {soul.name}.</DialogDescription>
+                            </DialogHeader>
+                            <EditSoulForm soul={soul} onSoulUpdated={() => setIsEditDialogOpen(false)} />
+                        </DialogContent>
+                    </Dialog>
                 </div>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -359,6 +379,7 @@ export function SoulsWonTable({ souls, onUpdateSoul, loading }: SoulsWonTablePro
   const { toast } = useToast();
   const isMobile = useIsMobile();
   const [mounted, setMounted] = React.useState(false);
+  const [editingSoul, setEditingSoul] = React.useState<Soul | null>(null);
 
   React.useEffect(() => {
     setMounted(true);
@@ -438,6 +459,7 @@ export function SoulsWonTable({ souls, onUpdateSoul, loading }: SoulsWonTablePro
   }
 
   return (
+    <>
     <Card>
       <CardHeader>
         <CardTitle>Follow-up Dashboard</CardTitle>
@@ -450,6 +472,7 @@ export function SoulsWonTable({ souls, onUpdateSoul, loading }: SoulsWonTablePro
           <TableHeader>
             <TableRow>
               <TableHead>Name</TableHead>
+              <TableHead>Contact Info</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Follow-up</TableHead>
               <TableHead>Won At</TableHead>
@@ -464,8 +487,11 @@ export function SoulsWonTable({ souls, onUpdateSoul, loading }: SoulsWonTablePro
               <TableRow key={soul.id}>
                 <TableCell className="font-medium">
                   <div>{soul.name}</div>
-                  <div className="text-xs text-muted-foreground">{soul.contact}</div>
                   {soul.church && <div className="text-xs text-muted-foreground flex items-center gap-1"><Church className="h-3 w-3" />{soul.church}</div>}
+                </TableCell>
+                <TableCell>
+                  {soul.email && <div>{soul.email}</div>}
+                  {soul.phone && <div className="text-xs text-muted-foreground">{soul.phone}</div>}
                 </TableCell>
                 <TableCell>
                   <Select value={soul.status} onValueChange={(value: FollowUpStatus) => handleStatusChange(soul.id, value)}>
@@ -531,6 +557,10 @@ export function SoulsWonTable({ souls, onUpdateSoul, loading }: SoulsWonTablePro
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                       <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                       <DropdownMenuItem onSelect={() => setEditingSoul(soul)}>
+                          <Edit className="mr-2 h-4 w-4" />
+                          Edit
+                      </DropdownMenuItem>
                       <LogFollowUpDialog soul={soul}>
                           <DropdownMenuItem onSelect={(e) => e.preventDefault()}>Log Follow-up</DropdownMenuItem>
                       </LogFollowUpDialog>
@@ -546,5 +576,15 @@ export function SoulsWonTable({ souls, onUpdateSoul, loading }: SoulsWonTablePro
         </Table>
       </CardContent>
     </Card>
+    <Dialog open={!!editingSoul} onOpenChange={(isOpen) => !isOpen && setEditingSoul(null)}>
+        <DialogContent>
+            <DialogHeader>
+                <DialogTitle>Edit Soul Details</DialogTitle>
+                <DialogDescription>Make changes to the record for {editingSoul?.name}.</DialogDescription>
+            </DialogHeader>
+            {editingSoul && <EditSoulForm soul={editingSoul} onSoulUpdated={() => setEditingSoul(null)} />}
+        </DialogContent>
+    </Dialog>
+    </>
   );
 }

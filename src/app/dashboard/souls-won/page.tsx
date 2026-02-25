@@ -34,7 +34,7 @@ export default function SoulsWonPage() {
   useEffect(() => {
     setMounted(true);
     setIsSearchVisible(true);
-    setSearchPlaceholder("Search by name, source, contact...");
+    setSearchPlaceholder("Search by name, email, phone...");
     return () => {
       setIsSearchVisible(false);
       setSearchTerm("");
@@ -53,7 +53,8 @@ export default function SoulsWonPage() {
     const term = searchTerm.toLowerCase();
     return souls.filter(soul => 
       soul.name.toLowerCase().includes(term) ||
-      (soul.contact && soul.contact.toLowerCase().includes(term)) ||
+      (soul.email && soul.email.toLowerCase().includes(term)) ||
+      (soul.phone && soul.phone.toLowerCase().includes(term)) ||
       soul.source.toLowerCase().includes(term) ||
       (soul.sourceDetails && soul.sourceDetails.toLowerCase().includes(term)) ||
       (soul.church && soul.church.toLowerCase().includes(term))

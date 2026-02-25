@@ -31,7 +31,8 @@ import { Calendar } from "../ui/calendar";
 
 const formSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters."),
-  contact: z.string().optional(),
+  email: z.string().email("Please enter a valid email address.").optional().or(z.literal('')),
+  phone: z.string().optional(),
   church: z.string().optional(),
   source: z.string({ required_error: "Please select a source." }),
   sourceDetails: z.string().optional(),
@@ -62,7 +63,8 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps)
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
-      contact: "",
+      email: "",
+      phone: "",
       church: "",
       source: defaultCampaign ? "Campaign" : "Personal",
       sourceDetails: defaultCampaign ? defaultCampaign.title : "",
@@ -85,7 +87,8 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps)
       const soulData: Omit<Soul, 'id'> = {
         userId: user.uid,
         name: values.name,
-        contact: values.contact,
+        email: values.email,
+        phone: values.phone,
         church: values.church,
         source: values.source as 'Personal' | 'Campaign' | 'Referral',
         sourceDetails: values.sourceDetails,
@@ -203,12 +206,25 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps)
         />
         <FormField
           control={form.control}
-          name="contact"
+          name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Contact Info (Email or Phone)</FormLabel>
+              <FormLabel>Email (Optional)</FormLabel>
               <FormControl>
                 <Input placeholder="john.doe@example.com" {...field} className="text-base"/>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="phone"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Phone Number (Optional)</FormLabel>
+              <FormControl>
+                <Input placeholder="+1 123 456 7890" {...field} className="text-base"/>
               </FormControl>
               <FormMessage />
             </FormItem>
