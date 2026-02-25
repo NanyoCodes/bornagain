@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect, useRef, useLayoutEffect } from 'react';
@@ -16,10 +15,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 import { bibleData } from '@/lib/bible-data';
 import { useUser, useFirestore, useDoc } from '@/firebase';
 import { doc, updateDoc, arrayUnion } from 'firebase/firestore';
-import type { UserProfile } from '@/lib/types';
+import type { UserProfile, ReadingHistoryItem } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
-import { format, formatDistanceToNow, isSameDay } from 'date-fns';
-import { Loader2, XCircle } from 'lucide-react';
+import { format, isSameDay } from 'date-fns';
+import { Loader2, XCircle, BookOpen } from 'lucide-react';
 import { Skeleton } from '../ui/skeleton';
 import { getBibleChapter, type BibleChapterOutput } from '@/ai/flows/get-bible-chapter-flow';
 import { Input } from '../ui/input';
@@ -77,19 +76,26 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
   }, [isOpen, selectedBookName, selectedChapterNumber]);
 
   useLayoutEffect(() => {
-    if (!scrollAreaRef.current) return;
-    const viewport = scrollAreaRef.current.querySelector('div[data-radix-scroll-area-viewport]');
+    const viewport = scrollAreaRef.current?.querySelector('div[data-radix-scroll-area-viewport]');
     if (!viewport) return;
 
     // Scroll to top when new chapter content is loaded
     viewport.scrollTop = 0;
+    
+    const checkScrollable = () => {
+        // For non-scrollable content, enable the button immediately after render
+        if (!isLoadingChapter && chapterContent) {
+            if (viewport.scrollHeight <= viewport.clientHeight) {
+                setIsScrolledToEnd(true);
+            }
+        }
+    };
+    
+    // Check after a short delay to ensure content is fully rendered
+    const timeoutId = setTimeout(checkScrollable, 100);
 
-    // For non-scrollable content, enable the button immediately after render
-    if (!isLoadingChapter && chapterContent) {
-      if (viewport.scrollHeight <= viewport.clientHeight) {
-        setIsScrolledToEnd(true);
-      }
-    }
+    return () => clearTimeout(timeoutId);
+
   }, [isLoadingChapter, chapterContent]);
 
   const handleMarkAsRead = async () => {
@@ -158,16 +164,28 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
     return [...userProfile.readingHistory].reverse();
   }, [userProfile?.readingHistory]);
 
-  const filteredHistory = useMemo(() => {
+  const historyGroups = useMemo(() => {
     if (!readingHistory) return [];
-    if (!filterDate) return readingHistory;
+    const groups: { date: Date; items: ReadingHistoryItem[] }[] = [];
+    readingHistory.forEach(item => {
+      if (!item.readAt) return;
+      const itemDate = item.readAt.toDate();
+      const lastGroup = groups[groups.length - 1];
+      if (lastGroup && isSameDay(lastGroup.date, itemDate)) {
+        lastGroup.items.push(item);
+      } else {
+        groups.push({ date: itemDate, items: [item] });
+      }
+    });
+    return groups;
+  }, [readingHistory]);
 
-    return readingHistory.filter(item => {
-        if (!item.readAt) return false;
-        const readDate = item.readAt.toDate();
-        return isSameDay(readDate, filterDate);
-    })
-  }, [readingHistory, filterDate]);
+  const filteredHistoryGroups = useMemo(() => {
+    if (!historyGroups) return [];
+    if (!filterDate) return historyGroups;
+    return historyGroups.filter(group => isSameDay(group.date, filterDate));
+  }, [historyGroups, filterDate]);
+
 
   const handleScroll = (event: React.UIEvent<HTMLDivElement>) => {
     if (isScrolledToEnd) return;
@@ -266,26 +284,40 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
             </div>
              <ScrollArea className="flex-grow border rounded-md">
                 {loadingProfile && (
-                  <div className="space-y-3 p-2">
+                  <div className="space-y-3 p-4">
                     <Skeleton className="h-10 w-full" />
                     <Skeleton className="h-10 w-full" />
                     <Skeleton className="h-10 w-full" />
                   </div>
                 )}
-                {!loadingProfile && filteredHistory.length === 0 && (
+                {!loadingProfile && filteredHistoryGroups.length === 0 && (
                   <div className="flex items-center justify-center h-full text-muted-foreground p-4 text-center">
-                    {readingHistory.length === 0 ? 'Your reading history is empty.' : 'No entries found for this date.'}
+                    {readingHistory.length === 0 ? 'Your reading history is empty.' : 'No entries found for the selected date.'}
                   </div>
                 )}
-                {!loadingProfile && filteredHistory.length > 0 && (
-                  <div className="space-y-2 p-2">
-                    {filteredHistory.map((item, index) => (
-                      <div key={index} className="flex justify-between items-center p-3 border rounded-lg">
-                        <p className="font-medium">{item.book} {item.chapter}</p>
-                        <p className="text-sm text-muted-foreground">
-                          {item.readAt ? formatDistanceToNow(item.readAt.toDate(), { addSuffix: true }) : 'Just now'}
-                        </p>
-                      </div>
+                {!loadingProfile && filteredHistoryGroups.length > 0 && (
+                  <div className="p-2 space-y-2">
+                    {filteredHistoryGroups.map(group => (
+                        <div key={group.date.toISOString()}>
+                            <div className="sticky top-0 z-10 flex justify-center my-2 bg-transparent">
+                                <div className="px-3 py-1 text-xs text-muted-foreground bg-muted/80 backdrop-blur-sm rounded-full">
+                                    {format(group.date, 'PPP')}
+                                </div>
+                            </div>
+                            <div className="space-y-2">
+                                {group.items.map((item, index) => (
+                                    <div key={index} className="flex justify-between items-center p-3 border rounded-lg bg-background hover:bg-muted/50 transition-colors">
+                                        <div className="flex items-center gap-3">
+                                            <BookOpen className="h-5 w-5 text-primary" />
+                                            <p className="font-medium">{item.book} {item.chapter}</p>
+                                        </div>
+                                        <p className="text-sm text-muted-foreground">
+                                            {item.readAt ? format(item.readAt.toDate(), 'p') : ''}
+                                        </p>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
                     ))}
                   </div>
                 )}
