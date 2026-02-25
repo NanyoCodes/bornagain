@@ -134,6 +134,7 @@ function AppHeader() {
             <Link
                 key={item.href}
                 href={item.href}
+                prefetch={true}
                 className={cn(
                 "transition-colors hover:text-foreground whitespace-nowrap",
                 pathname.startsWith(item.href) && item.href !== '/dashboard' || pathname === item.href ? "text-foreground font-semibold" : "text-muted-foreground"
@@ -275,6 +276,7 @@ function BottomNavBar() {
             <Link
               key={item.href}
               href={item.href}
+              prefetch={true}
               className={cn(
                 "flex flex-col items-center justify-center gap-0.5 p-1 text-[10px] transition-colors hover:text-primary",
                 (pathname.startsWith(item.href) && item.href !== '/dashboard') || pathname === item.href ? "text-primary" : "text-muted-foreground"
