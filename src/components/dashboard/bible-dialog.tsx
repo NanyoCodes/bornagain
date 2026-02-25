@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useMemo, useEffect, useRef } from 'react';
+import { useState, useMemo, useEffect, useRef, useLayoutEffect } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -49,20 +49,13 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
   }, [selectedBookName]);
 
   useEffect(() => {
-    if (!selectedBookName || !selectedChapterNumber) return;
+    if (!isOpen || !selectedBookName || !selectedChapterNumber) return;
 
     const fetchChapter = async () => {
       setIsLoadingChapter(true);
       setChapterError(null);
       setChapterContent(null);
       setIsScrolledToEnd(false);
-
-      if (scrollAreaRef.current) {
-        const viewport = scrollAreaRef.current.querySelector('div[data-radix-scroll-area-viewport]');
-        if (viewport) {
-            viewport.scrollTop = 0;
-        }
-      }
 
       try {
         const content = await getBibleChapter({
@@ -79,17 +72,21 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
     };
 
     fetchChapter();
-  }, [selectedBookName, selectedChapterNumber]);
+  }, [isOpen, selectedBookName, selectedChapterNumber]);
 
-  useEffect(() => {
-    if (!isLoadingChapter && chapterContent && scrollAreaRef.current) {
-      const checkScrollable = () => {
-        const viewport = scrollAreaRef.current?.querySelector('div[data-radix-scroll-area-viewport]');
-        if (viewport && viewport.scrollHeight <= viewport.clientHeight) {
-          setIsScrolledToEnd(true);
-        }
-      };
-      setTimeout(checkScrollable, 100);
+  useLayoutEffect(() => {
+    if (!scrollAreaRef.current) return;
+    const viewport = scrollAreaRef.current.querySelector('div[data-radix-scroll-area-viewport]');
+    if (!viewport) return;
+
+    // Scroll to top when new chapter content is loaded
+    viewport.scrollTop = 0;
+
+    // For non-scrollable content, enable the button immediately after render
+    if (!isLoadingChapter && chapterContent) {
+      if (viewport.scrollHeight <= viewport.clientHeight) {
+        setIsScrolledToEnd(true);
+      }
     }
   }, [isLoadingChapter, chapterContent]);
 
@@ -162,6 +159,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
   const handleScroll = (event: React.UIEvent<HTMLDivElement>) => {
     if (isScrolledToEnd) return;
     const target = event.currentTarget;
+    // Check if user is close to the bottom
     if (target.scrollHeight - target.scrollTop <= target.clientHeight + 5) {
       setIsScrolledToEnd(true);
     }
