@@ -45,8 +45,8 @@ import { WelcomePopup } from "@/components/auth/welcome-popup";
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: Home },
   { href: "/dashboard/souls-won", label: "Souls Won", icon: UserPlus },
-  { href: "/dashboard/campaigns", label: "Campaigns", icon: Target },
   { href: "/dashboard/testimonies", label: "Testimonies", icon: Newspaper },
+  { href: "/dashboard/campaigns", label: "Campaigns", icon: Target },
   { href: "/dashboard/progress", label: "Progress", icon: TrendingUp },
 ];
 
@@ -62,7 +62,7 @@ function AppHeader() {
   
   const notificationsQuery = useMemo(() => {
     if (!user?.uid || !firestore) return null;
-    return query(collection(firestore, `users/${user.uid}/notifications`), orderBy('createdAt', 'desc'), limit(10));
+    return query(collection(firestore, `users/${user.uid}/notifications`), orderBy('createdAt', 'desc'), limit(3));
   }, [user?.uid, firestore]);
 
   const { data: notifications, loading: notificationsLoading } = useCollection<Notification>(notificationsQuery);
@@ -175,7 +175,7 @@ function AppHeader() {
             </Link>
         </Button>
         <DropdownMenu onOpenChange={(open) => {
-          if (open && unreadCount > 0) {
+          if (!open && unreadCount > 0) {
             handleMarkAllAsRead();
           }
         }}>
@@ -214,6 +214,12 @@ function AppHeader() {
                   No new notifications.
                 </div>
             )}
+            <DropdownMenuSeparator />
+            <DropdownMenuItem asChild className="cursor-pointer justify-center">
+              <Link href="/dashboard/notifications">
+                View all notifications
+              </Link>
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
         <DropdownMenu>

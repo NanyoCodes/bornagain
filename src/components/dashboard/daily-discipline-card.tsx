@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -9,7 +10,7 @@ import { doc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import type { UserProfile } from '@/lib/types';
 import { isToday } from 'date-fns';
 import { Skeleton } from '../ui/skeleton';
-import { Heart, BookOpen, Share2, Megaphone } from 'lucide-react';
+import { Heart, BookOpen, Share2, Megaphone, Users } from 'lucide-react';
 import { BibleDialog } from './bible-dialog';
 import { PrayerDialog } from './prayer-dialog';
 import { useRouter } from 'next/navigation';
@@ -17,6 +18,7 @@ import { useRouter } from 'next/navigation';
 const disciplines = [
   { id: 'pray', label: 'Pray', icon: <Heart className="h-5 w-5 text-muted-foreground" /> },
   { id: 'read_bible', label: 'Read the Bible', icon: <BookOpen className="h-5 w-5 text-muted-foreground" /> },
+  { id: 'follow_up', label: 'Follow-up Soul', icon: <Users className="h-5 w-5 text-muted-foreground" /> },
   { id: 'share_testimony', label: 'Share Testimony', icon: <Share2 className="h-5 w-5 text-muted-foreground" /> },
   { id: 'evangelize', label: 'Evangelize', icon: <Megaphone className="h-5 w-5 text-muted-foreground" /> },
 ];
@@ -111,7 +113,7 @@ export function DailyDisciplineCard() {
           <CardTitle>Daily Discipline</CardTitle>
           <CardDescription>Your spiritual checklist for today.</CardDescription>
         </CardHeader>
-        <CardContent className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <CardContent className="grid grid-cols-2 md:grid-cols-5 gap-4">
           {disciplines.map(discipline => (
              <div 
               key={discipline.id}
@@ -132,6 +134,10 @@ export function DailyDisciplineCard() {
                     e.preventDefault();
                     handleDisciplineToggle(discipline.id);
                     router.push('/dashboard/campaigns');
+                  } else if (discipline.id === 'follow_up') {
+                    e.preventDefault();
+                    handleDisciplineToggle(discipline.id);
+                    router.push('/dashboard/souls-won');
                   }
                 }
               }}
