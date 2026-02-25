@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -11,6 +10,7 @@ import type { UserProfile } from '@/lib/types';
 import { isToday } from 'date-fns';
 import { Skeleton } from '../ui/skeleton';
 import { Heart, BookOpen, Share2, Megaphone } from 'lucide-react';
+import { BibleDialog } from './bible-dialog';
 
 const disciplines = [
   { id: 'pray', label: 'Pray', icon: <Heart className="h-5 w-5 text-muted-foreground" /> },
@@ -23,6 +23,7 @@ export function DailyDisciplineCard() {
   const { user } = useUser();
   const firestore = useFirestore();
   const [completedToday, setCompletedToday] = useState<string[]>([]);
+  const [isBibleDialogOpen, setIsBibleDialogOpen] = useState(false);
   
   const userDocRef = useMemo(() => {
     if (!user?.uid || !firestore) return null;
@@ -45,10 +46,11 @@ export function DailyDisciplineCard() {
   const handleDisciplineToggle = async (disciplineId: string) => {
     if (!user || !firestore) return;
     
-    const wasCompleted = completedToday.includes(disciplineId);
+    const oldCompleted = [...completedToday];
+    const wasCompleted = oldCompleted.includes(disciplineId);
     const newCompleted = wasCompleted
-      ? completedToday.filter(id => id !== disciplineId)
-      : [...completedToday, disciplineId];
+      ? oldCompleted.filter(id => id !== disciplineId)
+      : [...oldCompleted, disciplineId];
       
     setCompletedToday(newCompleted); // Optimistic update
 
@@ -63,9 +65,17 @@ export function DailyDisciplineCard() {
     } catch (error) {
       console.error("Failed to update daily discipline:", error);
       // Revert optimistic update on failure
-      setCompletedToday(completedToday);
+      setCompletedToday(oldCompleted);
     }
   };
+
+  const handleMarkBibleAsRead = () => {
+    if (!completedToday.includes('read_bible')) {
+      handleDisciplineToggle('read_bible');
+    }
+    setIsBibleDialogOpen(false);
+  };
+
 
   if (loading) {
     return (
@@ -87,30 +97,54 @@ export function DailyDisciplineCard() {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Daily Discipline</CardTitle>
-        <CardDescription>Your spiritual checklist for today.</CardDescription>
-      </CardHeader>
-      <CardContent className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {disciplines.map(discipline => (
-          <Label 
-            key={discipline.id} 
-            htmlFor={discipline.id}
-            className="flex flex-col items-center justify-center gap-2 p-4 border rounded-lg cursor-pointer hover:bg-muted/50 transition-colors data-[state=checked]:bg-accent"
-            data-state={completedToday.includes(discipline.id) ? 'checked' : 'unchecked'}
-          >
-            <Checkbox
-              id={discipline.id}
-              className="sr-only"
-              checked={completedToday.includes(discipline.id)}
-              onCheckedChange={() => handleDisciplineToggle(discipline.id)}
-            />
-            {discipline.icon}
-            <span className="text-sm font-medium text-center">{discipline.label}</span>
-          </Label>
-        ))}
-      </CardContent>
-    </Card>
+    <>
+      <Card>
+        <CardHeader>
+          <CardTitle>Daily Discipline</CardTitle>
+          <CardDescription>Your spiritual checklist for today.</CardDescription>
+        </CardHeader>
+        <CardContent className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {disciplines.map(discipline => (
+             <div 
+              key={discipline.id}
+              onClick={(e) => {
+                if (discipline.id === 'read_bible') {
+                  e.preventDefault();
+                  if (completedToday.includes('read_bible')) {
+                    handleDisciplineToggle('read_bible');
+                  } else {
+                    setIsBibleDialogOpen(true);
+                  }
+                }
+              }}
+            >
+              <Label 
+                htmlFor={discipline.id}
+                className="flex flex-col items-center justify-center gap-2 p-4 border rounded-lg cursor-pointer hover:bg-muted/50 transition-colors data-[state=checked]:bg-accent h-full"
+                data-state={completedToday.includes(discipline.id) ? 'checked' : 'unchecked'}
+              >
+                <Checkbox
+                  id={discipline.id}
+                  className="sr-only"
+                  checked={completedToday.includes(discipline.id)}
+                  onCheckedChange={() => {
+                    if (discipline.id !== 'read_bible') {
+                       handleDisciplineToggle(discipline.id)
+                    }
+                  }}
+                />
+                {discipline.icon}
+                <span className="text-sm font-medium text-center">{discipline.label}</span>
+              </Label>
+            </div>
+          ))}
+        </CardContent>
+      </Card>
+       <BibleDialog 
+        isOpen={isBibleDialogOpen}
+        onOpenChange={setIsBibleDialogOpen}
+        onMarkAsRead={handleMarkBibleAsRead}
+      />
+    </>
   );
 }
