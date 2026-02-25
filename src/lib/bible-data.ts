@@ -88,14 +88,20 @@ function generateBibleData(): Book[] {
   return Object.entries(bookDataStructure).map(([bookName, chapterCount]) => {
     const chapters: Chapter[] = [];
     for (let i = 1; i <= chapterCount; i++) {
+      // In a real app, this would be fetched on demand from a Bible API.
+      // We generate a few placeholder verses to demonstrate the structure.
+      const verseCount = 25; // Fixed number of placeholder verses to avoid hydration errors.
+      const verses: Verse[] = [];
+      for (let j = 1; j <= verseCount; j++) {
+        verses.push({
+          verse: j,
+          text: `This is a placeholder for ${bookName} chapter ${i}, verse ${j}. The full content would be loaded from a Bible API to ensure the application remains fast and lightweight.`
+        });
+      }
+
       chapters.push({
         chapter: i,
-        // Placeholder verse to avoid massive file size.
-        // In a real app, this would be fetched on demand.
-        verses: [
-          { verse: 1, text: `This is the first verse of ${bookName} chapter ${i}. The full text would be loaded from a Bible API.` },
-          { verse: 2, text: '...' },
-        ],
+        verses,
       });
     }
     return {
