@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -15,7 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 import { bibleData } from '@/lib/bible-data';
 import { useUser, useFirestore, useDoc } from '@/firebase';
-import { doc, updateDoc, arrayUnion, serverTimestamp } from 'firebase/firestore';
+import { doc, updateDoc, arrayUnion } from 'firebase/firestore';
 import type { UserProfile } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { formatDistanceToNow } from 'date-fns';
@@ -32,22 +32,22 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
   const [selectedChapterNumber, setSelectedChapterNumber] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // State for fetched chapter content
   const [chapterContent, setChapterContent] = useState<BibleChapterOutput | null>(null);
   const [isLoadingChapter, setIsLoadingChapter] = useState(true);
   const [chapterError, setChapterError] = useState<string | null>(null);
+
+  const [isScrolledToEnd, setIsScrolledToEnd] = useState(false);
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   const userDocRef = useMemo(() => (user ? doc(firestore, 'users', user.uid) : null), [user, firestore]);
   const { data: userProfile, loading: loadingProfile } = useDoc<UserProfile>(userDocRef);
   
   const selectedBook = useMemo(() => bibleData.find(b => b.name === selectedBookName), [selectedBookName]);
   
-  // Effect to reset chapter and fetch new content when book changes
   useEffect(() => {
     setSelectedChapterNumber(1);
   }, [selectedBookName]);
 
-  // Effect to fetch chapter content from the API
   useEffect(() => {
     if (!selectedBookName || !selectedChapterNumber) return;
 
@@ -55,6 +55,14 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
       setIsLoadingChapter(true);
       setChapterError(null);
       setChapterContent(null);
+      setIsScrolledToEnd(false);
+
+      if (scrollAreaRef.current) {
+        const viewport = scrollAreaRef.current.querySelector('div[data-radix-scroll-area-viewport]');
+        if (viewport) {
+            viewport.scrollTop = 0;
+        }
+      }
 
       try {
         const content = await getBibleChapter({
@@ -73,6 +81,18 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
     fetchChapter();
   }, [selectedBookName, selectedChapterNumber]);
 
+  useEffect(() => {
+    if (!isLoadingChapter && chapterContent && scrollAreaRef.current) {
+      const checkScrollable = () => {
+        const viewport = scrollAreaRef.current?.querySelector('div[data-radix-scroll-area-viewport]');
+        if (viewport && viewport.scrollHeight <= viewport.clientHeight) {
+          setIsScrolledToEnd(true);
+        }
+      };
+      setTimeout(checkScrollable, 100);
+    }
+  }, [isLoadingChapter, chapterContent]);
+
   const handleMarkAsRead = async () => {
     if (!user || !firestore || !chapterContent) {
       toast({ variant: 'destructive', title: 'Error', description: 'Could not mark as read. User or chapter content missing.' });
@@ -90,9 +110,32 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
         })
       });
       
-      onDisciplineCompleted();
+      if (!completedToday.includes('read_bible')) {
+        onDisciplineCompleted();
+      }
       toast({ title: 'Chapter Marked as Read', description: `${chapterContent.book} ${chapterContent.chapter} has been added to your history.`});
-      onOpenChange(false);
+      
+      const currentBookIndex = bibleData.findIndex(b => b.name === selectedBookName);
+      const currentBook = bibleData[currentBookIndex];
+      if (!currentBook) {
+        setIsSubmitting(false);
+        return;
+      }
+
+      const isLastChapter = selectedChapterNumber >= currentBook.chapters.length;
+
+      if (isLastChapter) {
+          const isLastBook = currentBookIndex >= bibleData.length - 1;
+          if (!isLastBook) {
+              const nextBook = bibleData[currentBookIndex + 1];
+              setSelectedBookName(nextBook.name);
+          } else {
+              toast({ title: 'Congratulations!', description: 'You have finished reading the entire Bible!' });
+              onOpenChange(false);
+          }
+      } else {
+          setSelectedChapterNumber(prev => prev + 1);
+      }
 
     } catch (error) {
       console.error("Failed to mark as read:", error);
@@ -102,10 +145,27 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
     }
   };
 
+  const completedToday = useMemo(() => {
+    if (!userProfile?.dailyDiscipline) return [];
+    const lastUpdatedDate = userProfile.dailyDiscipline.lastUpdated?.toDate();
+    if (lastUpdatedDate && new Date().toDateString() === lastUpdatedDate.toDateString()) {
+      return userProfile.dailyDiscipline.completed || [];
+    }
+    return [];
+  }, [userProfile]);
+
   const readingHistory = useMemo(() => {
     if (!userProfile?.readingHistory) return [];
     return [...userProfile.readingHistory].reverse();
   }, [userProfile?.readingHistory]);
+
+  const handleScroll = (event: React.UIEvent<HTMLDivElement>) => {
+    if (isScrolledToEnd) return;
+    const target = event.currentTarget;
+    if (target.scrollHeight - target.scrollTop <= target.clientHeight + 5) {
+      setIsScrolledToEnd(true);
+    }
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -140,14 +200,14 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                 </Select>
               </div>
 
-              <ScrollArea className="flex-grow border rounded-md p-4 relative">
+              <ScrollArea ref={scrollAreaRef} onScroll={handleScroll} className="flex-grow border rounded-md p-4 relative">
                   {isLoadingChapter && (
                     <div className="absolute inset-0 flex items-center justify-center bg-background/50">
                         <Loader2 className="h-8 w-8 animate-spin text-primary" />
                     </div>
                   )}
                   {chapterError && !isLoadingChapter && (
-                     <div className="absolute inset-0 flex items-center justify-center text-destructive">
+                     <div className="absolute inset-0 flex items-center justify-center text-destructive p-4 text-center">
                         {chapterError}
                     </div>
                   )}
@@ -164,9 +224,9 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
               </ScrollArea>
               
                <DialogFooter>
-                <Button onClick={handleMarkAsRead} disabled={isSubmitting || isLoadingChapter || !!chapterError}>
+                <Button onClick={handleMarkAsRead} disabled={isSubmitting || isLoadingChapter || !!chapterError || !isScrolledToEnd}>
                   {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Mark Chapter as Read
+                  Mark as Read & Next Chapter
                 </Button>
               </DialogFooter>
           </TabsContent>

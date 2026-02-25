@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -69,6 +70,12 @@ export function DailyDisciplineCard() {
     }
   };
 
+  const handleBibleRead = () => {
+    if (!completedToday.includes('read_bible')) {
+      handleDisciplineToggle('read_bible');
+    }
+  }
+
   if (loading) {
     return (
       <Card>
@@ -100,6 +107,7 @@ export function DailyDisciplineCard() {
              <div 
               key={discipline.id}
               onClick={(e) => {
+                // This div wrapper allows the whole card to be clickable for the Bible dialog
                 if (discipline.id === 'read_bible') {
                   e.preventDefault();
                   setIsBibleDialogOpen(true);
@@ -116,13 +124,10 @@ export function DailyDisciplineCard() {
                   className="sr-only"
                   checked={completedToday.includes(discipline.id)}
                   onCheckedChange={() => {
-                    if (discipline.id !== 'read_bible') {
+                    // For "Read Bible", the onDisciplineCompleted from the dialog handles checking the box.
+                    // This allows unchecking it directly.
+                    if (discipline.id !== 'read_bible' || completedToday.includes('read_bible')) {
                        handleDisciplineToggle(discipline.id)
-                    } else {
-                        // For read_bible, we toggle off directly, but toggle on is handled by the dialog
-                        if (completedToday.includes('read_bible')) {
-                            handleDisciplineToggle('read_bible');
-                        }
                     }
                   }}
                 />
@@ -136,11 +141,7 @@ export function DailyDisciplineCard() {
        <BibleDialog 
         isOpen={isBibleDialogOpen}
         onOpenChange={setIsBibleDialogOpen}
-        onDisciplineCompleted={() => {
-            if (!completedToday.includes('read_bible')) {
-                handleDisciplineToggle('read_bible');
-            }
-        }}
+        onDisciplineCompleted={handleBibleRead}
       />
     </>
   );
