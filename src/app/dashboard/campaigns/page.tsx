@@ -29,6 +29,7 @@ import { collection, query, orderBy, doc } from "firebase/firestore";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useSearch } from "@/context/search-context";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 function CampaignSkeletons() {
   return (
@@ -54,6 +55,7 @@ export default function CampaignsPage() {
   const isMobile = useIsMobile();
   const { searchTerm, setSearchPlaceholder, setIsSearchVisible, setSearchTerm } = useSearch();
   const [now, setNow] = useState(new Date());
+  const [filter, setFilter] = useState("all");
 
   useEffect(() => {
     setMounted(true);
@@ -122,7 +124,14 @@ export default function CampaignsPage() {
   const sortedAndFilteredCampaigns = useMemo(() => {
     const activeCampaigns = campaigns?.filter(c => c.status !== 'deleted');
 
-    const filtered = activeCampaigns?.filter((campaign) => {
+    const tabFilteredCampaigns = activeCampaigns?.filter(c => {
+        if (!user?.uid) return true;
+        if (filter === 'created') return c.organizerId === user.uid;
+        if (filter === 'joined') return joinedCampaignIds.has(c.id) && c.organizerId !== user.uid;
+        return true; // 'all'
+    });
+
+    const filtered = tabFilteredCampaigns?.filter((campaign) => {
       if (!searchTerm) return true;
       const term = searchTerm.toLowerCase();
 
@@ -196,7 +205,7 @@ export default function CampaignsPage() {
       return 0;
     });
 
-  }, [campaigns, searchTerm, userProfile, mounted, now]);
+  }, [campaigns, searchTerm, userProfile, mounted, now, filter, user?.uid, joinedCampaignIds]);
 
   const triggerButton = (
     <Button disabled={!user}>
@@ -206,6 +215,13 @@ export default function CampaignsPage() {
   );
 
   const formContent = <CreateCampaignForm onCampaignCreated={handleCampaignCreated} />;
+
+  let noResultsMessage = "No campaigns found.";
+    if (filter === 'created') {
+        noResultsMessage = "You haven't created any campaigns.";
+    } else if (filter === 'joined') {
+        noResultsMessage = "You haven't joined any campaigns.";
+    }
 
   return (
     <div className="space-y-8">
@@ -247,6 +263,14 @@ export default function CampaignsPage() {
         )}
       </div>
 
+      <Tabs value={filter} onValueChange={setFilter}>
+        <TabsList>
+            <TabsTrigger value="all">All Campaigns</TabsTrigger>
+            <TabsTrigger value="created">My Created</TabsTrigger>
+            <TabsTrigger value="joined">Joined</TabsTrigger>
+        </TabsList>
+      </Tabs>
+
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {loading && <CampaignSkeletons />}
         {sortedAndFilteredCampaigns?.map((campaign) => (
@@ -258,7 +282,7 @@ export default function CampaignsPage() {
           />
         ))}
          {!loading && sortedAndFilteredCampaigns?.length === 0 && (
-          <p className="text-muted-foreground col-span-full text-center">No campaigns found.</p>
+          <p className="text-muted-foreground col-span-full text-center">{noResultsMessage}</p>
         )}
       </div>
     </div>

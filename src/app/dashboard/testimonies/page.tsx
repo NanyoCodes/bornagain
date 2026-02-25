@@ -29,12 +29,14 @@ import { useCollection, useFirestore, useUser } from "@/firebase";
 import { collection, query, orderBy } from "firebase/firestore";
 import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card";
 import { useSearch } from "@/context/search-context";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function TestimoniesPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const isMobile = useIsMobile();
   const { searchTerm, setSearchPlaceholder, setIsSearchVisible, setSearchTerm } = useSearch();
+  const [filter, setFilter] = useState("all");
 
   const firestore = useFirestore();
   const { user } = useUser();
@@ -58,15 +60,20 @@ export default function TestimoniesPage() {
 
   const filteredTestimonies = useMemo(() => {
     if (!testimonies) return [];
-    if (!searchTerm) return testimonies;
+    
+    const tabFiltered = filter === 'mine' 
+      ? testimonies.filter(testimony => testimony.authorId === user?.uid)
+      : testimonies;
+
+    if (!searchTerm) return tabFiltered;
     const term = searchTerm.toLowerCase();
 
-    return testimonies.filter(testimony => 
+    return tabFiltered.filter(testimony => 
       testimony.content.toLowerCase().includes(term) ||
       testimony.authorName.toLowerCase().includes(term) ||
       testimony.category.toLowerCase().includes(term)
     );
-  }, [testimonies, searchTerm]);
+  }, [testimonies, searchTerm, filter, user?.uid]);
 
   const handleTestimonyCreated = () => {
     setIsDialogOpen(false);
@@ -80,6 +87,10 @@ export default function TestimoniesPage() {
   );
 
   const formContent = <CreateTestimonyForm onTestimonyCreated={handleTestimonyCreated} />;
+
+  const noResultsMessage = filter === 'mine'
+    ? 'You have not shared any testimonies.'
+    : 'No testimonies match your search.';
 
   return (
     <div className="space-y-8">
@@ -98,10 +109,10 @@ export default function TestimoniesPage() {
               <SheetContent side="bottom">
                 <SheetHeader>
                   <SheetTitle>Share Your Testimony</SheetTitle>
-                  <SheetDescription>
+                  <DialogDescription>
                     Encourage others by sharing what God has done in your life. Your
                     story matters.
-                  </SheetDescription>
+                  </DialogDescription>
                 </SheetHeader>
                 <div className="max-h-[80vh] overflow-y-auto p-1 mt-4">
                     {formContent}
@@ -126,6 +137,13 @@ export default function TestimoniesPage() {
             </Dialog>
           )}
       </div>
+
+      <Tabs value={filter} onValueChange={setFilter}>
+          <TabsList>
+              <TabsTrigger value="all">All Testimonies</TabsTrigger>
+              <TabsTrigger value="mine">My Testimonies</TabsTrigger>
+          </TabsList>
+      </Tabs>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {loading && (
@@ -156,7 +174,7 @@ export default function TestimoniesPage() {
           <TestimonyCard key={testimony.id} testimony={testimony} />
         ))}
          {!loading && filteredTestimonies?.length === 0 && (
-          <p className="text-muted-foreground col-span-full text-center">No testimonies found.</p>
+          <p className="text-muted-foreground col-span-full text-center">{noResultsMessage}</p>
         )}
       </div>
     </div>
