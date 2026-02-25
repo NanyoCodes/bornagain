@@ -2,7 +2,7 @@
 'use client';
 
 import { useMemo, useState, useEffect } from 'react';
-import { useCollection, useFirestore } from '@/firebase';
+import { useCollection, useFirestore, useUser } from '@/firebase';
 import { collection, query, where, documentId, orderBy, getDocs } from 'firebase/firestore';
 import type { Campaign, JoinedCampaign, Testimony, Soul } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -220,13 +220,14 @@ export function JoinedCampaignsList({ userId }: { userId: string }) {
 
 export function TestimoniesList({ userId }: { userId: string }) {
   const firestore = useFirestore();
+  const { user, loading: userLoading } = useUser();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterDate, setFilterDate] = useState<Date>();
 
   const testimoniesQuery = useMemo(() => {
-    if (!userId || !firestore) return null;
+    if (!user || user.uid !== userId || !firestore) return null;
     return query(collection(firestore, 'testimonies'), where('authorId', '==', userId), orderBy('createdAt', 'desc'));
-  }, [userId, firestore]);
+  }, [userId, firestore, user]);
   const { data: testimonies, loading } = useCollection<Testimony>(testimoniesQuery);
 
   const filteredTestimonies = useMemo(() => {
@@ -246,7 +247,7 @@ export function TestimoniesList({ userId }: { userId: string }) {
     });
   }, [testimonies, searchTerm, filterDate]);
 
-  if (loading) {
+  if (userLoading || loading) {
     return <ListSkeleton />;
   }
 
@@ -281,13 +282,14 @@ export function TestimoniesList({ userId }: { userId: string }) {
 
 export function CampaignsCreatedList({ userId }: { userId: string }) {
   const firestore = useFirestore();
+  const { user, loading: userLoading } = useUser();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterDate, setFilterDate] = useState<Date>();
 
   const campaignsQuery = useMemo(() => {
-    if (!userId || !firestore) return null;
+    if (!user || user.uid !== userId || !firestore) return null;
     return query(collection(firestore, 'campaigns'), where('organizerId', '==', userId), orderBy('createdAt', 'desc'));
-  }, [userId, firestore]);
+  }, [userId, firestore, user]);
   const { data: campaigns, loading } = useCollection<Campaign>(campaignsQuery);
   
   const activeCampaigns = useMemo(() => campaigns?.filter(c => c.status !== 'deleted') ?? [], [campaigns]);
@@ -310,7 +312,7 @@ export function CampaignsCreatedList({ userId }: { userId: string }) {
   }, [activeCampaigns, searchTerm, filterDate]);
 
 
-  if (loading) {
+  if (userLoading || loading) {
     return <ListSkeleton />;
   }
 
