@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -13,6 +12,7 @@ import { Skeleton } from '../ui/skeleton';
 import { Heart, BookOpen, Share2, Megaphone } from 'lucide-react';
 import { BibleDialog } from './bible-dialog';
 import { PrayerDialog } from './prayer-dialog';
+import { useRouter } from 'next/navigation';
 
 const disciplines = [
   { id: 'pray', label: 'Pray', icon: <Heart className="h-5 w-5 text-muted-foreground" /> },
@@ -27,6 +27,7 @@ export function DailyDisciplineCard() {
   const [completedToday, setCompletedToday] = useState<string[]>([]);
   const [isBibleDialogOpen, setIsBibleDialogOpen] = useState(false);
   const [isPrayerDialogOpen, setIsPrayerDialogOpen] = useState(false);
+  const router = useRouter();
   
   const userDocRef = useMemo(() => {
     if (!user?.uid || !firestore) return null;
@@ -116,10 +117,22 @@ export function DailyDisciplineCard() {
               key={discipline.id}
               onClick={(e) => {
                 const isCompleted = completedToday.includes(discipline.id);
-                if ((discipline.id === 'read_bible' || discipline.id === 'pray') && !isCompleted) {
+                if (!isCompleted) {
+                  if (discipline.id === 'read_bible') {
                     e.preventDefault();
-                    if (discipline.id === 'read_bible') setIsBibleDialogOpen(true);
-                    if (discipline.id === 'pray') setIsPrayerDialogOpen(true);
+                    setIsBibleDialogOpen(true);
+                  } else if (discipline.id === 'pray') {
+                    e.preventDefault();
+                    setIsPrayerDialogOpen(true);
+                  } else if (discipline.id === 'share_testimony') {
+                    e.preventDefault();
+                    handleDisciplineToggle(discipline.id);
+                    router.push('/dashboard/testimonies');
+                  } else if (discipline.id === 'evangelize') {
+                    e.preventDefault();
+                    handleDisciplineToggle(discipline.id);
+                    router.push('/dashboard/campaigns');
+                  }
                 }
               }}
             >
