@@ -10,6 +10,7 @@ import Link from 'next/link';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { formatDistanceToNow } from 'date-fns';
 import { useMemo } from 'react';
+import { MessageSquare } from 'lucide-react';
 
 function ChatListItem({ chat, currentUserId }: { chat: Chat, currentUserId: string }) {
     const lastUpdatedAt = chat.lastUpdatedAt?.toDate ? chat.lastUpdatedAt.toDate() : new Date();
@@ -133,8 +134,12 @@ export default function ChatsPage() {
                         </div>
                     )}
                     {!loading && chats?.length === 0 && (
-                        <div className="p-8 text-center text-muted-foreground">
-                            You have no active conversations.
+                        <div className="p-8 text-center">
+                            <MessageSquare className="mx-auto h-12 w-12 text-muted-foreground" />
+                            <h3 className="mt-4 text-lg font-semibold">No Active Conversations</h3>
+                            <p className="mt-2 text-sm text-muted-foreground">
+                                When you join a campaign or chat with an organizer, your conversations will appear here.
+                            </p>
                         </div>
                     )}
                     <div className="border-t">

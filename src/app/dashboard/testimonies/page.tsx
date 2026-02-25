@@ -3,7 +3,7 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
-import { PlusCircle } from "lucide-react";
+import { PlusCircle, Newspaper } from "lucide-react";
 import { CreateTestimonyForm } from "@/components/testimonies/create-testimony-form";
 import { TestimonyCard } from "@/components/testimonies/testimony-card";
 import {
@@ -174,7 +174,15 @@ export default function TestimoniesPage() {
           <TestimonyCard key={testimony.id} testimony={testimony} />
         ))}
          {!loading && filteredTestimonies?.length === 0 && (
-          <p className="text-muted-foreground col-span-full text-center">{noResultsMessage}</p>
+          <div className="col-span-full text-center py-12 flex flex-col items-center">
+            <Newspaper className="h-16 w-16 text-muted-foreground" />
+            <h3 className="mt-4 text-xl font-semibold">{noResultsMessage}</h3>
+            <p className="mt-2 text-sm text-muted-foreground">
+              {filter === 'mine'
+                ? 'Share your story to encourage the body of Christ!'
+                : 'Try a different search or be the first to share a testimony.'}
+            </p>
+          </div>
         )}
       </div>
     </div>

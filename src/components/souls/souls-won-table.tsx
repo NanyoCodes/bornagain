@@ -3,7 +3,7 @@
 
 import * as React from "react";
 import { format } from "date-fns";
-import { MoreHorizontal, Church, BookOpen, HandHelping, Check, Loader2 } from "lucide-react";
+import { MoreHorizontal, Church, BookOpen, HandHelping, Check, Loader2, UserPlus } from "lucide-react";
 import type { Soul, FollowUpStatus, FollowUpLogItem } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import {
@@ -399,6 +399,28 @@ export function SoulsWonTable({ souls, onUpdateSoul, loading }: SoulsWonTablePro
     )
   }
   
+  if (souls.length === 0) {
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle>Follow-up Dashboard</CardTitle>
+                <CardDescription>
+                A list of souls won. Keep track of their spiritual journey.
+                </CardDescription>
+            </CardHeader>
+            <CardContent>
+                <div className="text-center py-12 flex flex-col items-center">
+                    <UserPlus className="h-12 w-12 text-muted-foreground" />
+                    <h3 className="mt-4 text-lg font-semibold">No Records Found</h3>
+                    <p className="mt-2 text-sm text-muted-foreground max-w-sm">
+                        No souls match your current search. Try changing your filters or add a new soul to your list.
+                    </p>
+                </div>
+            </CardContent>
+        </Card>
+    );
+  }
+
   if (isMobile) {
       return (
         <div className="space-y-4">
@@ -410,15 +432,7 @@ export function SoulsWonTable({ souls, onUpdateSoul, loading }: SoulsWonTablePro
                     </CardDescription>
                 </CardHeader>
             </Card>
-            {souls.length > 0 ? (
-                souls.map((soul) => <SoulCard key={soul.id} soul={soul} onUpdateSoul={onUpdateSoul} />)
-            ) : (
-                <Card>
-                    <CardContent className="h-24 text-center flex items-center justify-center">
-                        <p>No records found.</p>
-                    </CardContent>
-                </Card>
-            )}
+            {souls.map((soul) => <SoulCard key={soul.id} soul={soul} onUpdateSoul={onUpdateSoul} />)}
         </div>
       )
   }
@@ -446,99 +460,88 @@ export function SoulsWonTable({ souls, onUpdateSoul, loading }: SoulsWonTablePro
             </TableRow>
           </TableHeader>
           <TableBody>
-            {souls.length > 0 ? (
-              souls.map((soul) => (
-                <TableRow key={soul.id}>
-                  <TableCell className="font-medium">
-                    <div>{soul.name}</div>
-                    <div className="text-xs text-muted-foreground">{soul.contact}</div>
-                    {soul.church && <div className="text-xs text-muted-foreground flex items-center gap-1"><Church className="h-3 w-3" />{soul.church}</div>}
-                  </TableCell>
-                  <TableCell>
-                    <Select value={soul.status} onValueChange={(value: FollowUpStatus) => handleStatusChange(soul.id, value)}>
-                        <SelectTrigger className="w-[150px] h-8">
-                            <SelectValue placeholder="Set status" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {statusOptions.map(s => (
-                                <SelectItem key={s} value={s}>{s}</SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-                  </TableCell>
-                  <TableCell>
-                    <TooltipProvider>
-                      <div className="flex items-center gap-3">
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                                <label className="flex items-center gap-1 cursor-pointer">
-                                    <Checkbox checked={soul.attendingChurch} onCheckedChange={(checked) => handleCheckboxChange(soul.id, 'attendingChurch', !!checked)} />
-                                    <Church className="h-4 w-4 text-muted-foreground" />
-                                </label>
-                            </TooltipTrigger>
-                            <TooltipContent>Attending Church</TooltipContent>
-                        </Tooltip>
-                         <Tooltip>
-                            <TooltipTrigger asChild>
-                                <label className="flex items-center gap-1 cursor-pointer">
-                                    <Checkbox checked={soul.inBibleStudy} onCheckedChange={(checked) => handleCheckboxChange(soul.id, 'inBibleStudy', !!checked)} />
-                                    <BookOpen className="h-4 w-4 text-muted-foreground" />
-                                </label>
-                            </TooltipTrigger>
-                            <TooltipContent>In Bible Study</TooltipContent>
-                        </Tooltip>
-                         <Tooltip>
-                            <TooltipTrigger asChild>
-                                <label className="flex items-center gap-1 cursor-pointer">
-                                    <Checkbox checked={soul.attendingPrayer} onCheckedChange={(checked) => handleCheckboxChange(soul.id, 'attendingPrayer', !!checked)} />
-                                    <HandHelping className="h-4 w-4 text-muted-foreground" />
-                                </label>
-                            </TooltipTrigger>
-                            <TooltipContent>Attending Prayer Meetings</TooltipContent>
-                        </Tooltip>
-                      </div>
-                    </TooltipProvider>
-                  </TableCell>
-                  <TableCell>{soul.wonAt ? format(soul.wonAt.toDate ? soul.wonAt.toDate() : new Date(soul.wonAt as any), "PPP") : ''}</TableCell>
-                  <TableCell>
-                    <div>{soul.source}</div>
-                    {soul.sourceDetails && <div className="text-xs text-muted-foreground">{soul.sourceDetails}</div>}
-                  </TableCell>
-                  <TableCell>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button
-                          aria-haspopup="true"
-                          size="icon"
-                          variant="ghost"
-                        >
-                          <MoreHorizontal className="h-4 w-4" />
-                          <span className="sr-only">Toggle menu</span>
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <LogFollowUpDialog soul={soul}>
-                            <DropdownMenuItem onSelect={(e) => e.preventDefault()}>Log Follow-up</DropdownMenuItem>
-                        </LogFollowUpDialog>
-                        <ViewHistoryDialog soul={soul}>
-                            <DropdownMenuItem onSelect={(e) => e.preventDefault()}>View History</DropdownMenuItem>
-                        </ViewHistoryDialog>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={6}
-                  className="h-24 text-center"
-                >
-                  No records found.
+            {souls.map((soul) => (
+              <TableRow key={soul.id}>
+                <TableCell className="font-medium">
+                  <div>{soul.name}</div>
+                  <div className="text-xs text-muted-foreground">{soul.contact}</div>
+                  {soul.church && <div className="text-xs text-muted-foreground flex items-center gap-1"><Church className="h-3 w-3" />{soul.church}</div>}
+                </TableCell>
+                <TableCell>
+                  <Select value={soul.status} onValueChange={(value: FollowUpStatus) => handleStatusChange(soul.id, value)}>
+                      <SelectTrigger className="w-[150px] h-8">
+                          <SelectValue placeholder="Set status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                          {statusOptions.map(s => (
+                              <SelectItem key={s} value={s}>{s}</SelectItem>
+                          ))}
+                      </SelectContent>
+                  </Select>
+                </TableCell>
+                <TableCell>
+                  <TooltipProvider>
+                    <div className="flex items-center gap-3">
+                      <Tooltip>
+                          <TooltipTrigger asChild>
+                              <label className="flex items-center gap-1 cursor-pointer">
+                                  <Checkbox checked={soul.attendingChurch} onCheckedChange={(checked) => handleCheckboxChange(soul.id, 'attendingChurch', !!checked)} />
+                                  <Church className="h-4 w-4 text-muted-foreground" />
+                              </label>
+                          </TooltipTrigger>
+                          <TooltipContent>Attending Church</TooltipContent>
+                      </Tooltip>
+                       <Tooltip>
+                          <TooltipTrigger asChild>
+                              <label className="flex items-center gap-1 cursor-pointer">
+                                  <Checkbox checked={soul.inBibleStudy} onCheckedChange={(checked) => handleCheckboxChange(soul.id, 'inBibleStudy', !!checked)} />
+                                  <BookOpen className="h-4 w-4 text-muted-foreground" />
+                              </label>
+                          </TooltipTrigger>
+                          <TooltipContent>In Bible Study</TooltipContent>
+                      </Tooltip>
+                       <Tooltip>
+                          <TooltipTrigger asChild>
+                              <label className="flex items-center gap-1 cursor-pointer">
+                                  <Checkbox checked={soul.attendingPrayer} onCheckedChange={(checked) => handleCheckboxChange(soul.id, 'attendingPrayer', !!checked)} />
+                                  <HandHelping className="h-4 w-4 text-muted-foreground" />
+                              </label>
+                          </TooltipTrigger>
+                          <TooltipContent>Attending Prayer Meetings</TooltipContent>
+                      </Tooltip>
+                    </div>
+                  </TooltipProvider>
+                </TableCell>
+                <TableCell>{soul.wonAt ? format(soul.wonAt.toDate ? soul.wonAt.toDate() : new Date(soul.wonAt as any), "PPP") : ''}</TableCell>
+                <TableCell>
+                  <div>{soul.source}</div>
+                  {soul.sourceDetails && <div className="text-xs text-muted-foreground">{soul.sourceDetails}</div>}
+                </TableCell>
+                <TableCell>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        aria-haspopup="true"
+                        size="icon"
+                        variant="ghost"
+                      >
+                        <MoreHorizontal className="h-4 w-4" />
+                        <span className="sr-only">Toggle menu</span>
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                      <LogFollowUpDialog soul={soul}>
+                          <DropdownMenuItem onSelect={(e) => e.preventDefault()}>Log Follow-up</DropdownMenuItem>
+                      </LogFollowUpDialog>
+                      <ViewHistoryDialog soul={soul}>
+                          <DropdownMenuItem onSelect={(e) => e.preventDefault()}>View History</DropdownMenuItem>
+                      </ViewHistoryDialog>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </TableCell>
               </TableRow>
-            )}
+            ))}
           </TableBody>
         </Table>
       </CardContent>

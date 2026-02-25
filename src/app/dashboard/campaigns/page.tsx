@@ -3,7 +3,7 @@
 
 import { useMemo, useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { PlusCircle } from "lucide-react";
+import { PlusCircle, Target } from "lucide-react";
 import { CreateCampaignForm } from "@/components/campaigns/create-campaign-form";
 import {
   Dialog,
@@ -282,7 +282,17 @@ export default function CampaignsPage() {
           />
         ))}
          {!loading && sortedAndFilteredCampaigns?.length === 0 && (
-          <p className="text-muted-foreground col-span-full text-center">{noResultsMessage}</p>
+          <div className="col-span-full text-center py-12 flex flex-col items-center">
+            <Target className="h-16 w-16 text-muted-foreground" />
+            <h3 className="mt-4 text-xl font-semibold">{noResultsMessage}</h3>
+            <p className="mt-2 text-sm text-muted-foreground">
+              {filter === 'created'
+                ? 'Why not start a new one to reach your community?'
+                : filter === 'joined'
+                ? 'Explore all campaigns to find one to join.'
+                : 'Try a different search term or create a new campaign.'}
+            </p>
+          </div>
         )}
       </div>
     </div>
