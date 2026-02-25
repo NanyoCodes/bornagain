@@ -169,25 +169,26 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
     const participantRef = doc(firestore, 'campaigns', campaign.id, 'participants', participantId);
     const joinedRef = doc(firestore, 'users', participantId, 'joinedCampaigns', campaign.id);
 
-    try {
-        await runTransaction(firestore, async (transaction) => {
-            const campaignDoc = await transaction.get(campaignRef);
-            if (!campaignDoc.exists()) {
-                throw new Error("Campaign does not exist!");
-            }
-            
-            const newParticipantCount = Math.max(0, (campaignDoc.data().participants || 0) - 1);
-            
-            transaction.update(campaignRef, { participants: newParticipantCount });
-            transaction.delete(participantRef);
-            transaction.delete(joinedRef);
-        });
-
+    runTransaction(firestore, async (transaction) => {
+        const campaignDoc = await transaction.get(campaignRef);
+        if (!campaignDoc.exists()) {
+            throw new Error("Campaign does not exist!");
+        }
+        
+        const newParticipantCount = Math.max(0, (campaignDoc.data().participants || 0) - 1);
+        
+        transaction.update(campaignRef, { participants: newParticipantCount });
+        transaction.delete(participantRef);
+        transaction.delete(joinedRef);
+    }).then(() => {
         toast({ title: 'Participant Removed', description: 'The user has been removed from the campaign.' });
-    } catch (error: any) {
-        console.error("Error removing participant:", error);
-        toast({ variant: 'destructive', title: 'Error', description: error.message || 'Could not remove participant.' });
-    }
+    }).catch(() => {
+        const permissionError = new FirestorePermissionError({
+            path: `TRANSACTION:REMOVE_PARTICIPANT:${participantId}`,
+            operation: 'write'
+        });
+        errorEmitter.emit('permission-error', permissionError);
+    });
   };
 
   const defaultValues = useMemo(() => {
@@ -282,37 +283,29 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
   };
 
 
-    const handleDeleteCampaign = async () => {
+  const handleDeleteCampaign = async () => {
     if (!user || !firestore) return;
     setIsDeleting(true);
-    try {
-        const campaignRef = doc(firestore, 'campaigns', campaign.id);
-        const deleteData: { [key: string]: any } = {
-            status: 'deleted',
-            deletionReason: 'Campaign deleted by organizer.',
-            deletedAt: serverTimestamp(),
-        };
-        
-        await updateDoc(campaignRef, deleteData).catch((serverError) => {
-            const permissionError = new FirestorePermissionError({
-                path: campaignRef.path,
-                operation: 'update',
-                requestResourceData: deleteData,
-            });
-            errorEmitter.emit('permission-error', permissionError);
-            throw permissionError;
-        });
-
+    const campaignRef = doc(firestore, 'campaigns', campaign.id);
+    const deleteData: { [key: string]: any } = {
+        status: 'deleted',
+        deletionReason: 'Campaign deleted by organizer.',
+        deletedAt: serverTimestamp(),
+    };
+    
+    updateDoc(campaignRef, deleteData).then(() => {
         toast({ title: 'Campaign Deleted', description: 'The campaign has been successfully deleted.' });
         onCampaignUpdated();
-    } catch (error: any) {
-        console.error('Delete error:', error);
-        if (error.name !== 'FirestorePermissionError') {
-             toast({ variant: 'destructive', title: 'Delete Error', description: 'Could not delete the campaign.' });
-        }
-    } finally {
+    }).catch(() => {
+        const permissionError = new FirestorePermissionError({
+            path: campaignRef.path,
+            operation: 'update',
+            requestResourceData: deleteData,
+        });
+        errorEmitter.emit('permission-error', permissionError);
+    }).finally(() => {
         setIsDeleting(false);
-    }
+    });
   };
 
 
@@ -328,50 +321,38 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
 
     setIsSubmitting(true);
     
-    try {
-        const campaignRef = doc(firestore, 'campaigns', campaign.id);
-        const updateData: { [key: string]: any } = {
-            title: values.title,
-            description: values.description,
-            goal: values.goal,
-            location: `${values.city}, ${values.country}`,
-            startDate: values.startDate,
-            endDate: values.endDate,
-            startTime: values.startTime,
-            endTime: values.endTime,
-            scripture: values.scripture,
-            scriptureTestimony: values.scriptureTestimony,
-            maxParticipants: values.maxParticipants || null,
-            lastUpdateReason: values.lastUpdateReason,
-        };
+    const campaignRef = doc(firestore, 'campaigns', campaign.id);
+    const updateData: { [key: string]: any } = {
+        title: values.title,
+        description: values.description,
+        goal: values.goal,
+        location: `${values.city}, ${values.country}`,
+        startDate: values.startDate,
+        endDate: values.endDate,
+        startTime: values.startTime,
+        endTime: values.endTime,
+        scripture: values.scripture,
+        scriptureTestimony: values.scriptureTestimony,
+        maxParticipants: values.maxParticipants || null,
+        lastUpdateReason: values.lastUpdateReason,
+    };
 
-        await updateDoc(campaignRef, updateData).catch((serverError) => {
-            const permissionError = new FirestorePermissionError({
-            path: campaignRef.path,
-            operation: 'update',
-            requestResourceData: updateData,
-            });
-            errorEmitter.emit('permission-error', permissionError);
-            throw permissionError;
-        });
-
+    updateDoc(campaignRef, updateData).then(() => {
         toast({
             title: 'Campaign Updated!',
             description: 'Your changes have been saved successfully.',
         });
         onCampaignUpdated();
-    } catch (error: any) {
-        console.error('Update error:', error);
-        if (error.name !== 'FirestorePermissionError') {
-            toast({
-                variant: 'destructive',
-                title: 'Update Error',
-                description: error.message || 'An unexpected error occurred.',
-            });
-        }
-    } finally {
+    }).catch(() => {
+        const permissionError = new FirestorePermissionError({
+        path: campaignRef.path,
+        operation: 'update',
+        requestResourceData: updateData,
+        });
+        errorEmitter.emit('permission-error', permissionError);
+    }).finally(() => {
         setIsSubmitting(false);
-    }
+    });
   }
 
   return (
@@ -648,3 +629,5 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
     </div>
   );
 }
+
+    

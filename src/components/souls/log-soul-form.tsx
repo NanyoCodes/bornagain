@@ -80,71 +80,63 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps)
     }
     setIsLoading(true);
     
-    try {
-      const soulsCollectionRef = collection(firestore, `users/${user.uid}/souls`);
-      const newSoulRef = doc(soulsCollectionRef); // Create a reference for the new soul
+    const soulsCollectionRef = collection(firestore, `users/${user.uid}/souls`);
+    const newSoulRef = doc(soulsCollectionRef); // Create a reference for the new soul
 
-      const soulData: Omit<Soul, 'id'> = {
-        userId: user.uid,
-        name: values.name,
-        email: values.email,
-        phone: values.phone,
-        church: values.church,
-        source: values.source as 'Personal' | 'Campaign' | 'Referral',
-        sourceDetails: values.sourceDetails,
-        wonAt: values.wonAt as any, // Firestore will convert it
-        status: "New",
-        followUpLog: values.initialNote ? [{ date: serverTimestamp() as any, note: values.initialNote }] : [],
-        attendingChurch: false,
-        inBibleStudy: false,
-        attendingPrayer: false,
-      };
-      
-      const isCampaignSource = values.source === 'Campaign';
-      let campaignId: string | undefined;
+    const soulData: Omit<Soul, 'id'> = {
+      userId: user.uid,
+      name: values.name,
+      email: values.email,
+      phone: values.phone,
+      church: values.church,
+      source: values.source as 'Personal' | 'Campaign' | 'Referral',
+      sourceDetails: values.sourceDetails,
+      wonAt: values.wonAt as any, // Firestore will convert it
+      status: "New",
+      followUpLog: values.initialNote ? [{ date: serverTimestamp() as any, note: values.initialNote }] : [],
+      attendingChurch: false,
+      inBibleStudy: false,
+      attendingPrayer: false,
+    };
+    
+    const isCampaignSource = values.source === 'Campaign';
+    let campaignId: string | undefined;
 
-      if (isCampaignSource) {
-        // Find the campaign by title from the form's sourceDetails.
-        // This relies on campaign titles being unique, which is not ideal but avoids a larger refactor.
-        const campaign = defaultCampaign || campaigns?.find(c => c.title === values.sourceDetails);
-        if (campaign) {
-            campaignId = campaign.id;
-            soulData.campaignId = campaign.id;
-        }
+    if (isCampaignSource) {
+      // Find the campaign by title from the form's sourceDetails.
+      // This relies on campaign titles being unique, which is not ideal but avoids a larger refactor.
+      const campaign = defaultCampaign || campaigns?.find(c => c.title === values.sourceDetails);
+      if (campaign) {
+          campaignId = campaign.id;
+          soulData.campaignId = campaign.id;
       }
+    }
 
-      await runTransaction(firestore, async (transaction) => {
-        // 1. Create the new soul document
-        transaction.set(newSoulRef, soulData);
+    runTransaction(firestore, async (transaction) => {
+      // 1. Create the new soul document
+      transaction.set(newSoulRef, soulData);
 
-        // 2. If from a campaign, increment the campaign's soul count
-        if (campaignId) {
-            const campaignRef = doc(firestore, 'campaigns', campaignId);
-            transaction.update(campaignRef, { soulsLogged: increment(1) });
-        }
-      }).catch((serverError) => {
-        const permissionError = new FirestorePermissionError({
-          path: `TRANSACTION:LOG_SOUL`,
-          operation: 'write',
-          requestResourceData: { soulData, campaignId },
-        });
-        errorEmitter.emit('permission-error', permissionError);
-        throw permissionError;
-      });
-
+      // 2. If from a campaign, increment the campaign's soul count
+      if (campaignId) {
+          const campaignRef = doc(firestore, 'campaigns', campaignId);
+          transaction.update(campaignRef, { soulsLogged: increment(1) });
+      }
+    }).then(() => {
       toast({
         title: "Soul Logged",
         description: `${values.name} has been added to your list.`,
       });
       onSoulLogged();
-    } catch(error: any) {
-      console.error("Error logging soul: ", error);
-      if (error.name !== 'FirestorePermissionError') {
-        toast({ variant: 'destructive', title: "Error", description: "Could not log soul." });
-      }
-    } finally {
+    }).catch((serverError) => {
+      const permissionError = new FirestorePermissionError({
+        path: `TRANSACTION:LOG_SOUL`,
+        operation: 'write',
+        requestResourceData: { soulData, campaignId },
+      });
+      errorEmitter.emit('permission-error', permissionError);
+    }).finally(() => {
         setIsLoading(false);
-    }
+    });
   }
 
   return (
@@ -327,3 +319,5 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps)
     </Form>
   );
 }
+
+    

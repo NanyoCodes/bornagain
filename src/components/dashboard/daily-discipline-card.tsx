@@ -14,6 +14,8 @@ import { Heart, BookOpen, Share2, Megaphone, Users } from 'lucide-react';
 import { BibleDialog } from './bible-dialog';
 import { PrayerDialog } from './prayer-dialog';
 import { useRouter } from 'next/navigation';
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError } from '@/firebase/errors';
 
 const disciplines = [
   { id: 'pray', label: 'Pray', icon: <Heart className="h-5 w-5 text-muted-foreground" /> },
@@ -61,18 +63,23 @@ export function DailyDisciplineCard() {
     setCompletedToday(newCompleted); // Optimistic update
 
     const userRef = doc(firestore, 'users', user.uid);
-    try {
-      await updateDoc(userRef, {
+    const updateData = {
         dailyDiscipline: {
           completed: newCompleted,
           lastUpdated: serverTimestamp(),
         }
-      });
-    } catch (error) {
-      console.error("Failed to update daily discipline:", error);
-      // Revert optimistic update on failure
-      setCompletedToday(oldCompleted);
-    }
+    };
+
+    updateDoc(userRef, updateData).catch(() => {
+        const permissionError = new FirestorePermissionError({
+            path: userRef.path,
+            operation: 'update',
+            requestResourceData: updateData,
+        });
+        errorEmitter.emit('permission-error', permissionError);
+        // Revert optimistic update on failure
+        setCompletedToday(oldCompleted);
+    });
   };
 
   const handleBibleRead = () => {
@@ -173,3 +180,5 @@ export function DailyDisciplineCard() {
     </>
   );
 }
+
+    

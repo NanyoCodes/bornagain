@@ -12,6 +12,8 @@ import { Bell } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError } from '@/firebase/errors';
 
 export default function NotificationsPage() {
   const { user } = useUser();
@@ -31,7 +33,14 @@ export default function NotificationsPage() {
     // Mark as read, but don't wait for it to complete before navigating
     if (!notification.isRead) {
       const notifRef = doc(firestore, `users/${user.uid}/notifications`, notification.id);
-      updateDoc(notifRef, { isRead: true }).catch(console.error);
+      updateDoc(notifRef, { isRead: true }).catch(() => {
+        const permissionError = new FirestorePermissionError({
+            path: notifRef.path,
+            operation: 'update',
+            requestResourceData: { isRead: true },
+        });
+        errorEmitter.emit('permission-error', permissionError);
+      });
     }
 
     if (notification.link) {
@@ -44,13 +53,20 @@ export default function NotificationsPage() {
     const unreadNotifications = notifications.filter(n => !n.isRead);
     if (unreadNotifications.length === 0) return;
 
-    const b = writeBatch(firestore);
+    const batch = writeBatch(firestore);
     unreadNotifications.forEach(notification => {
         const notifRef = doc(firestore, `users/${user.uid}/notifications`, notification.id);
-        b.update(notifRef, { isRead: true });
+        batch.update(notifRef, { isRead: true });
     });
     
-    await b.commit().catch(console.error);
+    batch.commit().catch(() => {
+        const permissionError = new FirestorePermissionError({
+            path: `users/${user.uid}/notifications`,
+            operation: 'update',
+            requestResourceData: { isRead: true },
+        });
+        errorEmitter.emit('permission-error', permissionError);
+    });
   };
   
   const unreadCount = useMemo(() => notifications?.filter(n => !n.isRead).length ?? 0, [notifications]);
@@ -125,3 +141,5 @@ export default function NotificationsPage() {
     </div>
   );
 }
+
+    

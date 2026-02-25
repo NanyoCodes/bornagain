@@ -77,58 +77,49 @@ export function EditSoulForm({ soul, onSoulUpdated }: EditSoulFormProps) {
     }
     setIsLoading(true);
 
-    try {
-      const soulRef = doc(firestore, `users/${user.uid}/souls`, soul.id);
+    const soulRef = doc(firestore, `users/${user.uid}/souls`, soul.id);
 
-      const soulUpdateData: Partial<Soul> = {
-        name: values.name,
-        email: values.email,
-        phone: values.phone,
-        church: values.church,
-        source: values.source as 'Personal' | 'Campaign' | 'Referral',
-        sourceDetails: values.sourceDetails,
-        wonAt: values.wonAt as any,
-      };
-      
-      const isCampaignSource = values.source === 'Campaign';
-      let campaignId: string | undefined;
+    const soulUpdateData: Partial<Soul> = {
+      name: values.name,
+      email: values.email,
+      phone: values.phone,
+      church: values.church,
+      source: values.source as 'Personal' | 'Campaign' | 'Referral',
+      sourceDetails: values.sourceDetails,
+      wonAt: values.wonAt as any,
+    };
+    
+    const isCampaignSource = values.source === 'Campaign';
+    let campaignId: string | undefined;
 
-      if (isCampaignSource) {
-        const campaign = campaigns?.find(c => c.title === values.sourceDetails);
-        if (campaign) {
-            campaignId = campaign.id;
-            soulUpdateData.campaignId = campaign.id;
-        } else {
-            soulUpdateData.campaignId = undefined;
-        }
+    if (isCampaignSource) {
+      const campaign = campaigns?.find(c => c.title === values.sourceDetails);
+      if (campaign) {
+          campaignId = campaign.id;
+          soulUpdateData.campaignId = campaign.id;
       } else {
-         soulUpdateData.campaignId = undefined;
+          soulUpdateData.campaignId = undefined;
       }
-      
-      await updateDoc(soulRef, soulUpdateData).catch((serverError) => {
-        const permissionError = new FirestorePermissionError({
-          path: soulRef.path,
-          operation: 'update',
-          requestResourceData: soulUpdateData,
-        });
-        errorEmitter.emit('permission-error', permissionError);
-        throw permissionError;
-      });
-
-      toast({
-        title: "Soul Updated",
-        description: `${values.name}'s record has been updated.`,
-      });
-      onSoulUpdated();
-
-    } catch (error: any) {
-      console.error("Error updating soul: ", error);
-      if (error.name !== 'FirestorePermissionError') {
-        toast({ variant: 'destructive', title: "Error", description: "Could not update soul." });
-      }
-    } finally {
-      setIsLoading(false);
+    } else {
+        soulUpdateData.campaignId = undefined;
     }
+    
+    updateDoc(soulRef, soulUpdateData).then(() => {
+        toast({
+            title: "Soul Updated",
+            description: `${values.name}'s record has been updated.`,
+        });
+        onSoulUpdated();
+    }).catch(() => {
+      const permissionError = new FirestorePermissionError({
+        path: soulRef.path,
+        operation: 'update',
+        requestResourceData: soulUpdateData,
+      });
+      errorEmitter.emit('permission-error', permissionError);
+    }).finally(() => {
+      setIsLoading(false);
+    });
   }
 
   return (
@@ -292,3 +283,5 @@ export function EditSoulForm({ soul, onSoulUpdated }: EditSoulFormProps) {
     </Form>
   );
 }
+
+    

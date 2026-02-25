@@ -41,6 +41,8 @@ import { collection, doc, limit, orderBy, query, writeBatch } from "firebase/fir
 import type { Notification } from "@/lib/types";
 import { formatDistanceToNow } from "date-fns";
 import { WelcomePopup } from "@/components/auth/welcome-popup";
+import { errorEmitter } from "@/firebase/error-emitter";
+import { FirestorePermissionError } from "@/firebase/errors";
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: Home },
@@ -80,13 +82,20 @@ function AppHeader() {
     const unreadNotifications = notifications.filter(n => !n.isRead);
     if (unreadNotifications.length === 0) return;
 
-    const b = writeBatch(firestore);
+    const batch = writeBatch(firestore);
     unreadNotifications.forEach(notification => {
         const notifRef = doc(firestore, `users/${user.uid}/notifications`, notification.id);
-        b.update(notifRef, { isRead: true });
+        batch.update(notifRef, { isRead: true });
     });
     
-    await b.commit().catch(console.error);
+    batch.commit().catch(() => {
+        const permissionError = new FirestorePermissionError({
+            path: `users/${user.uid}/notifications`,
+            operation: 'update',
+            requestResourceData: { isRead: true },
+        });
+        errorEmitter.emit('permission-error', permissionError);
+    });
   };
   
   if (!user) {
@@ -344,3 +353,5 @@ export default function DashboardLayout({
     </SearchProvider>
   );
 }
+
+    
