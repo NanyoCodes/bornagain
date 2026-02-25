@@ -653,7 +653,7 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
                     </span>
                 </div>
                 </ParticipantsDialog>
-                {status === "Ongoing" && (
+                {(status === "Ongoing" || status === "Past") && (
                     <div className="flex items-center gap-2">
                         <UserCheck2 className="h-4 w-4" />
                         <span>{campaign.soulsLogged || 0} soul{campaign.soulsLogged === 1 ? '' : 's'} won</span>
