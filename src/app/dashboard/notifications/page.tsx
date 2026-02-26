@@ -115,12 +115,13 @@ export default function NotificationsPage() {
           )}
           <div className="divide-y">
             {!loading && user && notifications?.map(notification => (
-                <div 
+                <button
                     key={notification.id} 
                     onClick={() => handleNotificationClick(notification)}
+                    disabled={!notification.link}
                     className={cn(
-                        "block p-4 hover:bg-muted/50 transition-colors",
-                        notification.link && "cursor-pointer"
+                        "block w-full text-left p-4 hover:bg-muted/50 active:bg-muted/50 transition-colors",
+                        !notification.link && "cursor-default"
                     )}
                 >
                     <div className="flex items-start gap-4">
@@ -133,7 +134,7 @@ export default function NotificationsPage() {
                             </p>
                         </div>
                     </div>
-                </div>
+                </button>
             ))}
           </div>
         </CardContent>

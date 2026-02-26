@@ -19,7 +19,7 @@ function ChatListItem({ chat, currentUserId }: { chat: Chat, currentUserId: stri
 
     if (chat.isGroupChat) {
         return (
-            <div onClick={() => router.push(`/dashboard/chats/${chat.id}`)} className="block hover:bg-muted/50 transition-colors cursor-pointer">
+            <div onClick={() => router.push(`/dashboard/chats/${chat.id}`)} className="block hover:bg-muted/50 active:bg-muted/50 transition-colors cursor-pointer">
                 <div className="flex items-center gap-4 p-4">
                     <Avatar className="h-12 w-12">
                         <AvatarFallback>{chat.participantIds.length}</AvatarFallback>
@@ -53,7 +53,7 @@ function ChatListItem({ chat, currentUserId }: { chat: Chat, currentUserId: stri
     if (!otherParticipantInfo) return null;
 
     return (
-        <div onClick={() => router.push(`/dashboard/chats/${chat.id}`)} className="block hover:bg-muted/50 transition-colors cursor-pointer">
+        <div onClick={() => router.push(`/dashboard/chats/${chat.id}`)} className="block hover:bg-muted/50 active:bg-muted/50 transition-colors cursor-pointer">
             <div className="flex items-center gap-4 p-4">
                 <Link href={`/dashboard/profile/${otherParticipantId}`} onClick={(e) => e.stopPropagation()} className="relative z-10">
                     <Avatar className="h-12 w-12">

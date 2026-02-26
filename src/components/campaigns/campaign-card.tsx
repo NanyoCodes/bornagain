@@ -542,7 +542,7 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
        <TooltipProvider>
         <Tooltip>
             <TooltipTrigger asChild>
-                <Button onClick={handleViewGroupChat} variant="outline" size="icon" disabled={isCheckingChat}>
+                <Button onClick={handleViewGroupChat} variant="outline" size="icon" disabled={isCheckingChat || status === 'Past'}>
                     {isCheckingChat ? <Loader2 className="h-4 w-4 animate-spin" /> : <Users className="h-4 w-4" />}
                 </Button>
             </TooltipTrigger>
@@ -645,13 +645,13 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
         <CardFooter className="p-6 pt-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mt-auto border-t bg-muted/50">
             <div className="flex items-center gap-4 text-sm text-muted-foreground">
                 <ParticipantsDialog campaign={campaign}>
-                <div className="flex items-center gap-2 cursor-pointer hover:text-primary transition-colors">
-                    <Users className="h-4 w-4" />
-                    <span>
-                        {campaign.participants}
-                        {campaign.maxParticipants ? ` / ${campaign.maxParticipants}` : ''} participant{campaign.participants === 1 ? '' : 's'}
-                    </span>
-                </div>
+                    <Button variant="ghost" className="h-auto p-0 justify-start text-sm font-normal text-muted-foreground hover:bg-transparent hover:text-primary">
+                        <Users className="h-4 w-4" />
+                        <span>
+                            {campaign.participants}
+                            {campaign.maxParticipants ? ` / ${campaign.maxParticipants}` : ''} participant{campaign.participants === 1 ? '' : 's'}
+                        </span>
+                    </Button>
                 </ParticipantsDialog>
                 {(status === "Ongoing" || status === "Past") && (
                     <div className="flex items-center gap-2">
