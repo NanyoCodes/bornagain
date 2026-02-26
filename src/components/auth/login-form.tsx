@@ -18,7 +18,7 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import React, { useState } from "react";
 import { Loader2, Mail, Lock } from "lucide-react";
-import { signInWithEmailAndPassword, sendPasswordResetEmail, AuthError, signOut } from "firebase/auth";
+import { signInWithEmailAndPassword, sendPasswordResetEmail, AuthError, signOut, sendEmailVerification, type User } from "firebase/auth";
 import { useAuth, useFirestore } from "@/firebase";
 import { doc, setDoc } from "firebase/firestore";
 import { errorEmitter } from "@/firebase/error-emitter";
@@ -114,6 +114,59 @@ function ForgotPasswordDialog() {
     );
 }
 
+// Dialog for handling unverified email
+function EmailVerificationDialog({ user, isOpen, onOpenChange }: { user: User | null; isOpen: boolean; onOpenChange: (open: boolean) => void; }) {
+    const { toast } = useToast();
+    const [isLoading, setIsLoading] = useState(false);
+
+    const handleResend = async () => {
+        if (!user) return;
+        setIsLoading(true);
+        try {
+            await sendEmailVerification(user);
+            toast({
+                title: "Verification Email Sent",
+                description: `A new verification link has been sent to ${user.email}.`,
+            });
+            onOpenChange(false);
+        } catch (error) {
+            const authError = error as AuthError;
+            toast({
+                variant: "destructive",
+                title: "Error",
+                description: authError.code === 'auth/too-many-requests' 
+                    ? 'Too many requests. Please try again later.'
+                    : authError.message || "Could not send verification email.",
+            });
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    return (
+        <AlertDialog open={isOpen} onOpenChange={onOpenChange}>
+            <AlertDialogContent>
+                <AlertDialogHeader>
+                    <AlertDialogTitle>Email Verification Required</AlertDialogTitle>
+                    <AlertDialogDescription>
+                        You must verify your email address before you can sign in. A verification link was sent to <strong>{user?.email}</strong> when you created your account.
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+                <p className="text-sm text-muted-foreground">
+                    Please check your inbox (and spam folder). If you don&apos;t see it, you can request a new one.
+                </p>
+                <AlertDialogFooter>
+                    <AlertDialogCancel disabled={isLoading} onClick={() => onOpenChange(false)}>Close</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleResend} disabled={isLoading}>
+                        {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                        Resend Verification Email
+                    </AlertDialogAction>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
+    );
+}
+
 
 export function LoginForm() {
   const router = useRouter();
@@ -121,6 +174,9 @@ export function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
   const auth = useAuth();
   const firestore = useFirestore();
+  const [userForVerification, setUserForVerification] = useState<User | null>(null);
+  const [isVerificationDialogOpen, setIsVerificationDialogOpen] = useState(false);
+
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -146,11 +202,8 @@ export function LoginForm() {
       const user = userCredential.user;
 
       if (!user.emailVerified && user.providerData.some(p => p.providerId === 'password')) {
-        toast({
-            variant: "destructive",
-            title: "Email Not Verified",
-            description: "Please check your inbox and verify your email address before logging in.",
-        });
+        setUserForVerification(user);
+        setIsVerificationDialogOpen(true);
         await signOut(auth);
         setIsLoading(false);
         return;
@@ -180,10 +233,28 @@ export function LoginForm() {
       router.push("/dashboard");
     } catch (error) {
       const authError = error as AuthError;
+      let description = "An unexpected error occurred. Please try again.";
+      
+      switch (authError.code) {
+        case 'auth/user-not-found':
+        case 'auth/wrong-password':
+        case 'auth/invalid-credential':
+          description = "Invalid email or password. Please check your credentials and try again.";
+          break;
+        case 'auth/too-many-requests':
+          description = "Access to this account has been temporarily disabled due to many failed login attempts. You can restore it by resetting your password or try again later.";
+          break;
+        case 'auth/user-disabled':
+          description = "This account has been disabled.";
+          break;
+        default:
+          description = authError.message || description;
+      }
+      
       toast({
         variant: "destructive",
         title: "Login Failed",
-        description: authError.message || "An unexpected error occurred.",
+        description: description,
       });
     } finally {
         setIsLoading(false);
@@ -191,48 +262,56 @@ export function LoginForm() {
   }
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4">
-        <FormField
-          control={form.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Email Address</FormLabel>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <FormControl>
-                  <Input placeholder="name@example.com" {...field} className="pl-10" />
-                </FormControl>
-              </div>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="password"
-          render={({ field }) => (
-            <FormItem>
-                <div className="flex items-center justify-between">
-                    <FormLabel>Password</FormLabel>
-                    <ForgotPasswordDialog />
+    <>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4">
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email Address</FormLabel>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <FormControl>
+                    <Input placeholder="name@example.com" {...field} className="pl-10" />
+                  </FormControl>
                 </div>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <FormControl>
-                  <Input type="password" placeholder="********" {...field} className="pl-10" />
-                </FormControl>
-              </div>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <Button type="submit" className="w-full" disabled={isLoading}>
-          {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Sign In
-        </Button>
-      </form>
-    </Form>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                  <div className="flex items-center justify-between">
+                      <FormLabel>Password</FormLabel>
+                      <ForgotPasswordDialog />
+                  </div>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <FormControl>
+                    <Input type="password" placeholder="********" {...field} className="pl-10" />
+                  </FormControl>
+                </div>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Sign In
+          </Button>
+        </form>
+      </Form>
+      <EmailVerificationDialog 
+        user={userForVerification} 
+        isOpen={isVerificationDialogOpen} 
+        onOpenChange={setIsVerificationDialogOpen} 
+      />
+    </>
   );
 }
+
