@@ -52,71 +52,85 @@ export function DailyDisciplineCard() {
 
   const handleDisciplineToggle = async (disciplineId: string) => {
     if (!user || !firestore) return;
-    
+
     const oldCompleted = [...completedToday];
     const wasCompleted = oldCompleted.includes(disciplineId);
     const newCompleted = wasCompleted
-      ? oldCompleted.filter(id => id !== disciplineId)
+      ? oldCompleted.filter((id) => id !== disciplineId)
       : [...oldCompleted, disciplineId];
-      
+
     setCompletedToday(newCompleted); // Optimistic update
 
     const userRef = doc(firestore, 'users', user.uid);
     const updateData = {
-        dailyDiscipline: {
-          completed: newCompleted,
-          lastUpdated: serverTimestamp(),
-        }
+      dailyDiscipline: {
+        completed: newCompleted,
+        lastUpdated: serverTimestamp(),
+      },
     };
 
-    updateDoc(userRef, updateData).catch(() => {
-        const permissionError = new FirestorePermissionError({
-            path: userRef.path,
-            operation: 'update',
-            requestResourceData: updateData,
-        });
-        errorEmitter.emit('permission-error', permissionError);
-        // Revert optimistic update on failure
-        setCompletedToday(oldCompleted);
-    });
+    try {
+      await updateDoc(userRef, updateData);
+    } catch (error) {
+      const permissionError = new FirestorePermissionError({
+        path: userRef.path,
+        operation: 'update',
+        requestResourceData: updateData,
+      });
+      errorEmitter.emit('permission-error', permissionError);
+      // Revert optimistic update on failure
+      setCompletedToday(oldCompleted);
+      // Re-throw the error so the caller knows it failed
+      throw error;
+    }
   };
 
   const handleBibleRead = () => {
     if (!completedToday.includes('read_bible')) {
-      handleDisciplineToggle('read_bible');
+      handleDisciplineToggle('read_bible').catch(() => {
+        // Error is handled in handleDisciplineToggle
+      });
     }
   }
 
   const handlePray = () => {
     if (!completedToday.includes('pray')) {
-      handleDisciplineToggle('pray');
+      handleDisciplineToggle('pray').catch(() => {
+        // Error is handled in handleDisciplineToggle
+      });
     }
   }
 
   const handleDisciplineClick = (disciplineId: string) => {
     const isCompleted = completedToday.includes(disciplineId);
 
+    // Always allow un-checking, and don't navigate
     if (isCompleted) {
-      handleDisciplineToggle(disciplineId);
+      handleDisciplineToggle(disciplineId).catch(() => { /* Error is handled, no further action needed */ });
       return;
     }
 
-    // It's not completed, so let's perform the action.
+    // Handle actions for completing a discipline for the first time
     if (disciplineId === 'read_bible') {
       setIsBibleDialogOpen(true);
-      // The dialog will call handleBibleRead -> handleDisciplineToggle
     } else if (disciplineId === 'pray') {
       setIsPrayerDialogOpen(true);
-      // The dialog will call handlePray -> handleDisciplineToggle
-    } else if (disciplineId === 'share_testimony') {
-      handleDisciplineToggle(disciplineId);
-      router.push('/dashboard/testimonies');
-    } else if (disciplineId === 'evangelize') {
-      handleDisciplineToggle(disciplineId);
-      router.push('/dashboard/campaigns');
-    } else if (disciplineId === 'follow_up') {
-      handleDisciplineToggle(disciplineId);
-      router.push('/dashboard/souls-won');
+    } else {
+      // For disciplines that navigate, await the toggle first
+      handleDisciplineToggle(disciplineId)
+        .then(() => {
+          // Only navigate after the toggle is successful
+          if (disciplineId === 'share_testimony') {
+            router.push('/dashboard/testimonies');
+          } else if (disciplineId === 'evangelize') {
+            router.push('/dashboard/campaigns');
+          } else if (disciplineId === 'follow_up') {
+            router.push('/dashboard/souls-won');
+          }
+        })
+        .catch(() => {
+          // If toggle fails, do not navigate. Error is already handled.
+        });
     }
   };
 
