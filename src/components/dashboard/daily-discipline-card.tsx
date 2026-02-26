@@ -14,6 +14,7 @@ import { useRouter } from 'next/navigation';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { Button } from '@/components/ui/button';
+import { useToast } from '@/hooks/use-toast';
 
 const disciplines = [
   { id: 'pray', label: 'Pray', icon: <Heart className="h-5 w-5 text-muted-foreground" /> },
@@ -26,6 +27,7 @@ const disciplines = [
 export function DailyDisciplineCard() {
   const { user } = useUser();
   const firestore = useFirestore();
+  const { toast } = useToast();
   const [completedToday, setCompletedToday] = useState<string[]>([]);
   const [isBibleDialogOpen, setIsBibleDialogOpen] = useState(false);
   const [isPrayerDialogOpen, setIsPrayerDialogOpen] = useState(false);
@@ -126,7 +128,11 @@ export function DailyDisciplineCard() {
             }
         }
     } catch (e) {
-        // Errors are handled by updateDisciplineState, do nothing here.
+        toast({
+            variant: "destructive",
+            title: "Update Failed",
+            description: "Your discipline could not be updated. Please check your connection and try again.",
+        });
     } finally {
         // Don't clear togglingId for dialogs, as they control their own closing.
         if (disciplineId !== 'read_bible' && disciplineId !== 'pray') {
