@@ -7,6 +7,8 @@ import { Loader2 } from 'lucide-react';
 import { type ControllerRenderProps } from 'react-hook-form';
 
 const libraries: ('places')[] = ['places'];
+const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+
 
 interface LocationAutocompleteInputProps {
     field: ControllerRenderProps<any, string>;
@@ -14,7 +16,7 @@ interface LocationAutocompleteInputProps {
 
 export function LocationAutocompleteInput({ field }: LocationAutocompleteInputProps) {
     const { isLoaded, loadError } = useJsApiLoader({
-        googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '',
+        googleMapsApiKey: GOOGLE_MAPS_API_KEY || '',
         libraries,
     });
 
@@ -33,8 +35,12 @@ export function LocationAutocompleteInput({ field }: LocationAutocompleteInputPr
         }
     };
 
+    if (!GOOGLE_MAPS_API_KEY) {
+        return <div className="text-destructive text-sm p-2 rounded-md border border-destructive/50 bg-destructive/10">Google Maps API key is missing. Please set NEXT_PUBLIC_GOOGLE_MAPS_API_KEY in your .env file.</div>;
+    }
+
     if (loadError) {
-        return <div className="text-destructive text-sm p-2 rounded-md border border-destructive/50">Error loading maps. Check API key.</div>;
+        return <div className="text-destructive text-sm p-2 rounded-md border border-destructive/50 bg-destructive/10">Error loading Google Maps. Please check your API key and network connection.</div>;
     }
 
     if (!isLoaded) {
