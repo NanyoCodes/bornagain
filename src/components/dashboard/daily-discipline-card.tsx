@@ -135,7 +135,11 @@ export function DailyDisciplineCard() {
             }
         }
     } catch (e) {
-        // Error toast is already handled by the callers of updateDisciplineState or by the emitter
+        toast({
+            variant: "destructive",
+            title: "Update Failed",
+            description: "Your discipline could not be updated. Please check your connection and try again.",
+        });
     } finally {
         setTogglingId(null);
     }
@@ -196,7 +200,6 @@ export function DailyDisciplineCard() {
                     <Loader2 className="h-5 w-5 animate-spin" />
                 ) : (
                     <>
-                        {completedToday.includes(discipline.id) && <Check className="absolute top-2 right-2 h-4 w-4 text-primary" />}
                         {discipline.icon}
                         <span className="text-sm font-medium whitespace-normal">{discipline.label}</span>
                     </>

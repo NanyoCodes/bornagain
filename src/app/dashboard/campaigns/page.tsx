@@ -151,7 +151,7 @@ export default function CampaignsPage() {
 
     if (!filtered || !mounted) return filtered;
 
-    const userLocation = userProfile?.location?.toLowerCase().trim();
+    const userCity = userProfile?.location?.city?.toLowerCase().trim();
 
     const getStatus = (campaign: (typeof processedCampaigns)[0]): number => {
       const { _startDate, _endDate } = campaign;
@@ -186,11 +186,11 @@ export default function CampaignsPage() {
         return statusA - statusB;
       }
 
-      if (userLocation) {
+      if (userCity) {
         const aLocation = a.location.toLowerCase();
         const bLocation = b.location.toLowerCase();
-        const isLocalA = aLocation.includes(userLocation);
-        const isLocalB = bLocation.includes(userLocation);
+        const isLocalA = aLocation.includes(userCity);
+        const isLocalB = bLocation.includes(userCity);
 
         if (isLocalA && !isLocalB) return -1;
         if (!isLocalA && isLocalB) return 1;

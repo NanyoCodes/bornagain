@@ -18,10 +18,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { useState, useMemo } from "react";
 import { CalendarIcon, Loader2 } from "lucide-react";
-import type { Campaign, Soul } from "@/lib/types";
+import type { Campaign, Soul, UserProfile } from "@/lib/types";
 import { Textarea } from "@/components/ui/textarea";
 import { format } from "date-fns";
-import { useFirestore, useUser, useCollection } from "@/firebase";
+import { useFirestore, useUser, useCollection, useDoc } from "@/firebase";
 import { collection, query, orderBy, serverTimestamp, doc, runTransaction, increment } from "firebase/firestore";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { errorEmitter } from "@/firebase/error-emitter";
@@ -53,6 +53,9 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps)
   const firestore = useFirestore();
   const [isLoading, setIsLoading] = useState(false);
 
+  const userDocRef = useMemo(() => user ? doc(firestore, 'users', user.uid) : null, [user, firestore]);
+  const { data: userProfile } = useDoc<UserProfile>(userDocRef);
+
   const campaignsQuery = useMemo(() => {
     if (!user?.uid || !firestore) return null;
     return query(collection(firestore, 'campaigns'), orderBy('createdAt', 'desc'));
@@ -82,6 +85,7 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps)
     
     const soulsCollectionRef = collection(firestore, `users/${user.uid}/souls`);
     const newSoulRef = doc(soulsCollectionRef); // Create a reference for the new soul
+    const globalSoulRef = doc(firestore, 'souls', newSoulRef.id);
 
     const soulData: Omit<Soul, 'id'> = {
       userId: user.uid,
@@ -91,6 +95,7 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps)
       church: values.church,
       source: values.source as 'Personal' | 'Campaign' | 'Referral',
       sourceDetails: values.sourceDetails,
+      userLocation: userProfile?.location,
       wonAt: values.wonAt as any, // Firestore will convert it
       status: "New",
       followUpLog: values.initialNote ? [{ date: serverTimestamp() as any, note: values.initialNote }] : [],
@@ -115,6 +120,8 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps)
     runTransaction(firestore, async (transaction) => {
       // 1. Create the new soul document
       transaction.set(newSoulRef, soulData);
+      transaction.set(globalSoulRef, soulData);
+
 
       // 2. If from a campaign, increment the campaign's soul count
       if (campaignId) {
@@ -319,5 +326,3 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps)
     </Form>
   );
 }
-
-    

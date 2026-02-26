@@ -28,7 +28,8 @@ import { FirestorePermissionError } from "@/firebase/errors";
 const formSchema = z.object({
   displayName: z.string().min(2, "Name must be at least 2 characters.").max(50, "Name is too long."),
   bio: z.string().max(280, "Bio is too long.").optional(),
-  location: z.string().max(100, "Location is too long.").optional(),
+  city: z.string().max(50, "City is too long.").optional(),
+  country: z.string().max(50, "Country is too long.").optional(),
   phone: z.string().max(50, "Phone number is too long.").optional(),
 });
 
@@ -50,7 +51,8 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
     defaultValues: {
       displayName: userProfile.displayName || "",
       bio: userProfile.bio || "",
-      location: userProfile.location || "",
+      city: userProfile.location?.city || "",
+      country: userProfile.location?.country || "",
       phone: userProfile.phone || "",
     },
   });
@@ -64,11 +66,14 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
 
     try {
       const firestoreUpdatePayload: { [key: string]: any } = {};
+      const newLocation = { city: values.city || "", country: values.country || "" };
 
       // Only add values to payload if they have changed from the initial profile
       if (values.displayName !== userProfile.displayName) firestoreUpdatePayload.displayName = values.displayName;
       if (values.bio !== userProfile.bio) firestoreUpdatePayload.bio = values.bio || "";
-      if (values.location !== userProfile.location) firestoreUpdatePayload.location = values.location || "";
+      if (newLocation.city !== userProfile.location?.city || newLocation.country !== userProfile.location?.country) {
+          firestoreUpdatePayload.location = newLocation;
+      }
       if (values.phone !== userProfile.phone) firestoreUpdatePayload.phone = values.phone || "";
 
       // Only update if there are changes
@@ -136,19 +141,34 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
             </FormItem>
           )}
         />
-         <FormField
-          control={form.control}
-          name="location"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Location</FormLabel>
-              <FormControl>
-                <Input placeholder="City, Country" {...field} value={field.value ?? ""} className="text-base" />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+         <div className="grid grid-cols-2 gap-4">
+            <FormField
+            control={form.control}
+            name="city"
+            render={({ field }) => (
+                <FormItem>
+                <FormLabel>City</FormLabel>
+                <FormControl>
+                    <Input placeholder="e.g., Nairobi" {...field} value={field.value ?? ""} className="text-base" />
+                </FormControl>
+                <FormMessage />
+                </FormItem>
+            )}
+            />
+            <FormField
+            control={form.control}
+            name="country"
+            render={({ field }) => (
+                <FormItem>
+                <FormLabel>Country</FormLabel>
+                <FormControl>
+                    <Input placeholder="e.g., Kenya" {...field} value={field.value ?? ""} className="text-base" />
+                </FormControl>
+                <FormMessage />
+                </FormItem>
+            )}
+            />
+         </div>
          <FormField
           control={form.control}
           name="phone"

@@ -3,9 +3,9 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { isSameDay, startOfDay, differenceInCalendarDays, format } from "date-fns";
-import { TrendingUp, UserCheck2, Trophy, ArrowRight, UserPlus } from "lucide-react";
+import { TrendingUp, UserCheck2, Trophy, ArrowRight, UserPlus, Globe, Loader2 } from "lucide-react";
 import { useCollection, useFirestore, useUser, useDoc } from "@/firebase";
-import { collection, query, doc, updateDoc, serverTimestamp, orderBy, limit } from "firebase/firestore";
+import { collection, query, doc, updateDoc, serverTimestamp, orderBy, limit, where, getCountFromServer } from "firebase/firestore";
 import type { Soul, UserProfile } from "@/lib/types";
 import { useMemo, useEffect, useState } from "react";
 import { DailyDisciplineCard } from "@/components/dashboard/daily-discipline-card";
@@ -77,6 +77,103 @@ function RecentSoulsList() {
             ))}
         </div>
     )
+}
+
+function GlobalSoulsCard({ location }: { location: { city?: string, country?: string } }) {
+    const firestore = useFirestore();
+    const [cityCount, setCityCount] = useState(0);
+    const [countryCount, setCountryCount] = useState(0);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        if (!firestore || (!location.city && !location.country)) {
+            setLoading(false);
+            return;
+        };
+
+        const fetchCounts = async () => {
+            try {
+                setLoading(true);
+                const soulsCollection = collection(firestore, 'souls');
+                
+                const promises = [];
+
+                if (location.city) {
+                    const cityQuery = query(soulsCollection, where('userLocation.city', '==', location.city));
+                    promises.push(getCountFromServer(cityQuery));
+                } else {
+                    promises.push(Promise.resolve(null));
+                }
+
+                if (location.country) {
+                    const countryQuery = query(soulsCollection, where('userLocation.country', '==', location.country));
+                    promises.push(getCountFromServer(countryQuery));
+                } else {
+                    promises.push(Promise.resolve(null));
+                }
+
+                const [citySnapshot, countrySnapshot] = await Promise.all(promises);
+                
+                setCityCount(citySnapshot?.data().count ?? 0);
+                setCountryCount(countrySnapshot?.data().count ?? 0);
+
+            } catch (error) {
+                console.error("Error fetching global soul counts:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchCounts();
+    }, [firestore, location]);
+
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle>Community Impact</CardTitle>
+                <CardDescription>Souls won by all users in your area.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+                {location.city && (
+                    <div className="flex items-center gap-4">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-secondary text-secondary-foreground">
+                            <Globe className="h-6 w-6" />
+                        </div>
+                        <div>
+                            <p className="text-muted-foreground">In {location.city}</p>
+                            {loading ? <Skeleton className="h-6 w-12 mt-1" /> : <p className="text-2xl font-bold">{cityCount}</p>}
+                        </div>
+                    </div>
+                )}
+                {location.country && (
+                    <div className="flex items-center gap-4">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-secondary text-secondary-foreground">
+                            <Globe className="h-6 w-6" />
+                        </div>
+                        <div>
+                            <p className="text-muted-foreground">In {location.country}</p>
+                            {loading ? <Skeleton className="h-6 w-12 mt-1" /> : <p className="text-2xl font-bold">{countryCount}</p>}
+                        </div>
+                    </div>
+                )}
+                {!loading && !location.city && !location.country && (
+                    <p className="text-sm text-center text-muted-foreground py-4">
+                        Add your location in your profile to see community stats.
+                    </p>
+                )}
+                 {loading && (
+                    <div className="flex items-center gap-4">
+                         <div className="flex h-12 w-12 items-center justify-center rounded-lg">
+                            <Loader2 className="h-6 w-6 animate-spin"/>
+                        </div>
+                         <div>
+                            <p className="text-muted-foreground">Loading stats...</p>
+                        </div>
+                    </div>
+                 )}
+            </CardContent>
+        </Card>
+    );
 }
 
 export default function DashboardPage() {
@@ -216,6 +313,8 @@ export default function DashboardPage() {
                     </CardContent>
                 </Card>
                 
+                {userProfile?.location && <GlobalSoulsCard location={userProfile.location} />}
+
                  <Card className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground">
                     <CardHeader>
                         <CardTitle>Share Your Story</CardTitle>

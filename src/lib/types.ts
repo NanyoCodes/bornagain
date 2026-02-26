@@ -12,7 +12,10 @@ export type UserProfile = {
   email: string;
   photoURL?: string;
   bio?: string;
-  location?: string;
+  location?: {
+    city?: string;
+    country?: string;
+  };
   phone?: string;
   currentStreak?: number;
   longestStreak?: number;
@@ -114,6 +117,10 @@ export type Soul = {
   source: 'Campaign' | 'Personal' | 'Referral';
   sourceDetails?: string; // e.g., Campaign name or referrer name
   campaignId?: string;
+  userLocation?: {
+    city?: string;
+    country?: string;
+  };
   wonAt: Timestamp; // ISO date string
   status: FollowUpStatus;
   followUpLog: FollowUpLogItem[];
