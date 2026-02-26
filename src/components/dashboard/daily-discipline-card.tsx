@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -8,7 +7,7 @@ import { doc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import type { UserProfile } from '@/lib/types';
 import { isToday } from 'date-fns';
 import { Skeleton } from '../ui/skeleton';
-import { Heart, BookOpen, Share2, Megaphone, Users, Check } from 'lucide-react';
+import { Heart, BookOpen, Share2, Megaphone, Users, Check, Loader2 } from 'lucide-react';
 import { BibleDialog } from './bible-dialog';
 import { PrayerDialog } from './prayer-dialog';
 import { useRouter } from 'next/navigation';
@@ -30,6 +29,7 @@ export function DailyDisciplineCard() {
   const [completedToday, setCompletedToday] = useState<string[]>([]);
   const [isBibleDialogOpen, setIsBibleDialogOpen] = useState(false);
   const [isPrayerDialogOpen, setIsPrayerDialogOpen] = useState(false);
+  const [togglingId, setTogglingId] = useState<string | null>(null);
   const router = useRouter();
   
   const userDocRef = useMemo(() => {
@@ -49,17 +49,14 @@ export function DailyDisciplineCard() {
       }
     }
   }, [userProfile]);
-
-  const handleDisciplineToggle = async (disciplineId: string) => {
+  
+  const updateDisciplineState = async (disciplineId: string) => {
     if (!user || !firestore) return;
 
-    const oldCompleted = [...completedToday];
-    const wasCompleted = oldCompleted.includes(disciplineId);
+    const wasCompleted = completedToday.includes(disciplineId);
     const newCompleted = wasCompleted
-      ? oldCompleted.filter((id) => id !== disciplineId)
-      : [...oldCompleted, disciplineId];
-
-    setCompletedToday(newCompleted); // Optimistic update
+      ? completedToday.filter((id) => id !== disciplineId)
+      : [...completedToday, disciplineId];
 
     const userRef = doc(firestore, 'users', user.uid);
     const updateData = {
@@ -71,6 +68,7 @@ export function DailyDisciplineCard() {
 
     try {
       await updateDoc(userRef, updateData);
+      setCompletedToday(newCompleted);
     } catch (error) {
       const permissionError = new FirestorePermissionError({
         path: userRef.path,
@@ -78,61 +76,75 @@ export function DailyDisciplineCard() {
         requestResourceData: updateData,
       });
       errorEmitter.emit('permission-error', permissionError);
-      // Revert optimistic update on failure
-      setCompletedToday(oldCompleted);
-      // Re-throw the error so the caller knows it failed
-      throw error;
+      throw error; // Re-throw to be caught by the caller
     }
   };
 
+
   const handleBibleRead = () => {
     if (!completedToday.includes('read_bible')) {
-      handleDisciplineToggle('read_bible').catch(() => {
-        // Error is handled in handleDisciplineToggle
+      updateDisciplineState('read_bible').catch(() => {
+        // Error is handled in updateDisciplineState
       });
     }
   }
 
   const handlePray = () => {
     if (!completedToday.includes('pray')) {
-      handleDisciplineToggle('pray').catch(() => {
-        // Error is handled in handleDisciplineToggle
+      updateDisciplineState('pray').catch(() => {
+        // Error is handled in updateDisciplineState
       });
     }
   }
 
-  const handleDisciplineClick = (disciplineId: string) => {
+  const handleDisciplineClick = async (disciplineId: string) => {
     const isCompleted = completedToday.includes(disciplineId);
+    
+    setTogglingId(disciplineId);
+    try {
+        // If it's already completed, just un-check it.
+        if (isCompleted) {
+            await updateDisciplineState(disciplineId);
+            return;
+        }
 
-    // Always allow un-checking, and don't navigate
-    if (isCompleted) {
-      handleDisciplineToggle(disciplineId).catch(() => { /* Error is handled, no further action needed */ });
-      return;
-    }
-
-    // Handle actions for completing a discipline for the first time
-    if (disciplineId === 'read_bible') {
-      setIsBibleDialogOpen(true);
-    } else if (disciplineId === 'pray') {
-      setIsPrayerDialogOpen(true);
-    } else {
-      // For disciplines that navigate, await the toggle first
-      handleDisciplineToggle(disciplineId)
-        .then(() => {
-          // Only navigate after the toggle is successful
-          if (disciplineId === 'share_testimony') {
-            router.push('/dashboard/testimonies');
-          } else if (disciplineId === 'evangelize') {
-            router.push('/dashboard/campaigns');
-          } else if (disciplineId === 'follow_up') {
-            router.push('/dashboard/souls-won');
-          }
-        })
-        .catch(() => {
-          // If toggle fails, do not navigate. Error is already handled.
-        });
+        // If it's not completed, perform the action.
+        if (disciplineId === 'read_bible') {
+            setIsBibleDialogOpen(true);
+        } else if (disciplineId === 'pray') {
+            setIsPrayerDialogOpen(true);
+        } else {
+            // For navigation disciplines, update DB, then navigate.
+            await updateDisciplineState(disciplineId);
+            
+            if (disciplineId === 'share_testimony') {
+                router.push('/dashboard/testimonies');
+            } else if (disciplineId === 'evangelize') {
+                router.push('/dashboard/campaigns');
+            } else if (disciplineId === 'follow_up') {
+                router.push('/dashboard/souls-won');
+            }
+        }
+    } catch (e) {
+        // Errors are handled by updateDisciplineState, do nothing here.
+    } finally {
+        // Don't clear togglingId for dialogs, as they control their own closing.
+        if (disciplineId !== 'read_bible' && disciplineId !== 'pray') {
+            setTogglingId(null);
+        } else if (isCompleted) {
+             setTogglingId(null);
+        }
     }
   };
+  
+   useEffect(() => {
+    if (!isBibleDialogOpen && togglingId === 'read_bible') {
+      setTogglingId(null);
+    }
+    if (!isPrayerDialogOpen && togglingId === 'pray') {
+      setTogglingId(null);
+    }
+  }, [isBibleDialogOpen, isPrayerDialogOpen, togglingId]);
 
   if (loading) {
     return (
@@ -164,25 +176,38 @@ export function DailyDisciplineCard() {
              <Button
                 key={discipline.id}
                 variant="outline"
-                className="relative flex flex-col items-center justify-center gap-2 p-4 h-full text-center data-[state=checked]:bg-accent data-[state=checked]:border-primary"
+                className="relative flex flex-col items-center justify-center gap-2 p-4 h-full text-center data-[state=checked]:bg-accent data-[state=checked]:border-primary disabled:opacity-75"
                 data-state={completedToday.includes(discipline.id) ? 'checked' : 'unchecked'}
                 onClick={() => handleDisciplineClick(discipline.id)}
+                disabled={togglingId === discipline.id}
             >
-                {completedToday.includes(discipline.id) && <Check className="absolute top-2 right-2 h-4 w-4 text-primary" />}
-                {discipline.icon}
-                <span className="text-sm font-medium whitespace-normal">{discipline.label}</span>
+                {togglingId === discipline.id ? (
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                ) : (
+                    <>
+                        {completedToday.includes(discipline.id) && <Check className="absolute top-2 right-2 h-4 w-4 text-primary" />}
+                        {discipline.icon}
+                        <span className="text-sm font-medium whitespace-normal">{discipline.label}</span>
+                    </>
+                )}
             </Button>
           ))}
         </CardContent>
       </Card>
        <BibleDialog 
         isOpen={isBibleDialogOpen}
-        onOpenChange={setIsBibleDialogOpen}
+        onOpenChange={(open) => {
+            setIsBibleDialogOpen(open);
+            if (!open) setTogglingId(null);
+        }}
         onDisciplineCompleted={handleBibleRead}
       />
       <PrayerDialog
         isOpen={isPrayerDialogOpen}
-        onOpenChange={setIsPrayerDialogOpen}
+        onOpenChange={(open) => {
+            setIsPrayerDialogOpen(open);
+            if (!open) setTogglingId(null);
+        }}
         onDisciplineCompleted={handlePray}
       />
     </>
