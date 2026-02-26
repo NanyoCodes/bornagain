@@ -29,13 +29,13 @@ import { collection, serverTimestamp, doc, writeBatch } from "firebase/firestore
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { format } from "date-fns";
+import { LocationAutocompleteInput } from "../common/location-autocomplete-input";
 
 const formSchema = z.object({
   goal: z.string({
     required_error: "Please select a campaign goal.",
   }),
-  city: z.string().min(2, "City is too short.").max(50, "City is too long."),
-  country: z.string().min(2, "Country is too short.").max(50, "Country is too long."),
+  location: z.string().min(3, "A location is required.").max(200, "Location is too long."),
   startDate: z.date({
     required_error: "A start date is required.",
   }),
@@ -78,8 +78,7 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      city: "",
-      country: "",
+      location: "",
       targetAudience: "",
       scripture: "",
       scriptureTestimony: "",
@@ -94,7 +93,7 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
     try {
       const result = await generateCampaignIdeas({
         goal: values.goal,
-        location: `${values.city}, ${values.country}`,
+        location: values.location,
         targetAudience: values.targetAudience,
         scripture: values.scripture,
       });
@@ -134,7 +133,7 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
             title: finalName,
             description: finalDescription,
             goal: values.goal,
-            location: `${values.city}, ${values.country}`,
+            location: values.location,
             startDate: values.startDate,
             endDate: values.endDate,
             startTime: values.startTime,
@@ -238,34 +237,24 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
               )}
             />
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          
             <FormField
               control={form.control}
-              name="city"
+              name="location"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>City</FormLabel>
+                  <FormLabel>Location</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g., Nairobi" {...field} className="text-base" />
+                    <LocationAutocompleteInput field={field} />
                   </FormControl>
+                  <FormDescription>
+                    Search for an address, city, or region.
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="country"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Country</FormLabel>
-                  <FormControl>
-                    <Input placeholder="e.g., Kenya" {...field} className="text-base" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
+
           <FormField
             control={form.control}
             name="scripture"

@@ -38,13 +38,13 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useRouter } from 'next/navigation';
+import { LocationAutocompleteInput } from '../common/location-autocomplete-input';
 
 const formSchema = z.object({
   title: z.string().min(3, "Title is too short.").max(100, "Title is too long."),
   description: z.string().min(3, "Description is too short.").max(5000, "Description is too long."),
   goal: z.string().min(3, "Goal is too short.").max(100, "Goal is too long."),
-  city: z.string().min(2, "City is too short.").max(50, "City is too long."),
-  country: z.string().min(2, "Country is too short.").max(50, "Country is too long."),
+  location: z.string().min(3, "A location is required.").max(200, "Location is too long."),
   startDate: z.date(),
   endDate: z.date(),
   startTime: z.string().min(1, "A start time is required."),
@@ -192,10 +192,6 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
   };
 
   const defaultValues = useMemo(() => {
-    const locationParts = campaign.location.split(',');
-    const city = locationParts[0]?.trim() || '';
-    const country = locationParts[1]?.trim() || '';
-    
     const safeToDate = (value: any): Date => {
         if (value?.toDate) return value.toDate();
         if (value instanceof Date) return value;
@@ -210,8 +206,7 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
       title: campaign.title || "",
       description: campaign.description || "",
       goal: campaign.goal || "",
-      city: city,
-      country: country,
+      location: campaign.location || "",
       startDate: safeToDate(campaign.startDate),
       endDate: safeToDate(campaign.endDate),
       startTime: campaign.startTime || "",
@@ -326,7 +321,7 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
         title: values.title,
         description: values.description,
         goal: values.goal,
-        location: `${values.city}, ${values.country}`,
+        location: values.location,
         startDate: values.startDate,
         endDate: values.endDate,
         startTime: values.startTime,
@@ -398,34 +393,22 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
                       </FormItem>
                   )}
                 />
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="city"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>City</FormLabel>
-                        <FormControl>
-                          <Input placeholder="e.g., Nairobi" {...field} className="text-base" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="country"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Country</FormLabel>
-                        <FormControl>
-                          <Input placeholder="e.g., Kenya" {...field} className="text-base" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
+                <FormField
+                  control={form.control}
+                  name="location"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Location</FormLabel>
+                      <FormControl>
+                        <LocationAutocompleteInput field={field} />
+                      </FormControl>
+                      <FormDescription>
+                        Search for an address, city, or region.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
                 <FormField
                     control={form.control}
                     name="scripture"

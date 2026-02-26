@@ -172,7 +172,8 @@
           "type": "string"
         },
         "location": {
-          "type": "string"
+          "type": "string",
+          "description": "The campaign's address or general location, often autofilled by Google Maps."
         },
         "startDate": {
           "type": "object"

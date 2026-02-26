@@ -24,6 +24,8 @@ import { updateProfile } from "firebase/auth";
 import type { UserProfile } from "@/lib/types";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
+import { LocationProfileInput } from "../common/location-profile-input";
+import { Label } from "../ui/label";
 
 const formSchema = z.object({
   displayName: z.string().min(2, "Name must be at least 2 characters.").max(50, "Name is too long."),
@@ -141,6 +143,13 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
             </FormItem>
           )}
         />
+        <div className="space-y-2">
+            <Label>Location Search</Label>
+            <LocationProfileInput form={form} />
+            <p className="text-sm text-muted-foreground">
+                Search for a location to autofill your city and country below.
+            </p>
+        </div>
          <div className="grid grid-cols-2 gap-4">
             <FormField
             control={form.control}
