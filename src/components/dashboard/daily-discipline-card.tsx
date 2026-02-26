@@ -3,19 +3,18 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Label } from '@/components/ui/label';
 import { useUser, useFirestore, useDoc } from '@/firebase';
 import { doc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import type { UserProfile } from '@/lib/types';
 import { isToday } from 'date-fns';
 import { Skeleton } from '../ui/skeleton';
-import { Heart, BookOpen, Share2, Megaphone, Users } from 'lucide-react';
+import { Heart, BookOpen, Share2, Megaphone, Users, Check } from 'lucide-react';
 import { BibleDialog } from './bible-dialog';
 import { PrayerDialog } from './prayer-dialog';
 import { useRouter } from 'next/navigation';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
+import { Button } from '@/components/ui/button';
 
 const disciplines = [
   { id: 'pray', label: 'Pray', icon: <Heart className="h-5 w-5 text-muted-foreground" /> },
@@ -94,6 +93,33 @@ export function DailyDisciplineCard() {
     }
   }
 
+  const handleDisciplineClick = (disciplineId: string) => {
+    const isCompleted = completedToday.includes(disciplineId);
+
+    if (isCompleted) {
+      handleDisciplineToggle(disciplineId);
+      return;
+    }
+
+    // It's not completed, so let's perform the action.
+    if (disciplineId === 'read_bible') {
+      setIsBibleDialogOpen(true);
+      // The dialog will call handleBibleRead -> handleDisciplineToggle
+    } else if (disciplineId === 'pray') {
+      setIsPrayerDialogOpen(true);
+      // The dialog will call handlePray -> handleDisciplineToggle
+    } else if (disciplineId === 'share_testimony') {
+      handleDisciplineToggle(disciplineId);
+      router.push('/dashboard/testimonies');
+    } else if (disciplineId === 'evangelize') {
+      handleDisciplineToggle(disciplineId);
+      router.push('/dashboard/campaigns');
+    } else if (disciplineId === 'follow_up') {
+      handleDisciplineToggle(disciplineId);
+      router.push('/dashboard/souls-won');
+    }
+  };
+
   if (loading) {
     return (
       <Card>
@@ -102,10 +128,9 @@ export function DailyDisciplineCard() {
           <CardDescription>Your spiritual checklist for today.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          {[...Array(4)].map((_, i) => (
+          {[...Array(5)].map((_, i) => (
             <div key={i} className="flex items-center space-x-3">
-              <Skeleton className="h-6 w-6" />
-              <Skeleton className="h-5 w-32" />
+              <Skeleton className="h-20 w-full" />
             </div>
           ))}
         </CardContent>
@@ -122,48 +147,17 @@ export function DailyDisciplineCard() {
         </CardHeader>
         <CardContent className="grid grid-cols-2 md:grid-cols-5 gap-4">
           {disciplines.map(discipline => (
-             <div 
-              key={discipline.id}
-              onClick={(e) => {
-                const isCompleted = completedToday.includes(discipline.id);
-                if (!isCompleted) {
-                  if (discipline.id === 'read_bible') {
-                    e.preventDefault();
-                    setIsBibleDialogOpen(true);
-                  } else if (discipline.id === 'pray') {
-                    e.preventDefault();
-                    setIsPrayerDialogOpen(true);
-                  } else if (discipline.id === 'share_testimony') {
-                    e.preventDefault();
-                    handleDisciplineToggle(discipline.id);
-                    router.push('/dashboard/testimonies');
-                  } else if (discipline.id === 'evangelize') {
-                    e.preventDefault();
-                    handleDisciplineToggle(discipline.id);
-                    router.push('/dashboard/campaigns');
-                  } else if (discipline.id === 'follow_up') {
-                    e.preventDefault();
-                    handleDisciplineToggle(discipline.id);
-                    router.push('/dashboard/souls-won');
-                  }
-                }
-              }}
-            >
-              <Label 
-                htmlFor={discipline.id}
-                className="flex flex-col items-center justify-center gap-2 p-4 border rounded-lg cursor-pointer hover:bg-muted/50 transition-colors data-[state=checked]:bg-accent h-full"
+             <Button
+                key={discipline.id}
+                variant="outline"
+                className="relative flex flex-col items-center justify-center gap-2 p-4 h-full text-center data-[state=checked]:bg-accent data-[state=checked]:border-primary"
                 data-state={completedToday.includes(discipline.id) ? 'checked' : 'unchecked'}
-              >
-                <Checkbox
-                  id={discipline.id}
-                  className="sr-only"
-                  checked={completedToday.includes(discipline.id)}
-                  onCheckedChange={() => handleDisciplineToggle(discipline.id)}
-                />
+                onClick={() => handleDisciplineClick(discipline.id)}
+            >
+                {completedToday.includes(discipline.id) && <Check className="absolute top-2 right-2 h-4 w-4 text-primary" />}
                 {discipline.icon}
-                <span className="text-sm font-medium text-center">{discipline.label}</span>
-              </Label>
-            </div>
+                <span className="text-sm font-medium whitespace-normal">{discipline.label}</span>
+            </Button>
           ))}
         </CardContent>
       </Card>
@@ -180,5 +174,3 @@ export function DailyDisciplineCard() {
     </>
   );
 }
-
-    
