@@ -183,9 +183,7 @@ export function LoginForm() {
       toast({
         variant: "destructive",
         title: "Login Failed",
-        description: authError.code === 'auth/invalid-credential'
-          ? "Invalid email or password. Please try again."
-          : "An unexpected error occurred.",
+        description: authError.message || "An unexpected error occurred.",
       });
     } finally {
         setIsLoading(false);

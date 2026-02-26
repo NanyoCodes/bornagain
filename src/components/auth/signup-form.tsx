@@ -81,7 +81,7 @@ export function SignUpForm() {
       };
 
       // Create user profile in Firestore
-      setDoc(userDocRef, userData).catch((serverError) => {
+      setDoc(userDocRef, userData, { merge: true }).catch((serverError) => {
         const permissionError = new FirestorePermissionError({
           path: userDocRef.path,
           operation: 'create',
@@ -101,7 +101,7 @@ export function SignUpForm() {
       toast({
         variant: "destructive",
         title: "Sign Up Failed",
-        description: authError.code === 'auth/email-already-in-use' ? 'An account with this email already exists.' : "An unexpected error occurred.",
+        description: authError.message || "An unexpected error occurred.",
       });
     } finally {
       setIsLoading(false);

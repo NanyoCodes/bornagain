@@ -65,20 +65,11 @@ export default function SignUpPage() {
       router.push('/dashboard');
     } catch (error) {
       const authError = error as AuthError;
-      if (authError.code === 'auth/unauthorized-domain') {
-        toast({
-          variant: 'destructive',
-          title: 'Sign Up Failed',
-          description:
-            "This app's domain is not authorized for authentication. Please contact support.",
-        });
-      } else {
-        toast({
-          variant: 'destructive',
-          title: 'Sign Up Failed',
-          description: 'An unexpected error occurred.',
-        });
-      }
+      toast({
+        variant: 'destructive',
+        title: 'Sign Up Failed',
+        description: authError.message || 'An unexpected error occurred.',
+      });
     }
   };
 
@@ -90,8 +81,8 @@ export default function SignUpPage() {
               <Image
                   src={logo.imageUrl}
                   alt={logo.description}
-                  width={72}
-                  height={72}
+                  width={80}
+                  height={80}
                   className="mb-2 rounded-lg"
                   data-ai-hint={logo.imageHint}
               />
