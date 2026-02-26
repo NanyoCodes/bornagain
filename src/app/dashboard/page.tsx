@@ -7,12 +7,14 @@ import { TrendingUp, UserCheck2, Trophy, ArrowRight, UserPlus } from "lucide-rea
 import { useCollection, useFirestore, useUser, useDoc } from "@/firebase";
 import { collection, query, doc, updateDoc, serverTimestamp, orderBy, limit } from "firebase/firestore";
 import type { Soul, UserProfile } from "@/lib/types";
-import { useMemo, useEffect } from "react";
+import { useMemo, useEffect, useState } from "react";
 import { DailyDisciplineCard } from "@/components/dashboard/daily-discipline-card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
+import { errorEmitter } from "@/firebase/error-emitter";
+import { FirestorePermissionError } from "@/firebase/errors";
 
 
 function RecentSoulsList() {
@@ -80,6 +82,7 @@ function RecentSoulsList() {
 export default function DashboardPage() {
   const { user, loading: authLoading } = useUser();
   const firestore = useFirestore();
+  const [streakUpdated, setStreakUpdated] = useState(false);
   
   const userDocRef = useMemo(() => {
     if (!user?.uid || !firestore) return null;
@@ -88,12 +91,15 @@ export default function DashboardPage() {
   const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userDocRef);
 
   useEffect(() => {
-    if (profileLoading || !user || !userProfile || !firestore) return;
+    if (streakUpdated || profileLoading || !user || !userProfile || !firestore) return;
 
     const today = startOfDay(new Date());
     const lastLogin = userProfile.lastLogin?.toDate ? startOfDay(userProfile.lastLogin.toDate()) : null;
 
-    if (lastLogin && isSameDay(today, lastLogin)) return;
+    if (lastLogin && isSameDay(today, lastLogin)) {
+      setStreakUpdated(true);
+      return;
+    }
 
     let newStreak = 1;
     if (lastLogin && differenceInCalendarDays(today, lastLogin) === 1) {
@@ -104,15 +110,30 @@ export default function DashboardPage() {
     const newLongestStreak = Math.max(currentLongestStreak, newStreak);
 
     const userRef = doc(firestore, 'users', user.uid);
-    updateDoc(userRef, {
-        currentStreak: newStreak,
-        longestStreak: newLongestStreak,
-        lastLogin: serverTimestamp(),
-    }).catch(error => {
-        console.error("Failed to update streak:", error);
-    });
+    const updateData = {
+      currentStreak: newStreak,
+      longestStreak: newLongestStreak,
+      lastLogin: serverTimestamp(),
+    };
 
-  }, [profileLoading, user?.uid, userProfile, firestore, user]);
+    updateDoc(userRef, updateData)
+      .then(() => {
+        setStreakUpdated(true);
+      })
+      .catch(() => {
+        const permissionError = new FirestorePermissionError({
+          path: userRef.path,
+          operation: 'update',
+          requestResourceData: {
+            currentStreak: newStreak,
+            longestStreak: newLongestStreak,
+          },
+        });
+        errorEmitter.emit('permission-error', permissionError);
+        setStreakUpdated(true); // Prevent infinite loops on error
+      });
+
+  }, [profileLoading, user, userProfile, firestore, streakUpdated]);
 
   const soulsQuery = useMemo(() => {
     if (!user?.uid || !firestore) return null;
