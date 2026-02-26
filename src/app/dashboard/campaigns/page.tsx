@@ -47,6 +47,43 @@ function CampaignSkeletons() {
   )
 }
 
+const safeToDate = (value: any): Date | null => {
+  if (!value) return null;
+  if (typeof value.toDate === 'function') return value.toDate();
+  if (value instanceof Date) return value;
+  if (typeof value === 'object' && typeof value.seconds === 'number') {
+    return new Date(value.seconds * 1000);
+  }
+  return null;
+};
+
+const getStatus = (campaign: { _startDate: Date | null, _endDate: Date | null, startTime?: string, endTime?: string }, now: Date): number => {
+    const { _startDate, _endDate } = campaign;
+    if (!_startDate || !_endDate) return 3; // Past
+    
+    const endDateTime = new Date(_endDate);
+    if (campaign.endTime && /^\d{2}:\d{2}$/.test(campaign.endTime)) {
+        const [hours, minutes] = campaign.endTime.split(':').map(Number);
+        endDateTime.setHours(hours, minutes, 59, 999);
+    } else {
+        endDateTime.setHours(23, 59, 59, 999);
+    }
+
+    if (endDateTime < now) return 3; // Past
+
+    const startDateTime = new Date(_startDate);
+    if (campaign.startTime && /^\d{2}:\d{2}$/.test(campaign.startTime)) {
+        const [hours, minutes] = campaign.startTime.split(':').map(Number);
+        startDateTime.setHours(hours, minutes, 0, 0);
+    } else {
+        startDateTime.setHours(0, 0, 0, 0);
+    }
+
+    if (startDateTime > now) return 2; // Upcoming
+    return 1; // Ongoing
+  };
+
+
 export default function CampaignsPage() {
   const { user } = useUser();
   const firestore = useFirestore();
@@ -104,24 +141,18 @@ export default function CampaignsPage() {
     setIsDialogOpen(false);
   };
 
-  const safeToDate = (value: any): Date | null => {
-    if (!value) return null;
-    if (typeof value.toDate === 'function') return value.toDate();
-    if (value instanceof Date) return value;
-    if (typeof value === 'object' && typeof value.seconds === 'number') {
-      return new Date(value.seconds * 1000);
-    }
-    return null;
-  };
-
   const processedCampaigns = useMemo(() => {
     if (!campaigns) return [];
-    return campaigns.map(c => ({
-      ...c,
-      _startDate: safeToDate(c.startDate),
-      _endDate: safeToDate(c.endDate),
-    }));
-  }, [campaigns]);
+    return campaigns.map(c => {
+      const _startDate = safeToDate(c.startDate);
+      const _endDate = safeToDate(c.endDate);
+      const tempCampaign = { ...c, _startDate, _endDate };
+      return {
+        ...tempCampaign,
+        _status: getStatus(tempCampaign, now),
+      }
+    });
+  }, [campaigns, now]);
 
   const sortedAndFilteredCampaigns = useMemo(() => {
     const activeCampaigns = processedCampaigns.filter(c => c.status !== 'deleted');
@@ -153,35 +184,9 @@ export default function CampaignsPage() {
 
     const userCity = userProfile?.location?.city?.toLowerCase().trim();
 
-    const getStatus = (campaign: (typeof processedCampaigns)[0]): number => {
-      const { _startDate, _endDate } = campaign;
-      if (!_startDate || !_endDate) return 3; // Past
-      
-      const endDateTime = new Date(_endDate);
-      if (campaign.endTime && /^\d{2}:\d{2}$/.test(campaign.endTime)) {
-        const [hours, minutes] = campaign.endTime.split(':').map(Number);
-        endDateTime.setHours(hours, minutes, 59, 999);
-      } else {
-        endDateTime.setHours(23, 59, 59, 999);
-      }
-
-      if (endDateTime < now) return 3; // Past
-
-      const startDateTime = new Date(_startDate);
-      if (campaign.startTime && /^\d{2}:\d{2}$/.test(campaign.startTime)) {
-        const [hours, minutes] = campaign.startTime.split(':').map(Number);
-        startDateTime.setHours(hours, minutes, 0, 0);
-      } else {
-        startDateTime.setHours(0, 0, 0, 0);
-      }
-
-      if (startDateTime > now) return 2; // Upcoming
-      return 1; // Ongoing
-    };
-
     return [...filtered].sort((a, b) => {
-      const statusA = getStatus(a);
-      const statusB = getStatus(b);
+      const statusA = a._status;
+      const statusB = b._status;
       if (statusA !== statusB) {
         return statusA - statusB;
       }
@@ -206,7 +211,7 @@ export default function CampaignsPage() {
       return 0;
     });
 
-  }, [processedCampaigns, searchTerm, userProfile, mounted, now, filter, user?.uid, joinedCampaignIds]);
+  }, [processedCampaigns, searchTerm, userProfile, mounted, filter, user?.uid, joinedCampaignIds]);
 
   const triggerButton = (
     <Button disabled={!user}>
