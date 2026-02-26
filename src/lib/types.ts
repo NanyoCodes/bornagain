@@ -146,6 +146,11 @@ export type ChatMessage = {
   senderId: string;
   text?: string;
   createdAt: Timestamp;
+  replyTo?: {
+    messageId: string;
+    text: string;
+    senderName: string;
+  };
 };
 
 export type Notification = {

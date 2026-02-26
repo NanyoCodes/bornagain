@@ -227,7 +227,7 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
 
     } catch (error: any) {
         if (error.name === 'FirestoreError' && error.code === 'aborted') {
-            toast({ variant: 'destructive', title: "Join Failed", description: error.message });
+            toast({ variant: 'destructive', title: "Join Failed", description: `Could not join campaign as it was updated during the process. It might be full. Please try again.` });
         } else {
             const permissionError = new FirestorePermissionError({
                 path: `TRANSACTION:JOIN_CAMPAIGN:${campaign.id}`,

@@ -11,9 +11,10 @@ import {
   doc,
   updateDoc,
   writeBatch,
+  type FieldValue,
 } from 'firebase/firestore';
 import type { Chat, ChatMessage, Campaign } from '@/lib/types';
-import { Loader2, Send, ArrowLeft } from 'lucide-react';
+import { Loader2, Send, ArrowLeft, Reply, X } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -38,6 +39,8 @@ export default function ChatPage() {
     const [newMessage, setNewMessage] = useState('');
     const [isSending, setIsSending] = useState(false);
     const scrollAreaRef = useRef<HTMLDivElement>(null);
+    const [replyingTo, setReplyingTo] = useState<ChatMessage | null>(null);
+
 
     const chatDocRef = useMemo(() => {
         if (!user?.uid || !firestore || !chatId) return null;
@@ -126,11 +129,31 @@ export default function ChatPage() {
 
         try {
             const messagesRef = collection(firestore, 'chats', chatId, 'messages');
-            await addDoc(messagesRef, {
+            
+            const newDocData: {
+                senderId: string;
+                text: string;
+                createdAt: FieldValue;
+                replyTo?: {
+                    messageId: string;
+                    text: string;
+                    senderName: string;
+                }
+            } = {
                 senderId: user.uid,
                 text: newMessage,
                 createdAt: serverTimestamp(),
-            });
+            };
+
+            if (replyingTo) {
+                newDocData.replyTo = {
+                    messageId: replyingTo.id,
+                    text: replyingTo.text?.substring(0, 100) || '',
+                    senderName: chat.participantInfo[replyingTo.senderId]?.displayName || 'User',
+                };
+            }
+
+            await addDoc(messagesRef, newDocData);
 
             const chatRef = doc(firestore, 'chats', chatId);
             await updateDoc(chatRef, {
@@ -153,7 +176,7 @@ export default function ChatPage() {
                         userId: participantId,
                         type: 'new_chat_message',
                         title: chat.isGroupChat 
-                            ? `New Message in ${chat.campaignTitle}`
+                            ? `New ${replyingTo ? 'reply' : 'message'} in ${chat.campaignTitle}`
                             : `New Message from ${user.displayName || 'User'}`,
                         message: chat.isGroupChat
                             ? `${user.displayName || 'User'}: ${newMessage.substring(0, 50)}${newMessage.length > 50 ? '...' : ''}`
@@ -167,12 +190,12 @@ export default function ChatPage() {
                     const mailCollectionRef = collection(firestore, 'mail');
                     const mailRef = doc(mailCollectionRef);
                     const subject = chat.isGroupChat
-                        ? `New Message in "${chat.campaignTitle}" Group Chat`
+                        ? `New ${replyingTo ? 'reply' : 'message'} in "${chat.campaignTitle}" Group Chat`
                         : `New Message from ${user.displayName || 'User'} | Testify`;
 
                     const html = `
                         <p>Hi ${recipientInfo?.displayName || 'there'},</p>
-                        <p>You have a new message from <strong>${user.displayName || 'a user'}</strong> in the chat for the campaign "<strong>${chat.campaignTitle}</strong>".</p>
+                        <p>You have a new ${replyingTo ? 'reply' : 'message'} from <strong>${user.displayName || 'a user'}</strong> in the chat for the campaign "<strong>${chat.campaignTitle}</strong>".</p>
                         <p><em>${newMessage}</em></p>
                         <p>You can view the full conversation and reply by clicking the button below:</p>
                         <a href="${link}" style="display: inline-block; padding: 10px 20px; font-size: 16px; color: #ffffff; background-color: #3b82f6; text-decoration: none; border-radius: 5px;">View Chat</a>
@@ -190,6 +213,7 @@ export default function ChatPage() {
             }
 
             setNewMessage('');
+            setReplyingTo(null);
         } catch (error) {
             console.error("Error sending message:", error);
             toast({
@@ -297,8 +321,8 @@ export default function ChatPage() {
                                         {group.messages.map(msg => {
                                             const senderInfo = chat.participantInfo[msg.senderId];
                                             return (
-                                            <div key={msg.id} className={cn(
-                                                "flex items-end gap-2 w-full",
+                                            <div key={msg.id} id={`message-${msg.id}`} className={cn(
+                                                "group relative flex items-end gap-2 w-full",
                                                 msg.senderId === user?.uid ? "justify-end" : "justify-start"
                                             )}>
                                                 {msg.senderId !== user?.uid && senderInfo && (
@@ -317,9 +341,43 @@ export default function ChatPage() {
                                                     </Tooltip>
                                                 )}
                                                 <div className={cn(
-                                                    "rounded-lg px-3 py-2 max-w-sm sm:max-w-md break-words flex flex-col",
+                                                    "relative rounded-lg px-3 py-2 max-w-sm sm:max-w-md break-words flex flex-col",
                                                     msg.senderId === user?.uid ? "bg-primary text-primary-foreground" : "bg-muted"
                                                 )}>
+                                                     <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        className={cn(
+                                                            "absolute top-0 h-6 w-6 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10",
+                                                            msg.senderId === user?.uid ? "-left-8" : "-right-8"
+                                                        )}
+                                                        onClick={() => setReplyingTo(msg)}
+                                                    >
+                                                        <Reply className="h-3 w-3" />
+                                                    </Button>
+
+                                                    {msg.replyTo && (
+                                                        <a 
+                                                            href={`#message-${msg.replyTo.messageId}`} 
+                                                            onClick={(e) => {
+                                                                e.preventDefault();
+                                                                const repliedMsgEl = document.getElementById(`message-${msg.replyTo.messageId}`);
+                                                                if (repliedMsgEl) {
+                                                                    repliedMsgEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                                                    const parentGroup = repliedMsgEl.closest('.group');
+                                                                    parentGroup?.classList.add('animate-pulse-once');
+                                                                    setTimeout(() => {
+                                                                        parentGroup?.classList.remove('animate-pulse-once');
+                                                                    }, 600);
+                                                                }
+                                                            }}
+                                                            className="mb-1.5 rounded-md border-l-2 border-primary/50 bg-black/10 p-2 text-xs dark:bg-white/10 block hover:bg-black/20 dark:hover:bg-white/20 transition-colors"
+                                                        >
+                                                            <p className="font-bold">{msg.replyTo.senderName}</p>
+                                                            <p className="line-clamp-2">{msg.replyTo.text}</p>
+                                                        </a>
+                                                    )}
+
                                                     {chat.isGroupChat && msg.senderId !== user?.uid && senderInfo && (
                                                         <Link href={`/dashboard/profile/${msg.senderId}`} className="text-xs font-bold mb-1 hover:underline">
                                                           {senderInfo.displayName}
@@ -356,7 +414,24 @@ export default function ChatPage() {
                             This group chat has been frozen as the campaign ended more than 24 hours ago.
                         </div>
                     ) : (
-                        <form onSubmit={handleSendMessage} className="flex gap-2 w-full items-center p-2">
+                        <>
+                        {replyingTo && (
+                            <div className="relative rounded-t-lg border-x border-t bg-muted/50 p-3 pt-2 pb-3">
+                                <p className="text-xs font-bold">
+                                    Replying to {chat.participantInfo[replyingTo.senderId]?.displayName || 'User'}
+                                </p>
+                                <p className="line-clamp-1 text-sm text-muted-foreground">{replyingTo.text}</p>
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="absolute right-1 top-1 h-6 w-6"
+                                    onClick={() => setReplyingTo(null)}
+                                >
+                                    <X className="h-4 w-4" />
+                                </Button>
+                            </div>
+                        )}
+                        <form onSubmit={handleSendMessage} className={cn("flex gap-2 w-full items-center p-2", replyingTo && "border-x border-b rounded-b-lg")}>
                             <Input
                                 value={newMessage}
                                 onChange={(e) => setNewMessage(e.target.value)}
@@ -368,6 +443,7 @@ export default function ChatPage() {
                                 {isSending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
                             </Button>
                         </form>
+                        </>
                     )}
                 </CardFooter>
             </Card>
