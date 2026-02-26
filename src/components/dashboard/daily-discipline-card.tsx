@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -5,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useUser, useFirestore, useDoc } from '@/firebase';
 import { doc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import type { UserProfile } from '@/lib/types';
-import { isToday } from 'date-fns';
+import { isToday, format } from 'date-fns';
 import { Skeleton } from '../ui/skeleton';
 import { Heart, BookOpen, Share2, Megaphone, Users, Check, Loader2 } from 'lucide-react';
 import { BibleDialog } from './bible-dialog';
@@ -68,25 +69,30 @@ export function DailyDisciplineCard() {
       },
     };
 
-    try {
-      await updateDoc(userRef, updateData);
-      setCompletedToday(newCompleted);
-    } catch (error) {
-      const permissionError = new FirestorePermissionError({
-        path: userRef.path,
-        operation: 'update',
-        requestResourceData: updateData,
-      });
-      errorEmitter.emit('permission-error', permissionError);
-      throw error; // Re-throw to be caught by the caller
-    }
+    await updateDoc(userRef, updateData)
+        .then(() => {
+            setCompletedToday(newCompleted);
+        })
+        .catch((error) => {
+            const permissionError = new FirestorePermissionError({
+                path: userRef.path,
+                operation: 'update',
+                requestResourceData: updateData,
+            });
+            errorEmitter.emit('permission-error', permissionError);
+            throw error;
+        });
   };
 
 
   const handleBibleRead = () => {
     if (!completedToday.includes('read_bible')) {
       updateDisciplineState('read_bible').catch(() => {
-        // Error is handled in updateDisciplineState
+        toast({
+            variant: "destructive",
+            title: "Update Failed",
+            description: "Your discipline could not be updated. Please check your connection and try again.",
+        });
       });
     }
   }
@@ -94,7 +100,11 @@ export function DailyDisciplineCard() {
   const handlePray = () => {
     if (!completedToday.includes('pray')) {
       updateDisciplineState('pray').catch(() => {
-        // Error is handled in updateDisciplineState
+         toast({
+            variant: "destructive",
+            title: "Update Failed",
+            description: "Your discipline could not be updated. Please check your connection and try again.",
+        });
       });
     }
   }
@@ -104,21 +114,18 @@ export function DailyDisciplineCard() {
     
     setTogglingId(disciplineId);
     try {
-        // If it's already completed, just un-check it.
-        if (isCompleted) {
-            await updateDisciplineState(disciplineId);
+        if (disciplineId === 'read_bible' && !isCompleted) {
+            setIsBibleDialogOpen(true);
+            return; 
+        }
+        if (disciplineId === 'pray' && !isCompleted) {
+            setIsPrayerDialogOpen(true);
             return;
         }
 
-        // If it's not completed, perform the action.
-        if (disciplineId === 'read_bible') {
-            setIsBibleDialogOpen(true);
-        } else if (disciplineId === 'pray') {
-            setIsPrayerDialogOpen(true);
-        } else {
-            // For navigation disciplines, update DB, then navigate.
-            await updateDisciplineState(disciplineId);
-            
+        await updateDisciplineState(disciplineId);
+        
+        if (!isCompleted) {
             if (disciplineId === 'share_testimony') {
                 router.push('/dashboard/testimonies');
             } else if (disciplineId === 'evangelize') {
@@ -128,18 +135,9 @@ export function DailyDisciplineCard() {
             }
         }
     } catch (e) {
-        toast({
-            variant: "destructive",
-            title: "Update Failed",
-            description: "Your discipline could not be updated. Please check your connection and try again.",
-        });
+        // Error toast is already handled by the callers of updateDisciplineState or by the emitter
     } finally {
-        // Don't clear togglingId for dialogs, as they control their own closing.
-        if (disciplineId !== 'read_bible' && disciplineId !== 'pray') {
-            setTogglingId(null);
-        } else if (isCompleted) {
-             setTogglingId(null);
-        }
+        setTogglingId(null);
     }
   };
   
@@ -174,8 +172,15 @@ export function DailyDisciplineCard() {
     <>
       <Card>
         <CardHeader>
-          <CardTitle>Daily Discipline</CardTitle>
-          <CardDescription>Your spiritual checklist for today.</CardDescription>
+          <div className="flex items-start justify-between">
+            <div>
+              <CardTitle>Daily Discipline</CardTitle>
+              <CardDescription>Your spiritual checklist for today.</CardDescription>
+            </div>
+            <div className="text-sm font-medium text-muted-foreground pt-1 whitespace-nowrap">
+              {format(new Date(), 'PPP')}
+            </div>
+          </div>
         </CardHeader>
         <CardContent className="grid grid-cols-2 md:grid-cols-5 gap-4">
           {disciplines.map(discipline => (
@@ -185,9 +190,9 @@ export function DailyDisciplineCard() {
                 className="relative flex flex-col items-center justify-center gap-2 p-4 h-full text-center data-[state=checked]:bg-accent data-[state=checked]:border-primary disabled:opacity-75"
                 data-state={completedToday.includes(discipline.id) ? 'checked' : 'unchecked'}
                 onClick={() => handleDisciplineClick(discipline.id)}
-                disabled={togglingId === discipline.id}
+                disabled={togglingId === discipline.id && !completedToday.includes(discipline.id)}
             >
-                {togglingId === discipline.id ? (
+                {togglingId === discipline.id && !completedToday.includes(discipline.id) ? (
                     <Loader2 className="h-5 w-5 animate-spin" />
                 ) : (
                     <>
