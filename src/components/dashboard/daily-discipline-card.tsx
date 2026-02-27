@@ -80,7 +80,7 @@ export function DailyDisciplineCard() {
                 requestResourceData: updateData,
             });
             errorEmitter.emit('permission-error', permissionError);
-            throw error;
+            throw error; // Re-throw to be caught by handleDisciplineClick
         });
   };
 
@@ -187,25 +187,33 @@ export function DailyDisciplineCard() {
           </div>
         </CardHeader>
         <CardContent className="grid grid-cols-2 md:grid-cols-5 gap-4">
-          {disciplines.map(discipline => (
-             <Button
-                key={discipline.id}
-                variant="outline"
-                className="relative flex flex-col items-center justify-center gap-2 p-4 h-full text-center data-[state=checked]:bg-accent data-[state=checked]:border-primary disabled:opacity-75"
-                data-state={completedToday.includes(discipline.id) ? 'checked' : 'unchecked'}
-                onClick={() => handleDisciplineClick(discipline.id)}
-                disabled={togglingId === discipline.id && !completedToday.includes(discipline.id)}
-            >
-                {togglingId === discipline.id && !completedToday.includes(discipline.id) ? (
-                    <Loader2 className="h-5 w-5 animate-spin" />
-                ) : (
-                    <>
-                        {discipline.icon}
-                        <span className="text-sm font-medium whitespace-normal">{discipline.label}</span>
-                    </>
-                )}
-            </Button>
-          ))}
+          {disciplines.map(discipline => {
+              const isCompleted = completedToday.includes(discipline.id);
+              return (
+                <Button
+                    key={discipline.id}
+                    variant="outline"
+                    className="relative flex flex-col items-center justify-center gap-2 p-4 h-full text-center data-[state=checked]:bg-accent data-[state=checked]:text-accent-foreground data-[state=checked]:border-primary disabled:opacity-75"
+                    data-state={isCompleted ? 'checked' : 'unchecked'}
+                    onClick={() => handleDisciplineClick(discipline.id)}
+                    disabled={togglingId === discipline.id}
+                >
+                    {togglingId === discipline.id ? (
+                        <Loader2 className="h-5 w-5 animate-spin" />
+                    ) : (
+                        <>
+                            {isCompleted && (
+                                <div className="absolute top-1.5 right-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                                    <Check className="h-3 w-3" />
+                                </div>
+                            )}
+                            {discipline.icon}
+                            <span className="text-sm font-medium whitespace-normal">{discipline.label}</span>
+                        </>
+                    )}
+                </Button>
+              )
+          })}
         </CardContent>
       </Card>
        <BibleDialog 
