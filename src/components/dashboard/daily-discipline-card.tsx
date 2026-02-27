@@ -123,8 +123,10 @@ export function DailyDisciplineCard() {
             return;
         }
 
+        // For other buttons or for un-checking a button
         await updateDisciplineState(disciplineId);
         
+        // Navigate only after successful update, and only if it was to complete the task
         if (!isCompleted) {
             if (disciplineId === 'share_testimony') {
                 router.push('/dashboard/testimonies');
@@ -182,7 +184,7 @@ export function DailyDisciplineCard() {
               <CardDescription>Your spiritual checklist for today.</CardDescription>
             </div>
             <div className="text-sm font-medium text-muted-foreground pt-1 whitespace-nowrap">
-              {format(new Date(), 'PPP')}
+              {format(new Date(), 'PPPP')}
             </div>
           </div>
         </CardHeader>
