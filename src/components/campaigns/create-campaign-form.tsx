@@ -36,6 +36,9 @@ const formSchema = z.object({
     required_error: "Please select a campaign goal.",
   }),
   location: z.string().min(3, "A location is required.").max(200, "Location is too long."),
+  latitude: z.number().optional(),
+  longitude: z.number().optional(),
+  coverageRadius: z.number().min(100, "Minimum radius is 100m").max(50000, "Maximum radius is 50km").optional(),
   startDate: z.date({
     required_error: "A start date is required.",
   }),
@@ -149,6 +152,9 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
             description: finalDescription,
             goal: values.goal,
             location: values.location,
+            latitude: values.latitude,
+            longitude: values.longitude,
+            coverageRadius: values.coverageRadius,
             startDate: values.startDate,
             endDate: values.endDate,
             startTime: values.startTime,
@@ -257,14 +263,14 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
             <FormField
               control={form.control}
               name="location"
-              render={({ field }) => (
+              render={() => (
                 <FormItem>
-                  <FormLabel>Location</FormLabel>
+                  <FormLabel>Location & Coverage</FormLabel>
                   <FormControl>
-                    <LocationMapPicker field={field} />
+                    <LocationMapPicker form={form} />
                   </FormControl>
                   <FormDescription>
-                    Search for an address or click on the map to pin the campaign location.
+                    Search for an address, click on the map, or drag the pin. Adjust the coverage area with the slider.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>

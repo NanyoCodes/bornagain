@@ -45,6 +45,9 @@ const formSchema = z.object({
   description: z.string().min(3, "Description is too short.").max(5000, "Description is too long."),
   goal: z.string().min(3, "Goal is too short.").max(100, "Goal is too long."),
   location: z.string().min(3, "A location is required.").max(200, "Location is too long."),
+  latitude: z.number().optional(),
+  longitude: z.number().optional(),
+  coverageRadius: z.number().min(100, "Minimum radius is 100m").max(50000, "Maximum radius is 50km").optional(),
   startDate: z.date(),
   endDate: z.date(),
   startTime: z.string().min(1, "A start time is required."),
@@ -208,6 +211,9 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
       description: campaign.description || "",
       goal: campaign.goal || "",
       location: campaign.location || "",
+      latitude: campaign.latitude,
+      longitude: campaign.longitude,
+      coverageRadius: campaign.coverageRadius,
       startDate: safeToDate(campaign.startDate),
       endDate: safeToDate(campaign.endDate),
       startTime: campaign.startTime || "",
@@ -324,6 +330,9 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
         description: values.description,
         goal: values.goal,
         location: values.location,
+        latitude: values.latitude,
+        longitude: values.longitude,
+        coverageRadius: values.coverageRadius,
         startDate: values.startDate,
         endDate: values.endDate,
         startTime: values.startTime,
@@ -396,21 +405,21 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
                       </FormItem>
                   )}
                 />
-                <FormField
-                  control={form.control}
-                  name="location"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Location</FormLabel>
-                      <FormControl>
-                        <LocationMapPicker field={field} />
-                      </FormControl>
-                      <FormDescription>
-                        Search for an address or click on the map to pin the campaign location.
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+                 <FormField
+                    control={form.control}
+                    name="location"
+                    render={() => (
+                        <FormItem>
+                        <FormLabel>Location & Coverage</FormLabel>
+                        <FormControl>
+                            <LocationMapPicker form={form} />
+                        </FormControl>
+                        <FormDescription>
+                            Search for an address, click on the map, or drag the pin. Adjust the coverage area with the slider.
+                        </FormDescription>
+                        <FormMessage />
+                        </FormItem>
+                    )}
                 />
                 <FormField
                     control={form.control}

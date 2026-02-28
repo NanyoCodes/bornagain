@@ -62,6 +62,9 @@ export type Campaign = {
   description: string;
   goal: string;
   location: string;
+  latitude?: number;
+  longitude?: number;
+  coverageRadius?: number; // in meters
   startDate: Timestamp;
   endDate: Timestamp;
   startTime: string;

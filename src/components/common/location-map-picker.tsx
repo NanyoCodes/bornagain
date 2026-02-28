@@ -2,17 +2,19 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { useJsApiLoader, GoogleMap, Autocomplete, MarkerF } from '@react-google-maps/api';
+import { useJsApiLoader, GoogleMap, Autocomplete, MarkerF, CircleF } from '@react-google-maps/api';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Slider } from '@/components/ui/slider';
 import { Loader2 } from 'lucide-react';
-import { type ControllerRenderProps } from 'react-hook-form';
+import { type UseFormReturn } from 'react-hook-form';
 import { useToast } from '@/hooks/use-toast';
 
 const libraries: ('places')[] = ['places'];
 const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
 interface LocationMapPickerProps {
-    field: ControllerRenderProps<any, string>;
+    form: UseFormReturn<any>;
 }
 
 const fallbackCenter = {
@@ -20,7 +22,7 @@ const fallbackCenter = {
     lng: -118.2437
 };
 
-export function LocationMapPicker({ field }: LocationMapPickerProps) {
+export function LocationMapPicker({ form }: LocationMapPickerProps) {
     const { toast } = useToast();
     const { isLoaded, loadError } = useJsApiLoader({
         googleMapsApiKey: GOOGLE_MAPS_API_KEY || '',
@@ -29,9 +31,16 @@ export function LocationMapPicker({ field }: LocationMapPickerProps) {
 
     const [autocomplete, setAutocomplete] = useState<google.maps.places.Autocomplete | null>(null);
     const [map, setMap] = useState<google.maps.Map | null>(null);
-    const [markerPosition, setMarkerPosition] = useState<google.maps.LatLngLiteral | null>(null);
-    const [center, setCenter] = useState(fallbackCenter);
-    const [inputValue, setInputValue] = useState(field.value || '');
+
+    const initialLocation = form.getValues('location');
+    const initialLat = form.getValues('latitude');
+    const initialLng = form.getValues('longitude');
+    const initialRadius = form.getValues('coverageRadius') || 1000; // Default to 1km
+
+    const [markerPosition, setMarkerPosition] = useState<google.maps.LatLngLiteral | null>(initialLat && initialLng ? { lat: initialLat, lng: initialLng } : null);
+    const [center, setCenter] = useState(initialLat && initialLng ? { lat: initialLat, lng: initialLng } : fallbackCenter);
+    const [inputValue, setInputValue] = useState(initialLocation || '');
+    const [radius, setRadius] = useState(initialRadius);
 
     const geocoderRef = useRef<google.maps.Geocoder>();
     const hasFetchedLocation = useRef(false);
@@ -44,43 +53,57 @@ export function LocationMapPicker({ field }: LocationMapPickerProps) {
     
     // Geocode initial value for the map marker on load (for edit form)
     useEffect(() => {
-        if (isLoaded && geocoderRef.current && field.value && !markerPosition) {
-            geocoderRef.current.geocode({ address: field.value }, (results, status) => {
+        if (isLoaded && geocoderRef.current && initialLocation && !markerPosition) {
+            geocoderRef.current.geocode({ address: initialLocation }, (results, status) => {
                 if (status === 'OK' && results && results[0]) {
                     const location = results[0].geometry.location;
                     const newPos = { lat: location.lat(), lng: location.lng() };
                     setMarkerPosition(newPos);
                     setCenter(newPos);
+                    form.setValue('latitude', newPos.lat);
+                    form.setValue('longitude', newPos.lng);
                     if(map) map.panTo(newPos);
                 }
             });
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isLoaded, field.value, map]);
+    }, [isLoaded, initialLocation, map]);
 
+
+    const updateFormLocation = useCallback((latLng: google.maps.LatLng) => {
+        if (!geocoderRef.current) return;
+        const newPos = { lat: latLng.lat(), lng: latLng.lng() };
+        setCenter(newPos);
+        setMarkerPosition(newPos);
+        form.setValue('latitude', newPos.lat, { shouldDirty: true });
+        form.setValue('longitude', newPos.lng, { shouldDirty: true });
+
+        geocoderRef.current.geocode({ location: newPos }, (results, status) => {
+            if (status === 'OK' && results && results[0]) {
+                const address = results[0].formatted_address;
+                setInputValue(address);
+                form.setValue('location', address, { shouldDirty: true });
+            } else {
+                toast({
+                    variant: "destructive",
+                    title: "Geocoding failed",
+                    description: `Could not find an address for this location. Status: ${status}`,
+                });
+                setInputValue('Custom Pinned Location');
+                form.setValue('location', 'Custom Pinned Location', { shouldDirty: true });
+            }
+        });
+    }, [form, toast]);
+    
     const handleMapClick = useCallback((e: google.maps.MapMouseEvent) => {
-        if (e.latLng && geocoderRef.current) {
-            const newPos = { lat: e.latLng.lat(), lng: e.latLng.lng() };
-            setCenter(newPos);
-            setMarkerPosition(newPos);
-            geocoderRef.current.geocode({ location: newPos }, (results, status) => {
-                if (status === 'OK' && results && results[0]) {
-                    setInputValue(results[0].formatted_address);
-                    field.onChange(results[0].formatted_address);
-                } else {
-                    toast({
-                        variant: "destructive",
-                        title: "Geocoding failed",
-                        description: `Could not find an address for this location. Status: ${status}`,
-                    });
-                }
-            });
+        if (e.latLng) {
+            updateFormLocation(e.latLng);
         }
-    }, [field, toast]);
+    }, [updateFormLocation]);
     
     // Get user's current location on initial load for new campaigns
     useEffect(() => {
-        if (isLoaded && !field.value && navigator.geolocation && !hasFetchedLocation.current) {
+        if (isLoaded && !initialLocation && navigator.geolocation && !hasFetchedLocation.current) {
             hasFetchedLocation.current = true; // Prevent re-fetching
             navigator.geolocation.getCurrentPosition(
                 (position) => {
@@ -88,20 +111,15 @@ export function LocationMapPicker({ field }: LocationMapPickerProps) {
                         lat: position.coords.latitude,
                         lng: position.coords.longitude,
                     };
+                    const userLatLng = new window.google.maps.LatLng(userLocation.lat, userLocation.lng);
                     setCenter(userLocation);
+                    updateFormLocation(userLatLng);
                     if (map) {
                         map.panTo(userLocation);
-                        map.setZoom(12);
-                        
-                        // Create a mock map event to auto-populate the form with current location
-                        const mockEvent = {
-                            latLng: new window.google.maps.LatLng(userLocation.lat, userLocation.lng)
-                        };
-                        handleMapClick(mockEvent as google.maps.MapMouseEvent);
+                        map.setZoom(14);
                     }
                 },
                 () => {
-                    // Handle error or denial
                     toast({
                         title: 'Location access was denied',
                         description: 'Using default location. You can still search or click on the map.',
@@ -109,7 +127,7 @@ export function LocationMapPicker({ field }: LocationMapPickerProps) {
                 }
             );
         }
-    }, [isLoaded, field.value, map, handleMapClick, toast]);
+    }, [isLoaded, initialLocation, map, toast, updateFormLocation]);
 
 
     const onLoadAutocomplete = (autocompleteInstance: google.maps.places.Autocomplete) => {
@@ -120,28 +138,34 @@ export function LocationMapPicker({ field }: LocationMapPickerProps) {
         if (autocomplete) {
             const place = autocomplete.getPlace();
             if (place.geometry && place.geometry.location) {
-                const location = place.geometry.location;
-                const newPos = { lat: location.lat(), lng: location.lng() };
                 if (map) {
-                    map.panTo(newPos);
+                    map.panTo(place.geometry.location);
                     map.setZoom(15);
                 }
-                setCenter(newPos);
-                setMarkerPosition(newPos);
+                updateFormLocation(place.geometry.location);
                 setInputValue(place.formatted_address || '');
-                field.onChange(place.formatted_address || '');
             } else if (place.name) {
-                // Fallback for places without geometry
                 setInputValue(place.name);
-                field.onChange(place.name);
+                form.setValue('location', place.name, { shouldDirty: true });
             }
         }
     };
     
     const handleMarkerDragEnd = useCallback((e: google.maps.MapMouseEvent) => {
-        handleMapClick(e);
-    }, [handleMapClick]);
+        if (e.latLng) {
+            updateFormLocation(e.latLng);
+        }
+    }, [updateFormLocation]);
 
+    const handleSliderChange = (value: number[]) => {
+        setRadius(value[0]);
+        form.setValue('coverageRadius', value[0], { shouldDirty: true });
+    };
+
+    const formatRadius = (value: number) => {
+        if (value < 1000) return `${value}m`;
+        return `${(value / 1000).toFixed(1)}km`;
+    }
 
     if (!GOOGLE_MAPS_API_KEY) {
         return <div className="text-destructive text-sm p-2 rounded-md border border-destructive/50 bg-destructive/10">Google Maps API key is missing. Please set NEXT_PUBLIC_GOOGLE_MAPS_API_KEY in your .env file.</div>;
@@ -175,13 +199,12 @@ export function LocationMapPicker({ field }: LocationMapPickerProps) {
                     className="text-base"
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
-                    onBlur={() => field.onChange(inputValue)}
                 />
             </Autocomplete>
             <GoogleMap
                 mapContainerClassName="h-80 w-full rounded-md"
                 center={center}
-                zoom={markerPosition ? 15 : 10}
+                zoom={markerPosition ? 14 : 10}
                 onLoad={setMap}
                 onClick={handleMapClick}
                 options={{
@@ -191,13 +214,41 @@ export function LocationMapPicker({ field }: LocationMapPickerProps) {
                 }}
             >
                 {markerPosition && (
-                    <MarkerF
-                        position={markerPosition}
-                        draggable={true}
-                        onDragEnd={handleMarkerDragEnd}
-                    />
+                    <>
+                        <MarkerF
+                            position={markerPosition}
+                            draggable={true}
+                            onDragEnd={handleMarkerDragEnd}
+                        />
+                        <CircleF
+                            center={markerPosition}
+                            radius={radius}
+                            options={{
+                                strokeColor: '#3b82f6',
+                                strokeOpacity: 0.8,
+                                strokeWeight: 2,
+                                fillColor: '#3b82f6',
+                                fillOpacity: 0.2,
+                            }}
+                        />
+                    </>
                 )}
             </GoogleMap>
+            <div className='space-y-2'>
+                <div className='flex justify-between items-center'>
+                    <Label htmlFor="coverage-slider">Coverage Radius</Label>
+                    <span className="text-sm font-medium text-muted-foreground">{formatRadius(radius)}</span>
+                </div>
+                <Slider
+                    id="coverage-slider"
+                    min={100}
+                    max={50000}
+                    step={100}
+                    value={[radius]}
+                    onValueChange={handleSliderChange}
+                    disabled={!markerPosition}
+                />
+            </div>
         </div>
     );
 }

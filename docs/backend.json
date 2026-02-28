@@ -175,6 +175,18 @@
           "type": "string",
           "description": "The campaign's address or general location, often autofilled by Google Maps."
         },
+        "latitude": {
+          "type": "number",
+          "description": "The latitude of the campaign's pinned location."
+        },
+        "longitude": {
+          "type": "number",
+          "description": "The longitude of the campaign's pinned location."
+        },
+        "coverageRadius": {
+          "type": "number",
+          "description": "The radius of the campaign's coverage area in meters."
+        },
         "startDate": {
           "type": "object"
         },
