@@ -33,9 +33,24 @@ export function LocationMapPicker({ form }: LocationMapPickerProps) {
     const [map, setMap] = useState<google.maps.Map | null>(null);
 
     const location = form.getValues('location');
-    const latitude = form.getValues('latitude');
-    const longitude = form.getValues('longitude');
+    let latitude = form.getValues('latitude');
+    let longitude = form.getValues('longitude');
     const radiusValue = form.getValues('coverageRadius');
+
+    if ((!latitude || !longitude) && location && typeof location === 'string' && location.startsWith('Pinned Location')) {
+        const match = location.match(/(-?\d+\.\d+),\s*(-?\d+\.\d+)/);
+        if (match) {
+            const parsedLat = parseFloat(match[1]);
+            const parsedLng = parseFloat(match[2]);
+            if (!isNaN(parsedLat) && !isNaN(parsedLng)) {
+                latitude = parsedLat;
+                longitude = parsedLng;
+                form.setValue('latitude', latitude, { shouldDirty: false });
+                form.setValue('longitude', longitude, { shouldDirty: false });
+            }
+        }
+    }
+
 
     const [markerPosition, setMarkerPosition] = useState<google.maps.LatLngLiteral | null>(latitude && longitude ? { lat: latitude, lng: longitude } : null);
     const [center, setCenter] = useState(latitude && longitude ? { lat: latitude, lng: longitude } : fallbackCenter);
@@ -68,7 +83,7 @@ export function LocationMapPicker({ form }: LocationMapPickerProps) {
             });
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isLoaded, map, form.getValues('location')]);
+    }, [isLoaded, map]);
 
 
     const updateFormLocation = useCallback((latLng: google.maps.LatLng) => {

@@ -54,7 +54,7 @@ const formSchema = z.object({
   endTime: z.string().min(1, "An end time is required."),
   scripture: z.string().max(100, "Scripture is too long.").optional(),
   scriptureTestimony: z.string().max(500, "Caption is too long.").optional(),
-  maxParticipants: z.number().optional(),
+  maxParticipants: z.number().min(1, "Maximum participants must be at least 1.").optional(),
   streamUrl: z.string().url({ message: "Please enter a valid URL." }).optional().or(z.literal('')),
   lastUpdateReason: z.string().min(10, { message: "Please provide a reason of at least 10 characters." }),
 }).refine((data) => data.endDate >= data.startDate, {
@@ -339,7 +339,7 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
         endTime: values.endTime,
         scripture: values.scripture,
         scriptureTestimony: values.scriptureTestimony,
-        maxParticipants: values.maxParticipants || null,
+        maxParticipants: values.maxParticipants ?? null,
         streamUrl: values.streamUrl || null,
         lastUpdateReason: values.lastUpdateReason,
     };
