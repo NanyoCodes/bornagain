@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect, useRef, useLayoutEffect } from 'react';
@@ -287,10 +288,28 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
             </div>
              <ScrollArea className="flex-grow border rounded-md">
                 {loadingProfile && (
-                  <div className="space-y-3 p-4">
-                    <Skeleton className="h-10 w-full" />
-                    <Skeleton className="h-10 w-full" />
-                    <Skeleton className="h-10 w-full" />
+                  <div className="space-y-6 p-4">
+                    <div className="flex items-center gap-4">
+                      <Skeleton className="h-10 w-10 rounded-full" />
+                      <div className="space-y-2">
+                        <Skeleton className="h-4 w-48" />
+                        <Skeleton className="h-4 w-24" />
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <Skeleton className="h-10 w-10 rounded-full" />
+                      <div className="space-y-2">
+                        <Skeleton className="h-4 w-40" />
+                        <Skeleton className="h-4 w-20" />
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <Skeleton className="h-10 w-10 rounded-full" />
+                      <div className="space-y-2">
+                        <Skeleton className="h-4 w-52" />
+                        <Skeleton className="h-4 w-28" />
+                      </div>
+                    </div>
                   </div>
                 )}
                 {!loadingProfile && filteredHistoryGroups.length === 0 && (
@@ -299,26 +318,48 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                   </div>
                 )}
                 {!loadingProfile && filteredHistoryGroups.length > 0 && (
-                  <div className="p-2 space-y-2">
+                  <div className="p-4">
                     {filteredHistoryGroups.map(group => (
                         <div key={group.date.toISOString()}>
-                            <div className="sticky top-0 z-10 flex justify-center my-2 bg-transparent">
-                                <div className="px-3 py-1 text-xs text-muted-foreground bg-muted/80 backdrop-blur-sm rounded-full">
-                                    {format(group.date, 'PPP')}
+                            <div className="relative my-4">
+                                <div className="absolute inset-0 flex items-center" aria-hidden="true">
+                                    <div className="w-full border-t" />
+                                </div>
+                                <div className="relative flex justify-center">
+                                    <span className="bg-background px-3 text-sm font-semibold text-muted-foreground">{format(group.date, 'PPP')}</span>
                                 </div>
                             </div>
-                            <div className="space-y-2">
-                                {group.items.map((item, index) => (
-                                    <div key={index} className="flex justify-between items-center p-3 border rounded-lg bg-background hover:bg-muted/50 transition-colors">
-                                        <div className="flex items-center gap-3">
-                                            <BookOpen className="h-5 w-5 text-primary" />
-                                            <p className="font-medium">{item.book} {item.chapter}</p>
-                                        </div>
-                                        <p className="text-sm text-muted-foreground">
-                                            {item.readAt ? format(item.readAt.toDate(), 'p') : ''}
-                                        </p>
-                                    </div>
-                                ))}
+                            <div className="mt-6 flow-root">
+                                <ul className="-mb-8">
+                                    {group.items.map((item, itemIdx) => (
+                                        <li key={itemIdx}>
+                                            <div className="relative pb-8">
+                                                {itemIdx !== group.items.length - 1 ? (
+                                                    <span className="absolute left-4 top-4 -ml-px h-full w-0.5 bg-border" aria-hidden="true" />
+                                                ) : null}
+                                                <div className="relative flex items-start space-x-3">
+                                                    <div>
+                                                        <span className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center ring-8 ring-background">
+                                                            <BookOpen className="h-5 w-5 text-primary" />
+                                                        </span>
+                                                    </div>
+                                                    <div className="flex min-w-0 flex-1 justify-between space-x-4 pt-1.5">
+                                                        <div>
+                                                            <p className="text-sm text-muted-foreground">
+                                                                Read <span className="font-medium text-foreground">{item.book} {item.chapter}</span>
+                                                            </p>
+                                                        </div>
+                                                        <div className="whitespace-nowrap text-right text-sm text-muted-foreground">
+                                                            <time dateTime={item.readAt.toDate().toISOString()}>
+                                                                {item.readAt ? format(item.readAt.toDate(), 'p') : ''}
+                                                            </time>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    ))}
+                                </ul>
                             </div>
                         </div>
                     ))}
