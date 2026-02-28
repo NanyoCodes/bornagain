@@ -38,7 +38,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useRouter } from 'next/navigation';
-import { LocationAutocompleteInput } from '../common/location-autocomplete-input';
+import { LocationMapPicker } from '../common/location-map-picker';
 
 const formSchema = z.object({
   title: z.string().min(3, "Title is too short.").max(100, "Title is too long."),
@@ -403,10 +403,10 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
                     <FormItem>
                       <FormLabel>Location</FormLabel>
                       <FormControl>
-                        <LocationAutocompleteInput field={field} />
+                        <LocationMapPicker field={field} />
                       </FormControl>
                       <FormDescription>
-                        Search for an address, city, or region.
+                        Search for an address or click on the map to pin the campaign location.
                       </FormDescription>
                       <FormMessage />
                     </FormItem>

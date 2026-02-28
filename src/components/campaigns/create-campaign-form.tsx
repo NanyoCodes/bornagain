@@ -29,7 +29,7 @@ import { collection, serverTimestamp, doc, writeBatch } from "firebase/firestore
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { format } from "date-fns";
-import { LocationAutocompleteInput } from "../common/location-autocomplete-input";
+import { LocationMapPicker } from "../common/location-map-picker";
 
 const formSchema = z.object({
   goal: z.string({
@@ -261,10 +261,10 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
                 <FormItem>
                   <FormLabel>Location</FormLabel>
                   <FormControl>
-                    <LocationAutocompleteInput field={field} />
+                    <LocationMapPicker field={field} />
                   </FormControl>
                   <FormDescription>
-                    Search for an address, city, or region.
+                    Search for an address or click on the map to pin the campaign location.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
