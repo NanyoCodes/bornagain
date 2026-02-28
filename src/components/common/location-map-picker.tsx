@@ -15,7 +15,7 @@ interface LocationMapPickerProps {
     field: ControllerRenderProps<any, string>;
 }
 
-const defaultCenter = {
+const fallbackCenter = {
     lat: 34.0522,
     lng: -118.2437
 };
@@ -30,9 +30,11 @@ export function LocationMapPicker({ field }: LocationMapPickerProps) {
     const [autocomplete, setAutocomplete] = useState<google.maps.places.Autocomplete | null>(null);
     const [map, setMap] = useState<google.maps.Map | null>(null);
     const [markerPosition, setMarkerPosition] = useState<google.maps.LatLngLiteral | null>(null);
+    const [center, setCenter] = useState(fallbackCenter);
     const [inputValue, setInputValue] = useState(field.value || '');
 
     const geocoderRef = useRef<google.maps.Geocoder>();
+    const hasFetchedLocation = useRef(false);
 
     useEffect(() => {
         if (isLoaded && !geocoderRef.current) {
@@ -48,12 +50,66 @@ export function LocationMapPicker({ field }: LocationMapPickerProps) {
                     const location = results[0].geometry.location;
                     const newPos = { lat: location.lat(), lng: location.lng() };
                     setMarkerPosition(newPos);
+                    setCenter(newPos);
                     if(map) map.panTo(newPos);
                 }
             });
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isLoaded, field.value, map]);
+
+    const handleMapClick = useCallback((e: google.maps.MapMouseEvent) => {
+        if (e.latLng && geocoderRef.current) {
+            const newPos = { lat: e.latLng.lat(), lng: e.latLng.lng() };
+            setCenter(newPos);
+            setMarkerPosition(newPos);
+            geocoderRef.current.geocode({ location: newPos }, (results, status) => {
+                if (status === 'OK' && results && results[0]) {
+                    setInputValue(results[0].formatted_address);
+                    field.onChange(results[0].formatted_address);
+                } else {
+                    toast({
+                        variant: "destructive",
+                        title: "Geocoding failed",
+                        description: `Could not find an address for this location. Status: ${status}`,
+                    });
+                }
+            });
+        }
+    }, [field, toast]);
+    
+    // Get user's current location on initial load for new campaigns
+    useEffect(() => {
+        if (isLoaded && !field.value && navigator.geolocation && !hasFetchedLocation.current) {
+            hasFetchedLocation.current = true; // Prevent re-fetching
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const userLocation = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude,
+                    };
+                    setCenter(userLocation);
+                    if (map) {
+                        map.panTo(userLocation);
+                        map.setZoom(12);
+                        
+                        // Create a mock map event to auto-populate the form with current location
+                        const mockEvent = {
+                            latLng: new window.google.maps.LatLng(userLocation.lat, userLocation.lng)
+                        };
+                        handleMapClick(mockEvent as google.maps.MapMouseEvent);
+                    }
+                },
+                () => {
+                    // Handle error or denial
+                    toast({
+                        title: 'Location access was denied',
+                        description: 'Using default location. You can still search or click on the map.',
+                    });
+                }
+            );
+        }
+    }, [isLoaded, field.value, map, handleMapClick, toast]);
 
 
     const onLoadAutocomplete = (autocompleteInstance: google.maps.places.Autocomplete) => {
@@ -70,6 +126,7 @@ export function LocationMapPicker({ field }: LocationMapPickerProps) {
                     map.panTo(newPos);
                     map.setZoom(15);
                 }
+                setCenter(newPos);
                 setMarkerPosition(newPos);
                 setInputValue(place.formatted_address || '');
                 field.onChange(place.formatted_address || '');
@@ -80,25 +137,6 @@ export function LocationMapPicker({ field }: LocationMapPickerProps) {
             }
         }
     };
-    
-    const handleMapClick = useCallback((e: google.maps.MapMouseEvent) => {
-        if (e.latLng && geocoderRef.current) {
-            const newPos = { lat: e.latLng.lat(), lng: e.latLng.lng() };
-            setMarkerPosition(newPos);
-            geocoderRef.current.geocode({ location: newPos }, (results, status) => {
-                if (status === 'OK' && results && results[0]) {
-                    setInputValue(results[0].formatted_address);
-                    field.onChange(results[0].formatted_address);
-                } else {
-                    toast({
-                        variant: "destructive",
-                        title: "Geocoding failed",
-                        description: `Could not find an address for this location. Status: ${status}`,
-                    });
-                }
-            });
-        }
-    }, [field, toast]);
     
     const handleMarkerDragEnd = useCallback((e: google.maps.MapMouseEvent) => {
         handleMapClick(e);
@@ -142,8 +180,8 @@ export function LocationMapPicker({ field }: LocationMapPickerProps) {
             </Autocomplete>
             <GoogleMap
                 mapContainerClassName="h-80 w-full rounded-md"
-                center={markerPosition || defaultCenter}
-                zoom={markerPosition ? 15 : 8}
+                center={center}
+                zoom={markerPosition ? 15 : 10}
                 onLoad={setMap}
                 onClick={handleMapClick}
                 options={{
