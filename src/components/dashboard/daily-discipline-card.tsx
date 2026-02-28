@@ -179,7 +179,7 @@ export function DailyDisciplineCard() {
       <Card>
         <CardHeader>
           <div className="flex flex-col items-start gap-2 sm:flex-row sm:justify-between">
-            <div>
+            <div className="space-y-1">
               <CardTitle>Daily Discipline</CardTitle>
               <CardDescription>Your spiritual checklist for today.</CardDescription>
             </div>
@@ -188,14 +188,14 @@ export function DailyDisciplineCard() {
             </div>
           </div>
         </CardHeader>
-        <CardContent className="grid grid-cols-2 md:grid-cols-5 gap-4">
+        <CardContent className="grid grid-cols-2 md:grid-cols-5 gap-2 sm:gap-4">
           {disciplines.map(discipline => {
               const isCompleted = completedToday.includes(discipline.id);
               return (
                 <Button
                     key={discipline.id}
                     variant="outline"
-                    className="relative flex flex-col items-center justify-center gap-2 p-4 h-full text-center data-[state=checked]:bg-accent data-[state=checked]:text-accent-foreground data-[state=checked]:border-primary disabled:opacity-75"
+                    className="relative flex flex-col items-center justify-center gap-1 px-2 py-4 h-full text-center data-[state=checked]:bg-accent data-[state=checked]:text-accent-foreground data-[state=checked]:border-primary disabled:opacity-75"
                     data-state={isCompleted ? 'checked' : 'unchecked'}
                     onClick={() => handleDisciplineClick(discipline.id)}
                     disabled={togglingId === discipline.id}
