@@ -283,5 +283,4 @@ export function EditSoulForm({ soul, onSoulUpdated }: EditSoulFormProps) {
     </Form>
   );
 }
-
     
