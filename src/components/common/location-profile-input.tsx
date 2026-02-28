@@ -20,6 +20,8 @@ export function LocationProfileInput({ form }: LocationProfileInputProps) {
     });
 
     const [autocomplete, setAutocomplete] = useState<google.maps.places.Autocomplete | null>(null);
+    const [inputValue, setInputValue] = useState('');
+
 
     const onLoad = (autocompleteInstance: google.maps.places.Autocomplete) => {
         setAutocomplete(autocompleteInstance);
@@ -45,6 +47,9 @@ export function LocationProfileInput({ form }: LocationProfileInputProps) {
 
             form.setValue('city', city, { shouldDirty: true });
             form.setValue('country', country, { shouldDirty: true });
+
+            const displayValue = [city, country].filter(Boolean).join(', ');
+            setInputValue(displayValue);
         }
     };
     
@@ -78,6 +83,8 @@ export function LocationProfileInput({ form }: LocationProfileInputProps) {
                 placeholder="Search location to autofill city/country"
                 type="text"
                 className="text-base"
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
             />
         </Autocomplete>
     );

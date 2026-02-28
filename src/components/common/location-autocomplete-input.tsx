@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useJsApiLoader, Autocomplete } from '@react-google-maps/api';
 import { Input } from '@/components/ui/input';
 import { Loader2 } from 'lucide-react';
@@ -21,6 +21,15 @@ export function LocationAutocompleteInput({ field }: LocationAutocompleteInputPr
     });
 
     const [autocomplete, setAutocomplete] = useState<google.maps.places.Autocomplete | null>(null);
+    const [inputValue, setInputValue] = useState(field.value || '');
+
+    useEffect(() => {
+        // Sync local state if form value changes from an external source (e.g. form.reset)
+        if (field.value !== inputValue) {
+            setInputValue(field.value || '');
+        }
+    }, [field.value, inputValue]);
+
 
     const onLoad = (autocompleteInstance: google.maps.places.Autocomplete) => {
         setAutocomplete(autocompleteInstance);
@@ -30,10 +39,16 @@ export function LocationAutocompleteInput({ field }: LocationAutocompleteInputPr
         if (autocomplete) {
             const place = autocomplete.getPlace();
             if (place.formatted_address) {
+                setInputValue(place.formatted_address);
                 field.onChange(place.formatted_address);
             }
         }
     };
+    
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setInputValue(e.target.value);
+        field.onChange(e.target.value);
+    }
 
     if (!GOOGLE_MAPS_API_KEY) {
         return <div className="text-destructive text-sm p-2 rounded-md border border-destructive/50 bg-destructive/10">Google Maps API key is missing. Please set NEXT_PUBLIC_GOOGLE_MAPS_API_KEY in your .env file.</div>;
@@ -62,11 +77,11 @@ export function LocationAutocompleteInput({ field }: LocationAutocompleteInputPr
     return (
         <Autocomplete onLoad={onLoad} onPlaceChanged={onPlaceChanged} fields={['formatted_address']} types={['geocode']}>
             <Input
-                {...field}
                 placeholder="Start typing an address, city, or place..."
                 type="text"
                 className="text-base"
-                onChange={(e) => field.onChange(e.target.value)}
+                value={inputValue}
+                onChange={handleInputChange}
             />
         </Autocomplete>
     );
