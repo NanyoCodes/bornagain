@@ -178,12 +178,12 @@ export function DailyDisciplineCard() {
     <>
       <Card>
         <CardHeader>
-          <div className="flex items-start justify-between">
+          <div className="flex flex-col items-start gap-2 sm:flex-row sm:justify-between">
             <div>
               <CardTitle>Daily Discipline</CardTitle>
               <CardDescription>Your spiritual checklist for today.</CardDescription>
             </div>
-            <div className="text-sm font-medium text-muted-foreground pt-1 whitespace-nowrap">
+            <div className="text-sm font-medium text-muted-foreground sm:pt-1">
               {format(new Date(), 'PPPP')}
             </div>
           </div>

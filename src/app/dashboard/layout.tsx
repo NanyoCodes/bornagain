@@ -292,7 +292,7 @@ function BottomNavBar() {
               )}
             >
               <item.icon className="h-5 w-5" />
-              <span className="whitespace-nowrap">{item.label}</span>
+              <span className="text-center">{item.label}</span>
             </Link>
           ))}
         </div>
