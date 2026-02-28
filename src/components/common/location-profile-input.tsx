@@ -53,11 +53,14 @@ export function LocationProfileInput({ form }: LocationProfileInputProps) {
     }
 
     if (loadError) {
-        const specificError = loadError.message.includes('ApiNotActivatedMapError')
-            ? 'The "Maps JavaScript API" or "Places API" is not enabled in your Google Cloud project. Please enable both and try again.'
-            : 'Error loading Google Maps. Please check your API key and network connection.';
-            
-         return <div className="text-destructive text-sm p-2 rounded-md border border-destructive/50 bg-destructive/10">{specificError}</div>;
+        let errorMessage = 'Error loading Google Maps. Please check your API key and network connection.';
+        if (loadError.message.includes('ApiNotActivatedMapError')) {
+            errorMessage = 'Google Maps Error: ApiNotActivatedMapError. Please ensure: 1) "Maps JavaScript API" and "Places API" are enabled. 2) Billing is enabled on your Google Cloud project. 3) Your API key restrictions are configured correctly for this domain.';
+        } else if (loadError.message.includes('InvalidKeyMapError')) {
+            errorMessage = 'Google Maps Error: Invalid API Key. Please check the key in your .env file.';
+        }
+        
+         return <div className="text-destructive text-sm p-2 rounded-md border border-destructive/50 bg-destructive/10">{errorMessage}</div>;
     }
 
     if (!isLoaded) {
