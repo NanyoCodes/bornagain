@@ -32,15 +32,15 @@ export function LocationMapPicker({ form }: LocationMapPickerProps) {
     const [autocomplete, setAutocomplete] = useState<google.maps.places.Autocomplete | null>(null);
     const [map, setMap] = useState<google.maps.Map | null>(null);
 
-    const initialLocation = form.getValues('location');
-    const initialLat = form.getValues('latitude');
-    const initialLng = form.getValues('longitude');
-    const initialRadius = form.getValues('coverageRadius') || 1000; // Default to 1km
+    const location = form.getValues('location');
+    const latitude = form.getValues('latitude');
+    const longitude = form.getValues('longitude');
+    const radiusValue = form.getValues('coverageRadius');
 
-    const [markerPosition, setMarkerPosition] = useState<google.maps.LatLngLiteral | null>(initialLat && initialLng ? { lat: initialLat, lng: initialLng } : null);
-    const [center, setCenter] = useState(initialLat && initialLng ? { lat: initialLat, lng: initialLng } : fallbackCenter);
-    const [inputValue, setInputValue] = useState(initialLocation || '');
-    const [radius, setRadius] = useState(initialRadius);
+    const [markerPosition, setMarkerPosition] = useState<google.maps.LatLngLiteral | null>(latitude && longitude ? { lat: latitude, lng: longitude } : null);
+    const [center, setCenter] = useState(latitude && longitude ? { lat: latitude, lng: longitude } : fallbackCenter);
+    const [inputValue, setInputValue] = useState(location || '');
+    const [radius, setRadius] = useState(radiusValue || 1000);
 
     const geocoderRef = useRef<google.maps.Geocoder>();
     const hasFetchedLocation = useRef(false);
@@ -53,7 +53,8 @@ export function LocationMapPicker({ form }: LocationMapPickerProps) {
     
     // Geocode initial value for the map marker on load (for edit form)
     useEffect(() => {
-        if (isLoaded && geocoderRef.current && initialLocation && !markerPosition) {
+        const initialLocation = form.getValues('location');
+        if (isLoaded && geocoderRef.current && initialLocation && !(form.getValues('latitude') && form.getValues('longitude'))) {
             geocoderRef.current.geocode({ address: initialLocation }, (results, status) => {
                 if (status === 'OK' && results && results[0]) {
                     const location = results[0].geometry.location;
@@ -67,7 +68,7 @@ export function LocationMapPicker({ form }: LocationMapPickerProps) {
             });
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isLoaded, initialLocation, map]);
+    }, [isLoaded, map, form.getValues('location')]);
 
 
     const updateFormLocation = useCallback((latLng: google.maps.LatLng) => {
@@ -87,10 +88,11 @@ export function LocationMapPicker({ form }: LocationMapPickerProps) {
                 toast({
                     variant: "destructive",
                     title: "Geocoding failed",
-                    description: `Could not find an address for this location. Status: ${status}`,
+                    description: `Could not find an address for this location. Using coordinates instead. Status: ${status}`,
                 });
-                setInputValue('Custom Pinned Location');
-                form.setValue('location', 'Custom Pinned Location', { shouldDirty: true });
+                const pinnedLocation = `Pinned Location (${newPos.lat.toFixed(4)}, ${newPos.lng.toFixed(4)})`;
+                setInputValue(pinnedLocation);
+                form.setValue('location', pinnedLocation, { shouldDirty: true });
             }
         });
     }, [form, toast]);
@@ -103,6 +105,7 @@ export function LocationMapPicker({ form }: LocationMapPickerProps) {
     
     // Get user's current location on initial load for new campaigns
     useEffect(() => {
+        const initialLocation = form.getValues('location');
         if (isLoaded && !initialLocation && navigator.geolocation && !hasFetchedLocation.current) {
             hasFetchedLocation.current = true; // Prevent re-fetching
             navigator.geolocation.getCurrentPosition(
@@ -127,7 +130,7 @@ export function LocationMapPicker({ form }: LocationMapPickerProps) {
                 }
             );
         }
-    }, [isLoaded, initialLocation, map, toast, updateFormLocation]);
+    }, [isLoaded, map, toast, updateFormLocation, form]);
 
 
     const onLoadAutocomplete = (autocompleteInstance: google.maps.places.Autocomplete) => {
