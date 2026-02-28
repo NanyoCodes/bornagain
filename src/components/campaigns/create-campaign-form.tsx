@@ -87,7 +87,7 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
     },
   });
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onAiSubmit(values: z.infer<typeof formSchema>) {
     setIsGenerating(true);
     setIdeas(null);
     try {
@@ -113,6 +113,21 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
     }
   }
 
+  const handleCreateManually = () => {
+    form.trigger().then(isValid => {
+        if (isValid) {
+            setIdeas({ campaignNames: [], description: '' }); // Set ideas to a non-null state to trigger the next step
+            setSelectedName('custom');
+            setFinalDescription('');
+        } else {
+            toast({
+                variant: "destructive",
+                title: "Incomplete Form",
+                description: "Please fill out all required fields before proceeding.",
+            });
+        }
+    });
+  };
 
   const handleCreateCampaign = async () => {
     const finalName = selectedName === 'custom' ? customName : selectedName;
@@ -147,6 +162,7 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
             scripture: values.scripture,
             scriptureTestimony: values.scriptureTestimony,
             imageUrl: null,
+            soulsLogged: 0,
         };
         
         const batch = writeBatch(firestore);
@@ -197,7 +213,7 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
   return (
     <>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={form.handleSubmit(onAiSubmit)} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <FormField
               control={form.control}
@@ -387,18 +403,19 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
                 </FormItem>
               )}
             />
-           <p className="text-sm text-muted-foreground">
-            Provide some keywords and let our AI assistant brainstorm for you.
+           <p className="text-sm text-muted-foreground pt-2">
+            Fill the details above, then either use AI to generate ideas or create the campaign manually.
            </p>
 
-          <Button type="submit" className="w-full" disabled={isGenerating}>
-            {isGenerating ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            ) : (
-              <Sparkles className="mr-2 h-4 w-4" />
-            )}
-            Generate Campaign Ideas
-          </Button>
+            <div className="flex flex-col sm:flex-row gap-2">
+                <Button type="submit" className="w-full" disabled={isGenerating}>
+                    {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
+                    Use AI Assistant
+                </Button>
+                <Button type="button" variant="secondary" className="w-full" onClick={handleCreateManually}>
+                    Create Manually
+                </Button>
+            </div>
         </form>
       </Form>
 
@@ -414,9 +431,9 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
           <CardContent className="p-6">
             <div className="space-y-6">
               <div>
-                <h3 className="text-lg font-semibold mb-2">Choose a Campaign Name</h3>
+                <h3 className="text-lg font-semibold mb-2">Campaign Name</h3>
                 <RadioGroup onValueChange={setSelectedName} value={selectedName}>
-                  {ideas.campaignNames.map((name, index) => (
+                  {ideas.campaignNames.length > 0 && ideas.campaignNames.map((name, index) => (
                     <div key={index} className="flex items-center space-x-2">
                       <RadioGroupItem value={name} id={`name-${index}`} />
                       <Label htmlFor={`name-${index}`} className="font-normal">{name}</Label>
@@ -437,12 +454,18 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
                 )}
               </div>
               <div>
-                <h3 className="text-lg font-semibold mb-2">Suggested Description</h3>
-                <Textarea value={finalDescription} onChange={(e) => setFinalDescription(e.target.value)} rows={5} className="text-base" />
+                <h3 className="text-lg font-semibold mb-2">{ideas.description ? 'Suggested Description' : 'Description'}</h3>
+                <Textarea 
+                    value={finalDescription} 
+                    onChange={(e) => setFinalDescription(e.target.value)} 
+                    rows={5} 
+                    className="text-base"
+                    placeholder="Describe your campaign's purpose and activities..." 
+                />
               </div>
               <Button className="w-full" onClick={handleCreateCampaign} disabled={isCreating}>
                 {isCreating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                 {isCreating ? 'Creating...' : 'Create Campaign with these details'}
+                 {isCreating ? 'Creating...' : 'Create Campaign'}
               </Button>
             </div>
           </CardContent>

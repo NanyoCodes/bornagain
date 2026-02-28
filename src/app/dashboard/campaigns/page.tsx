@@ -30,6 +30,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useSearch } from "@/context/search-context";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
 
 function CampaignSkeletons() {
   return (
@@ -93,6 +95,7 @@ export default function CampaignsPage() {
   const { searchTerm, setSearchPlaceholder, setIsSearchVisible, setSearchTerm } = useSearch();
   const [now, setNow] = useState(new Date());
   const [filter, setFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("all");
 
   useEffect(() => {
     setMounted(true);
@@ -164,7 +167,15 @@ export default function CampaignsPage() {
         return true; // 'all'
     });
 
-    const filtered = tabFilteredCampaigns.filter((campaign) => {
+    const statusFilteredCampaigns = tabFilteredCampaigns.filter(c => {
+        if (statusFilter === 'all') return true;
+        if (statusFilter === 'ongoing') return c._status === 1;
+        if (statusFilter === 'upcoming') return c._status === 2;
+        if (statusFilter === 'past') return c._status === 3;
+        return true;
+    });
+
+    const filtered = statusFilteredCampaigns.filter((campaign) => {
       if (!searchTerm) return true;
       const term = searchTerm.toLowerCase();
 
@@ -182,36 +193,68 @@ export default function CampaignsPage() {
 
     if (!filtered || !mounted) return filtered;
 
-    const userCity = userProfile?.location?.city?.toLowerCase().trim();
-
     return [...filtered].sort((a, b) => {
-      const statusA = a._status;
-      const statusB = b._status;
-      if (statusA !== statusB) {
-        return statusA - statusB;
-      }
+        // Status is primary sort key: Ongoing (1) < Upcoming (2) < Past (3)
+        if (a._status !== b._status) {
+            return a._status - b._status;
+        }
 
-      if (userCity) {
-        const aLocation = a.location.toLowerCase();
-        const bLocation = b.location.toLowerCase();
-        const isLocalA = aLocation.includes(userCity);
-        const isLocalB = bLocation.includes(userCity);
+        const getFullStartDate = (campaign: typeof a) => {
+            if (!campaign._startDate) return null;
+            const d = new Date(campaign._startDate);
+            if (campaign.startTime && /^\d{2}:\d{2}$/.test(campaign.startTime)) {
+                const [hours, minutes] = campaign.startTime.split(':').map(Number);
+                d.setHours(hours, minutes, 0, 0);
+            } else {
+                d.setHours(0, 0, 0, 0);
+            }
+            return d;
+        };
+        const getFullEndDate = (campaign: typeof b) => {
+            if (!campaign._endDate) return null;
+            const d = new Date(campaign._endDate);
+            if (campaign.endTime && /^\d{2}:\d{2}$/.test(campaign.endTime)) {
+                const [hours, minutes] = campaign.endTime.split(':').map(Number);
+                d.setHours(hours, minutes, 59, 999);
+            } else {
+                d.setHours(23, 59, 59, 999);
+            }
+            return d;
+        };
+        
+        // For Ongoing and Upcoming, sort by start date ascending (soonest first)
+        if (a._status === 1 || a._status === 2) {
+            const fullStartDateA = getFullStartDate(a);
+            const fullStartDateB = getFullStartDate(b);
 
-        if (isLocalA && !isLocalB) return -1;
-        if (!isLocalA && isLocalB) return 1;
-      }
+            if (fullStartDateA && fullStartDateB) {
+                const timeDiff = fullStartDateA.getTime() - fullStartDateB.getTime();
+                if (timeDiff !== 0) return timeDiff;
+            }
+            if (fullStartDateA) return -1;
+            if (fullStartDateB) return 1;
+        }
 
-      const startDateA = a._startDate;
-      const startDateB = b._startDate;
-      if (startDateA && startDateB) {
-        return startDateA.getTime() - startDateB.getTime();
-      }
-      if (startDateA) return -1;
-      if (startDateB) return 1;
-      return 0;
+        // For Past, sort by end date descending (most recently ended first)
+        if (a._status === 3) {
+            const fullEndDateA = getFullEndDate(a);
+            const fullEndDateB = getFullEndDate(b);
+
+            if (fullEndDateA && fullEndDateB) {
+                const timeDiff = fullEndDateB.getTime() - fullEndDateA.getTime();
+                if (timeDiff !== 0) return timeDiff;
+            }
+            if (fullEndDateA) return -1;
+            if (fullEndDateB) return 1;
+        }
+
+        // Fallback sort
+        const createdAtA = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : 0;
+        const createdAtB = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : 0;
+        return createdAtB - createdAtA;
     });
 
-  }, [processedCampaigns, searchTerm, userProfile, mounted, filter, user?.uid, joinedCampaignIds]);
+  }, [processedCampaigns, searchTerm, mounted, filter, user?.uid, joinedCampaignIds, statusFilter]);
 
   const triggerButton = (
     <Button disabled={!user}>
@@ -269,13 +312,27 @@ export default function CampaignsPage() {
         )}
       </div>
 
-      <Tabs value={filter} onValueChange={setFilter}>
-        <TabsList>
-            <TabsTrigger value="all">All Campaigns</TabsTrigger>
-            <TabsTrigger value="created">My Created</TabsTrigger>
-            <TabsTrigger value="joined">Joined</TabsTrigger>
-        </TabsList>
-      </Tabs>
+      <div className="flex flex-wrap gap-4 items-center">
+        <Tabs value={filter} onValueChange={setFilter}>
+            <TabsList>
+                <TabsTrigger value="all">All Campaigns</TabsTrigger>
+                <TabsTrigger value="created">My Created</TabsTrigger>
+                <TabsTrigger value="joined">Joined</TabsTrigger>
+            </TabsList>
+        </Tabs>
+        <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <SelectTrigger className="w-full sm:w-[180px]">
+                <SelectValue placeholder="Filter by status" />
+            </SelectTrigger>
+            <SelectContent>
+                <SelectItem value="all">All Statuses</SelectItem>
+                <SelectItem value="ongoing">Ongoing</SelectItem>
+                <SelectItem value="upcoming">Upcoming</SelectItem>
+                <SelectItem value="past">Past</SelectItem>
+            </SelectContent>
+        </Select>
+      </div>
+
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {loading && <CampaignSkeletons />}
