@@ -40,7 +40,11 @@ export function LocationAutocompleteInput({ field }: LocationAutocompleteInputPr
     }
 
     if (loadError) {
-        return <div className="text-destructive text-sm p-2 rounded-md border border-destructive/50 bg-destructive/10">Error loading Google Maps. Please check your API key and network connection.</div>;
+        const specificError = loadError.message.includes('ApiNotActivatedMapError')
+            ? 'The "Maps JavaScript API" or "Places API" is not enabled in your Google Cloud project. Please enable both and try again.'
+            : 'Error loading Google Maps. Please check your API key and network connection.';
+        
+        return <div className="text-destructive text-sm p-2 rounded-md border border-destructive/50 bg-destructive/10">{specificError}</div>;
     }
 
     if (!isLoaded) {
