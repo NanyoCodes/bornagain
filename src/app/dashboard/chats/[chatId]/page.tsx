@@ -12,6 +12,8 @@ import {
   updateDoc,
   writeBatch,
   type FieldValue,
+  where,
+  getDocs,
 } from 'firebase/firestore';
 import type { Chat, ChatMessage, Campaign } from '@/lib/types';
 import { Loader2, Send, ArrowLeft, Reply, X } from 'lucide-react';
@@ -61,6 +63,35 @@ export default function ChatPage() {
     const { data: messages, loading: loadingMessages } = useCollection<ChatMessage>(messagesQuery);
     
     const loading = userLoading || loadingChat || loadingMessages || loadingCampaign;
+
+    useEffect(() => {
+        if (!user?.uid || !firestore || !chatId) return;
+
+        const markNotificationsAsRead = async () => {
+            try {
+                const notificationsRef = collection(firestore, `users/${user.uid}/notifications`);
+                const q = query(
+                    notificationsRef,
+                    where('link', '==', `/dashboard/chats/${chatId}`),
+                    where('isRead', '==', false)
+                );
+
+                const querySnapshot = await getDocs(q);
+                if (querySnapshot.empty) return;
+
+                const batch = writeBatch(firestore);
+                querySnapshot.forEach(doc => {
+                    batch.update(doc.ref, { isRead: true });
+                });
+                await batch.commit();
+            } catch (error) {
+                // This can fail silently as it's not critical. The user can clear them from the notifications page.
+                console.warn("Failed to mark chat notifications as read:", error);
+            }
+        };
+
+        markNotificationsAsRead();
+    }, [user?.uid, firestore, chatId]);
 
     const isChatFrozen = useMemo(() => {
         if (!chat || !campaign) return false;
@@ -450,5 +481,3 @@ export default function ChatPage() {
         </div>
     )
 }
-
-    

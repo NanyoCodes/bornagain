@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useMemo } from 'react';
@@ -30,17 +29,19 @@ export default function NotificationsPage() {
   const handleNotificationClick = async (notification: Notification) => {
     if (!user || !firestore) return;
     
-    // Mark as read, but don't wait for it to complete before navigating
-    if (!notification.isRead) {
-      const notifRef = doc(firestore, `users/${user.uid}/notifications`, notification.id);
-      updateDoc(notifRef, { isRead: true }).catch(() => {
-        const permissionError = new FirestorePermissionError({
-            path: notifRef.path,
+    try {
+      if (!notification.isRead) {
+        const notifRef = doc(firestore, `users/${user.uid}/notifications`, notification.id);
+        await updateDoc(notifRef, { isRead: true });
+      }
+    } catch (error) {
+       const permissionError = new FirestorePermissionError({
+            path: `users/${user.uid}/notifications/${notification.id}`,
             operation: 'update',
             requestResourceData: { isRead: true },
         });
         errorEmitter.emit('permission-error', permissionError);
-      });
+        // Continue to navigate even if marking as read fails
     }
 
     if (notification.link) {
@@ -142,5 +143,3 @@ export default function NotificationsPage() {
     </div>
   );
 }
-
-    
