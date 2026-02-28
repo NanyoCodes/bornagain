@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { format, formatDistanceToNow, parse, isSameDay } from "date-fns";
-import { CalendarDays, MapPin, Users, Share2, Edit, MoreVertical, Loader2, MessageSquare, UserCheck2 } from "lucide-react";
+import { CalendarDays, MapPin, Users, Share2, Edit, MoreVertical, Loader2, MessageSquare, UserCheck2, PlayCircle } from "lucide-react";
 import type { Campaign, CampaignParticipant, UserProfile } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -661,12 +661,20 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
                 )}
             </div>
 
-            {isOwner
-            ? renderOwnerActions()
-            : isJoined
-            ? renderParticipantActions()
-            : renderVisitorActions()
-            }
+            {status === 'Ongoing' && campaign.streamUrl ? (
+                <Button asChild className="w-full sm:w-auto">
+                    <Link href={campaign.streamUrl} target="_blank" rel="noopener noreferrer">
+                        <PlayCircle className="mr-2 h-4 w-4" />
+                        Watch Live
+                    </Link>
+                </Button>
+            ) : isOwner ? (
+                renderOwnerActions()
+            ) : isJoined ? (
+                renderParticipantActions()
+            ) : (
+                renderVisitorActions()
+            )}
         </CardFooter>
         <CardFooter className="p-4 bg-muted/20 text-xs text-muted-foreground flex justify-between">
             <span className="truncate">

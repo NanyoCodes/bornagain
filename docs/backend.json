@@ -234,6 +234,11 @@
         "soulsLogged": {
           "type": "number",
           "description": "The total number of souls logged for this campaign."
+        },
+        "streamUrl": {
+          "type": "string",
+          "format": "uri",
+          "description": "A URL to a live stream for the campaign (e.g., YouTube Live, Zoom)."
         }
       },
       "required": [

@@ -1,3 +1,4 @@
+
 import type { Timestamp } from "firebase/firestore";
 
 export type ReadingHistoryItem = {
@@ -77,6 +78,7 @@ export type Campaign = {
   scripture?: string;
   scriptureTestimony?: string;
   soulsLogged?: number;
+  streamUrl?: string;
 };
 
 export type JoinedCampaign = {

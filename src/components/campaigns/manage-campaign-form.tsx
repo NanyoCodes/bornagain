@@ -52,6 +52,7 @@ const formSchema = z.object({
   scripture: z.string().max(100, "Scripture is too long.").optional(),
   scriptureTestimony: z.string().max(500, "Caption is too long.").optional(),
   maxParticipants: z.number().optional(),
+  streamUrl: z.string().url({ message: "Please enter a valid URL." }).optional().or(z.literal('')),
   lastUpdateReason: z.string().min(10, { message: "Please provide a reason of at least 10 characters." }),
 }).refine((data) => data.endDate >= data.startDate, {
     message: "End date cannot be before start date.",
@@ -214,6 +215,7 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
       scripture: campaign.scripture || "",
       scriptureTestimony: campaign.scriptureTestimony || "",
       maxParticipants: campaign.maxParticipants ?? undefined,
+      streamUrl: campaign.streamUrl || "",
       lastUpdateReason: "",
     };
   }, [campaign]);
@@ -329,6 +331,7 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
         scripture: values.scripture,
         scriptureTestimony: values.scriptureTestimony,
         maxParticipants: values.maxParticipants || null,
+        streamUrl: values.streamUrl || null,
         lastUpdateReason: values.lastUpdateReason,
     };
 
@@ -569,6 +572,30 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
 
         <Card>
             <CardHeader>
+                <CardTitle>Live Stream</CardTitle>
+                <CardDescription>Add a link to a live stream (e.g., YouTube Live, Zoom). The link will be shown to users while the campaign is ongoing.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <FormField
+                    control={form.control}
+                    name="streamUrl"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>Stream URL</FormLabel>
+                        <FormControl>
+                            <Input placeholder="https://youtube.com/live/..." {...field} value={field.value ?? ''} />
+                        </FormControl>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                />
+            </CardContent>
+        </Card>
+
+        <Separator />
+
+        <Card>
+            <CardHeader>
                 <CardTitle>Group Communication</CardTitle>
                 <CardDescription>Start a group chat with all campaign participants.</CardDescription>
             </CardHeader>
@@ -612,5 +639,3 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
     </div>
   );
 }
-
-    
