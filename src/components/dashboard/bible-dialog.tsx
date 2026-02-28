@@ -158,26 +158,29 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
     }
     return [];
   }, [userProfile]);
-
-  const readingHistory = useMemo(() => {
-    if (!userProfile?.readingHistory) return [];
-    return [...userProfile.readingHistory].reverse();
-  }, [userProfile?.readingHistory]);
+  
+  const readingHistory = userProfile?.readingHistory || [];
 
   const historyGroups = useMemo(() => {
-    if (!readingHistory) return [];
+    if (readingHistory.length === 0) return [];
+    
     const groups: { date: Date; items: ReadingHistoryItem[] }[] = [];
+    
+    // Group items by day, preserving chronological order within the day
     readingHistory.forEach(item => {
       if (!item.readAt) return;
       const itemDate = item.readAt.toDate();
       const lastGroup = groups[groups.length - 1];
+
       if (lastGroup && isSameDay(lastGroup.date, itemDate)) {
         lastGroup.items.push(item);
       } else {
         groups.push({ date: itemDate, items: [item] });
       }
     });
-    return groups;
+
+    // Reverse the groups to show the most recent days first
+    return groups.reverse();
   }, [readingHistory]);
 
   const filteredHistoryGroups = useMemo(() => {
