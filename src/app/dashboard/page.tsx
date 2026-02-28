@@ -3,7 +3,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { isSameDay, startOfDay, differenceInCalendarDays, format } from "date-fns";
-import { TrendingUp, UserCheck2, Trophy, ArrowRight, UserPlus, Globe, Loader2, RefreshCw } from "lucide-react";
+import { TrendingUp, UserCheck2, Trophy, ArrowRight, UserPlus, Globe, Loader2, RefreshCw, XCircle } from "lucide-react";
 import { useCollection, useFirestore, useUser, useDoc } from "@/firebase";
 import { collection, query, doc, updateDoc, serverTimestamp, orderBy, limit, where, getCountFromServer } from "firebase/firestore";
 import type { Soul, UserProfile } from "@/lib/types";
@@ -84,6 +84,7 @@ function GlobalSoulsCard({ location }: { location: { city?: string, country?: st
     const [cityCount, setCityCount] = useState(0);
     const [countryCount, setCountryCount] = useState(0);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
     const fetchCounts = useCallback(async () => {
         if (!firestore || (!location.city && !location.country)) {
@@ -93,6 +94,7 @@ function GlobalSoulsCard({ location }: { location: { city?: string, country?: st
 
         try {
             setLoading(true);
+            setError(null);
             const soulsCollection = collection(firestore, 'souls');
             
             const promises = [];
@@ -118,6 +120,7 @@ function GlobalSoulsCard({ location }: { location: { city?: string, country?: st
 
         } catch (error) {
             console.error("Error fetching global soul counts:", error);
+            setError("Could not load community stats.");
         } finally {
             setLoading(false);
         }
@@ -140,7 +143,13 @@ function GlobalSoulsCard({ location }: { location: { city?: string, country?: st
                 </Button>
             </CardHeader>
             <CardContent className="space-y-6">
-                {loading && (location.city || location.country) ? (
+                {error && (
+                    <div className="text-destructive text-sm p-3 rounded-md border border-destructive/50 bg-destructive/10 flex items-center gap-2">
+                        <XCircle className="h-4 w-4" />
+                        <p>{error} Please try again.</p>
+                    </div>
+                )}
+                {loading && !error ? (
                     <div className="flex items-center gap-4">
                          <div className="flex h-12 w-12 items-center justify-center rounded-lg">
                             <Loader2 className="h-6 w-6 animate-spin"/>
@@ -149,7 +158,7 @@ function GlobalSoulsCard({ location }: { location: { city?: string, country?: st
                             <p className="text-muted-foreground">Loading stats...</p>
                         </div>
                     </div>
-                ) : (
+                ) : !error && (
                     <>
                         {location.city && (
                             <div className="flex items-center gap-4">
