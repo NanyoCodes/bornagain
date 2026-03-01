@@ -1,4 +1,3 @@
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -17,7 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useMemo } from "react";
-import { CalendarIcon, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import type { Campaign, Soul, UserProfile } from "@/lib/types";
 import { Textarea } from "@/components/ui/textarea";
 import { format } from "date-fns";
@@ -25,9 +24,6 @@ import { useFirestore, useUser, useCollection, useDoc } from "@/firebase";
 import { collection, query, orderBy, serverTimestamp, doc, runTransaction, increment } from "firebase/firestore";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { errorEmitter } from "@/firebase/error-emitter";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import { cn } from "@/lib/utils";
-import { Calendar } from "../ui/calendar";
 
 const formSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters."),
@@ -166,39 +162,23 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps)
           control={form.control}
           name="wonAt"
           render={({ field }) => (
-            <FormItem className="flex flex-col">
+            <FormItem>
               <FormLabel>Date Won</FormLabel>
-              <Popover>
-                <PopoverTrigger asChild>
-                    <FormControl>
-                        <Button
-                            variant={"outline"}
-                            className={cn(
-                                "w-full pl-3 text-left font-normal",
-                                !field.value && "text-muted-foreground"
-                            )}
-                        >
-                            {field.value ? (
-                                format(field.value, "PPP")
-                            ) : (
-                                <span>Pick a date</span>
-                            )}
-                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                        </Button>
-                    </FormControl>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                        mode="single"
-                        selected={field.value}
-                        onSelect={field.onChange}
-                        disabled={(date) =>
-                            date > new Date() || date < new Date("1900-01-01")
-                        }
-                        initialFocus
-                    />
-                </PopoverContent>
-              </Popover>
+              <FormControl>
+                <Input 
+                  type="date"
+                  value={field.value ? format(field.value, "yyyy-MM-dd") : ""}
+                  onChange={(e) => {
+                    if (e.target.value) {
+                        const [year, month, day] = e.target.value.split('-').map(Number);
+                        field.onChange(new Date(year, month - 1, day));
+                    } else {
+                        field.onChange(undefined);
+                    }
+                  }}
+                  className="text-base"
+                />
+              </FormControl>
               <FormMessage />
             </FormItem>
           )}
