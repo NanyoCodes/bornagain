@@ -121,7 +121,6 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
   const [isLogSoulOpen, setIsLogSoulOpen] = useState(false);
   const [isChatLoading, setIsChatLoading] = useState(false);
   const [isJoining, setIsJoining] = useState(false);
-  const [isCheckingChat, setIsCheckingChat] = useState(false);
 
   const descriptionRef = useRef<HTMLParagraphElement>(null);
   const [isDescriptionTruncated, setIsDescriptionTruncated] = useState(false);
@@ -143,24 +142,16 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
     }
   }, [campaign.description]);
 
-  const handleViewGroupChat = async () => {
-    if (!firestore || !campaign.id) return;
-    setIsCheckingChat(true);
-    const chatRef = doc(firestore, 'chats', campaign.id);
-    try {
-        const chatDoc = await getDoc(chatRef);
-        if (chatDoc.exists()) {
-            router.push(`/dashboard/chats/${campaign.id}`);
-        } else {
-            toast({
-                title: "Group Chat Not Started",
-                description: "The organizer has not started the group chat for this campaign yet.",
-            });
-        }
-    } catch (error) {
-        console.error("Error checking for group chat:", error);
-    } finally {
-        setIsCheckingChat(false);
+  const handleViewGroupChat = () => {
+    if (!campaign.id) return;
+    
+    if (campaign.hasGroupChat) {
+        router.push(`/dashboard/chats/${campaign.id}`);
+    } else {
+        toast({
+            title: "Group Chat Not Started",
+            description: "The organizer has not started the group chat for this campaign yet.",
+        });
     }
   };
 
@@ -542,8 +533,8 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
        <TooltipProvider>
         <Tooltip>
             <TooltipTrigger asChild>
-                <Button onClick={handleViewGroupChat} variant="outline" size="icon" disabled={isCheckingChat || status === 'Past'}>
-                    {isCheckingChat ? <Loader2 className="h-4 w-4 animate-spin" /> : <Users className="h-4 w-4" />}
+                <Button onClick={handleViewGroupChat} variant="outline" size="icon" disabled={status === 'Past'}>
+                    <Users className="h-4 w-4" />
                 </Button>
             </TooltipTrigger>
             <TooltipContent><p>Group Chat</p></TooltipContent>

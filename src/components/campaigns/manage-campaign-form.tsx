@@ -10,7 +10,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDes
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, MessageSquare, Trash2, X } from 'lucide-react';
 import { useCollection, useFirestore, useUser } from '@/firebase';
-import { collection, doc, updateDoc, serverTimestamp, getDoc, where, limit, addDoc, setDoc, runTransaction, query, orderBy } from 'firebase/firestore';
+import { collection, doc, updateDoc, serverTimestamp, getDoc, where, limit, addDoc, setDoc, runTransaction, query, orderBy, writeBatch } from 'firebase/firestore';
 import type { Campaign, CampaignParticipant } from '@/lib/types';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
@@ -262,8 +262,9 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
             };
         });
         
-        const chatDocRef = doc(firestore, 'chats', campaign.id);
+        const batch = writeBatch(firestore);
 
+        const chatDocRef = doc(firestore, 'chats', campaign.id);
         const chatData = {
             participantIds,
             participantInfo,
@@ -273,8 +274,12 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
             isGroupChat: true,
             hasMessages: false,
         };
+        batch.set(chatDocRef, chatData, { merge: true });
 
-        await setDoc(chatDocRef, chatData, { merge: true });
+        const campaignDocRef = doc(firestore, 'campaigns', campaign.id);
+        batch.update(campaignDocRef, { hasGroupChat: true });
+        
+        await batch.commit();
         
         onCampaignUpdated();
         router.push(`/dashboard/chats/${campaign.id}`);

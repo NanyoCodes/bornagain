@@ -82,6 +82,7 @@ export type Campaign = {
   scriptureTestimony?: string;
   soulsLogged?: number;
   streamUrl?: string;
+  hasGroupChat?: boolean;
 };
 
 export type JoinedCampaign = {
