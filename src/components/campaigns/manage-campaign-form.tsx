@@ -162,9 +162,9 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
   const [isDeleting, setIsDeleting] = useState(false);
 
   const participantsQuery = useMemo(() => {
-    if (!firestore || !campaign.id || !user) return null;
+    if (!firestore || !campaign.id || !user || user.uid !== campaign.organizerId) return null;
     return query(collection(firestore, 'campaigns', campaign.id, 'participants'), orderBy('joinedAt', 'asc'));
-  }, [firestore, campaign.id, user]);
+  }, [firestore, campaign.id, user, campaign.organizerId]);
   
   const { data: participants, loading: participantsLoading } = useCollection<CampaignParticipant>(participantsQuery);
   
