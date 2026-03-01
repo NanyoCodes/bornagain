@@ -8,6 +8,10 @@ export const metadata: Metadata = {
   title: 'Testify',
   description:
     'A platform for believers to share testimonies, organize soul-winning campaigns, and track evangelism progress.',
+  manifest: '/manifest.webmanifest',
+  icons: {
+    icon: 'https://i.postimg.cc/5HnLbRH6/testify-logoo-(2).jpg',
+  },
 };
 
 export default function RootLayout({
@@ -18,7 +22,6 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <link rel="icon" href="https://i.postimg.cc/5HnLbRH6/testify-logoo-(2).jpg" sizes="any" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
           rel="preconnect"

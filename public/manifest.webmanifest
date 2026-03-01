@@ -1,0 +1,23 @@
+{
+  "name": "Testify",
+  "short_name": "Testify",
+  "description": "A platform for believers to share testimonies, organize soul-winning campaigns, and track evangelism progress.",
+  "icons": [
+    {
+      "src": "https://i.postimg.cc/5HnLbRH6/testify-logoo-(2).jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://i.postimg.cc/5HnLbRH6/testify-logoo-(2).jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "hsl(221, 83%, 53%)"
+}
