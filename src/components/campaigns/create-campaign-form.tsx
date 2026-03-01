@@ -30,11 +30,13 @@ import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { format } from "date-fns";
 import { LocationMapPicker } from "../common/location-map-picker";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 const formSchema = z.object({
   goal: z.string({
     required_error: "Please select a campaign goal.",
   }),
+  customGoal: z.string().optional(),
   location: z.string().min(3, "A location is required.").max(200, "Location is too long."),
   latitude: z.number().optional(),
   longitude: z.number().optional(),
@@ -54,6 +56,14 @@ const formSchema = z.object({
 }).refine((data) => data.endDate >= data.startDate, {
     message: "End date cannot be before start date.",
     path: ["endDate"],
+}).refine((data) => {
+    if (data.goal === 'Custom') {
+        return data.customGoal && data.customGoal.trim().length > 2;
+    }
+    return true;
+}, {
+    message: "Custom goal must be at least 3 characters.",
+    path: ["customGoal"],
 });
 
 
@@ -93,9 +103,10 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
   async function onAiSubmit(values: z.infer<typeof formSchema>) {
     setIsGenerating(true);
     setIdeas(null);
+    const goal = values.goal === 'Custom' && values.customGoal ? values.customGoal : values.goal;
     try {
       const result = await generateCampaignIdeas({
-        goal: values.goal,
+        goal: goal,
         location: values.location,
         targetAudience: values.targetAudience,
         scripture: values.scripture,
@@ -147,10 +158,11 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
 
     try {
         const values = form.getValues();
+        const goal = values.goal === 'Custom' && values.customGoal ? values.customGoal : values.goal;
         const campaignData = {
             title: finalName,
             description: finalDescription,
-            goal: values.goal,
+            goal: goal,
             location: values.location,
             latitude: values.latitude,
             longitude: values.longitude,
@@ -239,6 +251,7 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
                       <SelectItem value="Discipleship">Discipleship</SelectItem>
                       <SelectItem value="Prayer Meeting">Prayer Meeting</SelectItem>
                       <SelectItem value="Youth Program">Youth Program</SelectItem>
+                      <SelectItem value="Custom">Custom</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -259,23 +272,49 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
               )}
             />
           </div>
-          
+
+          {form.watch("goal") === "Custom" && (
             <FormField
-              control={form.control}
-              name="location"
-              render={() => (
-                <FormItem>
-                  <FormLabel>Location & Coverage</FormLabel>
-                  <FormControl>
-                    <LocationMapPicker form={form} />
-                  </FormControl>
-                  <FormDescription>
-                    Search for an address, click on the map, or drag the pin. Adjust the coverage area with the slider.
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
+                control={form.control}
+                name="customGoal"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>Custom Goal Name</FormLabel>
+                    <FormControl>
+                        <Input placeholder="e.g., Hospital Visitation" {...field} value={field.value ?? ""} className="text-base" />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
             />
+          )}
+          
+            <Accordion type="single" collapsible className="w-full rounded-md border px-3">
+              <AccordionItem value="location" className="border-none">
+                <AccordionTrigger className="py-3 hover:no-underline">
+                  <div className="flex flex-col items-start gap-1">
+                      <label className="font-medium">Location & Coverage</label>
+                      <p className="text-sm font-normal text-muted-foreground text-left">
+                          {form.watch('location') || 'Click to set location and coverage area.'}
+                      </p>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="pt-1 pb-4">
+                  <FormField
+                    control={form.control}
+                    name="location"
+                    render={() => (
+                      <FormItem>
+                        <FormControl>
+                          <LocationMapPicker form={form} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
 
           <FormField
             control={form.control}
