@@ -4,31 +4,32 @@ import { useState, useEffect } from 'react';
 import { useJsApiLoader, Autocomplete } from '@react-google-maps/api';
 import { Input } from '@/components/ui/input';
 import { Loader2 } from 'lucide-react';
-import { type ControllerRenderProps } from 'react-hook-form';
+import { type UseFormReturn } from 'react-hook-form';
 
 const libraries: ('places')[] = ['places'];
 const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
 
 interface LocationAutocompleteInputProps {
-    field: ControllerRenderProps<any, string>;
+    form: UseFormReturn<any>;
 }
 
-export function LocationAutocompleteInput({ field }: LocationAutocompleteInputProps) {
+export function LocationAutocompleteInput({ form }: LocationAutocompleteInputProps) {
     const { isLoaded, loadError } = useJsApiLoader({
         googleMapsApiKey: GOOGLE_MAPS_API_KEY || '',
         libraries,
     });
 
     const [autocomplete, setAutocomplete] = useState<google.maps.places.Autocomplete | null>(null);
-    const [inputValue, setInputValue] = useState(field.value || '');
+    const [inputValue, setInputValue] = useState(form.getValues('location') || '');
 
+    const watchedLocation = form.watch('location');
     useEffect(() => {
-        // Sync local state if form value changes from an external source (e.g. form.reset)
-        if (field.value !== inputValue) {
-            setInputValue(field.value || '');
+        // Sync local state if form value changes from an external source (e.g. map click)
+        if (watchedLocation !== inputValue) {
+            setInputValue(watchedLocation || '');
         }
-    }, [field.value, inputValue]);
+    }, [watchedLocation, inputValue]);
 
 
     const onLoad = (autocompleteInstance: google.maps.places.Autocomplete) => {
@@ -38,16 +39,20 @@ export function LocationAutocompleteInput({ field }: LocationAutocompleteInputPr
     const onPlaceChanged = () => {
         if (autocomplete) {
             const place = autocomplete.getPlace();
-            if (place.formatted_address) {
-                setInputValue(place.formatted_address);
-                field.onChange(place.formatted_address);
+            const newAddress = place.formatted_address || place.name || '';
+            setInputValue(newAddress);
+            form.setValue('location', newAddress, { shouldDirty: true });
+            
+            if (place.geometry?.location) {
+                form.setValue('latitude', place.geometry.location.lat(), { shouldDirty: true });
+                form.setValue('longitude', place.geometry.location.lng(), { shouldDirty: true });
             }
         }
     };
     
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setInputValue(e.target.value);
-        field.onChange(e.target.value);
+        form.setValue('location', e.target.value, { shouldDirty: true });
     }
 
     if (!GOOGLE_MAPS_API_KEY) {
@@ -75,7 +80,7 @@ export function LocationAutocompleteInput({ field }: LocationAutocompleteInputPr
     }
 
     return (
-        <Autocomplete onLoad={onLoad} onPlaceChanged={onPlaceChanged} fields={['formatted_address']} types={['geocode']}>
+        <Autocomplete onLoad={onLoad} onPlaceChanged={onPlaceChanged} fields={['formatted_address', 'name', 'geometry.location']} types={['geocode']}>
             <Input
                 placeholder="Start typing an address, city, or place..."
                 type="text"

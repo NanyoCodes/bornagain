@@ -1,9 +1,7 @@
-
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { useJsApiLoader, GoogleMap, Autocomplete, MarkerF, CircleF } from '@react-google-maps/api';
-import { Input } from '@/components/ui/input';
+import { useJsApiLoader, GoogleMap, MarkerF, CircleF } from '@react-google-maps/api';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { Loader2 } from 'lucide-react';
@@ -28,33 +26,15 @@ export function LocationMapPicker({ form }: LocationMapPickerProps) {
         googleMapsApiKey: GOOGLE_MAPS_API_KEY || '',
         libraries,
     });
-
-    const [autocomplete, setAutocomplete] = useState<google.maps.places.Autocomplete | null>(null);
+    
     const [map, setMap] = useState<google.maps.Map | null>(null);
 
-    const location = form.getValues('location');
-    let latitude = form.getValues('latitude');
-    let longitude = form.getValues('longitude');
+    const latitude = form.getValues('latitude');
+    const longitude = form.getValues('longitude');
     const radiusValue = form.getValues('coverageRadius');
-
-    if ((!latitude || !longitude) && location && typeof location === 'string' && location.startsWith('Pinned Location')) {
-        const match = location.match(/(-?\d+\.\d+),\s*(-?\d+\.\d+)/);
-        if (match) {
-            const parsedLat = parseFloat(match[1]);
-            const parsedLng = parseFloat(match[2]);
-            if (!isNaN(parsedLat) && !isNaN(parsedLng)) {
-                latitude = parsedLat;
-                longitude = parsedLng;
-                form.setValue('latitude', latitude, { shouldDirty: false });
-                form.setValue('longitude', longitude, { shouldDirty: false });
-            }
-        }
-    }
-
 
     const [markerPosition, setMarkerPosition] = useState<google.maps.LatLngLiteral | null>(latitude && longitude ? { lat: latitude, lng: longitude } : null);
     const [center, setCenter] = useState(latitude && longitude ? { lat: latitude, lng: longitude } : fallbackCenter);
-    const [inputValue, setInputValue] = useState(location || '');
     const [radius, setRadius] = useState(radiusValue || 1000);
 
     const geocoderRef = useRef<google.maps.Geocoder>();
@@ -65,26 +45,6 @@ export function LocationMapPicker({ form }: LocationMapPickerProps) {
             geocoderRef.current = new window.google.maps.Geocoder();
         }
     }, [isLoaded]);
-    
-    // Geocode initial value for the map marker on load (for edit form)
-    useEffect(() => {
-        const initialLocation = form.getValues('location');
-        if (isLoaded && geocoderRef.current && initialLocation && !(form.getValues('latitude') && form.getValues('longitude'))) {
-            geocoderRef.current.geocode({ address: initialLocation }, (results, status) => {
-                if (status === 'OK' && results && results[0]) {
-                    const location = results[0].geometry.location;
-                    const newPos = { lat: location.lat(), lng: location.lng() };
-                    setMarkerPosition(newPos);
-                    setCenter(newPos);
-                    form.setValue('latitude', newPos.lat);
-                    form.setValue('longitude', newPos.lng);
-                    if(map) map.panTo(newPos);
-                }
-            });
-        }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isLoaded, map]);
-
 
     const updateFormLocation = useCallback((latLng: google.maps.LatLng) => {
         if (!geocoderRef.current) return;
@@ -97,7 +57,6 @@ export function LocationMapPicker({ form }: LocationMapPickerProps) {
         geocoderRef.current.geocode({ location: newPos }, (results, status) => {
             if (status === 'OK' && results && results[0]) {
                 const address = results[0].formatted_address;
-                setInputValue(address);
                 form.setValue('location', address, { shouldDirty: true });
             } else {
                 toast({
@@ -106,7 +65,6 @@ export function LocationMapPicker({ form }: LocationMapPickerProps) {
                     description: `Could not find an address for this location. Using coordinates instead. Status: ${status}`,
                 });
                 const pinnedLocation = `Pinned Location (${newPos.lat.toFixed(4)}, ${newPos.lng.toFixed(4)})`;
-                setInputValue(pinnedLocation);
                 form.setValue('location', pinnedLocation, { shouldDirty: true });
             }
         });
@@ -118,11 +76,11 @@ export function LocationMapPicker({ form }: LocationMapPickerProps) {
         }
     }, [updateFormLocation]);
     
-    // Get user's current location on initial load for new campaigns
+    // This effect runs once to set an initial location if none is provided.
     useEffect(() => {
         const initialLocation = form.getValues('location');
         if (isLoaded && !initialLocation && navigator.geolocation && !hasFetchedLocation.current) {
-            hasFetchedLocation.current = true; // Prevent re-fetching
+            hasFetchedLocation.current = true;
             navigator.geolocation.getCurrentPosition(
                 (position) => {
                     const userLocation = {
@@ -137,37 +95,27 @@ export function LocationMapPicker({ form }: LocationMapPickerProps) {
                         map.setZoom(14);
                     }
                 },
-                () => {
-                    toast({
-                        title: 'Location access was denied',
-                        description: 'Using default location. You can still search or click on the map.',
-                    });
-                }
+                () => { /* Fail silently */ }
             );
         }
-    }, [isLoaded, map, toast, updateFormLocation, form]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isLoaded, map]);
 
+    // This effect syncs the map to the form state
+    const watchedLat = form.watch('latitude');
+    const watchedLng = form.watch('longitude');
 
-    const onLoadAutocomplete = (autocompleteInstance: google.maps.places.Autocomplete) => {
-        setAutocomplete(autocompleteInstance);
-    };
-
-    const onPlaceChanged = () => {
-        if (autocomplete) {
-            const place = autocomplete.getPlace();
-            if (place.geometry && place.geometry.location) {
-                if (map) {
-                    map.panTo(place.geometry.location);
-                    map.setZoom(15);
-                }
-                updateFormLocation(place.geometry.location);
-                setInputValue(place.formatted_address || '');
-            } else if (place.name) {
-                setInputValue(place.name);
-                form.setValue('location', place.name, { shouldDirty: true });
+    useEffect(() => {
+        if (watchedLat && watchedLng) {
+            const newPos = { lat: watchedLat, lng: watchedLng };
+            if (map && (newPos.lat !== center.lat || newPos.lng !== center.lng)) {
+                map.panTo(newPos);
             }
+            setCenter(newPos);
+            setMarkerPosition(newPos);
         }
-    };
+    }, [watchedLat, watchedLng, center.lat, center.lng, map]);
+
     
     const handleMarkerDragEnd = useCallback((e: google.maps.MapMouseEvent) => {
         if (e.latLng) {
@@ -201,24 +149,16 @@ export function LocationMapPicker({ form }: LocationMapPickerProps) {
 
     if (!isLoaded) {
         return (
-            <div className="flex items-center h-9 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-muted-foreground">
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                <span>Loading Maps...</span>
+            <div className="flex items-center justify-center h-80 w-full rounded-md border bg-background">
+                <Loader2 className="mr-2 h-6 w-6 animate-spin" />
+                <span>Loading Map...</span>
             </div>
         );
     }
 
     return (
         <div className="space-y-4">
-             <Autocomplete onLoad={onLoadAutocomplete} onPlaceChanged={onPlaceChanged} fields={['formatted_address', 'geometry', 'name']}>
-                <Input
-                    placeholder="Search Google Maps or click on the map to pin a location"
-                    type="text"
-                    className="text-base"
-                    value={inputValue}
-                    onChange={(e) => setInputValue(e.target.value)}
-                />
-            </Autocomplete>
+            <p className="text-sm text-muted-foreground">Click or drag the pin on the map to set a precise location.</p>
             <GoogleMap
                 mapContainerClassName="h-80 w-full rounded-md"
                 center={center}

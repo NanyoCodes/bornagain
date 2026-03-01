@@ -31,6 +31,7 @@ import { FirestorePermissionError } from "@/firebase/errors";
 import { format } from "date-fns";
 import { LocationMapPicker } from "../common/location-map-picker";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { LocationAutocompleteInput } from "../common/location-autocomplete-input";
 
 const formSchema = z.object({
   goal: z.string({
@@ -288,33 +289,28 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
                 )}
             />
           )}
+
+          <div className="space-y-2">
+            <FormLabel>Location Address</FormLabel>
+            <LocationAutocompleteInput form={form} />
+            {form.formState.errors.location && <p className="text-sm font-medium text-destructive">{form.formState.errors.location.message as string}</p>}
+          </div>
           
-            <Accordion type="single" collapsible className="w-full rounded-md border px-3">
+          <Accordion type="single" collapsible className="w-full rounded-md border px-3">
               <AccordionItem value="location" className="border-none">
                 <AccordionTrigger className="py-3 hover:no-underline">
                   <div className="flex flex-col items-start gap-1">
-                      <label className="font-medium">Location & Coverage</label>
+                      <label className="font-medium">Set Precise Location on Map</label>
                       <p className="text-sm font-normal text-muted-foreground text-left">
-                          {form.watch('location') || 'Click to set location and coverage area.'}
+                          Optionally, click to expand the map and fine-tune the pin or coverage area.
                       </p>
                   </div>
                 </AccordionTrigger>
                 <AccordionContent className="pt-1 pb-4">
-                  <FormField
-                    control={form.control}
-                    name="location"
-                    render={() => (
-                      <FormItem>
-                        <FormControl>
-                          <LocationMapPicker form={form} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <LocationMapPicker form={form} />
                 </AccordionContent>
               </AccordionItem>
-            </Accordion>
+          </Accordion>
 
           <FormField
             control={form.control}
