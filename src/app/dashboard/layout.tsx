@@ -310,6 +310,7 @@ export default function DashboardLayout({
   const router = useRouter();
   const pathname = usePathname();
   const [showWelcomePopup, setShowWelcomePopup] = useState(false);
+  const logo = PlaceHolderImages.find((img) => img.id === "logo");
 
   useEffect(() => {
     if (!loading && user?.uid) {
@@ -345,7 +346,17 @@ export default function DashboardLayout({
   if (loading || !user?.uid) {
     return (
       <div className="flex min-h-screen w-full flex-col items-center justify-center bg-background">
-        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+        {logo && (
+          <Image
+            src={logo.imageUrl}
+            alt={logo.description}
+            width={80}
+            height={80}
+            className="mb-6 rounded-lg animate-pulse"
+            data-ai-hint={logo.imageHint}
+          />
+        )}
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
         <p className="mt-4 text-muted-foreground">{getLoadingMessage(pathname)}</p>
       </div>
     );
