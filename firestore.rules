@@ -76,7 +76,7 @@ service cloud.firestore {
         (
           request.resource.data.diff(resource.data).affectedKeys().size() == 1 &&
           'soulsLogged' in request.resource.data.diff(resource.data).affectedKeys() &&
-          request.resource.data.soulsLogged == resource.data.soulsLogged + 1
+          request.resource.data.soulsLogged == (resource.data.soulsLogged || 0) + 1
         )
       );
       allow delete: if false; // Hard deletes are disallowed.
