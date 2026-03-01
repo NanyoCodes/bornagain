@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -21,7 +22,7 @@ import type { Campaign, Soul, UserProfile } from "@/lib/types";
 import { Textarea } from "@/components/ui/textarea";
 import { format } from "date-fns";
 import { useFirestore, useUser, useCollection, useDoc } from "@/firebase";
-import { collection, query, orderBy, serverTimestamp, doc, runTransaction, increment } from "firebase/firestore";
+import { collection, query, orderBy, serverTimestamp, doc, runTransaction } from "firebase/firestore";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { errorEmitter } from "@/firebase/error-emitter";
 
@@ -118,11 +119,15 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps)
       transaction.set(newSoulRef, soulData);
       transaction.set(globalSoulRef, soulData);
 
-
       // 2. If from a campaign, increment the campaign's soul count
       if (campaignId) {
           const campaignRef = doc(firestore, 'campaigns', campaignId);
-          transaction.update(campaignRef, { soulsLogged: increment(1) });
+          const campaignDoc = await transaction.get(campaignRef);
+          if (!campaignDoc.exists()) {
+            throw new Error("Campaign does not exist!");
+          }
+          const currentSoulsLogged = campaignDoc.data().soulsLogged || 0;
+          transaction.update(campaignRef, { soulsLogged: currentSoulsLogged + 1 });
       }
     }).then(() => {
       toast({
