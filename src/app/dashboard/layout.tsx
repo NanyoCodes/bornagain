@@ -308,6 +308,7 @@ export default function DashboardLayout({
 }) {
   const { user, loading } = useUser();
   const router = useRouter();
+  const pathname = usePathname();
   const [showWelcomePopup, setShowWelcomePopup] = useState(false);
 
   useEffect(() => {
@@ -329,11 +330,23 @@ export default function DashboardLayout({
     }
   }, [user, loading, router]);
 
+  const getLoadingMessage = (path: string) => {
+    if (path.startsWith('/dashboard/souls-won')) return 'Loading souls won...';
+    if (path.startsWith('/dashboard/testimonies')) return 'Loading testimonies...';
+    if (path.startsWith('/dashboard/campaigns')) return 'Loading campaigns...';
+    if (path.startsWith('/dashboard/progress')) return 'Loading your progress...';
+    if (path.startsWith('/dashboard/chats')) return 'Loading chats...';
+    if (path.startsWith('/dashboard/profile')) return 'Loading your profile...';
+    if (path.startsWith('/dashboard/settings')) return 'Loading settings...';
+    if (path.startsWith('/dashboard/notifications')) return 'Loading notifications...';
+    return 'Loading your dashboard...';
+  };
+
   if (loading || !user?.uid) {
     return (
       <div className="flex min-h-screen w-full flex-col items-center justify-center bg-background">
         <Loader2 className="h-12 w-12 animate-spin text-primary" />
-        <p className="mt-4 text-muted-foreground">Loading your dashboard...</p>
+        <p className="mt-4 text-muted-foreground">{getLoadingMessage(pathname)}</p>
       </div>
     );
   }
@@ -353,5 +366,3 @@ export default function DashboardLayout({
     </SearchProvider>
   );
 }
-
-    
