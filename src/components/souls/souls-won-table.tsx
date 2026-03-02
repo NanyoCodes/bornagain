@@ -3,7 +3,7 @@
 
 import * as React from "react";
 import { format } from "date-fns";
-import { MoreHorizontal, Church, BookOpen, HandHelping, Check, Loader2, UserPlus, Edit } from "lucide-react";
+import { MoreHorizontal, Church, BookOpen, HandHelping, Check, Loader2, UserPlus, Edit, MapPin } from "lucide-react";
 import type { Soul, FollowUpStatus, FollowUpLogItem } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import {
@@ -283,6 +283,7 @@ function SoulCard({ soul, onUpdateSoul }: { soul: ProcessedSoul, onUpdateSoul: S
                             {soul.phone && <div className="truncate">{soul.phone}</div>}
                         </CardDescription>
                         {soul.church && <CardDescription className="flex items-center gap-1 pt-1"><Church className="h-4 w-4" /> {soul.church}</CardDescription>}
+                        {soul.locationWon && <CardDescription className="flex items-center gap-1 pt-1"><MapPin className="h-4 w-4" /> {soul.locationWon}</CardDescription>}
                     </div>
                      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
                         <DropdownMenu>
@@ -475,6 +476,7 @@ export function SoulsWonTable({ souls, onUpdateSoul, loading }: SoulsWonTablePro
             <TableRow>
               <TableHead>Name</TableHead>
               <TableHead>Contact Info</TableHead>
+              <TableHead>Location Won</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Follow-up</TableHead>
               <TableHead>Won At</TableHead>
@@ -494,6 +496,9 @@ export function SoulsWonTable({ souls, onUpdateSoul, loading }: SoulsWonTablePro
                 <TableCell>
                   {soul.email && <div>{soul.email}</div>}
                   {soul.phone && <div className="text-xs text-muted-foreground">{soul.phone}</div>}
+                </TableCell>
+                <TableCell>
+                  {soul.locationWon || '-'}
                 </TableCell>
                 <TableCell>
                   <Select value={soul.status} onValueChange={(value: FollowUpStatus) => handleStatusChange(soul.id, value)}>

@@ -31,6 +31,7 @@ const formSchema = z.object({
   email: z.string().email("Please enter a valid email address.").optional().or(z.literal('')),
   phone: z.string().optional(),
   church: z.string().optional(),
+  locationWon: z.string().optional(),
   source: z.string({ required_error: "Please select a source." }),
   sourceDetails: z.string().optional(),
   initialNote: z.string().optional(),
@@ -46,7 +47,7 @@ type LogSoulFormProps = {
 
 export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps) {
   const { toast } = useToast();
-  const { user } = useUser();
+  const { user, loading: userLoading } = useUser();
   const firestore = useFirestore();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -66,6 +67,7 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps)
       email: "",
       phone: "",
       church: "",
+      locationWon: "",
       source: defaultCampaign ? "Campaign" : "Personal",
       sourceDetails: defaultCampaign ? defaultCampaign.title : "",
       initialNote: "",
@@ -74,8 +76,12 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps)
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    if (userLoading) {
+      toast({ variant: 'destructive', title: 'Please wait', description: 'Authentication is loading.' });
+      return;
+    }
     if (!user || !firestore) {
-      toast({ variant: "destructive", title: "Not Authenticated", description: "You must be logged in to log a soul." });
+      toast({ variant: 'destructive', title: 'Not Authenticated', description: 'You must be logged in to log a soul.' });
       return;
     }
     setIsLoading(true);
@@ -90,6 +96,7 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps)
       email: values.email,
       phone: values.phone,
       church: values.church,
+      locationWon: values.locationWon,
       source: values.source as 'Personal' | 'Campaign' | 'Referral',
       sourceDetails: values.sourceDetails,
       userLocation: userProfile?.location,
@@ -229,6 +236,19 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps)
         />
         <FormField
           control={form.control}
+          name="locationWon"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Location Won (Optional)</FormLabel>
+              <FormControl>
+                <Input placeholder="e.g., City Park, Nairobi" {...field} className="text-base"/>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
           name="source"
           render={({ field }) => (
             <FormItem>
@@ -303,8 +323,8 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps)
             </FormItem>
           )}
         />
-        <Button type="submit" className="w-full" disabled={isLoading}>
-          {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+        <Button type="submit" className="w-full" disabled={isLoading || userLoading}>
+          {(isLoading || userLoading) && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           Log Soul
         </Button>
       </form>

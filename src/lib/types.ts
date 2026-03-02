@@ -127,6 +127,7 @@ export type Soul = {
     city?: string;
     country?: string;
   };
+  locationWon?: string;
   wonAt: Timestamp; // ISO date string
   status: FollowUpStatus;
   followUpLog: FollowUpLogItem[];

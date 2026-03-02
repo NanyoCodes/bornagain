@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -29,6 +30,7 @@ const formSchema = z.object({
   email: z.string().email("Please enter a valid email address.").optional().or(z.literal('')),
   phone: z.string().optional(),
   church: z.string().optional(),
+  locationWon: z.string().optional(),
   source: z.string({ required_error: "Please select a source." }),
   sourceDetails: z.string().optional(),
   wonAt: z.date({
@@ -60,6 +62,7 @@ export function EditSoulForm({ soul, onSoulUpdated }: EditSoulFormProps) {
       email: soul.email || "",
       phone: soul.phone || "",
       church: soul.church || "",
+      locationWon: soul.locationWon || "",
       source: soul.source || "Personal",
       sourceDetails: soul.sourceDetails || "",
       wonAt: soul.wonAt.toDate(),
@@ -80,6 +83,7 @@ export function EditSoulForm({ soul, onSoulUpdated }: EditSoulFormProps) {
       email: values.email,
       phone: values.phone,
       church: values.church,
+      locationWon: values.locationWon,
       source: values.source as 'Personal' | 'Campaign' | 'Referral',
       sourceDetails: values.sourceDetails,
       wonAt: values.wonAt as any,
@@ -193,6 +197,19 @@ export function EditSoulForm({ soul, onSoulUpdated }: EditSoulFormProps) {
               <FormLabel>Church (Optional)</FormLabel>
               <FormControl>
                 <Input placeholder="e.g., New Life Church" {...field} className="text-base"/>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="locationWon"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Location Won (Optional)</FormLabel>
+              <FormControl>
+                <Input placeholder="e.g., City Park, Nairobi" {...field} className="text-base"/>
               </FormControl>
               <FormMessage />
             </FormItem>

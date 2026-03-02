@@ -313,6 +313,10 @@
             "country": { "type": "string" }
           }
         },
+        "locationWon": {
+            "type": "string",
+            "description": "The location where the soul was won (e.g., street name, event)."
+        },
         "wonAt": {
           "type": "object"
         },
