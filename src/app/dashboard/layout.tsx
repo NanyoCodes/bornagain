@@ -1,4 +1,3 @@
-
 "use client";
 
 import Image from "next/image";
@@ -8,7 +7,6 @@ import React, { useEffect, useMemo, useState } from "react";
 import {
   ArrowLeft,
   Bell,
-  Home,
   LogOut,
   MessageSquare,
   Newspaper,
@@ -19,6 +17,7 @@ import {
   UserPlus,
   Loader2,
   HeartHandshake,
+  TrendingUp,
 } from "lucide-react";
 
 import {
@@ -45,7 +44,7 @@ import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 
 const navItems = [
-  { href: "/dashboard", label: "Dashboard", icon: Home },
+  { href: "/dashboard/progress", label: "Progress", icon: TrendingUp },
   { href: "/dashboard/souls-won", label: "Souls Won", icon: UserPlus },
   { href: "/dashboard/testimonies", label: "Testimonies", icon: Newspaper },
   { href: "/dashboard/campaigns", label: "Campaigns", icon: Target },
@@ -131,7 +130,7 @@ function AppHeader() {
     <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b bg-background px-4 md:px-6">
       <div className="flex items-center gap-2 md:gap-6">
         <Link
-          href="/dashboard"
+          href="/dashboard/progress"
           className="flex items-center gap-2 text-lg font-semibold"
         >
           {logo && <Image src={logo.imageUrl} alt={logo.description} width={48} height={48} data-ai-hint={logo.imageHint} />}
@@ -146,7 +145,7 @@ function AppHeader() {
                 prefetch={true}
                 className={cn(
                 "transition-colors hover:text-foreground whitespace-nowrap",
-                pathname.startsWith(item.href) && item.href !== '/dashboard' || pathname === item.href ? "text-foreground font-semibold" : "text-muted-foreground"
+                pathname.startsWith(item.href) ? "text-foreground font-semibold" : "text-muted-foreground"
                 )}
             >
                 {item.label}
@@ -288,7 +287,7 @@ function BottomNavBar() {
               prefetch={true}
               className={cn(
                 "flex flex-col items-center justify-center gap-0.5 p-1 text-[10px] transition-colors hover:text-primary",
-                (pathname.startsWith(item.href) && item.href !== '/dashboard') || pathname === item.href ? "text-primary" : "text-muted-foreground"
+                pathname.startsWith(item.href) ? "text-primary" : "text-muted-foreground"
               )}
             >
               <item.icon className="h-5 w-5" />
