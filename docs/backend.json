@@ -457,7 +457,7 @@
     },
     "Chat": {
       "title": "Chat",
-      "description": "A chat session for a campaign, which can be a group chat among participants or a private one-on-one chat.",
+      "description": "A chat session, which can be a group chat for a campaign, a private one-on-one chat related to a campaign, or a private chat between accountability partners.",
       "type": "object",
       "properties": {
         "participantIds": {
@@ -470,14 +470,16 @@
           "type": "object"
         },
         "campaignId": {
-          "type": "string"
+          "type": "string",
+          "description": "The ID of the campaign this chat is related to, if applicable."
         },
         "campaignTitle": {
-          "type": "string"
+          "type": "string",
+          "description": "The title of the campaign this chat is related to, if applicable."
         },
         "isGroupChat": {
           "type": "boolean",
-          "description": "Indicates if this is a group chat for the whole campaign."
+          "description": "Indicates if this is a group chat. If false, it's a one-on-one chat."
         },
         "lastUpdatedAt": {
           "type": "object"
@@ -485,7 +487,6 @@
       },
       "required": [
         "participantIds",
-        "campaignId",
         "lastUpdatedAt"
       ]
     },

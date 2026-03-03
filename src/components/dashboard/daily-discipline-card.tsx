@@ -7,7 +7,7 @@ import { doc, updateDoc, serverTimestamp, writeBatch } from 'firebase/firestore'
 import type { UserProfile } from '@/lib/types';
 import { isToday, format } from 'date-fns';
 import { Skeleton } from '../ui/skeleton';
-import { Heart, BookOpen, Share2, Megaphone, Users, Loader2, Church } from 'lucide-react';
+import { Heart, BookOpen, Share2, Megaphone, Users, Loader2, Church, CheckCircle2 } from 'lucide-react';
 import { BibleDialog } from './bible-dialog';
 import { PrayerDialog } from './prayer-dialog';
 import { AttendChurchDialog } from './attend-church-dialog';
@@ -238,11 +238,16 @@ export function DailyDisciplineCard() {
                 <Button
                     key={discipline.id}
                     variant="outline"
-                    className="relative flex flex-col items-center justify-center gap-1 px-2 py-4 h-full text-center data-[state=checked]:bg-primary/10 data-[state=checked]:border-primary disabled:opacity-75"
+                    className="relative flex flex-col items-center justify-center gap-1 px-2 py-4 h-full text-center data-[state=checked]:bg-green-100 dark:data-[state=checked]:bg-green-900/20 data-[state=checked]:border-green-500/50 disabled:opacity-75"
                     data-state={isCompleted ? 'checked' : 'unchecked'}
                     onClick={() => handleDisciplineClick(discipline.id)}
                     disabled={togglingId === discipline.id}
                 >
+                   {isCompleted && togglingId !== discipline.id && (
+                      <div className="absolute top-1 right-1">
+                          <CheckCircle2 className="h-5 w-5 text-green-600" />
+                      </div>
+                  )}
                     {togglingId === discipline.id ? (
                         <Loader2 className="h-5 w-5 animate-spin" />
                     ) : (

@@ -202,16 +202,19 @@ export default function ChatPage() {
                     const notificationsCollectionRef = collection(firestore, 'users', participantId, 'notifications');
                     const notificationRef = doc(notificationsCollectionRef);
                     
+                    const title = chat.isGroupChat
+                        ? `New ${replyingTo ? 'reply' : 'message'} in ${chat.campaignTitle}`
+                        : `New Message from ${user.displayName || 'User'}`;
+                    const message = chat.campaignTitle
+                        ? `${user.displayName || 'User'}: ${newMessage.substring(0, 50)}${newMessage.length > 50 ? '...' : ''}`
+                        : `You have a new message from your accountability partner.`;
+
                     // In-app notification
                     batch.set(notificationRef, {
                         userId: participantId,
                         type: 'new_chat_message',
-                        title: chat.isGroupChat 
-                            ? `New ${replyingTo ? 'reply' : 'message'} in ${chat.campaignTitle}`
-                            : `New Message from ${user.displayName || 'User'}`,
-                        message: chat.isGroupChat
-                            ? `${user.displayName || 'User'}: ${newMessage.substring(0, 50)}${newMessage.length > 50 ? '...' : ''}`
-                            : `Regarding: ${chat.campaignTitle}`,
+                        title: title,
+                        message: message,
                         link: `/dashboard/chats/${chatId}`,
                         isRead: false,
                         createdAt: serverTimestamp()
@@ -220,13 +223,13 @@ export default function ChatPage() {
                     // Email notification
                     const mailCollectionRef = collection(firestore, 'mail');
                     const mailRef = doc(mailCollectionRef);
-                    const subject = chat.isGroupChat
-                        ? `New ${replyingTo ? 'reply' : 'message'} in "${chat.campaignTitle}" Group Chat`
+                    const subject = chat.campaignTitle
+                        ? `New ${replyingTo ? 'reply' : 'message'} in "${chat.campaignTitle}" Chat`
                         : `New Message from ${user.displayName || 'User'} | Testify`;
 
                     const html = `
                         <p>Hi ${recipientInfo?.displayName || 'there'},</p>
-                        <p>You have a new ${replyingTo ? 'reply' : 'message'} from <strong>${user.displayName || 'a user'}</strong> in the chat for the campaign "<strong>${chat.campaignTitle}</strong>".</p>
+                        <p>You have a new ${replyingTo ? 'reply' : 'message'} from <strong>${user.displayName || 'a user'}</strong> ${chat.campaignTitle ? `in the chat for the campaign "<strong>${chat.campaignTitle}</strong>"` : ''}.</p>
                         <p><em>${newMessage}</em></p>
                         <p>You can view the full conversation and reply by clicking the button below:</p>
                         <a href="${link}" style="display: inline-block; padding: 10px 20px; font-size: 16px; color: #ffffff; background-color: #3b82f6; text-decoration: none; border-radius: 5px;">View Chat</a>
@@ -327,9 +330,13 @@ export default function ChatPage() {
                                     {otherParticipantInfo.displayName}
                                 </Link>
                             </h2>
-                            <p className="text-sm text-muted-foreground">
-                                Regarding: <Link href={`/dashboard/campaigns#${chat.campaignId}`} className="hover:underline">{chat.campaignTitle}</Link>
-                            </p>
+                            {chat.campaignTitle ? (
+                                <p className="text-sm text-muted-foreground">
+                                    Regarding: <Link href={`/dashboard/campaigns#${chat.campaignId}`} className="hover:underline">{chat.campaignTitle}</Link>
+                                </p>
+                            ) : (
+                                <p className="text-sm text-muted-foreground">Accountability Partner</p>
+                            )}
                         </div>
                     </div>
                 ) : null}

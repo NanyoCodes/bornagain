@@ -2,12 +2,12 @@
 
 import { useMemo, useState } from 'react';
 import { useUser, useFirestore, useDoc, useCollection } from '@/firebase';
-import { doc, collection, addDoc, serverTimestamp, query, orderBy, limit } from 'firebase/firestore';
+import { doc, collection, addDoc, serverTimestamp, query, orderBy, limit, getDocs, where } from 'firebase/firestore';
 import type { UserProfile, DailyDisciplineLog } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Loader2, HeartHandshake, ShieldAlert } from 'lucide-react';
+import { Loader2, HeartHandshake, ShieldAlert, CheckCircle2, MessageSquare } from 'lucide-react';
 import { format, isSameDay } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
@@ -26,6 +26,7 @@ import { AccountabilitySettingsCard } from '@/components/settings/accountability
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 const disciplines = [
   { id: 'pray', label: 'Pray' },
@@ -37,7 +38,9 @@ export default function AccountabilityPage() {
   const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
+  const router = useRouter();
   const [isNudging, setIsNudging] = useState(false);
+  const [isChatLoading, setIsChatLoading] = useState(false);
   const [date, setDate] = useState<Date | undefined>(new Date());
 
   const userDocRef = useMemo(() => {
@@ -102,6 +105,60 @@ export default function AccountabilityPage() {
       setIsNudging(false);
     }
   };
+
+  const handleInitiateChat = async () => {
+    if (!user || !firestore || !partnerId || !userProfile || !partnerProfile) return;
+    setIsChatLoading(true);
+
+    try {
+        const participantIds = [user.uid, partnerId].sort();
+        const chatsRef = collection(firestore, 'chats');
+        
+        const q = query(
+            chatsRef,
+            where('participantIds', '==', participantIds),
+            where('isGroupChat', '==', false)
+        );
+
+        const querySnapshot = await getDocs(q);
+        let existingChat = querySnapshot.docs.find(doc => !doc.data().campaignId);
+        
+        let chatId: string;
+
+        if (existingChat) {
+            chatId = existingChat.id;
+        } else {
+            const newChatData = {
+                participantIds,
+                participantInfo: {
+                    [user.uid]: {
+                        displayName: userProfile.displayName || 'User',
+                        photoURL: userProfile.photoURL || '',
+                        email: userProfile.email || '',
+                    },
+                    [partnerId]: {
+                        displayName: partnerProfile.displayName,
+                        photoURL: partnerProfile.photoURL || '', 
+                        email: partnerProfile.email || '',
+                    },
+                },
+                lastUpdatedAt: serverTimestamp(),
+                isGroupChat: false,
+                hasMessages: false,
+            };
+            const chatDocRef = await addDoc(chatsRef, newChatData);
+            chatId = chatDocRef.id;
+        }
+        router.push(`/dashboard/chats/${chatId}`);
+
+    } catch (error) {
+        console.error("Error initiating partner chat:", error);
+        toast({ variant: 'destructive', title: 'Chat Error', description: 'Could not start the chat session.'});
+    } finally {
+        setIsChatLoading(false);
+    }
+  };
+
 
   if (loadingProfile || (partnerId && (loadingPartner || loadingHistory))) {
     return (
@@ -179,17 +236,18 @@ export default function AccountabilityPage() {
                         className={cn(
                             "flex items-center gap-3 rounded-lg border p-3 transition-colors",
                             completedOnSelectedDate.includes(discipline.id)
-                            ? "bg-primary/10 border-primary/20"
+                            ? "bg-green-100 dark:bg-green-900/20 border-green-500/20"
                             : "bg-muted/50"
                         )}
                         >
-                        <div
-                            className={cn(
-                            "h-8 w-8 shrink-0 rounded-full",
-                            completedOnSelectedDate.includes(discipline.id) ? "bg-primary" : "bg-background border-2"
-                            )}
-                        />
-                        <span className="font-medium text-sm">{discipline.label}</span>
+                          <div className="h-8 w-8 shrink-0 flex items-center justify-center">
+                              {completedOnSelectedDate.includes(discipline.id) ? (
+                                  <CheckCircle2 className="h-7 w-7 text-green-600" />
+                              ) : (
+                                  <div className="h-7 w-7 rounded-full bg-muted border-2" />
+                              )}
+                          </div>
+                          <span className="font-medium text-sm">{discipline.label}</span>
                         </div>
                     ))}
                 </div>
@@ -198,7 +256,7 @@ export default function AccountabilityPage() {
                 )}
             </div>
         </CardContent>
-        <CardFooter>
+        <CardFooter className="flex items-center gap-2">
           <AlertDialog>
             <AlertDialogTrigger asChild>
                <Button variant="outline" disabled={isNudging}>
@@ -219,6 +277,10 @@ export default function AccountabilityPage() {
                 </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
+          <Button onClick={handleInitiateChat} disabled={isChatLoading}>
+              {isChatLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <MessageSquare className="mr-2 h-4 w-4" />}
+              Chat with Partner
+          </Button>
         </CardFooter>
       </Card>
 

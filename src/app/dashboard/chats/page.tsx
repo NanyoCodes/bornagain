@@ -80,7 +80,13 @@ function ChatListItem({ chat, currentUserId, isUnread }: { chat: Chat, currentUs
                         </div>
                     </div>
                     <p className="text-sm text-muted-foreground truncate">
-                        Re: <Link href={`/dashboard/campaigns#${chat.campaignId}`} onClick={(e) => e.stopPropagation()} className="hover:underline">{chat.campaignTitle}</Link>
+                       {chat.campaignTitle ? (
+                          <>
+                            Re: <Link href={`/dashboard/campaigns#${chat.campaignId}`} onClick={(e) => e.stopPropagation()} className="hover:underline">{chat.campaignTitle}</Link>
+                          </>
+                        ) : (
+                          <span>Accountability Chat</span>
+                        )}
                     </p>
                     <p className="text-sm text-muted-foreground truncate mt-1">
                         {chat.hasMessages ? 'Click to view messages' : 'No messages yet.'}
@@ -152,7 +158,7 @@ export default function ChatsPage() {
                     Chats
                 </h1>
                 <p className="text-muted-foreground">
-                    Your conversations with campaign organizers and participants.
+                    Your conversations with campaign organizers and partners.
                 </p>
             </div>
 
@@ -179,7 +185,7 @@ export default function ChatsPage() {
                             <MessageSquare className="mx-auto h-12 w-12 text-muted-foreground" />
                             <h3 className="mt-4 text-lg font-semibold">No Active Conversations</h3>
                             <p className="mt-2 text-sm text-muted-foreground">
-                                When you join a campaign or chat with an organizer, your conversations will appear here.
+                                When you join a campaign or chat with someone, your conversations will appear here.
                             </p>
                         </div>
                     )}

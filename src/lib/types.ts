@@ -171,8 +171,8 @@ export type Chat = {
   id: string;
   participantIds: string[];
   participantInfo: ChatParticipantInfo;
-  campaignId: string;
-  campaignTitle: string;
+  campaignId?: string;
+  campaignTitle?: string;
   lastUpdatedAt: Timestamp;
   hasMessages?: boolean;
   isGroupChat?: boolean;
