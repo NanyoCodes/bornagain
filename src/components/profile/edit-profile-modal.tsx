@@ -16,9 +16,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Loader2 } from "lucide-react";
-import { useAuth, useFirestore, useUser } from "@/firebase";
+import { useAuth, useFirestore, useUser, useStorage } from "@/firebase";
 import { doc, updateDoc } from "firebase/firestore";
 import { updateProfile } from "firebase/auth";
 import type { UserProfile } from "@/lib/types";
@@ -26,6 +26,9 @@ import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { LocationProfileInput } from "../common/location-profile-input";
 import { Label } from "../ui/label";
+import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Progress } from "@/components/ui/progress";
 
 const formSchema = z.object({
   displayName: z.string().min(2, "Name must be at least 2 characters.").max(50, "Name is too long."),
@@ -45,8 +48,13 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
   const { user } = useUser();
   const auth = useAuth();
   const firestore = useFirestore();
+  const storage = useStorage();
   
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -59,18 +67,57 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
     },
   });
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setSelectedFile(file);
+      setPreviewUrl(URL.createObjectURL(file));
+    }
+  };
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    if (!user || !auth || !firestore) {
+    if (!user || !auth || !firestore || !storage) {
       toast({ variant: 'destructive', title: 'Not authenticated or Firebase not ready' });
       return;
     }
     setIsSubmitting(true);
+    setUploadProgress(0);
 
     try {
+      let finalPhotoURL = userProfile.photoURL;
+
+      // 1. Handle file upload if a new file is selected
+      if (selectedFile) {
+        const storageRef = ref(storage, `profile-pictures/${user.uid}`);
+        const uploadTask = uploadBytesResumable(storageRef, selectedFile);
+
+        finalPhotoURL = await new Promise<string | undefined>((resolve, reject) => {
+            uploadTask.on('state_changed',
+                (snapshot) => {
+                    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                    setUploadProgress(progress);
+                },
+                (error) => {
+                    console.error("Upload error:", error);
+                    toast({ variant: 'destructive', title: "Upload Failed", description: "Could not upload new profile picture." });
+                    reject(error);
+                },
+                async () => {
+                    try {
+                        const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+                        resolve(downloadURL);
+                    } catch (error) {
+                        reject(error);
+                    }
+                }
+            );
+        });
+      }
+
+      // 2. Prepare update payloads
       const firestoreUpdatePayload: { [key: string]: any } = {};
       const newLocation = { city: values.city || "", country: values.country || "" };
 
-      // Only add values to payload if they have changed from the initial profile
       if (values.displayName !== userProfile.displayName) {
         firestoreUpdatePayload.displayName = values.displayName;
         firestoreUpdatePayload.displayName_lowercase = values.displayName.toLowerCase();
@@ -81,9 +128,21 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
           firestoreUpdatePayload.location = newLocation;
       }
       if (values.phone !== userProfile.phone) firestoreUpdatePayload.phone = values.phone || "";
+      if (finalPhotoURL !== userProfile.photoURL) {
+        firestoreUpdatePayload.photoURL = finalPhotoURL;
+      }
 
-      // Only update if there are changes
-      if (Object.keys(firestoreUpdatePayload).length > 0) {
+      const hasFirestoreUpdate = Object.keys(firestoreUpdatePayload).length > 0;
+      const hasAuthUpdate = auth.currentUser && (values.displayName !== auth.currentUser.displayName || (finalPhotoURL && finalPhotoURL !== auth.currentUser.photoURL));
+
+      if (!hasFirestoreUpdate && !hasAuthUpdate) {
+          toast({ title: "No Changes", description: "You haven't made any changes to your profile." });
+          onClose();
+          return;
+      }
+      
+      // 3. Execute updates
+      if (hasFirestoreUpdate) {
         const userDocRef = doc(firestore, 'users', user.uid);
         await updateDoc(userDocRef, firestoreUpdatePayload).catch((serverError) => {
             const permissionError = new FirestorePermissionError({
@@ -92,14 +151,14 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                 requestResourceData: firestoreUpdatePayload,
             });
             errorEmitter.emit('permission-error', permissionError);
-            throw permissionError; // Re-throw to be caught by the outer catch
-          });
+            throw permissionError;
+        });
       }
 
-      // Update Firebase Auth profile if display name changed
-      if (auth.currentUser && values.displayName !== auth.currentUser.displayName) {
+      if (hasAuthUpdate && auth.currentUser) {
         await updateProfile(auth.currentUser, {
           displayName: values.displayName,
+          photoURL: finalPhotoURL,
         });
       }
       
@@ -108,19 +167,38 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
 
     } catch (error: any) {
       console.error("Profile update error:", error);
-       if (error.name === 'FirestorePermissionError') {
-         // This was already handled by the emitter, do nothing.
-       } else {
+       if (error.name !== 'FirestorePermissionError' && !error.message?.includes("Firebase Storage")) {
          toast({ variant: 'destructive', title: "Update Failed", description: error.message || "Could not update profile." });
        }
     } finally {
       setIsSubmitting(false);
+      setUploadProgress(0);
     }
   }
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <div className="flex flex-col items-center gap-4">
+          <Avatar className="h-24 w-24">
+            <AvatarImage src={previewUrl || userProfile.photoURL || undefined} alt={userProfile.displayName} />
+            <AvatarFallback>{userProfile.displayName?.charAt(0)}</AvatarFallback>
+          </Avatar>
+          <Button type="button" variant="outline" onClick={() => fileInputRef.current?.click()}>
+            Change Picture
+          </Button>
+          <Input
+            ref={fileInputRef}
+            type="file"
+            className="hidden"
+            accept="image/png, image/jpeg, image/gif"
+            onChange={handleFileChange}
+          />
+          {uploadProgress > 0 && uploadProgress < 100 && (
+            <Progress value={uploadProgress} className="w-full" />
+          )}
+        </div>
+
         <FormField
           control={form.control}
           name="displayName"
