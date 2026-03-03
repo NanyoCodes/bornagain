@@ -5,7 +5,7 @@ import { useState, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { useUser, useFirestore, useCollection } from '@/firebase';
+import { useUser, useFirestore } from '@/firebase';
 import {
   collection,
   query,
@@ -45,32 +45,11 @@ export function AccountabilitySettingsCard({ userProfile, userId }: { userProfil
   const firestore = useFirestore();
 
   const [isSending, setIsSending] = useState(false);
-  const [isResponding, setIsResponding] = useState<string | null>(null);
 
   const form = useForm<z.infer<typeof sendRequestSchema>>({
     resolver: zodResolver(sendRequestSchema),
     defaultValues: { email: '' },
   });
-
-  const requestsQuery = useMemo(() => {
-    if (!userId || !firestore) return null;
-    return query(
-        collection(firestore, 'accountabilityRequests'), 
-        where('participantIds', 'array-contains', userId)
-    );
-  }, [userId, firestore]);
-  const { data: allRequests, loading: loadingRequests } = useCollection<AccountabilityRequest>(requestsQuery);
-
-  const incomingRequests = useMemo(() => {
-    return allRequests?.filter(r => r.status === 'pending' && r.toUserId === userId)
-  }, [allRequests, userId]);
-  
-  const outgoingRequests = useMemo(() => {
-    return allRequests?.filter(r => r.status === 'pending' && r.fromUserId === userId)
-  }, [allRequests, userId]);
-  
-  const loadingIncoming = loadingRequests;
-  const loadingOutgoing = loadingRequests;
 
   const handleSendRequest = async (values: z.infer<typeof sendRequestSchema>) => {
     if (!user || !firestore || !userProfile) return;
@@ -138,56 +117,6 @@ export function AccountabilitySettingsCard({ userProfile, userId }: { userProfil
       toast({ variant: 'destructive', title: 'Error', description: error.message || 'Could not send request.' });
     } finally {
       setIsSending(false);
-    }
-  };
-
-  const handleRespondToRequest = async (request: AccountabilityRequest, response: 'accepted' | 'declined') => {
-    if (!user || !firestore) return;
-    setIsResponding(request.id);
-    
-    try {
-        if (response === 'accepted' && userProfile.accountabilityPartnerId) {
-            throw new Error("You already have a partner. Please remove them before accepting a new one.");
-        }
-
-        const batch = writeBatch(firestore);
-        const requestRef = doc(firestore, 'accountabilityRequests', request.id);
-
-        batch.update(requestRef, { status: response, respondedAt: serverTimestamp() });
-        
-        if (response === 'accepted') {
-            const currentUserRef = doc(firestore, 'users', user.uid);
-            batch.update(currentUserRef, {
-                accountabilityPartnerId: request.fromUserId,
-                accountabilityPartnerName: request.fromUserName,
-            });
-
-            const partnerUserRef = doc(firestore, 'users', request.fromUserId);
-            batch.update(partnerUserRef, {
-                accountabilityPartnerId: user.uid,
-                accountabilityPartnerName: userProfile.displayName,
-            });
-        }
-        await batch.commit();
-        toast({ title: `Request ${response}`, description: 'The request has been updated.' });
-    } catch (error: any) {
-        toast({ variant: 'destructive', title: 'Error', description: error.message || 'Could not respond to request.' });
-    } finally {
-        setIsResponding(null);
-    }
-  };
-  
-  const handleCancelRequest = async (requestId: string) => {
-    if (!firestore) return;
-    setIsResponding(requestId);
-    try {
-      const requestRef = doc(firestore, 'accountabilityRequests', requestId);
-      await deleteDoc(requestRef);
-      toast({ title: 'Request Canceled', description: 'Your partnership request has been withdrawn.' });
-    } catch (error) {
-      toast({ variant: 'destructive', title: 'Error', description: 'Could not cancel request.' });
-    } finally {
-      setIsResponding(null);
     }
   };
   
@@ -279,76 +208,6 @@ export function AccountabilitySettingsCard({ userProfile, userId }: { userProfil
                   </Button>
                 </form>
               </Form>
-            </div>
-            
-            {(loadingIncoming || (incomingRequests && incomingRequests.length > 0)) && <Separator />}
-
-            <div>
-              <h3 className="text-base font-semibold mb-2">Incoming Requests</h3>
-              {loadingIncoming ? <Loader2 className="animate-spin" /> : 
-                incomingRequests && incomingRequests.length > 0 ? (
-                  <div className="space-y-2">
-                    {incomingRequests.map(req => (
-                        <div key={req.id} className="flex items-center justify-between rounded-lg border p-3">
-                            <div className="flex items-center gap-3">
-                                <Avatar>
-                                    <AvatarImage src={req.fromUserPhotoURL ?? undefined} />
-                                    <AvatarFallback>{req.fromUserName.charAt(0)}</AvatarFallback>
-                                </Avatar>
-                                <div>
-                                    <p className="font-medium text-sm">{req.fromUserName}</p>
-                                    {req.createdAt && <p className="text-xs text-muted-foreground">{formatDistanceToNow(req.createdAt.toDate(), { addSuffix: true })}</p>}
-                                </div>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <Button size="sm" onClick={() => handleRespondToRequest(req, 'accepted')} disabled={isResponding === req.id}>
-                                    {isResponding === req.id ? <Loader2 className="h-4 w-4 animate-spin"/> : <Check className="h-4 w-4" />}
-                                    <span className="hidden sm:inline ml-2">Accept</span>
-                                </Button>
-                                <Button size="sm" variant="outline" onClick={() => handleRespondToRequest(req, 'declined')} disabled={isResponding === req.id}>
-                                    {isResponding === req.id ? <Loader2 className="h-4 w-4 animate-spin"/> : <X className="h-4 w-4" />}
-                                    <span className="hidden sm:inline ml-2">Decline</span>
-                                </Button>
-                            </div>
-                        </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-sm text-muted-foreground">You have no incoming requests.</p>
-                )
-              }
-            </div>
-
-            {(loadingOutgoing || (outgoingRequests && outgoingRequests.length > 0)) && <Separator />}
-
-            <div>
-              <h3 className="text-base font-semibold mb-2">Sent Requests</h3>
-               {loadingOutgoing ? <Loader2 className="animate-spin" /> : 
-                outgoingRequests && outgoingRequests.length > 0 ? (
-                  <div className="space-y-2">
-                     {outgoingRequests.map(req => (
-                        <div key={req.id} className="flex items-center justify-between rounded-lg border p-3">
-                            <div className="flex items-center gap-3">
-                                <Avatar>
-                                    <AvatarImage src={req.toUserPhotoURL ?? undefined} />
-                                    <AvatarFallback>{req.toUserName.charAt(0)}</AvatarFallback>
-                                </Avatar>
-                                <div>
-                                    <p className="font-medium text-sm">{req.toUserName}</p>
-                                    {req.createdAt && <p className="text-xs text-muted-foreground">{formatDistanceToNow(req.createdAt.toDate(), { addSuffix: true })}</p>}
-                                </div>
-                            </div>
-                             <Button size="sm" variant="outline" onClick={() => handleCancelRequest(req.id)} disabled={isResponding === req.id}>
-                                {isResponding === req.id ? <Loader2 className="h-4 w-4 animate-spin"/> : <X className="h-4 w-4" />}
-                                <span className="hidden sm:inline ml-2">Cancel</span>
-                            </Button>
-                        </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-sm text-muted-foreground">You have no pending sent requests.</p>
-                )
-              }
             </div>
           </>
         )}

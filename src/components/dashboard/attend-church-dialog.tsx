@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -22,7 +23,7 @@ import { doc, updateDoc, arrayUnion } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 import { ScrollArea } from '../ui/scroll-area';
 import { Separator } from '../ui/separator';
-import { format } from 'date-fns';
+import { format, parse } from 'date-fns';
 
 const formSchema = z.object({
   churchName: z.string().min(2, { message: 'Church name must be at least 2 characters.' }).max(100, { message: 'Church name is too long.' }),
@@ -48,6 +49,16 @@ export function AttendChurchDialog({ isOpen, onOpenChange, onDisciplineCompleted
       churchName: '',
     },
   });
+
+  const scheduleString = userProfile?.churchInfo?.schedule
+    ?.map(s => {
+        try {
+            return `${s.day} at ${format(parse(s.time, 'HH:mm', new Date()), 'p')}`;
+        } catch {
+            return `${s.day} at ${s.time}`;
+        }
+    })
+    .join(', ');
 
   useEffect(() => {
     if (isOpen) {
@@ -108,10 +119,15 @@ export function AttendChurchDialog({ isOpen, onOpenChange, onDisciplineCompleted
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Log Church Attendance</DialogTitle>
-          <DialogDescription>
+           <DialogDescription>
             {view === 'confirm' && userProfile?.churchInfo?.name
               ? 'Confirm your attendance for today.'
               : "That's great! Which church did you attend today?"}
+             {view === 'confirm' && scheduleString && (
+                <div className="mt-2 text-xs text-muted-foreground">
+                    Your schedule: {scheduleString}
+                </div>
+            )}
           </DialogDescription>
         </DialogHeader>
 

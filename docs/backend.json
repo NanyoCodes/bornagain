@@ -135,12 +135,18 @@
             "description": "The user's primary church details.",
             "properties": {
                 "name": { "type": "string", "description": "The name of the user's church." },
-                "worshipDays": {
-                    "type": "array",
-                    "items": { "type": "string" },
-                    "description": "The days of the week the user attends worship."
-                },
-                "worshipTime": { "type": "string", "description": "The typical time of the worship service." }
+                "schedule": {
+                  "type": "array",
+                  "description": "The user's worship schedule, with each item containing a day and time.",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "day": { "type": "string" },
+                      "time": { "type": "string" }
+                    },
+                    "required": ["day", "time"]
+                  }
+                }
             }
         },
         "attendanceHistory": {
@@ -529,9 +535,14 @@
           "enum": ["pending", "accepted", "declined"]
         },
         "createdAt": { "type": "object" },
-        "respondedAt": { "type": "object" }
+        "respondedAt": { "type": "object" },
+        "participantIds": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "A sorted array of the two participants' UIDs."
+        }
       },
-      "required": ["fromUserId", "fromUserName", "toUserId", "status", "createdAt"]
+      "required": ["fromUserId", "fromUserName", "toUserId", "status", "createdAt", "participantIds"]
     },
     "Mail": {
       "title": "Mail",

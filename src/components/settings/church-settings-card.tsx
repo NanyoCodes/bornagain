@@ -16,14 +16,18 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Checkbox } from '@/components/ui/checkbox';
 import { Loader2, Church } from 'lucide-react';
 import { doc, updateDoc } from 'firebase/firestore';
+import { Label } from '../ui/label';
 
 const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
 const churchSettingsSchema = z.object({
   name: z.string().min(2, { message: 'Church name must be at least 2 characters.' }).max(100).optional(),
-  worshipDays: z.array(z.string()).optional(),
-  worshipTime: z.string().optional(),
+  schedule: z.array(z.object({
+    day: z.string(),
+    time: z.string().refine(val => val, { message: "Time is required." }),
+  })).optional(),
 });
+
 
 export function ChurchSettingsCard({ userProfile, userId }: { userProfile: UserProfile; userId: string }) {
   const { toast } = useToast();
@@ -34,10 +38,11 @@ export function ChurchSettingsCard({ userProfile, userId }: { userProfile: UserP
     resolver: zodResolver(churchSettingsSchema),
     defaultValues: {
       name: userProfile.churchInfo?.name || userProfile.lastChurchAttended || '',
-      worshipDays: userProfile.churchInfo?.worshipDays || [],
-      worshipTime: userProfile.churchInfo?.worshipTime || '',
+      schedule: userProfile.churchInfo?.schedule || [],
     },
   });
+
+  const schedule = form.watch('schedule') || [];
 
   const handleSaveChanges = async (values: z.infer<typeof churchSettingsSchema>) => {
     if (!firestore || !userId) return;
@@ -48,8 +53,7 @@ export function ChurchSettingsCard({ userProfile, userId }: { userProfile: UserP
       await updateDoc(userRef, {
         churchInfo: {
           name: values.name || null,
-          worshipDays: values.worshipDays || [],
-          worshipTime: values.worshipTime || null,
+          schedule: values.schedule || [],
         },
       });
       toast({ title: 'Church Info Saved', description: 'Your church details have been updated.' });
@@ -85,55 +89,51 @@ export function ChurchSettingsCard({ userProfile, userId }: { userProfile: UserP
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="worshipDays"
-              render={() => (
-                <FormItem>
-                  <div className="mb-4">
-                    <FormLabel className="text-base">Worship Days</FormLabel>
-                  </div>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                  {daysOfWeek.map((day) => (
-                    <FormField
-                      key={day}
-                      control={form.control}
-                      name="worshipDays"
-                      render={({ field }) => (
-                        <FormItem key={day} className="flex flex-row items-start space-x-3 space-y-0">
-                          <FormControl>
-                            <Checkbox
-                              checked={field.value?.includes(day)}
-                              onCheckedChange={(checked) => {
-                                return checked
-                                  ? field.onChange([...(field.value || []), day])
-                                  : field.onChange(field.value?.filter((value) => value !== day));
-                              }}
-                            />
-                          </FormControl>
-                          <FormLabel className="font-normal">{day}</FormLabel>
-                        </FormItem>
+            <FormItem>
+              <div className="mb-4">
+                <FormLabel className="text-base">Worship Schedule</FormLabel>
+              </div>
+              <div className="space-y-3">
+                {daysOfWeek.map((day) => {
+                  const scheduleItem = schedule.find(item => item.day === day);
+                  const isChecked = !!scheduleItem;
+
+                  return (
+                    <div key={day} className="flex items-center justify-between gap-4 rounded-lg border p-3">
+                      <div className="flex items-center gap-3">
+                        <Checkbox
+                          id={`day-${day}`}
+                          checked={isChecked}
+                          onCheckedChange={(checked) => {
+                            const currentSchedule = form.getValues('schedule') || [];
+                            if (checked) {
+                              form.setValue('schedule', [...currentSchedule, { day, time: '10:00' }], { shouldDirty: true });
+                            } else {
+                              form.setValue('schedule', currentSchedule.filter(item => item.day !== day), { shouldDirty: true });
+                            }
+                          }}
+                        />
+                        <Label htmlFor={`day-${day}`} className="font-normal text-sm">{day}</Label>
+                      </div>
+                      {isChecked && (
+                        <Input
+                          type="time"
+                          className="w-36"
+                          value={scheduleItem.time}
+                          onChange={(e) => {
+                            const newTime = e.target.value;
+                            const currentSchedule = form.getValues('schedule') || [];
+                            form.setValue('schedule', currentSchedule.map(item => item.day === day ? { ...item, time: newTime } : item), { shouldDirty: true });
+                          }}
+                        />
                       )}
-                    />
-                  ))}
-                  </div>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="worshipTime"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Worship Time</FormLabel>
-                  <FormControl>
-                    <Input type="time" {...field} value={field.value ?? ''}/>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                    </div>
+                  );
+                })}
+              </div>
+               <FormMessage>{form.formState.errors.schedule?.root?.message}</FormMessage>
+            </FormItem>
+            
             <Button type="submit" disabled={isSubmitting || !form.formState.isDirty}>
               {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Save Church Info

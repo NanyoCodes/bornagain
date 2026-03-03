@@ -40,8 +40,10 @@ export type UserProfile = {
   lastChurchAttended?: string;
   churchInfo?: {
     name?: string;
-    worshipDays?: string[];
-    worshipTime?: string;
+    schedule?: {
+      day: string;
+      time: string;
+    }[];
   };
   attendanceHistory?: {
     churchName: string;
