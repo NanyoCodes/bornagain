@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -90,6 +89,7 @@ export function AttendChurchDialog({ isOpen, onOpenChange, onDisciplineCompleted
   };
   
   const attendanceHistory = userProfile?.attendanceHistory ? [...userProfile.attendanceHistory].reverse() : [];
+  const hasChurchInfo = userProfile?.churchInfo?.name && userProfile.churchInfo.worshipDays && userProfile.churchInfo.worshipDays.length > 0;
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -100,6 +100,16 @@ export function AttendChurchDialog({ isOpen, onOpenChange, onDisciplineCompleted
             That's great! Which church did you attend today?
           </DialogDescription>
         </DialogHeader>
+
+        {hasChurchInfo && (
+            <div className="text-sm p-3 rounded-md bg-muted/50 border">
+                <p className="font-semibold">{userProfile.churchInfo?.name}</p>
+                <p className="text-muted-foreground">
+                    Your usual schedule: {userProfile.churchInfo?.worshipDays?.join(', ')}
+                    {userProfile.churchInfo?.worshipTime ? ` at ${userProfile.churchInfo.worshipTime}` : ''}
+                </p>
+            </div>
+        )}
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4 pt-2">
