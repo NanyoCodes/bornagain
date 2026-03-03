@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useMemo, useState } from 'react';
@@ -32,9 +31,6 @@ const disciplines = [
   { id: 'pray', label: 'Pray' },
   { id: 'read_bible', label: 'Read Bible' },
   { id: 'attend_church', label: 'Attend Church' },
-  { id: 'follow_up', label: 'Follow-up' },
-  { id: 'share_testimony', label: 'Share Testimony' },
-  { id: 'evangelize', label: 'Evangelize' },
 ];
 
 export default function AccountabilityPage() {
