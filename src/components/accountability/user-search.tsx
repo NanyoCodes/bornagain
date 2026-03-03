@@ -173,21 +173,22 @@ export function UserSearch({ currentUserProfile }: { currentUserProfile: UserPro
                     if (existingRequestUserIds.has(foundUser.id)) buttonText = 'Request Sent';
 
                     return (
-                        <div key={foundUser.id} className="flex items-center justify-between p-2 rounded-md hover:bg-muted/50">
-                            <div className="flex items-center gap-3">
+                        <div key={foundUser.id} className="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between p-2 rounded-md hover:bg-muted/50">
+                            <div className="flex items-center gap-3 w-full">
                                 <Avatar>
                                     <AvatarImage src={foundUser.photoURL ?? undefined} alt={foundUser.displayName} />
                                     <AvatarFallback>{foundUser.displayName.charAt(0)}</AvatarFallback>
                                 </Avatar>
-                                <div>
-                                    <p className="font-semibold text-sm">{foundUser.displayName}</p>
-                                    <p className="text-xs text-muted-foreground">{foundUser.email}</p>
+                                <div className="min-w-0">
+                                    <p className="font-semibold text-sm truncate">{foundUser.displayName}</p>
+                                    <p className="text-xs text-muted-foreground truncate">{foundUser.email}</p>
                                 </div>
                             </div>
                             <Button
                                 size="sm"
                                 onClick={() => handleSendRequest(foundUser)}
                                 disabled={isDisabled}
+                                className="w-full sm:w-auto shrink-0"
                             >
                                 {isProcessingRequest === foundUser.id ? (
                                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
