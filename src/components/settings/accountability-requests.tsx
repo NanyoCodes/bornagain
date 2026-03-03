@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -231,9 +232,9 @@ export function AccountabilityRequests({ currentUserProfile }: { currentUserProf
                 </div>
             )}
             {requests.filter(r => r.status === 'declined').map(req => (
-                <div key={req.id} className="flex items-center justify-between p-3 rounded-lg border border-dashed">
-                    <div className="flex items-center gap-3">
-                        <XCircle className="h-5 w-5 text-muted-foreground" />
+                <div key={req.id} className="flex items-start justify-between gap-2 p-3 rounded-lg border border-dashed">
+                    <div className="flex items-start gap-3">
+                        <XCircle className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />
                         <div>
                              <p className="text-sm text-muted-foreground">
                                 {req.fromUserId === user?.uid 
@@ -247,7 +248,7 @@ export function AccountabilityRequests({ currentUserProfile }: { currentUserProf
                         size="icon"
                         variant="ghost"
                         onClick={() => deleteDoc(doc(firestore, 'accountabilityRequests', req.id))}
-                        className="h-8 w-8"
+                        className="h-8 w-8 shrink-0"
                     >
                         <X className="h-4 w-4 text-muted-foreground" />
                         <span className="sr-only">Dismiss</span>
@@ -255,9 +256,9 @@ export function AccountabilityRequests({ currentUserProfile }: { currentUserProf
                 </div>
             ))}
             {acceptedRequest && (
-                 <div className="flex items-center justify-between p-3 rounded-lg border border-dashed bg-green-50 dark:bg-green-900/20">
-                    <div className="flex items-center gap-3">
-                        <CheckCircle2 className="h-5 w-5 text-green-600" />
+                 <div className="flex items-start justify-between gap-2 p-3 rounded-lg border border-dashed bg-green-50 dark:bg-green-900/20">
+                    <div className="flex items-start gap-3">
+                        <CheckCircle2 className="h-5 w-5 text-green-600 shrink-0 mt-0.5" />
                         <div>
                              <p className="text-sm text-green-700 dark:text-green-400 font-medium">
                                 You are now accountability partners with {acceptedRequest.fromUserId === user?.uid ? acceptedRequest.toUserName : acceptedRequest.fromUserName}.
@@ -268,7 +269,7 @@ export function AccountabilityRequests({ currentUserProfile }: { currentUserProf
                         size="icon"
                         variant="ghost"
                         onClick={() => deleteDoc(doc(firestore, 'accountabilityRequests', acceptedRequest.id))}
-                        className="h-8 w-8"
+                        className="h-8 w-8 shrink-0"
                     >
                         <X className="h-4 w-4 text-muted-foreground" />
                         <span className="sr-only">Dismiss</span>
