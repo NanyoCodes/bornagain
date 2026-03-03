@@ -13,7 +13,6 @@ import {
   serverTimestamp,
   deleteDoc,
   getDocs,
-  Timestamp,
   doc,
 } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
@@ -34,7 +33,7 @@ const servers = {
   iceCandidatePoolSize: 10,
 };
 
-type CallState = 'idle' | 'creating' | 'outgoing' | 'incoming' | 'active';
+type CallState = 'idle' | 'requesting' | 'incoming' | 'connecting' | 'active';
 
 export interface CallManagerHandle {
     startCall: () => void;
@@ -51,15 +50,15 @@ export const CallManager = forwardRef<CallManagerHandle, CallManagerProps>(({ ch
 
     const [callState, setCallState] = useState<CallState>('idle');
     const [isMuted, setIsMuted] = useState(false);
-    const [incomingCall, setIncomingCall] = useState<SignalingMessage | null>(null);
+    const [incomingRequest, setIncomingRequest] = useState<SignalingMessage | null>(null);
 
     const pc = useRef<RTCPeerConnection | null>(null);
     const localStream = useRef<MediaStream | null>(null);
     const remoteStream = useRef<MediaStream | null>(null);
     const remoteAudioRef = useRef<HTMLAudioElement>(null);
     
-    const otherParticipantId = chat.participantIds.find(id => id !== user.uid);
-    const otherParticipantInfo = otherParticipantId ? chat.participantInfo[otherParticipantId] : null;
+    const otherParticipantId = useMemo(() => chat.participantIds.find(id => id !== user.uid), [chat.participantIds, user.uid]);
+    const otherParticipantInfo = useMemo(() => otherParticipantId ? chat.participantInfo[otherParticipantId] : null, [chat.participantInfo, otherParticipantId]);
 
     const signalingCollection = useMemo(() => {
         if (!firestore || !chat.id) return null;
@@ -76,14 +75,37 @@ export const CallManager = forwardRef<CallManagerHandle, CallManagerProps>(({ ch
             createdAt: serverTimestamp(),
         });
     }, [otherParticipantId, signalingCollection, user.uid]);
+    
+    // --- Connection and Cleanup Logic ---
+    const setupPeerConnection = useCallback(() => {
+        if (pc.current) return pc.current;
+
+        const newPc = new RTCPeerConnection(servers);
+        newPc.onicecandidate = event => {
+            if (event.candidate) {
+                sendSignal('ice-candidate', event.candidate.toJSON());
+            }
+        };
+        newPc.onconnectionstatechange = () => {
+            if (newPc.connectionState === 'disconnected' || newPc.connectionState === 'failed' || newPc.connectionState === 'closed') {
+                handleEndCall(false);
+            }
+        };
+        newPc.ontrack = event => {
+            remoteStream.current = event.streams[0];
+            if (remoteAudioRef.current) {
+                remoteAudioRef.current.srcObject = remoteStream.current;
+            }
+        };
+
+        pc.current = newPc;
+        return newPc;
+    }, [sendSignal]);
 
     const handleEndCall = useCallback(async (isInitiator = true) => {
-        // Prevent multiple cleanup calls
-        if (pc.current === null && callState === 'idle') {
-            return;
-        }
+        if (callState === 'idle') return;
 
-        if (isInitiator) {
+        if (isInitiator && callState !== 'requesting') {
            await sendSignal('hangup', {});
         }
         
@@ -91,15 +113,13 @@ export const CallManager = forwardRef<CallManagerHandle, CallManagerProps>(({ ch
         pc.current = null;
         localStream.current?.getTracks().forEach(track => track.stop());
         localStream.current = null;
-        remoteStream.current = null;
         if(remoteAudioRef.current) remoteAudioRef.current.srcObject = null;
 
         setCallState('idle');
-        setIncomingCall(null);
+        setIncomingRequest(null);
         setIsMuted(false);
         
-        // Clean up any remaining signaling docs
-        if (signalingCollection && user.uid) {
+        if (signalingCollection && user?.uid) {
             try {
                 const snapshot = await getDocs(query(signalingCollection, where('receiverId', '==', user.uid)));
                 snapshot.forEach(doc => deleteDoc(doc.ref));
@@ -108,160 +128,117 @@ export const CallManager = forwardRef<CallManagerHandle, CallManagerProps>(({ ch
             }
         }
 
-    }, [signalingCollection, user.uid, sendSignal, callState]);
+    }, [signalingCollection, user?.uid, sendSignal, callState]);
+
+    const acquireMediaAndAttachTracks = useCallback(async (peerConnection: RTCPeerConnection) => {
+        if (localStream.current) return; // Already have stream
+        
+        localStream.current = await navigator.mediaDevices.getUserMedia({ video: false, audio: true });
+        localStream.current.getTracks().forEach(track => {
+            peerConnection.addTrack(track, localStream.current!);
+        });
+    }, []);
 
     // --- Signaling listener ---
-    const q = useMemo(() => {
+    const signalingQuery = useMemo(() => {
         if (!signalingCollection || !user?.uid) return null;
         return query(signalingCollection, where("receiverId", "==", user.uid), orderBy("createdAt", "asc"));
     }, [signalingCollection, user?.uid]);
-    const { data: signals } = useCollection<SignalingMessage>(q);
+    const { data: signals } = useCollection<SignalingMessage>(signalingQuery);
 
     useEffect(() => {
         if (!signals || signals.length === 0 || !signalingCollection) return;
     
         signals.forEach(async (signal) => {
             try {
-                if (signal.type === 'offer') {
-                    if (callState === 'idle') {
-                        setIncomingCall(signal);
-                        setCallState('incoming');
-                    }
-                } else if (pc.current) {
-                    if (signal.type === 'answer' && pc.current.signalingState === 'have-local-offer') {
-                        const answerDescription = new RTCSessionDescription(signal.payload as RTCSessionDescriptionInit);
-                        await pc.current.setRemoteDescription(answerDescription);
-                    } else if (signal.type === 'ice-candidate' && pc.current.remoteDescription) {
-                        const candidate = new RTCIceCandidate(signal.payload as RTCIceCandidateInit);
-                        await pc.current.addIceCandidate(candidate);
-                    }
+                switch(signal.type) {
+                    case 'call-request':
+                        if (callState === 'idle') {
+                            setIncomingRequest(signal);
+                            setCallState('incoming');
+                        }
+                        break;
+
+                    case 'call-accepted':
+                         if (callState === 'requesting') {
+                            setCallState('connecting');
+                            const currentPc = setupPeerConnection();
+                            await acquireMediaAndAttachTracks(currentPc);
+                            const offerDescription = await currentPc.createOffer();
+                            await currentPc.setLocalDescription(offerDescription);
+                            await sendSignal('offer', { sdp: offerDescription.sdp, type: offerDescription.type });
+                        }
+                        break;
+                    
+                    case 'call-declined':
+                        if (callState === 'requesting') {
+                            toast({ variant: 'destructive', title: 'Call Declined', description: `${otherParticipantInfo?.displayName} is not available.` });
+                            handleEndCall(false);
+                        }
+                        break;
+                    
+                    case 'offer':
+                         if (callState === 'connecting') {
+                            const currentPc = pc.current;
+                            if (currentPc) {
+                                await currentPc.setRemoteDescription(new RTCSessionDescription(signal.payload as RTCSessionDescriptionInit));
+                                await acquireMediaAndAttachTracks(currentPc);
+                                const answerDescription = await currentPc.createAnswer();
+                                await currentPc.setLocalDescription(answerDescription);
+                                await sendSignal('answer', { sdp: answerDescription.sdp, type: answerDescription.type });
+                                setCallState('active');
+                            }
+                        }
+                        break;
+
+                    case 'answer':
+                        if (pc.current && pc.current.signalingState === 'have-local-offer') {
+                            const answerDescription = new RTCSessionDescription(signal.payload as RTCSessionDescriptionInit);
+                            await pc.current.setRemoteDescription(answerDescription);
+                            setCallState('active');
+                        }
+                        break;
+                    
+                    case 'ice-candidate':
+                        if (pc.current && pc.current.remoteDescription) {
+                            const candidate = new RTCIceCandidate(signal.payload as RTCIceCandidateInit);
+                            await pc.current.addIceCandidate(candidate);
+                        }
+                        break;
+
+                    case 'hangup':
+                        handleEndCall(false);
+                        break;
                 }
                 
-                if (signal.type === 'hangup') {
-                    handleEndCall(false); // false because we are receiving the hangup
-                }
-
-                // Delete signal after processing
-                const signalRef = doc(signalingCollection, signal.id);
-                await deleteDoc(signalRef);
+                await deleteDoc(doc(signalingCollection, signal.id));
 
             } catch (error) {
-                console.error("Error processing signal:", error);
+                console.error("Error processing signal:", signal.type, error);
+                handleEndCall(false);
             }
         });
-    }, [signals, signalingCollection, callState, handleEndCall]);
+    }, [signals, signalingCollection, callState, handleEndCall, acquireMediaAndAttachTracks, sendSignal, setupPeerConnection, otherParticipantInfo?.displayName, toast]);
 
-
-    // --- Main Call Functions ---
-    const handleStartCall = async () => {
+    // --- User-initiated actions ---
+    const handleCallRequest = useCallback(async () => {
         if (!otherParticipantId) return;
-        setCallState('creating');
+        setCallState('requesting');
+        await sendSignal('call-request', {});
+    }, [otherParticipantId, sendSignal]);
 
-        try {
-            pc.current = new RTCPeerConnection(servers);
-            pc.current.onconnectionstatechange = () => {
-                if (pc.current?.connectionState === 'disconnected' || pc.current?.connectionState === 'failed' || pc.current?.connectionState === 'closed') {
-                    handleEndCall(false);
-                }
-            };
-            
-            localStream.current = await navigator.mediaDevices.getUserMedia({ video: false, audio: true });
-            remoteStream.current = new MediaStream();
+    const handleAcceptRequest = useCallback(async () => {
+        if (!incomingRequest) return;
+        setCallState('connecting');
+        setupPeerConnection(); // Setup PC early to receive offer
+        await sendSignal('call-accepted', {});
+        setIncomingRequest(null);
+    }, [incomingRequest, sendSignal, setupPeerConnection]);
 
-            localStream.current.getTracks().forEach(track => {
-                pc.current?.addTrack(track, localStream.current!);
-            });
-            
-            pc.current.ontrack = event => {
-                event.streams[0].getTracks().forEach(track => {
-                    remoteStream.current?.addTrack(track);
-                });
-            };
-
-            if (remoteAudioRef.current) {
-                remoteAudioRef.current.srcObject = remoteStream.current;
-            }
-
-            pc.current.onicecandidate = event => {
-                if (event.candidate) {
-                    sendSignal('ice-candidate', event.candidate.toJSON());
-                }
-            };
-            
-            const offerDescription = await pc.current.createOffer();
-            await pc.current.setLocalDescription(offerDescription);
-            
-            await sendSignal('offer', { sdp: offerDescription.sdp, type: offerDescription.type });
-
-            setCallState('outgoing');
-
-        } catch (error: any) {
-            toast({ variant: 'destructive', title: 'Call Failed', description: error.message || 'Could not start call. Check microphone permissions.' });
-            handleEndCall(false);
-        }
-    };
-    
-    const handleAnswerCall = async () => {
-        if (!incomingCall || !otherParticipantId) return;
-        setCallState('creating');
-
-        try {
-            pc.current = new RTCPeerConnection(servers);
-            pc.current.onconnectionstatechange = () => {
-                if (pc.current?.connectionState === 'disconnected' || pc.current?.connectionState === 'failed' || pc.current?.connectionState === 'closed') {
-                    handleEndCall(false);
-                }
-            };
-
-            localStream.current = await navigator.mediaDevices.getUserMedia({ video: false, audio: true });
-            remoteStream.current = new MediaStream();
-            
-            localStream.current.getTracks().forEach(track => {
-                pc.current?.addTrack(track, localStream.current!);
-            });
-
-            pc.current.ontrack = event => {
-                event.streams[0].getTracks().forEach(track => {
-                    remoteStream.current?.addTrack(track);
-                });
-            };
-
-            if (remoteAudioRef.current) {
-                remoteAudioRef.current.srcObject = remoteStream.current;
-            }
-
-            pc.current.onicecandidate = event => {
-                if (event.candidate) {
-                    sendSignal('ice-candidate', event.candidate.toJSON());
-                }
-            };
-
-            await pc.current.setRemoteDescription(new RTCSessionDescription(incomingCall.payload as RTCSessionDescriptionInit));
-            
-            const answerDescription = await pc.current.createAnswer();
-            await pc.current.setLocalDescription(answerDescription);
-
-            await sendSignal('answer', { sdp: answerDescription.sdp, type: answerDescription.type });
-            
-            setCallState('active');
-            setIncomingCall(null);
-        } catch (error: any) {
-             toast({ variant: 'destructive', title: 'Call Failed', description: error.message || 'Could not answer call. Check microphone permissions.' });
-            handleEndCall(false);
-        }
-    };
-    
-    const handleDeclineCall = async () => {
-        if(incomingCall) {
-            if (!signalingCollection) return;
-            await addDoc(signalingCollection, {
-                senderId: user.uid,
-                receiverId: incomingCall.senderId,
-                type: 'hangup',
-                createdAt: serverTimestamp(),
-            });
-        }
-        setIncomingCall(null);
+    const handleDeclineRequest = async () => {
+        if(!incomingRequest) return;
+        await sendSignal('call-declined', {});
+        setIncomingRequest(null);
         setCallState('idle');
     }
 
@@ -273,23 +250,20 @@ export const CallManager = forwardRef<CallManagerHandle, CallManagerProps>(({ ch
         });
     };
 
-    // --- Imperative handle to expose startCall to parent ---
     useImperativeHandle(ref, () => ({
         startCall: () => {
             if (callState === 'idle' && !chat.isGroupChat) {
-                handleStartCall();
+                handleCallRequest();
             }
         }
     }));
     
-    // --- Render logic ---
     if (chat.isGroupChat) return null;
 
     return (
         <>
             <audio ref={remoteAudioRef} autoPlay playsInline />
 
-            {/* Incoming Call Dialog */}
             <Dialog open={callState === 'incoming'}>
                 <DialogContent onInteractOutside={(e) => e.preventDefault()}>
                     <DialogHeader>
@@ -304,11 +278,11 @@ export const CallManager = forwardRef<CallManagerHandle, CallManagerProps>(({ ch
                         <p className="text-sm text-muted-foreground animate-pulse">is calling...</p>
                     </div>
                     <DialogFooter className="grid grid-cols-2 gap-2">
-                        <Button variant="destructive" size="lg" onClick={handleDeclineCall}>
+                        <Button variant="destructive" size="lg" onClick={handleDeclineRequest}>
                             <PhoneOff className="mr-2 h-5 w-5" />
                             Decline
                         </Button>
-                        <Button variant="default" size="lg" className="bg-green-600 hover:bg-green-700" onClick={handleAnswerCall}>
+                        <Button variant="default" size="lg" className="bg-green-600 hover:bg-green-700" onClick={handleAcceptRequest}>
                              <Phone className="mr-2 h-5 w-5" />
                             Accept
                         </Button>
@@ -316,25 +290,28 @@ export const CallManager = forwardRef<CallManagerHandle, CallManagerProps>(({ ch
                 </DialogContent>
             </Dialog>
 
-            {/* Active/Outgoing Call View */}
-            <Dialog open={callState === 'active' || callState === 'outgoing' || callState === 'creating'}>
+            <Dialog open={['requesting', 'connecting', 'active'].includes(callState)} onOpenChange={(open) => !open && handleEndCall()}>
                 <DialogContent onInteractOutside={(e) => e.preventDefault()} className="max-w-sm">
-                    <DialogHeader>
+                     <DialogHeader>
                         <DialogTitle className="text-center">
-                            {callState === 'outgoing' ? 'Calling...' : callState === 'creating' ? 'Connecting...' : otherParticipantInfo?.displayName}
+                            {callState === 'requesting' && 'Calling...'}
+                            {callState === 'connecting' && 'Connecting...'}
+                            {callState === 'active' && otherParticipantInfo?.displayName}
                         </DialogTitle>
                     </DialogHeader>
                     <div className="flex flex-col items-center gap-4 py-8">
-                        <Avatar className={cn("h-24 w-24", callState === 'active' && 'border-2 border-green-500')}>
+                        <Avatar className={cn("h-24 w-24", callState === 'active' && 'border-2 border-green-500', callState === 'requesting' && 'animate-pulse')}>
                            <AvatarImage src={otherParticipantInfo?.photoURL} />
                            <AvatarFallback className="text-4xl">{otherParticipantInfo?.displayName?.charAt(0)}</AvatarFallback>
                         </Avatar>
-                        {callState === 'creating' && <Loader2 className="h-6 w-6 animate-spin mt-4" />}
+                        {(callState === 'connecting') && <Loader2 className="h-6 w-6 animate-spin mt-4" />}
                     </div>
-                    <DialogFooter className="grid grid-cols-3 gap-2">
-                        <Button variant="secondary" size="lg" onClick={toggleMute}>
-                           {isMuted ? <MicOff /> : <Mic />}
-                        </Button>
+                    <DialogFooter className={cn("grid gap-2", callState === 'requesting' ? 'grid-cols-1' : 'grid-cols-2')}>
+                        {callState !== 'requesting' && (
+                             <Button variant="secondary" size="lg" onClick={toggleMute}>
+                                {isMuted ? <MicOff /> : <Mic />}
+                            </Button>
+                        )}
                          <Button variant="destructive" size="lg" onClick={() => handleEndCall()}>
                             <PhoneOff />
                         </Button>
@@ -346,3 +323,5 @@ export const CallManager = forwardRef<CallManagerHandle, CallManagerProps>(({ ch
 });
 
 CallManager.displayName = 'CallManager';
+
+    

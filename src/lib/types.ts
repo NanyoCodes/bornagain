@@ -1,5 +1,3 @@
-
-
 import type { Timestamp } from "firebase/firestore";
 
 export type ReadingHistoryItem = {
@@ -191,7 +189,7 @@ export type SignalingMessage = {
   id: string;
   senderId: string;
   receiverId: string;
-  type: 'offer' | 'answer' | 'ice-candidate' | 'hangup';
+  type: 'call-request' | 'call-accepted' | 'call-declined' | 'offer' | 'answer' | 'ice-candidate' | 'hangup';
   payload?: RTCSessionDescriptionInit | RTCIceCandidateInit;
   createdAt: Timestamp;
 }
@@ -220,3 +218,5 @@ export type AccountabilityRequest = {
   respondedAt?: Timestamp;
   participantIds: string[];
 };
+
+    

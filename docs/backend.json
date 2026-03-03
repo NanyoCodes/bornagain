@@ -1,4 +1,3 @@
-
 {
   "entities": {
     "UserProfile": {
@@ -505,7 +504,7 @@
       "properties": {
         "senderId": { "type": "string" },
         "receiverId": { "type": "string" },
-        "type": { "type": "string", "enum": ["offer", "answer", "ice-candidate", "hangup"] },
+        "type": { "type": "string", "enum": ["call-request", "call-accepted", "call-declined", "offer", "answer", "ice-candidate", "hangup"] },
         "payload": { "type": "object" },
         "createdAt": { "type": "object" }
       },
@@ -692,3 +691,4 @@
     }
   }
 }
+    
