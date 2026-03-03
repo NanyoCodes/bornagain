@@ -191,4 +191,5 @@ export type AccountabilityRequest = {
   status: 'pending' | 'accepted' | 'declined';
   createdAt: Timestamp;
   respondedAt?: Timestamp;
+  participantIds: string[];
 };

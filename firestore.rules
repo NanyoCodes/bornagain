@@ -128,7 +128,7 @@ service cloud.firestore {
 
     // Accountability Requests
     match /accountabilityRequests/{requestId} {
-      allow read: if request.auth != null && (request.auth.uid == resource.data.fromUserId || request.auth.uid == resource.data.toUserId);
+      allow read: if request.auth != null && request.auth.uid in resource.data.participantIds;
       allow create: if request.auth != null && request.auth.uid == request.resource.data.fromUserId;
       // Recipient can accept/decline a pending request
       allow update: if request.auth != null && request.auth.uid == resource.data.toUserId

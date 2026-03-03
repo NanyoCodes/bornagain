@@ -51,17 +51,26 @@ export function AccountabilitySettingsCard({ userProfile, userId }: { userProfil
     defaultValues: { email: '' },
   });
 
-  const incomingQuery = useMemo(() => {
+  const requestsQuery = useMemo(() => {
     if (!userId || !firestore) return null;
-    return query(collection(firestore, 'accountabilityRequests'), where('toUserId', '==', userId), where('status', '==', 'pending'));
+    return query(
+        collection(firestore, 'accountabilityRequests'), 
+        where('participantIds', 'array-contains', userId), 
+        where('status', '==', 'pending')
+    );
   }, [userId, firestore]);
-  const { data: incomingRequests, loading: loadingIncoming } = useCollection<AccountabilityRequest>(incomingQuery);
+  const { data: pendingRequests, loading: loadingRequests } = useCollection<AccountabilityRequest>(requestsQuery);
 
-  const outgoingQuery = useMemo(() => {
-    if (!userId || !firestore) return null;
-    return query(collection(firestore, 'accountabilityRequests'), where('fromUserId', '==', userId), where('status', '==', 'pending'));
-  }, [userId, firestore]);
-  const { data: outgoingRequests, loading: loadingOutgoing } = useCollection<AccountabilityRequest>(outgoingQuery);
+  const incomingRequests = useMemo(() => {
+    return pendingRequests?.filter(r => r.toUserId === userId)
+  }, [pendingRequests, userId]);
+  
+  const outgoingRequests = useMemo(() => {
+    return pendingRequests?.filter(r => r.fromUserId === userId)
+  }, [pendingRequests, userId]);
+  
+  const loadingIncoming = loadingRequests;
+  const loadingOutgoing = loadingRequests;
 
   const handleSendRequest = async (values: z.infer<typeof sendRequestSchema>) => {
     if (!user || !firestore || !userProfile) return;
@@ -107,6 +116,7 @@ export function AccountabilitySettingsCard({ userProfile, userId }: { userProfil
         toUserPhotoURL: targetUser.photoURL || null,
         status: 'pending',
         createdAt: serverTimestamp(),
+        participantIds: [user.uid, targetUser.id].sort(),
       });
 
       // Send a notification to the target user
