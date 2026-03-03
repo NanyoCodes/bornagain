@@ -33,6 +33,7 @@ import { Loader2, Send, Check, X, UserX, HeartHandshake } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { Separator } from '../ui/separator';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '../ui/alert-dialog';
+import { formatDistanceToNow } from 'date-fns';
 
 const sendRequestSchema = z.object({
   email: z.string().email({ message: 'Please enter a valid email address.' }),
@@ -53,8 +54,6 @@ export function AccountabilitySettingsCard({ userProfile, userId }: { userProfil
 
   const requestsQuery = useMemo(() => {
     if (!userId || !firestore) return null;
-    // Query for all requests (pending, accepted, declined) where user is a participant.
-    // Filtering by status will happen on the client.
     return query(
         collection(firestore, 'accountabilityRequests'), 
         where('participantIds', 'array-contains', userId)
@@ -63,12 +62,10 @@ export function AccountabilitySettingsCard({ userProfile, userId }: { userProfil
   const { data: allRequests, loading: loadingRequests } = useCollection<AccountabilityRequest>(requestsQuery);
 
   const incomingRequests = useMemo(() => {
-    // Filter for pending requests where the user is the recipient.
     return allRequests?.filter(r => r.status === 'pending' && r.toUserId === userId)
   }, [allRequests, userId]);
   
   const outgoingRequests = useMemo(() => {
-    // Filter for pending requests where the user is the sender.
     return allRequests?.filter(r => r.status === 'pending' && r.fromUserId === userId)
   }, [allRequests, userId]);
   
@@ -129,7 +126,7 @@ export function AccountabilitySettingsCard({ userProfile, userId }: { userProfil
           type: 'accountability_request',
           title: 'New Accountability Request',
           message: `${userProfile.displayName} has asked you to be their accountability partner.`,
-          link: '/dashboard/settings',
+          link: '/dashboard/accountability',
           isRead: false,
           createdAt: serverTimestamp(),
       });
@@ -298,14 +295,19 @@ export function AccountabilitySettingsCard({ userProfile, userId }: { userProfil
                                     <AvatarImage src={req.fromUserPhotoURL ?? undefined} />
                                     <AvatarFallback>{req.fromUserName.charAt(0)}</AvatarFallback>
                                 </Avatar>
-                                <p className="font-medium text-sm">{req.fromUserName}</p>
+                                <div>
+                                    <p className="font-medium text-sm">{req.fromUserName}</p>
+                                    {req.createdAt && <p className="text-xs text-muted-foreground">{formatDistanceToNow(req.createdAt.toDate(), { addSuffix: true })}</p>}
+                                </div>
                             </div>
-                            <div className="flex gap-2">
+                            <div className="flex items-center gap-2">
                                 <Button size="sm" onClick={() => handleRespondToRequest(req, 'accepted')} disabled={isResponding === req.id}>
-                                    {isResponding === req.id ? <Loader2 className="animate-spin"/> : <Check />}
+                                    {isResponding === req.id ? <Loader2 className="h-4 w-4 animate-spin"/> : <Check className="h-4 w-4" />}
+                                    <span className="hidden sm:inline ml-2">Accept</span>
                                 </Button>
-                                <Button size="sm" variant="destructive" onClick={() => handleRespondToRequest(req, 'declined')} disabled={isResponding === req.id}>
-                                    {isResponding === req.id ? <Loader2 className="animate-spin"/> : <X />}
+                                <Button size="sm" variant="outline" onClick={() => handleRespondToRequest(req, 'declined')} disabled={isResponding === req.id}>
+                                    {isResponding === req.id ? <Loader2 className="h-4 w-4 animate-spin"/> : <X className="h-4 w-4" />}
+                                    <span className="hidden sm:inline ml-2">Decline</span>
                                 </Button>
                             </div>
                         </div>
@@ -331,11 +333,14 @@ export function AccountabilitySettingsCard({ userProfile, userId }: { userProfil
                                     <AvatarImage src={req.toUserPhotoURL ?? undefined} />
                                     <AvatarFallback>{req.toUserName.charAt(0)}</AvatarFallback>
                                 </Avatar>
-                                <p className="font-medium text-sm">{req.toUserName}</p>
+                                <div>
+                                    <p className="font-medium text-sm">{req.toUserName}</p>
+                                    {req.createdAt && <p className="text-xs text-muted-foreground">{formatDistanceToNow(req.createdAt.toDate(), { addSuffix: true })}</p>}
+                                </div>
                             </div>
                              <Button size="sm" variant="outline" onClick={() => handleCancelRequest(req.id)} disabled={isResponding === req.id}>
-                                {isResponding === req.id ? <Loader2 className="animate-spin"/> : <X className="mr-2 h-4 w-4" />}
-                                Cancel
+                                {isResponding === req.id ? <Loader2 className="h-4 w-4 animate-spin"/> : <X className="h-4 w-4" />}
+                                <span className="hidden sm:inline ml-2">Cancel</span>
                             </Button>
                         </div>
                     ))}

@@ -128,7 +128,11 @@ service cloud.firestore {
 
     // Accountability Requests
     match /accountabilityRequests/{requestId} {
-      allow read: if request.auth != null;
+      // A user can read a request if they are a participant.
+      // This rule is defensive against old data that might be missing the participantIds field.
+      allow read: if request.auth != null && 
+                   resource.data.get('participantIds', []) is list &&
+                   request.auth.uid in resource.data.get('participantIds', []);
       
       allow create: if request.auth != null
                     && request.auth.uid == request.resource.data.fromUserId
