@@ -39,18 +39,15 @@ export function useCollection<T extends { id: string }>(
         setError(null);
       },
       (err) => {
-        // In many cases, a permission-denied error is thrown during page transitions
-        // or logouts when a listener is being cleaned up. We can often ignore these
-        // as they are part of the normal component lifecycle. We'll log a warning
-        // but won't throw a blocking error.
         if (err.code === 'permission-denied') {
-            console.warn(`Firestore permission denied on collection listener for path: ${(query as any)._query?.path?.canonicalString() ?? 'unknown'}. This might be a transient error during navigation or logout.`);
+          const permissionError = new FirestorePermissionError({
+            path: (query as any)._query?.path?.canonicalString() ?? 'unknown collection',
+            operation: 'list',
+          });
+          errorEmitter.emit('permission-error', permissionError);
         } else {
-            const permissionError = new FirestorePermissionError({
-              path: (query as any)._query?.path?.canonicalString() ?? 'unknown collection',
-              operation: 'list',
-            });
-            errorEmitter.emit('permission-error', permissionError);
+          // For other types of Firestore errors (e.g., network, invalid query)
+          console.error("Firestore error in useCollection:", err);
         }
         
         setError(err);
