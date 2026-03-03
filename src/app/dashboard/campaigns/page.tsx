@@ -93,12 +93,13 @@ export default function CampaignsPage() {
   const [mounted, setMounted] = useState(false);
   const isMobile = useIsMobile();
   const { searchTerm, setSearchPlaceholder, setIsSearchVisible, setSearchTerm } = useSearch();
-  const [now, setNow] = useState(new Date());
+  const [now, setNow] = useState<Date | null>(null);
   const [filter, setFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
 
   useEffect(() => {
     setMounted(true);
+    setNow(new Date());
     // Update the 'now' state every minute to re-evaluate campaign statuses
     const interval = setInterval(() => {
       setNow(new Date());
@@ -145,7 +146,7 @@ export default function CampaignsPage() {
   };
 
   const processedCampaigns = useMemo(() => {
-    if (!campaigns) return [];
+    if (!campaigns || !now) return [];
     return campaigns.map(c => {
       const _startDate = safeToDate(c.startDate);
       const _endDate = safeToDate(c.endDate);

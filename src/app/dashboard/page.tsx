@@ -227,10 +227,16 @@ export default function DashboardPage() {
 
   // State and logic from progress page
   const [monthlyGoal, setMonthlyGoal] = useState(50);
-  const [goalDate, setGoalDate] = useState(new Date());
+  const [goalDate, setGoalDate] = useState<Date | null>(null);
   const [goalDialogOpen, setGoalDialogOpen] = useState(false);
   const [newGoal, setNewGoal] = useState(monthlyGoal);
-  const [newGoalDate, setNewGoalDate] = useState(goalDate);
+  const [newGoalDate, setNewGoalDate] = useState<Date | null>(null);
+
+  useEffect(() => {
+    const today = new Date();
+    setGoalDate(today);
+    setNewGoalDate(today);
+  }, []);
 
   const handleGoalDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
@@ -243,7 +249,7 @@ export default function DashboardPage() {
   const newGoalDateValue = newGoalDate ? format(newGoalDate, "yyyy-MM") : "";
   
   const soulsThisMonth = useMemo(() => {
-    if (!soulsWon) return 0;
+    if (!soulsWon || !goalDate) return 0;
     return soulsWon.filter(soul => {
       if (!soul.wonAt) return false;
       const wonDate = soul.wonAt.toDate ? soul.wonAt.toDate() : new Date(soul.wonAt as any);
@@ -279,7 +285,7 @@ export default function DashboardPage() {
   }, [soulsWon]);
 
   const handleSaveGoal = () => {
-    if (newGoal > 0) {
+    if (newGoal > 0 && newGoalDate) {
       setMonthlyGoal(newGoal);
       setGoalDate(newGoalDate);
       setGoalDialogOpen(false);
@@ -444,7 +450,7 @@ export default function DashboardPage() {
 
                  <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">{format(goalDate, 'MMMM yyyy')} Goal</CardTitle>
+                    <CardTitle className="text-sm font-medium">{goalDate ? format(goalDate, 'MMMM yyyy') : '...'} Goal</CardTitle>
                     <Dialog 
                         open={goalDialogOpen} 
                         onOpenChange={(isOpen) => {
@@ -500,8 +506,14 @@ export default function DashboardPage() {
                     </Dialog>
                     </CardHeader>
                     <CardContent>
-                    <div className="text-2xl font-bold">{`${soulsThisMonth} / ${monthlyGoal}`}</div>
-                    <p className="text-xs text-muted-foreground">{`${monthlyGoal > 0 ? Math.round((soulsThisMonth / monthlyGoal) * 100) : 0}% complete`}</p>
+                    {goalDate ? (
+                        <>
+                            <div className="text-2xl font-bold">{`${soulsThisMonth} / ${monthlyGoal}`}</div>
+                            <p className="text-xs text-muted-foreground">{`${monthlyGoal > 0 ? Math.round((soulsThisMonth / monthlyGoal) * 100) : 0}% complete`}</p>
+                        </>
+                    ) : (
+                        <Skeleton className="h-12 w-24" />
+                    )}
                     </CardContent>
                 </Card>
                 

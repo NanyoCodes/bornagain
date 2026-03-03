@@ -16,7 +16,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Loader2 } from "lucide-react";
 import type { Campaign, Soul, UserProfile } from "@/lib/types";
 import { Textarea } from "@/components/ui/textarea";
@@ -71,9 +71,16 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps)
       source: defaultCampaign ? "Campaign" : "Personal",
       sourceDetails: defaultCampaign ? defaultCampaign.title : "",
       initialNote: "",
-      wonAt: new Date(),
+      wonAt: undefined,
     },
   });
+
+  useEffect(() => {
+    // Set default date on client to avoid hydration mismatch
+    if (!form.getValues('wonAt')) {
+        form.setValue('wonAt', new Date());
+    }
+  }, [form]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (userLoading || profileLoading) {
