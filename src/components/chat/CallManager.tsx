@@ -66,13 +66,6 @@ export const CallManager = forwardRef<CallManagerHandle, CallManagerProps>(({ ch
         return collection(firestore, 'chats', chat.id, 'signaling');
     }, [firestore, chat.id]);
 
-    // --- Signaling listener ---
-    const q = useMemo(() => {
-        if (!signalingCollection || !user?.uid) return null;
-        return query(signalingCollection, where("receiverId", "==", user.uid), orderBy("createdAt", "asc"));
-    }, [signalingCollection, user?.uid]);
-    const { data: signals } = useCollection<SignalingMessage>(q);
-
     const sendSignal = useCallback(async (type: SignalingMessage['type'], payload: any) => {
         if (!otherParticipantId || !signalingCollection) return;
         await addDoc(signalingCollection, {
@@ -85,6 +78,11 @@ export const CallManager = forwardRef<CallManagerHandle, CallManagerProps>(({ ch
     }, [otherParticipantId, signalingCollection, user.uid]);
 
     const handleEndCall = useCallback(async (isInitiator = true) => {
+        // Prevent multiple cleanup calls
+        if (pc.current === null && callState === 'idle') {
+            return;
+        }
+
         if (isInitiator) {
            await sendSignal('hangup', {});
         }
@@ -102,14 +100,25 @@ export const CallManager = forwardRef<CallManagerHandle, CallManagerProps>(({ ch
         
         // Clean up any remaining signaling docs
         if (signalingCollection && user.uid) {
-            const snapshot = await getDocs(query(signalingCollection, where('receiverId', '==', user.uid)));
-            snapshot.forEach(doc => deleteDoc(doc.ref));
+            try {
+                const snapshot = await getDocs(query(signalingCollection, where('receiverId', '==', user.uid)));
+                snapshot.forEach(doc => deleteDoc(doc.ref));
+            } catch (error) {
+                console.warn("Could not clean up signaling documents on call end:", error);
+            }
         }
 
-    }, [signalingCollection, user.uid, sendSignal]);
+    }, [signalingCollection, user.uid, sendSignal, callState]);
+
+    // --- Signaling listener ---
+    const q = useMemo(() => {
+        if (!signalingCollection || !user?.uid) return null;
+        return query(signalingCollection, where("receiverId", "==", user.uid), orderBy("createdAt", "asc"));
+    }, [signalingCollection, user?.uid]);
+    const { data: signals } = useCollection<SignalingMessage>(q);
 
     useEffect(() => {
-        if (!signals || signals.length === 0 || !pc.current || !signalingCollection) return;
+        if (!signals || signals.length === 0 || !signalingCollection) return;
     
         signals.forEach(async (signal) => {
             try {
@@ -118,13 +127,17 @@ export const CallManager = forwardRef<CallManagerHandle, CallManagerProps>(({ ch
                         setIncomingCall(signal);
                         setCallState('incoming');
                     }
-                } else if (signal.type === 'answer' && pc.current?.signalingState === 'have-local-offer') {
-                    const answerDescription = new RTCSessionDescription(signal.payload as RTCSessionDescriptionInit);
-                    await pc.current.setRemoteDescription(answerDescription);
-                } else if (signal.type === 'ice-candidate' && pc.current?.remoteDescription) {
-                    const candidate = new RTCIceCandidate(signal.payload as RTCIceCandidateInit);
-                    await pc.current.addIceCandidate(candidate);
-                } else if (signal.type === 'hangup') {
+                } else if (pc.current) {
+                    if (signal.type === 'answer' && pc.current.signalingState === 'have-local-offer') {
+                        const answerDescription = new RTCSessionDescription(signal.payload as RTCSessionDescriptionInit);
+                        await pc.current.setRemoteDescription(answerDescription);
+                    } else if (signal.type === 'ice-candidate' && pc.current.remoteDescription) {
+                        const candidate = new RTCIceCandidate(signal.payload as RTCIceCandidateInit);
+                        await pc.current.addIceCandidate(candidate);
+                    }
+                }
+                
+                if (signal.type === 'hangup') {
                     handleEndCall(false); // false because we are receiving the hangup
                 }
 
@@ -146,6 +159,12 @@ export const CallManager = forwardRef<CallManagerHandle, CallManagerProps>(({ ch
 
         try {
             pc.current = new RTCPeerConnection(servers);
+            pc.current.onconnectionstatechange = () => {
+                if (pc.current?.connectionState === 'disconnected' || pc.current?.connectionState === 'failed' || pc.current?.connectionState === 'closed') {
+                    handleEndCall(false);
+                }
+            };
+            
             localStream.current = await navigator.mediaDevices.getUserMedia({ video: false, audio: true });
             remoteStream.current = new MediaStream();
 
@@ -188,6 +207,12 @@ export const CallManager = forwardRef<CallManagerHandle, CallManagerProps>(({ ch
 
         try {
             pc.current = new RTCPeerConnection(servers);
+            pc.current.onconnectionstatechange = () => {
+                if (pc.current?.connectionState === 'disconnected' || pc.current?.connectionState === 'failed' || pc.current?.connectionState === 'closed') {
+                    handleEndCall(false);
+                }
+            };
+
             localStream.current = await navigator.mediaDevices.getUserMedia({ video: false, audio: true });
             remoteStream.current = new MediaStream();
             
