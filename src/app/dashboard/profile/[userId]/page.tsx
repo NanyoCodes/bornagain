@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
@@ -9,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { useCollection, useFirestore, useUser } from "@/firebase";
 import { useDoc } from "@/firebase/firestore/use-doc";
 import { collection, query, where, doc } from "firebase/firestore";
-import type { Soul, Testimony, UserProfile, JoinedCampaign } from "@/lib/types";
+import type { Soul, Testimony, UserProfile, JoinedCampaign, Campaign } from "@/lib/types";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import {
@@ -53,18 +52,25 @@ export default function UserProfilePage() {
   const { data: testimonies, loading: testimoniesLoading } = useCollection<Testimony>(testimoniesQuery);
 
   const soulsQuery = useMemo(() => {
-    if (!isOwnProfile || !firestore) return null;
+    if (!userId || !firestore) return null;
     return query(collection(firestore, `users/${userId}/souls`));
-  }, [isOwnProfile, firestore, userId]);
+  }, [userId, firestore]);
   const { data: soulsWon, loading: soulsLoading } = useCollection<Soul>(soulsQuery);
 
   const joinedCampaignsQuery = useMemo(() => {
-    if (!isOwnProfile || !firestore) return null;
+    if (!userId || !firestore) return null;
     return query(collection(firestore, `users/${userId}/joinedCampaigns`));
-  }, [isOwnProfile, firestore, userId]);
+  }, [userId, firestore]);
   const { data: joinedCampaigns, loading: campaignsLoading } = useCollection<JoinedCampaign>(joinedCampaignsQuery);
+  
+  const createdCampaignsQuery = useMemo(() => {
+    if (!userId || !firestore) return null;
+    return query(collection(firestore, 'campaigns'), where('organizerId', '==', userId), where('status', '!=', 'deleted'));
+  }, [userId, firestore]);
+  const { data: createdCampaigns, loading: createdCampaignsLoading } = useCollection<Campaign>(createdCampaignsQuery);
 
-  const loading = profileLoading || testimoniesLoading || (isOwnProfile && (soulsLoading || campaignsLoading));
+
+  const loading = profileLoading || testimoniesLoading || soulsLoading || campaignsLoading || createdCampaignsLoading;
 
   if (loading) {
     return <div className="flex items-center justify-center h-full"><Loader2 className="h-8 w-8 animate-spin" /></div>;
@@ -81,6 +87,7 @@ export default function UserProfilePage() {
     testimonies: testimonies?.length ?? 0,
     soulsWon: soulsWon?.length ?? 0,
     campaignsJoined: joinedCampaigns?.length ?? 0,
+    campaignsCreated: createdCampaigns?.length ?? 0,
   };
   
   const triggerButton = (
@@ -168,12 +175,9 @@ export default function UserProfilePage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex justify-between items-center"><span className="flex items-center gap-2 text-muted-foreground"><Newspaper className="h-4 w-4" />Testimonies Shared</span> <Badge variant="secondary">{stats.testimonies}</Badge></div>
-            {isOwnProfile && (
-                <>
-                    <div className="flex justify-between items-center"><span className="flex items-center gap-2 text-muted-foreground"><Target className="h-4 w-4" />Campaigns Joined</span> <Badge variant="secondary">{stats.campaignsJoined}</Badge></div>
-                    <div className="flex justify-between items-center"><span className="flex items-center gap-2 text-muted-foreground"><UserCheck2 className="h-4 w-4" />Souls Won</span> <Badge variant="secondary">{stats.soulsWon}</Badge></div>
-                </>
-            )}
+            <div className="flex justify-between items-center"><span className="flex items-center gap-2 text-muted-foreground"><Target className="h-4 w-4" />Campaigns Created</span> <Badge variant="secondary">{stats.campaignsCreated}</Badge></div>
+            <div className="flex justify-between items-center"><span className="flex items-center gap-2 text-muted-foreground"><Target className="h-4 w-4" />Campaigns Joined</span> <Badge variant="secondary">{stats.campaignsJoined}</Badge></div>
+            <div className="flex justify-between items-center"><span className="flex items-center gap-2 text-muted-foreground"><UserCheck2 className="h-4 w-4" />Souls Won</span> <Badge variant="secondary">{stats.soulsWon}</Badge></div>
           </CardContent>
         </Card>
 
