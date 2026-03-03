@@ -3,7 +3,7 @@
 
 import * as React from "react";
 import { format } from "date-fns";
-import { MoreHorizontal, Church, BookOpen, HandHelping, Loader2, UserPlus, Edit, MapPin } from "lucide-react";
+import { MoreHorizontal, Church, BookOpen, HandHelping, Loader2, UserPlus, Edit, MapPin, Mail, Phone, ChevronDown } from "lucide-react";
 import type { Soul, FollowUpStatus, FollowUpLogItem } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import {
@@ -53,6 +53,7 @@ import { useFirestore, useUser } from "@/firebase";
 import { doc, updateDoc, arrayUnion } from "firebase/firestore";
 import { EditSoulForm } from "./edit-soul-form";
 import { cn } from "@/lib/utils";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/collapsible";
 
 const statusOptions: FollowUpStatus[] = ['New', 'Contacted', 'Attending Church', 'In Bible Study', 'Established'];
 
@@ -274,100 +275,111 @@ function SoulCard({ soul, onUpdateSoul }: { soul: ProcessedSoul, onUpdateSoul: S
 
     return (
         <Card>
-            <CardHeader>
-                <div className="flex justify-between items-start">
-                    <div>
-                        <CardTitle>{soul.name}</CardTitle>
-                        <CardDescription>
-                            {soul.email && <div className="truncate">{soul.email}</div>}
-                            {soul.phone && <div className="truncate">{soul.phone}</div>}
-                        </CardDescription>
-                        {soul.church && <CardDescription className="flex items-center gap-1 pt-1"><Church className="h-4 w-4" /> {soul.church}</CardDescription>}
-                        {soul.locationWon && <CardDescription className="flex items-center gap-1 pt-1"><MapPin className="h-4 w-4" /> {soul.locationWon}</CardDescription>}
+            <Collapsible>
+                <CollapsibleTrigger className="group w-full p-4 text-left">
+                     <div className="flex items-center justify-between">
+                        <div>
+                            <p className="font-semibold">{soul.name}</p>
+                            <p className="text-sm text-muted-foreground">{soul.status}</p>
+                        </div>
+                        <ChevronDown className="h-5 w-5 text-muted-foreground transition-transform duration-200 group-data-[state=open]:rotate-180" />
                     </div>
-                     <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-                        <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button aria-haspopup="true" size="icon" variant="ghost">
-                            <MoreHorizontal className="h-4 w-4" />
-                            <span className="sr-only">Toggle menu</span>
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                             <DialogTrigger asChild>
-                                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                                    <Edit className="mr-2 h-4 w-4"/>
-                                    Edit
-                                </DropdownMenuItem>
-                            </DialogTrigger>
-                            <LogFollowUpDialog soul={soul}>
-                                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>Log Follow-up</DropdownMenuItem>
-                            </LogFollowUpDialog>
-                            <ViewHistoryDialog soul={soul}>
-                                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>View History</DropdownMenuItem>
-                            </ViewHistoryDialog>
-                        </DropdownMenuContent>
-                        </DropdownMenu>
-                         <DialogContent>
-                            <DialogHeader>
-                                <DialogTitle>Edit Soul Details</DialogTitle>
-                                <DialogDescription>Make changes to the record for {soul.name}.</DialogDescription>
-                            </DialogHeader>
-                            <EditSoulForm soul={soul} onSoulUpdated={() => setIsEditDialogOpen(false)} />
-                        </DialogContent>
-                    </Dialog>
-                </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-                 <div className="space-y-2">
-                    <Label>Status</Label>
-                     <Select value={soul.status} onValueChange={(value: FollowUpStatus) => handleStatusChange(soul.id, value)}>
-                        <SelectTrigger>
-                            <SelectValue placeholder="Set status" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {statusOptions.map(s => (
-                                <SelectItem key={s} value={s}>{s}</SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-                 </div>
-                 <div className="space-y-2">
-                    <Label>Follow-up Milestones</Label>
-                    <div className="space-y-3 rounded-md border p-4">
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-3">
-                                <Church className="h-5 w-5 text-muted-foreground" />
-                                <span className="text-sm font-medium">Attending Church</span>
+                </CollapsibleTrigger>
+                <CollapsibleContent className="px-4 pb-4">
+                    <div className="border-t pt-4 space-y-4">
+                        <div className="flex justify-between items-start">
+                            <div className="text-sm text-muted-foreground space-y-1">
+                                {soul.email && <div className="truncate flex items-center gap-2"><Mail className="h-4 w-4"/>{soul.email}</div>}
+                                {soul.phone && <div className="truncate flex items-center gap-2 mt-1"><Phone className="h-4 w-4"/>{soul.phone}</div>}
+                                {soul.church && <div className="flex items-center gap-1 pt-2"><Church className="h-4 w-4" /> {soul.church}</div>}
+                                {soul.locationWon && <div className="flex items-center gap-1 pt-1"><MapPin className="h-4 w-4" /> {soul.locationWon}</div>}
                             </div>
-                            <Checkbox checked={soul.attendingChurch} onCheckedChange={(checked) => handleCheckboxChange(soul.id, 'attendingChurch', !!checked)} />
+                            <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+                                <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button aria-haspopup="true" size="icon" variant="ghost">
+                                    <MoreHorizontal className="h-4 w-4" />
+                                    <span className="sr-only">Toggle menu</span>
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                    <DialogTrigger asChild>
+                                        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                                            <Edit className="mr-2 h-4 w-4"/>
+                                            Edit
+                                        </DropdownMenuItem>
+                                    </DialogTrigger>
+                                    <LogFollowUpDialog soul={soul}>
+                                        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>Log Follow-up</DropdownMenuItem>
+                                    </LogFollowUpDialog>
+                                    <ViewHistoryDialog soul={soul}>
+                                        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>View History</DropdownMenuItem>
+                                    </ViewHistoryDialog>
+                                </DropdownMenuContent>
+                                </DropdownMenu>
+                                <DialogContent>
+                                    <DialogHeader>
+                                        <DialogTitle>Edit Soul Details</DialogTitle>
+                                        <DialogDescription>Make changes to the record for {soul.name}.</DialogDescription>
+                                    </DialogHeader>
+                                    <EditSoulForm soul={soul} onSoulUpdated={() => setIsEditDialogOpen(false)} />
+                                </DialogContent>
+                            </Dialog>
                         </div>
-                        <Separator />
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-3">
-                                <BookOpen className="h-5 w-5 text-muted-foreground" />
-                                <span className="text-sm font-medium">In Bible Study</span>
-                            </div>
-                            <Checkbox checked={soul.inBibleStudy} onCheckedChange={(checked) => handleCheckboxChange(soul.id, 'inBibleStudy', !!checked)} />
+
+                         <div className="space-y-2">
+                            <Label>Status</Label>
+                            <Select value={soul.status} onValueChange={(value: FollowUpStatus) => handleStatusChange(soul.id, value)}>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Set status" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {statusOptions.map(s => (
+                                        <SelectItem key={s} value={s}>{s}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
                         </div>
-                        <Separator />
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-3">
-                                <HandHelping className="h-5 w-5 text-muted-foreground" />
-                                <span className="text-sm font-medium">Attending Prayer</span>
+
+                        <div className="space-y-2">
+                            <Label>Follow-up Milestones</Label>
+                            <div className="space-y-3 rounded-md border p-4">
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-3">
+                                        <Church className="h-5 w-5 text-muted-foreground" />
+                                        <span className="text-sm font-medium">Attending Church</span>
+                                    </div>
+                                    <Checkbox checked={soul.attendingChurch} onCheckedChange={(checked) => handleCheckboxChange(soul.id, 'attendingChurch', !!checked)} />
+                                </div>
+                                <Separator />
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-3">
+                                        <BookOpen className="h-5 w-5 text-muted-foreground" />
+                                        <span className="text-sm font-medium">In Bible Study</span>
+                                    </div>
+                                    <Checkbox checked={soul.inBibleStudy} onCheckedChange={(checked) => handleCheckboxChange(soul.id, 'inBibleStudy', !!checked)} />
+                                </div>
+                                <Separator />
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-3">
+                                        <HandHelping className="h-5 w-5 text-muted-foreground" />
+                                        <span className="text-sm font-medium">Attending Prayer</span>
+                                    </div>
+                                    <Checkbox checked={soul.attendingPrayer} onCheckedChange={(checked) => handleCheckboxChange(soul.id, 'attendingPrayer', !!checked)} />
+                                </div>
                             </div>
-                            <Checkbox checked={soul.attendingPrayer} onCheckedChange={(checked) => handleCheckboxChange(soul.id, 'attendingPrayer', !!checked)} />
+                        </div>
+
+                        <div className="flex justify-between text-sm text-muted-foreground pt-4">
+                            <span>{soul.source} {soul.sourceDetails ? `(${soul.sourceDetails})` : ''}</span>
+                            <span>{format(soul._wonAt, "PPP")}</span>
                         </div>
                     </div>
-                 </div>
-            </CardContent>
-            <CardFooter className="flex justify-between text-sm text-muted-foreground">
-                <span>{soul.source} {soul.sourceDetails ? `(${soul.sourceDetails})` : ''}</span>
-                <span>{format(soul._wonAt, "PPP")}</span>
-            </CardFooter>
+                </CollapsibleContent>
+            </Collapsible>
         </Card>
-    )
+    );
 }
 
 export function SoulsWonTable({ souls, onUpdateSoul, loading }: SoulsWonTableProps) {
