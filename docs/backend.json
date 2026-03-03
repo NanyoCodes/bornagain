@@ -10,10 +10,9 @@
           "type": "string",
           "description": "The user's display name."
         },
-        "displayName_lowercase_parts": {
-          "type": "array",
-          "description": "The user's display name, split into parts and lowercased for searching.",
-          "items": { "type": "string" }
+        "displayName_lowercase": {
+          "type": "string",
+          "description": "The user's full display name, lowercased for searching."
         },
         "email": {
           "type": "string",
@@ -661,5 +660,3 @@
     }
   }
 }
-
-    

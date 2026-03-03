@@ -213,7 +213,7 @@ export function LoginForm() {
       const displayName = user.displayName || '';
       const userData = {
         displayName: displayName,
-        displayName_lowercase_parts: displayName.toLowerCase().split(' ').filter(p => p),
+        displayName_lowercase: displayName.toLowerCase(),
         email: user.email,
         photoURL: user.photoURL,
       };

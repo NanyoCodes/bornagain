@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useFirestore, useUser } from '@/firebase';
 import { collection, query, where, limit, getDocs, addDoc, serverTimestamp } from 'firebase/firestore';
 import type { UserProfile } from '@/lib/types';
@@ -21,44 +21,48 @@ export function UserSearch({ currentUserProfile }: { currentUserProfile: UserPro
     const [searchResults, setSearchResults] = useState<UserProfile[]>([]);
     const [sentRequests, setSentRequests] = useState<Set<string>>(new Set());
 
-    const handleSearch = async (e: React.FormEvent) => {
-        e.preventDefault();
+    useEffect(() => {
         const trimmedSearch = searchTerm.trim();
-        if (!trimmedSearch) return;
-        if (!user || !firestore) return;
+        if (trimmedSearch.length < 2) {
+            setSearchResults([]);
+            if (isSearching) setIsSearching(false);
+            return;
+        }
 
         setIsSearching(true);
-        setSearchResults([]);
-
-        try {
-            const usersRef = collection(firestore, 'users');
-            const searchLower = trimmedSearch.toLowerCase();
-            
-            const q = query(
-                usersRef,
-                where('displayName_lowercase_parts', 'array-contains', searchLower),
-                limit(10)
-            );
-            
-            const querySnapshot = await getDocs(q);
-            const users = querySnapshot.docs
-                .map(doc => ({ id: doc.id, ...doc.data() } as UserProfile))
-                .filter(u => u.id !== user.uid); // Filter out current user
-            
-            setSearchResults(users);
-             if (users.length === 0) {
-                toast({
-                    title: 'No Users Found',
-                    description: 'Try a different name.',
-                });
+        const debounceSearch = setTimeout(async () => {
+            if (!user || !firestore) {
+                setIsSearching(false);
+                return;
             }
-        } catch (error) {
-            console.error("User search failed:", error);
-            toast({ variant: 'destructive', title: 'Search Failed', description: 'Could not perform user search. This may be a permissions issue.' });
-        } finally {
-            setIsSearching(false);
-        }
-    };
+
+            try {
+                const usersRef = collection(firestore, 'users');
+                const searchLower = trimmedSearch.toLowerCase();
+                
+                const q = query(
+                    usersRef,
+                    where('displayName_lowercase', '>=', searchLower),
+                    where('displayName_lowercase', '<=', searchLower + '\uf8ff'),
+                    limit(10)
+                );
+                
+                const querySnapshot = await getDocs(q);
+                const users = querySnapshot.docs
+                    .map(doc => ({ id: doc.id, ...doc.data() } as UserProfile))
+                    .filter(u => u.id !== user.uid);
+                
+                setSearchResults(users);
+            } catch (error) {
+                console.error("User search failed:", error);
+                toast({ variant: 'destructive', title: 'Search Failed', description: 'Could not perform user search.' });
+            } finally {
+                setIsSearching(false);
+            }
+        }, 300);
+
+        return () => clearTimeout(debounceSearch);
+    }, [searchTerm, user, firestore, toast, isSearching]);
     
     const handleSendRequest = async (targetUser: UserProfile) => {
         if (!user || !firestore || !currentUserProfile) return;
@@ -76,7 +80,6 @@ export function UserSearch({ currentUserProfile }: { currentUserProfile: UserPro
             const requestsRef = collection(firestore, 'accountabilityRequests');
             const participantIdsSorted = [user.uid, targetUser.id].sort();
             
-            // Check for existing pending request between the two users
             const existingRequestQuery = query(
                 requestsRef,
                 where('participantIds', '==', participantIdsSorted),
@@ -132,42 +135,38 @@ export function UserSearch({ currentUserProfile }: { currentUserProfile: UserPro
         }
     };
 
-
     return (
         <div className="space-y-4">
-            <form onSubmit={handleSearch} className="flex items-center gap-2">
+            <div className="relative">
+                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
-                    placeholder="Search for a user by name..."
+                    placeholder="Search for users by name..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-8"
+                    autoComplete="off"
                 />
-                <Button type="submit" size="icon" disabled={isSearching || !searchTerm.trim()}>
-                    {isSearching ? <Loader2 className="animate-spin" /> : <Search />}
-                </Button>
-            </form>
-            <p className="text-xs text-muted-foreground px-1">
-                Tip: Search for one name at a time (e.g., "John" instead of "John Doe").
-            </p>
+                {isSearching && <Loader2 className="absolute right-2.5 top-2.5 h-4 w-4 animate-spin"/>}
+            </div>
 
-            <ScrollArea className="h-64 rounded-md border">
-                <div className="p-4">
-                {isSearching && <div className="flex justify-center p-4"><Loader2 className="animate-spin"/></div>}
-                {!isSearching && searchResults.length === 0 && (
-                    <div className="text-center text-muted-foreground p-4">
-                        Type a name and click search to find users.
+            <ScrollArea className="h-60 rounded-md border">
+                <div className="p-2">
+                {searchResults.length === 0 && !isSearching && (
+                    <div className="text-center text-muted-foreground p-4 text-sm">
+                       {searchTerm.trim().length < 2 ? "Start typing to search for users." : "No users found."}
                     </div>
                 )}
-                <div className="space-y-4">
-                {!isSearching && searchResults.map(foundUser => (
-                    <div key={foundUser.id} className="flex items-center justify-between">
+                <div className="space-y-2">
+                {searchResults.map(foundUser => (
+                    <div key={foundUser.id} className="flex items-center justify-between p-2 rounded-md hover:bg-muted/50">
                         <div className="flex items-center gap-3">
                             <Avatar>
                                 <AvatarImage src={foundUser.photoURL ?? undefined} alt={foundUser.displayName} />
                                 <AvatarFallback>{foundUser.displayName.charAt(0)}</AvatarFallback>
                             </Avatar>
                             <div>
-                                <p className="font-semibold">{foundUser.displayName}</p>
-                                <p className="text-sm text-muted-foreground">{foundUser.email}</p>
+                                <p className="font-semibold text-sm">{foundUser.displayName}</p>
+                                <p className="text-xs text-muted-foreground">{foundUser.email}</p>
                             </div>
                         </div>
                         <Button
@@ -185,4 +184,3 @@ export function UserSearch({ currentUserProfile }: { currentUserProfile: UserPro
         </div>
     );
 }
-
