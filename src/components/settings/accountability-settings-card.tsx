@@ -25,8 +25,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
-import { Loader2, Send, UserX, HeartHandshake } from 'lucide-react';
+import { Loader2, Send, UserX, HeartHandshake, Search } from 'lucide-react';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '../ui/alert-dialog';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { UserSearch } from '@/components/accountability/user-search';
 
 const sendRequestSchema = z.object({
   email: z.string().email({ message: 'Please enter a valid email address.' }),
@@ -44,7 +46,7 @@ export function AccountabilitySettingsCard({ userProfile, userId }: { userProfil
     defaultValues: { email: '' },
   });
 
-  const handleSendRequest = async (values: z.infer<typeof sendRequestSchema>) => {
+  const handleSendRequestByEmail = async (values: z.infer<typeof sendRequestSchema>) => {
     if (!user || !firestore || !userProfile) return;
     setIsSending(true);
 
@@ -52,7 +54,6 @@ export function AccountabilitySettingsCard({ userProfile, userId }: { userProfil
       if (values.email.toLowerCase() === user.email?.toLowerCase()) {
         throw new Error("You can't send a request to yourself.");
       }
-
       if (userProfile.accountabilityPartnerId) {
         throw new Error('You already have an accountability partner. Please remove your current partner before sending a new request.');
       }
@@ -73,10 +74,16 @@ export function AccountabilitySettingsCard({ userProfile, userId }: { userProfil
       }
       
       const requestsRef = collection(firestore, 'accountabilityRequests');
-      const existingRequestQuery = query(requestsRef, where('fromUserId', '==', user.uid), where('toUserId', '==', targetUser.id), where('status', '==', 'pending'));
-      const existingRequestSnapshot = await getDocs(existingRequestQuery);
-      if(!existingRequestSnapshot.empty) {
+      const existingRequestQuery1 = query(requestsRef, where('fromUserId', '==', user.uid), where('toUserId', '==', targetUser.id), where('status', '==', 'pending'));
+      const existingRequestQuery2 = query(requestsRef, where('fromUserId', '==', targetUser.id), where('toUserId', '==', user.uid), where('status', '==', 'pending'));
+            
+      const [snapshot1, snapshot2] = await Promise.all([getDocs(existingRequestQuery1), getDocs(existingRequestQuery2)]);
+      
+      if(!snapshot1.empty) {
         throw new Error('You have already sent a pending request to this user.');
+      }
+       if(!snapshot2.empty) {
+        throw new Error('This user has already sent you a request. Check your notifications to respond.');
       }
       
       const newRequestData = {
@@ -86,14 +93,13 @@ export function AccountabilitySettingsCard({ userProfile, userId }: { userProfil
         toUserId: targetUser.id,
         toUserName: targetUser.displayName,
         toUserPhotoURL: targetUser.photoURL || null,
-        status: 'pending',
+        status: 'pending' as 'pending',
         createdAt: serverTimestamp(),
         participantIds: [user.uid, targetUser.id].sort(),
       };
 
       await addDoc(requestsRef, newRequestData);
 
-      // Send a notification to the target user
       const notificationsRef = collection(firestore, 'users', targetUser.id, 'notifications');
       await addDoc(notificationsRef, {
           userId: targetUser.id,
@@ -146,11 +152,11 @@ export function AccountabilitySettingsCard({ userProfile, userId }: { userProfil
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2"><HeartHandshake className="h-5 w-5" /> Accountability Settings</CardTitle>
+        <CardTitle className="flex items-center gap-2"><HeartHandshake className="h-5 w-5" /> Accountability Partner</CardTitle>
         <CardDescription>
           {hasPartner 
             ? `Manage your partnership with ${userProfile.accountabilityPartnerName}.`
-            : "Send a request to another user to become accountability partners."
+            : "Find an accountability partner by searching for them or sending a request via email."
           }
         </CardDescription>
       </CardHeader>
@@ -180,31 +186,41 @@ export function AccountabilitySettingsCard({ userProfile, userId }: { userProfil
             </AlertDialog>
           </div>
         ) : (
-          <>
-            <div>
-              <h3 className="text-base font-semibold mb-2">Send a Request</h3>
-              <Form {...form}>
-                <form onSubmit={form.handleSubmit(handleSendRequest)} className="flex items-start gap-2">
-                  <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem className="flex-grow">
-                        <FormControl>
-                          <Input placeholder="Enter user's email address" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <Button type="submit" disabled={isSending}>
-                    {isSending ? <Loader2 className="animate-spin" /> : <Send />}
-                    <span className="sr-only sm:not-sr-only sm:ml-2">Send</span>
-                  </Button>
-                </form>
-              </Form>
-            </div>
-          </>
+          <Tabs defaultValue="search" className="w-full">
+              <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="search">
+                      <Search className="mr-2 h-4 w-4"/> Search Users
+                  </TabsTrigger>
+                  <TabsTrigger value="email">
+                      <Send className="mr-2 h-4 w-4"/> Request by Email
+                  </TabsTrigger>
+              </TabsList>
+              <TabsContent value="search" className="mt-6">
+                 <UserSearch currentUserProfile={userProfile} />
+              </TabsContent>
+              <TabsContent value="email" className="mt-6">
+                  <Form {...form}>
+                      <form onSubmit={form.handleSubmit(handleSendRequestByEmail)} className="flex items-start gap-2">
+                      <FormField
+                          control={form.control}
+                          name="email"
+                          render={({ field }) => (
+                          <FormItem className="flex-grow">
+                              <FormControl>
+                              <Input placeholder="Enter user's email address" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                          </FormItem>
+                          )}
+                      />
+                      <Button type="submit" disabled={isSending}>
+                          {isSending ? <Loader2 className="animate-spin" /> : <Send />}
+                          <span className="sr-only sm:not-sr-only sm:ml-2">Send</span>
+                      </Button>
+                      </form>
+                  </Form>
+              </TabsContent>
+          </Tabs>
         )}
       </CardContent>
     </Card>
