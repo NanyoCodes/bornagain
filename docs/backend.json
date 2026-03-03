@@ -129,6 +129,31 @@
         "lastChurchAttended": {
           "type": "string",
           "description": "The name of the last church the user attended."
+        },
+        "churchInfo": {
+            "type": "object",
+            "description": "The user's primary church details.",
+            "properties": {
+                "name": { "type": "string", "description": "The name of the user's church." },
+                "worshipDays": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "description": "The days of the week the user attends worship."
+                },
+                "worshipTime": { "type": "string", "description": "The typical time of the worship service." }
+            }
+        },
+        "attendanceHistory": {
+            "type": "array",
+            "description": "A log of the user's church attendance.",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "churchName": { "type": "string" },
+                    "attendedAt": { "type": "object" }
+                },
+                "required": ["churchName", "attendedAt"]
+            }
         }
       },
       "required": [

@@ -19,8 +19,11 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Loader2 } from 'lucide-react';
 import type { UserProfile } from '@/lib/types';
 import { useUser, useFirestore } from '@/firebase';
-import { doc, updateDoc } from 'firebase/firestore';
+import { doc, updateDoc, arrayUnion } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
+import { ScrollArea } from '../ui/scroll-area';
+import { Separator } from '../ui/separator';
+import { format } from 'date-fns';
 
 const formSchema = z.object({
   churchName: z.string().min(2, { message: 'Church name must be at least 2 characters.' }).max(100, { message: 'Church name is too long.' }),
@@ -49,7 +52,7 @@ export function AttendChurchDialog({ isOpen, onOpenChange, onDisciplineCompleted
   useEffect(() => {
     if (isOpen) {
       form.reset({
-        churchName: userProfile?.lastChurchAttended || '',
+        churchName: userProfile?.churchInfo?.name || userProfile?.lastChurchAttended || '',
       });
     }
   }, [isOpen, userProfile, form]);
@@ -60,7 +63,13 @@ export function AttendChurchDialog({ isOpen, onOpenChange, onDisciplineCompleted
     
     try {
       const userRef = doc(firestore, 'users', user.uid);
-      await updateDoc(userRef, { lastChurchAttended: values.churchName });
+      await updateDoc(userRef, { 
+        lastChurchAttended: values.churchName,
+        attendanceHistory: arrayUnion({
+            churchName: values.churchName,
+            attendedAt: new Date(),
+        })
+      });
       
       onDisciplineCompleted();
       toast({
@@ -79,6 +88,8 @@ export function AttendChurchDialog({ isOpen, onOpenChange, onDisciplineCompleted
         setIsSubmitting(false);
     }
   };
+  
+  const attendanceHistory = userProfile?.attendanceHistory ? [...userProfile.attendanceHistory].reverse() : [];
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -91,7 +102,7 @@ export function AttendChurchDialog({ isOpen, onOpenChange, onDisciplineCompleted
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4 pt-4">
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4 pt-2">
             <FormField
               control={form.control}
               name="churchName"
@@ -114,6 +125,27 @@ export function AttendChurchDialog({ isOpen, onOpenChange, onDisciplineCompleted
             </DialogFooter>
           </form>
         </Form>
+        
+        {attendanceHistory.length > 0 && (
+            <>
+                <Separator className="my-4" />
+                <div className="space-y-2">
+                    <h4 className="font-medium text-sm">Recent Attendance</h4>
+                    <ScrollArea className="h-32 w-full rounded-md border p-2">
+                        <div className="space-y-3">
+                            {attendanceHistory.map((item, index) => (
+                                <div key={index} className="text-sm">
+                                    <p className="font-semibold">{item.churchName}</p>
+                                    <p className="text-xs text-muted-foreground">
+                                        {item.attendedAt ? format(item.attendedAt.toDate(), "PPP") : 'Date unavailable'}
+                                    </p>
+                                </div>
+                            ))}
+                        </div>
+                    </ScrollArea>
+                </div>
+            </>
+        )}
       </DialogContent>
     </Dialog>
   );

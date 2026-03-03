@@ -51,6 +51,7 @@ import Link from 'next/link';
 import { useEffect, useState, useMemo } from 'react';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { AccountabilitySettingsCard } from '@/components/settings/accountability-settings-card';
+import { ChurchSettingsCard } from '@/components/settings/church-settings-card';
 
 // --- Validation Schemas ---
 const notificationFormSchema = z.object({
@@ -425,6 +426,7 @@ export default function SettingsPage() {
       ) : (
         <div className="space-y-6">
           <ProfileSettingsCard />
+          <ChurchSettingsCard userProfile={userProfile} userId={user.uid} />
           <AccountabilitySettingsCard userProfile={userProfile} userId={user.uid} />
           <AppearanceSettingsCard />
           <NotificationSettingsForm userProfile={userProfile} userId={user.uid} />
