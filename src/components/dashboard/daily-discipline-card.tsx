@@ -35,6 +35,7 @@ export function DailyDisciplineCard() {
   const [isBibleDialogOpen, setIsBibleDialogOpen] = useState(false);
   const [isPrayerDialogOpen, setIsPrayerDialogOpen] = useState(false);
   const [isAttendChurchDialogOpen, setIsAttendChurchDialogOpen] = useState(false);
+  const [attendChurchDialogView, setAttendChurchDialogView] = useState<'confirm' | 'form'>('form');
   const [togglingId, setTogglingId] = useState<string | null>(null);
   const router = useRouter();
   
@@ -138,11 +139,20 @@ export function DailyDisciplineCard() {
             return;
         }
         if (disciplineId === 'attend_church' && !isCompleted) {
-            setIsAttendChurchDialogOpen(true);
-            return;
+            const today = new Date();
+            const dayOfWeek = format(today, 'EEEE');
+            const scheduledDays = userProfile?.churchInfo?.schedule?.map(s => s.day) || [];
+            
+            if (scheduledDays.includes(dayOfWeek)) {
+                const hasDefaultChurch = !!userProfile?.churchInfo?.name;
+                setAttendChurchDialogView(hasDefaultChurch ? 'confirm' : 'form');
+                setIsAttendChurchDialogOpen(true);
+                return; 
+            }
+            // If not a scheduled day, just toggle without dialog
         }
 
-        // For other buttons or for un-checking a button
+        // For other buttons or for un-checking a button or non-scheduled church day
         await updateDisciplineState(disciplineId);
         
         // Navigate only after successful update, and only if it was to complete the task
@@ -264,6 +274,7 @@ export function DailyDisciplineCard() {
         }}
         onDisciplineCompleted={handleAttendChurch}
         userProfile={userProfile}
+        initialView={attendChurchDialogView}
       />
     </>
   );

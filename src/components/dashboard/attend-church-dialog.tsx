@@ -34,11 +34,12 @@ interface AttendChurchDialogProps {
   onOpenChange: (open: boolean) => void;
   onDisciplineCompleted: () => void;
   userProfile: UserProfile | null;
+  initialView: 'confirm' | 'form';
 }
 
-export function AttendChurchDialog({ isOpen, onOpenChange, onDisciplineCompleted, userProfile }: AttendChurchDialogProps) {
+export function AttendChurchDialog({ isOpen, onOpenChange, onDisciplineCompleted, userProfile, initialView }: AttendChurchDialogProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [view, setView] = useState<'confirm' | 'form'>('form');
+  const [view, setView] = useState<'confirm' | 'form'>(initialView);
   const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
@@ -50,25 +51,20 @@ export function AttendChurchDialog({ isOpen, onOpenChange, onDisciplineCompleted
     },
   });
 
-  const scheduleString = userProfile?.churchInfo?.schedule
-    ?.map(s => {
-        try {
-            return `${s.day} at ${format(parse(s.time, 'HH:mm', new Date()), 'p')}`;
-        } catch {
-            return `${s.day} at ${s.time}`;
-        }
-    })
-    .join(', ');
+  const todaysSchedule = userProfile?.churchInfo?.schedule?.find(s => s.day === format(new Date(), 'EEEE'));
+  const scheduleString = (todaysSchedule && view === 'confirm') ?
+    `Today's schedule: ${todaysSchedule.day} at ${format(parse(todaysSchedule.time, 'HH:mm', new Date()), 'p')}`
+    : null;
+
 
   useEffect(() => {
     if (isOpen) {
-      const hasDefaultChurch = !!userProfile?.churchInfo?.name;
-      setView(hasDefaultChurch ? 'confirm' : 'form');
+      setView(initialView);
       form.reset({
         churchName: userProfile?.churchInfo?.name || userProfile?.lastChurchAttended || '',
       });
     }
-  }, [isOpen, userProfile, form]);
+  }, [isOpen, userProfile, form, initialView]);
 
   const logAttendance = async (churchName: string) => {
     if (!user || !firestore) return;
@@ -118,14 +114,14 @@ export function AttendChurchDialog({ isOpen, onOpenChange, onDisciplineCompleted
     <Dialog open={isOpen} onOpenChange={(open) => { if(!isSubmitting) onOpenChange(open); }}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Log Church Attendance</DialogTitle>
+          <DialogTitle>Log Church Attendance for {format(new Date(), 'PPP')}</DialogTitle>
            <DialogDescription>
             {view === 'confirm' && userProfile?.churchInfo?.name
               ? 'Confirm your attendance for today.'
               : "That's great! Which church did you attend today?"}
-             {view === 'confirm' && scheduleString && (
+             {scheduleString && (
                 <div className="mt-2 text-xs text-muted-foreground">
-                    Your schedule: {scheduleString}
+                    {scheduleString}
                 </div>
             )}
           </DialogDescription>
