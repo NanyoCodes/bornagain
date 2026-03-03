@@ -99,10 +99,29 @@ export function SignUpForm() {
 
     } catch (error) {
       const authError = error as AuthError;
+      let description = "An unexpected error occurred. Please try again.";
+
+      switch (authError.code) {
+        case 'auth/email-already-in-use':
+          description = "This email address is already registered. Please try logging in instead.";
+          break;
+        case 'auth/invalid-email':
+          description = "The email address you entered is not valid.";
+          break;
+        case 'auth/operation-not-allowed':
+          description = "Email and password sign-up is not currently enabled.";
+          break;
+        case 'auth/weak-password':
+          description = "The password is too weak. Please choose a stronger password.";
+          break;
+        default:
+          description = authError.message || description;
+      }
+      
       toast({
         variant: "destructive",
         title: "Sign Up Failed",
-        description: authError.message || "An unexpected error occurred.",
+        description: description,
       });
     } finally {
       setIsLoading(false);
@@ -168,5 +187,3 @@ export function SignUpForm() {
     </Form>
   );
 }
-
-    

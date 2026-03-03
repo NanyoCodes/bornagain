@@ -210,8 +210,10 @@ export function LoginForm() {
       }
 
       const userDocRef = doc(firestore, "users", user.uid);
+      const displayName = user.displayName || '';
       const userData = {
-        displayName: user.displayName,
+        displayName: displayName,
+        displayName_lowercase_parts: displayName.toLowerCase().split(' ').filter(p => p),
         email: user.email,
         photoURL: user.photoURL,
       };
@@ -314,4 +316,3 @@ export function LoginForm() {
     </>
   );
 }
-
