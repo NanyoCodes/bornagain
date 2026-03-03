@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -100,18 +99,25 @@ export function UserSearch({ currentUserProfile }: { currentUserProfile: UserPro
             }
 
             const requestsRef = collection(firestore, 'accountabilityRequests');
-            const participantIdsSorted = [user.uid, targetUser.id].sort();
             
+            // Query for all pending requests the current user is a part of.
+            // This query is compatible with the security rule `allow read: if request.auth.uid in resource.data.participantIds`.
             const existingRequestQuery = query(
                 requestsRef,
-                where('participantIds', '==', participantIdsSorted),
+                where('participantIds', 'array-contains', user.uid),
                 where('status', '==', 'pending')
             );
             
             const querySnapshot = await getDocs(existingRequestQuery);
 
-            if (!querySnapshot.empty) {
-                const existingRequest = querySnapshot.docs[0].data();
+            // Now, filter the results on the client to find if a request with the target user already exists.
+            const existingRequestDoc = querySnapshot.docs.find(doc => {
+                const pIds = doc.data().participantIds as string[];
+                return pIds.includes(targetUser.id);
+            });
+
+            if (existingRequestDoc) {
+                const existingRequest = existingRequestDoc.data();
                 if (existingRequest.fromUserId === user.uid) {
                     throw new Error('You have already sent a pending request to this user.');
                 } else {
@@ -119,6 +125,7 @@ export function UserSearch({ currentUserProfile }: { currentUserProfile: UserPro
                 }
             }
 
+            // If no existing request, create a new one.
             const newRequestData = {
                 fromUserId: user.uid,
                 fromUserName: currentUserProfile.displayName,
@@ -128,7 +135,7 @@ export function UserSearch({ currentUserProfile }: { currentUserProfile: UserPro
                 toUserPhotoURL: targetUser.photoURL || null,
                 status: 'pending' as 'pending',
                 createdAt: serverTimestamp(),
-                participantIds: participantIdsSorted,
+                participantIds: [user.uid, targetUser.id].sort(),
             };
 
             await addDoc(requestsRef, newRequestData);
