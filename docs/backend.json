@@ -14,6 +14,11 @@
           "type": "string",
           "description": "The user's full display name, lowercased for searching."
         },
+        "displayName_tokens": {
+          "type": "array",
+          "description": "An array of lowercased words from the display name for searching.",
+          "items": { "type": "string" }
+        },
         "email": {
           "type": "string",
           "format": "email",

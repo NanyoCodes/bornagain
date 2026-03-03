@@ -141,6 +141,7 @@ export function PhoneAuthForm() {
       const userData = {
         displayName: displayName,
         displayName_lowercase: displayName.toLowerCase(),
+        displayName_tokens: displayName.toLowerCase().split(/\s+/).filter(Boolean),
         email: user.email,
         photoURL: user.photoURL,
         phone: user.phoneNumber,

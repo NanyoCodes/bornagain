@@ -77,6 +77,7 @@ export function SignUpForm() {
       const userData = {
         displayName: values.name,
         displayName_lowercase: values.name.toLowerCase(),
+        displayName_tokens: values.name.toLowerCase().split(/\s+/).filter(Boolean),
         email: values.email,
         photoURL: user.photoURL, // Initially null for email signup
       };

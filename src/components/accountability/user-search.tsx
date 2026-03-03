@@ -22,7 +22,7 @@ export function UserSearch({ currentUserProfile }: { currentUserProfile: UserPro
     const [sentRequests, setSentRequests] = useState<Set<string>>(new Set());
 
     useEffect(() => {
-        const trimmedSearch = searchTerm.trim();
+        const trimmedSearch = searchTerm.trim().toLowerCase();
         if (trimmedSearch.length < 2) {
             setSearchResults([]);
             if (isSearching) setIsSearching(false);
@@ -38,21 +38,43 @@ export function UserSearch({ currentUserProfile }: { currentUserProfile: UserPro
 
             try {
                 const usersRef = collection(firestore, 'users');
-                const searchLower = trimmedSearch.toLowerCase();
                 
-                const q = query(
+                // We'll perform two separate queries and merge the results client-side.
+                
+                // Query 1: By display name token using 'array-contains'
+                const nameQuery = query(
                     usersRef,
-                    where('displayName_lowercase', '>=', searchLower),
-                    where('displayName_lowercase', '<=', searchLower + '\uf8ff'),
-                    limit(10)
+                    where('displayName_tokens', 'array-contains', trimmedSearch),
+                    limit(5)
                 );
                 
-                const querySnapshot = await getDocs(q);
-                const users = querySnapshot.docs
-                    .map(doc => ({ id: doc.id, ...doc.data() } as UserProfile))
-                    .filter(u => u.id !== user.uid);
+                // Query 2: By email prefix
+                const emailQuery = query(
+                    usersRef,
+                    where('email', '>=', trimmedSearch),
+                    where('email', '<=', trimmedSearch + '\uf8ff'),
+                    limit(5)
+                );
+
+                const [nameSnapshot, emailSnapshot] = await Promise.all([
+                    getDocs(nameQuery),
+                    getDocs(emailQuery)
+                ]);
+
+                const usersMap = new Map<string, UserProfile>();
+                const processSnapshot = (snapshot: any) => {
+                    snapshot.docs.forEach((doc: any) => {
+                        if (doc.id !== user.uid) {
+                            usersMap.set(doc.id, { id: doc.id, ...doc.data() } as UserProfile);
+                        }
+                    });
+                };
+
+                processSnapshot(nameSnapshot);
+                processSnapshot(emailSnapshot);
+
+                setSearchResults(Array.from(usersMap.values()));
                 
-                setSearchResults(users);
             } catch (error) {
                 console.error("User search failed:", error);
                 toast({ variant: 'destructive', title: 'Search Failed', description: 'Could not perform user search.' });
@@ -62,7 +84,7 @@ export function UserSearch({ currentUserProfile }: { currentUserProfile: UserPro
         }, 300);
 
         return () => clearTimeout(debounceSearch);
-    }, [searchTerm, user, firestore, toast, isSearching]);
+    }, [searchTerm, user, firestore, toast]);
     
     const handleSendRequest = async (targetUser: UserProfile) => {
         if (!user || !firestore || !currentUserProfile) return;
@@ -140,7 +162,7 @@ export function UserSearch({ currentUserProfile }: { currentUserProfile: UserPro
             <div className="relative">
                 <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
-                    placeholder="Search for users by name..."
+                    placeholder="Search by name or email..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="pl-8"

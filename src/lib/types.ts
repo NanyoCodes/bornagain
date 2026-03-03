@@ -12,6 +12,7 @@ export type UserProfile = {
   id: string;
   displayName: string;
   displayName_lowercase?: string;
+  displayName_tokens?: string[];
   email: string;
   photoURL?: string;
   bio?: string;
