@@ -1,9 +1,8 @@
-
 "use client";
 
 import * as React from "react";
 import { format } from "date-fns";
-import { MoreHorizontal, Church, BookOpen, HandHelping, Check, Loader2, UserPlus, Edit, MapPin } from "lucide-react";
+import { MoreHorizontal, Church, BookOpen, HandHelping, Loader2, UserPlus, Edit, MapPin } from "lucide-react";
 import type { Soul, FollowUpStatus, FollowUpLogItem } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import {
@@ -218,14 +217,13 @@ function ViewHistoryDialog({ soul, children }: { soul: Soul; children: React.Rea
                         </p>
                         <div className="pl-4 border-l-2 space-y-3">
                             {log.checklist && log.checklist.length > 0 && (
-                                <div className="space-y-1">
+                                <ul className="space-y-1 list-disc list-inside">
                                     {log.checklist.map((item, i) => (
-                                        <div key={i} className="flex items-center gap-2 text-sm">
-                                            <Check className="h-4 w-4 text-green-500" />
-                                            <span>{item}</span>
-                                        </div>
+                                        <li key={i} className="text-sm">
+                                            {item}
+                                        </li>
                                     ))}
-                                </div>
+                                </ul>
                             )}
                             {log.note && (
                                 <blockquote className="text-sm text-muted-foreground italic">

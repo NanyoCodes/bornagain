@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -8,7 +7,7 @@ import { doc, updateDoc, serverTimestamp, writeBatch } from 'firebase/firestore'
 import type { UserProfile } from '@/lib/types';
 import { isToday, format } from 'date-fns';
 import { Skeleton } from '../ui/skeleton';
-import { Heart, BookOpen, Share2, Megaphone, Users, Check, Loader2, Church } from 'lucide-react';
+import { Heart, BookOpen, Share2, Megaphone, Users, Loader2, Church } from 'lucide-react';
 import { BibleDialog } from './bible-dialog';
 import { PrayerDialog } from './prayer-dialog';
 import { AttendChurchDialog } from './attend-church-dialog';
@@ -239,7 +238,7 @@ export function DailyDisciplineCard() {
                 <Button
                     key={discipline.id}
                     variant="outline"
-                    className="relative flex flex-col items-center justify-center gap-1 px-2 py-4 h-full text-center data-[state=checked]:bg-accent data-[state=checked]:text-accent-foreground data-[state=checked]:border-primary disabled:opacity-75"
+                    className="relative flex flex-col items-center justify-center gap-1 px-2 py-4 h-full text-center data-[state=checked]:bg-primary/10 data-[state=checked]:border-primary disabled:opacity-75"
                     data-state={isCompleted ? 'checked' : 'unchecked'}
                     onClick={() => handleDisciplineClick(discipline.id)}
                     disabled={togglingId === discipline.id}
@@ -248,11 +247,6 @@ export function DailyDisciplineCard() {
                         <Loader2 className="h-5 w-5 animate-spin" />
                     ) : (
                         <>
-                            {isCompleted && (
-                                <div className="absolute top-1.5 right-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-primary-foreground">
-                                    <Check className="h-3 w-3" />
-                                </div>
-                            )}
                             {discipline.icon}
                             <span className="text-sm font-medium whitespace-normal">{discipline.label}</span>
                         </>

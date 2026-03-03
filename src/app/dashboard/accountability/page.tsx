@@ -7,7 +7,7 @@ import type { UserProfile, DailyDisciplineLog } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Loader2, HeartHandshake, Check, ShieldAlert } from 'lucide-react';
+import { Loader2, HeartHandshake, ShieldAlert } from 'lucide-react';
 import { format, isSameDay } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
@@ -179,22 +179,16 @@ export default function AccountabilityPage() {
                         className={cn(
                             "flex items-center gap-3 rounded-lg border p-3 transition-colors",
                             completedOnSelectedDate.includes(discipline.id)
-                            ? "bg-primary/10 border-primary/20 text-primary-foreground"
+                            ? "bg-primary/10 border-primary/20"
                             : "bg-muted/50"
                         )}
                         >
                         <div
                             className={cn(
-                            "flex h-8 w-8 items-center justify-center rounded-full",
-                            completedOnSelectedDate.includes(discipline.id) ? "bg-primary text-primary-foreground" : "bg-background"
+                            "h-8 w-8 shrink-0 rounded-full",
+                            completedOnSelectedDate.includes(discipline.id) ? "bg-primary" : "bg-background border-2"
                             )}
-                        >
-                            {completedOnSelectedDate.includes(discipline.id) ? (
-                            <Check className="h-5 w-5" />
-                            ) : (
-                            <div className="h-5 w-5 text-muted-foreground" />
-                            )}
-                        </div>
+                        />
                         <span className="font-medium text-sm">{discipline.label}</span>
                         </div>
                     ))}
