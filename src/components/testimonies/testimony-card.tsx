@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from "next/link";
@@ -14,7 +13,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Testimony } from "@/lib/types";
-import { formatDistanceToNow } from "date-fns";
+import { format, formatDistanceToNow, differenceInHours } from "date-fns";
 import { Share2, MoreVertical, Edit, Trash2, Loader2 } from "lucide-react";
 import { useUser, useFirestore } from "@/firebase";
 import { useState, useRef, useEffect } from "react";
@@ -49,6 +48,14 @@ export function TestimonyCard({ testimony }: { testimony: Testimony }) {
   const createdAtDate = testimony.createdAt
     ? new Date(testimony.createdAt.seconds * 1000)
     : new Date();
+  
+  const now = new Date();
+  const hoursDifference = differenceInHours(now, createdAtDate);
+
+  const displayDate =
+    hoursDifference >= 24
+      ? format(createdAtDate, "PPP 'at' p")
+      : formatDistanceToNow(createdAtDate, { addSuffix: true });
 
     useEffect(() => {
         const checkTruncation = () => {
@@ -131,7 +138,7 @@ export function TestimonyCard({ testimony }: { testimony: Testimony }) {
               <CardTitle className="cursor-pointer hover:underline text-base font-semibold">{testimony.authorName}</CardTitle>
             </Link>
             <CardDescription className="text-xs mt-1">
-              {formatDistanceToNow(createdAtDate, { addSuffix: true })}
+              {displayDate}
             </CardDescription>
           </div>
         </div>
