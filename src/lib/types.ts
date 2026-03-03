@@ -27,9 +27,6 @@ export type UserProfile = {
     country?: string;
   };
   phone?: string;
-  currentStreak?: number;
-  longestStreak?: number;
-  lastLogin?: Timestamp;
   dailyDiscipline?: {
     completed: string[];
     lastUpdated: Timestamp;

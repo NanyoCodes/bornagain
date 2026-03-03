@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -7,7 +8,7 @@ import { doc, updateDoc, serverTimestamp, writeBatch } from 'firebase/firestore'
 import type { UserProfile } from '@/lib/types';
 import { isToday, format } from 'date-fns';
 import { Skeleton } from '../ui/skeleton';
-import { Heart, BookOpen, Share2, Megaphone, Users, Loader2, Church, CheckCircle2 } from 'lucide-react';
+import { Heart, BookOpen, Loader2, Church, CheckCircle2 } from 'lucide-react';
 import { BibleDialog } from './bible-dialog';
 import { PrayerDialog } from './prayer-dialog';
 import { AttendChurchDialog } from './attend-church-dialog';
@@ -21,9 +22,6 @@ const disciplines = [
   { id: 'pray', label: 'Pray', icon: <Heart className="h-5 w-5 text-muted-foreground" /> },
   { id: 'read_bible', label: 'Read Bible', icon: <BookOpen className="h-5 w-5 text-muted-foreground" /> },
   { id: 'attend_church', label: 'Attend Church', icon: <Church className="h-5 w-5 text-muted-foreground" /> },
-  { id: 'follow_up', label: 'Follow-up', icon: <Users className="h-5 w-5 text-muted-foreground" /> },
-  { id: 'share_testimony', label: 'Share Testimony', icon: <Share2 className="h-5 w-5 text-muted-foreground" /> },
-  { id: 'evangelize', label: 'Evangelize', icon: <Megaphone className="h-5 w-5 text-muted-foreground" /> },
 ];
 
 export function DailyDisciplineCard() {
@@ -166,16 +164,6 @@ export function DailyDisciplineCard() {
         // For other buttons or for un-checking a button or non-scheduled church day
         await updateDisciplineState(disciplineId);
         
-        // Navigate only after successful update, and only if it was to complete the task
-        if (!isCompleted) {
-            if (disciplineId === 'share_testimony') {
-                router.push('/dashboard/testimonies');
-            } else if (disciplineId === 'evangelize') {
-                router.push('/dashboard/campaigns');
-            } else if (disciplineId === 'follow_up') {
-                router.push('/dashboard/souls-won');
-            }
-        }
     } catch (e) {
         toast({
             variant: "destructive",
@@ -207,7 +195,7 @@ export function DailyDisciplineCard() {
           <CardDescription>Your spiritual checklist for today.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          {[...Array(5)].map((_, i) => (
+          {[...Array(3)].map((_, i) => (
             <div key={i} className="flex items-center space-x-3">
               <Skeleton className="h-20 w-full" />
             </div>
@@ -231,7 +219,7 @@ export function DailyDisciplineCard() {
             </div>
           </div>
         </CardHeader>
-        <CardContent className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-4">
+        <CardContent className="grid grid-cols-3 gap-2 sm:gap-4">
           {disciplines.map(discipline => {
               const isCompleted = completedToday.includes(discipline.id);
               return (

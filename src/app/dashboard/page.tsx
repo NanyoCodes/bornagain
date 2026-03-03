@@ -2,8 +2,8 @@
 "use client";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { isSameDay, startOfDay, differenceInCalendarDays, format, isSameMonth } from "date-fns";
-import { TrendingUp, UserCheck2, Trophy, ArrowRight, UserPlus, Globe, Loader2, RefreshCw, XCircle, Edit } from "lucide-react";
+import { isSameMonth, format } from "date-fns";
+import { ArrowRight, UserPlus, Globe, Loader2, RefreshCw, XCircle, Edit, UserCheck2 } from "lucide-react";
 import { useCollection, useFirestore, useUser, useDoc } from "@/firebase";
 import { collection, query, doc, updateDoc, serverTimestamp, orderBy, limit, where, getCountFromServer } from "firebase/firestore";
 import type { Soul, UserProfile } from "@/lib/types";
@@ -211,7 +211,6 @@ export default function DashboardPage() {
   const { user, loading: authLoading } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
-  const [streakUpdated, setStreakUpdated] = useState(false);
   
   const userDocRef = useMemo(() => {
     if (!user?.uid || !firestore) return null;
@@ -302,54 +301,7 @@ export default function DashboardPage() {
     }
   };
 
-  useEffect(() => {
-    if (streakUpdated || profileLoading || !user || !userProfile || !firestore) return;
-
-    const today = startOfDay(new Date());
-    const lastLogin = userProfile.lastLogin?.toDate ? startOfDay(userProfile.lastLogin.toDate()) : null;
-
-    if (lastLogin && isSameDay(today, lastLogin)) {
-      setStreakUpdated(true);
-      return;
-    }
-
-    let newStreak = 1;
-    if (lastLogin && differenceInCalendarDays(today, lastLogin) === 1) {
-        newStreak = (userProfile.currentStreak || 0) + 1;
-    }
-    
-    const currentLongestStreak = userProfile.longestStreak || 0;
-    const newLongestStreak = Math.max(currentLongestStreak, newStreak);
-
-    const userRef = doc(firestore, 'users', user.uid);
-    const updateData = {
-      currentStreak: newStreak,
-      longestStreak: newLongestStreak,
-      lastLogin: serverTimestamp(),
-    };
-
-    updateDoc(userRef, updateData)
-      .then(() => {
-        setStreakUpdated(true);
-      })
-      .catch(() => {
-        const permissionError = new FirestorePermissionError({
-          path: userRef.path,
-          operation: 'update',
-          requestResourceData: {
-            currentStreak: newStreak,
-            longestStreak: newLongestStreak,
-          },
-        });
-        errorEmitter.emit('permission-error', permissionError);
-        setStreakUpdated(true); // Prevent infinite loops on error
-      });
-
-  }, [profileLoading, user, userProfile, firestore, streakUpdated]);
-
   const soulsWonCount = soulsWon?.length ?? 0;
-  const currentStreak = userProfile?.currentStreak || 0;
-  const longestStreak = userProfile?.longestStreak || 0;
 
   const loading = authLoading || profileLoading || soulsLoading;
 
@@ -425,24 +377,6 @@ export default function DashboardPage() {
                             <div>
                                 <p className="text-muted-foreground">Total Souls Won</p>
                                 {loading ? <Skeleton className="h-6 w-12 mt-1" /> : <p className="text-2xl font-bold">{soulsWonCount}</p>}
-                            </div>
-                        </div>
-                        <div className="flex items-center gap-4">
-                            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                                <TrendingUp className="h-6 w-6" />
-                            </div>
-                            <div>
-                                <p className="text-muted-foreground">Current Streak</p>
-                                {loading ? <Skeleton className="h-6 w-12 mt-1" /> : <p className="text-2xl font-bold">{currentStreak} day{currentStreak === 1 ? '' : 's'}</p>}
-                            </div>
-                        </div>
-                        <div className="flex items-center gap-4">
-                            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                                <Trophy className="h-6 w-6" />
-                            </div>
-                            <div>
-                                <p className="text-muted-foreground">Longest Streak</p>
-                                {loading ? <Skeleton className="h-6 w-12 mt-1" /> : <p className="text-2xl font-bold">{longestStreak} day{longestStreak === 1 ? '' : 's'}</p>}
                             </div>
                         </div>
                     </CardContent>
