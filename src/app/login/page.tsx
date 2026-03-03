@@ -21,6 +21,8 @@ import { FirestorePermissionError } from '@/firebase/errors';
 import Image from 'next/image';
 import { useState } from 'react';
 import { Loader2 } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { PhoneAuthForm } from '@/components/auth/phone-auth-form';
 
 export default function LoginPage() {
   const logo = PlaceHolderImages.find((img) => img.id === 'logo');
@@ -100,11 +102,22 @@ export default function LoginPage() {
           )}
           <h1 className="text-2xl md:text-3xl font-bold">Sign In</h1>
           <p className="text-balance text-muted-foreground">
-              Enter your credentials to access your account
+              Choose a sign-in method to access your account.
           </p>
         </div>
         
-        <LoginForm />
+        <Tabs defaultValue="email" className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="email">Email</TabsTrigger>
+                <TabsTrigger value="phone">Phone</TabsTrigger>
+            </TabsList>
+            <TabsContent value="email" className="mt-4">
+                <LoginForm />
+            </TabsContent>
+            <TabsContent value="phone" className="mt-4">
+                <PhoneAuthForm />
+            </TabsContent>
+        </Tabs>
 
         <div className="text-center text-sm">
           Don&apos;t have an account?{' '}
@@ -138,5 +151,3 @@ export default function LoginPage() {
     </AuthLayout>
   );
 }
-
-    
