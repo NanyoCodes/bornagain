@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -16,24 +16,17 @@ import {
   serverTimestamp,
   doc,
   writeBatch,
-  updateDoc,
-  deleteDoc,
-  runTransaction,
-  FieldValue,
   deleteField,
 } from 'firebase/firestore';
-import type { UserProfile, AccountabilityRequest } from '@/lib/types';
+import type { UserProfile } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
-import { Loader2, Send, Check, X, UserX, HeartHandshake } from 'lucide-react';
-import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
-import { Separator } from '../ui/separator';
+import { Loader2, Send, UserX, HeartHandshake } from 'lucide-react';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '../ui/alert-dialog';
-import { formatDistanceToNow } from 'date-fns';
 
 const sendRequestSchema = z.object({
   email: z.string().email({ message: 'Please enter a valid email address.' }),
@@ -86,7 +79,7 @@ export function AccountabilitySettingsCard({ userProfile, userId }: { userProfil
         throw new Error('You have already sent a pending request to this user.');
       }
       
-      await addDoc(requestsRef, {
+      const newRequestData = {
         fromUserId: user.uid,
         fromUserName: userProfile.displayName,
         fromUserPhotoURL: userProfile.photoURL || null,
@@ -96,7 +89,9 @@ export function AccountabilitySettingsCard({ userProfile, userId }: { userProfil
         status: 'pending',
         createdAt: serverTimestamp(),
         participantIds: [user.uid, targetUser.id].sort(),
-      });
+      };
+
+      await addDoc(requestsRef, newRequestData);
 
       // Send a notification to the target user
       const notificationsRef = collection(firestore, 'users', targetUser.id, 'notifications');
@@ -151,11 +146,11 @@ export function AccountabilitySettingsCard({ userProfile, userId }: { userProfil
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2"><HeartHandshake className="h-5 w-5" /> Accountability</CardTitle>
+        <CardTitle className="flex items-center gap-2"><HeartHandshake className="h-5 w-5" /> Accountability Settings</CardTitle>
         <CardDescription>
           {hasPartner 
-            ? `Your accountability partner is ${userProfile.accountabilityPartnerName}.`
-            : "Find an accountability partner to help you stay on track with your spiritual goals."
+            ? `Manage your partnership with ${userProfile.accountabilityPartnerName}.`
+            : "Send a request to another user to become accountability partners."
           }
         </CardDescription>
       </CardHeader>
