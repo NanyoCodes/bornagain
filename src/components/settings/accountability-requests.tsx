@@ -169,7 +169,7 @@ export function AccountabilityRequests({ currentUserProfile }: { currentUserProf
                                 <div>
                                     <p className="font-semibold text-sm">{req.fromUserName}</p>
                                     <p className="text-xs text-muted-foreground">
-                                        Sent {formatDistanceToNow(req.createdAt.toDate(), { addSuffix: true })}
+                                        Sent {req.createdAt ? formatDistanceToNow(req.createdAt.toDate(), { addSuffix: true }) : 'a moment ago'}
                                     </p>
                                 </div>
                             </div>
@@ -212,7 +212,7 @@ export function AccountabilityRequests({ currentUserProfile }: { currentUserProf
                                 <div>
                                     <p className="font-semibold text-sm">{req.toUserName}</p>
                                     <p className="text-xs text-muted-foreground">
-                                        Sent {formatDistanceToNow(req.createdAt.toDate(), { addSuffix: true })}
+                                        Sent {req.createdAt ? formatDistanceToNow(req.createdAt.toDate(), { addSuffix: true }) : 'a moment ago'}
                                     </p>
                                 </div>
                             </div>
