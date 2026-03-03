@@ -23,6 +23,15 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useSearch } from "@/context/search-context";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { format } from "date-fns";
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
+
+// This is a workaround for the jspdf-autotable types
+declare module 'jspdf' {
+  interface jsPDF {
+    autoTable: (options: any) => jsPDF;
+  }
+}
 
 export default function SoulsWonPage() {
   const { user } = useUser();
@@ -96,17 +105,55 @@ export default function SoulsWonPage() {
       return;
     }
 
-    if (formatType === 'pdf') {
-        toast({ title: "Coming Soon!", description: "PDF export functionality is not yet available." });
-        return;
-    }
-
-    // CSV Export Logic
     const headers = [
       "Name", "Email", "Phone", "Church", "Location Won", "Date Won", "Source", "Source Details", "Status",
       "Attending Church", "In Bible Study", "Attending Prayer", "Last Follow Up Date", "Last Follow Up Note"
     ];
 
+    const body = filteredSouls.map(soul => {
+        const lastFollowUp = soul.followUpLog && soul.followUpLog.length > 0
+            ? [...soul.followUpLog].sort((a, b) => b.date.toDate().getTime() - a.date.toDate().getTime())[0]
+            : null;
+
+        return [
+            soul.name,
+            soul.email || '',
+            soul.phone || '',
+            soul.church || '',
+            soul.locationWon || '',
+            format(soul._wonAt, "yyyy-MM-dd"),
+            soul.source,
+            soul.sourceDetails || '',
+            soul.status,
+            soul.attendingChurch ? 'Yes' : 'No',
+            soul.inBibleStudy ? 'Yes' : 'No',
+            soul.attendingPrayer ? 'Yes' : 'No',
+            lastFollowUp ? format(lastFollowUp.date.toDate(), 'yyyy-MM-dd') : '',
+            lastFollowUp ? lastFollowUp.note : ''
+        ];
+    });
+
+
+    if (formatType === 'pdf') {
+        const doc = new jsPDF({ orientation: 'landscape' });
+        
+        doc.autoTable({
+            head: [headers],
+            body: body,
+            didDrawPage: (data) => {
+                doc.setFontSize(18);
+                doc.text("Souls Won Report", data.settings.margin.left, 15);
+            },
+            styles: { fontSize: 8, cellPadding: 1.5 },
+            headStyles: { fillColor: [34, 139, 34] }, // A shade of green
+        });
+
+        doc.save(`souls-won-${new Date().toISOString().slice(0,10)}.pdf`);
+        toast({ title: "Export Started", description: "Your PDF file should begin downloading." });
+        return;
+    }
+
+    // CSV Export Logic
     const escapeCsvCell = (cellData: any): string => {
         if (cellData === null || cellData === undefined) return '';
         const stringVal = String(cellData);
@@ -116,29 +163,7 @@ export default function SoulsWonPage() {
         return stringVal;
     };
     
-    const csvRows = filteredSouls.map(soul => {
-        const lastFollowUp = soul.followUpLog && soul.followUpLog.length > 0
-            ? [...soul.followUpLog].sort((a, b) => b.date.toDate().getTime() - a.date.toDate().getTime())[0]
-            : null;
-
-        const row = [
-            soul.name,
-            soul.email,
-            soul.phone,
-            soul.church,
-            soul.locationWon,
-            format(soul._wonAt, "yyyy-MM-dd"),
-            soul.source,
-            soul.sourceDetails,
-            soul.status,
-            soul.attendingChurch ? 'Yes' : 'No',
-            soul.inBibleStudy ? 'Yes' : 'No',
-            soul.attendingPrayer ? 'Yes' : 'No',
-            lastFollowUp ? format(lastFollowUp.date.toDate(), 'yyyy-MM-dd') : '',
-            lastFollowUp ? lastFollowUp.note : ''
-        ];
-        return row.map(escapeCsvCell).join(',');
-    });
+    const csvRows = body.map(row => row.map(escapeCsvCell).join(','));
 
     const csvString = [headers.join(','), ...csvRows].join('\n');
     const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
@@ -187,8 +212,8 @@ export default function SoulsWonPage() {
               <DropdownMenuItem onSelect={() => handleExport('csv')}>
                 Export as CSV
               </DropdownMenuItem>
-              <DropdownMenuItem onSelect={() => handleExport('pdf')} disabled>
-                Export as PDF (coming soon)
+              <DropdownMenuItem onSelect={() => handleExport('pdf')}>
+                Export as PDF
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
