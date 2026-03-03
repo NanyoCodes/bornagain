@@ -1,4 +1,3 @@
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -52,7 +51,7 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps)
   const [isLoading, setIsLoading] = useState(false);
 
   const userDocRef = useMemo(() => user ? doc(firestore, 'users', user.uid) : null, [user, firestore]);
-  const { data: userProfile } = useDoc<UserProfile>(userDocRef);
+  const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userDocRef);
 
   const campaignsQuery = useMemo(() => {
     if (!user?.uid || !firestore) return null;
@@ -76,8 +75,8 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps)
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    if (userLoading) {
-      toast({ variant: 'destructive', title: 'Please wait', description: 'Authentication is loading.' });
+    if (userLoading || profileLoading) {
+      toast({ variant: 'destructive', title: 'Please wait', description: 'User data is loading.' });
       return;
     }
     if (!user || !firestore) {
@@ -323,8 +322,8 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps)
             </FormItem>
           )}
         />
-        <Button type="submit" className="w-full" disabled={isLoading || userLoading}>
-          {(isLoading || userLoading) && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+        <Button type="submit" className="w-full" disabled={isLoading || userLoading || profileLoading}>
+          {(isLoading || userLoading || profileLoading) && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           Log Soul
         </Button>
       </form>
