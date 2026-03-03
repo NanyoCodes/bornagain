@@ -172,7 +172,7 @@ export default function AccountabilityPage() {
   if (!partnerId || !partnerProfile) {
     return (
       <div className="space-y-8 max-w-3xl mx-auto">
-        <div className="flex h-full w-full flex-col items-center justify-center text-center rounded-lg border-2 border-dashed p-12">
+        <div className="flex h-full w-full flex-col items-center justify-center text-center rounded-lg border-2 border-dashed p-6 sm:p-12">
             <HeartHandshake className="h-16 w-16 text-muted-foreground" />
             <h2 className="mt-6 text-2xl font-semibold">Find an Accountability Partner</h2>
             <p className="mt-2 max-w-md text-muted-foreground">
@@ -186,17 +186,17 @@ export default function AccountabilityPage() {
 
   return (
     <div className="space-y-8 max-w-3xl mx-auto">
-      <div className="flex items-center gap-6">
+      <div className="flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left">
         <Link href={`/dashboard/profile/${partnerId}`}>
-          <Avatar className="h-20 w-20 border cursor-pointer hover:opacity-80 transition-opacity">
+          <Avatar className="h-24 w-24 sm:h-20 sm:w-20 border cursor-pointer hover:opacity-80 transition-opacity">
             <AvatarImage src={partnerProfile.photoURL ?? undefined} alt={partnerProfile.displayName} />
-            <AvatarFallback className="text-3xl">{partnerProfile.displayName.charAt(0)}</AvatarFallback>
+            <AvatarFallback className="text-4xl sm:text-3xl">{partnerProfile.displayName.charAt(0)}</AvatarFallback>
           </Avatar>
         </Link>
         <div>
           <p className="text-sm text-muted-foreground">Your Accountability Partner</p>
           <Link href={`/dashboard/profile/${partnerId}`}>
-            <h1 className="text-3xl font-bold tracking-tight font-headline hover:underline">{partnerProfile.displayName}</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight font-headline hover:underline">{partnerProfile.displayName}</h1>
           </Link>
         </div>
       </div>
@@ -256,10 +256,10 @@ export default function AccountabilityPage() {
                 )}
             </div>
         </CardContent>
-        <CardFooter className="flex items-center gap-2">
+        <CardFooter className="flex flex-col sm:flex-row gap-2">
           <AlertDialog>
             <AlertDialogTrigger asChild>
-               <Button variant="outline" disabled={isNudging}>
+               <Button variant="outline" disabled={isNudging} className="w-full sm:w-auto">
                 {isNudging ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ShieldAlert className="mr-2 h-4 w-4" />}
                 Send a Nudge
               </Button>
@@ -277,7 +277,7 @@ export default function AccountabilityPage() {
                 </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
-          <Button onClick={handleInitiateChat} disabled={isChatLoading}>
+          <Button onClick={handleInitiateChat} disabled={isChatLoading} className="w-full sm:w-auto">
               {isChatLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <MessageSquare className="mr-2 h-4 w-4" />}
               Chat with Partner
           </Button>
