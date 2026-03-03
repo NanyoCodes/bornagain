@@ -150,19 +150,23 @@ export function DailyDisciplineCard() {
         if (disciplineId === 'attend_church' && !isCompleted) {
             const today = new Date();
             const dayOfWeek = format(today, 'EEEE');
-            const scheduledDays = userProfile?.churchInfo?.schedule?.map(s => s.day) || [];
-            
-            if (scheduledDays.includes(dayOfWeek)) {
-                const hasDefaultChurch = !!userProfile?.churchInfo?.name;
-                setAttendChurchDialogView(hasDefaultChurch ? 'confirm' : 'form');
-                setIsAttendChurchDialogOpen(true);
-                return; 
+            const isScheduledDay = userProfile?.churchInfo?.schedule?.some(s => s.day === dayOfWeek) ?? false;
+            const hasDefaultChurch = !!userProfile?.churchInfo?.name;
+
+            if (isScheduledDay && hasDefaultChurch) {
+                setAttendChurchDialogView('confirm');
+            } else {
+                setAttendChurchDialogView('form');
             }
-            // If not a scheduled day, just toggle without dialog
+            
+            setIsAttendChurchDialogOpen(true);
+            return;
         }
 
-        // For other buttons or for un-checking a button or non-scheduled church day
-        await updateDisciplineState(disciplineId);
+        // For un-checking a button
+        if (isCompleted) {
+            await updateDisciplineState(disciplineId);
+        }
         
     } catch (e) {
         toast({

@@ -51,9 +51,11 @@ export function AttendChurchDialog({ isOpen, onOpenChange, onDisciplineCompleted
     },
   });
 
-  const todaysSchedule = userProfile?.churchInfo?.schedule?.find(s => s.day === format(new Date(), 'EEEE'));
-  const scheduleString = (todaysSchedule && view === 'confirm') ?
-    `Today's schedule: ${todaysSchedule.day} at ${format(parse(todaysSchedule.time, 'HH:mm', new Date()), 'p')}`
+  const todaysSchedules = userProfile?.churchInfo?.schedule?.filter(s => s.day === format(new Date(), 'EEEE'));
+  const hasScheduleForToday = todaysSchedules && todaysSchedules.length > 0;
+  
+  const scheduleString = (hasScheduleForToday && view === 'confirm') ?
+    `Today's schedule: ${todaysSchedules.map(s => format(parse(s.time, 'HH:mm', new Date()), 'p')).join(' / ')}`
     : null;
 
 
@@ -122,6 +124,11 @@ export function AttendChurchDialog({ isOpen, onOpenChange, onDisciplineCompleted
              {scheduleString && (
                 <div className="mt-2 text-xs text-muted-foreground">
                     {scheduleString}
+                </div>
+            )}
+            {view === 'form' && !hasScheduleForToday && userProfile?.churchInfo?.schedule && userProfile.churchInfo.schedule.length > 0 && (
+                <div className="mt-2 text-xs text-amber-600 dark:text-amber-500 rounded-md border border-amber-500/30 bg-amber-500/10 p-2">
+                    Note: Today is not one of your scheduled worship days. You can still log your attendance.
                 </div>
             )}
           </DialogDescription>

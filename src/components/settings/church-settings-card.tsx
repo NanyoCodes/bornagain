@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -13,8 +13,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Loader2, Church } from 'lucide-react';
+import { Loader2, Church, Plus, X } from 'lucide-react';
 import { doc, updateDoc } from 'firebase/firestore';
 import { Label } from '../ui/label';
 
@@ -43,6 +42,16 @@ export function ChurchSettingsCard({ userProfile, userId }: { userProfile: UserP
   });
 
   const schedule = form.watch('schedule') || [];
+
+  const scheduleByDay = useMemo(() => (schedule || []).reduce((acc, item, index) => {
+    const day = item.day;
+    if (!acc[day]) {
+        acc[day] = [];
+    }
+    acc[day].push({ ...item, originalIndex: index });
+    return acc;
+  }, {} as { [key: string]: (typeof schedule[0] & {originalIndex: number})[] }), [schedule]);
+
 
   const handleSaveChanges = async (values: z.infer<typeof churchSettingsSchema>) => {
     if (!firestore || !userId) return;
@@ -92,46 +101,59 @@ export function ChurchSettingsCard({ userProfile, userId }: { userProfile: UserP
             <FormItem>
               <div className="mb-4">
                 <FormLabel className="text-base">Worship Schedule</FormLabel>
+                <FormMessage className="mt-2">{form.formState.errors.schedule?.root?.message}</FormMessage>
               </div>
-              <div className="space-y-3">
+              <div className="space-y-2">
                 {daysOfWeek.map((day) => {
-                  const scheduleItem = schedule.find(item => item.day === day);
-                  const isChecked = !!scheduleItem;
-
-                  return (
-                    <div key={day} className="flex items-center justify-between gap-4 rounded-lg border p-3">
-                      <div className="flex items-center gap-3">
-                        <Checkbox
-                          id={`day-${day}`}
-                          checked={isChecked}
-                          onCheckedChange={(checked) => {
-                            const currentSchedule = form.getValues('schedule') || [];
-                            if (checked) {
-                              form.setValue('schedule', [...currentSchedule, { day, time: '10:00' }], { shouldDirty: true });
-                            } else {
-                              form.setValue('schedule', currentSchedule.filter(item => item.day !== day), { shouldDirty: true });
-                            }
-                          }}
-                        />
-                        <Label htmlFor={`day-${day}`} className="font-normal text-sm">{day}</Label>
+                    const daySchedules = scheduleByDay[day] || [];
+                    return(
+                      <div key={day} className="rounded-lg border p-4 space-y-3">
+                          <div className="flex items-center justify-between">
+                              <Label className="font-medium">{day}</Label>
+                              <Button
+                                  type="button"
+                                  variant="secondary"
+                                  size="sm"
+                                  onClick={() => {
+                                      const currentSchedule = form.getValues('schedule') || [];
+                                      form.setValue('schedule', [...currentSchedule, { day, time: '10:00' }], { shouldDirty: true });
+                                  }}
+                              >
+                                  <Plus className="mr-2 h-4 w-4" />
+                                  Add Time
+                              </Button>
+                          </div>
+                          {daySchedules.length === 0 && <p className="text-xs text-muted-foreground pt-1">No services scheduled for {day}.</p>}
+                          {daySchedules.map(item => (
+                              <div key={item.originalIndex} className="flex items-center gap-2">
+                                  <Input
+                                      type="time"
+                                      className="flex-grow"
+                                      value={item.time}
+                                      onChange={(e) => {
+                                          const updatedSchedule = [...(form.getValues('schedule') || [])];
+                                          updatedSchedule[item.originalIndex].time = e.target.value;
+                                          form.setValue('schedule', updatedSchedule, { shouldDirty: true });
+                                      }}
+                                  />
+                                  <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="icon"
+                                      className="shrink-0"
+                                      onClick={() => {
+                                          const updatedSchedule = (form.getValues('schedule') || []).filter((_, i) => i !== item.originalIndex);
+                                          form.setValue('schedule', updatedSchedule, { shouldDirty: true });
+                                      }}
+                                  >
+                                      <X className="h-4 w-4 text-destructive" />
+                                  </Button>
+                              </div>
+                          ))}
                       </div>
-                      {isChecked && (
-                        <Input
-                          type="time"
-                          className="w-36"
-                          value={scheduleItem.time}
-                          onChange={(e) => {
-                            const newTime = e.target.value;
-                            const currentSchedule = form.getValues('schedule') || [];
-                            form.setValue('schedule', currentSchedule.map(item => item.day === day ? { ...item, time: newTime } : item), { shouldDirty: true });
-                          }}
-                        />
-                      )}
-                    </div>
-                  );
+                    )
                 })}
               </div>
-               <FormMessage>{form.formState.errors.schedule?.root?.message}</FormMessage>
             </FormItem>
             
             <Button type="submit" disabled={isSubmitting || !form.formState.isDirty}>
