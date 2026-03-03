@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
@@ -7,7 +8,7 @@ import { Edit, Loader2, Mail, MapPin, Newspaper, Phone, Target, UserCheck2, Hear
 import { Badge } from "@/components/ui/badge";
 import { useCollection, useFirestore, useUser } from "@/firebase";
 import { useDoc } from "@/firebase/firestore/use-doc";
-import { collection, query, where, doc } from "firebase/firestore";
+import { collection, query, where, doc, getDocs, documentId } from "firebase/firestore";
 import type { Soul, Testimony, UserProfile, JoinedCampaign, Campaign } from "@/lib/types";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -32,6 +33,8 @@ export default function UserProfilePage() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const isMobile = useIsMobile();
+  const [activeJoinedCampaignsCount, setActiveJoinedCampaignsCount] = useState(0);
+  const [campaignsCountLoading, setCampaignsCountLoading] = useState(true);
 
   useEffect(() => {
     setMounted(true);
@@ -77,8 +80,53 @@ export default function UserProfilePage() {
   }, [userId, firestore]);
   const { data: createdCampaigns, loading: createdCampaignsLoading } = useCollection<Campaign>(createdCampaignsQuery);
 
+  useEffect(() => {
+    if (!firestore || campaignsLoading || !joinedCampaigns) {
+        return;
+    }
 
-  const loading = profileLoading || testimoniesLoading || soulsLoading || campaignsLoading || createdCampaignsLoading;
+    const joinedCampaignIds = joinedCampaigns.map(jc => jc.id);
+
+    if (joinedCampaignIds.length === 0) {
+        setActiveJoinedCampaignsCount(0);
+        setCampaignsCountLoading(false);
+        return;
+    }
+
+    const fetchActiveCampaigns = async () => {
+        setCampaignsCountLoading(true);
+        try {
+            // Firestore 'in' query is limited to 30 elements per query.
+            const chunks: string[][] = [];
+            for (let i = 0; i < joinedCampaignIds.length; i += 30) {
+                chunks.push(joinedCampaignIds.slice(i, i + 30));
+            }
+
+            const campaignPromises = chunks.map(chunk => {
+                const q = query(
+                    collection(firestore, 'campaigns'),
+                    where(documentId(), 'in', chunk),
+                    where('status', '==', 'active')
+                );
+                return getDocs(q);
+            });
+
+            const snapshots = await Promise.all(campaignPromises);
+            const count = snapshots.reduce((acc, snapshot) => acc + snapshot.size, 0);
+            setActiveJoinedCampaignsCount(count);
+        } catch (error) {
+            console.error("Error fetching active joined campaigns count:", error);
+            setActiveJoinedCampaignsCount(0);
+        } finally {
+            setCampaignsCountLoading(false);
+        }
+    };
+
+    fetchActiveCampaigns();
+}, [joinedCampaigns, campaignsLoading, firestore]);
+
+
+  const loading = profileLoading || testimoniesLoading || soulsLoading || campaignsLoading || createdCampaignsLoading || campaignsCountLoading;
 
   if (loading) {
     return <div className="flex items-center justify-center h-full"><Loader2 className="h-8 w-8 animate-spin" /></div>;
@@ -94,7 +142,7 @@ export default function UserProfilePage() {
   const stats = {
     testimonies: testimonies?.length ?? 0,
     soulsWon: soulsWon?.length ?? 0,
-    campaignsJoined: joinedCampaigns?.length ?? 0,
+    campaignsJoined: activeJoinedCampaignsCount,
     campaignsCreated: createdCampaigns?.length ?? 0,
   };
   
