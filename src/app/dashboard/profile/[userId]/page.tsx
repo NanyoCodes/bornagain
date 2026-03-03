@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
@@ -115,7 +114,7 @@ export default function UserProfilePage() {
                 <div className="flex flex-col sm:flex-row justify-between items-start">
                     <div className="flex-grow">
                         <h1 className="text-2xl sm:text-3xl font-bold font-headline">{displayName}</h1>
-                        {!isOwnProfile && (
+                        {!isOwnProfile && userProfile.accountabilityPartnerId === currentUser?.uid && (
                             <Badge variant="secondary" className="mt-2">
                                 <HeartHandshake className="mr-2 h-4 w-4" />
                                 Your Accountability Partner
@@ -169,16 +168,18 @@ export default function UserProfilePage() {
         </CardContent>
       </Card>
       
-      <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
+      <div className="grid grid-cols-1 gap-6">
         <Card>
           <CardHeader>
             <CardTitle>Activity Statistics</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex justify-between items-center"><span className="flex items-center gap-2 text-muted-foreground"><Newspaper className="h-4 w-4" />Testimonies Shared</span> <Badge variant="secondary">{stats.testimonies}</Badge></div>
-            <div className="flex justify-between items-center"><span className="flex items-center gap-2 text-muted-foreground"><Target className="h-4 w-4" />Campaigns Created</span> <Badge variant="secondary">{stats.campaignsCreated}</Badge></div>
-            <div className="flex justify-between items-center"><span className="flex items-center gap-2 text-muted-foreground"><Target className="h-4 w-4" />Campaigns Joined</span> <Badge variant="secondary">{stats.campaignsJoined}</Badge></div>
-            <div className="flex justify-between items-center"><span className="flex items-center gap-2 text-muted-foreground"><UserCheck2 className="h-4 w-4" />Souls Won</span> <Badge variant="secondary">{stats.soulsWon}</Badge></div>
+          <CardContent>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="flex justify-between items-center rounded-lg border p-3"><span className="flex items-center gap-2 text-muted-foreground"><Newspaper className="h-4 w-4" />Testimonies Shared</span> <Badge variant="secondary">{stats.testimonies}</Badge></div>
+                <div className="flex justify-between items-center rounded-lg border p-3"><span className="flex items-center gap-2 text-muted-foreground"><Target className="h-4 w-4" />Campaigns Created</span> <Badge variant="secondary">{stats.campaignsCreated}</Badge></div>
+                <div className="flex justify-between items-center rounded-lg border p-3"><span className="flex items-center gap-2 text-muted-foreground"><Target className="h-4 w-4" />Campaigns Joined</span> <Badge variant="secondary">{stats.campaignsJoined}</Badge></div>
+                <div className="flex justify-between items-center rounded-lg border p-3"><span className="flex items-center gap-2 text-muted-foreground"><UserCheck2 className="h-4 w-4" />Souls Won</span> <Badge variant="secondary">{stats.soulsWon}</Badge></div>
+            </div>
           </CardContent>
         </Card>
       </div>
