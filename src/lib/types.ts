@@ -36,6 +36,7 @@ export type UserProfile = {
   };
   accountabilityPartnerId?: string;
   accountabilityPartnerName?: string;
+  lastChurchAttended?: string;
 };
 
 export type Achievement = {
