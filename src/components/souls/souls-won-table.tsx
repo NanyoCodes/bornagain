@@ -1,3 +1,4 @@
+
 "use client";
 
 import * as React from "react";
@@ -51,6 +52,7 @@ import { Form, FormControl, FormField, FormItem, FormMessage } from "@/component
 import { useFirestore, useUser } from "@/firebase";
 import { doc, updateDoc, arrayUnion } from "firebase/firestore";
 import { EditSoulForm } from "./edit-soul-form";
+import { cn } from "@/lib/utils";
 
 const statusOptions: FollowUpStatus[] = ['New', 'Contacted', 'Attending Church', 'In Bible Study', 'Established'];
 
@@ -333,38 +335,30 @@ function SoulCard({ soul, onUpdateSoul }: { soul: ProcessedSoul, onUpdateSoul: S
                  </div>
                  <div className="space-y-2">
                     <Label>Follow-up Milestones</Label>
-                    <div className="flex items-center rounded-md border p-4">
-                        <TooltipProvider>
-                            <div className="flex w-full items-center justify-around">
-                                <Tooltip>
-                                    <TooltipTrigger asChild>
-                                        <label className="flex items-center gap-1.5 cursor-pointer">
-                                            <Checkbox checked={soul.attendingChurch} onCheckedChange={(checked) => handleCheckboxChange(soul.id, 'attendingChurch', !!checked)} />
-                                            <Church className="h-5 w-5 text-muted-foreground" />
-                                        </label>
-                                    </TooltipTrigger>
-                                    <TooltipContent>Attending Church</TooltipContent>
-                                </Tooltip>
-                                <Tooltip>
-                                    <TooltipTrigger asChild>
-                                        <label className="flex items-center gap-1.5 cursor-pointer">
-                                            <Checkbox checked={soul.inBibleStudy} onCheckedChange={(checked) => handleCheckboxChange(soul.id, 'inBibleStudy', !!checked)} />
-                                            <BookOpen className="h-5 w-5 text-muted-foreground" />
-                                        </label>
-                                    </TooltipTrigger>
-                                    <TooltipContent>In Bible Study</TooltipContent>
-                                </Tooltip>
-                                <Tooltip>
-                                    <TooltipTrigger asChild>
-                                        <label className="flex items-center gap-1.5 cursor-pointer">
-                                            <Checkbox checked={soul.attendingPrayer} onCheckedChange={(checked) => handleCheckboxChange(soul.id, 'attendingPrayer', !!checked)} />
-                                            <HandHelping className="h-5 w-5 text-muted-foreground" />
-                                        </label>
-                                    </TooltipTrigger>
-                                    <TooltipContent>Attending Prayer Meetings</TooltipContent>
-                                </Tooltip>
+                    <div className="space-y-3 rounded-md border p-4">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                                <Church className="h-5 w-5 text-muted-foreground" />
+                                <span className="text-sm font-medium">Attending Church</span>
                             </div>
-                        </TooltipProvider>
+                            <Checkbox checked={soul.attendingChurch} onCheckedChange={(checked) => handleCheckboxChange(soul.id, 'attendingChurch', !!checked)} />
+                        </div>
+                        <Separator />
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                                <BookOpen className="h-5 w-5 text-muted-foreground" />
+                                <span className="text-sm font-medium">In Bible Study</span>
+                            </div>
+                            <Checkbox checked={soul.inBibleStudy} onCheckedChange={(checked) => handleCheckboxChange(soul.id, 'inBibleStudy', !!checked)} />
+                        </div>
+                        <Separator />
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                                <HandHelping className="h-5 w-5 text-muted-foreground" />
+                                <span className="text-sm font-medium">Attending Prayer</span>
+                            </div>
+                            <Checkbox checked={soul.attendingPrayer} onCheckedChange={(checked) => handleCheckboxChange(soul.id, 'attendingPrayer', !!checked)} />
+                        </div>
                     </div>
                  </div>
             </CardContent>
@@ -512,37 +506,49 @@ export function SoulsWonTable({ souls, onUpdateSoul, loading }: SoulsWonTablePro
                   </Select>
                 </TableCell>
                 <TableCell>
-                  <TooltipProvider>
-                    <div className="flex items-center gap-3">
-                      <Tooltip>
-                          <TooltipTrigger asChild>
-                              <label className="flex items-center gap-1 cursor-pointer">
-                                  <Checkbox checked={soul.attendingChurch} onCheckedChange={(checked) => handleCheckboxChange(soul.id, 'attendingChurch', !!checked)} />
-                                  <Church className="h-4 w-4 text-muted-foreground" />
-                              </label>
-                          </TooltipTrigger>
-                          <TooltipContent>Attending Church</TooltipContent>
-                      </Tooltip>
-                       <Tooltip>
-                          <TooltipTrigger asChild>
-                              <label className="flex items-center gap-1 cursor-pointer">
-                                  <Checkbox checked={soul.inBibleStudy} onCheckedChange={(checked) => handleCheckboxChange(soul.id, 'inBibleStudy', !!checked)} />
-                                  <BookOpen className="h-4 w-4 text-muted-foreground" />
-                              </label>
-                          </TooltipTrigger>
-                          <TooltipContent>In Bible Study</TooltipContent>
-                      </Tooltip>
-                       <Tooltip>
-                          <TooltipTrigger asChild>
-                              <label className="flex items-center gap-1 cursor-pointer">
-                                  <Checkbox checked={soul.attendingPrayer} onCheckedChange={(checked) => handleCheckboxChange(soul.id, 'attendingPrayer', !!checked)} />
-                                  <HandHelping className="h-4 w-4 text-muted-foreground" />
-                              </label>
-                          </TooltipTrigger>
-                          <TooltipContent>Attending Prayer Meetings</TooltipContent>
-                      </Tooltip>
+                    <div className="flex items-center gap-2">
+                        <TooltipProvider>
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <Button
+                                        variant={soul.attendingChurch ? 'secondary' : 'ghost'}
+                                        size="icon"
+                                        className={cn('h-8 w-8', soul.attendingChurch && 'border border-green-500/50')}
+                                        onClick={() => handleCheckboxChange(soul.id, 'attendingChurch', !soul.attendingChurch)}
+                                    >
+                                        <Church className={cn('h-4 w-4', soul.attendingChurch ? 'text-green-600' : 'text-muted-foreground')} />
+                                    </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>Attending Church</TooltipContent>
+                            </Tooltip>
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <Button
+                                        variant={soul.inBibleStudy ? 'secondary' : 'ghost'}
+                                        size="icon"
+                                        className={cn('h-8 w-8', soul.inBibleStudy && 'border border-green-500/50')}
+                                        onClick={() => handleCheckboxChange(soul.id, 'inBibleStudy', !soul.inBibleStudy)}
+                                    >
+                                        <BookOpen className={cn('h-4 w-4', soul.inBibleStudy ? 'text-green-600' : 'text-muted-foreground')} />
+                                    </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>In Bible Study</TooltipContent>
+                            </Tooltip>
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <Button
+                                        variant={soul.attendingPrayer ? 'secondary' : 'ghost'}
+                                        size="icon"
+                                        className={cn('h-8 w-8', soul.attendingPrayer && 'border border-green-500/50')}
+                                        onClick={() => handleCheckboxChange(soul.id, 'attendingPrayer', !soul.attendingPrayer)}
+                                    >
+                                        <HandHelping className={cn('h-4 w-4', soul.attendingPrayer ? 'text-green-600' : 'text-muted-foreground')} />
+                                    </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>Attending Prayer Meetings</TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
                     </div>
-                  </TooltipProvider>
                 </TableCell>
                 <TableCell>{format(soul._wonAt, "PPP")}</TableCell>
                 <TableCell>
