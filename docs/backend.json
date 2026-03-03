@@ -117,6 +117,14 @@
               "description": "Allow others to see the user's city and country."
             }
           }
+        },
+        "accountabilityPartnerId": {
+          "type": "string",
+          "description": "The UID of the user's accountability partner."
+        },
+        "accountabilityPartnerName": {
+          "type": "string",
+          "description": "The display name of the user's accountability partner."
         }
       },
       "required": [
@@ -455,7 +463,7 @@
         },
         "type": {
           "type": "string",
-          "enum": ["campaign_join", "new_chat_message"]
+          "enum": ["campaign_join", "new_chat_message", "accountability_nudge", "accountability_request"]
         },
         "title": {
           "type": "string"
@@ -475,6 +483,26 @@
         }
       },
       "required": ["userId", "type", "title", "message", "isRead", "createdAt"]
+    },
+    "AccountabilityRequest": {
+      "title": "Accountability Request",
+      "description": "A request from one user to another to become accountability partners.",
+      "type": "object",
+      "properties": {
+        "fromUserId": { "type": "string" },
+        "fromUserName": { "type": "string" },
+        "fromUserPhotoURL": { "type": "string", "format": "uri" },
+        "toUserId": { "type": "string" },
+        "toUserName": { "type": "string" },
+        "toUserPhotoURL": { "type": "string", "format": "uri" },
+        "status": {
+          "type": "string",
+          "enum": ["pending", "accepted", "declined"]
+        },
+        "createdAt": { "type": "object" },
+        "respondedAt": { "type": "object" }
+      },
+      "required": ["fromUserId", "fromUserName", "toUserId", "status", "createdAt"]
     },
     "Mail": {
       "title": "Mail",
@@ -573,6 +601,12 @@
         "$ref": "#/entities/ChatMessage"
       },
       "description": "Stores messages for a specific chat session."
+    },
+    "/accountabilityRequests/{requestId}": {
+      "schema": {
+        "$ref": "#/entities/AccountabilityRequest"
+      },
+      "description": "Stores accountability partnership requests between users."
     },
     "/mail/{mailId}": {
       "schema": {

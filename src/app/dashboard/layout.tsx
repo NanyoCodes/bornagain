@@ -19,6 +19,7 @@ import {
   User,
   UserPlus,
   Loader2,
+  HeartHandshake,
 } from "lucide-react";
 
 import {
@@ -49,6 +50,7 @@ const navItems = [
   { href: "/dashboard/souls-won", label: "Souls Won", icon: UserPlus },
   { href: "/dashboard/testimonies", label: "Testimonies", icon: Newspaper },
   { href: "/dashboard/campaigns", label: "Campaigns", icon: Target },
+  { href: "/dashboard/accountability", label: "Partner", icon: HeartHandshake },
   { href: "/dashboard/progress", label: "Progress", icon: TrendingUp },
 ];
 
@@ -64,7 +66,7 @@ function AppHeader() {
   
   const notificationsQuery = useMemo(() => {
     if (!user?.uid || !firestore) return null;
-    return query(collection(firestore, `users/${user.uid}/notifications`), orderBy('createdAt', 'desc'), limit(3));
+    return query(collection(firestore, `users/${user.uid}/notifications`), orderBy('createdAt', 'desc'), limit(5));
   }, [user?.uid, firestore]);
 
   const { data: notifications, loading: notificationsLoading } = useCollection<Notification>(notificationsQuery);
@@ -280,7 +282,7 @@ function BottomNavBar() {
   
     return (
       <nav className="fixed bottom-0 left-0 right-0 z-40 border-t bg-background md:hidden">
-        <div className="grid h-16 grid-cols-5 items-center">
+        <div className="grid h-16 grid-cols-6 items-center">
           {navItems.map((item) => (
             <Link
               key={item.href}
@@ -335,6 +337,7 @@ export default function DashboardLayout({
     if (path.startsWith('/dashboard/souls-won')) return 'Loading souls won...';
     if (path.startsWith('/dashboard/testimonies')) return 'Loading testimonies...';
     if (path.startsWith('/dashboard/campaigns')) return 'Loading campaigns...';
+    if (path.startsWith('/dashboard/accountability')) return 'Loading accountability...';
     if (path.startsWith('/dashboard/progress')) return 'Loading your progress...';
     if (path.startsWith('/dashboard/chats')) return 'Loading chats...';
     if (path.startsWith('/dashboard/profile')) return 'Loading your profile...';

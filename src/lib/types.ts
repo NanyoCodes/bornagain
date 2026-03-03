@@ -34,6 +34,8 @@ export type UserProfile = {
     profileVisibility?: 'public' | 'private';
     showLocation?: boolean;
   };
+  accountabilityPartnerId?: string;
+  accountabilityPartnerName?: string;
 };
 
 export type Achievement = {
@@ -170,10 +172,23 @@ export type ChatMessage = {
 export type Notification = {
   id: string;
   userId: string;
-  type: 'campaign_join' | 'new_chat_message';
+  type: 'campaign_join' | 'new_chat_message' | 'accountability_nudge' | 'accountability_request';
   title: string;
   message: string;
   link?: string;
   isRead: boolean;
   createdAt: Timestamp;
+};
+
+export type AccountabilityRequest = {
+  id: string;
+  fromUserId: string;
+  fromUserName: string;
+  fromUserPhotoURL?: string;
+  toUserId: string;
+  toUserName: string;
+  toUserPhotoURL?: string;
+  status: 'pending' | 'accepted' | 'declined';
+  createdAt: Timestamp;
+  respondedAt?: Timestamp;
 };

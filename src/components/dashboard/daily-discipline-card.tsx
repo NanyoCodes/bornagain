@@ -8,7 +8,7 @@ import { doc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import type { UserProfile } from '@/lib/types';
 import { isToday, format } from 'date-fns';
 import { Skeleton } from '../ui/skeleton';
-import { Heart, BookOpen, Share2, Megaphone, Users, Check, Loader2 } from 'lucide-react';
+import { Heart, BookOpen, Share2, Megaphone, Users, Check, Loader2, Church } from 'lucide-react';
 import { BibleDialog } from './bible-dialog';
 import { PrayerDialog } from './prayer-dialog';
 import { useRouter } from 'next/navigation';
@@ -19,8 +19,9 @@ import { useToast } from '@/hooks/use-toast';
 
 const disciplines = [
   { id: 'pray', label: 'Pray', icon: <Heart className="h-5 w-5 text-muted-foreground" /> },
-  { id: 'read_bible', label: 'Read the Bible', icon: <BookOpen className="h-5 w-5 text-muted-foreground" /> },
-  { id: 'follow_up', label: 'Follow-up Soul', icon: <Users className="h-5 w-5 text-muted-foreground" /> },
+  { id: 'read_bible', label: 'Read Bible', icon: <BookOpen className="h-5 w-5 text-muted-foreground" /> },
+  { id: 'attend_church', label: 'Attend Church', icon: <Church className="h-5 w-5 text-muted-foreground" /> },
+  { id: 'follow_up', label: 'Follow-up', icon: <Users className="h-5 w-5 text-muted-foreground" /> },
   { id: 'share_testimony', label: 'Share Testimony', icon: <Share2 className="h-5 w-5 text-muted-foreground" /> },
   { id: 'evangelize', label: 'Evangelize', icon: <Megaphone className="h-5 w-5 text-muted-foreground" /> },
 ];
@@ -188,7 +189,7 @@ export function DailyDisciplineCard() {
             </div>
           </div>
         </CardHeader>
-        <CardContent className="grid grid-cols-2 md:grid-cols-5 gap-2 sm:gap-4">
+        <CardContent className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-4">
           {disciplines.map(discipline => {
               const isCompleted = completedToday.includes(discipline.id);
               return (
