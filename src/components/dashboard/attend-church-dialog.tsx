@@ -37,6 +37,7 @@ interface AttendChurchDialogProps {
 
 export function AttendChurchDialog({ isOpen, onOpenChange, onDisciplineCompleted, userProfile }: AttendChurchDialogProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [view, setView] = useState<'confirm' | 'form'>('form');
   const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
@@ -50,22 +51,24 @@ export function AttendChurchDialog({ isOpen, onOpenChange, onDisciplineCompleted
 
   useEffect(() => {
     if (isOpen) {
+      const hasDefaultChurch = !!userProfile?.churchInfo?.name;
+      setView(hasDefaultChurch ? 'confirm' : 'form');
       form.reset({
         churchName: userProfile?.churchInfo?.name || userProfile?.lastChurchAttended || '',
       });
     }
   }, [isOpen, userProfile, form]);
 
-  const handleSubmit = async (values: z.infer<typeof formSchema>) => {
+  const logAttendance = async (churchName: string) => {
     if (!user || !firestore) return;
     setIsSubmitting(true);
     
     try {
       const userRef = doc(firestore, 'users', user.uid);
       await updateDoc(userRef, { 
-        lastChurchAttended: values.churchName,
+        lastChurchAttended: churchName,
         attendanceHistory: arrayUnion({
-            churchName: values.churchName,
+            churchName: churchName,
             attendedAt: new Date(),
         })
       });
@@ -73,7 +76,7 @@ export function AttendChurchDialog({ isOpen, onOpenChange, onDisciplineCompleted
       onDisciplineCompleted();
       toast({
         title: 'Attendance Logged!',
-        description: `Great job attending ${values.churchName} today.`,
+        description: `Great job attending ${churchName} today.`,
       });
       onOpenChange(false);
     } catch (error) {
@@ -83,58 +86,77 @@ export function AttendChurchDialog({ isOpen, onOpenChange, onDisciplineCompleted
             title: 'Error',
             description: 'Could not save church attendance. Please try again.',
         });
-    } finally {
-        setIsSubmitting(false);
+        setIsSubmitting(false); // only set to false on error, success closes dialog
+        throw error; // re-throw to be caught by the caller
     }
+    // No finally block, as we want loading to persist until dialog closes on success
+  };
+
+  const handleConfirmDefaultChurch = async () => {
+    if (!userProfile?.churchInfo?.name) return;
+    await logAttendance(userProfile.churchInfo.name).catch(() => {});
+  };
+  
+  const handleFormSubmit = async (values: z.infer<typeof formSchema>) => {
+    await logAttendance(values.churchName).catch(() => {});
   };
   
   const attendanceHistory = userProfile?.attendanceHistory ? [...userProfile.attendanceHistory].reverse() : [];
-  const hasChurchInfo = userProfile?.churchInfo?.name && userProfile.churchInfo.worshipDays && userProfile.churchInfo.worshipDays.length > 0;
 
   return (
-    <Dialog open={isOpen} onOpenChange={onOpenChange}>
+    <Dialog open={isOpen} onOpenChange={(open) => { if(!isSubmitting) onOpenChange(open); }}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Log Church Attendance</DialogTitle>
           <DialogDescription>
-            That's great! Which church did you attend today?
+            {view === 'confirm' && userProfile?.churchInfo?.name
+              ? 'Confirm your attendance for today.'
+              : "That's great! Which church did you attend today?"}
           </DialogDescription>
         </DialogHeader>
 
-        {hasChurchInfo && (
-            <div className="text-sm p-3 rounded-md bg-muted/50 border">
-                <p className="font-semibold">{userProfile.churchInfo?.name}</p>
-                <p className="text-muted-foreground">
-                    Your usual schedule: {userProfile.churchInfo?.worshipDays?.join(', ')}
-                    {userProfile.churchInfo?.worshipTime ? ` at ${userProfile.churchInfo.worshipTime}` : ''}
-                </p>
+        {view === 'confirm' && userProfile?.churchInfo?.name ? (
+          <div className="space-y-6 py-4">
+            <div className="text-center">
+              <p className="text-muted-foreground">Did you attend</p>
+              <p className="text-2xl font-semibold font-headline">{userProfile.churchInfo.name}?</p>
             </div>
-        )}
-
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4 pt-2">
-            <FormField
-              control={form.control}
-              name="churchName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Church Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="e.g., New Life Church" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isSubmitting}>Cancel</Button>
-              <Button type="submit" disabled={isSubmitting}>
+            <div className="flex flex-col gap-2">
+              <Button onClick={handleConfirmDefaultChurch} disabled={isSubmitting} size="lg">
                 {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Confirm Attendance
+                Yes, I Attended
               </Button>
-            </DialogFooter>
-          </form>
-        </Form>
+              <Button variant="outline" onClick={() => setView('form')} disabled={isSubmitting}>
+                I Attended a Different Church
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-4 pt-2">
+              <FormField
+                control={form.control}
+                name="churchName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Church Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="e.g., New Life Church" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <DialogFooter>
+                <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isSubmitting}>Cancel</Button>
+                <Button type="submit" disabled={isSubmitting}>
+                  {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  Confirm Attendance
+                </Button>
+              </DialogFooter>
+            </form>
+          </Form>
+        )}
         
         {attendanceHistory.length > 0 && (
             <>
