@@ -384,7 +384,7 @@ export default function DashboardPage() {
                             axisLine={false}
                             tickFormatter={(value) => value.slice(0, 3)}
                             />
-                            <YAxis />
+                            <YAxis domain={[0, (dataMax: number) => Math.max(dataMax || 0, monthlyGoal)]} />
                             <Tooltip cursor={false} content={<ChartTooltipContent />} />
                             <Bar dataKey="soulsWon" fill="var(--color-soulsWon)" radius={8} />
                         </BarChart>
@@ -537,3 +537,5 @@ export default function DashboardPage() {
     </div>
   );
 }
+
+    
