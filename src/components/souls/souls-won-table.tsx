@@ -68,7 +68,7 @@ const followUpIdeas = [
 
 const logFollowUpFormSchema = z.object({
     checklist: z.array(z.string()).optional(),
-    note: z.string().optional(),
+    note: z.string().min(1, { message: "A note is required." }),
 });
 
 function LogFollowUpDialog({ soul, children }: { soul: Soul; children: React.ReactNode; }) {
@@ -91,10 +91,7 @@ function LogFollowUpDialog({ soul, children }: { soul: Soul; children: React.Rea
       toast({ variant: 'destructive', title: 'Not Authenticated' });
       return;
     }
-    if (!values.checklist?.length && !values.note) {
-      toast({ variant: 'destructive', title: 'Empty Log', description: 'Please select an item or write a note.' });
-      return;
-    }
+    
     setIsLoading(true);
 
     try {
@@ -180,7 +177,7 @@ function LogFollowUpDialog({ soul, children }: { soul: Soul; children: React.Rea
                         name="note"
                         render={({ field }) => (
                             <FormItem>
-                                <Label>Additional Notes</Label>
+                                <Label>Additional Notes (Required)</Label>
                                 <FormControl>
                                     <Textarea placeholder="e.g., They are struggling with..." {...field} value={field.value ?? ''} />
                                 </FormControl>
