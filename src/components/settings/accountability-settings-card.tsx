@@ -2,14 +2,17 @@
 'use client';
 
 import { useUser, useFirestore } from '@/firebase';
-import type { UserProfile } from '@/lib/types';
+import type { UserProfile, AccountabilityRequest } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { UserX, HeartHandshake } from 'lucide-react';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '../ui/alert-dialog';
 import { UserSearch } from '@/components/accountability/user-search';
-import { doc, writeBatch, deleteField } from 'firebase/firestore';
+import { doc, writeBatch, deleteField, query, collection, where } from 'firebase/firestore';
+import { AccountabilityRequests } from './accountability-requests';
+import { useCollection } from '@/firebase/firestore/use-collection';
+import { useMemo } from 'react';
 
 export function AccountabilitySettingsCard({ userProfile, userId }: { userProfile: UserProfile; userId: string }) {
   const { toast } = useToast();
@@ -41,8 +44,20 @@ export function AccountabilitySettingsCard({ userProfile, userId }: { userProfil
         toast({ variant: 'destructive', title: 'Error', description: 'Could not remove partner.' });
     }
   };
+  
+  const pendingRequestsQuery = useMemo(() => {
+    if (!user) return null;
+    return query(
+        collection(firestore, 'accountabilityRequests'),
+        where('participantIds', 'array-contains', user.uid),
+        where('status', '==', 'pending')
+    );
+  }, [user, firestore]);
+
+  const { data: pendingRequests } = useCollection<AccountabilityRequest>(pendingRequestsQuery);
 
   const hasPartner = !!userProfile.accountabilityPartnerId;
+  const hasPendingRequests = pendingRequests && pendingRequests.length > 0;
 
   return (
     <Card>
@@ -51,7 +66,7 @@ export function AccountabilitySettingsCard({ userProfile, userId }: { userProfil
         <CardDescription>
           {hasPartner 
             ? `Manage your partnership with ${userProfile.accountabilityPartnerName}.`
-            : "Find an accountability partner by searching for them by name."
+            : "Manage requests or find a new accountability partner to help you stay on track."
           }
         </CardDescription>
       </CardHeader>
@@ -81,7 +96,10 @@ export function AccountabilitySettingsCard({ userProfile, userId }: { userProfil
             </AlertDialog>
           </div>
         ) : (
-          <UserSearch currentUserProfile={userProfile} />
+            <div className="space-y-4">
+                <AccountabilityRequests currentUserProfile={userProfile} />
+                {!hasPendingRequests && <UserSearch currentUserProfile={userProfile} />}
+            </div>
         )}
       </CardContent>
     </Card>

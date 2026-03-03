@@ -2,14 +2,15 @@
 
 import { useState, useEffect } from 'react';
 import { useFirestore, useUser } from '@/firebase';
-import { collection, query, where, limit, getDocs, addDoc, serverTimestamp } from 'firebase/firestore';
-import type { UserProfile } from '@/lib/types';
+import { collection, query, where, limit, getDocs, setDoc, serverTimestamp, doc } from 'firebase/firestore';
+import type { AccountabilityRequest, UserProfile } from '@/lib/types';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Loader2, Send, Search } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useToast } from '@/hooks/use-toast';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { useCollection } from '@/firebase/firestore/use-collection';
 
 export function UserSearch({ currentUserProfile }: { currentUserProfile: UserProfile }) {
     const { user } = useUser();
@@ -18,7 +19,14 @@ export function UserSearch({ currentUserProfile }: { currentUserProfile: UserPro
     const [searchTerm, setSearchTerm] = useState('');
     const [isSearching, setIsSearching] = useState(false);
     const [searchResults, setSearchResults] = useState<UserProfile[]>([]);
-    const [sentRequests, setSentRequests] = useState<Set<string>>(new Set());
+    const [isProcessingRequest, setIsProcessingRequest] = useState<string | null>(null);
+
+    // Get all existing requests to disable buttons for users who have already been sent a request.
+    const requestsQuery = query(collection(firestore, 'accountabilityRequests'), where('participantIds', 'array-contains', user?.uid || ''));
+    const { data: existingRequests } = useCollection<AccountabilityRequest>(requestsQuery);
+
+    const existingRequestUserIds = new Set(existingRequests?.flatMap(r => r.participantIds).filter(id => id !== user?.uid));
+
 
     useEffect(() => {
         const trimmedSearch = searchTerm.trim().toLowerCase();
@@ -37,17 +45,14 @@ export function UserSearch({ currentUserProfile }: { currentUserProfile: UserPro
 
             try {
                 const usersRef = collection(firestore, 'users');
+                const searchTokens = trimmedSearch.split(' ').filter(Boolean);
                 
-                // We'll perform two separate queries and merge the results client-side.
-                
-                // Query 1: By display name token using 'array-contains'
                 const nameQuery = query(
                     usersRef,
-                    where('displayName_tokens', 'array-contains', trimmedSearch),
+                    where('displayName_tokens', 'array-contains-any', searchTokens),
                     limit(5)
                 );
                 
-                // Query 2: By email prefix
                 const emailQuery = query(
                     usersRef,
                     where('email', '>=', trimmedSearch),
@@ -63,8 +68,9 @@ export function UserSearch({ currentUserProfile }: { currentUserProfile: UserPro
                 const usersMap = new Map<string, UserProfile>();
                 const processSnapshot = (snapshot: any) => {
                     snapshot.docs.forEach((doc: any) => {
-                        if (doc.id !== user.uid) {
-                            usersMap.set(doc.id, { id: doc.id, ...doc.data() } as UserProfile);
+                        const docData = doc.data();
+                        if (doc.id !== user.uid && !docData.accountabilityPartnerId) {
+                            usersMap.set(doc.id, { id: doc.id, ...docData } as UserProfile);
                         }
                     });
                 };
@@ -88,60 +94,36 @@ export function UserSearch({ currentUserProfile }: { currentUserProfile: UserPro
     const handleSendRequest = async (targetUser: UserProfile) => {
         if (!user || !firestore || !currentUserProfile) return;
         
-        setSentRequests(prev => new Set(prev).add(targetUser.id));
+        setIsProcessingRequest(targetUser.id);
 
         try {
             if (currentUserProfile.accountabilityPartnerId) {
                 throw new Error('You already have an accountability partner. Please remove your current partner before sending a new request.');
             }
             if (targetUser.accountabilityPartnerId) {
-                throw new Error('This user already has an accountability partner.');
+                throw new Error(`${targetUser.displayName} already has an accountability partner.`);
             }
 
-            const requestsRef = collection(firestore, 'accountabilityRequests');
-            
-            // Query for all pending requests the current user is a part of.
-            // This query is compatible with the security rule `allow read: if request.auth.uid in resource.data.participantIds`.
-            const existingRequestQuery = query(
-                requestsRef,
-                where('participantIds', 'array-contains', user.uid),
-                where('status', '==', 'pending')
-            );
-            
-            const querySnapshot = await getDocs(existingRequestQuery);
+            const participantIds = [user.uid, targetUser.id].sort();
+            const requestId = participantIds.join('_');
+            const requestRef = doc(firestore, 'accountabilityRequests', requestId);
 
-            // Now, filter the results on the client to find if a request with the target user already exists.
-            const existingRequestDoc = querySnapshot.docs.find(doc => {
-                const pIds = doc.data().participantIds as string[];
-                return pIds.includes(targetUser.id);
-            });
-
-            if (existingRequestDoc) {
-                const existingRequest = existingRequestDoc.data();
-                if (existingRequest.fromUserId === user.uid) {
-                    throw new Error('You have already sent a pending request to this user.');
-                } else {
-                    throw new Error('This user has already sent you a request. Check your notifications to respond.');
-                }
-            }
-
-            // If no existing request, create a new one.
-            const newRequestData = {
+            const newRequestData: Omit<AccountabilityRequest, 'id'> = {
                 fromUserId: user.uid,
                 fromUserName: currentUserProfile.displayName,
-                fromUserPhotoURL: currentUserProfile.photoURL || null,
+                fromUserPhotoURL: currentUserProfile.photoURL || '',
                 toUserId: targetUser.id,
                 toUserName: targetUser.displayName,
-                toUserPhotoURL: targetUser.photoURL || null,
-                status: 'pending' as 'pending',
-                createdAt: serverTimestamp(),
-                participantIds: [user.uid, targetUser.id].sort(),
+                toUserPhotoURL: targetUser.photoURL || '',
+                status: 'pending' as const,
+                createdAt: serverTimestamp() as any,
+                participantIds,
             };
 
-            await addDoc(requestsRef, newRequestData);
+            await setDoc(requestRef, newRequestData);
 
             const notificationsRef = collection(firestore, 'users', targetUser.id, 'notifications');
-            await addDoc(notificationsRef, {
+            await setDoc(doc(notificationsRef), {
                 userId: targetUser.id,
                 type: 'accountability_request',
                 title: 'New Accountability Request',
@@ -156,20 +138,18 @@ export function UserSearch({ currentUserProfile }: { currentUserProfile: UserPro
         } catch (error: any) {
             console.error("Error sending request:", error);
             toast({ variant: 'destructive', title: 'Error', description: error.message || 'Could not send request.' });
-            setSentRequests(prev => {
-                const newSet = new Set(prev);
-                newSet.delete(targetUser.id);
-                return newSet;
-            });
+        } finally {
+            setIsProcessingRequest(null);
         }
     };
 
     return (
         <div className="space-y-4">
+             <h3 className="text-sm font-semibold text-muted-foreground">FIND A PARTNER</h3>
             <div className="relative">
                 <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
-                    placeholder="Search by name or email..."
+                    placeholder="Search for users by name or email..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="pl-8"
@@ -186,27 +166,39 @@ export function UserSearch({ currentUserProfile }: { currentUserProfile: UserPro
                     </div>
                 )}
                 <div className="space-y-2">
-                {searchResults.map(foundUser => (
-                    <div key={foundUser.id} className="flex items-center justify-between p-2 rounded-md hover:bg-muted/50">
-                        <div className="flex items-center gap-3">
-                            <Avatar>
-                                <AvatarImage src={foundUser.photoURL ?? undefined} alt={foundUser.displayName} />
-                                <AvatarFallback>{foundUser.displayName.charAt(0)}</AvatarFallback>
-                            </Avatar>
-                            <div>
-                                <p className="font-semibold text-sm">{foundUser.displayName}</p>
-                                <p className="text-xs text-muted-foreground">{foundUser.email}</p>
+                {searchResults.map(foundUser => {
+                    const isDisabled = isProcessingRequest === foundUser.id || existingRequestUserIds.has(foundUser.id);
+                    let buttonText = 'Request';
+                    if (isProcessingRequest === foundUser.id) buttonText = 'Sending...';
+                    if (existingRequestUserIds.has(foundUser.id)) buttonText = 'Request Sent';
+
+                    return (
+                        <div key={foundUser.id} className="flex items-center justify-between p-2 rounded-md hover:bg-muted/50">
+                            <div className="flex items-center gap-3">
+                                <Avatar>
+                                    <AvatarImage src={foundUser.photoURL ?? undefined} alt={foundUser.displayName} />
+                                    <AvatarFallback>{foundUser.displayName.charAt(0)}</AvatarFallback>
+                                </Avatar>
+                                <div>
+                                    <p className="font-semibold text-sm">{foundUser.displayName}</p>
+                                    <p className="text-xs text-muted-foreground">{foundUser.email}</p>
+                                </div>
                             </div>
+                            <Button
+                                size="sm"
+                                onClick={() => handleSendRequest(foundUser)}
+                                disabled={isDisabled}
+                            >
+                                {isProcessingRequest === foundUser.id ? (
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                ) : (
+                                    <Send className="mr-2 h-4 w-4" />
+                                )}
+                                {buttonText}
+                            </Button>
                         </div>
-                        <Button
-                            size="sm"
-                            onClick={() => handleSendRequest(foundUser)}
-                            disabled={sentRequests.has(foundUser.id)}
-                        >
-                            {sentRequests.has(foundUser.id) ? 'Request Sent' : <><Send className="mr-2 h-4 w-4" />Request</>}
-                        </Button>
-                    </div>
-                ))}
+                    )
+                })}
                 </div>
                 </div>
             </ScrollArea>
