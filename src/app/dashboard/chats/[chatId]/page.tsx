@@ -16,7 +16,7 @@ import {
   getDocs,
 } from 'firebase/firestore';
 import type { Chat, ChatMessage, Campaign } from '@/lib/types';
-import { Loader2, Send, ArrowLeft, Reply, X } from 'lucide-react';
+import { Loader2, Send, ArrowLeft, Reply, X, Phone } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -28,6 +28,7 @@ import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
 import { format, isSameDay, differenceInHours } from 'date-fns';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { CallManager, type CallManagerHandle } from '@/components/chat/CallManager';
 
 
 export default function ChatPage() {
@@ -42,6 +43,7 @@ export default function ChatPage() {
     const [isSending, setIsSending] = useState(false);
     const scrollAreaRef = useRef<HTMLDivElement>(null);
     const [replyingTo, setReplyingTo] = useState<ChatMessage | null>(null);
+    const callManagerRef = useRef<CallManagerHandle>(null);
 
 
     const chatDocRef = useMemo(() => {
@@ -296,6 +298,7 @@ export default function ChatPage() {
 
     return (
         <div className="flex flex-col h-full max-h-[calc(100vh-10rem)] w-full">
+            {chat && user && <CallManager ref={callManagerRef} chat={chat} user={user} />}
             <div className="flex items-center gap-4 mb-4">
                 <Button variant="outline" size="icon" onClick={() => router.back()}>
                     <ArrowLeft className="h-4 w-4" />
@@ -317,14 +320,14 @@ export default function ChatPage() {
                         </div>
                     </div>
                 ) : otherParticipantInfo && otherParticipantId ? (
-                    <div className="flex items-center gap-3">
+                   <div className="flex items-center gap-3 flex-grow">
                         <Link href={`/dashboard/profile/${otherParticipantId}`}>
                             <Avatar>
                                 <AvatarImage src={otherParticipantInfo.photoURL} />
                                 <AvatarFallback>{otherParticipantInfo.displayName.charAt(0)}</AvatarFallback>
                             </Avatar>
                         </Link>
-                        <div>
+                        <div className="flex-grow">
                             <h2 className="font-semibold">
                                 <Link href={`/dashboard/profile/${otherParticipantId}`} className="hover:underline">
                                     {otherParticipantInfo.displayName}
@@ -338,6 +341,14 @@ export default function ChatPage() {
                                 <p className="text-sm text-muted-foreground">Accountability Partner</p>
                             )}
                         </div>
+                         <Button
+                            variant="outline"
+                            size="icon"
+                            onClick={() => callManagerRef.current?.startCall()}
+                        >
+                            <Phone className="h-4 w-4" />
+                            <span className="sr-only">Start Call</span>
+                        </Button>
                     </div>
                 ) : null}
             </div>

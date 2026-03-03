@@ -498,6 +498,19 @@
         "createdAt"
       ]
     },
+    "SignalingMessage": {
+      "title": "Signaling Message",
+      "description": "A WebRTC signaling message for establishing a peer-to-peer connection.",
+      "type": "object",
+      "properties": {
+        "senderId": { "type": "string" },
+        "receiverId": { "type": "string" },
+        "type": { "type": "string", "enum": ["offer", "answer", "ice-candidate", "hangup"] },
+        "payload": { "type": "object" },
+        "createdAt": { "type": "object" }
+      },
+      "required": ["senderId", "receiverId", "type", "createdAt"]
+    },
     "Notification": {
       "title": "Notification",
       "description": "Represents an in-app notification for a user.",
@@ -658,6 +671,12 @@
         "$ref": "#/entities/ChatMessage"
       },
       "description": "Stores messages for a specific chat session."
+    },
+    "/chats/{chatId}/signaling/{signalingId}": {
+      "schema": {
+        "$ref": "#/entities/SignalingMessage"
+      },
+      "description": "Stores WebRTC signaling messages for establishing voice calls."
     },
     "/accountabilityRequests/{requestId}": {
       "schema": {
