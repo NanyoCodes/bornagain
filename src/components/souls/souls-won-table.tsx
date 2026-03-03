@@ -255,8 +255,6 @@ type SoulsWonTableProps = {
   loading: boolean;
 };
 
-const statusOptions: FollowUpStatus[] = ['New', 'Contacted', 'Attending Church', 'In Bible Study', 'Established'];
-
 function SoulCard({ soul, onUpdateSoul }: { soul: ProcessedSoul, onUpdateSoul: SoulsWonTableProps['onUpdateSoul'] }) {
     const { toast } = useToast();
     const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
@@ -383,6 +381,7 @@ export function SoulsWonTable({ souls, onUpdateSoul, loading }: SoulsWonTablePro
   const isMobile = useIsMobile();
   const [mounted, setMounted] = React.useState(false);
   const [editingSoul, setEditingSoul] = React.useState<Soul | null>(null);
+  const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
 
   React.useEffect(() => {
     setMounted(true);
@@ -564,7 +563,10 @@ export function SoulsWonTable({ souls, onUpdateSoul, loading }: SoulsWonTablePro
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                       <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                       <DropdownMenuItem onSelect={() => setEditingSoul(soul)}>
+                       <DropdownMenuItem onSelect={() => {
+                          setEditingSoul(soul);
+                          setIsEditDialogOpen(true);
+                       }}>
                           <Edit className="mr-2 h-4 w-4" />
                           Edit
                       </DropdownMenuItem>
@@ -583,13 +585,18 @@ export function SoulsWonTable({ souls, onUpdateSoul, loading }: SoulsWonTablePro
         </Table>
       </CardContent>
     </Card>
-    <Dialog open={!!editingSoul} onOpenChange={(isOpen) => !isOpen && setEditingSoul(null)}>
+    <Dialog open={isEditDialogOpen} onOpenChange={(open) => {
+        setIsEditDialogOpen(open);
+        if (!open) {
+            setEditingSoul(null);
+        }
+    }}>
         <DialogContent>
             <DialogHeader>
                 <DialogTitle>Edit Soul Details</DialogTitle>
                 <DialogDescription>Make changes to the record for {editingSoul?.name}.</DialogDescription>
             </DialogHeader>
-            {editingSoul && <EditSoulForm soul={editingSoul} onSoulUpdated={() => setEditingSoul(null)} />}
+            {editingSoul && <EditSoulForm soul={editingSoul} onSoulUpdated={() => setIsEditDialogOpen(false)} />}
         </DialogContent>
     </Dialog>
     </>
