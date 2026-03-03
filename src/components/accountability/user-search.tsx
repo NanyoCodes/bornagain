@@ -67,27 +67,31 @@ export function UserSearch({ currentUserProfile }: { currentUserProfile: UserPro
 
         try {
             if (currentUserProfile.accountabilityPartnerId) {
-                throw new Error('You already have an accountability partner.');
+                throw new Error('You already have an accountability partner. Please remove your current partner before sending a new request.');
             }
             if (targetUser.accountabilityPartnerId) {
                 throw new Error('This user already has an accountability partner.');
             }
 
             const requestsRef = collection(firestore, 'accountabilityRequests');
-            // Check for existing pending request from current user to target user
-            const existingRequestQuery1 = query(requestsRef, where('fromUserId', '==', user.uid), where('toUserId', '==', targetUser.id), where('status', '==', 'pending'));
-            // Check for existing pending request from target user to current user
-            const existingRequestQuery2 = query(requestsRef, where('fromUserId', '==', targetUser.id), where('toUserId', '==', user.uid), where('status', '==', 'pending'));
+            const participantIdsSorted = [user.uid, targetUser.id].sort();
             
-            const [snapshot1, snapshot2] = await Promise.all([getDocs(existingRequestQuery1), getDocs(existingRequestQuery2)]);
+            // Check for existing pending request between the two users
+            const existingRequestQuery = query(
+                requestsRef,
+                where('participantIds', '==', participantIdsSorted),
+                where('status', '==', 'pending')
+            );
+            
+            const querySnapshot = await getDocs(existingRequestQuery);
 
-            if(!snapshot1.empty) {
-                toast({ variant: 'default', title: 'Request Already Sent', description: 'You have already sent a pending request to this user.' });
-                return;
-            }
-
-            if(!snapshot2.empty) {
-                throw new Error('This user has already sent you a request. Check your notifications to respond.');
+            if (!querySnapshot.empty) {
+                const existingRequest = querySnapshot.docs[0].data();
+                if (existingRequest.fromUserId === user.uid) {
+                    throw new Error('You have already sent a pending request to this user.');
+                } else {
+                    throw new Error('This user has already sent you a request. Check your notifications to respond.');
+                }
             }
 
             const newRequestData = {
@@ -99,7 +103,7 @@ export function UserSearch({ currentUserProfile }: { currentUserProfile: UserPro
                 toUserPhotoURL: targetUser.photoURL || null,
                 status: 'pending' as 'pending',
                 createdAt: serverTimestamp(),
-                participantIds: [user.uid, targetUser.id].sort(),
+                participantIds: participantIdsSorted,
             };
 
             await addDoc(requestsRef, newRequestData);
@@ -182,4 +186,3 @@ export function UserSearch({ currentUserProfile }: { currentUserProfile: UserPro
     );
 }
 
-    
