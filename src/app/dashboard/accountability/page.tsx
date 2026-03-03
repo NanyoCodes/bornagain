@@ -24,7 +24,8 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { AccountabilitySettingsCard } from '@/components/settings/accountability-settings-card';
-import { Calendar } from '@/components/ui/calendar';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 const disciplines = [
   { id: 'pray', label: 'Pray' },
@@ -68,10 +69,6 @@ export default function AccountabilityPage() {
   }, [partnerId, firestore]);
 
   const { data: partnerHistory, loading: loadingHistory } = useCollection<DailyDisciplineLog>(partnerHistoryQuery);
-
-  const completedDays = useMemo(() => {
-    return partnerHistory?.filter(h => h.completed.length > 0).map(h => h.date.toDate()) ?? [];
-  }, [partnerHistory]);
   
   const completedOnSelectedDate = useMemo(() => {
     if (!date || !partnerHistory) return [];
@@ -153,15 +150,25 @@ export default function AccountabilityPage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-8 md:grid-cols-2">
-            <Calendar
-                mode="single"
-                selected={date}
-                onSelect={setDate}
-                disabled={(d) => d > new Date() || d < new Date("2020-01-01")}
-                modifiers={{ completed: completedDays }}
-                modifiersStyles={{ completed: { color: 'hsl(var(--primary-foreground))', backgroundColor: 'hsl(var(--primary))' } }}
-                className="rounded-md border not-prose"
-            />
+            <div className="space-y-2 self-start">
+                <Label htmlFor="history-date">Select a Date</Label>
+                <Input
+                    id="history-date"
+                    type="date"
+                    value={date ? format(date, 'yyyy-MM-dd') : ''}
+                    onChange={(e) => {
+                        if (e.target.value) {
+                            const [year, month, day] = e.target.value.split('-').map(Number);
+                            setDate(new Date(year, month - 1, day));
+                        } else {
+                            setDate(undefined);
+                        }
+                    }}
+                    max={format(new Date(), 'yyyy-MM-dd')}
+                    className="w-full"
+                />
+            </div>
+
             <div className="space-y-4">
                 <p className="font-semibold text-center">{date ? format(date, 'PPP') : 'Select a day'}</p>
                 <div className="grid grid-cols-2 gap-4">
