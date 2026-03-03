@@ -2,8 +2,8 @@
 "use client";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { isSameDay, startOfDay, differenceInCalendarDays, format } from "date-fns";
-import { TrendingUp, UserCheck2, Trophy, ArrowRight, UserPlus, Globe, Loader2, RefreshCw, XCircle } from "lucide-react";
+import { isSameDay, startOfDay, differenceInCalendarDays, format, isSameMonth } from "date-fns";
+import { TrendingUp, UserCheck2, Trophy, ArrowRight, UserPlus, Globe, Loader2, RefreshCw, XCircle, Edit } from "lucide-react";
 import { useCollection, useFirestore, useUser, useDoc } from "@/firebase";
 import { collection, query, doc, updateDoc, serverTimestamp, orderBy, limit, where, getCountFromServer } from "firebase/firestore";
 import type { Soul, UserProfile } from "@/lib/types";
@@ -15,6 +15,12 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
+import { Bar, BarChart, CartesianGrid, ResponsiveContainer, XAxis, YAxis, Tooltip } from "recharts";
+import { ChartContainer, ChartTooltipContent } from "@/components/ui/chart";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
 
 
 function RecentSoulsList() {
@@ -194,9 +200,17 @@ function GlobalSoulsCard({ location }: { location: { city?: string, country?: st
     );
 }
 
+const chartConfig = {
+  soulsWon: {
+    label: "Souls Won",
+    color: "hsl(var(--primary))",
+  },
+} satisfies import("@/components/ui/chart").ChartConfig;
+
 export default function DashboardPage() {
   const { user, loading: authLoading } = useUser();
   const firestore = useFirestore();
+  const { toast } = useToast();
   const [streakUpdated, setStreakUpdated] = useState(false);
   
   const userDocRef = useMemo(() => {
@@ -204,6 +218,83 @@ export default function DashboardPage() {
     return doc(firestore, 'users', user.uid);
   }, [user?.uid, firestore]);
   const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userDocRef);
+
+  const soulsQuery = useMemo(() => {
+    if (!user?.uid || !firestore) return null;
+    return query(collection(firestore, `users/${user.uid}/souls`));
+  }, [user?.uid, firestore]);
+  const { data: soulsWon, loading: soulsLoading } = useCollection<Soul>(soulsQuery);
+
+  // State and logic from progress page
+  const [monthlyGoal, setMonthlyGoal] = useState(50);
+  const [goalDate, setGoalDate] = useState(new Date());
+  const [goalDialogOpen, setGoalDialogOpen] = useState(false);
+  const [newGoal, setNewGoal] = useState(monthlyGoal);
+  const [newGoalDate, setNewGoalDate] = useState(goalDate);
+
+  const handleGoalDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+    if (value) {
+      const [year, month] = value.split('-').map(Number);
+      setNewGoalDate(new Date(year, month - 1, 1));
+    }
+  };
+
+  const newGoalDateValue = newGoalDate ? format(newGoalDate, "yyyy-MM") : "";
+  
+  const soulsThisMonth = useMemo(() => {
+    if (!soulsWon) return 0;
+    return soulsWon.filter(soul => {
+      if (!soul.wonAt) return false;
+      const wonDate = soul.wonAt.toDate ? soul.wonAt.toDate() : new Date(soul.wonAt as any);
+      return isSameMonth(wonDate, goalDate);
+    }).length;
+  }, [soulsWon, goalDate]);
+
+  const progressData = useMemo(() => {
+    if (!soulsWon) return [];
+    const monthlyData: { [key: string]: { date: string, soulsWon: number } } = {};
+    const sixMonthsAgo = new Date();
+    sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 5);
+    sixMonthsAgo.setDate(1);
+
+    for (let i = 0; i < 6; i++) {
+        const date = new Date(sixMonthsAgo.getFullYear(), sixMonthsAgo.getMonth() + i, 1);
+        const monthKey = format(date, "MMM");
+        monthlyData[monthKey] = { date: monthKey, soulsWon: 0 };
+    }
+
+    soulsWon.forEach(soul => {
+      if (soul.wonAt) {
+        const wonDate = soul.wonAt.toDate ? soul.wonAt.toDate() : new Date(soul.wonAt as any);
+        if (wonDate >= sixMonthsAgo) {
+            const monthKey = format(wonDate, "MMM");
+            if (monthlyData[monthKey]) {
+                monthlyData[monthKey].soulsWon++;
+            }
+        }
+      }
+    });
+    return Object.values(monthlyData);
+  }, [soulsWon]);
+
+  const handleSaveGoal = () => {
+    if (newGoal > 0) {
+      setMonthlyGoal(newGoal);
+      setGoalDate(newGoalDate);
+      setGoalDialogOpen(false);
+      toast({
+        title: "Monthly Goal Updated",
+        description: `Your new goal for ${format(newGoalDate, "MMMM yyyy")} is ${newGoal} souls.`,
+      });
+    } else {
+      toast({
+        variant: "destructive",
+        title: "Invalid Goal",
+        description: "Please enter a number greater than 0.",
+      });
+    }
+  };
 
   useEffect(() => {
     if (streakUpdated || profileLoading || !user || !userProfile || !firestore) return;
@@ -250,12 +341,6 @@ export default function DashboardPage() {
 
   }, [profileLoading, user, userProfile, firestore, streakUpdated]);
 
-  const soulsQuery = useMemo(() => {
-    if (!user?.uid || !firestore) return null;
-    return query(collection(firestore, `users/${user.uid}/souls`));
-  }, [user?.uid, firestore]);
-  const { data: soulsWon, loading: soulsLoading } = useCollection<Soul>(soulsQuery);
-
   const soulsWonCount = soulsWon?.length ?? 0;
   const currentStreak = userProfile?.currentStreak || 0;
   const longestStreak = userProfile?.longestStreak || 0;
@@ -275,6 +360,32 @@ export default function DashboardPage() {
         <div className="grid gap-8 lg:grid-cols-3">
             <div className="lg:col-span-2 space-y-8">
                 <DailyDisciplineCard />
+
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Monthly Statistics</CardTitle>
+                        <CardDescription>Souls won in the last 6 months.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                    <ChartContainer config={chartConfig} className="h-[300px] w-full">
+                        <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={progressData} accessibilityLayer>
+                            <CartesianGrid vertical={false} />
+                            <XAxis
+                            dataKey="date"
+                            tickLine={false}
+                            tickMargin={10}
+                            axisLine={false}
+                            tickFormatter={(value) => value.slice(0, 3)}
+                            />
+                            <YAxis />
+                            <Tooltip cursor={false} content={<ChartTooltipContent />} />
+                            <Bar dataKey="soulsWon" fill="var(--color-soulsWon)" radius={8} />
+                        </BarChart>
+                        </ResponsiveContainer>
+                    </ChartContainer>
+                    </CardContent>
+                </Card>
 
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between">
@@ -328,6 +439,69 @@ export default function DashboardPage() {
                                 {loading ? <Skeleton className="h-6 w-12 mt-1" /> : <p className="text-2xl font-bold">{longestStreak} day{longestStreak === 1 ? '' : 's'}</p>}
                             </div>
                         </div>
+                    </CardContent>
+                </Card>
+
+                 <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">{format(goalDate, 'MMMM yyyy')} Goal</CardTitle>
+                    <Dialog 
+                        open={goalDialogOpen} 
+                        onOpenChange={(isOpen) => {
+                        if(isOpen) {
+                            setNewGoal(monthlyGoal);
+                            setNewGoalDate(goalDate);
+                        }
+                        setGoalDialogOpen(isOpen);
+                        }}
+                    >
+                        <DialogTrigger asChild>
+                        <Button variant="ghost" size="icon" className="h-5 w-5">
+                            <Edit className="h-4 w-4 text-muted-foreground" />
+                        </Button>
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-[425px]">
+                        <DialogHeader>
+                            <DialogTitle>Set Monthly Goal</DialogTitle>
+                            <DialogDescription>
+                            Set your personal goal for souls won for a specific month.
+                            </DialogDescription>
+                        </DialogHeader>
+                        <div className="grid gap-4 py-4">
+                            <div className="grid grid-cols-4 items-center gap-4">
+                            <Label htmlFor="goal" className="text-right">
+                                Souls
+                            </Label>
+                            <Input
+                                id="goal"
+                                type="number"
+                                value={newGoal}
+                                onChange={(e) => setNewGoal(Number(e.target.value))}
+                                className="col-span-3"
+                            />
+                            </div>
+                            <div className="grid grid-cols-4 items-center gap-4">
+                            <Label htmlFor="goal-month" className="text-right">
+                                For Month
+                            </Label>
+                            <Input
+                                id="goal-month"
+                                type="month"
+                                value={newGoalDateValue}
+                                onChange={handleGoalDateChange}
+                                className="col-span-3"
+                            />
+                            </div>
+                        </div>
+                        <DialogFooter>
+                            <Button onClick={handleSaveGoal}>Save Goal</Button>
+                        </DialogFooter>
+                        </DialogContent>
+                    </Dialog>
+                    </CardHeader>
+                    <CardContent>
+                    <div className="text-2xl font-bold">{`${soulsThisMonth} / ${monthlyGoal}`}</div>
+                    <p className="text-xs text-muted-foreground">{`${monthlyGoal > 0 ? Math.round((soulsThisMonth / monthlyGoal) * 100) : 0}% complete`}</p>
                     </CardContent>
                 </Card>
                 

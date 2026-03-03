@@ -509,9 +509,9 @@
       "description": "An email to be sent by the Trigger Email extension.",
       "type": "object",
       "properties": {
-        "toUids": {
+        "to": {
           "type": "array",
-          "description": "A list of user UIDs to send the email to.",
+          "description": "A list of email addresses to send the email to.",
           "items": {
             "type": "string"
           }
@@ -529,7 +529,7 @@
         }
       },
       "required": [
-        "toUids",
+        "to",
         "message"
       ]
     }

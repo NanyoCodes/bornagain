@@ -25,6 +25,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { format } from "date-fns";
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
+import { PlaceHolderImages } from "@/lib/placeholder-images";
 
 // This is a workaround for the jspdf-autotable types
 declare module 'jspdf' {
@@ -136,16 +137,22 @@ export default function SoulsWonPage() {
 
     if (formatType === 'pdf') {
         const doc = new jsPDF({ orientation: 'landscape' });
+        const logo = PlaceHolderImages.find((img) => img.id === 'logo');
         
         doc.autoTable({
             head: [headers],
             body: body,
             didDrawPage: (data) => {
-                doc.setFontSize(18);
-                doc.text("Souls Won Report", data.settings.margin.left, 15);
+                // Header
+                if (logo?.imageUrl) {
+                    doc.addImage(logo.imageUrl, 'JPG', data.settings.margin.left, 15, 12, 12);
+                }
+                doc.setFontSize(20);
+                doc.text("Souls Won Report", data.settings.margin.left + 15, 24);
             },
+            startY: 32,
             styles: { fontSize: 8, cellPadding: 1.5 },
-            headStyles: { fillColor: [34, 139, 34] }, // A shade of green
+            headStyles: { fillColor: [34, 139, 34] },
         });
 
         doc.save(`souls-won-${new Date().toISOString().slice(0,10)}.pdf`);

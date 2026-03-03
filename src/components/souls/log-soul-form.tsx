@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -79,7 +80,7 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps)
       toast({ variant: 'destructive', title: 'Please wait', description: 'User data is loading.' });
       return;
     }
-    if (!user || !firestore) {
+    if (!user || !firestore || !userProfile) {
       toast({ variant: 'destructive', title: 'Not Authenticated', description: 'You must be logged in to log a soul.' });
       return;
     }
@@ -111,8 +112,6 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps)
     let campaignId: string | undefined;
 
     if (isCampaignSource) {
-      // Find the campaign by title from the form's sourceDetails.
-      // This relies on campaign titles being unique, which is not ideal but avoids a larger refactor.
       const campaign = defaultCampaign || campaigns?.find(c => c.title === values.sourceDetails);
       if (campaign) {
           campaignId = campaign.id;
@@ -135,6 +134,28 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps)
           const currentSoulsLogged = campaignDoc.data().soulsLogged || 0;
           transaction.update(campaignRef, { soulsLogged: currentSoulsLogged + 1 });
       }
+
+      // 3. If email is provided, send an invitation
+        if (values.email) {
+            const mailCollectionRef = collection(firestore, 'mail');
+            const newMailRef = doc(mailCollectionRef);
+            const appUrl = window.location.origin;
+            transaction.set(newMailRef, {
+                to: [values.email],
+                message: {
+                    subject: `You're invited to join Testify!`,
+                    html: `
+                        <p>Hi ${values.name},</p>
+                        <p>${userProfile.displayName || 'A friend'} has invited you to join Testify, a platform for believers to share testimonies, organize soul-winning campaigns, and track evangelism progress.</p>
+                        <p>Join the movement and start your journey today!</p>
+                        <a href="${appUrl}" style="display: inline-block; padding: 10px 20px; font-size: 16px; color: #ffffff; background-color: #3b82f6; text-decoration: none; border-radius: 5px;">Join Testify</a>
+                        <br><br>
+                        <p>God bless,</p>
+                        <p>The Testify Team</p>
+                    `,
+                },
+            });
+        }
     }).then(() => {
       toast({
         title: "Soul Logged",

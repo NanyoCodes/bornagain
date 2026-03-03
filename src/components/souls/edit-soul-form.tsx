@@ -21,7 +21,7 @@ import { Loader2 } from "lucide-react";
 import type { Soul, Campaign } from "@/lib/types";
 import { format } from "date-fns";
 import { useFirestore, useUser, useCollection } from "@/firebase";
-import { collection, query, orderBy, doc, updateDoc } from "firebase/firestore";
+import { collection, query, orderBy, doc, updateDoc, addDoc } from "firebase/firestore";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { errorEmitter } from "@/firebase/error-emitter";
 
@@ -109,6 +109,29 @@ export function EditSoulForm({ soul, onSoulUpdated }: EditSoulFormProps) {
             title: "Soul Updated",
             description: `${values.name}'s record has been updated.`,
         });
+
+        // Send invite if email was just added
+        if (!soul.email && values.email) {
+            const mailCollectionRef = collection(firestore, 'mail');
+            const appUrl = window.location.origin;
+            const inviterName = user.displayName || 'A friend';
+            addDoc(mailCollectionRef, {
+                to: [values.email],
+                message: {
+                    subject: `You're invited to join Testify!`,
+                    html: `
+                        <p>Hi ${values.name},</p>
+                        <p>${inviterName} has invited you to join Testify, a platform for believers to share testimonies, organize soul-winning campaigns, and track evangelism progress.</p>
+                        <p>Join the movement and start your journey today!</p>
+                        <a href="${appUrl}" style="display: inline-block; padding: 10px 20px; font-size: 16px; color: #ffffff; background-color: #3b82f6; text-decoration: none; border-radius: 5px;">Join Testify</a>
+                        <br><br>
+                        <p>God bless,</p>
+                        <p>The Testify Team</p>
+                    `,
+                },
+            }).catch(err => console.error("Failed to send invitation email:", err));
+        }
+
         onSoulUpdated();
     }).catch(() => {
       const permissionError = new FirestorePermissionError({

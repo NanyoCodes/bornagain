@@ -15,7 +15,6 @@ import {
   Search,
   Settings,
   Target,
-  TrendingUp,
   User,
   UserPlus,
   Loader2,
@@ -51,7 +50,6 @@ const navItems = [
   { href: "/dashboard/testimonies", label: "Testimonies", icon: Newspaper },
   { href: "/dashboard/campaigns", label: "Campaigns", icon: Target },
   { href: "/dashboard/accountability", label: "Partner", icon: HeartHandshake },
-  { href: "/dashboard/progress", label: "Progress", icon: TrendingUp },
 ];
 
 function AppHeader() {
@@ -282,7 +280,7 @@ function BottomNavBar() {
   
     return (
       <nav className="fixed bottom-0 left-0 right-0 z-40 border-t bg-background md:hidden">
-        <div className="grid h-16 grid-cols-6 items-center">
+        <div className="grid h-16 grid-cols-5 items-center">
           {navItems.map((item) => (
             <Link
               key={item.href}
