@@ -76,7 +76,7 @@ export function SignUpForm() {
       const userDocRef = doc(firestore, "users", user.uid);
       const userData = {
         displayName: values.name,
-        displayName_lowercase: values.name.toLowerCase(),
+        displayName_lowercase_parts: values.name.toLowerCase().split(' ').filter(p => p),
         email: values.email,
         photoURL: user.photoURL, // Initially null for email signup
       };
@@ -168,3 +168,5 @@ export function SignUpForm() {
     </Form>
   );
 }
+
+    

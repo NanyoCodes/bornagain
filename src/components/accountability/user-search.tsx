@@ -23,7 +23,8 @@ export function UserSearch({ currentUserProfile }: { currentUserProfile: UserPro
 
     const handleSearch = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!searchTerm.trim()) return;
+        const trimmedSearch = searchTerm.trim();
+        if (!trimmedSearch) return;
         if (!user || !firestore) return;
 
         setIsSearching(true);
@@ -31,12 +32,11 @@ export function UserSearch({ currentUserProfile }: { currentUserProfile: UserPro
 
         try {
             const usersRef = collection(firestore, 'users');
-            const searchLower = searchTerm.toLowerCase();
+            const searchLower = trimmedSearch.toLowerCase();
             
             const q = query(
                 usersRef,
-                where('displayName_lowercase', '>=', searchLower),
-                where('displayName_lowercase', '<=', searchLower + '\uf8ff'),
+                where('displayName_lowercase_parts', 'array-contains', searchLower),
                 limit(10)
             );
             
@@ -133,7 +133,7 @@ export function UserSearch({ currentUserProfile }: { currentUserProfile: UserPro
         <div className="space-y-4">
             <form onSubmit={handleSearch} className="flex items-center gap-2">
                 <Input
-                    placeholder="Search for users by name..."
+                    placeholder="Search for a user by name..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                 />
@@ -141,6 +141,9 @@ export function UserSearch({ currentUserProfile }: { currentUserProfile: UserPro
                     {isSearching ? <Loader2 className="animate-spin" /> : <Search />}
                 </Button>
             </form>
+            <p className="text-xs text-muted-foreground px-1">
+                Tip: Search for one name at a time (e.g., "John" instead of "John Doe").
+            </p>
 
             <ScrollArea className="h-64 rounded-md border">
                 <div className="p-4">
@@ -178,3 +181,5 @@ export function UserSearch({ currentUserProfile }: { currentUserProfile: UserPro
         </div>
     );
 }
+
+    

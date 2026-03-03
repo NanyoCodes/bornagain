@@ -140,7 +140,7 @@ export function PhoneAuthForm() {
       const displayName = user.displayName || `User ${user.uid.substring(0, 5)}`;
       const userData = {
         displayName: displayName,
-        displayName_lowercase: displayName.toLowerCase(),
+        displayName_lowercase_parts: displayName.toLowerCase().split(' ').filter(p => p),
         email: user.email,
         photoURL: user.photoURL,
         phone: user.phoneNumber,
@@ -229,3 +229,5 @@ export function PhoneAuthForm() {
     </>
   );
 }
+
+    

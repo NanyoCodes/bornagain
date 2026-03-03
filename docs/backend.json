@@ -10,9 +10,10 @@
           "type": "string",
           "description": "The user's display name."
         },
-        "displayName_lowercase": {
-          "type": "string",
-          "description": "The user's display name in lowercase for searching."
+        "displayName_lowercase_parts": {
+          "type": "array",
+          "description": "The user's display name, split into parts and lowercased for searching.",
+          "items": { "type": "string" }
         },
         "email": {
           "type": "string",
@@ -502,7 +503,7 @@
         },
         "type": {
           "type": "string",
-          "enum": ["campaign_join", "new_chat_message", "accountability_nudge", "accountability_request"]
+          "enum": ["campaign_join", "new_chat_message", "accountability_nudge", "accountability_request", "request_accepted", "request_declined"]
         },
         "title": {
           "type": "string"
@@ -660,3 +661,5 @@
     }
   }
 }
+
+    

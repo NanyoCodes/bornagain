@@ -73,7 +73,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
       // Only add values to payload if they have changed from the initial profile
       if (values.displayName !== userProfile.displayName) {
         firestoreUpdatePayload.displayName = values.displayName;
-        firestoreUpdatePayload.displayName_lowercase = values.displayName.toLowerCase();
+        firestoreUpdatePayload.displayName_lowercase_parts = values.displayName.toLowerCase().split(' ').filter(p => p);
       }
       if (values.bio !== userProfile.bio) firestoreUpdatePayload.bio = values.bio || "";
       if (newLocation.city !== userProfile.location?.city || newLocation.country !== userProfile.location?.country) {
@@ -202,3 +202,5 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
     </Form>
   );
 }
+
+    

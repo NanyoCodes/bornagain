@@ -45,11 +45,12 @@ export default function LoginPage() {
     try {
       const result = await signInWithPopup(auth, authProvider);
       const user = result.user;
+      const displayName = user.displayName || '';
 
       const userDocRef = doc(firestore, 'users', user.uid);
       const userData = {
-        displayName: user.displayName,
-        displayName_lowercase: user.displayName?.toLowerCase(),
+        displayName: displayName,
+        displayName_lowercase_parts: displayName.toLowerCase().split(' ').filter(p => p),
         email: user.email,
         photoURL: user.photoURL,
       };
@@ -137,3 +138,5 @@ export default function LoginPage() {
     </AuthLayout>
   );
 }
+
+    
