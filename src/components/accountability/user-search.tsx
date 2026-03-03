@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -30,13 +31,12 @@ export function UserSearch({ currentUserProfile }: { currentUserProfile: UserPro
 
         try {
             const usersRef = collection(firestore, 'users');
-            const searchTermCapitalized = searchTerm.charAt(0).toUpperCase() + searchTerm.slice(1);
+            const searchLower = searchTerm.toLowerCase();
             
-            // This is a simple prefix search. A real app might need a more robust search solution.
             const q = query(
                 usersRef,
-                where('displayName', '>=', searchTermCapitalized),
-                where('displayName', '<=', searchTermCapitalized + '\uf8ff'),
+                where('displayName_lowercase', '>=', searchLower),
+                where('displayName_lowercase', '<=', searchLower + '\uf8ff'),
                 limit(10)
             );
             
@@ -49,7 +49,7 @@ export function UserSearch({ currentUserProfile }: { currentUserProfile: UserPro
              if (users.length === 0) {
                 toast({
                     title: 'No Users Found',
-                    description: 'Try a different name. Note that search is case-sensitive.',
+                    description: 'Try a different name.',
                 });
             }
         } catch (error) {

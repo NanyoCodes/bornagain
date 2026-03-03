@@ -137,8 +137,10 @@ export function PhoneAuthForm() {
       const user = result.user;
 
       const userDocRef = doc(firestore, "users", user.uid);
+      const displayName = user.displayName || `User ${user.uid.substring(0, 5)}`;
       const userData = {
-        displayName: user.displayName || `User ${user.uid.substring(0, 5)}`,
+        displayName: displayName,
+        displayName_lowercase: displayName.toLowerCase(),
         email: user.email,
         photoURL: user.photoURL,
         phone: user.phoneNumber,

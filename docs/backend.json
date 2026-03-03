@@ -10,6 +10,10 @@
           "type": "string",
           "description": "The user's display name."
         },
+        "displayName_lowercase": {
+          "type": "string",
+          "description": "The user's display name in lowercase for searching."
+        },
         "email": {
           "type": "string",
           "format": "email",

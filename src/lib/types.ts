@@ -11,6 +11,7 @@ export type ReadingHistoryItem = {
 export type UserProfile = {
   id: string;
   displayName: string;
+  displayName_lowercase?: string;
   email: string;
   photoURL?: string;
   bio?: string;

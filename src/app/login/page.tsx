@@ -49,6 +49,7 @@ export default function LoginPage() {
       const userDocRef = doc(firestore, 'users', user.uid);
       const userData = {
         displayName: user.displayName,
+        displayName_lowercase: user.displayName?.toLowerCase(),
         email: user.email,
         photoURL: user.photoURL,
       };
