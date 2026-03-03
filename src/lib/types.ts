@@ -185,15 +185,6 @@ export type ChatMessage = {
   };
 };
 
-export type SignalingMessage = {
-  id: string;
-  senderId: string;
-  receiverId: string;
-  type: 'call-request' | 'call-accepted' | 'call-declined' | 'offer' | 'answer' | 'ice-candidate' | 'hangup';
-  payload?: RTCSessionDescriptionInit | RTCIceCandidateInit;
-  createdAt: Timestamp;
-}
-
 export type Notification = {
   id: string;
   userId: string;
