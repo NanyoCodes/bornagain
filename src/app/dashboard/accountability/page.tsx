@@ -26,6 +26,7 @@ import {
 import { AccountabilitySettingsCard } from '@/components/settings/accountability-settings-card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import Link from 'next/link';
 
 const disciplines = [
   { id: 'pray', label: 'Pray' },
@@ -133,13 +134,17 @@ export default function AccountabilityPage() {
   return (
     <div className="space-y-8 max-w-3xl mx-auto">
       <div className="flex items-center gap-6">
-        <Avatar className="h-20 w-20 border">
-          <AvatarImage src={partnerProfile.photoURL ?? undefined} alt={partnerProfile.displayName} />
-          <AvatarFallback className="text-3xl">{partnerProfile.displayName.charAt(0)}</AvatarFallback>
-        </Avatar>
+        <Link href={`/dashboard/profile/${partnerId}`}>
+          <Avatar className="h-20 w-20 border cursor-pointer hover:opacity-80 transition-opacity">
+            <AvatarImage src={partnerProfile.photoURL ?? undefined} alt={partnerProfile.displayName} />
+            <AvatarFallback className="text-3xl">{partnerProfile.displayName.charAt(0)}</AvatarFallback>
+          </Avatar>
+        </Link>
         <div>
           <p className="text-sm text-muted-foreground">Your Accountability Partner</p>
-          <h1 className="text-3xl font-bold tracking-tight font-headline">{partnerProfile.displayName}</h1>
+          <Link href={`/dashboard/profile/${partnerId}`}>
+            <h1 className="text-3xl font-bold tracking-tight font-headline hover:underline">{partnerProfile.displayName}</h1>
+          </Link>
         </div>
       </div>
       <Card>
