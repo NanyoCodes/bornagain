@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback, useImperativeHandle, forwardRef } from 'react';
+import { useState, useEffect, useRef, useCallback, useImperativeHandle, forwardRef, useMemo } from 'react';
 import { useUser, useFirestore, useCollection } from '@/firebase';
 import type { User } from 'firebase/auth';
 import type { Chat, SignalingMessage } from '@/lib/types';
@@ -14,6 +14,7 @@ import {
   deleteDoc,
   getDocs,
   Timestamp,
+  doc,
 } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Phone, PhoneOff, Mic, MicOff, PhoneIncoming, Loader2 } from 'lucide-react';
@@ -60,23 +61,55 @@ export const CallManager = forwardRef<CallManagerHandle, CallManagerProps>(({ ch
     const otherParticipantId = chat.participantIds.find(id => id !== user.uid);
     const otherParticipantInfo = otherParticipantId ? chat.participantInfo[otherParticipantId] : null;
 
-    const signalingCollection = collection(firestore, 'chats', chat.id, 'signaling');
+    const signalingCollection = useMemo(() => {
+        if (!firestore || !chat.id) return null;
+        return collection(firestore, 'chats', chat.id, 'signaling');
+    }, [firestore, chat.id]);
 
-    // --- Imperative handle to expose startCall to parent ---
-    useImperativeHandle(ref, () => ({
-        startCall: () => {
-            if (callState === 'idle' && !chat.isGroupChat) {
-                handleStartCall();
-            }
-        }
-    }));
-    
     // --- Signaling listener ---
-    const q = query(signalingCollection, where("receiverId", "==", user.uid), orderBy("createdAt", "asc"));
+    const q = useMemo(() => {
+        if (!signalingCollection || !user?.uid) return null;
+        return query(signalingCollection, where("receiverId", "==", user.uid), orderBy("createdAt", "asc"));
+    }, [signalingCollection, user?.uid]);
     const { data: signals } = useCollection<SignalingMessage>(q);
 
+    const sendSignal = useCallback(async (type: SignalingMessage['type'], payload: any) => {
+        if (!otherParticipantId || !signalingCollection) return;
+        await addDoc(signalingCollection, {
+            senderId: user.uid,
+            receiverId: otherParticipantId,
+            type,
+            payload,
+            createdAt: serverTimestamp(),
+        });
+    }, [otherParticipantId, signalingCollection, user.uid]);
+
+    const handleEndCall = useCallback(async (isInitiator = true) => {
+        if (isInitiator) {
+           await sendSignal('hangup', {});
+        }
+        
+        pc.current?.close();
+        pc.current = null;
+        localStream.current?.getTracks().forEach(track => track.stop());
+        localStream.current = null;
+        remoteStream.current = null;
+        if(remoteAudioRef.current) remoteAudioRef.current.srcObject = null;
+
+        setCallState('idle');
+        setIncomingCall(null);
+        setIsMuted(false);
+        
+        // Clean up any remaining signaling docs
+        if (signalingCollection && user.uid) {
+            const snapshot = await getDocs(query(signalingCollection, where('receiverId', '==', user.uid)));
+            snapshot.forEach(doc => deleteDoc(doc.ref));
+        }
+
+    }, [signalingCollection, user.uid, sendSignal]);
+
     useEffect(() => {
-        if (!signals || signals.length === 0 || !pc.current) return;
+        if (!signals || signals.length === 0 || !pc.current || !signalingCollection) return;
     
         signals.forEach(async (signal) => {
             try {
@@ -96,14 +129,14 @@ export const CallManager = forwardRef<CallManagerHandle, CallManagerProps>(({ ch
                 }
 
                 // Delete signal after processing
-                const signalRef = doc(firestore, 'chats', chat.id, 'signaling', signal.id);
+                const signalRef = doc(signalingCollection, signal.id);
                 await deleteDoc(signalRef);
 
             } catch (error) {
                 console.error("Error processing signal:", error);
             }
         });
-    }, [signals, firestore, chat.id, callState]);
+    }, [signals, signalingCollection, callState, handleEndCall]);
 
 
     // --- Main Call Functions ---
@@ -193,30 +226,9 @@ export const CallManager = forwardRef<CallManagerHandle, CallManagerProps>(({ ch
         }
     };
     
-    const handleEndCall = useCallback(async (isInitiator = true) => {
-        if (isInitiator) {
-           await sendSignal('hangup', {});
-        }
-        
-        pc.current?.close();
-        pc.current = null;
-        localStream.current?.getTracks().forEach(track => track.stop());
-        localStream.current = null;
-        remoteStream.current = null;
-        if(remoteAudioRef.current) remoteAudioRef.current.srcObject = null;
-
-        setCallState('idle');
-        setIncomingCall(null);
-        setIsMuted(false);
-        
-        // Clean up any remaining signaling docs
-        const snapshot = await getDocs(query(signalingCollection, where('receiverId', '==', user.uid)));
-        snapshot.forEach(doc => deleteDoc(doc.ref));
-
-    }, [signalingCollection, user.uid]);
-
     const handleDeclineCall = async () => {
         if(incomingCall) {
+            if (!signalingCollection) return;
             await addDoc(signalingCollection, {
                 senderId: user.uid,
                 receiverId: incomingCall.senderId,
@@ -236,17 +248,15 @@ export const CallManager = forwardRef<CallManagerHandle, CallManagerProps>(({ ch
         });
     };
 
-    const sendSignal = async (type: SignalingMessage['type'], payload: any) => {
-        if (!otherParticipantId) return;
-        await addDoc(signalingCollection, {
-            senderId: user.uid,
-            receiverId: otherParticipantId,
-            type,
-            payload,
-            createdAt: serverTimestamp(),
-        });
-    }
-
+    // --- Imperative handle to expose startCall to parent ---
+    useImperativeHandle(ref, () => ({
+        startCall: () => {
+            if (callState === 'idle' && !chat.isGroupChat) {
+                handleStartCall();
+            }
+        }
+    }));
+    
     // --- Render logic ---
     if (chat.isGroupChat) return null;
 
