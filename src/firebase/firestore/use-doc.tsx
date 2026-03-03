@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -42,11 +41,19 @@ export function useDoc<T>(
         setError(null);
       },
       (err) => {
-        const permissionError = new FirestorePermissionError({
-          path: docRef.path,
-          operation: 'get',
-        });
-        errorEmitter.emit('permission-error', permissionError);
+        // In many cases, a permission-denied error is thrown during page transitions
+        // or logouts when a listener is being cleaned up. We can often ignore these
+        // as they are part of the normal component lifecycle. We'll log a warning
+        // but won't throw a blocking error.
+        if (err.code === 'permission-denied') {
+            console.warn(`Firestore permission denied on doc listener for path: ${docRef.path}. This might be a transient error during navigation or logout.`);
+        } else {
+            const permissionError = new FirestorePermissionError({
+              path: docRef.path,
+              operation: 'get',
+            });
+            errorEmitter.emit('permission-error', permissionError);
+        }
         
         setError(err);
         setData(null);
