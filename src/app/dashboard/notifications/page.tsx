@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useMemo } from 'react';
@@ -122,11 +123,12 @@ export default function NotificationsPage() {
                     disabled={!notification.link}
                     className={cn(
                         "block w-full text-left p-4 hover:bg-muted/50 active:bg-muted/50 transition-colors",
-                        !notification.link && "cursor-default"
+                        !notification.link && "cursor-default",
+                        notification.isRead && "opacity-60"
                     )}
                 >
                     <div className="flex items-start gap-4">
-                        <div className={cn("mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full", !notification.isRead ? "bg-primary" : "")} />
+                        <div className={cn("mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full", !notification.isRead ? "bg-primary" : "bg-border")} />
                         <div className="flex-1 space-y-1">
                             <p className="font-semibold">{notification.title}</p>
                             <p className="text-sm text-muted-foreground">{notification.message}</p>

@@ -8,7 +8,7 @@ import type { UserProfile, DailyDisciplineLog } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Loader2, HeartHandshake, Check, ShieldAlert, TrendingUp, Trophy } from 'lucide-react';
+import { Loader2, HeartHandshake, Check, ShieldAlert } from 'lucide-react';
 import { format, isSameDay } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
@@ -24,7 +24,6 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { AccountabilitySettingsCard } from '@/components/settings/accountability-settings-card';
-import { Separator } from '@/components/ui/separator';
 import { Calendar } from '@/components/ui/calendar';
 
 const disciplines = [
@@ -220,34 +219,6 @@ export default function AccountabilityPage() {
           </AlertDialog>
         </CardFooter>
       </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Partner's Streaks</CardTitle>
-        </CardHeader>
-        <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="flex items-center gap-4 rounded-lg border p-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary">
-              <TrendingUp className="h-6 w-6" />
-            </div>
-            <div>
-              <p className="text-muted-foreground">Current Streak</p>
-              <p className="text-2xl font-bold">{partnerProfile.currentStreak || 0} day{partnerProfile.currentStreak === 1 ? '' : 's'}</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-4 rounded-lg border p-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary">
-              <Trophy className="h-6 w-6" />
-            </div>
-            <div>
-              <p className="text-muted-foreground">Longest Streak</p>
-              <p className="text-2xl font-bold">{partnerProfile.longestStreak || 0} day{partnerProfile.longestStreak === 1 ? '' : 's'}</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Separator />
 
       {userProfile && user && <AccountabilitySettingsCard userProfile={userProfile} userId={user.uid} />}
     </div>

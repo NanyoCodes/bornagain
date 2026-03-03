@@ -210,7 +210,7 @@ function AppHeader() {
             ) : notifications && notifications.length > 0 ? (
                 notifications.map((notification) => (
                   <DropdownMenuItem key={notification.id} asChild className="cursor-pointer data-[disabled]:opacity-100 data-[disabled]:pointer-events-auto">
-                    <Link href={notification.link || '#'} className={cn("flex flex-col items-start gap-1 p-2 w-full", !notification.isRead && "bg-accent/50")}>
+                    <Link href={notification.link || '#'} className={cn("flex flex-col items-start gap-1 p-2 w-full", !notification.isRead && "bg-accent/50", notification.isRead && "opacity-60 hover:opacity-100")}>
                         <p className="font-semibold text-sm">{notification.title}</p>
                         <p className="text-xs text-muted-foreground whitespace-normal">{notification.message}</p>
                          <p className="text-xs text-muted-foreground self-end">
