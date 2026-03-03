@@ -4,7 +4,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Edit, Loader2, Mail, MapPin, Newspaper, Phone, Target, UserCheck2 } from "lucide-react";
+import { Edit, Loader2, Mail, MapPin, Newspaper, Phone, Target, UserCheck2, TrendingUp, Trophy, HeartHandshake } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useCollection, useFirestore, useUser } from "@/firebase";
 import { useDoc } from "@/firebase/firestore/use-doc";
@@ -107,7 +107,13 @@ export default function UserProfilePage() {
                 <div className="flex flex-col sm:flex-row justify-between items-start">
                     <div className="flex-grow">
                         <h1 className="text-2xl sm:text-3xl font-bold font-headline">{displayName}</h1>
-                        <p className="text-muted-foreground mt-1">{bio || (isOwnProfile ? "You haven't shared your testimony yet. You can add one by editing your profile." : "This user hasn't shared a testimony yet.")}</p>
+                        {!isOwnProfile && (
+                            <Badge variant="secondary" className="mt-2">
+                                <HeartHandshake className="mr-2 h-4 w-4" />
+                                Your Accountability Partner
+                            </Badge>
+                        )}
+                        <p className="text-muted-foreground mt-2">{bio || (isOwnProfile ? "You haven't shared your testimony yet. You can add one by editing your profile." : "This user hasn't shared a testimony yet.")}</p>
                     </div>
                     {isOwnProfile && (
                         <div className="mt-4 sm:mt-0 sm:ml-4 shrink-0">
@@ -155,13 +161,13 @@ export default function UserProfilePage() {
         </CardContent>
       </Card>
       
-      <div className="grid grid-cols-1 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
             <CardTitle>Activity Statistics</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex justify-between items-center"><span className="flex items-center gap-2 text-muted-foreground"><Newspaper className="h-4 w-4" />Testimonies</span> <Badge variant="secondary">{stats.testimonies}</Badge></div>
+            <div className="flex justify-between items-center"><span className="flex items-center gap-2 text-muted-foreground"><Newspaper className="h-4 w-4" />Testimonies Shared</span> <Badge variant="secondary">{stats.testimonies}</Badge></div>
             {isOwnProfile && (
                 <>
                     <div className="flex justify-between items-center"><span className="flex items-center gap-2 text-muted-foreground"><Target className="h-4 w-4" />Campaigns Joined</span> <Badge variant="secondary">{stats.campaignsJoined}</Badge></div>
@@ -169,6 +175,32 @@ export default function UserProfilePage() {
                 </>
             )}
           </CardContent>
+        </Card>
+
+        <Card>
+            <CardHeader>
+                <CardTitle>Streaks</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+                <div className="flex items-center gap-4 rounded-lg border p-4">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                        <TrendingUp className="h-6 w-6" />
+                    </div>
+                    <div>
+                        <p className="text-muted-foreground">Current Streak</p>
+                        <p className="text-2xl font-bold">{userProfile.currentStreak || 0} day{userProfile.currentStreak === 1 ? '' : 's'}</p>
+                    </div>
+                </div>
+                <div className="flex items-center gap-4 rounded-lg border p-4">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                        <Trophy className="h-6 w-6" />
+                    </div>
+                    <div>
+                        <p className="text-muted-foreground">Longest Streak</p>
+                        <p className="text-2xl font-bold">{userProfile.longestStreak || 0} day{userProfile.longestStreak === 1 ? '' : 's'}</p>
+                    </div>
+                </div>
+            </CardContent>
         </Card>
       </div>
     </div>
