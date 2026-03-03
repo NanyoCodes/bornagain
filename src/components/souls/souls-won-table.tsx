@@ -53,6 +53,8 @@ import { useFirestore, useUser } from "@/firebase";
 import { doc, updateDoc, arrayUnion } from "firebase/firestore";
 import { EditSoulForm } from "./edit-soul-form";
 
+const statusOptions: FollowUpStatus[] = ['New', 'Contacted', 'Attending Church', 'In Bible Study', 'Established'];
+
 // --- LogFollowUpDialog Component Definition ---
 const followUpIdeas = [
     { id: 'invite-service', label: 'Invited to small group/service' },
