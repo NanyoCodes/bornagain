@@ -2,14 +2,14 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { useUser, useFirestore, useDoc } from '@/firebase';
-import { doc, collection, addDoc, serverTimestamp } from 'firebase/firestore';
-import type { UserProfile } from '@/lib/types';
+import { useUser, useFirestore, useDoc, useCollection } from '@/firebase';
+import { doc, collection, addDoc, serverTimestamp, query, orderBy, limit } from 'firebase/firestore';
+import type { UserProfile, DailyDisciplineLog } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Loader2, HeartHandshake, Check, ShieldAlert, TrendingUp, Trophy } from 'lucide-react';
-import { isToday } from 'date-fns';
+import { format, isSameDay } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import {
@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { AccountabilitySettingsCard } from '@/components/settings/accountability-settings-card';
 import { Separator } from '@/components/ui/separator';
+import { Calendar } from '@/components/ui/calendar';
 
 const disciplines = [
   { id: 'pray', label: 'Pray' },
@@ -40,6 +41,7 @@ export default function AccountabilityPage() {
   const firestore = useFirestore();
   const { toast } = useToast();
   const [isNudging, setIsNudging] = useState(false);
+  const [date, setDate] = useState<Date | undefined>(new Date());
 
   const userDocRef = useMemo(() => {
     if (!user?.uid) return null;
@@ -57,14 +59,27 @@ export default function AccountabilityPage() {
 
   const { data: partnerProfile, loading: loadingPartner } = useDoc<UserProfile>(partnerDocRef);
 
-  const partnerCompletedToday = useMemo(() => {
-    if (!partnerProfile?.dailyDiscipline) return [];
-    const lastUpdatedDate = partnerProfile.dailyDiscipline.lastUpdated?.toDate();
-    if (lastUpdatedDate && isToday(lastUpdatedDate)) {
-      return partnerProfile.dailyDiscipline.completed || [];
-    }
-    return [];
-  }, [partnerProfile]);
+  const partnerHistoryQuery = useMemo(() => {
+    if (!partnerId) return null;
+    return query(
+      collection(firestore, 'users', partnerId, 'disciplineHistory'),
+      orderBy('date', 'desc'),
+      limit(90) // Fetch last 90 days for history
+    );
+  }, [partnerId, firestore]);
+
+  const { data: partnerHistory, loading: loadingHistory } = useCollection<DailyDisciplineLog>(partnerHistoryQuery);
+
+  const completedDays = useMemo(() => {
+    return partnerHistory?.filter(h => h.completed.length > 0).map(h => h.date.toDate()) ?? [];
+  }, [partnerHistory]);
+  
+  const completedOnSelectedDate = useMemo(() => {
+    if (!date || !partnerHistory) return [];
+    const historyForDay = partnerHistory.find(h => isSameDay(h.date.toDate(), date));
+    return historyForDay?.completed || [];
+  }, [date, partnerHistory]);
+
 
   const handleNudge = async () => {
     if (!user || !firestore || !partnerId || !userProfile) return;
@@ -95,7 +110,7 @@ export default function AccountabilityPage() {
     }
   };
 
-  if (loadingProfile || (partnerId && loadingPartner)) {
+  if (loadingProfile || (partnerId && (loadingPartner || loadingHistory))) {
     return (
       <div className="flex h-full w-full flex-col items-center justify-center">
         <Loader2 className="h-12 w-12 animate-spin text-primary" />
@@ -133,37 +148,54 @@ export default function AccountabilityPage() {
       </div>
       <Card>
         <CardHeader>
-          <CardTitle>Today's Daily Discipline Progress</CardTitle>
+          <CardTitle>Partner's Discipline History</CardTitle>
           <CardDescription>
-            Check in on {partnerProfile.displayName}'s progress for today.
+            Select a date to view {partnerProfile.displayName}'s progress.
           </CardDescription>
         </CardHeader>
-        <CardContent className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          {disciplines.map(discipline => (
-            <div
-              key={discipline.id}
-              className={cn(
-                "flex items-center gap-3 rounded-lg border p-3 transition-colors",
-                partnerCompletedToday.includes(discipline.id)
-                  ? "bg-primary/10 border-primary/20 text-primary-foreground"
-                  : "bg-muted/50"
-              )}
-            >
-              <div
-                className={cn(
-                  "flex h-8 w-8 items-center justify-center rounded-full",
-                  partnerCompletedToday.includes(discipline.id) ? "bg-primary text-primary-foreground" : "bg-background"
+        <CardContent className="grid gap-8 md:grid-cols-2">
+            <Calendar
+                mode="single"
+                selected={date}
+                onSelect={setDate}
+                disabled={(d) => d > new Date() || d < new Date("2020-01-01")}
+                modifiers={{ completed: completedDays }}
+                modifiersStyles={{ completed: { color: 'hsl(var(--primary-foreground))', backgroundColor: 'hsl(var(--primary))' } }}
+                className="rounded-md border not-prose"
+            />
+            <div className="space-y-4">
+                <p className="font-semibold text-center">{date ? format(date, 'PPP') : 'Select a day'}</p>
+                <div className="grid grid-cols-2 gap-4">
+                    {disciplines.map(discipline => (
+                        <div
+                        key={discipline.id}
+                        className={cn(
+                            "flex items-center gap-3 rounded-lg border p-3 transition-colors",
+                            completedOnSelectedDate.includes(discipline.id)
+                            ? "bg-primary/10 border-primary/20 text-primary-foreground"
+                            : "bg-muted/50"
+                        )}
+                        >
+                        <div
+                            className={cn(
+                            "flex h-8 w-8 items-center justify-center rounded-full",
+                            completedOnSelectedDate.includes(discipline.id) ? "bg-primary text-primary-foreground" : "bg-background"
+                            )}
+                        >
+                            {completedOnSelectedDate.includes(discipline.id) ? (
+                            <Check className="h-5 w-5" />
+                            ) : (
+                            <div className="h-5 w-5 text-muted-foreground" />
+                            )}
+                        </div>
+                        <span className="font-medium text-sm">{discipline.label}</span>
+                        </div>
+                    ))}
+                </div>
+                {date && completedOnSelectedDate.length === 0 && (
+                    <p className="text-sm text-center text-muted-foreground pt-4">No disciplines completed on this day.</p>
                 )}
-              >
-                {partnerCompletedToday.includes(discipline.id) ? (
-                  <Check className="h-5 w-5" />
-                ) : (
-                  <div className="h-5 w-5 text-muted-foreground" />
-                )}
-              </div>
-              <span className="font-medium text-sm">{discipline.label}</span>
             </div>
-          ))}
         </CardContent>
         <CardFooter>
           <AlertDialog>

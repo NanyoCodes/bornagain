@@ -176,6 +176,19 @@
         "email"
       ]
     },
+    "DailyDisciplineLog": {
+      "title": "Daily Discipline Log",
+      "description": "A record of completed disciplines for a given day. The document ID is the date string 'YYYY-MM-DD'.",
+      "type": "object",
+      "properties": {
+        "completed": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "date": { "type": "object" }
+      },
+      "required": ["completed", "date"]
+    },
     "Testimony": {
       "title": "Testimony",
       "description": "A user's testimony of what God has done.",
@@ -596,6 +609,12 @@
         "$ref": "#/entities/UserProfile"
       },
       "description": "Stores public user profile data, keyed by user ID."
+    },
+    "/users/{userId}/disciplineHistory/{logId}": {
+      "schema": {
+        "$ref": "#/entities/DailyDisciplineLog"
+      },
+      "description": "Stores a user's daily discipline completion history."
     },
     "/souls/{soulId}": {
       "schema": {

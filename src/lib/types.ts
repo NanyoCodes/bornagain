@@ -8,6 +8,12 @@ export type ReadingHistoryItem = {
   readAt: Timestamp;
 };
 
+export type DailyDisciplineLog = {
+  id: string; // The date string YYYY-MM-DD
+  completed: string[];
+  date: Timestamp;
+};
+
 export type UserProfile = {
   id: string;
   displayName: string;

@@ -4,7 +4,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useUser, useFirestore, useDoc } from '@/firebase';
-import { doc, updateDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, updateDoc, serverTimestamp, writeBatch } from 'firebase/firestore';
 import type { UserProfile } from '@/lib/types';
 import { isToday, format } from 'date-fns';
 import { Skeleton } from '../ui/skeleton';
@@ -65,6 +65,11 @@ export function DailyDisciplineCard() {
       ? completedToday.filter((id) => id !== disciplineId)
       : [...completedToday, disciplineId];
 
+    const today = new Date();
+    const dateString = format(today, 'yyyy-MM-dd');
+
+    const batch = writeBatch(firestore);
+
     const userRef = doc(firestore, 'users', user.uid);
     const updateData = {
       dailyDiscipline: {
@@ -72,14 +77,21 @@ export function DailyDisciplineCard() {
         lastUpdated: serverTimestamp(),
       },
     };
+    batch.update(userRef, updateData);
 
-    await updateDoc(userRef, updateData)
+    const historyRef = doc(firestore, 'users', user.uid, 'disciplineHistory', dateString);
+    batch.set(historyRef, {
+        completed: newCompleted,
+        date: serverTimestamp()
+    }, { merge: true });
+
+    await batch.commit()
         .then(() => {
             setCompletedToday(newCompleted);
         })
         .catch((error) => {
             const permissionError = new FirestorePermissionError({
-                path: userRef.path,
+                path: userRef.path, // This is a simplification for the batch
                 operation: 'update',
                 requestResourceData: updateData,
             });
