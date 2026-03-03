@@ -53,21 +53,24 @@ export function AccountabilitySettingsCard({ userProfile, userId }: { userProfil
 
   const requestsQuery = useMemo(() => {
     if (!userId || !firestore) return null;
+    // Query for all requests (pending, accepted, declined) where user is a participant.
+    // Filtering by status will happen on the client.
     return query(
         collection(firestore, 'accountabilityRequests'), 
-        where('participantIds', 'array-contains', userId), 
-        where('status', '==', 'pending')
+        where('participantIds', 'array-contains', userId)
     );
   }, [userId, firestore]);
-  const { data: pendingRequests, loading: loadingRequests } = useCollection<AccountabilityRequest>(requestsQuery);
+  const { data: allRequests, loading: loadingRequests } = useCollection<AccountabilityRequest>(requestsQuery);
 
   const incomingRequests = useMemo(() => {
-    return pendingRequests?.filter(r => r.toUserId === userId)
-  }, [pendingRequests, userId]);
+    // Filter for pending requests where the user is the recipient.
+    return allRequests?.filter(r => r.status === 'pending' && r.toUserId === userId)
+  }, [allRequests, userId]);
   
   const outgoingRequests = useMemo(() => {
-    return pendingRequests?.filter(r => r.fromUserId === userId)
-  }, [pendingRequests, userId]);
+    // Filter for pending requests where the user is the sender.
+    return allRequests?.filter(r => r.status === 'pending' && r.fromUserId === userId)
+  }, [allRequests, userId]);
   
   const loadingIncoming = loadingRequests;
   const loadingOutgoing = loadingRequests;
