@@ -1,15 +1,13 @@
-
 'use client';
 
 import { useMemo, useState } from 'react';
-import { useUser, useFirestore, useDoc, useCollection } from '@/firebase';
+import { useUser, useFirestore, useDoc } from '@/firebase';
 import { doc, collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import type { UserProfile } from '@/lib/types';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Loader2, HeartHandshake, Check, ShieldAlert, TrendingUp, Trophy } from 'lucide-react';
-import Link from 'next/link';
 import { isToday } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
@@ -24,6 +22,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { AccountabilitySettingsCard } from '@/components/settings/accountability-settings-card';
+import { Separator } from '@/components/ui/separator';
 
 const disciplines = [
   { id: 'pray', label: 'Pray' },
@@ -105,15 +105,15 @@ export default function AccountabilityPage() {
 
   if (!partnerId || !partnerProfile) {
     return (
-      <div className="flex h-full w-full flex-col items-center justify-center text-center">
-        <HeartHandshake className="h-16 w-16 text-muted-foreground" />
-        <h2 className="mt-6 text-2xl font-semibold">Find an Accountability Partner</h2>
-        <p className="mt-2 max-w-md text-muted-foreground">
-          An accountability partner can help you stay on track with your spiritual goals. Send a request to get started!
-        </p>
-        <Button asChild className="mt-6">
-          <Link href="/dashboard/settings">Go to Settings</Link>
-        </Button>
+      <div className="space-y-8 max-w-3xl mx-auto">
+        <div className="flex h-full w-full flex-col items-center justify-center text-center rounded-lg border-2 border-dashed p-12">
+            <HeartHandshake className="h-16 w-16 text-muted-foreground" />
+            <h2 className="mt-6 text-2xl font-semibold">Find an Accountability Partner</h2>
+            <p className="mt-2 max-w-md text-muted-foreground">
+            An accountability partner can help you stay on track with your spiritual goals. Send a request to get started!
+            </p>
+        </div>
+        {userProfile && user && <AccountabilitySettingsCard userProfile={userProfile} userId={user.uid} />}
       </div>
     );
   }
@@ -213,6 +213,10 @@ export default function AccountabilityPage() {
           </div>
         </CardContent>
       </Card>
+
+      <Separator />
+
+      {userProfile && user && <AccountabilitySettingsCard userProfile={userProfile} userId={user.uid} />}
     </div>
   );
 }

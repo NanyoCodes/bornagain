@@ -23,7 +23,7 @@ import {
 } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, User, Bell, Lock, Trash2, MessageSquare, Mail, Phone, Palette, HeartHandshake } from 'lucide-react';
+import { Loader2, User, Bell, Lock, Trash2, MessageSquare, Mail, Phone, Palette } from 'lucide-react';
 import { useDoc, useFirestore, useUser } from '@/firebase';
 import { doc, updateDoc } from 'firebase/firestore';
 import type { UserProfile } from '@/lib/types';
@@ -50,7 +50,6 @@ import {
 import Link from 'next/link';
 import { useEffect, useState, useMemo } from 'react';
 import { ThemeToggle } from '@/components/theme-toggle';
-import { AccountabilitySettingsCard } from '@/components/settings/accountability-settings-card';
 import { ChurchSettingsCard } from '@/components/settings/church-settings-card';
 
 // --- Validation Schemas ---
@@ -427,7 +426,6 @@ export default function SettingsPage() {
         <div className="space-y-6">
           <ProfileSettingsCard />
           <ChurchSettingsCard userProfile={userProfile} userId={user.uid} />
-          <AccountabilitySettingsCard userProfile={userProfile} userId={user.uid} />
           <AppearanceSettingsCard />
           <NotificationSettingsForm userProfile={userProfile} userId={user.uid} />
           <PrivacySettingsForm userProfile={userProfile} userId={user.uid} />
