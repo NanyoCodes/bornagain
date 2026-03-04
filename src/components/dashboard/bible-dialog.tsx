@@ -25,9 +25,10 @@ import { getBibleChapter, type BibleChapterOutput } from '@/ai/flows/get-bible-c
 import { Input } from '../ui/input';
 
 const bibleVersions = [
-    { id: 'kjv', name: 'King James (KJV)' },
-    { id: 'web', name: 'World English Bible (WEB)' },
-    { id: 'bbe', name: 'Bible in Basic English' },
+    { id: 'kjv', name: 'King James (KJV)', premium: false },
+    { id: 'web', name: 'World English Bible (WEB)', premium: false },
+    { id: 'bbe', name: 'Bible in Basic English', premium: false },
+    { id: 'nlt', name: 'New Living Translation (NLT)', premium: true },
 ];
 
 export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { isOpen: boolean; onOpenChange: (open: boolean) => void; onDisciplineCompleted: () => void; }) {
@@ -73,9 +74,9 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
           version: selectedVersion,
         });
         setChapterContent(content);
-      } catch (error) {
+      } catch (error: any) {
         console.error(error);
-        setChapterError("Failed to load chapter. Please check your connection or API settings.");
+        setChapterError(error.message || "Failed to load chapter. Please check your connection or API settings.");
       } finally {
         setIsLoadingChapter(false);
       }
@@ -246,7 +247,10 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                   <SelectTrigger><SelectValue placeholder="Select a version" /></SelectTrigger>
                   <SelectContent>
                       {bibleVersions.map(version => (
-                          <SelectItem key={version.id} value={version.id}>{version.name}</SelectItem>
+                          <SelectItem key={version.id} value={version.id}>
+                            {version.name}
+                            {version.premium && <span className="text-xs text-muted-foreground ml-1">(Premium)</span>}
+                          </SelectItem>
                       ))}
                   </SelectContent>
                 </Select>
@@ -259,8 +263,11 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                     </div>
                   )}
                   {chapterError && !isLoadingChapter && (
-                     <div className="absolute inset-0 flex items-center justify-center text-destructive p-4 text-center">
-                        {chapterError}
+                     <div className="absolute inset-0 flex items-center justify-center p-4">
+                        <div className="text-center text-destructive bg-destructive/10 border border-destructive/50 p-4 rounded-md">
+                          <p className="font-semibold">Error Loading Chapter</p>
+                          <p className="text-sm">{chapterError}</p>
+                        </div>
                     </div>
                   )}
                   {!isLoadingChapter && !chapterError && chapterContent && (
