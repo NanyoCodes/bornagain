@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview A Genkit flow for fetching Bible chapter content from external APIs.
@@ -34,15 +35,10 @@ export type BibleChapterOutput = z.infer<typeof BibleChapterOutputSchema>;
 // API 1: Public Domain Bibles (bible-api.com)
 const PUBLIC_BIBLE_API_URL = 'https://bible-api.com/';
 
-// API 2: Premium/Modern Bibles (api.scripture.api.bible)
-const PREMIUM_BIBLE_API_URL = process.env.PREMIUM_BIBLE_API_URL;
-const PREMIUM_BIBLE_API_KEY = process.env.PREMIUM_BIBLE_API_KEY;
-
-// The Bible ID for NLT on api.scripture.api.bible is for the second edition (NLT-SE)
-const PREMIUM_VERSIONS = [
-  { id: 'nlt', bibleId: 'de4e12af7f28f599-01', name: 'New Living Translation' }
-];
-
+// API 2: NLT via api.scripture.api.bible
+const NLT_BIBLE_API_URL = process.env.PREMIUM_BIBLE_API_URL;
+const NLT_BIBLE_API_KEY = process.env.PREMIUM_BIBLE_API_KEY;
+const NLT_BIBLE_ID = 'de4e12af7f28f599-01'; // NLT Second Edition
 
 /**
  * Fetches a Bible chapter from the public bible-api.com.
@@ -81,21 +77,16 @@ async function fetchFromPublicApi(book: string, chapter: number, version?: strin
 }
 
 /**
- * Fetches a chapter from a premium Bible API (api.scripture.api.bible).
+ * Fetches a chapter from the NLT API (api.scripture.api.bible).
  */
-async function fetchFromPremiumApi(book: string, chapter: number, version: string): Promise<BibleChapterOutput> {
-  if (!PREMIUM_BIBLE_API_URL || !PREMIUM_BIBLE_API_KEY) {
+async function fetchNltChapter(book: string, chapter: number): Promise<BibleChapterOutput> {
+  if (!NLT_BIBLE_API_URL || !NLT_BIBLE_API_KEY) {
     throw new Error(
-      `The "${version.toUpperCase()}" translation requires a premium API key. ` +
-      `Please get a key from a Bible API provider and add PREMIUM_BIBLE_API_URL and PREMIUM_BIBLE_API_KEY to your environment variables.`
+      `The "NLT" translation requires an API key. ` +
+      `Please get a key from a Bible API provider (like api.scripture.api.bible) and add PREMIUM_BIBLE_API_URL and PREMIUM_BIBLE_API_KEY to your environment variables.`
     );
   }
   
-  const bibleVersionInfo = PREMIUM_VERSIONS.find(v => v.id === version.toLowerCase());
-  if (!bibleVersionInfo) {
-      throw new Error(`The version "${version}" is not configured as a premium version.`);
-  }
-
   const bookNameToAbbr: { [key: string]: string } = {
     "Genesis": "GEN", "Exodus": "EXO", "Leviticus": "LEV", "Numbers": "NUM", "Deuteronomy": "DEU",
     "Joshua": "JOS", "Judges": "JDG", "Ruth": "RUT", "1 Samuel": "1SA", "2 Samuel": "2SA", "1 Kings": "1KI",
@@ -117,14 +108,14 @@ async function fetchFromPremiumApi(book: string, chapter: number, version: strin
   }
 
   const chapterId = `${bookAbbreviation}.${chapter}`;
-  const url = `${PREMIUM_BIBLE_API_URL}/bibles/${bibleVersionInfo.bibleId}/chapters/${chapterId}?content-type=text&include-verse-numbers=true`;
+  const url = `${NLT_BIBLE_API_URL}/bibles/${NLT_BIBLE_ID}/chapters/${chapterId}?content-type=text&include-verse-numbers=true`;
 
   try {
-    const response = await fetch(url, { headers: { 'api-key': PREMIUM_BIBLE_API_KEY } });
+    const response = await fetch(url, { headers: { 'api-key': NLT_BIBLE_API_KEY } });
 
     if (!response.ok) {
         const errorText = await response.text();
-        console.error("Premium Bible API Error:", errorText);
+        console.error("NLT API Error:", errorText);
         let errorMessage = `Failed to fetch chapter. Status: ${response.status}.`;
         if (response.status === 401 || response.status === 403) {
             errorMessage += ' The API key may be invalid or lacks permission for this Bible version.';
@@ -149,14 +140,13 @@ async function fetchFromPremiumApi(book: string, chapter: number, version: strin
         book: book,
         chapter: parseInt(data.data.number, 10),
         verses: verses,
-        translation: bibleVersionInfo.name,
+        translation: 'New Living Translation',
     };
   } catch (error: any) {
-    console.error('Error fetching from premium Bible API:', error);
-    throw new Error(error.message || `Could not retrieve Bible chapter from the premium API. Please check your API key and network connection.`);
+    console.error('Error fetching from NLT API:', error);
+    throw new Error(error.message || `Could not retrieve Bible chapter from the NLT API. Please check your API key and network connection.`);
   }
 }
-
 
 /**
  * Fetches a chapter of the Bible, routing to the correct API based on version.
@@ -165,8 +155,8 @@ export async function getBibleChapter(input: BibleChapterInput): Promise<BibleCh
   const { book, chapter, version } = input;
   const requestedVersion = version || 'kjv';
 
-  if (PREMIUM_VERSIONS.some(v => v.id === requestedVersion.toLowerCase())) {
-    return fetchFromPremiumApi(book, chapter, requestedVersion);
+  if (requestedVersion.toLowerCase() === 'nlt') {
+    return fetchNltChapter(book, chapter);
   }
   
   return fetchFromPublicApi(book, chapter, requestedVersion);

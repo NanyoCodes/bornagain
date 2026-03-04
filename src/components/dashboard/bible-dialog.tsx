@@ -25,10 +25,10 @@ import { getBibleChapter, type BibleChapterOutput } from '@/ai/flows/get-bible-c
 import { Input } from '../ui/input';
 
 const bibleVersions = [
-    { id: 'kjv', name: 'King James (KJV)', premium: false },
-    { id: 'web', name: 'World English Bible (WEB)', premium: false },
-    { id: 'bbe', name: 'Bible in Basic English', premium: false },
-    { id: 'nlt', name: 'New Living Translation (NLT)', premium: true },
+    { id: 'kjv', name: 'King James (KJV)' },
+    { id: 'web', name: 'World English Bible (WEB)' },
+    { id: 'bbe', name: 'Bible in Basic English' },
+    { id: 'nlt', name: 'New Living Translation (NLT)' },
 ];
 
 export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { isOpen: boolean; onOpenChange: (open: boolean) => void; onDisciplineCompleted: () => void; }) {
@@ -249,7 +249,6 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                       {bibleVersions.map(version => (
                           <SelectItem key={version.id} value={version.id}>
                             {version.name}
-                            {version.premium && <span className="text-xs text-muted-foreground ml-1">(Premium)</span>}
                           </SelectItem>
                       ))}
                   </SelectContent>
