@@ -106,14 +106,14 @@ function GlobalSoulsCard({ location }: { location: { city?: string, country?: st
             const promises = [];
 
             if (location.city) {
-                const cityQuery = query(soulsCollection, where('userLocation.city', '==', location.city));
+                const cityQuery = query(soulsCollection, where('userLocation.city_lowercase', '==', location.city.toLowerCase()));
                 promises.push(getCountFromServer(cityQuery));
             } else {
                 promises.push(Promise.resolve(null));
             }
 
             if (location.country) {
-                const countryQuery = query(soulsCollection, where('userLocation.country', '==', location.country));
+                const countryQuery = query(soulsCollection, where('userLocation.country_lowercase', '==', location.country.toLowerCase()));
                 promises.push(getCountFromServer(countryQuery));
             } else {
                 promises.push(Promise.resolve(null));

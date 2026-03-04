@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -69,7 +70,12 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
     try {
       // Prepare update payloads
       const firestoreUpdatePayload: { [key: string]: any } = {};
-      const newLocation = { city: values.city || "", country: values.country || "" };
+      const newLocation = {
+        city: values.city || "",
+        country: values.country || "",
+        city_lowercase: (values.city || "").toLowerCase(),
+        country_lowercase: (values.country || "").toLowerCase(),
+      };
 
       if (values.displayName !== userProfile.displayName) {
         firestoreUpdatePayload.displayName = values.displayName;

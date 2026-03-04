@@ -97,6 +97,13 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps)
     const newSoulRef = doc(soulsCollectionRef); // Create a reference for the new soul
     const globalSoulRef = doc(firestore, 'souls', newSoulRef.id);
 
+    const processedUserLocation = userProfile?.location ? {
+        city: userProfile.location.city || "",
+        country: userProfile.location.country || "",
+        city_lowercase: (userProfile.location.city || "").toLowerCase(),
+        country_lowercase: (userProfile.location.country || "").toLowerCase(),
+    } : undefined;
+
     const soulData: Omit<Soul, 'id'> = {
       userId: user.uid,
       name: values.name,
@@ -106,7 +113,7 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps)
       locationWon: values.locationWon,
       source: values.source as 'Personal' | 'Campaign' | 'Referral',
       sourceDetails: values.sourceDetails,
-      userLocation: userProfile?.location,
+      userLocation: processedUserLocation,
       wonAt: values.wonAt as any, // Firestore will convert it
       status: "New",
       followUpLog: values.initialNote ? [{ date: serverTimestamp() as any, note: values.initialNote }] : [],

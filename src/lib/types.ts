@@ -1,3 +1,4 @@
+
 import type { Timestamp } from "firebase/firestore";
 
 export type ReadingHistoryItem = {
@@ -23,6 +24,8 @@ export type UserProfile = {
   location?: {
     city?: string;
     country?: string;
+    city_lowercase?: string;
+    country_lowercase?: string;
   };
   phone?: string;
   dailyDiscipline?: {
@@ -144,6 +147,8 @@ export type Soul = {
   userLocation?: {
     city?: string;
     country?: string;
+    city_lowercase?: string;
+    country_lowercase?: string;
   };
   locationWon?: string;
   wonAt: Timestamp; // ISO date string
@@ -209,5 +214,3 @@ export type AccountabilityRequest = {
   respondedAt?: Timestamp;
   participantIds: string[];
 };
-
-    
