@@ -127,22 +127,65 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
   const [isDescriptionTruncated, setIsDescriptionTruncated] = useState(false);
   const [showFullDescription, setShowFullDescription] = useState(false);
 
-  const cardColorVariants = [
-    "border-t-primary",
-    "border-t-sky-500",
-    "border-t-amber-500",
-    "border-t-teal-500",
-    "border-t-rose-500",
-  ];
-  const colorIndex = useMemo(() => {
-    if (!campaign.id) return 0;
-    let hash = 0;
-    for (let i = 0; i < campaign.id.length; i++) {
-        hash = campaign.id.charCodeAt(i) + ((hash << 5) - hash);
+  const safeToDate = (value: any): Date | null => {
+    if (!value) return null;
+    if (value instanceof Date) return value;
+    if (typeof value.toDate === 'function') return value.toDate();
+    try {
+      const d = new Date(value);
+      if (!isNaN(d.getTime())) return d;
+    } catch (e) {}
+    try {
+      if (typeof value === 'object' && value.seconds) {
+         const d = new Date(value.seconds * 1000);
+         if(!isNaN(d.getTime())) return d;
+      }
+    } catch(e) {}
+    return null;
+  };
+
+  const startDate = safeToDate(campaign.startDate);
+  const endDate = safeToDate(campaign.endDate);
+
+  const getStatus = (): "Ongoing" | "Upcoming" | "Past" => {
+    const now = new Date();
+    if (!startDate || !endDate) return "Past";
+    
+    const endDateTime = new Date(endDate);
+    if (campaign.endTime && /^\d{2}:\d{2}$/.test(campaign.endTime)) {
+        const [hours, minutes] = campaign.endTime.split(':').map(Number);
+        endDateTime.setHours(hours, minutes, 59, 999);
+    } else {
+        endDateTime.setHours(23, 59, 59, 999);
     }
-    return Math.abs(hash % cardColorVariants.length);
-  }, [campaign.id]);
-  const borderColorClass = cardColorVariants[colorIndex];
+
+    if (endDateTime < now) return "Past";
+    
+    const startDateTime = new Date(startDate);
+    if (campaign.startTime && /^\d{2}:\d{2}$/.test(campaign.startTime)) {
+        const [hours, minutes] = campaign.startTime.split(':').map(Number);
+        startDateTime.setHours(hours, minutes, 0, 0);
+    } else {
+        startDateTime.setHours(0,0,0,0);
+    }
+
+    if (startDateTime > now) return "Upcoming";
+    return "Ongoing";
+  };
+  const status = getStatus();
+
+  const borderColorClass = useMemo(() => {
+    switch (status) {
+      case 'Ongoing':
+        return 'border-t-blue-500';
+      case 'Upcoming':
+        return 'border-t-green-500';
+      case 'Past':
+        return 'border-t-red-500';
+      default:
+        return 'border-t-primary';
+    }
+  }, [status]);
 
 
   useEffect(() => {
@@ -363,26 +406,6 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
   };
 
 
-  const safeToDate = (value: any): Date | null => {
-    if (!value) return null;
-    if (value instanceof Date) return value;
-    if (typeof value.toDate === 'function') return value.toDate();
-    try {
-      const d = new Date(value);
-      if (!isNaN(d.getTime())) return d;
-    } catch (e) {}
-    try {
-      if (typeof value === 'object' && value.seconds) {
-         const d = new Date(value.seconds * 1000);
-         if(!isNaN(d.getTime())) return d;
-      }
-    } catch(e) {}
-    return null;
-  };
-
-  const startDate = safeToDate(campaign.startDate);
-  const endDate = safeToDate(campaign.endDate);
-
   const startTimeFormatted = campaign.startTime && /^\d{2}:\d{2}$/.test(campaign.startTime)
     ? format(parse(campaign.startTime, 'HH:mm', new Date()), 'p')
     : campaign.startTime;
@@ -407,33 +430,6 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
   
   const timeString = campaign.startTime && campaign.endTime ? `${startTimeFormatted} - ${endTimeFormatted}` : "Time not set";
   
-  const getStatus = (): "Ongoing" | "Upcoming" | "Past" => {
-    const now = new Date();
-    if (!startDate || !endDate) return "Past";
-    
-    const endDateTime = new Date(endDate);
-    if (campaign.endTime && /^\d{2}:\d{2}$/.test(campaign.endTime)) {
-        const [hours, minutes] = campaign.endTime.split(':').map(Number);
-        endDateTime.setHours(hours, minutes, 59, 999);
-    } else {
-        endDateTime.setHours(23, 59, 59, 999);
-    }
-
-    if (endDateTime < now) return "Past";
-    
-    const startDateTime = new Date(startDate);
-    if (campaign.startTime && /^\d{2}:\d{2}$/.test(campaign.startTime)) {
-        const [hours, minutes] = campaign.startTime.split(':').map(Number);
-        startDateTime.setHours(hours, minutes, 0, 0);
-    } else {
-        startDateTime.setHours(0,0,0,0);
-    }
-
-    if (startDateTime > now) return "Upcoming";
-    return "Ongoing";
-  };
-  const status = getStatus();
-
   const footerDateText = (() => {
     const createdAtDate = safeToDate(campaign.createdAt);
     if (!createdAtDate) return '';
