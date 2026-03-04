@@ -16,7 +16,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Loader2, Sparkles } from "lucide-react";
 import { generateCampaignIdeas } from "@/ai/flows/generate-campaign-ideas";
 import { Card, CardContent } from "@/components/ui/card";
@@ -96,6 +96,8 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
   const [customName, setCustomName] = useState('');
   const [finalDescription, setFinalDescription] = useState('');
   const [isCreating, setIsCreating] = useState(false);
+  
+  const ideasCardRef = useRef<HTMLDivElement>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -111,6 +113,14 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
 
   const startDate = form.watch('startDate');
   const endDate = form.watch('endDate');
+
+  useEffect(() => {
+    if (ideas && ideasCardRef.current) {
+      setTimeout(() => {
+        ideasCardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+    }
+  }, [ideas]);
 
   let durationText: string | null = null;
   if (startDate && endDate && endDate >= startDate) {
@@ -498,7 +508,7 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
       )}
 
       {ideas && (
-        <Card className="mt-6">
+        <Card className="mt-6" ref={ideasCardRef}>
           <CardContent className="p-6">
             <div className="space-y-6">
               <div>
