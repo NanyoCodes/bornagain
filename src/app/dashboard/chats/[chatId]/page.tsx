@@ -395,7 +395,7 @@ export default function ChatPage() {
                 ) : null}
             </div>
 
-            <div className="flex-grow overflow-hidden px-4">
+            <div className="flex-1 px-4 min-h-0">
                 <TooltipProvider>
                     <ScrollArea className="h-full" ref={scrollAreaRef}>
                         {messageGroups.length > 0 ? (
