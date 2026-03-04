@@ -315,19 +315,22 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
       const participantIds = [user.uid, campaign.organizerId].sort();
       const chatsRef = collection(firestore, 'chats');
 
+      // Simplified query
       const q = query(
         chatsRef,
         where('participantIds', '==', participantIds),
-        where('isGroupChat', '==', false),
-        where('campaignId', '==', campaign.id),
-        limit(1)
+        where('isGroupChat', '==', false)
       );
 
       const querySnapshot = await getDocs(q);
+      
+      // Find the specific one for this campaign, or the one without a campaignId (accountability chat)
+      let existingChat = querySnapshot.docs.find(doc => doc.data().campaignId === campaign.id);
+
       let chatId: string;
 
-      if (!querySnapshot.empty) {
-        chatId = querySnapshot.docs[0].id;
+      if (existingChat) {
+        chatId = existingChat.id;
       } else {
          const organizerDoc = await getDoc(doc(firestore, "users", campaign.organizerId));
          const organizerProfile = organizerDoc.data() as UserProfile | undefined;
@@ -528,22 +531,12 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
     <div className="flex items-center flex-wrap justify-end gap-2">
       {LogSoulDialog}
       <Dialog open={isManageOpen} onOpenChange={setIsManageOpen}>
-        <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="icon">
-                    <MoreVertical className="h-4 w-4" />
-                </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-                <DialogTrigger asChild>
-                    <DropdownMenuItem>
-                        <Edit className="mr-2 h-4 w-4" />
-                        Manage
-                    </DropdownMenuItem>
-                </DialogTrigger>
-            </DropdownMenuContent>
-        </DropdownMenu>
-
+        <DialogTrigger asChild>
+          <Button variant="outline" size="icon">
+            <Edit className="h-4 w-4" />
+            <span className="sr-only">Manage Campaign</span>
+          </Button>
+        </DialogTrigger>
         <DialogContent className="sm:max-w-2xl">
           <DialogHeader>
             <DialogTitle>Manage Campaign</DialogTitle>
