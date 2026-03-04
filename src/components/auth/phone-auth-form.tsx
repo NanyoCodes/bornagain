@@ -1,6 +1,7 @@
+
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -51,34 +52,10 @@ export function PhoneAuthForm() {
   const [isCodeSent, setIsCodeSent] = useState(false);
   const [confirmationResult, setConfirmationResult] = useState<ConfirmationResult | null>(null);
   
+  // A ref to hold the RecaptchaVerifier instance across re-renders
   const verifierRef = useRef<RecaptchaVerifier | null>(null);
   const recaptchaContainerRef = useRef<HTMLDivElement | null>(null);
-
-  // This useEffect sets up the reCAPTCHA verifier and ensures it's cleaned up.
-  useEffect(() => {
-    if (!auth || !recaptchaContainerRef.current) {
-      return;
-    }
-
-    // Only create a new verifier if one doesn't exist
-    if (!verifierRef.current) {
-      const verifier = new RecaptchaVerifier(auth, recaptchaContainerRef.current, {
-        'size': 'invisible',
-        'expired-callback': () => {
-          toast({ variant: 'destructive', title: 'reCAPTCHA expired.', description: 'Please try sending the code again.' });
-          setIsCodeSent(false); // Go back to phone number entry
-        }
-      });
-      verifierRef.current = verifier;
-    }
-
-    // Cleanup function to clear the reCAPTCHA when the component unmounts.
-    return () => {
-      verifierRef.current?.clear();
-    };
-  }, [auth, toast]);
-
-
+  
   const phoneForm = useForm<z.infer<typeof phoneSchema>>({
     resolver: zodResolver(phoneSchema),
     defaultValues: { phone: "" },
@@ -91,23 +68,32 @@ export function PhoneAuthForm() {
 
   async function onPhoneSubmit(values: z.infer<typeof phoneSchema>) {
     setIsLoading(true);
-    if (!auth || !firestore) {
-        toast({ variant: "destructive", title: "Firebase not initialized." });
+    if (!auth || !firestore || !recaptchaContainerRef.current) {
+        toast({ variant: "destructive", title: "Authentication service not ready. Please try again." });
         setIsLoading(false);
         return;
     }
-    
-    const appVerifier = verifierRef.current;
-    if (!appVerifier) {
-      toast({ variant: "destructive", title: "reCAPTCHA not ready", description: "Please wait a moment and try again." });
-      setIsLoading(false);
-      return;
+
+    // Clear any previous verifier
+    if (verifierRef.current) {
+        verifierRef.current.clear();
     }
 
-    const phoneNumber = values.phone;
-
     try {
-      const result = await signInWithPhoneNumber(auth, phoneNumber, appVerifier);
+      // Create and render the reCAPTCHA verifier.
+      const verifier = new RecaptchaVerifier(auth, recaptchaContainerRef.current, {
+        'size': 'invisible',
+        'expired-callback': () => {
+          toast({ variant: 'destructive', title: 'reCAPTCHA expired.', description: 'Please try sending the code again.' });
+          setIsLoading(false);
+          setIsCodeSent(false);
+        }
+      });
+      verifierRef.current = verifier;
+
+      const phoneNumber = values.phone;
+      const result = await signInWithPhoneNumber(auth, phoneNumber, verifier);
+
       setConfirmationResult(result);
       setIsCodeSent(true);
       toast({ title: "Verification code sent", description: `A code has been sent to ${phoneNumber}` });
@@ -118,7 +104,7 @@ export function PhoneAuthForm() {
       toast({
         variant: "destructive",
         title: "Could not send code",
-        description: authError.message || "Please check the phone number and try again.",
+        description: authError.message || "An internal error occurred. Please check the phone number and try again.",
       });
     } finally {
       setIsLoading(false);
@@ -177,7 +163,6 @@ export function PhoneAuthForm() {
 
   return (
     <>
-      {/* This div MUST always be in the DOM for reCAPTCHA to work correctly. */}
       <div ref={recaptchaContainerRef}></div>
 
       {!isCodeSent ? (
@@ -231,3 +216,5 @@ export function PhoneAuthForm() {
     </>
   );
 }
+
+    
