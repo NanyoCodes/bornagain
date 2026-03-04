@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useRef } from "react";
@@ -53,23 +52,30 @@ export function PhoneAuthForm() {
   const [confirmationResult, setConfirmationResult] = useState<ConfirmationResult | null>(null);
   
   const verifierRef = useRef<RecaptchaVerifier | null>(null);
-  const recaptchaContainerRef = useRef<HTMLDivElement>(null);
+  const recaptchaContainerRef = useRef<HTMLDivElement | null>(null);
 
-  // This useEffect sets up the reCAPTCHA verifier.
+  // This useEffect sets up the reCAPTCHA verifier and ensures it's cleaned up.
   useEffect(() => {
-    // Prevent re-initialization and run only when auth is available.
-    if (!auth || !recaptchaContainerRef.current || verifierRef.current) {
+    if (!auth || !recaptchaContainerRef.current) {
       return;
     }
-    
-    const verifier = new RecaptchaVerifier(auth, recaptchaContainerRef.current, {
-      'size': 'invisible',
-      'expired-callback': () => {
-        toast({ variant: 'destructive', title: 'reCAPTCHA expired.', description: 'Please try sending the code again.' });
-      }
-    });
-    
-    verifierRef.current = verifier;
+
+    // Only create a new verifier if one doesn't exist
+    if (!verifierRef.current) {
+      const verifier = new RecaptchaVerifier(auth, recaptchaContainerRef.current, {
+        'size': 'invisible',
+        'expired-callback': () => {
+          toast({ variant: 'destructive', title: 'reCAPTCHA expired.', description: 'Please try sending the code again.' });
+          setIsCodeSent(false); // Go back to phone number entry
+        }
+      });
+      verifierRef.current = verifier;
+    }
+
+    // Cleanup function to clear the reCAPTCHA when the component unmounts.
+    return () => {
+      verifierRef.current?.clear();
+    };
   }, [auth, toast]);
 
 
@@ -169,59 +175,59 @@ export function PhoneAuthForm() {
     }
   }
 
-  if (isCodeSent) {
-    return (
-      <Form {...codeForm}>
-        <form onSubmit={codeForm.handleSubmit(onCodeSubmit)} className="space-y-3">
-          <FormField
-            control={codeForm.control}
-            name="code"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Verification Code</FormLabel>
-                <FormControl>
-                  <Input placeholder="123456" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Verify & Sign In
-          </Button>
-          <Button variant="link" className="w-full" onClick={() => setIsCodeSent(false)}>
-            Use a different phone number
-          </Button>
-        </form>
-      </Form>
-    );
-  }
-
   return (
     <>
+      {/* This div MUST always be in the DOM for reCAPTCHA to work correctly. */}
       <div ref={recaptchaContainerRef}></div>
-      <Form {...phoneForm}>
-        <form onSubmit={phoneForm.handleSubmit(onPhoneSubmit)} className="space-y-3">
-          <FormField
-            control={phoneForm.control}
-            name="phone"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Phone Number</FormLabel>
-                <FormControl>
-                  <Input placeholder="+11234567890" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Send Verification Code
-          </Button>
-        </form>
-      </Form>
+
+      {!isCodeSent ? (
+        <Form {...phoneForm}>
+          <form onSubmit={phoneForm.handleSubmit(onPhoneSubmit)} className="space-y-3">
+            <FormField
+              control={phoneForm.control}
+              name="phone"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Phone Number</FormLabel>
+                  <FormControl>
+                    <Input placeholder="+11234567890" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Send Verification Code
+            </Button>
+          </form>
+        </Form>
+      ) : (
+        <Form {...codeForm}>
+          <form onSubmit={codeForm.handleSubmit(onCodeSubmit)} className="space-y-3">
+            <FormField
+              control={codeForm.control}
+              name="code"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Verification Code</FormLabel>
+                  <FormControl>
+                    <Input placeholder="123456" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Verify & Sign In
+            </Button>
+            <Button variant="link" className="w-full" onClick={() => setIsCodeSent(false)}>
+              Use a different phone number
+            </Button>
+          </form>
+        </Form>
+      )}
     </>
   );
 }
