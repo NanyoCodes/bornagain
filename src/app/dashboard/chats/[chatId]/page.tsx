@@ -23,7 +23,6 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { useParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent } from '@/components/ui/card';
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
 import { format, isSameDay, differenceInHours } from 'date-fns';
@@ -337,7 +336,7 @@ export default function ChatPage() {
 
     return (
         <div className="flex flex-col h-full w-full">
-            <div className="flex items-center gap-4 mb-4">
+            <div className="flex items-center gap-4 mb-4 shrink-0">
                 <Button variant="outline" size="icon" onClick={() => router.back()}>
                     <ArrowLeft className="h-4 w-4" />
                     <span className="sr-only">Back</span>
@@ -383,10 +382,9 @@ export default function ChatPage() {
                 ) : null}
             </div>
 
-            <Card className="flex-grow flex flex-col overflow-hidden rounded-b-none border-b-0">
-                <CardContent className="p-0 flex-grow">
-                    <TooltipProvider>
-                    <ScrollArea className="h-full p-4" ref={scrollAreaRef}>
+            <div className="flex-grow overflow-hidden">
+                <TooltipProvider>
+                    <ScrollArea className="h-full p-4 border-x border-t rounded-t-lg" ref={scrollAreaRef}>
                         {messageGroups.length > 0 ? (
                            <div className="space-y-2">
                                 {messageGroups.map((group) => (
@@ -509,11 +507,10 @@ export default function ChatPage() {
                             </div>
                         )}
                     </ScrollArea>
-                    </TooltipProvider>
-                </CardContent>
-            </Card>
+                </TooltipProvider>
+            </div>
 
-            <div className="shrink-0 p-2 border-t border-x rounded-b-lg bg-background flex flex-col items-stretch gap-1">
+            <div className="shrink-0 p-2 border-b border-x rounded-b-lg bg-background flex flex-col items-stretch gap-1">
                 {isChatFrozen ? (
                     <div className="p-3 text-center text-sm text-muted-foreground bg-muted/50">
                         This group chat has been frozen as the campaign ended more than 24 hours ago.
