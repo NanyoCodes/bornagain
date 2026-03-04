@@ -1,4 +1,3 @@
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -28,7 +27,7 @@ import { useUser, useFirestore } from "@/firebase";
 import { collection, serverTimestamp, doc, writeBatch } from "firebase/firestore";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
-import { format } from "date-fns";
+import { format, differenceInDays, isSameDay } from "date-fns";
 import { LocationMapPicker } from "../common/location-map-picker";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { LocationAutocompleteInput } from "../common/location-autocomplete-input";
@@ -65,6 +64,16 @@ const formSchema = z.object({
 }, {
     message: "Custom goal must be at least 3 characters.",
     path: ["customGoal"],
+}).refine((data) => {
+    if (data.startDate && data.endDate && isSameDay(data.startDate, data.endDate)) {
+        if(data.startTime && data.endTime) {
+            return data.endTime > data.startTime;
+        }
+    }
+    return true;
+}, {
+    message: "End time must be after start time for a single-day campaign.",
+    path: ["endTime"],
 });
 
 
@@ -100,6 +109,21 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
       endTime: "12:00",
     },
   });
+
+  const startDate = form.watch('startDate');
+  const endDate = form.watch('endDate');
+
+  let durationText: string | null = null;
+  if (startDate && endDate && endDate >= startDate) {
+      const diffInDays = differenceInDays(endDate, startDate);
+      if (diffInDays === 0) {
+          durationText = "This is a single-day campaign.";
+      } else {
+          const days = diffInDays + 1;
+          durationText = `Campaign duration: ${days} days.`;
+      }
+  }
+
 
   async function onAiSubmit(values: z.infer<typeof formSchema>) {
     setIsGenerating(true);
@@ -395,6 +419,9 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
                 )}
               />
            </div>
+           {durationText && (
+                <p className="text-sm text-muted-foreground -mt-2">{durationText}</p>
+           )}
            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
                 control={form.control}

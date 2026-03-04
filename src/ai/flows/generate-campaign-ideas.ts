@@ -40,7 +40,7 @@ const generateCampaignIdeasPrompt = ai.definePrompt({
   output: {schema: CampaignIdeaOutputSchema},
   prompt: `You are an AI assistant specialized in creating engaging and inspirational campaign ideas for faith-based initiatives.
 
-Based on the following keywords and inspirational scripture, generate 3-5 creative and compelling campaign names, and a detailed, engaging description (2-3 paragraphs) that draws revelation from the scripture and clearly communicates the campaign's purpose, encouraging participation.
+Based on the following keywords and inspirational scripture, generate 3-5 creative and compelling campaign names, and a concise and engaging description (around 50-70 words) that draws revelation from the scripture and clearly communicates the campaign's purpose, encouraging participation.
 
 Goal: {{{goal}}}
 Location: {{{location}}}
