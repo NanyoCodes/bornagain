@@ -341,7 +341,7 @@ export default function ChatPage() {
     const otherParticipantInfo = otherParticipantId ? chat.participantInfo[otherParticipantId] : null;
 
     return (
-        <div className="flex flex-col h-full w-full">
+        <div className="flex flex-1 flex-col w-full min-h-0">
             <div className="flex items-center gap-4 p-4 shrink-0 border-b">
                 <Button variant="outline" size="icon" onClick={() => router.back()}>
                     <ArrowLeft className="h-4 w-4" />
@@ -556,5 +556,3 @@ export default function ChatPage() {
         </div>
     )
 }
-
-    
