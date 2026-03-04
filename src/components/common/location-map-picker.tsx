@@ -1,12 +1,13 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { useJsApiLoader, GoogleMap, MarkerF, CircleF } from '@react-google-maps/api';
+import { useJsApiLoader, GoogleMap, MarkerF, CircleF, Autocomplete } from '@react-google-maps/api';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { Loader2 } from 'lucide-react';
 import { type UseFormReturn } from 'react-hook-form';
 import { useToast } from '@/hooks/use-toast';
+import { Input } from '@/components/ui/input';
 
 const libraries: ('places')[] = ['places'];
 const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
@@ -28,6 +29,7 @@ export function LocationMapPicker({ form }: LocationMapPickerProps) {
     });
     
     const [map, setMap] = useState<google.maps.Map | null>(null);
+    const [autocomplete, setAutocomplete] = useState<google.maps.places.Autocomplete | null>(null);
 
     const latitude = form.getValues('latitude');
     const longitude = form.getValues('longitude');
@@ -57,7 +59,7 @@ export function LocationMapPicker({ form }: LocationMapPickerProps) {
         geocoderRef.current.geocode({ location: newPos }, (results, status) => {
             if (status === 'OK' && results && results[0]) {
                 const address = results[0].formatted_address;
-                form.setValue('location', address, { shouldDirty: true });
+                form.setValue('location', address, { shouldDirty: true, shouldValidate: true });
             } else {
                 toast({
                     variant: "destructive",
@@ -65,7 +67,7 @@ export function LocationMapPicker({ form }: LocationMapPickerProps) {
                     description: `Could not find an address for this location. Using coordinates instead. Status: ${status}`,
                 });
                 const pinnedLocation = `Pinned Location (${newPos.lat.toFixed(4)}, ${newPos.lng.toFixed(4)})`;
-                form.setValue('location', pinnedLocation, { shouldDirty: true });
+                form.setValue('location', pinnedLocation, { shouldDirty: true, shouldValidate: true });
             }
         });
     }, [form, toast]);
@@ -133,6 +135,44 @@ export function LocationMapPicker({ form }: LocationMapPickerProps) {
         return `${(value / 1000).toFixed(1)}km`;
     }
 
+    const onMapLoad = useCallback((mapInstance: google.maps.Map) => {
+        setMap(mapInstance);
+    }, []);
+
+    const onAutocompleteLoad = (autocompleteInstance: google.maps.places.Autocomplete) => {
+        setAutocomplete(autocompleteInstance);
+    };
+
+    const onPlaceChanged = () => {
+        if (autocomplete !== null) {
+            const place = autocomplete.getPlace();
+            if (place.geometry?.location) {
+                const newPos = { lat: place.geometry.location.lat(), lng: place.geometry.location.lng() };
+                const address = place.formatted_address || place.name || '';
+                
+                // Update form
+                form.setValue('latitude', newPos.lat, { shouldDirty: true });
+                form.setValue('longitude', newPos.lng, { shouldDirty: true });
+                form.setValue('location', address, { shouldDirty: true, shouldValidate: true });
+
+                // Update map
+                if (map) {
+                    map.panTo(newPos);
+                    map.setZoom(14);
+                }
+                setCenter(newPos);
+                setMarkerPosition(newPos);
+            } else {
+                 toast({
+                    variant: "destructive",
+                    title: "Location not found",
+                    description: "Please select a valid location from the dropdown suggestions.",
+                });
+            }
+        }
+    };
+
+
     if (!GOOGLE_MAPS_API_KEY) {
         return <div className="text-destructive text-sm p-2 rounded-md border border-destructive/50 bg-destructive/10">Google Maps API key is missing. Please set NEXT_PUBLIC_GOOGLE_MAPS_API_KEY in your .env file.</div>;
     }
@@ -158,12 +198,27 @@ export function LocationMapPicker({ form }: LocationMapPickerProps) {
 
     return (
         <div className="space-y-4">
-            <p className="text-sm text-muted-foreground">Click or drag the pin on the map to set a precise location.</p>
+             <Autocomplete
+                onLoad={onAutocompleteLoad}
+                onPlaceChanged={onPlaceChanged}
+                fields={['formatted_address', 'name', 'geometry.location']}
+                types={['geocode']}
+            >
+                <Input
+                    type="text"
+                    placeholder="Search for a location..."
+                    className="text-base"
+                    defaultValue={form.getValues('location')}
+                />
+            </Autocomplete>
+            <p className="text-sm text-muted-foreground -mt-2">
+                Search for an address or click/drag the pin on the map.
+            </p>
             <GoogleMap
                 mapContainerClassName="h-80 w-full rounded-md"
                 center={center}
                 zoom={markerPosition ? 14 : 10}
-                onLoad={setMap}
+                onLoad={onMapLoad}
                 onClick={handleMapClick}
                 options={{
                     streetViewControl: false,
