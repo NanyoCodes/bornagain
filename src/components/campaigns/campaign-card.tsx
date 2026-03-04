@@ -33,6 +33,7 @@ import { Badge } from "../ui/badge";
 import { useRouter } from "next/navigation";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip";
 import { Skeleton } from "../ui/skeleton";
+import { cn } from "@/lib/utils";
 
 
 function ParticipantsDialog({ campaign, children }: { campaign: Campaign; children: React.ReactNode; }) {
@@ -125,6 +126,24 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
   const descriptionRef = useRef<HTMLParagraphElement>(null);
   const [isDescriptionTruncated, setIsDescriptionTruncated] = useState(false);
   const [showFullDescription, setShowFullDescription] = useState(false);
+
+  const cardColorVariants = [
+    "border-t-primary",
+    "border-t-sky-500",
+    "border-t-amber-500",
+    "border-t-teal-500",
+    "border-t-rose-500",
+  ];
+  const colorIndex = useMemo(() => {
+    if (!campaign.id) return 0;
+    let hash = 0;
+    for (let i = 0; i < campaign.id.length; i++) {
+        hash = campaign.id.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    return Math.abs(hash % cardColorVariants.length);
+  }, [campaign.id]);
+  const borderColorClass = cardColorVariants[colorIndex];
+
 
   useEffect(() => {
     if (descriptionRef.current) {
@@ -570,7 +589,7 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
 
   return (
     <>
-        <Card id={campaign.id} className="flex flex-col h-full overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 scroll-mt-20">
+        <Card id={campaign.id} className={cn("flex flex-col h-full overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 scroll-mt-20 border-t-4", borderColorClass)}>
         <CardHeader className="p-6 flex flex-row items-start justify-between gap-4">
             <div className="flex-1 min-w-0">
                 <CardTitle className="font-bold text-xl truncate">{campaign.title}</CardTitle>
