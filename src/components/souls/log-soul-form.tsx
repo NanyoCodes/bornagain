@@ -159,13 +159,25 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps)
                 message: {
                     subject: `You're invited to join Testify!`,
                     html: `
-                        <p>Hi ${values.name},</p>
-                        <p>${userProfile.displayName || 'A friend'} has invited you to join Testify, a platform for believers to share testimonies, organize soul-winning campaigns, and track evangelism progress.</p>
-                        <p>Join the movement and start your journey today!</p>
-                        <a href="${appUrl}" style="display: inline-block; padding: 10px 20px; font-size: 16px; color: #ffffff; background-color: #3b82f6; text-decoration: none; border-radius: 5px;">Join Testify</a>
-                        <br><br>
-                        <p>God bless,</p>
-                        <p>The Testify Team</p>
+                        <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+                          <div style="max-width: 600px; margin: 20px auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
+                            <div style="text-align: center; margin-bottom: 20px;">
+                              <img src="https://i.postimg.cc/5HnLbRH6/testify-logoo-(2).jpg" alt="Testify Logo" style="width: 80px; height: 80px; border-radius: 8px;">
+                              <h1 style="font-size: 24px; margin-top: 10px;">You're Invited to Testify</h1>
+                            </div>
+                            <p>Hi ${values.name},</p>
+                            <p><strong>${userProfile.displayName || 'A friend'}</strong> has invited you to join Testify, a platform for believers to share testimonies, organize soul-winning campaigns, and track evangelism progress.</p>
+                            <p>Join the movement and start your journey today!</p>
+                            <div style="text-align: center; margin: 30px 0;">
+                              <a href="${appUrl}" style="background-color: #3b82f6; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-size: 16px;">Join Testify</a>
+                            </div>
+                            <p>God bless,</p>
+                            <p><strong>The Testify Team</strong></p>
+                          </div>
+                          <div style="text-align: center; font-size: 12px; color: #999; margin-top: 20px;">
+                            <p>&copy; Testify. All rights reserved.</p>
+                          </div>
+                        </div>
                     `,
                 },
             });

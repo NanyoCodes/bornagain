@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useLayoutEffect, useRef, useMemo } from 'react';
@@ -268,14 +269,26 @@ export default function ChatPage() {
                         : `New Message from ${user.displayName || 'User'} | Testify`;
 
                     const html = `
-                        <p>Hi ${recipientInfo?.displayName || 'there'},</p>
-                        <p>You have a new ${replyingTo ? 'reply' : 'message'} from <strong>${user.displayName || 'a user'}</strong> ${chat.campaignTitle ? `in the chat for the campaign "<strong>${chat.campaignTitle}</strong>"` : ''}.</p>
-                        <p><em>${newMessage}</em></p>
-                        <p>You can view the full conversation and reply by clicking the button below:</p>
-                        <a href="${link}" style="display: inline-block; padding: 10px 20px; font-size: 16px; color: #ffffff; background-color: #3b82f6; text-decoration: none; border-radius: 5px;">View Chat</a>
-                        <br><br>
-                        <p>God bless,</p>
-                        <p>The Testify Team</p>
+                        <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+                          <div style="max-width: 600px; margin: 20px auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
+                            <div style="text-align: center; margin-bottom: 20px;">
+                              <img src="https://i.postimg.cc/5HnLbRH6/testify-logoo-(2).jpg" alt="Testify Logo" style="width: 80px; height: 80px; border-radius: 8px;">
+                            </div>
+                            <p>Hi ${recipientInfo?.displayName || 'there'},</p>
+                            <p>You have a new ${replyingTo ? 'reply' : 'message'} from <strong>${user.displayName || 'a user'}</strong> ${chat.campaignTitle ? `in the chat for the campaign "<strong>${chat.campaignTitle}</strong>"` : ''}.</p>
+                            <blockquote style="border-left: 4px solid #ccc; padding-left: 1rem; margin-left: 0; font-style: italic; color: #666;">${newMessage}</blockquote>
+                            <p>You can view the full conversation and reply by clicking the button below:</p>
+                            <div style="text-align: center; margin: 30px 0;">
+                                <a href="${link}" style="background-color: #3b82f6; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-size: 16px;">View Chat</a>
+                            </div>
+                            <p>God bless,</p>
+                            <p><strong>The Testify Team</strong></p>
+                          </div>
+                           <div style="text-align: center; font-size: 12px; color: #999; margin-top: 20px;">
+                            <p>You received this email because you have notifications enabled for Testify chats.</p>
+                            <p>&copy; Testify. All rights reserved.</p>
+                          </div>
+                        </div>
                     `;
 
                     batch.set(mailRef, {
