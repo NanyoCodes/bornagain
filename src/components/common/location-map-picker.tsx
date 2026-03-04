@@ -73,10 +73,21 @@ export function LocationMapPicker({ form }: LocationMapPickerProps) {
                 form.setValue('location', address, { shouldDirty: true, shouldValidate: true });
                 setInputValue(address);
             } else {
+                let errorTitle = "Geocoding Failed";
+                let errorDescription = `Could not find an address for this location. You can set it manually. (Status: ${status})`;
+
+                if (status === 'REQUEST_DENIED') {
+                    errorTitle = "Geocoding API Error";
+                    errorDescription = "The Geocoding API is not enabled for your API key. Please enable it in your Google Cloud Console to automatically find addresses.";
+                } else if (status === 'OVER_QUERY_LIMIT') {
+                    errorTitle = "API Limit Reached";
+                    errorDescription = "You have exceeded your usage quota for the Geocoding API.";
+                }
+
                 toast({
                     variant: "destructive",
-                    title: "Geocoding failed",
-                    description: `Could not find an address for this location. You can name it manually.`,
+                    title: errorTitle,
+                    description: errorDescription,
                 });
                 const pinnedLocation = `Pinned Location (${newPos.lat.toFixed(4)}, ${newPos.lng.toFixed(4)})`;
                 form.setValue('location', pinnedLocation, { shouldDirty: true, shouldValidate: true });
