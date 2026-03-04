@@ -232,7 +232,7 @@ export default function ProgressPage() {
     if (!user?.uid || !firestore) return null;
     return query(collection(firestore, `users/${user.uid}/souls`));
   }, [user?.uid, firestore]);
-  const { data: soulsWon, loading: soulsLoading } = useCollection<Soul>(soulsWon);
+  const { data: soulsWon, loading: soulsLoading } = useCollection<Soul>(soulsQuery);
 
   // State and logic from progress page
   const [monthlyGoal, setMonthlyGoal] = useState(50);
