@@ -40,7 +40,6 @@ import {
 import { useRouter } from 'next/navigation';
 import { LocationMapPicker } from '../common/location-map-picker';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion';
-import { LocationAutocompleteInput } from '../common/location-autocomplete-input';
 
 const formSchema = z.object({
   title: z.string().min(3, "Title is too short.").max(100, "Title is too long."),
@@ -412,27 +411,32 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
                       </FormItem>
                   )}
                 />
-                 <div className="space-y-2">
-                    <FormLabel>Location Address</FormLabel>
-                    <LocationAutocompleteInput form={form} />
-                    {form.formState.errors.location && <p className="text-sm font-medium text-destructive">{form.formState.errors.location.message as string}</p>}
-                </div>
                 
-                <Accordion type="single" collapsible className="w-full rounded-md border px-3">
-                    <AccordionItem value="location" className="border-none">
-                        <AccordionTrigger className="py-3 hover:no-underline">
+                <FormField
+                  control={form.control}
+                  name="location"
+                  render={() => (
+                    <FormItem>
+                      <Accordion type="single" collapsible defaultValue="item-1" className="w-full rounded-md border">
+                        <AccordionItem value="item-1" className="border-none">
+                          <AccordionTrigger className="px-3 py-3 hover:no-underline">
                             <div className="flex flex-col items-start gap-1">
-                                <label className="font-medium">Set Precise Location on Map</label>
-                                <p className="text-sm font-normal text-muted-foreground text-left">
-                                     Optionally, click to expand the map and fine-tune the pin or coverage area.
-                                </p>
+                              <FormLabel>Campaign Location</FormLabel>
+                               <FormDescription className="text-left">
+                                Search or use the map to set a precise location for your campaign.
+                              </FormDescription>
                             </div>
-                        </AccordionTrigger>
-                        <AccordionContent className="pt-1 pb-4">
-                           <LocationMapPicker form={form} />
-                        </AccordionContent>
-                    </AccordionItem>
-                </Accordion>
+                          </AccordionTrigger>
+                          <AccordionContent className="px-3 pt-1 pb-4">
+                            <LocationMapPicker form={form} />
+                          </AccordionContent>
+                        </AccordionItem>
+                      </Accordion>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
                 <FormField
                     control={form.control}
                     name="scripture"

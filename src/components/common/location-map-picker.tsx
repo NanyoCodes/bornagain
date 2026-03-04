@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
@@ -38,6 +39,8 @@ export function LocationMapPicker({ form }: LocationMapPickerProps) {
     const [markerPosition, setMarkerPosition] = useState<google.maps.LatLngLiteral | null>(latitude && longitude ? { lat: latitude, lng: longitude } : null);
     const [center, setCenter] = useState(latitude && longitude ? { lat: latitude, lng: longitude } : fallbackCenter);
     const [radius, setRadius] = useState(radiusValue || 1000);
+    const [inputValue, setInputValue] = useState(form.getValues('location') || '');
+
 
     const geocoderRef = useRef<google.maps.Geocoder>();
     const hasFetchedLocation = useRef(false);
@@ -47,6 +50,14 @@ export function LocationMapPicker({ form }: LocationMapPickerProps) {
             geocoderRef.current = new window.google.maps.Geocoder();
         }
     }, [isLoaded]);
+    
+    const watchedLocation = form.watch('location');
+    useEffect(() => {
+        // Sync local state if form value changes from an external source (e.g. map click)
+        if (watchedLocation !== inputValue) {
+            setInputValue(watchedLocation || '');
+        }
+    }, [watchedLocation, inputValue]);
 
     const updateFormLocation = useCallback((latLng: google.maps.LatLng) => {
         if (!geocoderRef.current) return;
@@ -60,14 +71,16 @@ export function LocationMapPicker({ form }: LocationMapPickerProps) {
             if (status === 'OK' && results && results[0]) {
                 const address = results[0].formatted_address;
                 form.setValue('location', address, { shouldDirty: true, shouldValidate: true });
+                setInputValue(address);
             } else {
                 toast({
                     variant: "destructive",
                     title: "Geocoding failed",
-                    description: `Could not find an address for this location. Using coordinates instead. Status: ${status}`,
+                    description: `Could not find an address for this location. You can name it manually.`,
                 });
                 const pinnedLocation = `Pinned Location (${newPos.lat.toFixed(4)}, ${newPos.lng.toFixed(4)})`;
                 form.setValue('location', pinnedLocation, { shouldDirty: true, shouldValidate: true });
+                setInputValue(pinnedLocation);
             }
         });
     }, [form, toast]);
@@ -142,6 +155,11 @@ export function LocationMapPicker({ form }: LocationMapPickerProps) {
     const onAutocompleteLoad = (autocompleteInstance: google.maps.places.Autocomplete) => {
         setAutocomplete(autocompleteInstance);
     };
+    
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setInputValue(e.target.value);
+        form.setValue('location', e.target.value, { shouldDirty: true });
+    }
 
     const onPlaceChanged = () => {
         if (autocomplete !== null) {
@@ -150,6 +168,9 @@ export function LocationMapPicker({ form }: LocationMapPickerProps) {
                 const newPos = { lat: place.geometry.location.lat(), lng: place.geometry.location.lng() };
                 const address = place.formatted_address || place.name || '';
                 
+                // Update local state for input
+                setInputValue(address);
+
                 // Update form
                 form.setValue('latitude', newPos.lat, { shouldDirty: true });
                 form.setValue('longitude', newPos.lng, { shouldDirty: true });
@@ -206,13 +227,14 @@ export function LocationMapPicker({ form }: LocationMapPickerProps) {
             >
                 <Input
                     type="text"
-                    placeholder="Search for a location..."
+                    placeholder="Search for an address to pin on the map..."
                     className="text-base"
-                    defaultValue={form.getValues('location')}
+                    value={inputValue}
+                    onChange={handleInputChange}
                 />
             </Autocomplete>
             <p className="text-sm text-muted-foreground -mt-2">
-                Search for an address or click/drag the pin on the map.
+                Search to find a location, or click/drag the pin on the map. You can edit the location name above.
             </p>
             <GoogleMap
                 mapContainerClassName="h-80 w-full rounded-md"
