@@ -54,8 +54,28 @@ import { doc, updateDoc, arrayUnion } from "firebase/firestore";
 import { EditSoulForm } from "./edit-soul-form";
 import { cn } from "@/lib/utils";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/collapsible";
+import { Badge } from "../ui/badge";
 
 const statusOptions: FollowUpStatus[] = ['New', 'Contacted', 'Attending Church', 'In Bible Study', 'Established'];
+
+const getStatusClasses = (status: FollowUpStatus | undefined): string => {
+    if (!status) return 'bg-secondary text-secondary-foreground border-border';
+    switch (status) {
+        case 'New':
+            return 'bg-[hsl(var(--status-new)/0.1)] text-[hsl(var(--status-new))] border-[hsl(var(--status-new)/0.2)]';
+        case 'Contacted':
+            return 'bg-[hsl(var(--status-contacted)/0.1)] text-[hsl(var(--status-contacted))] border-[hsl(var(--status-contacted)/0.2)]';
+        case 'Attending Church':
+            return 'bg-[hsl(var(--status-attending-church)/0.1)] text-[hsl(var(--status-attending-church))] border-[hsl(var(--status-attending-church)/0.2)]';
+        case 'In Bible Study':
+            return 'bg-[hsl(var(--status-bible-study)/0.1)] text-[hsl(var(--status-bible-study))] border-[hsl(var(--status-bible-study)/0.2)]';
+        case 'Established':
+            return 'bg-[hsl(var(--status-established)/0.1)] text-[hsl(var(--status-established))] border-[hsl(var(--status-established)/0.2)]';
+        default:
+            return 'bg-secondary text-secondary-foreground border-border';
+    }
+}
+
 
 // --- LogFollowUpDialog Component Definition ---
 const followUpIdeas = [
@@ -277,7 +297,7 @@ function SoulCard({ soul, onUpdateSoul }: { soul: ProcessedSoul, onUpdateSoul: S
                      <div className="flex items-center justify-between">
                         <div>
                             <p className="font-semibold">{soul.name}</p>
-                            <p className="text-sm text-muted-foreground">{soul.status}</p>
+                            <Badge className={cn("mt-1", getStatusClasses(soul.status))} variant="outline">{soul.status}</Badge>
                         </div>
                         <ChevronDown className="h-5 w-5 text-muted-foreground transition-transform duration-200 group-data-[state=open]:rotate-180" />
                     </div>
@@ -328,7 +348,7 @@ function SoulCard({ soul, onUpdateSoul }: { soul: ProcessedSoul, onUpdateSoul: S
                          <div className="space-y-2">
                             <Label>Status</Label>
                             <Select value={soul.status} onValueChange={(value: FollowUpStatus) => handleStatusChange(soul.id, value)}>
-                                <SelectTrigger>
+                                <SelectTrigger className={cn("font-semibold", getStatusClasses(soul.status))}>
                                     <SelectValue placeholder="Set status" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -504,7 +524,7 @@ export function SoulsWonTable({ souls, onUpdateSoul, loading }: SoulsWonTablePro
                 </TableCell>
                 <TableCell>
                   <Select value={soul.status} onValueChange={(value: FollowUpStatus) => handleStatusChange(soul.id, value)}>
-                      <SelectTrigger className="w-[150px] h-8">
+                      <SelectTrigger className={cn("w-[150px] h-8 font-semibold", getStatusClasses(soul.status))}>
                           <SelectValue placeholder="Set status" />
                       </SelectTrigger>
                       <SelectContent>

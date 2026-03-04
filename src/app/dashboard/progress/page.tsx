@@ -15,7 +15,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
-import { Bar, BarChart, CartesianGrid, ResponsiveContainer, XAxis, YAxis, Tooltip } from "recharts";
+import { Bar, BarChart, CartesianGrid, ResponsiveContainer, XAxis, YAxis, Tooltip, Cell } from "recharts";
 import { ChartContainer, ChartTooltipContent } from "@/components/ui/chart";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -207,6 +207,14 @@ const chartConfig = {
   },
 } satisfies import("@/components/ui/chart").ChartConfig;
 
+const chartColors = [
+  "hsl(var(--chart-1))",
+  "hsl(var(--chart-2))",
+  "hsl(var(--chart-3))",
+  "hsl(var(--chart-4))",
+  "hsl(var(--chart-5))",
+];
+
 export default function ProgressPage() {
   const { user, loading: authLoading } = useUser();
   const firestore = useFirestore();
@@ -338,7 +346,11 @@ export default function ProgressPage() {
                             />
                             <YAxis domain={[0, (dataMax: number) => Math.max(dataMax || 0, monthlyGoal)]} />
                             <Tooltip cursor={false} content={<ChartTooltipContent />} />
-                            <Bar dataKey="soulsWon" fill="var(--color-soulsWon)" radius={8} />
+                            <Bar dataKey="soulsWon" radius={8}>
+                                {progressData.map((_entry, index) => (
+                                    <Cell key={`cell-${index}`} fill={chartColors[index % chartColors.length]} />
+                                ))}
+                            </Bar>
                         </BarChart>
                         </ResponsiveContainer>
                     </ChartContainer>
