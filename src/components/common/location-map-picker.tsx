@@ -31,6 +31,7 @@ export function LocationMapPicker({ form }: LocationMapPickerProps) {
     const [map, setMap] = useState<google.maps.Map | null>(null);
     const [autocomplete, setAutocomplete] = useState<google.maps.places.Autocomplete | null>(null);
     const searchBoxRef = useRef<HTMLDivElement>(null);
+    const [geocodingError, setGeocodingError] = useState<string | null>(null);
 
     const latitude = form.getValues('latitude');
     const longitude = form.getValues('longitude');
@@ -69,32 +70,25 @@ export function LocationMapPicker({ form }: LocationMapPickerProps) {
 
         geocoderRef.current.geocode({ location: newPos }, (results, status) => {
             if (status === 'OK' && results && results[0]) {
+                setGeocodingError(null);
                 const address = results[0].formatted_address;
                 form.setValue('location', address, { shouldDirty: true, shouldValidate: true });
                 setInputValue(address);
             } else {
-                let errorTitle = "Geocoding Failed";
-                let errorDescription = `Could not find an address for this location. You can set it manually. (Status: ${status})`;
-
+                let errorMessage = `Could not find an address for this location. You can set it manually. (Status: ${status})`;
                 if (status === 'REQUEST_DENIED') {
-                    errorTitle = "Geocoding API Error";
-                    errorDescription = "The Geocoding API is not enabled for your API key. Please enable it in your Google Cloud Console to automatically find addresses.";
+                    errorMessage = "Geocoding API Error: This service may not be enabled on your API key. Please enable the 'Geocoding API' in your Google Cloud Console to automatically find addresses when clicking the map.";
                 } else if (status === 'OVER_QUERY_LIMIT') {
-                    errorTitle = "API Limit Reached";
-                    errorDescription = "You have exceeded your usage quota for the Geocoding API.";
+                    errorMessage = "API Limit Reached: You have exceeded your usage quota for the Geocoding API.";
                 }
+                setGeocodingError(errorMessage);
 
-                toast({
-                    variant: "destructive",
-                    title: errorTitle,
-                    description: errorDescription,
-                });
                 const pinnedLocation = `Pinned Location (${newPos.lat.toFixed(4)}, ${newPos.lng.toFixed(4)})`;
                 form.setValue('location', pinnedLocation, { shouldDirty: true, shouldValidate: true });
                 setInputValue(pinnedLocation);
             }
         });
-    }, [form, toast]);
+    }, [form]);
     
     const handleMapClick = useCallback((e: google.maps.MapMouseEvent) => {
         if (e.latLng) {
@@ -181,6 +175,7 @@ export function LocationMapPicker({ form }: LocationMapPickerProps) {
         if (autocomplete !== null) {
             const place = autocomplete.getPlace();
             if (place.geometry?.location) {
+                setGeocodingError(null);
                 const newPos = { lat: place.geometry.location.lat(), lng: place.geometry.location.lng() };
                 const address = place.formatted_address || place.name || '';
                 
@@ -286,6 +281,13 @@ export function LocationMapPicker({ form }: LocationMapPickerProps) {
                     </>
                 )}
             </GoogleMap>
+            
+            {geocodingError && (
+                <div className="text-destructive text-sm p-3 rounded-md border border-destructive/50 bg-destructive/10">
+                    {geocodingError}
+                </div>
+            )}
+
             <div className='space-y-2'>
                 <div className='flex justify-between items-center'>
                     <Label htmlFor="coverage-slider">Coverage Radius</Label>
