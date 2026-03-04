@@ -338,7 +338,7 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
         location: values.location,
         latitude: values.latitude,
         longitude: values.longitude,
-        coverageRadius: values.coverageRadius,
+        coverageRadius: values.coverageRadius ?? null,
         startDate: values.startDate,
         endDate: values.endDate,
         startTime: values.startTime,
