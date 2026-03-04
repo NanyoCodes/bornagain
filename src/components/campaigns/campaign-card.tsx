@@ -183,7 +183,7 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
       case 'Past':
         return 'border-t-red-500';
       default:
-        return 'border-t-primary';
+        return 'border-t-border';
     }
   }, [status]);
 
@@ -505,7 +505,7 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
 
 
   const renderOwnerActions = () => (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center flex-wrap justify-end gap-2">
       {LogSoulDialog}
       <Dialog open={isManageOpen} onOpenChange={setIsManageOpen}>
         <DropdownMenu>
@@ -544,7 +544,7 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
   );
 
   const renderParticipantActions = () => (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center flex-wrap justify-end gap-2">
       {LogSoulDialog}
        <TooltipProvider>
         <Tooltip>
@@ -561,7 +561,7 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
   );
 
   const renderVisitorActions = () => (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center flex-wrap justify-end gap-2">
         <TooltipProvider>
             <Tooltip>
                 <TooltipTrigger asChild>
