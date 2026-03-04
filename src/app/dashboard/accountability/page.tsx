@@ -256,7 +256,7 @@ export default function AccountabilityPage() {
                 )}
             </div>
         </CardContent>
-        <CardFooter className="flex flex-col sm:flex-row gap-2">
+        <CardFooter className="flex flex-wrap gap-2">
           <AlertDialog>
             <AlertDialogTrigger asChild>
                <Button variant="outline" disabled={isNudging} className="w-full sm:w-auto">
