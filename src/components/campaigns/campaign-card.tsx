@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { format, formatDistanceToNow, parse, isSameDay, differenceInDays } from "date-fns";
-import { CalendarDays, MapPin, Users, Share2, Edit, MoreVertical, Loader2, MessageSquare, UserCheck2, PlayCircle } from "lucide-react";
+import { CalendarDays, MapPin, Users, Share2, Edit, MoreVertical, Loader2, MessageSquare, UserCheck2, PlayCircle, UserPlus } from "lucide-react";
 import type { Campaign, CampaignParticipant, UserProfile } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -34,6 +34,7 @@ import { useRouter } from "next/navigation";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip";
 import { Skeleton } from "../ui/skeleton";
 import { cn } from "@/lib/utils";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 
 function ParticipantsDialog({ campaign, children }: { campaign: Campaign; children: React.ReactNode; }) {
@@ -126,6 +127,12 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
   const descriptionRef = useRef<HTMLParagraphElement>(null);
   const [isDescriptionTruncated, setIsDescriptionTruncated] = useState(false);
   const [showFullDescription, setShowFullDescription] = useState(false);
+
+  const isMobile = useIsMobile();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const safeToDate = (value: any): Date | null => {
     if (!value) return null;
@@ -307,18 +314,20 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
     try {
       const participantIds = [user.uid, campaign.organizerId].sort();
       const chatsRef = collection(firestore, 'chats');
+
       const q = query(
         chatsRef,
         where('participantIds', '==', participantIds),
-        where('campaignId', '==', campaign.id),
-        limit(1)
+        where('isGroupChat', '==', false)
       );
 
       const querySnapshot = await getDocs(q);
+      const existingChat = querySnapshot.docs.find(doc => doc.data().campaignId === campaign.id);
+      
       let chatId: string;
 
-      if (!querySnapshot.empty) {
-        chatId = querySnapshot.docs[0].id;
+      if (existingChat) {
+        chatId = existingChat.id;
       } else {
          const organizerDoc = await getDoc(doc(firestore, "users", campaign.organizerId));
          const organizerProfile = organizerDoc.data() as UserProfile | undefined;
@@ -449,7 +458,18 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
   const LogSoulDialog = (
     <Dialog open={isLogSoulOpen} onOpenChange={setIsLogSoulOpen}>
       <DialogTrigger asChild>
-        <Button>Log Soul</Button>
+        {mounted && isMobile ? (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="outline" size="icon"><UserCheck2 className="h-4 w-4" /></Button>
+              </TooltipTrigger>
+              <TooltipContent><p>Log Soul</p></TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        ) : (
+          <Button>Log Soul</Button>
+        )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
@@ -573,12 +593,23 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
             </Tooltip>
         </TooltipProvider>
         {shareButton}
-        <Button onClick={handleJoin} disabled={!userId || isJoining || status === 'Past' || isFull}>
-            {isJoining ? <Loader2 className="h-4 w-4 animate-spin" />
-             : isFull ? 'Campaign Full'
-             : 'Join Campaign'
-            }
-        </Button>
+        {mounted && isMobile ? (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button onClick={handleJoin} size="icon" disabled={!userId || isJoining || status === 'Past' || isFull}>
+                  {isJoining ? <Loader2 className="h-4 w-4 animate-spin" /> : <UserPlus className="h-4 w-4" />}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent><p>{isFull ? 'Campaign Full' : 'Join Campaign'}</p></TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        ) : (
+          <Button onClick={handleJoin} disabled={!userId || isJoining || status === 'Past' || isFull}>
+            {isJoining && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {isFull ? 'Campaign Full' : 'Join Campaign'}
+          </Button>
+        )}
     </div>
   );
 
