@@ -1,3 +1,4 @@
+
 "use client";
 
 import Image from "next/image";
@@ -308,6 +309,7 @@ export default function DashboardLayout({
   const { user, loading } = useUser();
   const router = useRouter();
   const pathname = usePathname();
+  const isChatPage = pathname.startsWith('/dashboard/chats/');
   const [showWelcomePopup, setShowWelcomePopup] = useState(false);
   const logo = PlaceHolderImages.find((img) => img.id === "logo");
 
@@ -366,7 +368,7 @@ export default function DashboardLayout({
     <SearchProvider>
       <div className="flex min-h-screen w-full flex-col bg-background">
         <AppHeader />
-        <main className="flex w-full flex-1 flex-col p-4 pb-24 md:p-6 md:pb-8 lg:p-8 max-w-7xl mx-auto">{children}</main>
+        <main className={cn("flex w-full flex-1 flex-col max-w-7xl mx-auto", !isChatPage && "p-4 pb-24 md:p-6 md:pb-8 lg:p-8")}>{children}</main>
         <BottomNavBar />
         <WelcomePopup 
           isOpen={showWelcomePopup}

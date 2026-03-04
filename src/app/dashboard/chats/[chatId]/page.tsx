@@ -349,7 +349,7 @@ export default function ChatPage() {
 
     return (
         <div className="flex flex-col h-full w-full">
-            <div className="flex items-center gap-4 mb-4 shrink-0">
+            <div className="flex items-center gap-4 p-4 shrink-0">
                 <Button variant="outline" size="icon" onClick={() => router.back()}>
                     <ArrowLeft className="h-4 w-4" />
                     <span className="sr-only">Back</span>
@@ -395,11 +395,11 @@ export default function ChatPage() {
                 ) : null}
             </div>
 
-            <div className="flex-grow overflow-hidden">
+            <div className="flex-grow overflow-hidden px-4">
                 <TooltipProvider>
-                    <ScrollArea className="h-full p-4 border-x border-t rounded-t-lg" ref={scrollAreaRef}>
+                    <ScrollArea className="h-full" ref={scrollAreaRef}>
                         {messageGroups.length > 0 ? (
-                           <div className="space-y-2">
+                           <div className="space-y-2 pb-4">
                                 {messageGroups.map((group) => (
                                 <div key={group.date.toISOString()} className="relative">
                                     <div className="sticky top-0 z-10 flex justify-center my-4">
@@ -523,7 +523,7 @@ export default function ChatPage() {
                 </TooltipProvider>
             </div>
 
-            <div className="shrink-0 p-2 border-b border-x rounded-b-lg bg-background flex flex-col items-stretch gap-1">
+            <div className="shrink-0 border-t p-4 pb-20 md:pb-4 bg-background">
                 {isChatFrozen ? (
                     <div className="p-3 text-center text-sm text-muted-foreground bg-muted/50">
                         This group chat has been frozen as the campaign ended more than 24 hours ago.
@@ -531,7 +531,7 @@ export default function ChatPage() {
                 ) : (
                     <>
                     {replyingTo && (
-                        <div className="relative rounded-t-lg border-x border-t bg-muted/50 p-3 pt-2 pb-3">
+                        <div className="relative rounded-t-lg border bg-muted/50 p-3 pt-2 pb-3 mb-2">
                             <p className="text-xs font-bold">
                                 Replying to {chat.participantInfo[replyingTo.senderId]?.displayName || 'User'}
                             </p>
@@ -546,7 +546,7 @@ export default function ChatPage() {
                             </Button>
                         </div>
                     )}
-                    <form onSubmit={handleSendMessage} className={cn("flex gap-2 w-full items-center p-2", replyingTo && "border-x border-b rounded-b-lg")}>
+                    <form onSubmit={handleSendMessage} className="flex gap-2 w-full items-center">
                         <Input
                             value={newMessage}
                             onChange={(e) => setNewMessage(e.target.value)}
