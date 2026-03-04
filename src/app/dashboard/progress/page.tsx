@@ -21,6 +21,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { Progress } from "@/components/ui/progress";
 
 
 function RecentSoulsList() {
@@ -51,15 +52,15 @@ function RecentSoulsList() {
 
     if (!souls || souls.length === 0) {
         return (
-            <div className="text-center py-10 border-2 border-dashed rounded-lg">
+            <div className="text-center py-10 border-2 border-dashed rounded-lg bg-slate-50 dark:bg-slate-900/30">
                 <div className="mx-auto h-12 w-12 text-muted-foreground">
-                    <UserPlus />
+                    <UserPlus strokeWidth={1.5} />
                 </div>
-                <h3 className="mt-2 text-sm font-semibold">No souls logged yet</h3>
+                <h3 className="mt-4 text-lg font-semibold">Log Your First Soul</h3>
                 <p className="mt-1 text-sm text-muted-foreground">Start tracking the lives you impact.</p>
-                <Button asChild variant="secondary" size="sm" className="mt-4">
+                <Button asChild size="sm" className="mt-4">
                     <Link href="/dashboard/souls-won">
-                        Log Your First Soul
+                        Get Started <ArrowRight className="ml-2 h-4 w-4" />
                     </Link>
                 </Button>
             </div>
@@ -67,19 +68,20 @@ function RecentSoulsList() {
     }
 
     return (
-        <div className="space-y-4">
+        <div className="space-y-1">
             {souls.map(soul => (
-                <div key={soul.id} className="flex items-center gap-4">
+                <Link href="/dashboard/souls-won" key={soul.id} className="flex items-center gap-4 p-2 -mx-2 rounded-lg hover:bg-muted/50 transition-colors">
                     <Avatar className="h-10 w-10 border">
                          <AvatarFallback>{soul.name.charAt(0)}</AvatarFallback>
                     </Avatar>
                     <div className="flex-1">
-                        <p className="text-sm font-medium leading-none">{soul.name}</p>
+                        <p className="font-semibold leading-none">{soul.name}</p>
                         <p className="text-sm text-muted-foreground">
                             Won on {soul.wonAt ? format(soul.wonAt.toDate(), "PPP") : 'N/A'}
                         </p>
                     </div>
-                </div>
+                    <ArrowRight className="h-4 w-4 text-muted-foreground" />
+                </Link>
             ))}
         </div>
     )
@@ -230,7 +232,7 @@ export default function ProgressPage() {
     if (!user?.uid || !firestore) return null;
     return query(collection(firestore, `users/${user.uid}/souls`));
   }, [user?.uid, firestore]);
-  const { data: soulsWon, loading: soulsLoading } = useCollection<Soul>(soulsQuery);
+  const { data: soulsWon, loading: soulsLoading } = useCollection<Soul>(soulsWon);
 
   // State and logic from progress page
   const [monthlyGoal, setMonthlyGoal] = useState(50);
@@ -453,12 +455,20 @@ export default function ProgressPage() {
                     </CardHeader>
                     <CardContent>
                     {goalDate ? (
-                        <>
-                            <div className="text-2xl font-bold">{`${soulsThisMonth} / ${monthlyGoal}`}</div>
-                            <p className="text-xs text-muted-foreground">{`${monthlyGoal > 0 ? Math.round((soulsThisMonth / monthlyGoal) * 100) : 0}% complete`}</p>
-                        </>
+                        <div className="space-y-2">
+                            <div className="flex justify-between items-baseline">
+                                <div className="text-2xl font-bold">{soulsThisMonth}</div>
+                                <div className="text-sm text-muted-foreground">/ {monthlyGoal} souls</div>
+                            </div>
+                            <Progress value={monthlyGoal > 0 ? (soulsThisMonth / monthlyGoal) * 100 : 0} className="h-2" />
+                            <p className="text-xs text-muted-foreground text-right">{`${monthlyGoal > 0 ? Math.round((soulsThisMonth / monthlyGoal) * 100) : 0}% complete`}</p>
+                        </div>
                     ) : (
-                        <Skeleton className="h-12 w-24" />
+                        <div className="space-y-2">
+                            <Skeleton className="h-6 w-1/2" />
+                            <Skeleton className="h-2 w-full" />
+                            <Skeleton className="h-3 w-1/4 ml-auto" />
+                        </div>
                     )}
                     </CardContent>
                 </Card>

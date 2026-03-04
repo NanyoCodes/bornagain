@@ -17,11 +17,12 @@ import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
+import { cn } from '@/lib/utils';
 
 const disciplines = [
-  { id: 'pray', label: 'Pray', icon: <Heart className="h-5 w-5 text-muted-foreground" /> },
-  { id: 'read_bible', label: 'Read Bible', icon: <BookOpen className="h-5 w-5 text-muted-foreground" /> },
-  { id: 'attend_church', label: 'Attend Church', icon: <Church className="h-5 w-5 text-muted-foreground" /> },
+  { id: 'pray', label: 'Pray', Icon: Heart },
+  { id: 'read_bible', label: 'Read Bible', Icon: BookOpen },
+  { id: 'attend_church', label: 'Attend Church', Icon: Church },
 ];
 
 export function DailyDisciplineCard() {
@@ -198,11 +199,9 @@ export function DailyDisciplineCard() {
           <CardTitle>Daily Discipline</CardTitle>
           <CardDescription>Your spiritual checklist for today.</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {[...Array(3)].map((_, i) => (
-            <div key={i} className="flex items-center space-x-3">
-              <Skeleton className="h-20 w-full" />
-            </div>
+            <Skeleton key={i} className="h-28 w-full" />
           ))}
         </CardContent>
       </Card>
@@ -223,29 +222,30 @@ export function DailyDisciplineCard() {
             </div>
           </div>
         </CardHeader>
-        <CardContent className="grid grid-cols-3 gap-2 sm:gap-4">
+        <CardContent className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {disciplines.map(discipline => {
               const isCompleted = completedToday.includes(discipline.id);
+              const { Icon } = discipline;
               return (
                 <Button
                     key={discipline.id}
                     variant="outline"
-                    className="relative flex flex-col items-center justify-center gap-1 px-2 py-4 h-full text-center data-[state=checked]:bg-green-100 dark:data-[state=checked]:bg-green-900/20 data-[state=checked]:border-green-500/50 disabled:opacity-75"
+                    className="relative flex flex-col items-center justify-center gap-2 p-4 h-28 text-center transition-all duration-200 ease-in-out transform hover:-translate-y-1 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 data-[state=checked]:bg-primary/10 data-[state=checked]:border-primary/50 dark:data-[state=checked]:bg-primary/20 data-[state=checked]:shadow-md disabled:opacity-75"
                     data-state={isCompleted ? 'checked' : 'unchecked'}
                     onClick={() => handleDisciplineClick(discipline.id)}
                     disabled={togglingId === discipline.id}
                 >
                    {isCompleted && togglingId !== discipline.id && (
-                      <div className="absolute top-1 right-1">
-                          <CheckCircle2 className="h-5 w-5 text-green-600" />
+                      <div className="absolute top-2 right-2">
+                          <CheckCircle2 className="h-5 w-5 text-primary" />
                       </div>
                   )}
                     {togglingId === discipline.id ? (
-                        <Loader2 className="h-5 w-5 animate-spin" />
+                        <Loader2 className="h-8 w-8 animate-spin" />
                     ) : (
                         <>
-                            {discipline.icon}
-                            <span className="text-sm font-medium whitespace-normal">{discipline.label}</span>
+                            <Icon className={cn("h-8 w-8 text-muted-foreground transition-colors", isCompleted && "text-primary")} />
+                            <span className="text-base font-medium">{discipline.label}</span>
                         </>
                     )}
                 </Button>
