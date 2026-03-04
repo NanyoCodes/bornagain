@@ -568,6 +568,29 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
                         </FormItem>
                     )}
                 />
+                
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Live Stream</CardTitle>
+                        <CardDescription>Add a link to a live stream (e.g., YouTube Live, Zoom). The link will be shown to users while the campaign is ongoing.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <FormField
+                            control={form.control}
+                            name="streamUrl"
+                            render={({ field }) => (
+                                <FormItem>
+                                <FormLabel>Stream URL</FormLabel>
+                                <FormControl>
+                                    <Input placeholder="https://youtube.com/live/..." {...field} value={field.value ?? ''} />
+                                </FormControl>
+                                <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                    </CardContent>
+                </Card>
+
                 <FormField
                   control={form.control}
                   name="lastUpdateReason"
@@ -592,30 +615,6 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
         <Separator />
 
         <ParticipantList campaign={campaign} participants={participants || []} loading={participantsLoading} onRemove={handleRemoveParticipant} />
-
-        <Separator />
-
-        <Card>
-            <CardHeader>
-                <CardTitle>Live Stream</CardTitle>
-                <CardDescription>Add a link to a live stream (e.g., YouTube Live, Zoom). The link will be shown to users while the campaign is ongoing.</CardDescription>
-            </CardHeader>
-            <CardContent>
-                <FormField
-                    control={form.control}
-                    name="streamUrl"
-                    render={({ field }) => (
-                        <FormItem>
-                        <FormLabel>Stream URL</FormLabel>
-                        <FormControl>
-                            <Input placeholder="https://youtube.com/live/..." {...field} value={field.value ?? ''} />
-                        </FormControl>
-                        <FormMessage />
-                        </FormItem>
-                    )}
-                />
-            </CardContent>
-        </Card>
 
         <Separator />
 
