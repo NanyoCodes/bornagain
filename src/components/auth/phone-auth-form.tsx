@@ -4,7 +4,7 @@
 import 'react-phone-number-input/style.css'
 import PhoneInput, { isPossiblePhoneNumber } from 'react-phone-number-input'
 import { useState, useEffect } from "react";
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useRouter } from "next/navigation";
@@ -40,9 +40,9 @@ const codeSchema = z.object({
   code: z.string().length(6, "Verification code must be 6 digits."),
 });
 
+// Add a global declaration for window.grecaptcha
 declare global {
     interface Window {
-        recaptchaVerifier?: RecaptchaVerifier;
         grecaptcha?: any;
     }
 }
@@ -57,24 +57,6 @@ export function PhoneAuthForm() {
   const [isCodeSent, setIsCodeSent] = useState(false);
   const [confirmationResult, setConfirmationResult] = useState<ConfirmationResult | null>(null);
 
-  // This will run ONCE on mount to set up the verifier.
-  useEffect(() => {
-    if (!auth) return;
-
-    // This ensures we don't create multiple verifiers, especially with HMR in dev.
-    if (!window.recaptchaVerifier) {
-      window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-        'size': 'invisible',
-        'expired-callback': () => {
-          toast({ variant: 'destructive', title: 'reCAPTCHA expired.', description: 'Please try sending the code again.' });
-          setIsLoading(false);
-          setIsCodeSent(false);
-        }
-      });
-    }
-  }, [auth, toast]);
-
-
   const phoneForm = useForm<z.infer<typeof phoneSchema>>({
     resolver: zodResolver(phoneSchema),
     defaultValues: { phone: "" },
@@ -87,28 +69,41 @@ export function PhoneAuthForm() {
 
   async function onPhoneSubmit(values: z.infer<typeof phoneSchema>) {
     setIsLoading(true);
-    if (!auth || !firestore || !window.recaptchaVerifier) {
+    if (!auth || !firestore) {
         toast({ variant: "destructive", title: "Authentication service not ready. Please try again." });
         setIsLoading(false);
         return;
     }
 
+    // Ensure the container is empty before creating a new verifier
+    const recaptchaContainer = document.getElementById('recaptcha-container');
+    if (recaptchaContainer) {
+        recaptchaContainer.innerHTML = '';
+    }
+
     try {
-      const verifier = window.recaptchaVerifier;
+      const verifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+        'size': 'invisible',
+      });
+      
       const phoneNumber = values.phone;
       const result = await signInWithPhoneNumber(auth, phoneNumber, verifier);
 
       setConfirmationResult(result);
-      codeForm.reset({ code: "" }); // Clear code input
+      codeForm.reset({ code: "" });
       setIsCodeSent(true);
       toast({ title: "Verification code sent", description: `A code has been sent to ${phoneNumber}` });
     } catch (error) {
       const authError = error as AuthError;
       console.error("Phone Auth Error:", authError);
       
-      // Reset the verifier if an error occurs.
-      if (window.grecaptcha && window.recaptchaVerifier?.widgetId) {
-        window.grecaptcha.reset(window.recaptchaVerifier.widgetId);
+      // Reset reCAPTCHA on error
+      if (window.grecaptcha) {
+        try {
+            window.grecaptcha.reset();
+        } catch (e) {
+            console.error("Error resetting grecaptcha", e);
+        }
       }
 
       toast({
@@ -160,7 +155,7 @@ export function PhoneAuthForm() {
     } catch (error) {
       const authError = error as AuthError;
       console.error("Code Confirmation Error:", authError);
-      codeForm.reset({ code: "" }); // Clear code input on error
+      codeForm.reset({ code: "" });
       toast({
         variant: "destructive",
         title: "Verification Failed",
