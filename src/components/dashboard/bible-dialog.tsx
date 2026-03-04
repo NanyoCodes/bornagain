@@ -28,7 +28,6 @@ const bibleVersions = [
     { id: 'kjv', name: 'King James (KJV)' },
     { id: 'web', name: 'World English Bible (WEB)' },
     { id: 'bbe', name: 'Bible in Basic English' },
-    { id: 'nlt', name: 'New Living Translation (NLT)' },
 ];
 
 export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { isOpen: boolean; onOpenChange: (open: boolean) => void; onDisciplineCompleted: () => void; }) {
