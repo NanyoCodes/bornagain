@@ -12,6 +12,7 @@ import { z } from 'genkit';
 const BibleChapterInputSchema = z.object({
   book: z.string().describe('The name of the book (e.g., John).'),
   chapter: z.number().describe('The chapter number.'),
+  version: z.string().optional().describe('The Bible version/translation slug (e.g., kjv, web).'),
 });
 export type BibleChapterInput = z.infer<typeof BibleChapterInputSchema>;
 
@@ -24,6 +25,7 @@ const BibleChapterOutputSchema = z.object({
   book: z.string(),
   chapter: z.number(),
   verses: z.array(VerseSchema),
+  translation: z.string().optional(),
 });
 export type BibleChapterOutput = z.infer<typeof BibleChapterOutputSchema>;
 
@@ -40,8 +42,12 @@ const BIBLE_API_KEY = process.env.BIBLE_API_KEY;
 export async function getBibleChapter(
   input: BibleChapterInput
 ): Promise<BibleChapterOutput> {
-  const { book, chapter } = input;
-  const url = `${BIBLE_API_URL}${encodeURIComponent(book)}+${chapter}`;
+  const { book, chapter, version } = input;
+  let url = `${BIBLE_API_URL}${encodeURIComponent(book)}+${chapter}`;
+  if (version) {
+    url += `?translation=${version}`;
+  }
+
 
   const headers: HeadersInit = {
     'Content-Type': 'application/json',
@@ -76,6 +82,7 @@ export async function getBibleChapter(
       book: data.verses[0]?.book_name || book,
       chapter: parseInt(data.verses[0]?.chapter || chapter, 10),
       verses: formattedVerses,
+      translation: data.translation_name,
     };
   } catch (error) {
     console.error('Error fetching Bible chapter:', error);

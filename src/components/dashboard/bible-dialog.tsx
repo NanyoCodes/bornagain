@@ -24,6 +24,12 @@ import { Skeleton } from '../ui/skeleton';
 import { getBibleChapter, type BibleChapterOutput } from '@/ai/flows/get-bible-chapter-flow';
 import { Input } from '../ui/input';
 
+const bibleVersions = [
+    { id: 'kjv', name: 'King James (KJV)' },
+    { id: 'web', name: 'World English Bible (WEB)' },
+    { id: 'bbe', name: 'Bible in Basic English' },
+];
+
 export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { isOpen: boolean; onOpenChange: (open: boolean) => void; onDisciplineCompleted: () => void; }) {
   const { toast } = useToast();
   const { user } = useUser();
@@ -31,6 +37,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
 
   const [selectedBookName, setSelectedBookName] = useState(bibleData[0].name);
   const [selectedChapterNumber, setSelectedChapterNumber] = useState(1);
+  const [selectedVersion, setSelectedVersion] = useState(bibleVersions[0].id);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [chapterContent, setChapterContent] = useState<BibleChapterOutput | null>(null);
@@ -63,6 +70,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
         const content = await getBibleChapter({
           book: selectedBookName,
           chapter: selectedChapterNumber,
+          version: selectedVersion,
         });
         setChapterContent(content);
       } catch (error) {
@@ -74,7 +82,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
     };
 
     fetchChapter();
-  }, [isOpen, selectedBookName, selectedChapterNumber]);
+  }, [isOpen, selectedBookName, selectedChapterNumber, selectedVersion]);
 
   useLayoutEffect(() => {
     const viewport = scrollAreaRef.current?.querySelector('div[data-radix-scroll-area-viewport]');
@@ -204,7 +212,10 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-3xl h-[90vh] flex flex-col">
         <DialogHeader>
-          <DialogTitle>Read the Bible</DialogTitle>
+          <DialogTitle>
+            Read the Bible
+             {chapterContent?.translation && <span className="text-muted-foreground text-sm font-normal ml-2">({chapterContent.translation})</span>}
+          </DialogTitle>
         </DialogHeader>
 
         <Tabs defaultValue="read" className="flex-grow flex flex-col min-h-0">
@@ -214,7 +225,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
           </TabsList>
           
           <TabsContent value="read" className="flex-grow flex flex-col min-h-0 mt-4 space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <Select value={selectedBookName} onValueChange={setSelectedBookName}>
                     <SelectTrigger><SelectValue placeholder="Select a book" /></SelectTrigger>
                     <SelectContent>
@@ -230,6 +241,14 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                             <SelectItem key={chapter.chapter} value={String(chapter.chapter)}>Chapter {chapter.chapter}</SelectItem>
                         ))}
                     </SelectContent>
+                </Select>
+                <Select value={selectedVersion} onValueChange={setSelectedVersion}>
+                  <SelectTrigger><SelectValue placeholder="Select a version" /></SelectTrigger>
+                  <SelectContent>
+                      {bibleVersions.map(version => (
+                          <SelectItem key={version.id} value={version.id}>{version.name}</SelectItem>
+                      ))}
+                  </SelectContent>
                 </Select>
               </div>
 
