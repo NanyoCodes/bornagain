@@ -23,7 +23,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { useParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
 import { format, isSameDay, differenceInHours } from 'date-fns';
@@ -336,7 +336,7 @@ export default function ChatPage() {
     const otherParticipantInfo = otherParticipantId ? chat.participantInfo[otherParticipantId] : null;
 
     return (
-        <div className="flex flex-col h-full max-h-[calc(100vh-10rem)] w-full">
+        <div className="flex flex-col h-full w-full">
             <div className="flex items-center gap-4 mb-4">
                 <Button variant="outline" size="icon" onClick={() => router.back()}>
                     <ArrowLeft className="h-4 w-4" />
@@ -383,10 +383,10 @@ export default function ChatPage() {
                 ) : null}
             </div>
 
-            <Card className="flex flex-col flex-grow">
-                <CardContent className="p-0 flex-grow flex flex-col">
+            <Card className="flex-grow flex flex-col overflow-hidden rounded-b-none border-b-0">
+                <CardContent className="p-0 flex-grow">
                     <TooltipProvider>
-                    <ScrollArea className="flex-grow p-4" ref={scrollAreaRef}>
+                    <ScrollArea className="h-full p-4" ref={scrollAreaRef}>
                         {messageGroups.length > 0 ? (
                            <div className="space-y-2">
                                 {messageGroups.map((group) => (
@@ -511,46 +511,46 @@ export default function ChatPage() {
                     </ScrollArea>
                     </TooltipProvider>
                 </CardContent>
-
-                <CardFooter className="p-2 border-t bg-background flex flex-col items-stretch gap-1">
-                    {isChatFrozen ? (
-                        <div className="p-3 text-center text-sm text-muted-foreground bg-muted/50">
-                            This group chat has been frozen as the campaign ended more than 24 hours ago.
-                        </div>
-                    ) : (
-                        <>
-                        {replyingTo && (
-                            <div className="relative rounded-t-lg border-x border-t bg-muted/50 p-3 pt-2 pb-3">
-                                <p className="text-xs font-bold">
-                                    Replying to {chat.participantInfo[replyingTo.senderId]?.displayName || 'User'}
-                                </p>
-                                <p className="line-clamp-1 text-sm text-muted-foreground">{replyingTo.text}</p>
-                                <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="absolute right-1 top-1 h-6 w-6"
-                                    onClick={() => setReplyingTo(null)}
-                                >
-                                    <X className="h-4 w-4" />
-                                </Button>
-                            </div>
-                        )}
-                        <form onSubmit={handleSendMessage} className={cn("flex gap-2 w-full items-center p-2", replyingTo && "border-x border-b rounded-b-lg")}>
-                            <Input
-                                value={newMessage}
-                                onChange={(e) => setNewMessage(e.target.value)}
-                                placeholder="Type a message..."
-                                disabled={isSending}
-                                autoComplete="off"
-                            />
-                            <Button type="submit" size="icon" disabled={isSending || !newMessage.trim()}>
-                                {isSending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-                            </Button>
-                        </form>
-                        </>
-                    )}
-                </CardFooter>
             </Card>
+
+            <div className="shrink-0 p-2 border-t border-x rounded-b-lg bg-background flex flex-col items-stretch gap-1">
+                {isChatFrozen ? (
+                    <div className="p-3 text-center text-sm text-muted-foreground bg-muted/50">
+                        This group chat has been frozen as the campaign ended more than 24 hours ago.
+                    </div>
+                ) : (
+                    <>
+                    {replyingTo && (
+                        <div className="relative rounded-t-lg border-x border-t bg-muted/50 p-3 pt-2 pb-3">
+                            <p className="text-xs font-bold">
+                                Replying to {chat.participantInfo[replyingTo.senderId]?.displayName || 'User'}
+                            </p>
+                            <p className="line-clamp-1 text-sm text-muted-foreground">{replyingTo.text}</p>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="absolute right-1 top-1 h-6 w-6"
+                                onClick={() => setReplyingTo(null)}
+                            >
+                                <X className="h-4 w-4" />
+                            </Button>
+                        </div>
+                    )}
+                    <form onSubmit={handleSendMessage} className={cn("flex gap-2 w-full items-center p-2", replyingTo && "border-x border-b rounded-b-lg")}>
+                        <Input
+                            value={newMessage}
+                            onChange={(e) => setNewMessage(e.target.value)}
+                            placeholder="Type a message..."
+                            disabled={isSending}
+                            autoComplete="off"
+                        />
+                        <Button type="submit" size="icon" disabled={isSending || !newMessage.trim()}>
+                            {isSending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                        </Button>
+                    </form>
+                    </>
+                )}
+            </div>
         </div>
     )
 }
