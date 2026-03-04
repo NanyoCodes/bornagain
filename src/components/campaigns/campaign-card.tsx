@@ -2,7 +2,7 @@
 "use client";
 
 import Link from "next/link";
-import { format, formatDistanceToNow, parse, isSameDay } from "date-fns";
+import { format, formatDistanceToNow, parse, isSameDay, differenceInDays } from "date-fns";
 import { CalendarDays, MapPin, Users, Share2, Edit, MoreVertical, Loader2, MessageSquare, UserCheck2, PlayCircle } from "lucide-react";
 import type { Campaign, CampaignParticipant, UserProfile } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
@@ -379,7 +379,8 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
           dateString = startFormatted;
       } else {
           const endFormatted = format(endDate, "PPP");
-          dateString = `${startFormatted} to ${endFormatted}`;
+          const days = differenceInDays(endDate, startDate) + 1;
+          dateString = `${startFormatted} to ${endFormatted} (${days} days)`;
       }
   } else {
       dateString = "Date not set";
