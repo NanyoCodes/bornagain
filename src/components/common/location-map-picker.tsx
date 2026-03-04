@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
@@ -31,6 +30,7 @@ export function LocationMapPicker({ form }: LocationMapPickerProps) {
     
     const [map, setMap] = useState<google.maps.Map | null>(null);
     const [autocomplete, setAutocomplete] = useState<google.maps.places.Autocomplete | null>(null);
+    const searchBoxRef = useRef<HTMLDivElement>(null);
 
     const latitude = form.getValues('latitude');
     const longitude = form.getValues('longitude');
@@ -150,6 +150,11 @@ export function LocationMapPicker({ form }: LocationMapPickerProps) {
 
     const onMapLoad = useCallback((mapInstance: google.maps.Map) => {
         setMap(mapInstance);
+        if (searchBoxRef.current) {
+            mapInstance.controls[window.google.maps.ControlPosition.TOP_CENTER].push(
+                searchBoxRef.current
+            );
+        }
     }, []);
 
     const onAutocompleteLoad = (autocompleteInstance: google.maps.places.Autocomplete) => {
@@ -219,23 +224,24 @@ export function LocationMapPicker({ form }: LocationMapPickerProps) {
 
     return (
         <div className="space-y-4">
-             <Autocomplete
-                onLoad={onAutocompleteLoad}
-                onPlaceChanged={onPlaceChanged}
-                fields={['formatted_address', 'name', 'geometry.location']}
-                types={['geocode']}
-            >
-                <Input
-                    type="text"
-                    placeholder="Search for an address to pin on the map..."
-                    className="text-base"
-                    value={inputValue}
-                    onChange={handleInputChange}
-                />
-            </Autocomplete>
-            <p className="text-sm text-muted-foreground -mt-2">
-                Search to find a location, or click/drag the pin on the map. You can edit the location name above.
-            </p>
+             {/* This div is positioned by the Google Map onLoad callback. It also holds the Autocomplete component. */}
+             <div ref={searchBoxRef} className="w-full max-w-sm sm:max-w-md px-4 pt-4">
+                <Autocomplete
+                    onLoad={onAutocompleteLoad}
+                    onPlaceChanged={onPlaceChanged}
+                    fields={['formatted_address', 'name', 'geometry.location']}
+                    types={['geocode']}
+                >
+                    <Input
+                        type="text"
+                        placeholder="Search for a location..."
+                        className="text-base shadow-lg"
+                        value={inputValue}
+                        onChange={handleInputChange}
+                    />
+                </Autocomplete>
+            </div>
+            
             <GoogleMap
                 mapContainerClassName="h-80 w-full rounded-md"
                 center={center}
