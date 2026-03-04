@@ -366,7 +366,7 @@ export default function DashboardLayout({
 
   return (
     <SearchProvider>
-      <div className="flex min-h-screen w-full flex-col bg-background">
+      <div className="flex min-h-screen w-full flex-col bg-muted/30">
         <AppHeader />
         <main className={cn("flex w-full flex-1 flex-col max-w-7xl mx-auto", !isChatPage && "p-4 pb-24 md:p-6 md:pb-8 lg:p-8")}>{children}</main>
         <BottomNavBar />
