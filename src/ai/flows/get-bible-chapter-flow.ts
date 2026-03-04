@@ -36,8 +36,8 @@ export type BibleChapterOutput = z.infer<typeof BibleChapterOutputSchema>;
 const PUBLIC_BIBLE_API_URL = 'https://bible-api.com/';
 
 // API 2: NLT via api.scripture.api.bible
-const NLT_BIBLE_API_URL = process.env.PREMIUM_BIBLE_API_URL;
-const NLT_BIBLE_API_KEY = process.env.PREMIUM_BIBLE_API_KEY;
+const NLT_BIBLE_API_URL = process.env.NLT_BIBLE_API_URL;
+const NLT_BIBLE_API_KEY = process.env.NLT_BIBLE_API_KEY;
 const NLT_BIBLE_ID = 'de4e12af7f28f599-01'; // NLT Second Edition
 
 /**
@@ -83,7 +83,7 @@ async function fetchNltChapter(book: string, chapter: number): Promise<BibleChap
   if (!NLT_BIBLE_API_URL || !NLT_BIBLE_API_KEY) {
     throw new Error(
       `The "NLT" translation requires an API key. ` +
-      `Please get a key from a Bible API provider (like api.scripture.api.bible) and add PREMIUM_BIBLE_API_URL and PREMIUM_BIBLE_API_KEY to your environment variables.`
+      `Please get a key from a Bible API provider (like api.scripture.api.bible) and add NLT_BIBLE_API_URL and NLT_BIBLE_API_KEY to your environment variables.`
     );
   }
   
