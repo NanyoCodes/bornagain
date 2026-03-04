@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -231,11 +231,6 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
     resolver: zodResolver(formSchema),
     defaultValues,
   });
-
-  useEffect(() => {
-    form.reset(defaultValues);
-  }, [defaultValues, form]);
-
 
   const handleStartGroupChat = async () => {
     if (!user || !firestore) return;

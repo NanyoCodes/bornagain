@@ -318,16 +318,16 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
       const q = query(
         chatsRef,
         where('participantIds', '==', participantIds),
-        where('isGroupChat', '==', false)
+        where('isGroupChat', '==', false),
+        where('campaignId', '==', campaign.id),
+        limit(1)
       );
 
       const querySnapshot = await getDocs(q);
-      const existingChat = querySnapshot.docs.find(doc => doc.data().campaignId === campaign.id);
-      
       let chatId: string;
 
-      if (existingChat) {
-        chatId = existingChat.id;
+      if (!querySnapshot.empty) {
+        chatId = querySnapshot.docs[0].id;
       } else {
          const organizerDoc = await getDoc(doc(firestore, "users", campaign.organizerId));
          const organizerProfile = organizerDoc.data() as UserProfile | undefined;
@@ -458,18 +458,18 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
   const LogSoulDialog = (
     <Dialog open={isLogSoulOpen} onOpenChange={setIsLogSoulOpen}>
       <DialogTrigger asChild>
-        {mounted && isMobile ? (
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant="outline" size="icon"><UserCheck2 className="h-4 w-4" /></Button>
-              </TooltipTrigger>
-              <TooltipContent><p>Log Soul</p></TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        ) : (
-          <Button>Log Soul</Button>
-        )}
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant="outline" size="icon">
+                <UserCheck2 className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Log Soul</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </DialogTrigger>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
@@ -699,20 +699,22 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
                 )}
             </div>
 
-            {status === 'Ongoing' && campaign.streamUrl ? (
-                <Button asChild className="w-full sm:w-auto">
-                    <Link href={campaign.streamUrl} target="_blank" rel="noopener noreferrer">
-                        <PlayCircle className="mr-2 h-4 w-4" />
-                        Watch Live
-                    </Link>
-                </Button>
-            ) : isOwner ? (
-                renderOwnerActions()
-            ) : isJoined ? (
-                renderParticipantActions()
-            ) : (
-                renderVisitorActions()
-            )}
+            <div className="flex-shrink-0">
+                {status === 'Ongoing' && campaign.streamUrl ? (
+                    <Button asChild className="w-full sm:w-auto">
+                        <Link href={campaign.streamUrl} target="_blank" rel="noopener noreferrer">
+                            <PlayCircle className="mr-2 h-4 w-4" />
+                            Watch Live
+                        </Link>
+                    </Button>
+                ) : isOwner ? (
+                    renderOwnerActions()
+                ) : isJoined ? (
+                    renderParticipantActions()
+                ) : (
+                    renderVisitorActions()
+                )}
+            </div>
         </CardFooter>
         <CardFooter className="p-4 bg-muted/20 text-xs text-muted-foreground flex justify-between">
             <span className="truncate">
