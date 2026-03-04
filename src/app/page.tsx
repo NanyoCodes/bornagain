@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from 'next/link';
@@ -21,8 +20,6 @@ import { FirestorePermissionError } from '@/firebase/errors';
 import Image from 'next/image';
 import { useState } from 'react';
 import { Loader2 } from 'lucide-react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { PhoneAuthForm } from '@/components/auth/phone-auth-form';
 
 export default function SignUpPage() {
   const logo = PlaceHolderImages.find((img) => img.id === 'logo');
@@ -103,22 +100,11 @@ export default function SignUpPage() {
           )}
           <h1 className="text-2xl md:text-3xl font-bold">Create an account</h1>
           <p className="text-balance text-muted-foreground">
-            Choose a method to join the movement
+            Enter your details below to create your account.
           </p>
         </div>
 
-        <Tabs defaultValue="email" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="email">Email</TabsTrigger>
-                <TabsTrigger value="phone">Phone</TabsTrigger>
-            </TabsList>
-            <TabsContent value="email" className="mt-4">
-                <SignUpForm />
-            </TabsContent>
-            <TabsContent value="phone" className="mt-4">
-                <PhoneAuthForm />
-            </TabsContent>
-        </Tabs>
+        <SignUpForm />
 
         <div className="text-center text-sm">
           Already have an account?{' '}
