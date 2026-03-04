@@ -55,12 +55,13 @@ export function PhoneAuthForm() {
   const verifierRef = useRef<RecaptchaVerifier | null>(null);
   const recaptchaContainerRef = useRef<HTMLDivElement>(null);
 
-  // This useEffect correctly sets up and tears down the reCAPTCHA verifier,
-  // making it compatible with React's Strict Mode in development.
+  // This useEffect sets up the reCAPTCHA verifier.
   useEffect(() => {
-    if (!auth || !recaptchaContainerRef.current) return;
+    // Prevent re-initialization and run only when auth is available.
+    if (!auth || !recaptchaContainerRef.current || verifierRef.current) {
+      return;
+    }
     
-    // Create a new verifier instance and store it in the ref
     const verifier = new RecaptchaVerifier(auth, recaptchaContainerRef.current, {
       'size': 'invisible',
       'expired-callback': () => {
@@ -69,12 +70,6 @@ export function PhoneAuthForm() {
     });
     
     verifierRef.current = verifier;
-
-    // The cleanup function will be called when the component unmounts.
-    // This is crucial for preventing errors in development with React Strict Mode.
-    return () => {
-      verifier.clear();
-    };
   }, [auth, toast]);
 
 
