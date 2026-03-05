@@ -10,7 +10,7 @@ import {
   DialogFooter
 } from '@/components/ui/dialog';
 import { Button } from '../ui/button';
-import { Loader2, Quote, ExternalLink } from 'lucide-react';
+import { Loader2, Quote, PlayCircle } from 'lucide-react';
 import type { UserProfile } from '@/lib/types';
 import Link from 'next/link';
 
@@ -53,7 +53,7 @@ export function PrayerDialog({ isOpen, onOpenChange, onDisciplineCompleted, user
         <DialogHeader>
           <DialogTitle>A Moment to Pray</DialogTitle>
           <DialogDescription>
-            Take a moment to reflect, connect with God, or join a prayer meeting.
+            Take a moment to reflect, connect with God, or join a prayer stream.
           </DialogDescription>
         </DialogHeader>
 
@@ -70,7 +70,7 @@ export function PrayerDialog({ isOpen, onOpenChange, onDisciplineCompleted, user
 
             {prayerLinks.length > 0 && (
             <div className="space-y-3">
-                <h4 className="font-medium text-sm text-muted-foreground">Join a Prayer Meeting</h4>
+                <h4 className="font-medium text-sm text-muted-foreground">Join a Prayer Stream</h4>
                 <div className="space-y-2">
                     {prayerLinks.map((link, index) => (
                         <Button asChild key={index} variant="secondary" className="w-full justify-start">
@@ -80,7 +80,7 @@ export function PrayerDialog({ isOpen, onOpenChange, onDisciplineCompleted, user
                                 rel="noopener noreferrer"
                                 className="flex items-center"
                             >
-                                <ExternalLink className="mr-2 h-4 w-4" />
+                                <PlayCircle className="mr-2 h-4 w-4" />
                                 {link.name}
                             </Link>
                         </Button>
