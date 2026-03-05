@@ -169,6 +169,9 @@ export type Soul = {
   wonAt: Timestamp; // ISO date string
   status: FollowUpStatus;
   followUpLog: FollowUpLogItem[];
+  attendingChurch?: boolean;
+  inBibleStudy?: boolean;
+  attendingPrayer?: boolean;
 };
 
 export type ChatParticipantInfo = {

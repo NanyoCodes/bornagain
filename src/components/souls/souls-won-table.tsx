@@ -3,7 +3,7 @@
 
 import * as React from "react";
 import { format } from "date-fns";
-import { MoreHorizontal, Church, UserPlus, Edit, MapPin, Mail, Phone, ChevronDown } from "lucide-react";
+import { MoreHorizontal, Church, UserPlus, Edit, MapPin, Mail, Phone, ChevronDown, BookOpen, Heart } from "lucide-react";
 import type { Soul, FollowUpStatus, FollowUpLogItem } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import {
@@ -48,6 +48,8 @@ import { cn } from "@/lib/utils";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/collapsible";
 import { Badge } from "../ui/badge";
 import { Loader2 } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 
 const statusOptions: FollowUpStatus[] = ['New', 'Contacted', 'Established'];
@@ -68,17 +70,12 @@ const getStatusClasses = (status: FollowUpStatus | undefined): string => {
 
 
 // --- LogFollowUpDialog Component Definition ---
-const followUpIdeas = [
-    { id: 'invite-service', label: 'Invited to small group/service' },
-    { id: 'connect-leader', label: 'Connected with a leader/mentor' },
-    { id: 'share-resources', label: 'Shared new believer resources' },
-    { id: 'pray-needs', label: 'Prayed for their specific needs' },
-    { id: 'schedule-meeting', label: 'Scheduled a follow-up meeting' },
-];
-
 const logFollowUpFormSchema = z.object({
     note: z.string().min(1, { message: "A note is required." }),
     status: z.enum(statusOptions),
+    attendingChurch: z.boolean(),
+    inBibleStudy: z.boolean(),
+    attendingPrayer: z.boolean(),
 });
 
 function LogFollowUpDialog({ soul, children }: { soul: Soul; children: React.ReactNode; }) {
@@ -93,8 +90,23 @@ function LogFollowUpDialog({ soul, children }: { soul: Soul; children: React.Rea
     defaultValues: {
       note: '',
       status: soul.status,
+      attendingChurch: soul.attendingChurch || false,
+      inBibleStudy: soul.inBibleStudy || false,
+      attendingPrayer: soul.attendingPrayer || false,
     },
   });
+  
+  React.useEffect(() => {
+    if (isOpen) {
+      form.reset({
+        note: '',
+        status: soul.status,
+        attendingChurch: soul.attendingChurch || false,
+        inBibleStudy: soul.inBibleStudy || false,
+        attendingPrayer: soul.attendingPrayer || false,
+      });
+    }
+  }, [isOpen, soul, form]);
 
   async function onSubmit(values: z.infer<typeof logFollowUpFormSchema>) {
     if (!user || !firestore) {
@@ -115,6 +127,9 @@ function LogFollowUpDialog({ soul, children }: { soul: Soul; children: React.Rea
       await updateDoc(soulRef, {
         followUpLog: arrayUnion(newLogEntry),
         status: values.status,
+        attendingChurch: values.attendingChurch,
+        inBibleStudy: values.inBibleStudy,
+        attendingPrayer: values.attendingPrayer,
       });
 
       toast({
@@ -122,7 +137,6 @@ function LogFollowUpDialog({ soul, children }: { soul: Soul; children: React.Rea
         description: `A new entry has been added for ${soul.name}.`,
       });
       setIsOpen(false);
-      form.reset();
     } catch (error: any) {
       console.error('Error logging follow-up: ', error);
       toast({ variant: 'destructive', title: 'Error', description: 'Could not log follow-up.' });
@@ -132,7 +146,7 @@ function LogFollowUpDialog({ soul, children }: { soul: Soul; children: React.Rea
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => { if (!isLoading) { setIsOpen(open); if (!open) form.reset({ note: '', status: soul.status }); } }}>
+    <Dialog open={isOpen} onOpenChange={(open) => { if (!isLoading) { setIsOpen(open); } }}>
         <DialogTrigger asChild>{children}</DialogTrigger>
         <DialogContent className="sm:max-w-md">
             <DialogHeader>
@@ -178,6 +192,52 @@ function LogFollowUpDialog({ soul, children }: { soul: Soul; children: React.Rea
                             </FormItem>
                         )}
                     />
+                    <div className="space-y-4 rounded-lg border p-4">
+                        <div className="space-y-0.5">
+                            <Label>Update Milestones</Label>
+                            <p className="text-sm text-muted-foreground">
+                                Update their progress on key spiritual disciplines.
+                            </p>
+                        </div>
+                        <div className="space-y-1">
+                            <FormField
+                                control={form.control}
+                                name="attendingChurch"
+                                render={({ field }) => (
+                                    <FormItem className="flex flex-row items-center justify-between rounded-md p-2 hover:bg-muted/50">
+                                        <FormLabel className="font-normal flex items-center gap-2 cursor-pointer"><Church className="h-4 w-4" />Attending Church</FormLabel>
+                                        <FormControl>
+                                            <Switch checked={field.value} onCheckedChange={field.onChange} />
+                                        </FormControl>
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="inBibleStudy"
+                                render={({ field }) => (
+                                    <FormItem className="flex flex-row items-center justify-between rounded-md p-2 hover:bg-muted/50">
+                                        <FormLabel className="font-normal flex items-center gap-2 cursor-pointer"><BookOpen className="h-4 w-4" />In Bible Study</FormLabel>
+                                        <FormControl>
+                                            <Switch checked={field.value} onCheckedChange={field.onChange} />
+                                        </FormControl>
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="attendingPrayer"
+                                render={({ field }) => (
+                                    <FormItem className="flex flex-row items-center justify-between rounded-md p-2 hover:bg-muted/50">
+                                        <FormLabel className="font-normal flex items-center gap-2 cursor-pointer"><Heart className="h-4 w-4" />Attending Prayer</FormLabel>
+                                        <FormControl>
+                                            <Switch checked={field.value} onCheckedChange={field.onChange} />
+                                        </FormControl>
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
+                    </div>
                     <DialogFooter>
                         <Button type="submit" disabled={isLoading}>
                             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
@@ -308,7 +368,25 @@ function SoulCard({ soul }: { soul: ProcessedSoul }) {
                             </Dialog>
                         </div>
                         
-                        <div className="space-y-3">
+                        <div className="space-y-3 pt-4 border-t">
+                            <Label>Milestones</Label>
+                            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-muted-foreground">
+                                <div className={cn("flex items-center gap-1.5 text-sm", soul.attendingChurch && "text-green-600 font-semibold")}>
+                                    <Church className="h-4 w-4" />
+                                    <span>Church</span>
+                                </div>
+                                <div className={cn("flex items-center gap-1.5 text-sm", soul.inBibleStudy && "text-green-600 font-semibold")}>
+                                    <BookOpen className="h-4 w-4" />
+                                    <span>Bible Study</span>
+                                </div>
+                                <div className={cn("flex items-center gap-1.5 text-sm", soul.attendingPrayer && "text-green-600 font-semibold")}>
+                                    <Heart className="h-4 w-4" />
+                                    <span>Prayer</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="space-y-3 pt-4 border-t">
                             <Label>Follow-up</Label>
                             <div className="border rounded-lg p-4 space-y-4">
                                {latestFollowUp ? (
@@ -427,8 +505,8 @@ export function SoulsWonTable({ souls, loading }: SoulsWonTableProps) {
             <TableRow>
               <TableHead>Name</TableHead>
               <TableHead>Contact Info</TableHead>
-              <TableHead>Location Won</TableHead>
               <TableHead>Status</TableHead>
+              <TableHead>Milestones</TableHead>
               <TableHead>Last Follow-up</TableHead>
               <TableHead>Won At</TableHead>
               <TableHead>Source</TableHead>
@@ -453,10 +531,37 @@ export function SoulsWonTable({ souls, loading }: SoulsWonTableProps) {
                   {soul.phone && <div className="text-xs text-muted-foreground">{soul.phone}</div>}
                 </TableCell>
                 <TableCell>
-                  {soul.locationWon || '-'}
+                  <Badge className={cn("w-[150px] justify-center", getStatusClasses(soul.status))} variant="outline">{soul.status}</Badge>
                 </TableCell>
                 <TableCell>
-                  <Badge className={cn("w-[150px] justify-center", getStatusClasses(soul.status))} variant="outline">{soul.status}</Badge>
+                    <div className="flex items-center gap-3">
+                        <TooltipProvider>
+                            <Tooltip>
+                                <TooltipTrigger>
+                                    <Church className={cn("h-4 w-4 text-muted-foreground/60", soul.attendingChurch && "text-green-600")} />
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    <p>{soul.attendingChurch ? 'Attending Church' : 'Not Attending Church'}</p>
+                                </TooltipContent>
+                            </Tooltip>
+                            <Tooltip>
+                                <TooltipTrigger>
+                                    <BookOpen className={cn("h-4 w-4 text-muted-foreground/60", soul.inBibleStudy && "text-green-600")} />
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    <p>{soul.inBibleStudy ? 'In Bible Study' : 'Not In Bible Study'}</p>
+                                </TooltipContent>
+                            </Tooltip>
+                            <Tooltip>
+                                <TooltipTrigger>
+                                    <Heart className={cn("h-4 w-4 text-muted-foreground/60", soul.attendingPrayer && "text-green-600")} />
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    <p>{soul.attendingPrayer ? 'Attending Prayer' : 'Not Attending Prayer'}</p>
+                                </TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
+                    </div>
                 </TableCell>
                 <TableCell>
                     {latestFollowUp ? (
