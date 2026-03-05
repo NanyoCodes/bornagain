@@ -82,6 +82,26 @@
             ]
           }
         },
+        "prayerLinks": {
+          "type": "array",
+          "description": "A list of personal prayer links.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "url": {
+                "type": "string",
+                "format": "uri"
+              }
+            },
+            "required": [
+              "name",
+              "url"
+            ]
+          }
+        },
         "notificationSettings": {
           "type": "object",
           "description": "User's notification preferences.",
@@ -672,5 +692,3 @@
     }
   }
 }
-
-    

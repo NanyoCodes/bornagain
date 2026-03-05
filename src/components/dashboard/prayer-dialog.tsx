@@ -11,7 +11,9 @@ import {
   DialogFooter
 } from '@/components/ui/dialog';
 import { Button } from '../ui/button';
-import { Loader2, Quote } from 'lucide-react';
+import { Loader2, Quote, ExternalLink } from 'lucide-react';
+import type { UserProfile } from '@/lib/types';
+import Link from 'next/link';
 
 const prayerVerses = [
     { verse: "Philippians 4:6-7", text: "Do not be anxious about anything, but in every situation, by prayer and petition, with thanksgiving, present your requests to God. And the peace of God, which transcends all understanding, will guard your hearts and your minds in Christ Jesus." },
@@ -22,9 +24,11 @@ const prayerVerses = [
     { verse: "James 5:16", text: "Therefore confess your sins to each other and pray for each other so that you may be healed. The prayer of a righteous person is powerful and effective." }
 ];
 
-export function PrayerDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { isOpen: boolean; onOpenChange: (open: boolean) => void; onDisciplineCompleted: () => void; }) {
+export function PrayerDialog({ isOpen, onOpenChange, onDisciplineCompleted, userProfile }: { isOpen: boolean; onOpenChange: (open: boolean) => void; onDisciplineCompleted: () => void; userProfile: UserProfile | null; }) {
   const [verse, setVerse] = useState<{ verse: string; text: string; } | null>(null);
   const [isCompleting, setIsCompleting] = useState(false);
+
+  const prayerLinks = userProfile?.prayerLinks || [];
 
   useEffect(() => {
     if (isOpen) {
@@ -50,21 +54,43 @@ export function PrayerDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { 
         <DialogHeader>
           <DialogTitle>A Moment to Pray</DialogTitle>
           <DialogDescription>
-            Take a moment to reflect and connect with God.
+            Take a moment to reflect, connect with God, or join a prayer meeting.
           </DialogDescription>
         </DialogHeader>
 
-        {verse && (
-            <div className="my-4 space-y-4">
-                 <blockquote className="relative border-l-2 pl-6 italic">
-                    <Quote className="absolute -left-4 -top-2 h-6 w-6 text-muted-foreground/20" />
-                    {verse.text}
-                </blockquote>
-                <p className="text-right font-semibold">- {verse.verse}</p>
+        <div className="my-4 space-y-6">
+            {verse && (
+                <div className="space-y-4">
+                    <blockquote className="relative border-l-2 pl-6 italic">
+                        <Quote className="absolute -left-4 -top-2 h-6 w-6 text-muted-foreground/20" />
+                        {verse.text}
+                    </blockquote>
+                    <p className="text-right font-semibold">- {verse.verse}</p>
+                </div>
+            )}
+
+            {prayerLinks.length > 0 && (
+            <div className="space-y-3">
+                <h4 className="font-medium text-sm text-muted-foreground">Your Prayer Links</h4>
+                <div className="rounded-lg border divide-y">
+                    {prayerLinks.map((link, index) => (
+                        <Link
+                            key={index}
+                            href={link.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center justify-between p-3 hover:bg-muted/50 transition-colors"
+                        >
+                            <span>{link.name}</span>
+                            <ExternalLink className="h-4 w-4 text-muted-foreground" />
+                        </Link>
+                    ))}
+                </div>
             </div>
-        )}
+            )}
+        </div>
         
-        <DialogFooter>
+        <DialogFooter className="sm:justify-between gap-2">
             <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isCompleting}>Cancel</Button>
             <Button onClick={handleComplete} disabled={isCompleting}>
                 {isCompleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

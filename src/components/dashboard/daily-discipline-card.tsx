@@ -268,6 +268,7 @@ export function DailyDisciplineCard() {
             if (!open) setTogglingId(null);
         }}
         onDisciplineCompleted={handlePray}
+        userProfile={userProfile}
       />
       <AttendChurchDialog
         isOpen={isAttendChurchDialogOpen}

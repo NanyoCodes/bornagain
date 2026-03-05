@@ -33,6 +33,10 @@ export type UserProfile = {
     lastUpdated: Timestamp;
   };
   readingHistory?: ReadingHistoryItem[];
+  prayerLinks?: {
+    name: string;
+    url: string;
+  }[];
   notificationSettings?: {
     newCampaignsInArea?: boolean;
     weeklyDigest?: boolean;
