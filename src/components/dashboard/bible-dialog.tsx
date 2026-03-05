@@ -160,11 +160,6 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
   
   const selectedBook = useMemo(() => bibleData.find(b => b.name === selectedBookName), [selectedBookName]);
   
-  const activeHighlight = useMemo(() => {
-    if (!activeHighlightId || !highlights) return null;
-    return highlights.find(h => h.id === activeHighlightId) || null;
-  }, [activeHighlightId, highlights]);
-  
   useEffect(() => {
     setSelectedChapterNumber(1);
     setActiveHighlightId(null);
@@ -180,6 +175,11 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
   }, [user, firestore, chapterContent]);
 
   const { data: highlights } = useCollection<BibleHighlight>(highlightsQuery);
+
+  const activeHighlight = useMemo(() => {
+    if (!activeHighlightId || !highlights) return null;
+    return highlights.find(h => h.id === activeHighlightId) || null;
+  }, [activeHighlightId, highlights]);
 
   const highlightsMap = useMemo(() => {
     const map = new Map<number, BibleHighlight>();
