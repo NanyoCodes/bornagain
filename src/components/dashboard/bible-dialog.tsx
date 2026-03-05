@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect, useRef, useLayoutEffect } from 'react';
@@ -289,7 +290,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-3xl h-[90vh]">
+      <DialogContent className="sm:max-w-3xl h-[90vh] flex flex-col">
         <DialogHeader>
           <DialogTitle>
             Read the Bible
@@ -333,7 +334,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                 </Select>
               </div>
 
-              <div className="relative flex-grow">
+              <div className="relative flex-grow min-h-0">
                 <ScrollArea ref={scrollAreaRef} onScroll={handleScroll} className="h-full border rounded-md p-4">
                     {isLoadingChapter && (
                       <div className="absolute inset-0 flex items-center justify-center bg-background/50">
@@ -385,7 +386,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                     )}
                 </ScrollArea>
                 {selectedVerses.length > 0 && (
-                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 w-auto">
+                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 w-auto z-10">
                         <div className="flex items-center gap-2 p-2 rounded-full border bg-background shadow-lg">
                             {highlightColors.map(color => (
                                 <Button key={color} variant="outline" size="icon" className="rounded-full" onClick={() => handleSaveHighlight(color)} disabled={isProcessingHighlight}>
