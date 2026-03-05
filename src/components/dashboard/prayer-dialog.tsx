@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -66,7 +67,7 @@ export function PrayerDialog({ isOpen, onOpenChange, onDisciplineCompleted, user
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>A Moment to Pray</DialogTitle>
           <DialogDescription>
