@@ -147,6 +147,7 @@ export type FollowUpStatus = 'New' | 'Contacted' | 'Established';
 export type FollowUpLogItem = {
   date: Timestamp;
   note?: string;
+  actions?: string[];
 };
 
 export type Soul = {

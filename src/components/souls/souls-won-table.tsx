@@ -40,7 +40,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";
 import { useFirestore, useUser } from "@/firebase";
 import { doc, updateDoc, arrayUnion } from "firebase/firestore";
 import { EditSoulForm } from "./edit-soul-form";
@@ -50,9 +50,18 @@ import { Badge } from "../ui/badge";
 import { Loader2 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Checkbox } from "@/components/ui/checkbox";
 
 
 const statusOptions: FollowUpStatus[] = ['New', 'Contacted', 'Established'];
+const actionItems = [
+  { id: 'prayed_together', label: 'Prayed together' },
+  { id: 'studied_bible', label: 'Studied Bible' },
+  { id: 'shared_meal', label: 'Shared a meal' },
+  { id: 'visited_home', label: 'Visited their home' },
+  { id: 'introduced_friend', label: 'Introduced to a friend' },
+  { id: 'gave_gift', label: 'Gave a gift' },
+];
 
 const getStatusClasses = (status: FollowUpStatus | undefined): string => {
     if (!status) return 'bg-secondary text-secondary-foreground border-border';
@@ -76,6 +85,7 @@ const logFollowUpFormSchema = z.object({
     attendingChurch: z.boolean(),
     inBibleStudy: z.boolean(),
     attendingPrayer: z.boolean(),
+    actions: z.array(z.string()).optional(),
 });
 
 function LogFollowUpDialog({ soul, children }: { soul: Soul; children: React.ReactNode; }) {
@@ -93,6 +103,7 @@ function LogFollowUpDialog({ soul, children }: { soul: Soul; children: React.Rea
       attendingChurch: soul.attendingChurch || false,
       inBibleStudy: soul.inBibleStudy || false,
       attendingPrayer: soul.attendingPrayer || false,
+      actions: [],
     },
   });
   
@@ -104,6 +115,7 @@ function LogFollowUpDialog({ soul, children }: { soul: Soul; children: React.Rea
         attendingChurch: soul.attendingChurch || false,
         inBibleStudy: soul.inBibleStudy || false,
         attendingPrayer: soul.attendingPrayer || false,
+        actions: [],
       });
     }
   }, [isOpen, soul, form]);
@@ -122,6 +134,7 @@ function LogFollowUpDialog({ soul, children }: { soul: Soul; children: React.Rea
       const newLogEntry: FollowUpLogItem = {
         date: new Date() as any,
         note: values.note || '',
+        actions: values.actions || [],
       };
 
       await updateDoc(soulRef, {
@@ -192,6 +205,55 @@ function LogFollowUpDialog({ soul, children }: { soul: Soul; children: React.Rea
                             </FormItem>
                         )}
                     />
+                     <FormField
+                        control={form.control}
+                        name="actions"
+                        render={() => (
+                            <FormItem className="space-y-3 rounded-lg border p-4">
+                            <div className="mb-4">
+                                <FormLabel className="text-base">Actions Taken</FormLabel>
+                                <FormDescription>
+                                    Select all relationship-building actions taken during this follow-up.
+                                </FormDescription>
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                {actionItems.map((item) => (
+                                <FormField
+                                    key={item.id}
+                                    control={form.control}
+                                    name="actions"
+                                    render={({ field }) => {
+                                    return (
+                                        <FormItem
+                                        key={item.id}
+                                        className="flex flex-row items-start space-x-3 space-y-0"
+                                        >
+                                        <FormControl>
+                                            <Checkbox
+                                            checked={field.value?.includes(item.id)}
+                                            onCheckedChange={(checked) => {
+                                                return checked
+                                                ? field.onChange([...(field.value || []), item.id])
+                                                : field.onChange(
+                                                    field.value?.filter(
+                                                        (value) => value !== item.id
+                                                    )
+                                                    )
+                                            }}
+                                            />
+                                        </FormControl>
+                                        <FormLabel className="font-normal text-sm">
+                                            {item.label}
+                                        </FormLabel>
+                                        </FormItem>
+                                    )
+                                    }}
+                                />
+                                ))}
+                            </div>
+                            </FormItem>
+                        )}
+                        />
                     <div className="space-y-4 rounded-lg border p-4">
                         <div className="space-y-0.5">
                             <Label>Update Milestones</Label>
@@ -278,6 +340,16 @@ function ViewHistoryDialog({ soul, children }: { soul: Soul; children: React.Rea
                            {log.date ? format(log.date.toDate(), "PPP 'at' p") : 'Date not available'}
                         </p>
                         <div className="pl-4 border-l-2 space-y-3">
+                           {log.actions && log.actions.length > 0 && (
+                                <div className="flex flex-wrap gap-2">
+                                    {log.actions.map(actionId => {
+                                        const action = actionItems.find(a => a.id === actionId);
+                                        return action ? (
+                                            <Badge key={actionId} variant="secondary">{action.label}</Badge>
+                                        ) : null;
+                                    })}
+                                </div>
+                            )}
                            {log.note ? (
                                 <blockquote className="text-sm text-muted-foreground italic">
                                     &ldquo;{log.note}&rdquo;
@@ -392,7 +464,15 @@ function SoulCard({ soul }: { soul: ProcessedSoul }) {
                                {latestFollowUp ? (
                                     <div className="text-sm">
                                         <p className="font-semibold text-muted-foreground">Latest Log: {format(latestFollowUp.date.toDate(), "PPP")}</p>
-                                        <p className="italic line-clamp-2 mt-1">&ldquo;{latestFollowUp.note}&rdquo;</p>
+                                        {latestFollowUp.actions && latestFollowUp.actions.length > 0 && (
+                                            <div className="mt-2 flex flex-wrap gap-1">
+                                                {latestFollowUp.actions.map(actionId => {
+                                                    const action = actionItems.find(a => a.id === actionId);
+                                                    return action ? <Badge key={actionId} variant="secondary" className="text-xs font-normal">{action.label}</Badge> : null
+                                                })}
+                                            </div>
+                                        )}
+                                        <p className="italic line-clamp-2 mt-2">&ldquo;{latestFollowUp.note}&rdquo;</p>
                                     </div>
                                 ) : (
                                     <p className="text-sm text-muted-foreground">No follow-up logged yet.</p>
@@ -565,8 +645,15 @@ export function SoulsWonTable({ souls, loading }: SoulsWonTableProps) {
                 </TableCell>
                 <TableCell>
                     {latestFollowUp ? (
-                        <div className="text-xs text-muted-foreground">
-                            {format(latestFollowUp.date.toDate(), "PPP")}
+                        <div className="text-xs">
+                            <div className="text-muted-foreground font-semibold">
+                                {format(latestFollowUp.date.toDate(), "PPP")}
+                            </div>
+                            {latestFollowUp.actions && latestFollowUp.actions.length > 0 && (
+                                <div className="text-muted-foreground line-clamp-1" title={latestFollowUp.actions.map(a => actionItems.find(ai => ai.id === a)?.label).join(', ')}>
+                                    {latestFollowUp.actions.map(a => actionItems.find(ai => ai.id === a)?.label).join(', ')}
+                                </div>
+                            )}
                         </div>
                     ) : (
                         <div className="text-xs text-muted-foreground">No logs</div>
