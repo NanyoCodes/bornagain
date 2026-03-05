@@ -1,4 +1,3 @@
-
 "use client";
 
 import Image from "next/image";
@@ -54,7 +53,7 @@ const navItems = [
 
 function AppHeader() {
   const { user } = useUser();
-  const { chatId: rawChatId, userId: rawUserId } = useParams()
+  const { chatId: rawChatId, userId: rawUserId } = useParams();
   const chatId = rawChatId as string;
   const userId = rawUserId as string;
   const pathname = usePathname();
@@ -407,7 +406,7 @@ export default function DashboardLayout({
     <SearchProvider>
       <div className="flex min-h-screen w-full flex-col bg-muted/30">
         <AppHeader />
-        <main className="flex-1 overflow-y-auto">
+        <main className="flex-1 overflow-y-auto min-h-0">
           <div className="max-w-7xl mx-auto p-4 md:p-6 pb-20 md:pb-6">
             {children}
           </div>

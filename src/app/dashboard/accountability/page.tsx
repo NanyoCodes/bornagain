@@ -185,7 +185,7 @@ export default function AccountabilityPage() {
   }
 
   return (
-    <div className="space-y-8 max-w-3xl mx-auto pb-20 md:pb-6">
+    <div className="space-y-8 max-w-3xl mx-auto">
       <div className="flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left">
         <Link href={`/dashboard/profile/${partnerId}`}>
           <Avatar className="h-24 w-24 sm:h-20 sm:w-20 border cursor-pointer hover:opacity-80 transition-opacity">
