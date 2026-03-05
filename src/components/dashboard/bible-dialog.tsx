@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect, useRef, useLayoutEffect } from 'react';
@@ -327,6 +326,37 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
         }
     };
 
+    const formatVerses = (verses: number[]): string => {
+        if (!verses || verses.length === 0) return '';
+        const sorted = [...verses].sort((a, b) => a - b);
+        const ranges: (number | string)[] = [];
+        
+        if (sorted.length === 0) return '';
+
+        let start = sorted[0];
+        let end = sorted[0];
+
+        for (let i = 1; i < sorted.length; i++) {
+            if (sorted[i] === end + 1) {
+                end = sorted[i];
+            } else {
+                if (start === end) {
+                    ranges.push(start);
+                } else {
+                    ranges.push(`${start}-${end}`);
+                }
+                start = sorted[i];
+                end = sorted[i];
+            }
+        }
+        if (start === end) {
+            ranges.push(start);
+        } else {
+            ranges.push(`${start}-${end}`);
+        }
+        return ranges.join(', ');
+    }
+
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -427,11 +457,16 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                                         <div className="grid gap-4">
                                             <div className="space-y-2">
                                                 <h4 className="font-medium leading-none">My Note</h4>
+                                                {activeHighlight && (
+                                                    <p className="text-sm font-semibold text-primary pt-1">
+                                                        {activeHighlight.book} {activeHighlight.chapter}:{formatVerses(activeHighlight.verses)}
+                                                    </p>
+                                                )}
                                                 <p className="text-sm text-muted-foreground">
                                                 Add a personal note to this highlight.
                                                 </p>
                                             </div>
-                                            <Textarea value={noteText} onChange={(e) => setNoteText(e.target.value)} rows={4} />
+                                            <Textarea value={noteText} onChange={(e) => setNoteText(e.target.value)} rows={4} placeholder="Your note..."/>
                                             <div className="flex justify-between">
                                                 <Button variant="destructive" size="sm" onClick={handleDeleteHighlight} disabled={isSaving}>
                                                     {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Trash2 className="mr-2 h-4 w-4"/>}
