@@ -255,16 +255,23 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
     };
 
     const handleVerseClick = (verseNumber: number) => {
-        setActiveHighlight(null);
-        setPopoverOpen(false);
-
         const existingHighlight = highlightsMap.get(verseNumber);
+
+        // Case 1: Clicked a highlighted verse.
         if (existingHighlight) {
-            setActiveHighlight(existingHighlight);
+            // If it's already active, do nothing (keeps popover open).
+            if (activeHighlight?.id === existingHighlight.id) {
+                return;
+            }
+            // If it's not active, make it active.
             setSelectedVerses([]);
+            setActiveHighlight(existingHighlight);
             return;
         }
 
+        // Case 2: Clicked an un-highlighted verse.
+        // This is a selection action, so close any active popover.
+        setActiveHighlight(null);
         setSelectedVerses(prev =>
             prev.includes(verseNumber)
                 ? prev.filter(v => v !== verseNumber)
