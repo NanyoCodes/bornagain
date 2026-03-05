@@ -18,12 +18,10 @@ import { doc, updateDoc, arrayUnion, collection, query, where, addDoc, serverTim
 import type { UserProfile, ReadingHistoryItem, BibleHighlight } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { format, isSameDay } from 'date-fns';
-import { Loader2, XCircle, BookOpen, MessageSquare, Trash2 } from 'lucide-react';
+import { Loader2, XCircle, BookOpen } from 'lucide-react';
 import { Skeleton } from '../ui/skeleton';
 import { getBibleChapter, type BibleChapterOutput } from '@/ai/flows/get-bible-chapter-flow';
 import { Input } from '../ui/input';
-import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
-import { Textarea } from '../ui/textarea';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip';
 import { cn } from '@/lib/utils';
 
@@ -54,11 +52,9 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const [filterDate, setFilterDate] = useState<Date | undefined>();
 
-  // Highlighting and notes state
+  // Highlighting state
   const [selectedVerses, setSelectedVerses] = useState<number[]>([]);
-  const [activeHighlight, setActiveHighlight] = useState<BibleHighlight | null>(null);
-  const [noteText, setNoteText] = useState('');
-  const [isSaving, setIsSaving] = useState(false);
+  const [isProcessingHighlight, setIsProcessingHighlight] = useState(false);
 
 
   const userDocRef = useMemo(() => (user ? doc(firestore, 'users', user.uid) : null), [user, firestore]);
@@ -140,12 +136,6 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
     return () => clearTimeout(timeoutId);
 
   }, [isLoadingChapter, chapterContent]);
-  
-  useEffect(() => {
-    if (activeHighlight) {
-        setNoteText(activeHighlight.note || '');
-    }
-  }, [activeHighlight]);
 
   const handleMarkAsRead = async () => {
     if (!user || !firestore || !chapterContent) {
@@ -252,21 +242,23 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
     const handleVerseClick = (verseNumber: number) => {
         const existingHighlight = highlightsMap.get(verseNumber);
 
-        // Case 1: Clicked a highlighted verse.
         if (existingHighlight) {
-            // If it's already active, do nothing (keeps popover open).
-            if (activeHighlight?.id === existingHighlight.id) {
-                return;
-            }
-            // If it's not active, make it active.
-            setSelectedVerses([]);
-            setActiveHighlight(existingHighlight);
+            if (!user || !firestore) return;
+            setIsProcessingHighlight(true);
+            deleteDoc(doc(firestore, 'users', user.uid, 'bibleHighlights', existingHighlight.id))
+                .then(() => {
+                    toast({ title: 'Highlight Removed' });
+                })
+                .catch(() => {
+                    toast({ variant: 'destructive', title: 'Error', description: 'Could not remove highlight.' });
+                })
+                .finally(() => {
+                    setIsProcessingHighlight(false);
+                });
             return;
         }
 
-        // Case 2: Clicked an un-highlighted verse.
-        // This is a selection action, so close any active popover.
-        setActiveHighlight(null);
+        // If clicking an un-highlighted verse, add/remove from selection.
         setSelectedVerses(prev =>
             prev.includes(verseNumber)
                 ? prev.filter(v => v !== verseNumber)
@@ -277,7 +269,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
     const handleSaveHighlight = async (color: string) => {
         if (!user || !firestore || selectedVerses.length === 0 || !chapterContent) return;
 
-        setIsSaving(true);
+        setIsProcessingHighlight(true);
         try {
             await addDoc(collection(firestore, 'users', user.uid, 'bibleHighlights'), {
                 userId: user.uid,
@@ -291,72 +283,9 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
         } catch (error) {
             toast({ variant: 'destructive', title: 'Error', description: 'Could not save highlight.' });
         } finally {
-            setIsSaving(false);
+            setIsProcessingHighlight(false);
         }
     };
-    
-    const handleUpdateNote = async () => {
-        if (!user || !firestore || !activeHighlight) return;
-
-        setIsSaving(true);
-        try {
-            const highlightRef = doc(firestore, 'users', user.uid, 'bibleHighlights', activeHighlight.id);
-            await updateDoc(highlightRef, { note: noteText });
-            toast({ title: 'Note Saved' });
-            setActiveHighlight(null);
-        } catch (error) {
-            toast({ variant: 'destructive', title: 'Error', description: 'Could not save note.' });
-        } finally {
-            setIsSaving(false);
-        }
-    };
-    
-    const handleDeleteHighlight = async () => {
-        if (!user || !firestore || !activeHighlight) return;
-
-        setIsSaving(true);
-        try {
-            await deleteDoc(doc(firestore, 'users', user.uid, 'bibleHighlights', activeHighlight.id));
-            toast({ title: 'Highlight Removed' });
-            setActiveHighlight(null);
-        } catch (error) {
-            toast({ variant: 'destructive', title: 'Error', description: 'Could not remove highlight.' });
-        } finally {
-            setIsSaving(false);
-        }
-    };
-
-    const formatVerses = (verses: number[]): string => {
-        if (!verses || verses.length === 0) return '';
-        const sorted = [...verses].sort((a, b) => a - b);
-        const ranges: (number | string)[] = [];
-        
-        if (sorted.length === 0) return '';
-
-        let start = sorted[0];
-        let end = sorted[0];
-
-        for (let i = 1; i < sorted.length; i++) {
-            if (sorted[i] === end + 1) {
-                end = sorted[i];
-            } else {
-                if (start === end) {
-                    ranges.push(start);
-                } else {
-                    ranges.push(`${start}-${end}`);
-                }
-                start = sorted[i];
-                end = sorted[i];
-            }
-        }
-        if (start === end) {
-            ranges.push(start);
-        } else {
-            ranges.push(`${start}-${end}`);
-        }
-        return ranges.join(', ');
-    }
-
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -426,60 +355,30 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                                 const isSelected = selectedVerses.includes(verseNum);
                                 const highlightInfo = highlightsMap.get(verseNum);
                                 return (
-                                <Popover key={verseNum} open={activeHighlight?.id === highlightInfo?.id} onOpenChange={(open) => { if (!open) setActiveHighlight(null); }}>
-                                    <PopoverTrigger asChild>
-                                        <p
-                                            className={cn(
-                                                'rounded-md transition-colors -mx-2 px-2 py-1',
-                                                highlightInfo && getHighlightClass(highlightInfo.color),
-                                                isSelected && 'verse-selected',
-                                                !highlightInfo && 'hover:bg-muted/50 cursor-pointer'
-                                            )}
-                                            onClick={() => handleVerseClick(verseNum)}
-                                        >
-                                            <sup className="text-sm font-sans text-muted-foreground mr-2 select-none">{v.verse}</sup>
-                                            {v.text}
-                                            {highlightInfo?.note && (
-                                                 <TooltipProvider delayDuration={100}>
-                                                    <Tooltip>
-                                                        <TooltipTrigger asChild>
-                                                            <MessageSquare className="inline-block h-4 w-4 ml-2 text-muted-foreground" />
-                                                        </TooltipTrigger>
-                                                        <TooltipContent className="max-w-xs">
-                                                            <p>{highlightInfo.note}</p>
-                                                        </TooltipContent>
-                                                    </Tooltip>
-                                                </TooltipProvider>
-                                            )}
-                                        </p>
-                                    </PopoverTrigger>
-                                    <PopoverContent className="w-80">
-                                        <div className="grid gap-4">
-                                            <div className="space-y-1.5">
-                                                <h4 className="font-medium leading-none">My Note</h4>
-                                                {activeHighlight && (
-                                                    <p className="text-sm font-semibold text-primary pt-1">
-                                                        {activeHighlight.book} {activeHighlight.chapter}:{formatVerses(activeHighlight.verses)}
-                                                    </p>
+                                <TooltipProvider key={verseNum} delayDuration={100}>
+                                    <Tooltip>
+                                        <TooltipTrigger asChild>
+                                            <p
+                                                className={cn(
+                                                    'rounded-md transition-colors -mx-2 px-2 py-1',
+                                                    highlightInfo && getHighlightClass(highlightInfo.color),
+                                                    isSelected && 'verse-selected',
+                                                    !highlightInfo && 'hover:bg-muted/50 cursor-pointer',
+                                                    highlightInfo && 'cursor-pointer'
                                                 )}
-                                                <p className="text-sm text-muted-foreground">
-                                                Add a personal note to this highlight.
-                                                </p>
-                                            </div>
-                                            <Textarea value={noteText} onChange={(e) => setNoteText(e.target.value)} rows={5} placeholder="Your note..."/>
-                                            <div className="flex justify-between">
-                                                <Button variant="destructive" size="sm" onClick={handleDeleteHighlight} disabled={isSaving}>
-                                                    {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Trash2 className="mr-2 h-4 w-4"/>}
-                                                     Delete
-                                                </Button>
-                                                <Button onClick={handleUpdateNote} size="sm" disabled={isSaving}>
-                                                     {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                                    Save Note
-                                                </Button>
-                                            </div>
-                                        </div>
-                                    </PopoverContent>
-                                </Popover>
+                                                onClick={() => handleVerseClick(verseNum)}
+                                            >
+                                                <sup className="text-sm font-sans text-muted-foreground mr-2 select-none">{v.verse}</sup>
+                                                {v.text}
+                                            </p>
+                                        </TooltipTrigger>
+                                        {highlightInfo && (
+                                            <TooltipContent>
+                                                <p>Click to remove highlight.</p>
+                                            </TooltipContent>
+                                        )}
+                                    </Tooltip>
+                                </TooltipProvider>
                                 )
                           })}
                       </div>
@@ -489,7 +388,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                     <div className="absolute bottom-4 left-1/2 -translate-x-1/2 w-auto">
                         <div className="flex items-center gap-2 p-2 rounded-full border bg-background shadow-lg">
                             {highlightColors.map(color => (
-                                <Button key={color} variant="outline" size="icon" className="rounded-full" onClick={() => handleSaveHighlight(color)} disabled={isSaving}>
+                                <Button key={color} variant="outline" size="icon" className="rounded-full" onClick={() => handleSaveHighlight(color)} disabled={isProcessingHighlight}>
                                     <div className={cn("h-5 w-5 rounded-full", getHighlightClass(color))} />
                                 </Button>
                             ))}
