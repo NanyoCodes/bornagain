@@ -677,16 +677,10 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
                         </TooltipProvider>
                         {shareButton}
                         {mounted && isMobile ? (
-                          <TooltipProvider>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <Button onClick={handleJoin} size="icon" disabled={!userId || isJoining || status === 'Past' || isFull}>
-                                  {isJoining ? <Loader2 className="h-4 w-4 animate-spin" /> : <UserPlus className="h-4 w-4" />}
-                                </Button>
-                              </TooltipTrigger>
-                              <TooltipContent><p>{isFull ? 'Campaign Full' : 'Join Campaign'}</p></TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>
+                          <Button onClick={handleJoin} size="sm" disabled={!userId || isJoining || status === 'Past' || isFull}>
+                            {isJoining && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                            {isFull ? 'Full' : 'Join'}
+                          </Button>
                         ) : (
                           <Button onClick={handleJoin} disabled={!userId || isJoining || status === 'Past' || isFull}>
                             {isJoining && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
