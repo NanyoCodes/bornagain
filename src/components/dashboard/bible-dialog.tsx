@@ -453,9 +453,9 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                                             )}
                                         </p>
                                     </PopoverTrigger>
-                                    <PopoverContent className="w-80">
-                                        <div className="grid gap-4">
-                                            <div className="space-y-2">
+                                    <PopoverContent className="w-72">
+                                        <div className="grid gap-3">
+                                            <div className="space-y-1.5">
                                                 <h4 className="font-medium leading-none">My Note</h4>
                                                 {activeHighlight && (
                                                     <p className="text-sm font-semibold text-primary pt-1">
@@ -466,7 +466,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                                                 Add a personal note to this highlight.
                                                 </p>
                                             </div>
-                                            <Textarea value={noteText} onChange={(e) => setNoteText(e.target.value)} rows={4} placeholder="Your note..."/>
+                                            <Textarea value={noteText} onChange={(e) => setNoteText(e.target.value)} rows={3} placeholder="Your note..."/>
                                             <div className="flex justify-between">
                                                 <Button variant="destructive" size="sm" onClick={handleDeleteHighlight} disabled={isSaving}>
                                                     {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Trash2 className="mr-2 h-4 w-4"/>}
