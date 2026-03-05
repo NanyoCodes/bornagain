@@ -17,7 +17,7 @@ import { SoulsWonTable } from "@/components/souls/souls-won-table";
 import { LogSoulForm } from "@/components/souls/log-soul-form";
 import type { Soul } from "@/lib/types";
 import { useCollection, useFirestore, useUser } from "@/firebase";
-import { collection, query, orderBy, doc, updateDoc } from "firebase/firestore";
+import { collection, query, orderBy } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useSearch } from "@/context/search-context";
@@ -83,17 +83,6 @@ export default function SoulsWonPage() {
 
   const handleSoulLogged = () => {
     setIsLogDialogOpen(false);
-  };
-
-  const handleUpdateSoul = async (soulId: string, data: Partial<Soul>) => {
-    if (!user || !firestore) return;
-    const soulRef = doc(firestore, `users/${user.uid}/souls`, soulId);
-    try {
-      await updateDoc(soulRef, data);
-    } catch (error) {
-      console.error("Error updating soul: ", error);
-      toast({ variant: 'destructive', title: "Update Failed", description: "Could not update the record."});
-    }
   };
 
   const handleExport = (formatType: 'csv' | 'pdf') => {
@@ -261,7 +250,6 @@ export default function SoulsWonPage() {
       
       <SoulsWonTable 
         souls={filteredSouls || []} 
-        onUpdateSoul={handleUpdateSoul} 
         loading={loading}
       />
     </div>
