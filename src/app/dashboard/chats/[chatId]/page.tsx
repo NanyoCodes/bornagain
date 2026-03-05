@@ -186,8 +186,7 @@ export default function ChatPage() {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [messageGroups]);
 
-    const handleSendMessage = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const sendMessage = async () => {
         if (!newMessage.trim() || !user || !firestore || !chatId || isSending || !chat || isChatFrozen) return;
         
         setIsSending(true);
@@ -303,6 +302,18 @@ export default function ChatPage() {
             });
         } finally {
             setIsSending(false);
+        }
+    };
+
+    const handleFormSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        sendMessage();
+    };
+
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            sendMessage();
         }
     };
 
@@ -538,10 +549,11 @@ export default function ChatPage() {
                             </Button>
                         </div>
                     )}
-                    <form onSubmit={handleSendMessage} className="flex gap-2 w-full items-center">
+                    <form onSubmit={handleFormSubmit} className="flex gap-2 w-full items-center">
                         <Input
                             value={newMessage}
                             onChange={(e) => setNewMessage(e.target.value)}
+                            onKeyDown={handleKeyDown}
                             placeholder="Type a message..."
                             disabled={isSending}
                             autoComplete="off"
