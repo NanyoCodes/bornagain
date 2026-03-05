@@ -13,6 +13,9 @@ import { Button } from '../ui/button';
 import { Loader2, Quote, PlayCircle } from 'lucide-react';
 import type { UserProfile } from '@/lib/types';
 import Link from 'next/link';
+import { useUser } from '@/firebase';
+import { PrayerLinksSettingsCard } from '../settings/prayer-links-settings-card';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 const prayerVerses = [
     { verse: "Philippians 4:6-7", text: "Do not be anxious about anything, but in every situation, by prayer and petition, with thanksgiving, present your requests to God. And the peace of God, which transcends all understanding, will guard your hearts and your minds in Christ Jesus." },
@@ -24,6 +27,7 @@ const prayerVerses = [
 ];
 
 export function PrayerDialog({ isOpen, onOpenChange, onDisciplineCompleted, userProfile }: { isOpen: boolean; onOpenChange: (open: boolean) => void; onDisciplineCompleted: () => void; userProfile: UserProfile | null; }) {
+  const { user } = useUser();
   const [verse, setVerse] = useState<{ verse: string; text: string; } | null>(null);
   const [isCompleting, setIsCompleting] = useState(false);
 
@@ -90,7 +94,23 @@ export function PrayerDialog({ isOpen, onOpenChange, onDisciplineCompleted, user
             )}
         </div>
         
-        <DialogFooter className="sm:justify-between gap-2">
+        <Accordion type="single" collapsible className="w-full">
+            <AccordionItem value="item-1">
+                <AccordionTrigger>Manage Prayer Links</AccordionTrigger>
+                <AccordionContent>
+                    {user && userProfile && (
+                        <div className="pt-4">
+                            <p className="text-sm text-muted-foreground mb-4">
+                                Add or remove personal links to prayer meetings or streams (up to 5).
+                            </p>
+                            <PrayerLinksSettingsCard userProfile={userProfile} userId={user.uid} />
+                        </div>
+                    )}
+                </AccordionContent>
+            </AccordionItem>
+        </Accordion>
+        
+        <DialogFooter className="sm:justify-between gap-2 pt-4">
             <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isCompleting}>Cancel</Button>
             <Button onClick={handleComplete} disabled={isCompleting}>
                 {isCompleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
