@@ -12,10 +12,10 @@ import {
 import { Button } from '../ui/button';
 import { Loader2, Quote, PlayCircle } from 'lucide-react';
 import type { UserProfile } from '@/lib/types';
-import Link from 'next/link';
 import { useUser } from '@/firebase';
 import { PrayerLinksSettingsCard } from '../settings/prayer-links-settings-card';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Separator } from '../ui/separator';
+import { useToast } from '@/hooks/use-toast';
 
 const prayerVerses = [
     { verse: "Philippians 4:6-7", text: "Do not be anxious about anything, but in every situation, by prayer and petition, with thanksgiving, present your requests to God. And the peace of God, which transcends all understanding, will guard your hearts and your minds in Christ Jesus." },
@@ -30,6 +30,7 @@ export function PrayerDialog({ isOpen, onOpenChange, onDisciplineCompleted, user
   const { user } = useUser();
   const [verse, setVerse] = useState<{ verse: string; text: string; } | null>(null);
   const [isCompleting, setIsCompleting] = useState(false);
+  const { toast } = useToast();
 
   const prayerLinks = userProfile?.prayerLinks || [];
 
@@ -48,6 +49,18 @@ export function PrayerDialog({ isOpen, onOpenChange, onDisciplineCompleted, user
     setTimeout(() => {
         setIsCompleting(false);
         onOpenChange(false);
+        toast({ title: 'Discipline Completed', description: 'You have completed the prayer discipline for today.'});
+    }, 500);
+  }
+
+  const handleLinkClick = (url: string) => {
+    setIsCompleting(true);
+    onDisciplineCompleted();
+    window.open(url, '_blank', 'noopener,noreferrer');
+    setTimeout(() => {
+        setIsCompleting(false);
+        onOpenChange(false);
+        toast({ title: 'Discipline Completed', description: 'You have completed the prayer discipline for today.'});
     }, 500);
   }
 
@@ -77,16 +90,15 @@ export function PrayerDialog({ isOpen, onOpenChange, onDisciplineCompleted, user
                 <h4 className="font-medium text-sm text-muted-foreground">Join a Prayer Stream</h4>
                 <div className="space-y-2">
                     {prayerLinks.map((link, index) => (
-                        <Button asChild key={index} variant="secondary" className="w-full justify-start">
-                            <Link
-                                href={link.url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="flex items-center"
-                            >
-                                <PlayCircle className="mr-2 h-4 w-4" />
-                                {link.name}
-                            </Link>
+                        <Button
+                            key={index}
+                            variant="secondary"
+                            className="w-full justify-start"
+                            onClick={() => handleLinkClick(link.url)}
+                            disabled={isCompleting}
+                        >
+                            <PlayCircle className="mr-2 h-4 w-4" />
+                            {link.name}
                         </Button>
                     ))}
                 </div>
@@ -94,21 +106,19 @@ export function PrayerDialog({ isOpen, onOpenChange, onDisciplineCompleted, user
             )}
         </div>
         
-        <Accordion type="single" collapsible className="w-full">
-            <AccordionItem value="item-1">
-                <AccordionTrigger>Manage Prayer Links</AccordionTrigger>
-                <AccordionContent>
-                    {user && userProfile && (
-                        <div className="pt-4">
-                            <p className="text-sm text-muted-foreground mb-4">
-                                Add or remove personal links to prayer meetings or streams (up to 5).
-                            </p>
-                            <PrayerLinksSettingsCard userProfile={userProfile} userId={user.uid} />
-                        </div>
-                    )}
-                </AccordionContent>
-            </AccordionItem>
-        </Accordion>
+        <Separator />
+
+        <div className="space-y-2 pt-2">
+            <h3 className="font-semibold">Manage Prayer Links</h3>
+            {user && userProfile && (
+                <div className="pt-2">
+                    <p className="text-sm text-muted-foreground mb-4">
+                        Add or remove personal links to prayer meetings or streams (up to 5).
+                    </p>
+                    <PrayerLinksSettingsCard userProfile={userProfile} userId={user.uid} />
+                </div>
+            )}
+        </div>
         
         <DialogFooter className="sm:justify-between gap-2 pt-4">
             <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isCompleting}>Cancel</Button>
