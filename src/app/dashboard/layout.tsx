@@ -54,6 +54,8 @@ const navItems = [
 
 function AppHeader() {
   const { user } = useUser();
+  const { chatId, userId: userIdFromParams } = useParams();
+  const userId = userIdFromParams as string;
   const pathname = usePathname();
   const auth = useAuth();
   const firestore = useFirestore();
@@ -80,13 +82,25 @@ function AppHeader() {
     if (!user?.uid || !firestore) return null;
     return query(
       collection(firestore, `users/${user.uid}/notifications`),
-      where('type', 'in', otherNotificationTypes),
-      orderBy('createdAt', 'desc'),
-      limit(5)
+      where('type', 'in', otherNotificationTypes)
+      // orderBy('createdAt', 'desc'), // This causes a composite index requirement.
+      // limit(5) // Limit must be done on client side after sorting.
     );
   }, [user?.uid, firestore]);
 
-  const { data: otherNotifications, loading: notificationsLoading } = useCollection<Notification>(otherNotificationsQuery);
+  const { data: otherNotificationsData, loading: notificationsLoading } = useCollection<Notification>(otherNotificationsQuery);
+
+  const otherNotifications = useMemo(() => {
+    if (!otherNotificationsData) return null;
+    return [...otherNotificationsData]
+      .sort((a, b) => {
+        const timeA = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : 0;
+        const timeB = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : 0;
+        return timeB - timeA;
+      })
+      .slice(0, 5); // Apply limit after sorting
+  }, [otherNotificationsData]);
+  
   const unreadCount = useMemo(() => otherNotifications?.filter(n => !n.isRead).length ?? 0, [otherNotifications]);
 
 
@@ -394,7 +408,7 @@ export default function DashboardLayout({
       <div className="flex min-h-screen w-full flex-col bg-muted/30">
         <AppHeader />
         <main className="flex-1 overflow-y-auto">
-          <div className={cn("max-w-7xl mx-auto p-4 md:p-6", !isChatPage && "pb-20 md:pb-6")}>
+          <div className={cn("max-w-7xl mx-auto p-4 md:p-6 pb-20 md:pb-6")}>
             {children}
           </div>
         </main>

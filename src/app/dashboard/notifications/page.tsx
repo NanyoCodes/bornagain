@@ -26,12 +26,21 @@ export default function NotificationsPage() {
     const otherNotificationTypes = ['campaign_join', 'accountability_nudge', 'accountability_request', 'request_accepted', 'request_declined'];
     return query(
         collection(firestore, `users/${user.uid}/notifications`),
-        where('type', 'in', otherNotificationTypes),
-        orderBy('createdAt', 'desc')
+        where('type', 'in', otherNotificationTypes)
+        // orderBy('createdAt', 'desc') // This causes a composite index requirement.
     );
   }, [user?.uid, firestore]);
 
-  const { data: notifications, loading } = useCollection<Notification>(notificationsQuery);
+  const { data: notificationsData, loading } = useCollection<Notification>(notificationsQuery);
+
+  const notifications = useMemo(() => {
+    if (!notificationsData) return null;
+    return [...notificationsData].sort((a, b) => {
+        const timeA = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : 0;
+        const timeB = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : 0;
+        return timeB - timeA;
+    });
+  }, [notificationsData]);
 
   const handleNotificationClick = async (notification: Notification) => {
     if (!user || !firestore) return;
