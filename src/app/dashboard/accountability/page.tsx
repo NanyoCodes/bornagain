@@ -7,7 +7,7 @@ import type { UserProfile, DailyDisciplineLog } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Loader2, HeartHandshake, ShieldAlert, CheckCircle2, MessageSquare } from 'lucide-react';
+import { Loader2, HeartHandshake, ShieldAlert, CheckCircle2, MessagesSquare } from 'lucide-react';
 import { format, isSameDay } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
@@ -185,7 +185,7 @@ export default function AccountabilityPage() {
   }
 
   return (
-    <div className="space-y-8 max-w-3xl mx-auto">
+    <div className="space-y-8 max-w-3xl mx-auto pb-20 md:pb-6">
       <div className="flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left">
         <Link href={`/dashboard/profile/${partnerId}`}>
           <Avatar className="h-24 w-24 sm:h-20 sm:w-20 border cursor-pointer hover:opacity-80 transition-opacity">
@@ -278,7 +278,7 @@ export default function AccountabilityPage() {
             </AlertDialogContent>
           </AlertDialog>
           <Button onClick={handleInitiateChat} disabled={isChatLoading} className="w-full sm:w-auto">
-              {isChatLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <MessageSquare className="mr-2 h-4 w-4" />}
+              {isChatLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <MessagesSquare className="mr-2 h-4 w-4" />}
               Chat with Partner
           </Button>
         </CardFooter>

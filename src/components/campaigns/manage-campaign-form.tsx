@@ -8,7 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, MessageSquare, Trash2, X } from 'lucide-react';
+import { Loader2, MessagesSquare, Trash2, X } from 'lucide-react';
 import { useCollection, useFirestore, useUser } from '@/firebase';
 import { collection, doc, updateDoc, serverTimestamp, getDoc, where, limit, addDoc, setDoc, runTransaction, query, orderBy, writeBatch } from 'firebase/firestore';
 import type { Campaign, CampaignParticipant } from '@/lib/types';
@@ -620,7 +620,7 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
             </CardHeader>
             <CardContent>
                 <Button onClick={handleStartGroupChat} disabled={isChatLoading || participantsLoading || !participants || participants.length <= 1}>
-                    {isChatLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <MessageSquare className="mr-2 h-4 w-4" />}
+                    {isChatLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <MessagesSquare className="mr-2 h-4 w-4" />}
                     Start Group Chat
                 </Button>
                  {participants && participants.length <= 1 && <p className="text-xs text-muted-foreground mt-2">You need at least one other participant to start a group chat.</p>}

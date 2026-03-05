@@ -9,7 +9,7 @@ import Link from 'next/link';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { formatDistanceToNow } from 'date-fns';
 import { useMemo } from 'react';
-import { MessageSquare } from 'lucide-react';
+import { MessagesSquare } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 
@@ -182,7 +182,7 @@ export default function ChatsPage() {
                     )}
                     {!loading && chats?.length === 0 && (
                         <div className="p-8 text-center border-t">
-                            <MessageSquare className="mx-auto h-12 w-12 text-muted-foreground" />
+                            <MessagesSquare className="mx-auto h-12 w-12 text-muted-foreground" />
                             <h3 className="mt-4 text-lg font-semibold">No Active Conversations</h3>
                             <p className="mt-2 text-sm text-muted-foreground">
                                 When you join a campaign or chat with someone, your conversations will appear here.

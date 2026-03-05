@@ -9,7 +9,7 @@ import {
   ArrowLeft,
   Bell,
   LogOut,
-  MessageSquare,
+  MessagesSquare,
   Newspaper,
   Search,
   Settings,
@@ -54,8 +54,9 @@ const navItems = [
 
 function AppHeader() {
   const { user } = useUser();
-  const { chatId, userId: userIdFromParams } = useParams();
-  const userId = userIdFromParams as string;
+  const { chatId: rawChatId, userId: rawUserId } = useParams()
+  const chatId = rawChatId as string;
+  const userId = rawUserId as string;
   const pathname = usePathname();
   const auth = useAuth();
   const firestore = useFirestore();
@@ -214,7 +215,7 @@ function AppHeader() {
         )}
         <Button variant="ghost" size="icon" asChild>
             <Link href="/dashboard/chats" className="relative">
-                <MessageSquare className="h-5 w-5" />
+                <MessagesSquare className="h-5 w-5" />
                 {unreadChatCount > 0 && (
                     <div className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-xs font-bold text-destructive-foreground">
                         {unreadChatCount}
@@ -348,7 +349,6 @@ export default function DashboardLayout({
   const { user, loading } = useUser();
   const router = useRouter();
   const pathname = usePathname();
-  const isChatPage = pathname.startsWith('/dashboard/chats/');
   const [showWelcomePopup, setShowWelcomePopup] = useState(false);
   const logo = PlaceHolderImages.find((img) => img.id === "logo");
 
@@ -408,7 +408,7 @@ export default function DashboardLayout({
       <div className="flex min-h-screen w-full flex-col bg-muted/30">
         <AppHeader />
         <main className="flex-1 overflow-y-auto">
-          <div className={cn("max-w-7xl mx-auto p-4 md:p-6 pb-20 md:pb-6")}>
+          <div className="max-w-7xl mx-auto p-4 md:p-6 pb-20 md:pb-6">
             {children}
           </div>
         </main>
