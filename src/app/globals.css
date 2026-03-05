@@ -31,8 +31,6 @@
     --chart-5: 43 74% 66%;
     --status-new: 48 96% 51%; /* amber-500 */
     --status-contacted: 221 83% 53%; /* blue-600 */
-    --status-attending-church: 199 89% 44%; /* cyan-600 */
-    --status-bible-study: 262 84% 59%; /* violet-600 */
     --status-established: 0 84.2% 60.2%;
   }
 
@@ -63,8 +61,6 @@
     --chart-5: 43 65% 60%;
     --status-new: 45 93% 57%; /* amber-500 */
     --status-contacted: 217 91% 60%; /* blue-500 */
-    --status-attending-church: 198 93% 60%; /* cyan-500 */
-    --status-bible-study: 259 92% 70%; /* violet-500 */
     --status-established: 0 72.2% 50.6%;
   }
 }

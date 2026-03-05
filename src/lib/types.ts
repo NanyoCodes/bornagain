@@ -142,12 +142,11 @@ export type ProgressLog = {
   soulsWon: number;
 };
 
-export type FollowUpStatus = 'New' | 'Contacted' | 'Attending Church' | 'In Bible Study' | 'Established';
+export type FollowUpStatus = 'New' | 'Contacted' | 'Established';
 
 export type FollowUpLogItem = {
   date: Timestamp;
   note?: string;
-  checklist?: string[];
 };
 
 export type Soul = {
@@ -170,9 +169,6 @@ export type Soul = {
   wonAt: Timestamp; // ISO date string
   status: FollowUpStatus;
   followUpLog: FollowUpLogItem[];
-  attendingChurch: boolean;
-  inBibleStudy: boolean;
-  attendingPrayer: boolean;
 };
 
 export type ChatParticipantInfo = {

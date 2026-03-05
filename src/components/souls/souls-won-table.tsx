@@ -50,7 +50,7 @@ import { Badge } from "../ui/badge";
 import { Loader2 } from "lucide-react";
 
 
-const statusOptions: FollowUpStatus[] = ['New', 'Contacted', 'Attending Church', 'In Bible Study', 'Established'];
+const statusOptions: FollowUpStatus[] = ['New', 'Contacted', 'Established'];
 
 const getStatusClasses = (status: FollowUpStatus | undefined): string => {
     if (!status) return 'bg-secondary text-secondary-foreground border-border';
@@ -59,10 +59,6 @@ const getStatusClasses = (status: FollowUpStatus | undefined): string => {
             return 'bg-[hsl(var(--status-new)/0.1)] text-[hsl(var(--status-new))] border-[hsl(var(--status-new)/0.2)]';
         case 'Contacted':
             return 'bg-[hsl(var(--status-contacted)/0.1)] text-[hsl(var(--status-contacted))] border-[hsl(var(--status-contacted)/0.2)]';
-        case 'Attending Church':
-            return 'bg-[hsl(var(--status-attending-church)/0.1)] text-[hsl(var(--status-attending-church))] border-[hsl(var(--status-attending-church)/0.2)]';
-        case 'In Bible Study':
-            return 'bg-[hsl(var(--status-bible-study)/0.1)] text-[hsl(var(--status-bible-study))] border-[hsl(var(--status-bible-study)/0.2)]';
         case 'Established':
             return 'bg-[hsl(var(--status-established)/0.1)] text-[hsl(var(--status-established))] border-[hsl(var(--status-established)/0.2)]';
         default:
@@ -81,7 +77,6 @@ const followUpIdeas = [
 ];
 
 const logFollowUpFormSchema = z.object({
-    checklist: z.array(z.string()).optional(),
     note: z.string().min(1, { message: "A note is required." }),
     status: z.enum(statusOptions),
 });
@@ -96,7 +91,6 @@ function LogFollowUpDialog({ soul, children }: { soul: Soul; children: React.Rea
   const form = useForm<z.infer<typeof logFollowUpFormSchema>>({
     resolver: zodResolver(logFollowUpFormSchema),
     defaultValues: {
-      checklist: [],
       note: '',
       status: soul.status,
     },
@@ -116,7 +110,6 @@ function LogFollowUpDialog({ soul, children }: { soul: Soul; children: React.Rea
       const newLogEntry: FollowUpLogItem = {
         date: new Date() as any,
         note: values.note || '',
-        checklist: values.checklist || [],
       };
 
       await updateDoc(soulRef, {
@@ -139,36 +132,23 @@ function LogFollowUpDialog({ soul, children }: { soul: Soul; children: React.Rea
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => { if (!isLoading) { setIsOpen(open); if (!open) form.reset({ checklist: [], note: '', status: soul.status }); } }}>
+    <Dialog open={isOpen} onOpenChange={(open) => { if (!isLoading) { setIsOpen(open); if (!open) form.reset({ note: '', status: soul.status }); } }}>
         <DialogTrigger asChild>{children}</DialogTrigger>
         <DialogContent className="sm:max-w-md">
             <DialogHeader>
                 <DialogTitle>Log Follow-up for {soul.name}</DialogTitle>
                 <DialogDescription>
-                    Select the actions you took and add any relevant notes.
+                    Record your interaction and update their progress.
                 </DialogDescription>
             </DialogHeader>
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                     <FormField
                         control={form.control}
-                        name="checklist"
-                        render={() => (
-                            <FormItem>
-                                <div className="mb-4">
-                                    <Label className="text-base">Follow-up Checklist</Label>
-                                </div>
-                                {/* ... Checkbox form fields are omitted for brevity as they are not changing ... */}
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                    <FormField
-                        control={form.control}
                         name="note"
                         render={({ field }) => (
                             <FormItem>
-                                <Label>Additional Notes (Required)</Label>
+                                <Label>Notes (Required)</Label>
                                 <FormControl>
                                     <Textarea placeholder="e.g., They are struggling with..." {...field} value={field.value ?? ''} />
                                 </FormControl>
@@ -238,21 +218,11 @@ function ViewHistoryDialog({ soul, children }: { soul: Soul; children: React.Rea
                            {log.date ? format(log.date.toDate(), "PPP 'at' p") : 'Date not available'}
                         </p>
                         <div className="pl-4 border-l-2 space-y-3">
-                            {log.checklist && log.checklist.length > 0 && (
-                                <ul className="space-y-1 list-disc list-inside">
-                                    {log.checklist.map((item, i) => (
-                                        <li key={i} className="text-sm">
-                                            {item}
-                                        </li>
-                                    ))}
-                                </ul>
-                            )}
-                            {log.note && (
+                           {log.note ? (
                                 <blockquote className="text-sm text-muted-foreground italic">
                                     &ldquo;{log.note}&rdquo;
                                 </blockquote>
-                            )}
-                             {(!log.checklist || log.checklist.length === 0) && !log.note && (
+                            ) : (
                                  <p className="text-sm text-muted-foreground italic">No details recorded for this entry.</p>
                              )}
                         </div>
