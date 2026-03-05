@@ -642,15 +642,14 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                                 .sort((a, b) => (a.createdAt?.seconds ?? 0) - (b.createdAt?.seconds ?? 0))
                                 .map(h => (
                                     <Card key={h.id} onClick={() => setActiveHighlightId(h.id)} className={cn("cursor-pointer hover:bg-muted/50", getHighlightClass(h.color), 'bg-opacity-20 dark:bg-opacity-10')}>
-                                    <CardHeader className="p-2">
-                                        <CardTitle className="text-sm font-medium">{getVerseReference(h)}</CardTitle>
-                                        {h.updatedAt && <CardDescription className="text-xs">Updated {formatDistanceToNow(h.updatedAt.toDate(), {addSuffix: true})}</CardDescription>}
-                                    </CardHeader>
-                                    {h.note && (
-                                        <CardContent className="p-2 pt-0">
-                                        <p className="text-xs text-muted-foreground line-clamp-2">{h.note}</p>
-                                        </CardContent>
-                                    )}
+                                        <CardHeader className="p-2 flex flex-row items-center justify-between">
+                                            <CardTitle className="text-sm font-medium truncate pr-2">{getVerseReference(h)}</CardTitle>
+                                            {h.updatedAt && (
+                                                <p className="text-xs text-muted-foreground shrink-0">
+                                                    {formatDistanceToNow(h.updatedAt.toDate(), { addSuffix: true })}
+                                                </p>
+                                            )}
+                                        </CardHeader>
                                     </Card>
                                 ))}
 
