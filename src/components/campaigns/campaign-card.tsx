@@ -529,7 +529,7 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
 
   const renderOwnerActions = () => (
     <div className="flex items-center flex-wrap justify-end gap-2">
-      {status !== 'Upcoming' && LogSoulDialog}
+      {status === 'Ongoing' && LogSoulDialog}
       <Dialog open={isManageOpen} onOpenChange={setIsManageOpen}>
         <DialogTrigger asChild>
           <Button variant="outline" size="icon">
@@ -558,7 +558,7 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
 
   const renderParticipantActions = () => (
     <div className="flex items-center flex-wrap justify-end gap-2">
-      {status !== 'Upcoming' && LogSoulDialog}
+      {status === 'Ongoing' && LogSoulDialog}
        <TooltipProvider>
         <Tooltip>
             <TooltipTrigger asChild>
