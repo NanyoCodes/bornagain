@@ -41,7 +41,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "../ui/skeleton";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Label } from "@/components/ui/label";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
@@ -89,6 +89,7 @@ const followUpIdeas = [
 const logFollowUpFormSchema = z.object({
     checklist: z.array(z.string()).optional(),
     note: z.string().min(1, { message: "A note is required." }),
+    status: z.enum(statusOptions),
 });
 
 function LogFollowUpDialog({ soul, children }: { soul: Soul; children: React.ReactNode; }) {
@@ -103,6 +104,7 @@ function LogFollowUpDialog({ soul, children }: { soul: Soul; children: React.Rea
     defaultValues: {
       checklist: [],
       note: '',
+      status: soul.status,
     },
   });
 
@@ -125,6 +127,7 @@ function LogFollowUpDialog({ soul, children }: { soul: Soul; children: React.Rea
 
       await updateDoc(soulRef, {
         followUpLog: arrayUnion(newLogEntry),
+        status: values.status,
       });
 
       toast({
@@ -142,7 +145,7 @@ function LogFollowUpDialog({ soul, children }: { soul: Soul; children: React.Rea
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog open={isOpen} onOpenChange={(open) => { if (!isLoading) { setIsOpen(open); if (!open) form.reset({ checklist: [], note: '', status: soul.status }); } }}>
         <DialogTrigger asChild>{children}</DialogTrigger>
         <DialogContent className="sm:max-w-md">
             <DialogHeader>
@@ -201,6 +204,28 @@ function LogFollowUpDialog({ soul, children }: { soul: Soul; children: React.Rea
                                 <FormControl>
                                     <Textarea placeholder="e.g., They are struggling with..." {...field} value={field.value ?? ''} />
                                 </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="status"
+                        render={({ field }) => (
+                            <FormItem>
+                                <Label>Update Status</Label>
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <FormControl>
+                                        <SelectTrigger className={cn("font-semibold", getStatusClasses(field.value as FollowUpStatus))}>
+                                            <SelectValue placeholder="Set status" />
+                                        </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                        {statusOptions.map(s => (
+                                            <SelectItem key={s} value={s}>{s}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
                                 <FormMessage />
                             </FormItem>
                         )}
@@ -279,11 +304,6 @@ function SoulCard({ soul, onUpdateSoul }: { soul: ProcessedSoul, onUpdateSoul: S
     const { toast } = useToast();
     const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
 
-    const handleStatusChange = (soulId: string, newStatus: FollowUpStatus) => {
-        onUpdateSoul(soulId, { status: newStatus });
-        toast({ title: "Status Updated", description: `Status updated to ${newStatus}.` });
-    };
-
     const handleCheckboxChange = (soulId: string, field: 'attendingChurch' | 'inBibleStudy' | 'attendingPrayer', checked: boolean) => {
         onUpdateSoul(soulId, { [field]: checked });
         const activity = field === 'attendingChurch' ? 'Church Attendance' : field === 'inBibleStudy' ? 'Bible Study' : 'Prayer Meeting';
@@ -345,20 +365,6 @@ function SoulCard({ soul, onUpdateSoul }: { soul: ProcessedSoul, onUpdateSoul: S
                             </Dialog>
                         </div>
 
-                         <div className="space-y-2">
-                            <Label>Status</Label>
-                            <Select value={soul.status} onValueChange={(value: FollowUpStatus) => handleStatusChange(soul.id, value)}>
-                                <SelectTrigger className={cn("font-semibold", getStatusClasses(soul.status))}>
-                                    <SelectValue placeholder="Set status" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {statusOptions.map(s => (
-                                        <SelectItem key={s} value={s}>{s}</SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                        </div>
-
                         <div className="space-y-2">
                             <Label>Follow-up Milestones</Label>
                             <div className="space-y-3 rounded-md border p-4">
@@ -400,7 +406,6 @@ function SoulCard({ soul, onUpdateSoul }: { soul: ProcessedSoul, onUpdateSoul: S
 }
 
 export function SoulsWonTable({ souls, onUpdateSoul, loading }: SoulsWonTableProps) {
-  const { toast } = useToast();
   const isMobile = useIsMobile();
   const [mounted, setMounted] = React.useState(false);
   const [editingSoul, setEditingSoul] = React.useState<Soul | null>(null);
@@ -409,12 +414,6 @@ export function SoulsWonTable({ souls, onUpdateSoul, loading }: SoulsWonTablePro
   React.useEffect(() => {
     setMounted(true);
   }, []);
-
-
-  const handleStatusChange = (soulId: string, newStatus: FollowUpStatus) => {
-    onUpdateSoul(soulId, { status: newStatus });
-    toast({ title: "Status Updated", description: `Status updated to ${newStatus}.` });
-  };
 
   const handleCheckboxChange = (soulId: string, field: 'attendingChurch' | 'inBibleStudy' | 'attendingPrayer', checked: boolean) => {
     onUpdateSoul(soulId, { [field]: checked });
@@ -523,16 +522,7 @@ export function SoulsWonTable({ souls, onUpdateSoul, loading }: SoulsWonTablePro
                   {soul.locationWon || '-'}
                 </TableCell>
                 <TableCell>
-                  <Select value={soul.status} onValueChange={(value: FollowUpStatus) => handleStatusChange(soul.id, value)}>
-                      <SelectTrigger className={cn("w-[150px] h-8 font-semibold", getStatusClasses(soul.status))}>
-                          <SelectValue placeholder="Set status" />
-                      </SelectTrigger>
-                      <SelectContent>
-                          {statusOptions.map(s => (
-                              <SelectItem key={s} value={s}>{s}</SelectItem>
-                          ))}
-                      </SelectContent>
-                  </Select>
+                  <Badge className={cn("w-[150px] justify-center", getStatusClasses(soul.status))} variant="outline">{soul.status}</Badge>
                 </TableCell>
                 <TableCell>
                     <div className="flex items-center gap-2">
@@ -620,20 +610,17 @@ export function SoulsWonTable({ souls, onUpdateSoul, loading }: SoulsWonTablePro
         </Table>
       </CardContent>
     </Card>
-    <Dialog open={isEditDialogOpen} onOpenChange={(open) => {
-        setIsEditDialogOpen(open);
-        if (!open) {
-            setEditingSoul(null);
-        }
-    }}>
+    <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogContent>
             <DialogHeader>
                 <DialogTitle>Edit Soul Details</DialogTitle>
                 <DialogDescription>Make changes to the record for {editingSoul?.name}.</DialogDescription>
             </DialogHeader>
-            {editingSoul && <EditSoulForm soul={editingSoul} onSoulUpdated={() => setIsEditDialogOpen(false)} />}
+            {editingSoul && <EditSoulForm soul={editingSoul} onSoulUpdated={() => { setIsEditDialogOpen(false); setEditingSoul(null); }} />}
         </DialogContent>
     </Dialog>
     </>
   );
 }
+
+    
