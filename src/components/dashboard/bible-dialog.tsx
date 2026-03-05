@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect, useRef, useLayoutEffect } from 'react';
@@ -360,7 +361,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-3xl max-h-[90vh] flex flex-col">
+      <DialogContent className="sm:max-w-3xl flex flex-col h-full max-h-[calc(100vh-2rem)] sm:h-auto">
         <DialogHeader>
           <DialogTitle>
             Read the Bible
@@ -453,7 +454,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                                             )}
                                         </p>
                                     </PopoverTrigger>
-                                    <PopoverContent className="w-72">
+                                    <PopoverContent className="w-72" side="right" sideOffset={5}>
                                         <div className="grid gap-3">
                                             <div className="space-y-1.5">
                                                 <h4 className="font-medium leading-none">My Note</h4>
