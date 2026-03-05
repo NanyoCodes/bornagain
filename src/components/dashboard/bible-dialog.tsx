@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect, useRef, useLayoutEffect } from 'react';
@@ -159,11 +158,6 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
   const { data: userProfile, loading: loadingProfile } = useDoc<UserProfile>(userDocRef);
   
   const selectedBook = useMemo(() => bibleData.find(b => b.name === selectedBookName), [selectedBookName]);
-  
-  useEffect(() => {
-    setSelectedChapterNumber(1);
-    setActiveHighlightId(null);
-  }, [selectedBookName]);
 
   const highlightsQuery = useMemo(() => {
     if (!user || !chapterContent) return null;
@@ -175,6 +169,16 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
   }, [user, firestore, chapterContent]);
 
   const { data: highlights } = useCollection<BibleHighlight>(highlightsQuery);
+  
+  const activeHighlight = useMemo(() => {
+    if (!activeHighlightId || !highlights) return null;
+    return highlights.find(h => h.id === activeHighlightId) || null;
+  }, [activeHighlightId, highlights]);
+  
+  useEffect(() => {
+    setSelectedChapterNumber(1);
+    setActiveHighlightId(null);
+  }, [selectedBookName]);
 
   const highlightsMap = useMemo(() => {
     const map = new Map<number, BibleHighlight>();
@@ -188,11 +192,6 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
     return map;
   }, [highlights]);
   
-  const activeHighlight = useMemo(() => {
-    if (!activeHighlightId || !highlights) return null;
-    return highlights.find(h => h.id === activeHighlightId) || null;
-  }, [activeHighlightId, highlights]);
-
   useEffect(() => {
     if (!isOpen || !selectedBookName || !selectedChapterNumber) return;
 
@@ -541,7 +540,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
 
                             {highlights && highlights
                                 .filter(h => h.id !== activeHighlightId)
-                                .sort((a, b) => a.createdAt.seconds - b.createdAt.seconds)
+                                .sort((a, b) => (a.createdAt?.seconds ?? 0) - (b.createdAt?.seconds ?? 0))
                                 .map(h => (
                                     <Card key={h.id} onClick={() => setActiveHighlightId(h.id)} className={cn("cursor-pointer hover:bg-muted/50", getHighlightClass(h.color), 'bg-opacity-20 dark:bg-opacity-10')}>
                                     <CardHeader className="p-3">
