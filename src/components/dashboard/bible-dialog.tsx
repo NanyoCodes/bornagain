@@ -7,23 +7,26 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogFooter
+  DialogFooter,
+  DialogDescription,
 } from '@/components/ui/dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '../ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
+import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from '../ui/card';
 import { bibleData } from '@/lib/bible-data';
 import { useUser, useFirestore, useDoc, useCollection } from '@/firebase';
-import { doc, updateDoc, arrayUnion, collection, query, where, addDoc, serverTimestamp, deleteDoc } from 'firebase/firestore';
+import { doc, updateDoc, arrayUnion, collection, query, where, addDoc, serverTimestamp, deleteDoc, setDoc } from 'firebase/firestore';
 import type { UserProfile, ReadingHistoryItem, BibleHighlight } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
-import { format, isSameDay } from 'date-fns';
-import { Loader2, XCircle, BookOpen } from 'lucide-react';
+import { format, isSameDay, formatDistanceToNow } from 'date-fns';
+import { Loader2, XCircle, BookOpen, Trash2 } from 'lucide-react';
 import { Skeleton } from '../ui/skeleton';
 import { getBibleChapter, type BibleChapterOutput } from '@/ai/flows/get-bible-chapter-flow';
 import { Input } from '../ui/input';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip';
+import { Textarea } from '../ui/textarea';
 import { cn } from '@/lib/utils';
 
 
@@ -34,6 +37,100 @@ const bibleVersions = [
 ];
 
 const highlightColors = ['yellow', 'green', 'blue', 'pink'];
+
+
+// Helper function to format verse references
+const getVerseReference = (h: { book: string; chapter: number; verses: number[] }) => {
+    if (!h || !h.verses) return '';
+    const verses = [...h.verses].sort((a, b) => a - b);
+    if (verses.length === 0) return '';
+    if (verses.length === 1) return `${h.book} ${h.chapter}:${verses[0]}`;
+    // Find consecutive ranges
+    const ranges: string[] = [];
+    let start = verses[0];
+    for (let i = 1; i < verses.length; i++) {
+        if (verses[i] !== verses[i-1] + 1) {
+            if (start === verses[i-1]) {
+                ranges.push(`${start}`);
+            } else {
+                ranges.push(`${start}-${verses[i-1]}`);
+            }
+            start = verses[i];
+        }
+    }
+    if (start === verses[verses.length-1]) {
+        ranges.push(`${start}`);
+    } else {
+        ranges.push(`${start}-${verses[verses.length-1]}`);
+    }
+    return `${h.book} ${h.chapter}:${ranges.join(', ')}`;
+};
+
+// Internal component for the note editor
+function NoteEditor({ highlight, onSave, onDelete, onCancel }: { highlight: BibleHighlight; onSave: (id: string, note: string) => Promise<void>; onDelete: (id: string) => Promise<void>; onCancel: () => void; }) {
+  const [note, setNote] = useState(highlight.note || '');
+  const [isSaving, setIsSaving] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  
+  const handleSave = async () => {
+    setIsSaving(true);
+    await onSave(highlight.id, note);
+    setIsSaving(false);
+    onCancel(); // Close editor on save
+  }
+  
+  const handleDelete = async () => {
+    setIsDeleting(true);
+    await onDelete(highlight.id);
+    // This component will unmount, so no need to set loading to false
+  }
+
+  return (
+    <Card className="bg-primary/5 border-primary/20 shadow-lg">
+      <CardHeader className="p-4">
+        <CardTitle className="text-base">Editing Note</CardTitle>
+        <CardDescription>{getVerseReference(highlight)}</CardDescription>
+      </CardHeader>
+      <CardContent className="p-4 pt-0">
+        <Textarea 
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            placeholder="Add your personal note..."
+            rows={5}
+            className="text-sm"
+        />
+      </CardContent>
+      <CardFooter className="p-4 pt-0 justify-between">
+          <AlertDialog>
+             <AlertDialogTrigger asChild>
+                <Button variant="destructive" size="sm" disabled={isDeleting}>
+                    {isDeleting ? <Loader2 className="mr-1 h-4 w-4 animate-spin"/> : <Trash2 className="mr-1 h-4 w-4"/>}
+                    Delete
+                </Button>
+             </AlertDialogTrigger>
+             <AlertDialogContent>
+                <AlertDialogHeader>
+                    <AlertDialogTitle>Delete this highlight?</AlertDialogTitle>
+                    <AlertDialogDescription>This will permanently remove the highlight and its associated note.</AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleDelete} className="bg-destructive hover:bg-destructive/90">Confirm</AlertDialogAction>
+                </AlertDialogFooter>
+             </AlertDialogContent>
+          </AlertDialog>
+          <div className="flex gap-2">
+            <Button variant="ghost" size="sm" onClick={onCancel}>Cancel</Button>
+            <Button size="sm" onClick={handleSave} disabled={isSaving || note === (highlight.note || '')}>
+              {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>}
+              Save
+            </Button>
+          </div>
+      </CardFooter>
+    </Card>
+  )
+}
+
 
 export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { isOpen: boolean; onOpenChange: (open: boolean) => void; onDisciplineCompleted: () => void; }) {
   const { toast } = useToast();
@@ -56,15 +153,21 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
   // Highlighting state
   const [selectedVerses, setSelectedVerses] = useState<number[]>([]);
   const [isProcessingHighlight, setIsProcessingHighlight] = useState(false);
-
+  const [activeHighlightId, setActiveHighlightId] = useState<string | null>(null);
 
   const userDocRef = useMemo(() => (user ? doc(firestore, 'users', user.uid) : null), [user, firestore]);
   const { data: userProfile, loading: loadingProfile } = useDoc<UserProfile>(userDocRef);
   
   const selectedBook = useMemo(() => bibleData.find(b => b.name === selectedBookName), [selectedBookName]);
   
+  const activeHighlight = useMemo(() => {
+    if (!activeHighlightId || !highlights) return null;
+    return highlights.find(h => h.id === activeHighlightId) || null;
+  }, [activeHighlightId, highlights]);
+  
   useEffect(() => {
     setSelectedChapterNumber(1);
+    setActiveHighlightId(null);
   }, [selectedBookName]);
 
   const highlightsQuery = useMemo(() => {
@@ -99,6 +202,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
       setChapterContent(null);
       setIsScrolledToEnd(false);
       setSelectedVerses([]);
+      setActiveHighlightId(null);
 
       try {
         const content = await getBibleChapter({
@@ -241,25 +345,16 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
     };
 
     const handleVerseClick = (verseNumber: number) => {
+        if (activeHighlightId) return;
+
         const existingHighlight = highlightsMap.get(verseNumber);
 
         if (existingHighlight) {
-            if (!user || !firestore) return;
-            setIsProcessingHighlight(true);
-            deleteDoc(doc(firestore, 'users', user.uid, 'bibleHighlights', existingHighlight.id))
-                .then(() => {
-                    toast({ title: 'Highlight Removed' });
-                })
-                .catch(() => {
-                    toast({ variant: 'destructive', title: 'Error', description: 'Could not remove highlight.' });
-                })
-                .finally(() => {
-                    setIsProcessingHighlight(false);
-                });
+            setActiveHighlightId(existingHighlight.id);
+            setSelectedVerses([]);
             return;
         }
 
-        // If clicking an un-highlighted verse, add/remove from selection.
         setSelectedVerses(prev =>
             prev.includes(verseNumber)
                 ? prev.filter(v => v !== verseNumber)
@@ -272,14 +367,19 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
 
         setIsProcessingHighlight(true);
         try {
-            await addDoc(collection(firestore, 'users', user.uid, 'bibleHighlights'), {
+            const newHighlightRef = doc(collection(firestore, 'users', user.uid, 'bibleHighlights'));
+            
+            await setDoc(newHighlightRef, {
                 userId: user.uid,
                 book: chapterContent.book,
                 chapter: chapterContent.chapter,
                 verses: selectedVerses,
                 color: color,
                 createdAt: serverTimestamp(),
+                note: '',
             });
+            
+            setActiveHighlightId(newHighlightRef.id);
             setSelectedVerses([]);
         } catch (error) {
             toast({ variant: 'destructive', title: 'Error', description: 'Could not save highlight.' });
@@ -287,10 +387,35 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
             setIsProcessingHighlight(false);
         }
     };
+    
+    const handleUpdateNote = async (highlightId: string, noteText: string) => {
+        if (!user || !firestore) return;
+        try {
+            const highlightRef = doc(firestore, 'users', user.uid, 'bibleHighlights', highlightId);
+            await updateDoc(highlightRef, { note: noteText, updatedAt: serverTimestamp() });
+            toast({ title: 'Note Saved' });
+        } catch (error) {
+            toast({ variant: 'destructive', title: 'Error', description: 'Could not save note.' });
+        }
+    };
+
+    const handleDeleteHighlight = async (highlightId: string) => {
+        if (!user || !firestore) return;
+        try {
+            await deleteDoc(doc(firestore, 'users', user.uid, 'bibleHighlights', highlightId));
+            toast({ title: 'Highlight Removed' });
+            if (activeHighlightId === highlightId) {
+                setActiveHighlightId(null);
+            }
+        } catch (error) {
+            toast({ variant: 'destructive', title: 'Error', description: 'Could not remove highlight.' });
+        }
+    };
+
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-3xl h-[90vh] flex flex-col">
+      <DialogContent className="sm:max-w-4xl h-[90vh] flex flex-col">
         <DialogHeader>
           <DialogTitle>
             Read the Bible
@@ -314,7 +439,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                         ))}
                     </SelectContent>
                 </Select>
-                <Select value={String(selectedChapterNumber)} onValueChange={(val) => setSelectedChapterNumber(Number(val))}>
+                <Select value={String(selectedChapterNumber)} onValueChange={(val) => { setSelectedChapterNumber(Number(val)); setActiveHighlightId(null); }}>
                     <SelectTrigger><SelectValue placeholder="Select a chapter" /></SelectTrigger>
                     <SelectContent>
                         {selectedBook?.chapters.map(chapter => (
@@ -334,79 +459,113 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                 </Select>
               </div>
 
-              <div className="relative flex-grow min-h-0">
-                <ScrollArea ref={scrollAreaRef} onScroll={handleScroll} className="h-full border rounded-md p-4">
-                    {isLoadingChapter && (
-                      <div className="absolute inset-0 flex items-center justify-center bg-background/50">
-                          <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                      </div>
-                    )}
-                    {chapterError && !isLoadingChapter && (
-                       <div className="absolute inset-0 flex items-center justify-center p-4">
-                          <div className="text-center text-destructive bg-destructive/10 border border-destructive/50 p-4 rounded-md">
-                            <p className="font-semibold">Error Loading Chapter</p>
-                            <p className="text-sm">{chapterError}</p>
-                          </div>
-                      </div>
-                    )}
-                    {!isLoadingChapter && !chapterError && chapterContent && (
-                      <div className="space-y-4 text-lg leading-relaxed font-serif">
-                          {chapterContent.verses.map(v => {
-                                const verseNum = v.verse;
-                                const isSelected = selectedVerses.includes(verseNum);
-                                const highlightInfo = highlightsMap.get(verseNum);
-                                return (
-                                <TooltipProvider key={verseNum} delayDuration={100}>
-                                    <Tooltip>
-                                        <TooltipTrigger asChild>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 flex-grow min-h-0">
+                <div className="md:col-span-2 flex flex-col gap-4 min-h-0">
+                    <div className="relative flex-grow min-h-0">
+                        <ScrollArea ref={scrollAreaRef} onScroll={handleScroll} className="h-full border rounded-md p-4">
+                            {isLoadingChapter && (
+                            <div className="absolute inset-0 flex items-center justify-center bg-background/50 z-20">
+                                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                            </div>
+                            )}
+                            {chapterError && !isLoadingChapter && (
+                            <div className="absolute inset-0 flex items-center justify-center p-4">
+                                <div className="text-center text-destructive bg-destructive/10 border border-destructive/50 p-4 rounded-md">
+                                <p className="font-semibold">Error Loading Chapter</p>
+                                <p className="text-sm">{chapterError}</p>
+                                </div>
+                            </div>
+                            )}
+                            {!isLoadingChapter && !chapterError && chapterContent && (
+                            <div className="space-y-4 text-lg leading-relaxed font-serif">
+                                {chapterContent.verses.map(v => {
+                                        const verseNum = v.verse;
+                                        const isSelected = selectedVerses.includes(verseNum);
+                                        const highlightInfo = highlightsMap.get(verseNum);
+                                        const isActiveHighlight = activeHighlight?.verses.includes(verseNum) ?? false;
+                                        return (
                                             <p
+                                                key={verseNum}
                                                 className={cn(
                                                     'rounded-md transition-colors -mx-2 px-2 py-1',
                                                     highlightInfo && getHighlightClass(highlightInfo.color),
                                                     isSelected && 'verse-selected',
-                                                    !highlightInfo && 'hover:bg-muted/50 cursor-pointer',
-                                                    highlightInfo && 'cursor-pointer'
+                                                    isActiveHighlight && 'ring-2 ring-primary ring-offset-2 ring-offset-background',
+                                                    'cursor-pointer'
                                                 )}
                                                 onClick={() => handleVerseClick(verseNum)}
                                             >
                                                 <sup className="text-sm font-sans text-muted-foreground mr-2 select-none">{v.verse}</sup>
                                                 {v.text}
                                             </p>
-                                        </TooltipTrigger>
-                                        {highlightInfo && (
-                                            <TooltipContent>
-                                                <p>Click to remove highlight.</p>
-                                            </TooltipContent>
-                                        )}
-                                    </Tooltip>
-                                </TooltipProvider>
-                                )
-                          })}
-                      </div>
-                    )}
-                </ScrollArea>
-                {selectedVerses.length > 0 && (
-                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 w-auto z-10">
-                        <div className="flex items-center gap-2 p-2 rounded-full border bg-background shadow-lg">
-                            {highlightColors.map(color => (
-                                <Button key={color} variant="outline" size="icon" className="rounded-full" onClick={() => handleSaveHighlight(color)} disabled={isProcessingHighlight}>
-                                    <div className={cn("h-5 w-5 rounded-full", getHighlightClass(color))} />
-                                </Button>
-                            ))}
-                            <Button variant="ghost" size="icon" className="rounded-full" onClick={() => setSelectedVerses([])}>
-                                <XCircle className="h-5 w-5" />
-                            </Button>
-                        </div>
+                                        )
+                                })}
+                            </div>
+                            )}
+                        </ScrollArea>
+                        {selectedVerses.length > 0 && (
+                            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 w-auto z-10">
+                                <div className="flex items-center gap-2 p-2 rounded-full border bg-background shadow-lg">
+                                    {highlightColors.map(color => (
+                                        <Button key={color} variant="outline" size="icon" className="rounded-full" onClick={() => handleSaveHighlight(color)} disabled={isProcessingHighlight}>
+                                            <div className={cn("h-5 w-5 rounded-full", getHighlightClass(color))} />
+                                        </Button>
+                                    ))}
+                                    <Button variant="ghost" size="icon" className="rounded-full" onClick={() => setSelectedVerses([])}>
+                                        <XCircle className="h-5 w-5" />
+                                    </Button>
+                                </div>
+                            </div>
+                        )}
                     </div>
-                )}
-              </div>
-              
-               <DialogFooter>
-                <Button onClick={handleMarkAsRead} disabled={isSubmitting || isLoadingChapter || !!chapterError || !isScrolledToEnd}>
-                  {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Mark as Read & Next Chapter
-                </Button>
-              </DialogFooter>
+                    <DialogFooter>
+                        <Button onClick={handleMarkAsRead} disabled={isSubmitting || isLoadingChapter || !!chapterError || !isScrolledToEnd}>
+                        {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                        Mark as Read & Next Chapter
+                        </Button>
+                    </DialogFooter>
+                </div>
+                
+                <div className="md:col-span-1 flex flex-col gap-4 h-full">
+                    <h3 className="text-lg font-semibold tracking-tight">Notes for {chapterContent?.book} {chapterContent?.chapter}</h3>
+                    <ScrollArea className="flex-grow h-full border rounded-md p-2">
+                        <div className="space-y-4 p-2">
+                            {activeHighlight && (
+                                <NoteEditor 
+                                    highlight={activeHighlight} 
+                                    onSave={handleUpdateNote} 
+                                    onDelete={handleDeleteHighlight}
+                                    onCancel={() => setActiveHighlightId(null)} 
+                                />
+                            )}
+
+                            {highlights && highlights
+                                .filter(h => h.id !== activeHighlightId)
+                                .sort((a, b) => a.createdAt.seconds - b.createdAt.seconds)
+                                .map(h => (
+                                    <Card key={h.id} onClick={() => setActiveHighlightId(h.id)} className={cn("cursor-pointer hover:bg-muted/50", getHighlightClass(h.color), 'bg-opacity-20 dark:bg-opacity-10')}>
+                                    <CardHeader className="p-3">
+                                        <CardTitle className="text-sm">{getVerseReference(h)}</CardTitle>
+                                        {h.updatedAt && <CardDescription className="text-xs">Updated {formatDistanceToNow(h.updatedAt.toDate(), {addSuffix: true})}</CardDescription>}
+                                    </CardHeader>
+                                    {h.note && (
+                                        <CardContent className="p-3 pt-0">
+                                        <p className="text-sm text-muted-foreground line-clamp-3">{h.note}</p>
+                                        </CardContent>
+                                    )}
+                                    </Card>
+                                ))}
+
+                            {highlights?.length === 0 && (
+                                <div className="text-center text-muted-foreground py-10">
+                                    <p>No notes for this chapter.</p>
+                                    <p className="text-xs mt-1">Highlight some text to get started.</p>
+                                </div>
+                            )}
+                        </div>
+                    </ScrollArea>
+                </div>
+            </div>
           </TabsContent>
           
           <TabsContent value="history" className="flex-grow flex flex-col min-h-0 mt-4 space-y-4">
@@ -439,20 +598,6 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                       <div className="space-y-2">
                         <Skeleton className="h-4 w-48" />
                         <Skeleton className="h-4 w-24" />
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-4">
-                      <Skeleton className="h-10 w-10 rounded-full" />
-                      <div className="space-y-2">
-                        <Skeleton className="h-4 w-40" />
-                        <Skeleton className="h-4 w-20" />
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-4">
-                      <Skeleton className="h-10 w-10 rounded-full" />
-                      <div className="space-y-2">
-                        <Skeleton className="h-4 w-52" />
-                        <Skeleton className="h-4 w-28" />
                       </div>
                     </div>
                   </div>

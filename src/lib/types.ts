@@ -16,6 +16,7 @@ export type BibleHighlight = {
   color: string; // e.g., 'yellow', 'blue', 'green', 'pink'
   note?: string;
   createdAt: Timestamp;
+  updatedAt?: Timestamp;
 };
 
 export type DailyDisciplineLog = {
