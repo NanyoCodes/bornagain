@@ -10,8 +10,8 @@
     --card-foreground: 224 71.4% 4.1%;
     --popover: 0 0% 100%;
     --popover-foreground: 224 71.4% 4.1%;
-    --primary: 142.1 76.2% 36.3%;
-    --primary-foreground: 355.7 100% 97.3%;
+    --primary: 0 84.2% 60.2%;
+    --primary-foreground: 210 40% 98%;
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
     --muted: 210 40% 96.1%;
@@ -22,9 +22,9 @@
     --destructive-foreground: 210 40% 98%;
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 142.1 76.2% 36.3%;
+    --ring: 0 84.2% 60.2%;
     --radius: 0.5rem;
-    --chart-1: 142.1 76.2% 36.3%;
+    --chart-1: 0 84.2% 60.2%;
     --chart-2: 221.2 83.2% 53.3%;
     --chart-3: 16.4 91.6% 57.3%;
     --chart-4: 343.3 88.6% 63.1%;
@@ -33,7 +33,7 @@
     --status-contacted: 221 83% 53%; /* blue-600 */
     --status-attending-church: 199 89% 44%; /* cyan-600 */
     --status-bible-study: 262 84% 59%; /* violet-600 */
-    --status-established: 142.1 76.2% 36.3%; /* primary */
+    --status-established: 0 84.2% 60.2%;
   }
 
   .dark {
@@ -43,8 +43,8 @@
     --card-foreground: 210 20% 98%;
     --popover: 224 71.4% 4.1%;
     --popover-foreground: 210 20% 98%;
-    --primary: 142.1 70.2% 45.3%;
-    --primary-foreground: 355.7 100% 97.3%;
+    --primary: 0 72.2% 50.6%;
+    --primary-foreground: 210 20% 98%;
     --secondary: 215 27.9% 16.9%;
     --secondary-foreground: 210 20% 98%;
     --muted: 215 27.9% 16.9%;
@@ -55,8 +55,8 @@
     --destructive-foreground: 210 40% 98%;
     --border: 215 27.9% 16.9%;
     --input: 215 27.9% 16.9%;
-    --ring: 142.1 70.2% 45.3%;
-    --chart-1: 142.1 70.2% 45.3%;
+    --ring: 0 72.2% 50.6%;
+    --chart-1: 0 72.2% 50.6%;
     --chart-2: 217.2 91.2% 59.8%;
     --chart-3: 22.4 92.6% 59.3%;
     --chart-4: 343.3 80.6% 60.1%;
@@ -65,7 +65,7 @@
     --status-contacted: 217 91% 60%; /* blue-500 */
     --status-attending-church: 198 93% 60%; /* cyan-500 */
     --status-bible-study: 259 92% 70%; /* violet-500 */
-    --status-established: 142.1 70.2% 45.3%; /* primary */
+    --status-established: 0 72.2% 50.6%;
   }
 }
 
