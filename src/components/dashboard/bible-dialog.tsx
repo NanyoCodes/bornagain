@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect, useRef, useLayoutEffect } from 'react';
@@ -88,20 +89,20 @@ function NoteEditor({ highlight, onSave, onDelete, onCancel }: { highlight: Bibl
 
   return (
     <Card className="bg-primary/5 border-primary/20 shadow-lg">
-      <CardHeader className="p-4">
+      <CardHeader className="p-3">
         <CardTitle className="text-base">Editing Note</CardTitle>
         <CardDescription>{getVerseReference(highlight)}</CardDescription>
       </CardHeader>
-      <CardContent className="p-4 pt-0">
+      <CardContent className="p-3 pt-0">
         <Textarea 
             value={note}
             onChange={(e) => setNote(e.target.value)}
             placeholder="Add your personal note to this highlight..."
-            rows={5}
+            rows={4}
             className="text-sm"
         />
       </CardContent>
-      <CardFooter className="p-4 pt-0 justify-between">
+      <CardFooter className="p-3 pt-0 justify-between">
           <AlertDialog>
              <AlertDialogTrigger asChild>
                 <Button variant="destructive" size="sm" disabled={isDeleting}>
@@ -626,7 +627,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                 <div className="md:col-span-1 flex flex-col gap-4 h-full">
                     <h3 className="text-lg font-semibold tracking-tight">Notes for {chapterContent?.book} {chapterContent?.chapter}</h3>
                     <ScrollArea className="flex-grow h-full border rounded-md p-2">
-                        <div className="space-y-4 p-2">
+                        <div className="space-y-2 p-1">
                             {activeHighlight && (
                                 <NoteEditor 
                                     highlight={activeHighlight} 
@@ -641,13 +642,13 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                                 .sort((a, b) => (a.createdAt?.seconds ?? 0) - (b.createdAt?.seconds ?? 0))
                                 .map(h => (
                                     <Card key={h.id} onClick={() => setActiveHighlightId(h.id)} className={cn("cursor-pointer hover:bg-muted/50", getHighlightClass(h.color), 'bg-opacity-20 dark:bg-opacity-10')}>
-                                    <CardHeader className="p-3">
-                                        <CardTitle className="text-sm">{getVerseReference(h)}</CardTitle>
+                                    <CardHeader className="p-2">
+                                        <CardTitle className="text-sm font-medium">{getVerseReference(h)}</CardTitle>
                                         {h.updatedAt && <CardDescription className="text-xs">Updated {formatDistanceToNow(h.updatedAt.toDate(), {addSuffix: true})}</CardDescription>}
                                     </CardHeader>
                                     {h.note && (
-                                        <CardContent className="p-3 pt-0">
-                                        <p className="text-sm text-muted-foreground line-clamp-3">{h.note}</p>
+                                        <CardContent className="p-2 pt-0">
+                                        <p className="text-xs text-muted-foreground line-clamp-2">{h.note}</p>
                                         </CardContent>
                                     )}
                                     </Card>
@@ -760,3 +761,4 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
     </Dialog>
   );
 }
+
