@@ -59,7 +59,6 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
   const [selectedVerses, setSelectedVerses] = useState<number[]>([]);
   const [activeHighlight, setActiveHighlight] = useState<BibleHighlight | null>(null);
   const [noteText, setNoteText] = useState('');
-  const [popoverOpen, setPopoverOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
 
@@ -146,9 +145,6 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
   useEffect(() => {
     if (activeHighlight) {
         setNoteText(activeHighlight.note || '');
-        setPopoverOpen(true);
-    } else {
-        setPopoverOpen(false);
     }
   }, [activeHighlight]);
 
@@ -308,7 +304,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
             const highlightRef = doc(firestore, 'users', user.uid, 'bibleHighlights', activeHighlight.id);
             await updateDoc(highlightRef, { note: noteText });
             toast({ title: 'Note Saved' });
-            setPopoverOpen(false);
+            setActiveHighlight(null);
         } catch (error) {
             toast({ variant: 'destructive', title: 'Error', description: 'Could not save note.' });
         } finally {
@@ -323,7 +319,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
         try {
             await deleteDoc(doc(firestore, 'users', user.uid, 'bibleHighlights', activeHighlight.id));
             toast({ title: 'Highlight Removed' });
-            setPopoverOpen(false);
+            setActiveHighlight(null);
         } catch (error) {
             toast({ variant: 'destructive', title: 'Error', description: 'Could not remove highlight.' });
         } finally {
@@ -348,7 +344,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
             <TabsTrigger value="history">History</TabsTrigger>
           </TabsList>
           
-          <TabsContent value="read" className="flex-grow flex flex-col min-h-0 mt-4 space-y-4">
+          <TabsContent value="read" className="flex-grow flex flex-col min-h-0 mt-4 gap-4">
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <Select value={selectedBookName} onValueChange={setSelectedBookName}>
                     <SelectTrigger><SelectValue placeholder="Select a book" /></SelectTrigger>
@@ -400,7 +396,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                                 const isSelected = selectedVerses.includes(verseNum);
                                 const highlightInfo = highlightsMap.get(verseNum);
                                 return (
-                                <Popover key={verseNum} open={popoverOpen && activeHighlight?.id === highlightInfo?.id} onOpenChange={(open) => { if (!open) setActiveHighlight(null); }}>
+                                <Popover key={verseNum} open={activeHighlight?.id === highlightInfo?.id} onOpenChange={(open) => { if (!open) setActiveHighlight(null); }}>
                                     <PopoverTrigger asChild>
                                         <p
                                             className={cn(
