@@ -27,7 +27,6 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
                 data-ai-hint={logo.imageHint}
                 />
             )}
-            <span className="text-2xl font-bold font-headline">Testify</span>
         </Link>
         
         <div className="space-y-4 mb-12 z-10">
