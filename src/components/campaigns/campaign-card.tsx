@@ -526,87 +526,6 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
 
   const isFull = campaign.maxParticipants && campaign.participants >= campaign.maxParticipants;
 
-
-  const renderOwnerActions = () => (
-    <div className="flex items-center flex-wrap justify-end gap-2">
-      {status === 'Ongoing' && LogSoulDialog}
-      <Dialog open={isManageOpen} onOpenChange={setIsManageOpen}>
-        <DialogTrigger asChild>
-          <Button variant="outline" size="icon">
-            <Edit className="h-4 w-4" />
-            <span className="sr-only">Manage Campaign</span>
-          </Button>
-        </DialogTrigger>
-        <DialogContent className="sm:max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>Manage Campaign</DialogTitle>
-            <DialogDescription>
-              Update the progress and details of your campaign.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="max-h-[70vh] overflow-y-auto pr-2">
-            <ManageCampaignForm
-              campaign={campaign}
-              onCampaignUpdated={() => setIsManageOpen(false)}
-            />
-          </div>
-        </DialogContent>
-      </Dialog>
-      {shareButton}
-    </div>
-  );
-
-  const renderParticipantActions = () => (
-    <div className="flex items-center flex-wrap justify-end gap-2">
-      {status === 'Ongoing' && LogSoulDialog}
-       <TooltipProvider>
-        <Tooltip>
-            <TooltipTrigger asChild>
-                <Button onClick={handleViewGroupChat} variant="outline" size="icon" disabled={status === 'Past'}>
-                    <Users className="h-4 w-4" />
-                </Button>
-            </TooltipTrigger>
-            <TooltipContent><p>Group Chat</p></TooltipContent>
-        </Tooltip>
-       </TooltipProvider>
-      {shareButton}
-    </div>
-  );
-
-  const renderVisitorActions = () => (
-    <div className="flex items-center flex-wrap justify-end gap-2">
-        <TooltipProvider>
-            <Tooltip>
-                <TooltipTrigger asChild>
-                    <Button onClick={handleInitiateChat} variant="outline" size="icon" disabled={!userId || isChatLoading}>
-                         {isChatLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <MessageSquare className="h-4 w-4" />}
-                    </Button>
-                </TooltipTrigger>
-                <TooltipContent><p>Chat with Organizer</p></TooltipContent>
-            </Tooltip>
-        </TooltipProvider>
-        {shareButton}
-        {mounted && isMobile ? (
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button onClick={handleJoin} size="icon" disabled={!userId || isJoining || status === 'Past' || isFull}>
-                  {isJoining ? <Loader2 className="h-4 w-4 animate-spin" /> : <UserPlus className="h-4 w-4" />}
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent><p>{isFull ? 'Campaign Full' : 'Join Campaign'}</p></TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        ) : (
-          <Button onClick={handleJoin} disabled={!userId || isJoining || status === 'Past' || isFull}>
-            {isJoining && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {isFull ? 'Campaign Full' : 'Join Campaign'}
-          </Button>
-        )}
-    </div>
-  );
-
-
   return (
     <>
         <Card id={campaign.id} className={cn("flex flex-col h-full overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 scroll-mt-20 border-t-4", borderColorClass)}>
@@ -692,20 +611,89 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
                 )}
             </div>
 
-            <div className="flex-shrink-0">
-                {status === 'Ongoing' && campaign.streamUrl ? (
+            <div className="flex items-center flex-wrap justify-end gap-2">
+                {status === 'Ongoing' && campaign.streamUrl && (
                     <Button asChild className="w-full sm:w-auto">
                         <Link href={campaign.streamUrl} target="_blank" rel="noopener noreferrer">
                             <PlayCircle className="mr-2 h-4 w-4" />
                             Watch Live
                         </Link>
                     </Button>
-                ) : isOwner ? (
-                    renderOwnerActions()
+                )}
+
+                {isOwner ? (
+                    <>
+                      {status === 'Ongoing' && LogSoulDialog}
+                      <Dialog open={isManageOpen} onOpenChange={setIsManageOpen}>
+                        <DialogTrigger asChild>
+                          <Button variant="outline" size="icon">
+                            <Edit className="h-4 w-4" />
+                            <span className="sr-only">Manage Campaign</span>
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-2xl">
+                          <DialogHeader>
+                            <DialogTitle>Manage Campaign</DialogTitle>
+                            <DialogDescription>
+                              Update the progress and details of your campaign.
+                            </DialogDescription>
+                          </DialogHeader>
+                          <div className="max-h-[70vh] overflow-y-auto pr-2">
+                            <ManageCampaignForm
+                              campaign={campaign}
+                              onCampaignUpdated={() => setIsManageOpen(false)}
+                            />
+                          </div>
+                        </DialogContent>
+                      </Dialog>
+                      {shareButton}
+                    </>
                 ) : isJoined ? (
-                    renderParticipantActions()
+                     <>
+                        {status === 'Ongoing' && LogSoulDialog}
+                         <TooltipProvider>
+                          <Tooltip>
+                              <TooltipTrigger asChild>
+                                  <Button onClick={handleViewGroupChat} variant="outline" size="icon" disabled={status === 'Past'}>
+                                      <Users className="h-4 w-4" />
+                                  </Button>
+                              </TooltipTrigger>
+                              <TooltipContent><p>Group Chat</p></TooltipContent>
+                          </Tooltip>
+                         </TooltipProvider>
+                        {shareButton}
+                    </>
                 ) : (
-                    renderVisitorActions()
+                    <>
+                        <TooltipProvider>
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <Button onClick={handleInitiateChat} variant="outline" size="icon" disabled={!userId || isChatLoading}>
+                                         {isChatLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <MessageSquare className="h-4 w-4" />}
+                                    </Button>
+                                </TooltipTrigger>
+                                <TooltipContent><p>Chat with Organizer</p></TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
+                        {shareButton}
+                        {mounted && isMobile ? (
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button onClick={handleJoin} size="icon" disabled={!userId || isJoining || status === 'Past' || isFull}>
+                                  {isJoining ? <Loader2 className="h-4 w-4 animate-spin" /> : <UserPlus className="h-4 w-4" />}
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent><p>{isFull ? 'Campaign Full' : 'Join Campaign'}</p></TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        ) : (
+                          <Button onClick={handleJoin} disabled={!userId || isJoining || status === 'Past' || isFull}>
+                            {isJoining && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                            {isFull ? 'Campaign Full' : 'Join Campaign'}
+                          </Button>
+                        )}
+                    </>
                 )}
             </div>
         </CardFooter>
