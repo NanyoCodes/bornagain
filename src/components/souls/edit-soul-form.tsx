@@ -24,6 +24,7 @@ import { useFirestore, useUser, useCollection } from "@/firebase";
 import { collection, query, orderBy, doc, updateDoc, addDoc } from "firebase/firestore";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { errorEmitter } from "@/firebase/error-emitter";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 const formSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters."),
@@ -200,58 +201,6 @@ export function EditSoulForm({ soul, onSoulUpdated }: EditSoulFormProps) {
         />
         <FormField
           control={form.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Email (Optional)</FormLabel>
-              <FormControl>
-                <Input placeholder="john.doe@example.com" {...field} className="text-base"/>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="phone"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Phone Number (Optional)</FormLabel>
-              <FormControl>
-                <Input placeholder="+1 123 456 7890" {...field} className="text-base"/>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="church"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Church (Optional)</FormLabel>
-              <FormControl>
-                <Input placeholder="e.g., New Life Church" {...field} className="text-base"/>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="locationWon"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Location Won (Optional)</FormLabel>
-              <FormControl>
-                <Input placeholder="e.g., City Park, Nairobi" {...field} className="text-base"/>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
           name="source"
           render={({ field }) => (
             <FormItem>
@@ -313,6 +262,69 @@ export function EditSoulForm({ soul, onSoulUpdated }: EditSoulFormProps) {
             )}
           />
         )}
+
+        <Accordion type="single" collapsible className="w-full">
+            <AccordionItem value="optional-details">
+                <AccordionTrigger>Optional Details</AccordionTrigger>
+                <AccordionContent>
+                    <div className="space-y-4 pt-4">
+                        <FormField
+                            control={form.control}
+                            name="email"
+                            render={({ field }) => (
+                                <FormItem>
+                                <FormLabel>Email</FormLabel>
+                                <FormControl>
+                                    <Input placeholder="john.doe@example.com" {...field} className="text-base"/>
+                                </FormControl>
+                                <FormMessage />
+                                </FormItem>
+                            )}
+                            />
+                        <FormField
+                            control={form.control}
+                            name="phone"
+                            render={({ field }) => (
+                                <FormItem>
+                                <FormLabel>Phone Number</FormLabel>
+                                <FormControl>
+                                    <Input placeholder="+1 123 456 7890" {...field} className="text-base"/>
+                                </FormControl>
+                                <FormMessage />
+                                </FormItem>
+                            )}
+                            />
+                        <FormField
+                            control={form.control}
+                            name="church"
+                            render={({ field }) => (
+                                <FormItem>
+                                <FormLabel>Church</FormLabel>
+                                <FormControl>
+                                    <Input placeholder="e.g., New Life Church" {...field} className="text-base"/>
+                                </FormControl>
+                                <FormMessage />
+                                </FormItem>
+                            )}
+                            />
+                        <FormField
+                            control={form.control}
+                            name="locationWon"
+                            render={({ field }) => (
+                                <FormItem>
+                                <FormLabel>Location Won</FormLabel>
+                                <FormControl>
+                                    <Input placeholder="e.g., City Park, Nairobi" {...field} className="text-base"/>
+                                </FormControl>
+                                <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                    </div>
+                </AccordionContent>
+            </AccordionItem>
+        </Accordion>
+
         <Button type="submit" className="w-full" disabled={isLoading}>
           {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           Save Changes
@@ -321,4 +333,3 @@ export function EditSoulForm({ soul, onSoulUpdated }: EditSoulFormProps) {
     </Form>
   );
 }
-    

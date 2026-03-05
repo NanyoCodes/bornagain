@@ -25,6 +25,7 @@ import { useFirestore, useUser, useCollection, useDoc } from "@/firebase";
 import { collection, query, orderBy, serverTimestamp, doc, runTransaction } from "firebase/firestore";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { errorEmitter } from "@/firebase/error-emitter";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 const formSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters."),
@@ -244,58 +245,6 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps)
         />
         <FormField
           control={form.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Email (Optional)</FormLabel>
-              <FormControl>
-                <Input placeholder="john.doe@example.com" {...field} className="text-base"/>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="phone"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Phone Number (Optional)</FormLabel>
-              <FormControl>
-                <Input placeholder="+1 123 456 7890" {...field} className="text-base"/>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="church"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Church (Optional)</FormLabel>
-              <FormControl>
-                <Input placeholder="e.g., New Life Church" {...field} className="text-base"/>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="locationWon"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Location Won (Optional)</FormLabel>
-              <FormControl>
-                <Input placeholder="e.g., City Park, Nairobi" {...field} className="text-base"/>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
           name="source"
           render={({ field }) => (
             <FormItem>
@@ -357,19 +306,82 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps)
             )}
             />
          )}
-        <FormField
-          control={form.control}
-          name="initialNote"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Initial Note (Optional)</FormLabel>
-              <FormControl>
-                <Textarea placeholder="e.g., Met at the park, prayed together..." {...field} className="text-base"/>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+
+        <Accordion type="single" collapsible className="w-full">
+            <AccordionItem value="optional-details">
+                <AccordionTrigger>Optional Details</AccordionTrigger>
+                <AccordionContent>
+                    <div className="space-y-4 pt-4">
+                        <FormField
+                        control={form.control}
+                        name="email"
+                        render={({ field }) => (
+                            <FormItem>
+                            <FormLabel>Email</FormLabel>
+                            <FormControl>
+                                <Input placeholder="john.doe@example.com" {...field} className="text-base"/>
+                            </FormControl>
+                            <FormMessage />
+                            </FormItem>
+                        )}
+                        />
+                        <FormField
+                        control={form.control}
+                        name="phone"
+                        render={({ field }) => (
+                            <FormItem>
+                            <FormLabel>Phone Number</FormLabel>
+                            <FormControl>
+                                <Input placeholder="+1 123 456 7890" {...field} className="text-base"/>
+                            </FormControl>
+                            <FormMessage />
+                            </FormItem>
+                        )}
+                        />
+                        <FormField
+                        control={form.control}
+                        name="church"
+                        render={({ field }) => (
+                            <FormItem>
+                            <FormLabel>Church</FormLabel>
+                            <FormControl>
+                                <Input placeholder="e.g., New Life Church" {...field} className="text-base"/>
+                            </FormControl>
+                            <FormMessage />
+                            </FormItem>
+                        )}
+                        />
+                        <FormField
+                        control={form.control}
+                        name="locationWon"
+                        render={({ field }) => (
+                            <FormItem>
+                            <FormLabel>Location Won</FormLabel>
+                            <FormControl>
+                                <Input placeholder="e.g., City Park, Nairobi" {...field} className="text-base"/>
+                            </FormControl>
+                            <FormMessage />
+                            </FormItem>
+                        )}
+                        />
+                        <FormField
+                        control={form.control}
+                        name="initialNote"
+                        render={({ field }) => (
+                            <FormItem>
+                            <FormLabel>Initial Note</FormLabel>
+                            <FormControl>
+                                <Textarea placeholder="e.g., Met at the park, prayed together..." {...field} className="text-base"/>
+                            </FormControl>
+                            <FormMessage />
+                            </FormItem>
+                        )}
+                        />
+                    </div>
+                </AccordionContent>
+            </AccordionItem>
+        </Accordion>
+
         <Button type="submit" className="w-full" disabled={isLoading || userLoading || profileLoading}>
           {(isLoading || userLoading || profileLoading) && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           Log Soul
