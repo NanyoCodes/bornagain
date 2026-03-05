@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -71,19 +70,20 @@ export function PrayerDialog({ isOpen, onOpenChange, onDisciplineCompleted, user
 
             {prayerLinks.length > 0 && (
             <div className="space-y-3">
-                <h4 className="font-medium text-sm text-muted-foreground">Your Prayer Links</h4>
-                <div className="rounded-lg border divide-y">
+                <h4 className="font-medium text-sm text-muted-foreground">Join a Prayer Meeting</h4>
+                <div className="space-y-2">
                     {prayerLinks.map((link, index) => (
-                        <Link
-                            key={index}
-                            href={link.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex items-center justify-between p-3 hover:bg-muted/50 transition-colors"
-                        >
-                            <span>{link.name}</span>
-                            <ExternalLink className="h-4 w-4 text-muted-foreground" />
-                        </Link>
+                        <Button asChild key={index} variant="secondary" className="w-full justify-start">
+                            <Link
+                                href={link.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center"
+                            >
+                                <ExternalLink className="mr-2 h-4 w-4" />
+                                {link.name}
+                            </Link>
+                        </Button>
                     ))}
                 </div>
             </div>
