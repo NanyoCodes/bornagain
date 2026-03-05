@@ -603,7 +603,7 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
                         </span>
                     </Button>
                 </ParticipantsDialog>
-                {(status === "Ongoing" || status === "Past") && (
+                {(status === "Ongoing") && (
                     <div className="flex items-center gap-2">
                         <UserCheck2 className="h-4 w-4" />
                         <span>{campaign.soulsLogged || 0} soul{campaign.soulsLogged === 1 ? '' : 's'} won</span>
@@ -611,7 +611,7 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
                 )}
             </div>
 
-            <div className="flex items-center flex-wrap justify-end gap-2">
+            <div className="w-full sm:w-auto flex items-center flex-wrap justify-end gap-2">
                 {status === 'Ongoing' && campaign.streamUrl && (
                     <Button asChild className="w-full sm:w-auto">
                         <Link href={campaign.streamUrl} target="_blank" rel="noopener noreferrer">
@@ -684,7 +684,7 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
                         ) : (
                           <Button onClick={handleJoin} disabled={!userId || isJoining || status === 'Past' || isFull}>
                             {isJoining && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                            {isFull ? 'Campaign Full' : 'Join Campaign'}
+                            {isFull ? 'Campaign Full' : 'Join'}
                           </Button>
                         )}
                     </>
