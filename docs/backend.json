@@ -1,3 +1,4 @@
+
 {
   "entities": {
     "UserProfile": {
@@ -406,6 +407,10 @@
         },
         "attendingPrayer": {
           "type": "boolean"
+        },
+        "inServiceDepartment": {
+          "type": "boolean",
+          "description": "Indicates if the soul is serving in a department in church."
         }
       },
       "required": [

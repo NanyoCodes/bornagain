@@ -173,6 +173,7 @@ export type Soul = {
   attendingChurch?: boolean;
   inBibleStudy?: boolean;
   attendingPrayer?: boolean;
+  inServiceDepartment?: boolean;
 };
 
 export type ChatParticipantInfo = {

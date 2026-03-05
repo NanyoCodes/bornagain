@@ -3,7 +3,7 @@
 
 import * as React from "react";
 import { format } from "date-fns";
-import { MoreHorizontal, Church, UserPlus, Edit, MapPin, Mail, Phone, ChevronDown, BookOpen, Heart } from "lucide-react";
+import { MoreHorizontal, Church, UserPlus, Edit, MapPin, Mail, Phone, ChevronDown, BookOpen, Heart, Users } from "lucide-react";
 import type { Soul, FollowUpStatus, FollowUpLogItem } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import {
@@ -49,7 +49,6 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/colla
 import { Badge } from "../ui/badge";
 import { Loader2 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Checkbox } from "@/components/ui/checkbox";
 
 
@@ -85,8 +84,27 @@ const logFollowUpFormSchema = z.object({
     attendingChurch: z.boolean(),
     inBibleStudy: z.boolean(),
     attendingPrayer: z.boolean(),
+    inServiceDepartment: z.boolean(),
     actions: z.array(z.string()).optional(),
+}).superRefine((data, ctx) => {
+    if (data.status === 'Established') {
+        if (!data.attendingChurch) {
+            ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: "Required for 'Established' status.",
+                path: ['attendingChurch']
+            });
+        }
+        if (!data.inServiceDepartment) {
+            ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: "Required for 'Established' status.",
+                path: ['inServiceDepartment']
+            });
+        }
+    }
 });
+
 
 function LogFollowUpDialog({ soul, children }: { soul: Soul; children: React.ReactNode; }) {
   const { toast } = useToast();
@@ -103,6 +121,7 @@ function LogFollowUpDialog({ soul, children }: { soul: Soul; children: React.Rea
       attendingChurch: soul.attendingChurch || false,
       inBibleStudy: soul.inBibleStudy || false,
       attendingPrayer: soul.attendingPrayer || false,
+      inServiceDepartment: soul.inServiceDepartment || false,
       actions: [],
     },
   });
@@ -115,6 +134,7 @@ function LogFollowUpDialog({ soul, children }: { soul: Soul; children: React.Rea
         attendingChurch: soul.attendingChurch || false,
         inBibleStudy: soul.inBibleStudy || false,
         attendingPrayer: soul.attendingPrayer || false,
+        inServiceDepartment: soul.inServiceDepartment || false,
         actions: [],
       });
     }
@@ -143,6 +163,7 @@ function LogFollowUpDialog({ soul, children }: { soul: Soul; children: React.Rea
         attendingChurch: values.attendingChurch,
         inBibleStudy: values.inBibleStudy,
         attendingPrayer: values.attendingPrayer,
+        inServiceDepartment: values.inServiceDepartment,
       });
 
       toast({
@@ -256,7 +277,7 @@ function LogFollowUpDialog({ soul, children }: { soul: Soul; children: React.Rea
                         />
                     <div className="space-y-4 rounded-lg border p-4">
                         <div className="space-y-0.5">
-                            <Label>Update Milestones</Label>
+                            <Label>Progress Update</Label>
                             <p className="text-sm text-muted-foreground">
                                 Update their progress on key spiritual disciplines.
                             </p>
@@ -267,7 +288,25 @@ function LogFollowUpDialog({ soul, children }: { soul: Soul; children: React.Rea
                                 name="attendingChurch"
                                 render={({ field }) => (
                                     <FormItem className="flex flex-row items-center justify-between rounded-md p-2 hover:bg-muted/50">
-                                        <FormLabel className="font-normal flex items-center gap-2 cursor-pointer"><Church className="h-4 w-4" />Attending Church</FormLabel>
+                                        <div>
+                                            <FormLabel className="font-normal flex items-center gap-2 cursor-pointer"><Church className="h-4 w-4" />Attending Church</FormLabel>
+                                            <FormMessage className="text-xs" />
+                                        </div>
+                                        <FormControl>
+                                            <Switch checked={field.value} onCheckedChange={field.onChange} />
+                                        </FormControl>
+                                    </FormItem>
+                                )}
+                            />
+                             <FormField
+                                control={form.control}
+                                name="inServiceDepartment"
+                                render={({ field }) => (
+                                    <FormItem className="flex flex-row items-center justify-between rounded-md p-2 hover:bg-muted/50">
+                                        <div>
+                                            <FormLabel className="font-normal flex items-center gap-2 cursor-pointer"><Users className="h-4 w-4" />In Service Department</FormLabel>
+                                            <FormMessage className="text-xs" />
+                                        </div>
                                         <FormControl>
                                             <Switch checked={field.value} onCheckedChange={field.onChange} />
                                         </FormControl>
@@ -441,24 +480,6 @@ function SoulCard({ soul }: { soul: ProcessedSoul }) {
                         </div>
                         
                         <div className="space-y-3 pt-4 border-t">
-                            <Label>Milestones</Label>
-                            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-muted-foreground">
-                                <div className={cn("flex items-center gap-1.5 text-sm", soul.attendingChurch && "text-green-600 font-semibold")}>
-                                    <Church className="h-4 w-4" />
-                                    <span>Church</span>
-                                </div>
-                                <div className={cn("flex items-center gap-1.5 text-sm", soul.inBibleStudy && "text-green-600 font-semibold")}>
-                                    <BookOpen className="h-4 w-4" />
-                                    <span>Bible Study</span>
-                                </div>
-                                <div className={cn("flex items-center gap-1.5 text-sm", soul.attendingPrayer && "text-green-600 font-semibold")}>
-                                    <Heart className="h-4 w-4" />
-                                    <span>Prayer</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="space-y-3 pt-4 border-t">
                             <Label>Follow-up</Label>
                             <div className="border rounded-lg p-4 space-y-4">
                                {latestFollowUp ? (
@@ -586,7 +607,6 @@ export function SoulsWonTable({ souls, loading }: SoulsWonTableProps) {
               <TableHead>Name</TableHead>
               <TableHead>Contact Info</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead>Milestones</TableHead>
               <TableHead>Last Follow-up</TableHead>
               <TableHead>Won At</TableHead>
               <TableHead>Source</TableHead>
@@ -612,36 +632,6 @@ export function SoulsWonTable({ souls, loading }: SoulsWonTableProps) {
                 </TableCell>
                 <TableCell>
                   <Badge className={cn("w-[150px] justify-center", getStatusClasses(soul.status))} variant="outline">{soul.status}</Badge>
-                </TableCell>
-                <TableCell>
-                    <div className="flex items-center gap-3">
-                        <TooltipProvider>
-                            <Tooltip>
-                                <TooltipTrigger>
-                                    <Church className={cn("h-4 w-4 text-muted-foreground/60", soul.attendingChurch && "text-green-600")} />
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                    <p>{soul.attendingChurch ? 'Attending Church' : 'Not Attending Church'}</p>
-                                </TooltipContent>
-                            </Tooltip>
-                            <Tooltip>
-                                <TooltipTrigger>
-                                    <BookOpen className={cn("h-4 w-4 text-muted-foreground/60", soul.inBibleStudy && "text-green-600")} />
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                    <p>{soul.inBibleStudy ? 'In Bible Study' : 'Not In Bible Study'}</p>
-                                </TooltipContent>
-                            </Tooltip>
-                            <Tooltip>
-                                <TooltipTrigger>
-                                    <Heart className={cn("h-4 w-4 text-muted-foreground/60", soul.attendingPrayer && "text-green-600")} />
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                    <p>{soul.attendingPrayer ? 'Attending Prayer' : 'Not Attending Prayer'}</p>
-                                </TooltipContent>
-                            </Tooltip>
-                        </TooltipProvider>
-                    </div>
                 </TableCell>
                 <TableCell>
                     {latestFollowUp ? (

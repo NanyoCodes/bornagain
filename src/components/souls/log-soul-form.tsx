@@ -120,6 +120,7 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps)
       attendingChurch: false,
       inBibleStudy: false,
       attendingPrayer: false,
+      inServiceDepartment: false,
     };
     
     const isCampaignSource = values.source === 'Campaign';
