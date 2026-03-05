@@ -31,10 +31,10 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 export default function ChatPage() {
     const { user, loading: userLoading } = useUser();
     const firestore = useFirestore();
-    const params = useParams();
+    const { chatId: rawChatId } = useParams();
     const router = useRouter();
     const { toast } = useToast();
-    const chatId = params.chatId as string;
+    const chatId = rawChatId as string;
 
     const [newMessage, setNewMessage] = useState('');
     const [isSending, setIsSending] = useState(false);

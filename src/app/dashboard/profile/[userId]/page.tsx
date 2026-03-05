@@ -25,8 +25,8 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useParams } from "next/navigation";
 
 export default function UserProfilePage() {
-  const params = useParams();
-  const userId = params.userId as string;
+  const { userId: userIdFromParams } = useParams();
+  const userId = userIdFromParams as string;
 
   const { user: currentUser } = useUser();
   const firestore = useFirestore();
