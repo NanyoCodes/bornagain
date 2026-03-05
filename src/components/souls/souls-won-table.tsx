@@ -50,6 +50,7 @@ import { Badge } from "../ui/badge";
 import { Loader2 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 
 const statusOptions: FollowUpStatus[] = ['New', 'Contacted', 'Established'];
@@ -190,7 +191,7 @@ function LogFollowUpDialog({ soul, children }: { soul: Soul; children: React.Rea
                 </DialogDescription>
             </DialogHeader>
             <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                     <FormField
                         control={form.control}
                         name="note"
@@ -226,119 +227,125 @@ function LogFollowUpDialog({ soul, children }: { soul: Soul; children: React.Rea
                             </FormItem>
                         )}
                     />
-                     <FormField
-                        control={form.control}
-                        name="actions"
-                        render={() => (
-                            <FormItem className="space-y-3 rounded-lg border p-4">
-                            <div className="mb-4">
-                                <FormLabel className="text-base">Actions Taken</FormLabel>
-                                <FormDescription>
-                                    Select all relationship-building actions taken during this follow-up.
-                                </FormDescription>
-                            </div>
-                            <div className="grid grid-cols-2 gap-4">
-                                {actionItems.map((item) => (
+                    
+                    <Accordion type="single" collapsible className="w-full">
+                        <AccordionItem value="actions">
+                            <AccordionTrigger className="text-sm font-medium">Actions Taken</AccordionTrigger>
+                            <AccordionContent>
                                 <FormField
-                                    key={item.id}
                                     control={form.control}
                                     name="actions"
-                                    render={({ field }) => {
-                                    return (
-                                        <FormItem
-                                        key={item.id}
-                                        className="flex flex-row items-start space-x-3 space-y-0"
-                                        >
-                                        <FormControl>
-                                            <Checkbox
-                                            checked={field.value?.includes(item.id)}
-                                            onCheckedChange={(checked) => {
-                                                return checked
-                                                ? field.onChange([...(field.value || []), item.id])
-                                                : field.onChange(
-                                                    field.value?.filter(
-                                                        (value) => value !== item.id
+                                    render={() => (
+                                        <FormItem className="space-y-3 pt-4">
+                                            <FormDescription>
+                                                Select all relationship-building actions taken during this follow-up.
+                                            </FormDescription>
+                                            <div className="grid grid-cols-2 gap-4">
+                                                {actionItems.map((item) => (
+                                                <FormField
+                                                    key={item.id}
+                                                    control={form.control}
+                                                    name="actions"
+                                                    render={({ field }) => {
+                                                    return (
+                                                        <FormItem
+                                                        key={item.id}
+                                                        className="flex flex-row items-start space-x-3 space-y-0"
+                                                        >
+                                                        <FormControl>
+                                                            <Checkbox
+                                                            checked={field.value?.includes(item.id)}
+                                                            onCheckedChange={(checked) => {
+                                                                return checked
+                                                                ? field.onChange([...(field.value || []), item.id])
+                                                                : field.onChange(
+                                                                    field.value?.filter(
+                                                                        (value) => value !== item.id
+                                                                    )
+                                                                    )
+                                                            }}
+                                                            />
+                                                        </FormControl>
+                                                        <FormLabel className="font-normal text-sm">
+                                                            {item.label}
+                                                        </FormLabel>
+                                                        </FormItem>
                                                     )
-                                                    )
-                                            }}
-                                            />
-                                        </FormControl>
-                                        <FormLabel className="font-normal text-sm">
-                                            {item.label}
-                                        </FormLabel>
+                                                    }}
+                                                />
+                                                ))}
+                                            </div>
                                         </FormItem>
-                                    )
-                                    }}
+                                    )}
                                 />
-                                ))}
-                            </div>
-                            </FormItem>
-                        )}
-                        />
-                    <div className="space-y-4 rounded-lg border p-4">
-                        <div className="space-y-0.5">
-                            <Label>Progress Update</Label>
-                            <p className="text-sm text-muted-foreground">
-                                Update their progress on key spiritual disciplines.
-                            </p>
-                        </div>
-                        <div className="space-y-1">
-                            <FormField
-                                control={form.control}
-                                name="attendingChurch"
-                                render={({ field }) => (
-                                    <FormItem className="flex flex-row items-center justify-between rounded-md p-2 hover:bg-muted/50">
-                                        <div>
-                                            <FormLabel className="font-normal flex items-center gap-2 cursor-pointer"><Church className="h-4 w-4" />Attending Church</FormLabel>
-                                            <FormMessage className="text-xs" />
-                                        </div>
-                                        <FormControl>
-                                            <Switch checked={field.value} onCheckedChange={field.onChange} />
-                                        </FormControl>
-                                    </FormItem>
-                                )}
-                            />
-                             <FormField
-                                control={form.control}
-                                name="inServiceDepartment"
-                                render={({ field }) => (
-                                    <FormItem className="flex flex-row items-center justify-between rounded-md p-2 hover:bg-muted/50">
-                                        <div>
-                                            <FormLabel className="font-normal flex items-center gap-2 cursor-pointer"><Users className="h-4 w-4" />In Service Department</FormLabel>
-                                            <FormMessage className="text-xs" />
-                                        </div>
-                                        <FormControl>
-                                            <Switch checked={field.value} onCheckedChange={field.onChange} />
-                                        </FormControl>
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="inBibleStudy"
-                                render={({ field }) => (
-                                    <FormItem className="flex flex-row items-center justify-between rounded-md p-2 hover:bg-muted/50">
-                                        <FormLabel className="font-normal flex items-center gap-2 cursor-pointer"><BookOpen className="h-4 w-4" />In Bible Study</FormLabel>
-                                        <FormControl>
-                                            <Switch checked={field.value} onCheckedChange={field.onChange} />
-                                        </FormControl>
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="attendingPrayer"
-                                render={({ field }) => (
-                                    <FormItem className="flex flex-row items-center justify-between rounded-md p-2 hover:bg-muted/50">
-                                        <FormLabel className="font-normal flex items-center gap-2 cursor-pointer"><Heart className="h-4 w-4" />Attending Prayer</FormLabel>
-                                        <FormControl>
-                                            <Switch checked={field.value} onCheckedChange={field.onChange} />
-                                        </FormControl>
-                                    </FormItem>
-                                )}
-                            />
-                        </div>
-                    </div>
+                            </AccordionContent>
+                        </AccordionItem>
+                        <AccordionItem value="progress">
+                             <AccordionTrigger className="text-sm font-medium">Progress Update</AccordionTrigger>
+                             <AccordionContent>
+                                <div className="space-y-1 pt-4">
+                                     <p className="text-sm text-muted-foreground pb-2">
+                                        Update their progress on key spiritual disciplines.
+                                    </p>
+                                    <FormField
+                                        control={form.control}
+                                        name="attendingChurch"
+                                        render={({ field }) => (
+                                            <FormItem className="flex flex-row items-center justify-between rounded-md p-2 -mx-2 hover:bg-muted/50">
+                                                <div>
+                                                    <FormLabel className="font-normal flex items-center gap-2 cursor-pointer"><Church className="h-4 w-4" />Attending Church</FormLabel>
+                                                    <FormMessage className="text-xs" />
+                                                </div>
+                                                <FormControl>
+                                                    <Switch checked={field.value} onCheckedChange={field.onChange} />
+                                                </FormControl>
+                                            </FormItem>
+                                        )}
+                                    />
+                                    <FormField
+                                        control={form.control}
+                                        name="inServiceDepartment"
+                                        render={({ field }) => (
+                                            <FormItem className="flex flex-row items-center justify-between rounded-md p-2 -mx-2 hover:bg-muted/50">
+                                                <div>
+                                                    <FormLabel className="font-normal flex items-center gap-2 cursor-pointer"><Users className="h-4 w-4" />In Service Department</FormLabel>
+                                                    <FormMessage className="text-xs" />
+                                                </div>
+                                                <FormControl>
+                                                    <Switch checked={field.value} onCheckedChange={field.onChange} />
+                                                </FormControl>
+                                            </FormItem>
+                                        )}
+                                    />
+                                    <FormField
+                                        control={form.control}
+                                        name="inBibleStudy"
+                                        render={({ field }) => (
+                                            <FormItem className="flex flex-row items-center justify-between rounded-md p-2 -mx-2 hover:bg-muted/50">
+                                                <FormLabel className="font-normal flex items-center gap-2 cursor-pointer"><BookOpen className="h-4 w-4" />In Bible Study</FormLabel>
+                                                <FormControl>
+                                                    <Switch checked={field.value} onCheckedChange={field.onChange} />
+                                                </FormControl>
+                                            </FormItem>
+                                        )}
+                                    />
+                                    <FormField
+                                        control={form.control}
+                                        name="attendingPrayer"
+                                        render={({ field }) => (
+                                            <FormItem className="flex flex-row items-center justify-between rounded-md p-2 -mx-2 hover:bg-muted/50">
+                                                <FormLabel className="font-normal flex items-center gap-2 cursor-pointer"><Heart className="h-4 w-4" />Attending Prayer</FormLabel>
+                                                <FormControl>
+                                                    <Switch checked={field.value} onCheckedChange={field.onChange} />
+                                                </FormControl>
+                                            </FormItem>
+                                        )}
+                                    />
+                                </div>
+                             </AccordionContent>
+                        </AccordionItem>
+                    </Accordion>
+
                     <DialogFooter>
                         <Button type="submit" disabled={isLoading}>
                             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
@@ -635,13 +642,16 @@ export function SoulsWonTable({ souls, loading }: SoulsWonTableProps) {
                 </TableCell>
                 <TableCell>
                     {latestFollowUp ? (
-                        <div className="text-xs">
+                        <div className="text-xs space-y-1">
                             <div className="text-muted-foreground font-semibold">
                                 {format(latestFollowUp.date.toDate(), "PPP")}
                             </div>
                             {latestFollowUp.actions && latestFollowUp.actions.length > 0 && (
-                                <div className="text-muted-foreground line-clamp-1" title={latestFollowUp.actions.map(a => actionItems.find(ai => ai.id === a)?.label).join(', ')}>
-                                    {latestFollowUp.actions.map(a => actionItems.find(ai => ai.id === a)?.label).join(', ')}
+                                <div className="flex flex-wrap gap-1">
+                                    {latestFollowUp.actions.map(actionId => {
+                                        const action = actionItems.find(a => a.id === actionId);
+                                        return action ? <Badge key={actionId} variant="secondary" className="font-normal">{action.label}</Badge> : null
+                                    })}
                                 </div>
                             )}
                         </div>
