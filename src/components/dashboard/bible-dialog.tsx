@@ -95,7 +95,7 @@ function NoteEditor({ highlight, onSave, onDelete, onCancel }: { highlight: Bibl
         <Textarea 
             value={note}
             onChange={(e) => setNote(e.target.value)}
-            placeholder="Add your personal note..."
+            placeholder="Add your personal note to this highlight..."
             rows={5}
             className="text-sm"
         />
@@ -176,11 +176,6 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
 
   const { data: highlights } = useCollection<BibleHighlight>(highlightsQuery);
 
-  const activeHighlight = useMemo(() => {
-    if (!activeHighlightId || !highlights) return null;
-    return highlights.find(h => h.id === activeHighlightId) || null;
-  }, [activeHighlightId, highlights]);
-
   const highlightsMap = useMemo(() => {
     const map = new Map<number, BibleHighlight>();
     if (!highlights) return map;
@@ -192,6 +187,11 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
     });
     return map;
   }, [highlights]);
+  
+  const activeHighlight = useMemo(() => {
+    if (!activeHighlightId || !highlights) return null;
+    return highlights.find(h => h.id === activeHighlightId) || null;
+  }, [activeHighlightId, highlights]);
 
   useEffect(() => {
     if (!isOpen || !selectedBookName || !selectedChapterNumber) return;
