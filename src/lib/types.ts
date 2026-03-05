@@ -7,6 +7,17 @@ export type ReadingHistoryItem = {
   readAt: Timestamp;
 };
 
+export type BibleHighlight = {
+  id: string;
+  userId: string;
+  book: string;
+  chapter: number;
+  verses: number[];
+  color: string; // e.g., 'yellow', 'blue', 'green', 'pink'
+  note?: string;
+  createdAt: Timestamp;
+};
+
 export type DailyDisciplineLog = {
   id: string; // The date string YYYY-MM-DD
   completed: string[];

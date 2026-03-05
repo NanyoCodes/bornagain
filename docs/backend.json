@@ -602,6 +602,24 @@
         "to",
         "message"
       ]
+    },
+    "BibleHighlight": {
+      "title": "Bible Highlight",
+      "description": "Represents a user's highlight and notes on Bible verses.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "book": { "type": "string" },
+        "chapter": { "type": "number" },
+        "verses": {
+          "type": "array",
+          "items": { "type": "number" }
+        },
+        "color": { "type": "string", "description": "The color of the highlight (e.g., 'yellow', 'blue')." },
+        "note": { "type": "string", "description": "The user's personal note on the highlight." },
+        "createdAt": { "type": "object" }
+      },
+      "required": ["userId", "book", "chapter", "verses", "color", "createdAt"]
     }
   },
   "auth": {
@@ -623,6 +641,12 @@
         "$ref": "#/entities/DailyDisciplineLog"
       },
       "description": "Stores a user's daily discipline completion history."
+    },
+    "/users/{userId}/bibleHighlights/{highlightId}": {
+      "schema": {
+        "$ref": "#/entities/BibleHighlight"
+      },
+      "description": "Stores a user's Bible highlights and notes."
     },
     "/souls/{soulId}": {
       "schema": {

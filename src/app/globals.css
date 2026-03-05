@@ -77,3 +77,21 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer utilities {
+  .highlight-yellow {
+    @apply bg-yellow-200 dark:bg-yellow-700/40;
+  }
+  .highlight-blue {
+    @apply bg-blue-200 dark:bg-blue-700/40;
+  }
+  .highlight-green {
+    @apply bg-green-200 dark:bg-green-700/40;
+  }
+  .highlight-pink {
+    @apply bg-pink-200 dark:bg-pink-700/40;
+  }
+  .verse-selected {
+    @apply bg-primary/10;
+  }
+}

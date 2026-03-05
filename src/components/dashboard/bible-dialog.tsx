@@ -14,21 +14,28 @@ import { Button } from '../ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 import { bibleData } from '@/lib/bible-data';
-import { useUser, useFirestore, useDoc } from '@/firebase';
-import { doc, updateDoc, arrayUnion } from 'firebase/firestore';
-import type { UserProfile, ReadingHistoryItem } from '@/lib/types';
+import { useUser, useFirestore, useDoc, useCollection } from '@/firebase';
+import { doc, updateDoc, arrayUnion, collection, query, where, addDoc, serverTimestamp, deleteDoc } from 'firebase/firestore';
+import type { UserProfile, ReadingHistoryItem, BibleHighlight } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { format, isSameDay } from 'date-fns';
-import { Loader2, XCircle, BookOpen } from 'lucide-react';
+import { Loader2, XCircle, BookOpen, MessageSquare, Trash2 } from 'lucide-react';
 import { Skeleton } from '../ui/skeleton';
 import { getBibleChapter, type BibleChapterOutput } from '@/ai/flows/get-bible-chapter-flow';
 import { Input } from '../ui/input';
+import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
+import { Textarea } from '../ui/textarea';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip';
+import { cn } from '@/lib/utils';
+
 
 const bibleVersions = [
     { id: 'kjv', name: 'King James (KJV)' },
     { id: 'web', name: 'World English Bible (WEB)' },
     { id: 'bbe', name: 'Bible in Basic English' },
 ];
+
+const highlightColors = ['yellow', 'green', 'blue', 'pink'];
 
 export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { isOpen: boolean; onOpenChange: (open: boolean) => void; onDisciplineCompleted: () => void; }) {
   const { toast } = useToast();
@@ -48,6 +55,14 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const [filterDate, setFilterDate] = useState<Date | undefined>();
 
+  // Highlighting and notes state
+  const [selectedVerses, setSelectedVerses] = useState<number[]>([]);
+  const [activeHighlight, setActiveHighlight] = useState<BibleHighlight | null>(null);
+  const [noteText, setNoteText] = useState('');
+  const [popoverOpen, setPopoverOpen] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+
+
   const userDocRef = useMemo(() => (user ? doc(firestore, 'users', user.uid) : null), [user, firestore]);
   const { data: userProfile, loading: loadingProfile } = useDoc<UserProfile>(userDocRef);
   
@@ -57,6 +72,29 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
     setSelectedChapterNumber(1);
   }, [selectedBookName]);
 
+  const highlightsQuery = useMemo(() => {
+    if (!user || !chapterContent) return null;
+    return query(
+      collection(firestore, 'users', user.uid, 'bibleHighlights'),
+      where('book', '==', chapterContent.book),
+      where('chapter', '==', chapterContent.chapter)
+    );
+  }, [user, firestore, chapterContent]);
+
+  const { data: highlights } = useCollection<BibleHighlight>(highlightsQuery);
+
+  const highlightsMap = useMemo(() => {
+    const map = new Map<number, BibleHighlight>();
+    if (!highlights) return map;
+
+    highlights.forEach(highlight => {
+      highlight.verses.forEach(verseNum => {
+        map.set(verseNum, highlight);
+      });
+    });
+    return map;
+  }, [highlights]);
+
   useEffect(() => {
     if (!isOpen || !selectedBookName || !selectedChapterNumber) return;
 
@@ -65,6 +103,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
       setChapterError(null);
       setChapterContent(null);
       setIsScrolledToEnd(false);
+      setSelectedVerses([]);
 
       try {
         const content = await getBibleChapter({
@@ -88,11 +127,9 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
     const viewport = scrollAreaRef.current?.querySelector('div[data-radix-scroll-area-viewport]');
     if (!viewport) return;
 
-    // Scroll to top when new chapter content is loaded
     viewport.scrollTop = 0;
     
     const checkScrollable = () => {
-        // For non-scrollable content, enable the button immediately after render
         if (!isLoadingChapter && chapterContent) {
             if (viewport.scrollHeight <= viewport.clientHeight) {
                 setIsScrolledToEnd(true);
@@ -100,12 +137,20 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
         }
     };
     
-    // Check after a short delay to ensure content is fully rendered
     const timeoutId = setTimeout(checkScrollable, 100);
 
     return () => clearTimeout(timeoutId);
 
   }, [isLoadingChapter, chapterContent]);
+  
+  useEffect(() => {
+    if (activeHighlight) {
+        setNoteText(activeHighlight.note || '');
+        setPopoverOpen(true);
+    } else {
+        setPopoverOpen(false);
+    }
+  }, [activeHighlight]);
 
   const handleMarkAsRead = async () => {
     if (!user || !firestore || !chapterContent) {
@@ -175,7 +220,6 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
     
     const groups: { date: Date; items: ReadingHistoryItem[] }[] = [];
     
-    // Group items by day, preserving chronological order within the day
     readingHistory.forEach(item => {
       if (!item.readAt) return;
       const itemDate = item.readAt.toDate();
@@ -187,8 +231,6 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
         groups.push({ date: itemDate, items: [item] });
       }
     });
-
-    // Reverse the groups to show the most recent days first
     return groups.reverse();
   }, [readingHistory]);
 
@@ -202,11 +244,86 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
   const handleScroll = (event: React.UIEvent<HTMLDivElement>) => {
     if (isScrolledToEnd) return;
     const target = event.currentTarget;
-    // Check if user is close to the bottom
     if (target.scrollHeight - target.scrollTop <= target.clientHeight + 5) {
       setIsScrolledToEnd(true);
     }
   };
+  
+    const getHighlightClass = (color?: string) => {
+        if (!color) return '';
+        return `highlight-${color}`;
+    };
+
+    const handleVerseClick = (verseNumber: number) => {
+        setActiveHighlight(null);
+        setPopoverOpen(false);
+
+        const existingHighlight = highlightsMap.get(verseNumber);
+        if (existingHighlight) {
+            setActiveHighlight(existingHighlight);
+            setSelectedVerses([]);
+            return;
+        }
+
+        setSelectedVerses(prev =>
+            prev.includes(verseNumber)
+                ? prev.filter(v => v !== verseNumber)
+                : [...prev, verseNumber].sort((a, b) => a - b)
+        );
+    };
+
+    const handleSaveHighlight = async (color: string) => {
+        if (!user || !firestore || selectedVerses.length === 0 || !chapterContent) return;
+
+        setIsSaving(true);
+        try {
+            await addDoc(collection(firestore, 'users', user.uid, 'bibleHighlights'), {
+                userId: user.uid,
+                book: chapterContent.book,
+                chapter: chapterContent.chapter,
+                verses: selectedVerses,
+                color: color,
+                createdAt: serverTimestamp(),
+            });
+            setSelectedVerses([]);
+        } catch (error) {
+            toast({ variant: 'destructive', title: 'Error', description: 'Could not save highlight.' });
+        } finally {
+            setIsSaving(false);
+        }
+    };
+    
+    const handleUpdateNote = async () => {
+        if (!user || !firestore || !activeHighlight) return;
+
+        setIsSaving(true);
+        try {
+            const highlightRef = doc(firestore, 'users', user.uid, 'bibleHighlights', activeHighlight.id);
+            await updateDoc(highlightRef, { note: noteText });
+            toast({ title: 'Note Saved' });
+            setPopoverOpen(false);
+        } catch (error) {
+            toast({ variant: 'destructive', title: 'Error', description: 'Could not save note.' });
+        } finally {
+            setIsSaving(false);
+        }
+    };
+    
+    const handleDeleteHighlight = async () => {
+        if (!user || !firestore || !activeHighlight) return;
+
+        setIsSaving(true);
+        try {
+            await deleteDoc(doc(firestore, 'users', user.uid, 'bibleHighlights', activeHighlight.id));
+            toast({ title: 'Highlight Removed' });
+            setPopoverOpen(false);
+        } catch (error) {
+            toast({ variant: 'destructive', title: 'Error', description: 'Could not remove highlight.' });
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -254,31 +371,97 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                 </Select>
               </div>
 
-              <ScrollArea ref={scrollAreaRef} onScroll={handleScroll} className="flex-grow border rounded-md p-4 relative">
-                  {isLoadingChapter && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-background/50">
-                        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                    </div>
-                  )}
-                  {chapterError && !isLoadingChapter && (
-                     <div className="absolute inset-0 flex items-center justify-center p-4">
-                        <div className="text-center text-destructive bg-destructive/10 border border-destructive/50 p-4 rounded-md">
-                          <p className="font-semibold">Error Loading Chapter</p>
-                          <p className="text-sm">{chapterError}</p>
+              <div className="relative flex-grow">
+                <ScrollArea ref={scrollAreaRef} onScroll={handleScroll} className="h-full border rounded-md p-4">
+                    {isLoadingChapter && (
+                      <div className="absolute inset-0 flex items-center justify-center bg-background/50">
+                          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                      </div>
+                    )}
+                    {chapterError && !isLoadingChapter && (
+                       <div className="absolute inset-0 flex items-center justify-center p-4">
+                          <div className="text-center text-destructive bg-destructive/10 border border-destructive/50 p-4 rounded-md">
+                            <p className="font-semibold">Error Loading Chapter</p>
+                            <p className="text-sm">{chapterError}</p>
+                          </div>
+                      </div>
+                    )}
+                    {!isLoadingChapter && !chapterError && chapterContent && (
+                      <div className="space-y-4 text-lg leading-relaxed font-serif">
+                          {chapterContent.verses.map(v => {
+                                const verseNum = v.verse;
+                                const isSelected = selectedVerses.includes(verseNum);
+                                const highlightInfo = highlightsMap.get(verseNum);
+                                return (
+                                <Popover key={verseNum} open={popoverOpen && activeHighlight?.id === highlightInfo?.id} onOpenChange={(open) => { if (!open) setActiveHighlight(null); }}>
+                                    <PopoverTrigger asChild>
+                                        <p
+                                            className={cn(
+                                                'rounded-md transition-colors -mx-2 px-2 py-1',
+                                                highlightInfo && getHighlightClass(highlightInfo.color),
+                                                isSelected && 'verse-selected',
+                                                !highlightInfo && 'hover:bg-muted/50 cursor-pointer'
+                                            )}
+                                            onClick={() => handleVerseClick(verseNum)}
+                                        >
+                                            <sup className="text-sm font-sans text-muted-foreground mr-2 select-none">{v.verse}</sup>
+                                            {v.text}
+                                            {highlightInfo?.note && (
+                                                 <TooltipProvider delayDuration={100}>
+                                                    <Tooltip>
+                                                        <TooltipTrigger asChild>
+                                                            <MessageSquare className="inline-block h-4 w-4 ml-2 text-muted-foreground" />
+                                                        </TooltipTrigger>
+                                                        <TooltipContent className="max-w-xs">
+                                                            <p>{highlightInfo.note}</p>
+                                                        </TooltipContent>
+                                                    </Tooltip>
+                                                </TooltipProvider>
+                                            )}
+                                        </p>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-80">
+                                        <div className="grid gap-4">
+                                            <div className="space-y-2">
+                                                <h4 className="font-medium leading-none">My Note</h4>
+                                                <p className="text-sm text-muted-foreground">
+                                                Add a personal note to this highlight.
+                                                </p>
+                                            </div>
+                                            <Textarea value={noteText} onChange={(e) => setNoteText(e.target.value)} rows={4} />
+                                            <div className="flex justify-between">
+                                                <Button variant="destructive" size="sm" onClick={handleDeleteHighlight} disabled={isSaving}>
+                                                    {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Trash2 className="mr-2 h-4 w-4"/>}
+                                                     Delete
+                                                </Button>
+                                                <Button onClick={handleUpdateNote} size="sm" disabled={isSaving}>
+                                                     {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                                    Save Note
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    </PopoverContent>
+                                </Popover>
+                                )
+                          })}
+                      </div>
+                    )}
+                </ScrollArea>
+                {selectedVerses.length > 0 && (
+                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 w-auto">
+                        <div className="flex items-center gap-2 p-2 rounded-full border bg-background shadow-lg">
+                            {highlightColors.map(color => (
+                                <Button key={color} variant="outline" size="icon" className="rounded-full" onClick={() => handleSaveHighlight(color)} disabled={isSaving}>
+                                    <div className={cn("h-5 w-5 rounded-full", getHighlightClass(color))} />
+                                </Button>
+                            ))}
+                            <Button variant="ghost" size="icon" className="rounded-full" onClick={() => setSelectedVerses([])}>
+                                <XCircle className="h-5 w-5" />
+                            </Button>
                         </div>
                     </div>
-                  )}
-                  {!isLoadingChapter && !chapterError && chapterContent && (
-                    <div className="space-y-4 text-lg leading-relaxed font-serif">
-                        {chapterContent.verses.map(v => (
-                            <p key={v.verse}>
-                                <sup className="text-sm font-sans text-muted-foreground mr-2">{v.verse}</sup>
-                                {v.text}
-                            </p>
-                        ))}
-                    </div>
-                  )}
-              </ScrollArea>
+                )}
+              </div>
               
                <DialogFooter>
                 <Button onClick={handleMarkAsRead} disabled={isSubmitting || isLoadingChapter || !!chapterError || !isScrolledToEnd}>
