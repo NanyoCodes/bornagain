@@ -21,12 +21,14 @@ import { doc, updateDoc, arrayUnion, collection, query, where, addDoc, serverTim
 import type { UserProfile, ReadingHistoryItem, BibleHighlight } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { format, isSameDay, formatDistanceToNow } from 'date-fns';
-import { Loader2, XCircle, BookOpen, Trash2 } from 'lucide-react';
+import { Loader2, XCircle, BookOpen, Trash2, ChevronRight } from 'lucide-react';
 import { Skeleton } from '../ui/skeleton';
 import { getBibleChapter, type BibleChapterOutput } from '@/ai/flows/get-bible-chapter-flow';
 import { Input } from '../ui/input';
 import { Textarea } from '../ui/textarea';
 import { cn } from '@/lib/utils';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '../ui/sheet';
 
 
 const bibleVersions = [
@@ -153,6 +155,13 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
   const [selectedVerses, setSelectedVerses] = useState<number[]>([]);
   const [isProcessingHighlight, setIsProcessingHighlight] = useState(false);
   const [activeHighlightId, setActiveHighlightId] = useState<string | null>(null);
+
+  const isMobile = useIsMobile();
+  const [mounted, setMounted] = useState(false);
+  const [isBookSheetOpen, setIsBookSheetOpen] = useState(false);
+  const [isChapterSheetOpen, setIsChapterSheetOpen] = useState(false);
+  const [isVersionSheetOpen, setIsVersionSheetOpen] = useState(false);
+  const [bookSearchTerm, setBookSearchTerm] = useState('');
 
   const userDocRef = useMemo(() => (user ? doc(firestore, 'users', user.uid) : null), [user, firestore]);
   const { data: userProfile, loading: loadingProfile } = useDoc<UserProfile>(userDocRef);
@@ -411,6 +420,28 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
         }
     };
 
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    const filteredBibleData = useMemo(() => {
+        if (!bookSearchTerm) return bibleData;
+        return bibleData.filter(book => book.name.toLowerCase().includes(bookSearchTerm.toLowerCase()));
+    }, [bookSearchTerm]);
+
+    const handleSelectBook = (bookName: string) => {
+        setSelectedBookName(bookName);
+        setIsBookSheetOpen(false);
+    }
+    const handleSelectChapter = (chapter: number) => {
+        setSelectedChapterNumber(chapter);
+        setActiveHighlightId(null);
+        setIsChapterSheetOpen(false);
+    }
+    const handleSelectVersion = (version: string) => {
+        setSelectedVersion(version);
+        setIsVersionSheetOpen(false);
+    }
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -429,33 +460,100 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
           </TabsList>
           
           <TabsContent value="read" className="flex-grow flex flex-col min-h-0 mt-4 gap-4">
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <Select value={selectedBookName} onValueChange={setSelectedBookName}>
-                    <SelectTrigger><SelectValue placeholder="Select a book" /></SelectTrigger>
-                    <SelectContent>
-                        {bibleData.map(book => (
-                            <SelectItem key={book.name} value={book.name}>{book.name}</SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
-                <Select value={String(selectedChapterNumber)} onValueChange={(val) => { setSelectedChapterNumber(Number(val)); setActiveHighlightId(null); }}>
-                    <SelectTrigger><SelectValue placeholder="Select a chapter" /></SelectTrigger>
-                    <SelectContent>
-                        {selectedBook?.chapters.map(chapter => (
-                            <SelectItem key={chapter.chapter} value={String(chapter.chapter)}>Chapter {chapter.chapter}</SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
-                <Select value={selectedVersion} onValueChange={setSelectedVersion}>
-                  <SelectTrigger><SelectValue placeholder="Select a version" /></SelectTrigger>
-                  <SelectContent>
-                      {bibleVersions.map(version => (
-                          <SelectItem key={version.id} value={version.id}>
-                            {version.name}
-                          </SelectItem>
-                      ))}
-                  </SelectContent>
-                </Select>
+              <div className="shrink-0">
+                {!mounted || !isMobile ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <Select value={selectedBookName} onValueChange={setSelectedBookName}>
+                            <SelectTrigger><SelectValue placeholder="Select a book" /></SelectTrigger>
+                            <SelectContent>
+                                {bibleData.map(book => (
+                                    <SelectItem key={book.name} value={book.name}>{book.name}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                        <Select value={String(selectedChapterNumber)} onValueChange={(val) => { setSelectedChapterNumber(Number(val)); setActiveHighlightId(null); }}>
+                            <SelectTrigger><SelectValue placeholder="Select a chapter" /></SelectTrigger>
+                            <SelectContent>
+                                {selectedBook?.chapters.map(chapter => (
+                                    <SelectItem key={chapter.chapter} value={String(chapter.chapter)}>Chapter {chapter.chapter}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                        <Select value={selectedVersion} onValueChange={setSelectedVersion}>
+                          <SelectTrigger><SelectValue placeholder="Select a version" /></SelectTrigger>
+                          <SelectContent>
+                              {bibleVersions.map(version => (
+                                  <SelectItem key={version.id} value={version.id}>
+                                    {version.name}
+                                  </SelectItem>
+                              ))}
+                          </SelectContent>
+                        </Select>
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-3 gap-2">
+                        <Sheet open={isBookSheetOpen} onOpenChange={setIsBookSheetOpen}>
+                            <SheetTrigger asChild>
+                                <Button variant="outline" className="truncate justify-between">
+                                    <span className="truncate">{selectedBookName}</span>
+                                    <ChevronRight className="h-4 w-4 shrink-0 opacity-50" />
+                                </Button>
+                            </SheetTrigger>
+                            <SheetContent side="bottom" className="h-[90vh] flex flex-col">
+                                <SheetHeader>
+                                    <SheetTitle>Select a Book</SheetTitle>
+                                </SheetHeader>
+                                <Input placeholder="Search books..." value={bookSearchTerm} onChange={(e) => setBookSearchTerm(e.target.value)} />
+                                <ScrollArea className="flex-grow">
+                                    {filteredBibleData.map(book => (
+                                    <Button key={book.name} variant="ghost" size="lg" className="w-full justify-start" onClick={() => handleSelectBook(book.name)}>{book.name}</Button>
+                                    ))}
+                                </ScrollArea>
+                            </SheetContent>
+                        </Sheet>
+
+                        <Sheet open={isChapterSheetOpen} onOpenChange={setIsChapterSheetOpen}>
+                            <SheetTrigger asChild>
+                                <Button variant="outline" className="truncate justify-between">
+                                    <span className="truncate">Chapter {selectedChapterNumber}</span>
+                                    <ChevronRight className="h-4 w-4 shrink-0 opacity-50" />
+                                </Button>
+                            </SheetTrigger>
+                            <SheetContent side="bottom" className="h-[90vh] flex flex-col">
+                                <SheetHeader>
+                                    <SheetTitle>{selectedBookName}</SheetTitle>
+                                    <SheetDescription>Select a chapter</SheetDescription>
+                                </SheetHeader>
+                                <ScrollArea className="flex-grow">
+                                    <div className="grid grid-cols-5 gap-2 p-4">
+                                    {selectedBook?.chapters.map(chapter => (
+                                    <Button key={chapter.chapter} variant={chapter.chapter === selectedChapterNumber ? 'default' : 'outline'} size="icon" onClick={() => handleSelectChapter(chapter.chapter)}>{chapter.chapter}</Button>
+                                    ))}
+                                    </div>
+                                </ScrollArea>
+                            </SheetContent>
+                        </Sheet>
+                        
+                        <Sheet open={isVersionSheetOpen} onOpenChange={setIsVersionSheetOpen}>
+                            <SheetTrigger asChild>
+                                <Button variant="outline" className="truncate justify-between">
+                                    <span className="truncate">{selectedVersion.toUpperCase()}</span>
+                                    <ChevronRight className="h-4 w-4 shrink-0 opacity-50" />
+                                </Button>
+                            </SheetTrigger>
+                            <SheetContent side="bottom" className="h-auto">
+                                <SheetHeader>
+                                    <SheetTitle>Select a Version</SheetTitle>
+                                </SheetHeader>
+                                <div className="grid gap-2 py-4">
+                                {bibleVersions.map(version => (
+                                    <Button key={version.id} variant={version.id === selectedVersion ? 'default' : 'ghost'} size="lg" className="w-full justify-start" onClick={() => handleSelectVersion(version.id)}>{version.name}</Button>
+                                ))}
+                                </div>
+                            </SheetContent>
+                        </Sheet>
+                    </div>
+                )}
               </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 flex-grow min-h-0">
