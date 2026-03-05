@@ -37,7 +37,7 @@ import { useUser, useAuth, useFirestore, useCollection } from "@/firebase";
 import { signOut } from "firebase/auth";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { SearchProvider, useSearch } from "@/context/search-context";
-import { collection, doc, limit, orderBy, query, writeBatch } from "firebase/firestore";
+import { collection, doc, limit, orderBy, query, where, writeBatch } from "firebase/firestore";
 import type { Notification } from "@/lib/types";
 import { formatDistanceToNow } from "date-fns";
 import { WelcomePopup } from "@/components/auth/welcome-popup";
@@ -62,13 +62,33 @@ function AppHeader() {
   const { searchTerm, setSearchTerm, searchPlaceholder, isSearchVisible } = useSearch();
   const [showMobileSearch, setShowMobileSearch] = useState(false);
   
-  const notificationsQuery = useMemo(() => {
+  // Query for unread chat notifications
+  const unreadChatNotifsQuery = useMemo(() => {
     if (!user?.uid || !firestore) return null;
-    return query(collection(firestore, `users/${user.uid}/notifications`), orderBy('createdAt', 'desc'), limit(5));
+    return query(
+      collection(firestore, `users/${user.uid}/notifications`),
+      where('type', '==', 'new_chat_message'),
+      where('isRead', '==', false)
+    );
+  }, [user?.uid, firestore]);
+  const { data: unreadChatNotifications } = useCollection<Notification>(unreadChatNotifsQuery);
+  const unreadChatCount = unreadChatNotifications?.length ?? 0;
+
+  // Query for other notifications (for the bell dropdown)
+  const otherNotificationTypes = ['campaign_join', 'accountability_nudge', 'accountability_request', 'request_accepted', 'request_declined'];
+  const otherNotificationsQuery = useMemo(() => {
+    if (!user?.uid || !firestore) return null;
+    return query(
+      collection(firestore, `users/${user.uid}/notifications`),
+      where('type', 'in', otherNotificationTypes),
+      orderBy('createdAt', 'desc'),
+      limit(5)
+    );
   }, [user?.uid, firestore]);
 
-  const { data: notifications, loading: notificationsLoading } = useCollection<Notification>(notificationsQuery);
-  const unreadCount = useMemo(() => notifications?.filter(n => !n.isRead).length ?? 0, [notifications]);
+  const { data: otherNotifications, loading: notificationsLoading } = useCollection<Notification>(otherNotificationsQuery);
+  const unreadCount = useMemo(() => otherNotifications?.filter(n => !n.isRead).length ?? 0, [otherNotifications]);
+
 
   const handleLogout = async () => {
     if (!auth) return;
@@ -77,9 +97,9 @@ function AppHeader() {
   };
   
   const handleMarkAllAsRead = async () => {
-    if (!user || !firestore || !notifications) return;
+    if (!user || !firestore || !otherNotifications) return;
     
-    const unreadNotifications = notifications.filter(n => !n.isRead);
+    const unreadNotifications = otherNotifications.filter(n => !n.isRead);
     if (unreadNotifications.length === 0) return;
 
     const batch = writeBatch(firestore);
@@ -179,8 +199,13 @@ function AppHeader() {
           </Button>
         )}
         <Button variant="ghost" size="icon" asChild>
-            <Link href="/dashboard/chats">
+            <Link href="/dashboard/chats" className="relative">
                 <MessageSquare className="h-5 w-5" />
+                {unreadChatCount > 0 && (
+                    <div className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-xs font-bold text-destructive-foreground">
+                        {unreadChatCount}
+                    </div>
+                )}
                 <span className="sr-only">Chats</span>
             </Link>
         </Button>
@@ -207,8 +232,8 @@ function AppHeader() {
               <div className="p-4 text-sm text-center text-muted-foreground">
                 <Loader2 className="h-4 w-4 animate-spin mx-auto" />
               </div>
-            ) : notifications && notifications.length > 0 ? (
-                notifications.map((notification) => (
+            ) : otherNotifications && otherNotifications.length > 0 ? (
+                otherNotifications.map((notification) => (
                   <DropdownMenuItem key={notification.id} asChild className="cursor-pointer data-[disabled]:opacity-100 data-[disabled]:pointer-events-auto">
                     <Link href={notification.link || '#'} className={cn("flex flex-col items-start gap-1 p-2 w-full", !notification.isRead && "bg-accent/50", notification.isRead && "opacity-60 hover:opacity-100")}>
                         <p className="font-semibold text-sm">{notification.title}</p>
@@ -368,8 +393,8 @@ export default function DashboardLayout({
     <SearchProvider>
       <div className="flex min-h-screen w-full flex-col bg-muted/30">
         <AppHeader />
-        <main className={cn("flex-1 overflow-y-auto", !isChatPage && "pb-16 md:pb-0")}>
-          <div className={cn(!isChatPage && "max-w-7xl mx-auto p-4 md:p-6")}>
+        <main className="flex-1 overflow-y-auto">
+          <div className={cn("max-w-7xl mx-auto p-4 md:p-6", !isChatPage && "pb-20 md:pb-6")}>
             {children}
           </div>
         </main>

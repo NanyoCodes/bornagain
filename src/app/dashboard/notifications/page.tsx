@@ -4,7 +4,7 @@
 import { useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUser, useFirestore, useCollection } from '@/firebase';
-import { collection, query, orderBy, doc, updateDoc, writeBatch } from 'firebase/firestore';
+import { collection, query, orderBy, doc, updateDoc, writeBatch, where } from 'firebase/firestore';
 import type { Notification } from '@/lib/types';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -22,7 +22,13 @@ export default function NotificationsPage() {
 
   const notificationsQuery = useMemo(() => {
     if (!user?.uid || !firestore) return null;
-    return query(collection(firestore, `users/${user.uid}/notifications`), orderBy('createdAt', 'desc'));
+    // Exclude chat notifications from this page
+    const otherNotificationTypes = ['campaign_join', 'accountability_nudge', 'accountability_request', 'request_accepted', 'request_declined'];
+    return query(
+        collection(firestore, `users/${user.uid}/notifications`),
+        where('type', 'in', otherNotificationTypes),
+        orderBy('createdAt', 'desc')
+    );
   }, [user?.uid, firestore]);
 
   const { data: notifications, loading } = useCollection<Notification>(notificationsQuery);
@@ -81,7 +87,7 @@ export default function NotificationsPage() {
                 Notifications
             </h1>
             <p className="text-muted-foreground">
-                All your recent updates and alerts.
+                Your recent updates and alerts. Chat messages appear separately.
             </p>
         </div>
         {!loading && notifications && notifications.length > 0 && (
