@@ -67,6 +67,7 @@ export type UserProfile = {
     churchName: string;
     attendedAt: Timestamp;
   }[];
+  lastActive?: Timestamp;
 };
 
 export type Achievement = {

@@ -2,10 +2,10 @@
 "use client";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { isSameMonth, format } from "date-fns";
+import { isSameMonth, format, differenceInHours, subDays } from "date-fns";
 import { ArrowRight, UserPlus, Globe, Loader2, RefreshCw, XCircle, Edit, UserCheck2 } from "lucide-react";
 import { useCollection, useFirestore, useUser, useDoc } from "@/firebase";
-import { collection, query, doc, updateDoc, serverTimestamp, orderBy, limit, where, getCountFromServer } from "firebase/firestore";
+import { collection, query, doc, updateDoc, serverTimestamp, orderBy, limit, where, getCountFromServer, getDocs } from "firebase/firestore";
 import type { Soul, UserProfile } from "@/lib/types";
 import { useMemo, useEffect, useState, useCallback } from "react";
 import { DailyDisciplineCard } from "@/components/dashboard/daily-discipline-card";
@@ -22,6 +22,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Progress } from "@/components/ui/progress";
+import { WelcomeBackDialog } from "@/components/dashboard/welcome-back-dialog";
 
 
 function RecentSoulsList() {
@@ -111,8 +112,8 @@ function GlobalSoulsCard({ location, userSouls }: { location: { city?: string, c
             return;
         };
 
+        setLoading(true);
         try {
-            setLoading(true);
             setError(null);
             const soulsCollection = collection(firestore, 'souls');
             
@@ -253,12 +254,81 @@ export default function DashboardPage() {
   const [goalDialogOpen, setGoalDialogOpen] = useState(false);
   const [newGoal, setNewGoal] = useState(monthlyGoal);
   const [newGoalDate, setNewGoalDate] = useState<Date | null>(null);
+  
+  const [showWelcomeBack, setShowWelcomeBack] = useState(false);
+  const [summaryData, setSummaryData] = useState<{
+    newTestimoniesCount: number;
+    soulsWonCount: number;
+    recentDisciplines: { date: string; completed: boolean }[];
+  } | null>(null);
 
   useEffect(() => {
     const today = new Date();
     setGoalDate(today);
     setNewGoalDate(today);
   }, []);
+
+  const loading = authLoading || profileLoading || soulsLoading;
+
+  useEffect(() => {
+    if (loading || !userProfile || !firestore || !user) return;
+
+    const lastActive = userProfile.lastActive?.toDate();
+    const now = new Date();
+
+    // Show summary if last active was more than 48 hours ago
+    if (lastActive && differenceInHours(now, lastActive) > 48) {
+      const fetchSummaryData = async () => {
+        try {
+          // 1. Get new testimonies count
+          const testimoniesQuery = query(
+            collection(firestore, 'testimonies'),
+            where('createdAt', '>', lastActive)
+          );
+          const testimoniesSnapshot = await getCountFromServer(testimoniesQuery);
+          const newTestimoniesCount = testimoniesSnapshot.data().count;
+
+          // 2. Get souls won count (already available from page data)
+          const soulsWonCount = soulsWon?.length ?? 0;
+
+          // 3. Get recent discipline history
+          const recentDisciplines: { date: string; completed: boolean }[] = [];
+          const threeDaysAgo = subDays(now, 4); // Go back a bit further to be safe
+          const disciplineHistoryQuery = query(
+            collection(firestore, `users/${user.uid}/disciplineHistory`),
+            where('date', '>=', threeDaysAgo)
+          );
+          const disciplineSnapshot = await getDocs(disciplineHistoryQuery);
+          const historyMap = new Map(disciplineSnapshot.docs.map(d => [format(d.data().date.toDate(), 'yyyy-MM-dd'), d.data().completed.length > 0]));
+          
+          for (let i = 1; i <= 3; i++) {
+              const date = subDays(now, i);
+              const dateString = format(date, 'yyyy-MM-dd');
+              const prettyDate = format(date, 'MMM d');
+              recentDisciplines.push({
+                  date: prettyDate,
+                  completed: historyMap.get(dateString) || false
+              });
+          }
+          recentDisciplines.reverse(); // Show oldest first
+
+          setSummaryData({
+            newTestimoniesCount,
+            soulsWonCount,
+            recentDisciplines
+          });
+          setShowWelcomeBack(true);
+
+        } catch (error) {
+          console.error("Failed to fetch welcome back summary:", error);
+          // Don't show the dialog if data fetching fails.
+        }
+      };
+
+      fetchSummaryData();
+    }
+  }, [loading, userProfile, firestore, user, soulsWon]);
+
 
   const handleGoalDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
@@ -325,9 +395,6 @@ export default function DashboardPage() {
   };
 
   const soulsWonCount = soulsWon?.length ?? 0;
-
-  const loading = authLoading || profileLoading || soulsLoading;
-
 
   return (
     <div className="space-y-8">
@@ -503,6 +570,14 @@ export default function DashboardPage() {
                 </Card>
             </div>
         </div>
+        {summaryData && userProfile && (
+            <WelcomeBackDialog 
+                isOpen={showWelcomeBack}
+                onClose={() => setShowWelcomeBack(false)}
+                userProfile={userProfile}
+                summaryData={summaryData}
+            />
+        )}
     </div>
   );
 }

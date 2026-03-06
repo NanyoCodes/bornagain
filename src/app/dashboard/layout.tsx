@@ -37,7 +37,7 @@ import { useUser, useAuth, useFirestore, useCollection } from "@/firebase";
 import { signOut } from "firebase/auth";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { SearchProvider, useSearch } from "@/context/search-context";
-import { collection, doc, limit, orderBy, query, where, writeBatch } from "firebase/firestore";
+import { collection, doc, limit, orderBy, query, where, writeBatch, updateDoc, serverTimestamp } from "firebase/firestore";
 import type { Notification } from "@/lib/types";
 import { formatDistanceToNow } from "date-fns";
 import { WelcomePopup } from "@/components/auth/welcome-popup";
@@ -350,6 +350,7 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const { user, loading } = useUser();
+  const firestore = useFirestore();
   const router = useRouter();
   const pathname = usePathname();
   const [showWelcomePopup, setShowWelcomePopup] = useState(false);
@@ -357,7 +358,14 @@ export default function DashboardLayout({
   const isChatPage = pathname.startsWith('/dashboard/chats/');
 
   useEffect(() => {
-    if (!loading && user?.uid) {
+    if (!loading && user) {
+      // Update last active timestamp
+      const userRef = doc(firestore, 'users', user.uid);
+      updateDoc(userRef, { lastActive: serverTimestamp() }).catch(err => {
+        // This is a non-critical background task.
+        console.warn("Failed to update last active time:", err);
+      });
+
       // Check if it's a new user to show the welcome popup
       const welcomePopupShown = sessionStorage.getItem('welcomePopupShown');
       if (!welcomePopupShown && user.metadata.creationTime && user.metadata.lastSignInTime) {
@@ -373,7 +381,7 @@ export default function DashboardLayout({
     } else if (!loading && !user) {
       router.push('/login');
     }
-  }, [user, loading, router]);
+  }, [user, loading, router, firestore]);
 
   const getLoadingMessage = (path: string) => {
     if (path.startsWith('/dashboard/souls-won')) return 'Loading souls won...';

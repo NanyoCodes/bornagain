@@ -161,6 +161,10 @@
                 },
                 "required": ["churchName", "attendedAt"]
             }
+        },
+        "lastActive": {
+          "type": "object",
+          "description": "Timestamp of the user's last activity."
         }
       },
       "required": [
