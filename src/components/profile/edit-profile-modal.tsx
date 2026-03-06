@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -94,7 +95,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
     setIsSubmitting(true);
 
     try {
-      let newPhotoURL: string | undefined = undefined;
+      let newPhotoURL: string | null = userProfile.photoURL || null;
 
       if (photoFile && storage) {
         const filePath = `users/${user.uid}/profile.jpg`;
@@ -104,60 +105,47 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
       }
       
       const displayName = `${values.firstName} ${values.lastName}`;
-      const firestoreUpdatePayload: { [key: string]: any } = {};
-      const newLocation = {
-        city: values.city || "",
-        country: values.country || "",
-        city_lowercase: (values.city || "").toLowerCase(),
-        country_lowercase: (values.country || "").toLowerCase(),
+      
+      // Firestore payload always includes all fields for simplicity and robustness
+      const firestoreUpdatePayload: Partial<UserProfile> = {
+        firstName: values.firstName,
+        lastName: values.lastName,
+        fullName_lowercase: displayName.toLowerCase(),
+        name_tokens: displayName.toLowerCase().split(/\s+/).filter(Boolean),
+        bio: values.bio || "",
+        location: {
+          city: values.city || "",
+          country: values.country || "",
+          city_lowercase: (values.city || "").toLowerCase(),
+          country_lowercase: (values.country || "").toLowerCase(),
+        },
+        phone: values.phone || "",
+        photoURL: newPhotoURL || "",
       };
 
-      if (values.firstName !== userProfile.firstName) firestoreUpdatePayload.firstName = values.firstName;
-      if (values.lastName !== userProfile.lastName) firestoreUpdatePayload.lastName = values.lastName;
-
-      if (values.firstName !== userProfile.firstName || values.lastName !== userProfile.lastName) {
-        firestoreUpdatePayload.fullName_lowercase = displayName.toLowerCase();
-        firestoreUpdatePayload.name_tokens = displayName.toLowerCase().split(/\s+/).filter(Boolean);
+      // Auth payload only includes fields that have changed
+      const authUpdatePayload: { displayName?: string; photoURL?: string } = {};
+      if (displayName !== user.displayName) {
+        authUpdatePayload.displayName = displayName;
       }
-
-      if (values.bio !== userProfile.bio) firestoreUpdatePayload.bio = values.bio || "";
-      if (newLocation.city !== userProfile.location?.city || newLocation.country !== userProfile.location?.country) {
-          firestoreUpdatePayload.location = newLocation;
-      }
-      if (values.phone !== userProfile.phone) firestoreUpdatePayload.phone = values.phone || "";
-      if (newPhotoURL) {
-        firestoreUpdatePayload.photoURL = newPhotoURL;
-      }
-
-      const hasFirestoreUpdate = Object.keys(firestoreUpdatePayload).length > 0;
-      const hasAuthUpdate = auth.currentUser && (displayName !== auth.currentUser.displayName || (newPhotoURL && newPhotoURL !== auth.currentUser.photoURL));
-
-      if (!hasFirestoreUpdate && !hasAuthUpdate) {
-          toast({ title: "No Changes", description: "You haven't made any changes to your profile." });
-          onClose();
-          setIsSubmitting(false); // Make sure to stop spinner
-          return;
+      if (newPhotoURL !== user.photoURL) {
+        authUpdatePayload.photoURL = newPhotoURL || "";
       }
       
-      const authUpdatePromise = hasAuthUpdate && auth.currentUser 
-        ? updateProfile(auth.currentUser, {
-            displayName: displayName,
-            photoURL: newPhotoURL || auth.currentUser.photoURL,
-          })
+      const authUpdatePromise = Object.keys(authUpdatePayload).length > 0
+        ? updateProfile(user, authUpdatePayload)
         : Promise.resolve();
 
-      const firestoreUpdatePromise = hasFirestoreUpdate
-        ? updateDoc(doc(firestore, 'users', user.uid), firestoreUpdatePayload).catch((serverError) => {
-            const permissionError = new FirestorePermissionError({
-                path: `users/${user.uid}`,
-                operation: 'update',
-                requestResourceData: firestoreUpdatePayload,
-            });
-            errorEmitter.emit('permission-error', permissionError);
-            throw permissionError;
-        })
-        : Promise.resolve();
-
+      const firestoreUpdatePromise = updateDoc(doc(firestore, 'users', user.uid), firestoreUpdatePayload).catch((serverError) => {
+        const permissionError = new FirestorePermissionError({
+            path: `users/${user.uid}`,
+            operation: 'update',
+            requestResourceData: firestoreUpdatePayload,
+        });
+        errorEmitter.emit('permission-error', permissionError);
+        throw permissionError;
+      });
+      
       await Promise.all([authUpdatePromise, firestoreUpdatePromise]);
       
       toast({ title: "Profile Updated", description: "Your changes have been saved." });
@@ -291,3 +279,5 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
     </Form>
   );
 }
+
+    
