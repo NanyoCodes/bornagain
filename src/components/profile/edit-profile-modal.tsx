@@ -1,10 +1,9 @@
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -18,7 +17,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
-import { useAuth, useFirestore, useUser, useStorage } from "@/firebase";
+import { useAuth, useFirestore, useUser } from "@/firebase";
 import { doc, updateDoc } from "firebase/firestore";
 import { updateProfile } from "firebase/auth";
 import type { UserProfile } from "@/lib/types";
@@ -27,8 +26,6 @@ import { FirestorePermissionError } from "@/firebase/errors";
 import { LocationProfileInput } from "../common/location-profile-input";
 import { Label } from "../ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ref as storageRef, uploadBytes, getDownloadURL } from "firebase/storage";
-import { cn } from "@/lib/utils";
 
 const formSchema = z.object({
   firstName: z.string().min(2, "First name must be at least 2 characters.").max(50, "Name is too long."),
@@ -49,11 +46,8 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
   const { user } = useUser();
   const auth = useAuth();
   const firestore = useFirestore();
-  const storage = useStorage();
   
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [photoFile, setPhotoFile] = useState<File | null>(null);
-  const [photoPreview, setPhotoPreview] = useState<string | null>(userProfile.photoURL || null);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -67,26 +61,6 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
     },
   });
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      if (file.size > 5 * 1024 * 1024) { // 5MB limit
-        toast({
-          variant: 'destructive',
-          title: 'File too large',
-          description: 'Please upload an image smaller than 5MB.'
-        });
-        return;
-      }
-      setPhotoFile(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPhotoPreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (!user || !auth || !firestore) {
       toast({ variant: 'destructive', title: 'Not authenticated or Firebase not ready' });
@@ -95,18 +69,9 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
     setIsSubmitting(true);
 
     try {
-      let newPhotoURL: string | null = userProfile.photoURL || null;
-
-      if (photoFile && storage) {
-        const filePath = `users/${user.uid}/profile.jpg`;
-        const fileRef = storageRef(storage, filePath);
-        await uploadBytes(fileRef, photoFile);
-        newPhotoURL = await getDownloadURL(fileRef);
-      }
-      
       const displayName = `${values.firstName} ${values.lastName}`;
       
-      const firestoreUpdatePayload: Partial<UserProfile> = {
+      const firestoreUpdatePayload = {
         firstName: values.firstName,
         lastName: values.lastName,
         fullName_lowercase: displayName.toLowerCase(),
@@ -119,12 +84,10 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
           country_lowercase: (values.country || "").toLowerCase(),
         },
         phone: values.phone || "",
-        photoURL: newPhotoURL || "",
       };
       
       const authUpdatePromise = updateProfile(user, {
         displayName: displayName,
-        photoURL: newPhotoURL || "",
       });
 
       const firestoreUpdatePromise = updateDoc(doc(firestore, 'users', user.uid), firestoreUpdatePayload).catch((serverError) => {
@@ -155,22 +118,12 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <div className="flex flex-col items-center gap-4">
+        <div className="flex flex-col items-center gap-2">
           <Avatar className="h-24 w-24">
-            <AvatarImage src={photoPreview || undefined} alt={`${userProfile.firstName} ${userProfile.lastName}`} />
+            <AvatarImage src={userProfile.photoURL || undefined} alt={`${userProfile.firstName} ${userProfile.lastName}`} />
             <AvatarFallback>{userProfile.firstName?.charAt(0)}{userProfile.lastName?.charAt(0)}</AvatarFallback>
           </Avatar>
-           <Label htmlFor="photo-upload" className={cn(buttonVariants({ variant: "outline" }), "cursor-pointer")}>
-              Change Photo
-            </Label>
-            <Input
-              id="photo-upload"
-              type="file"
-              className="sr-only"
-              accept="image/png, image/jpeg, image/gif"
-              onChange={handleFileChange}
-              disabled={isSubmitting}
-            />
+           <p className="text-sm text-muted-foreground text-center px-4">Profile photo is synced from your social login (e.g., Google). To change it, update your photo on that platform.</p>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
