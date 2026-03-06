@@ -27,7 +27,8 @@ import { errorEmitter } from "@/firebase/error-emitter";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 const formSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters."),
+  firstName: z.string().min(2, "First name must be at least 2 characters."),
+  lastName: z.string().min(2, "Last name must be at least 2 characters."),
   email: z.string().email("Please enter a valid email address.").optional().or(z.literal('')),
   phone: z.string().optional(),
   church: z.string().optional(),
@@ -61,7 +62,8 @@ export function EditSoulForm({ soul, onSoulUpdated }: EditSoulFormProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: soul.name || "",
+      firstName: soul.firstName || "",
+      lastName: soul.lastName || "",
       email: soul.email || "",
       phone: soul.phone || "",
       church: soul.church || "",
@@ -84,7 +86,8 @@ export function EditSoulForm({ soul, onSoulUpdated }: EditSoulFormProps) {
     const soulRef = doc(firestore, `users/${user.uid}/souls`, soul.id);
 
     const soulUpdateData: { [key: string]: any } = {
-      name: values.name,
+      firstName: values.firstName,
+      lastName: values.lastName,
       email: values.email,
       phone: values.phone,
       church: values.church,
@@ -118,7 +121,7 @@ export function EditSoulForm({ soul, onSoulUpdated }: EditSoulFormProps) {
     updateDoc(soulRef, soulUpdateData).then(() => {
         toast({
             title: "Soul Updated",
-            description: `${values.name}'s record has been updated.`,
+            description: `${values.firstName} ${values.lastName}'s record has been updated.`,
         });
 
         // Send invite if email was just added
@@ -137,7 +140,7 @@ export function EditSoulForm({ soul, onSoulUpdated }: EditSoulFormProps) {
                               <img src="https://i.postimg.cc/5HnLbRH6/testify-logoo-(2).jpg" alt="Testify Logo" style="width: 80px; height: 80px; border-radius: 8px;">
                               <h1 style="font-size: 24px; margin-top: 10px;">You're Invited to Testify</h1>
                             </div>
-                            <p>Hi ${values.name},</p>
+                            <p>Hi ${values.firstName},</p>
                             <p><strong>${inviterName}</strong> has invited you to join Testify, a platform for believers to share testimonies, organize soul-winning campaigns, and track evangelism progress.</p>
                             <p>Join the movement and start your journey today!</p>
                             <div style="text-align: center; margin: 30px 0;">
@@ -171,19 +174,34 @@ export function EditSoulForm({ soul, onSoulUpdated }: EditSoulFormProps) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Name</FormLabel>
-              <FormControl>
-                <Input placeholder="John Doe" {...field} className="text-base"/>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <div className="grid grid-cols-2 gap-4">
+            <FormField
+            control={form.control}
+            name="firstName"
+            render={({ field }) => (
+                <FormItem>
+                <FormLabel>First Name</FormLabel>
+                <FormControl>
+                    <Input placeholder="John" {...field} className="text-base"/>
+                </FormControl>
+                <FormMessage />
+                </FormItem>
+            )}
+            />
+            <FormField
+            control={form.control}
+            name="lastName"
+            render={({ field }) => (
+                <FormItem>
+                <FormLabel>Last Name</FormLabel>
+                <FormControl>
+                    <Input placeholder="Doe" {...field} className="text-base"/>
+                </FormControl>
+                <FormMessage />
+                </FormItem>
+            )}
+            />
+        </div>
         <FormField
           control={form.control}
           name="wonAt"
@@ -371,3 +389,5 @@ export function EditSoulForm({ soul, onSoulUpdated }: EditSoulFormProps) {
     </Form>
   );
 }
+
+    

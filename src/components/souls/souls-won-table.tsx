@@ -169,7 +169,7 @@ function LogFollowUpDialog({ soul, children }: { soul: Soul; children: React.Rea
 
       toast({
         title: 'Follow-up Logged',
-        description: `A new entry has been added for ${soul.name}.`,
+        description: `A new entry has been added for ${soul.firstName} ${soul.lastName}.`,
       });
       setIsOpen(false);
     } catch (error: any) {
@@ -185,7 +185,7 @@ function LogFollowUpDialog({ soul, children }: { soul: Soul; children: React.Rea
         <DialogTrigger asChild>{children}</DialogTrigger>
         <DialogContent className="sm:max-w-md">
             <DialogHeader>
-                <DialogTitle>Log Follow-up for {soul.name}</DialogTitle>
+                <DialogTitle>Log Follow-up for {soul.firstName} {soul.lastName}</DialogTitle>
                 <DialogDescription>
                     Record your interaction and update their progress.
                 </DialogDescription>
@@ -375,7 +375,7 @@ function ViewHistoryDialog({ soul, children }: { soul: Soul; children: React.Rea
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Follow-up History for {soul.name}</DialogTitle>
+          <DialogTitle>Follow-up History for {soul.firstName} {soul.lastName}</DialogTitle>
           <DialogDescription>A complete log of all follow-up interactions.</DialogDescription>
         </DialogHeader>
         <ScrollArea className="max-h-[60vh] pr-4">
@@ -447,7 +447,7 @@ const SoulCard = React.memo(function SoulCard({ soul }: { soul: Soul }) {
                 <CollapsibleTrigger className="group w-full p-4 text-left">
                      <div className="flex items-center justify-between">
                         <div>
-                            <p className="font-semibold">{soul.name}</p>
+                            <p className="font-semibold">{soul.firstName} {soul.lastName}</p>
                             <Badge className={cn("mt-1", getStatusClasses(soul.status))} variant="outline">{soul.status}</Badge>
                         </div>
                         <ChevronDown className="h-5 w-5 text-muted-foreground transition-transform duration-200 group-data-[state=open]:rotate-180" />
@@ -489,7 +489,7 @@ const SoulCard = React.memo(function SoulCard({ soul }: { soul: Soul }) {
                                 <DialogContent>
                                     <DialogHeader>
                                         <DialogTitle>Edit Soul Details</DialogTitle>
-                                        <DialogDescription>Make changes to the record for {soul.name}.</DialogDescription>
+                                        <DialogDescription>Make changes to the record for {soul.firstName} {soul.lastName}.</DialogDescription>
                                     </DialogHeader>
                                     <div className="max-h-[70vh] overflow-y-auto pr-2">
                                         <EditSoulForm soul={soul} onSoulUpdated={() => setIsEditDialogOpen(false)} />
@@ -556,7 +556,7 @@ const SoulTableRow = React.memo(function SoulTableRow({ soul, onEditClick }: { s
     return (
         <TableRow>
             <TableCell className="font-medium">
-                <div>{soul.name}</div>
+                <div>{soul.firstName} {soul.lastName}</div>
                 {soul.church && <div className="text-xs text-muted-foreground flex items-center gap-1"><Church className="h-3 w-3" />{soul.church}</div>}
             </TableCell>
             <TableCell>
@@ -735,7 +735,7 @@ export function SoulsWonTable({ souls, loading }: SoulsWonTableProps) {
         <DialogContent>
             <DialogHeader>
                 <DialogTitle>Edit Soul Details</DialogTitle>
-                <DialogDescription>Make changes to the record for {editingSoul?.name}.</DialogDescription>
+                <DialogDescription>Make changes to the record for {editingSoul?.firstName} {editingSoul?.lastName}.</DialogDescription>
             </DialogHeader>
             <div className="max-h-[70vh] overflow-y-auto pr-2">
               {editingSoul && <EditSoulForm soul={editingSoul} onSoulUpdated={() => { setIsEditDialogOpen(false); setEditingSoul(null); }} />}
@@ -745,3 +745,5 @@ export function SoulsWonTable({ souls, loading }: SoulsWonTableProps) {
     </>
   );
 }
+
+    

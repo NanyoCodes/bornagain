@@ -25,8 +25,11 @@ import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 
 const formSchema = z.object({
-  name: z.string().min(2, {
-    message: "Name must be at least 2 characters.",
+  firstName: z.string().min(2, {
+    message: "First name must be at least 2 characters.",
+  }),
+  lastName: z.string().min(2, {
+    message: "Last name must be at least 2 characters.",
   }),
   email: z.string().email({
     message: "Please enter a valid email address.",
@@ -46,7 +49,8 @@ export function SignUpForm() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
+      firstName: "",
+      lastName: "",
       email: "",
       password: "",
     },
@@ -66,18 +70,23 @@ export function SignUpForm() {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
       const user = userCredential.user;
+      const displayName = `${values.firstName} ${values.lastName}`;
       
       await updateProfile(user, {
-        displayName: values.name,
+        displayName: displayName,
       });
       
       await sendEmailVerification(user);
 
       const userDocRef = doc(firestore, "users", user.uid);
+      const fullName = `${values.firstName} ${values.lastName}`;
+      const nameTokens = fullName.toLowerCase().split(' ').filter(Boolean);
+
       const userData = {
-        displayName: values.name,
-        displayName_lowercase: values.name.toLowerCase(),
-        displayName_tokens: values.name.toLowerCase().split(/\s+/).filter(Boolean),
+        firstName: values.firstName,
+        lastName: values.lastName,
+        fullName_lowercase: fullName.toLowerCase(),
+        name_tokens: nameTokens,
         email: values.email,
         photoURL: user.photoURL, // Initially null for email signup
       };
@@ -132,22 +141,34 @@ export function SignUpForm() {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4">
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Name</FormLabel>
-               <div className="relative">
-                <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <div className="grid grid-cols-2 gap-4">
+          <FormField
+            control={form.control}
+            name="firstName"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>First Name</FormLabel>
                 <FormControl>
-                    <Input placeholder="John Doe" {...field} className="pl-10" />
+                    <Input placeholder="John" {...field} className="pl-3" />
                 </FormControl>
-               </div>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="lastName"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Last Name</FormLabel>
+                <FormControl>
+                    <Input placeholder="Doe" {...field} className="pl-3" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
         <FormField
           control={form.control}
           name="email"
@@ -188,3 +209,5 @@ export function SignUpForm() {
     </Form>
   );
 }
+
+    

@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
@@ -69,7 +70,7 @@ export default function TestimoniesPage() {
 
     return tabFiltered.filter(testimony => 
       testimony.content.toLowerCase().includes(term) ||
-      testimony.authorName.toLowerCase().includes(term) ||
+      `${testimony.authorFirstName} ${testimony.authorLastName}`.toLowerCase().includes(term) ||
       testimony.category.toLowerCase().includes(term)
     );
   }, [testimonies, searchTerm, filter, user?.uid]);
@@ -187,3 +188,5 @@ export default function TestimoniesPage() {
     </div>
   );
 }
+
+    

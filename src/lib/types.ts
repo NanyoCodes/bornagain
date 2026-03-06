@@ -27,9 +27,10 @@ export type DailyDisciplineLog = {
 
 export type UserProfile = {
   id: string;
-  displayName: string;
-  displayName_lowercase?: string;
-  displayName_tokens?: string[];
+  firstName: string;
+  lastName: string;
+  fullName_lowercase?: string;
+  name_tokens?: string[];
   email: string;
   photoURL?: string;
   bio?: string;
@@ -54,7 +55,8 @@ export type UserProfile = {
     weeklyDigest?: boolean;
   };
   accountabilityPartnerId?: string;
-  accountabilityPartnerName?: string;
+  accountabilityPartnerFirstName?: string;
+  accountabilityPartnerLastName?: string;
   lastChurchAttended?: string;
   churchInfo?: {
     name?: string;
@@ -82,7 +84,8 @@ export type TestimonyCategory = 'Healing' | 'Financial Breakthrough' | 'Salvatio
 export type Testimony = {
   id: string;
   authorId: string;
-  authorName: string;
+  authorFirstName: string;
+  authorLastName: string;
   authorAvatarUrl?: string;
   content: string;
   createdAt: Timestamp;
@@ -107,7 +110,8 @@ export type Campaign = {
   maxParticipants?: number;
   createdAt: Timestamp;
   organizerId: string;
-  organizerName: string;
+  organizerFirstName: string;
+  organizerLastName: string;
   status?: 'active' | 'deleted';
   lastUpdateReason?: string;
   deletionReason?: string;
@@ -128,7 +132,8 @@ export type JoinedCampaign = {
 export type CampaignParticipant = {
   id: string;
   userId: string;
-  displayName: string;
+  firstName: string;
+  lastName: string;
   email?: string;
   photoURL?: string;
   joinedAt: Timestamp;
@@ -150,7 +155,8 @@ export type FollowUpLogItem = {
 export type Soul = {
   id: string;
   userId: string;
-  name: string;
+  firstName: string;
+  lastName: string;
   email?: string;
   phone?: string;
   church?: string;
@@ -179,7 +185,8 @@ export type Soul = {
 
 export type ChatParticipantInfo = {
   [key: string]: {
-    displayName: string;
+    firstName: string;
+    lastName: string;
     photoURL?: string;
     email?: string;
   }
@@ -204,7 +211,8 @@ export type ChatMessage = {
   replyTo?: {
     messageId: string;
     text: string;
-    senderName: string;
+    senderFirstName: string;
+    senderLastName: string;
   };
 };
 
@@ -222,13 +230,17 @@ export type Notification = {
 export type AccountabilityRequest = {
   id: string;
   fromUserId: string;
-  fromUserName: string;
+  fromUserFirstName: string;
+  fromUserLastName: string;
   fromUserPhotoURL?: string;
   toUserId: string;
-  toUserName: string;
+  toUserFirstName: string;
+  toUserLastName: string;
   toUserPhotoURL?: string;
   status: 'pending' | 'accepted' | 'declined';
   createdAt: Timestamp;
   respondedAt?: Timestamp;
   participantIds: string[];
 };
+
+    

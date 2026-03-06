@@ -64,7 +64,7 @@ export default function SoulsWonPage() {
     if (!searchTerm) return souls;
     const term = searchTerm.toLowerCase();
     return souls.filter(soul => 
-      soul.name.toLowerCase().includes(term) ||
+      `${soul.firstName} ${soul.lastName}`.toLowerCase().includes(term) ||
       (soul.email && soul.email.toLowerCase().includes(term)) ||
       (soul.phone && soul.phone.toLowerCase().includes(term)) ||
       soul.source.toLowerCase().includes(term) ||
@@ -88,7 +88,7 @@ export default function SoulsWonPage() {
     }
 
     const headers = [
-      "Name", "Email", "Phone", "Church", "Location Won", "Date Won", "Source", "Source Details", "Status",
+      "First Name", "Last Name", "Email", "Phone", "Church", "Location Won", "Date Won", "Source", "Source Details", "Status",
       "Attending Church", "In Bible Study", "Attending Prayer", "Last Follow Up Date", "Last Follow Up Note"
     ];
 
@@ -100,7 +100,8 @@ export default function SoulsWonPage() {
         const locationWonString = soul.locationWon ? [soul.locationWon.city, soul.locationWon.state, soul.locationWon.country].filter(Boolean).join(', ') : '';
 
         return [
-            soul.name,
+            soul.firstName,
+            soul.lastName,
             soul.email || '',
             soul.phone || '',
             soul.church || '',
@@ -249,3 +250,5 @@ export default function SoulsWonPage() {
     </div>
   );
 }
+
+    

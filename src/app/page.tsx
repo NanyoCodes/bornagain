@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -44,13 +45,19 @@ export default function SignUpPage() {
     try {
       const result = await signInWithPopup(auth, authProvider);
       const user = result.user;
-      const displayName = user.displayName || '';
+      
+      const nameParts = user.displayName?.split(' ') || [];
+      const firstName = nameParts[0] || '';
+      const lastName = nameParts.slice(1).join(' ');
+      const fullName = `${firstName} ${lastName}`;
+      const nameTokens = fullName.toLowerCase().split(' ').filter(Boolean);
 
       const userDocRef = doc(firestore, 'users', user.uid);
       const userData = {
-        displayName: displayName,
-        displayName_lowercase: displayName.toLowerCase(),
-        displayName_tokens: displayName.toLowerCase().split(/\s+/).filter(Boolean),
+        firstName: firstName,
+        lastName: lastName,
+        fullName_lowercase: fullName.toLowerCase(),
+        name_tokens: nameTokens,
         email: user.email,
         photoURL: user.photoURL,
       };
@@ -138,3 +145,5 @@ export default function SignUpPage() {
     </AuthLayout>
   );
 }
+
+    

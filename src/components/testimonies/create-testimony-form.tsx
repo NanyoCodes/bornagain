@@ -59,10 +59,12 @@ export function CreateTestimonyForm({ onTestimonyCreated }: CreateTestimonyFormP
     setIsSubmitting(true);
     
     try {
+      const nameParts = user.displayName?.split(' ') || [];
       const testimonyCollectionRef = collection(firestore, "testimonies");
       const testimonyData: any = {
           authorId: user.uid,
-          authorName: user.displayName || user.email || 'Anonymous',
+          authorFirstName: nameParts[0] || 'Anonymous',
+          authorLastName: nameParts.slice(1).join(' ') || '',
           authorAvatarUrl: user.photoURL || null,
           content: values.content,
           createdAt: serverTimestamp(),
@@ -151,3 +153,5 @@ export function CreateTestimonyForm({ onTestimonyCreated }: CreateTestimonyFormP
     </Form>
   );
 }
+
+    

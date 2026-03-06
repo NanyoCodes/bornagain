@@ -22,13 +22,14 @@ import type { Campaign, Soul, UserProfile } from "@/lib/types";
 import { Textarea } from "@/components/ui/textarea";
 import { format } from "date-fns";
 import { useFirestore, useUser, useCollection, useDoc } from "@/firebase";
-import { collection, query, orderBy, serverTimestamp, doc, runTransaction } from "firebase/firestore";
+import { collection, query, orderBy, serverTimestamp, doc, runTransaction, addDoc } from "firebase/firestore";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 const formSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters."),
+  firstName: z.string().min(2, "First name must be at least 2 characters."),
+  lastName: z.string().min(2, "Last name must be at least 2 characters."),
   email: z.string().email("Please enter a valid email address.").optional().or(z.literal('')),
   phone: z.string().optional(),
   church: z.string().optional(),
@@ -66,7 +67,8 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps)
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
+      firstName: "",
+      lastName: "",
       email: "",
       phone: "",
       church: "",
@@ -111,7 +113,8 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps)
 
     const soulData: Omit<Soul, 'id'> = {
       userId: user.uid,
-      name: values.name,
+      firstName: values.firstName,
+      lastName: values.lastName,
       email: values.email,
       phone: values.phone,
       church: values.church,
@@ -145,28 +148,27 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps)
       }
     }
 
-    runTransaction(firestore, async (transaction) => {
-      // 1. Create the new soul document
-      transaction.set(newSoulRef, soulData);
-      transaction.set(globalSoulRef, soulData);
+    try {
+        await runTransaction(firestore, async (transaction) => {
+            transaction.set(newSoulRef, soulData);
+            transaction.set(globalSoulRef, soulData);
 
-      // 2. If from a campaign, increment the campaign's soul count
-      if (campaignId) {
-          const campaignRef = doc(firestore, 'campaigns', campaignId);
-          const campaignDoc = await transaction.get(campaignRef);
-          if (!campaignDoc.exists()) {
-            throw new Error("Campaign does not exist!");
-          }
-          const currentSoulsLogged = campaignDoc.data().soulsLogged || 0;
-          transaction.update(campaignRef, { soulsLogged: currentSoulsLogged + 1 });
-      }
+            if (campaignId) {
+                const campaignRef = doc(firestore, 'campaigns', campaignId);
+                const campaignDoc = await transaction.get(campaignRef);
+                if (!campaignDoc.exists()) {
+                    throw new Error("Campaign does not exist!");
+                }
+                const currentSoulsLogged = campaignDoc.data().soulsLogged || 0;
+                transaction.update(campaignRef, { soulsLogged: currentSoulsLogged + 1 });
+            }
+        });
 
-      // 3. If email is provided, send an invitation
         if (values.email) {
             const mailCollectionRef = collection(firestore, 'mail');
-            const newMailRef = doc(mailCollectionRef);
             const appUrl = window.location.origin;
-            transaction.set(newMailRef, {
+            const inviterName = user.displayName || 'A friend';
+            addDoc(mailCollectionRef, {
                 to: [values.email],
                 message: {
                     subject: `You're invited to join Testify!`,
@@ -177,8 +179,8 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps)
                               <img src="https://i.postimg.cc/5HnLbRH6/testify-logoo-(2).jpg" alt="Testify Logo" style="width: 80px; height: 80px; border-radius: 8px;">
                               <h1 style="font-size: 24px; margin-top: 10px;">You're Invited to Testify</h1>
                             </div>
-                            <p>Hi ${values.name},</p>
-                            <p><strong>${userProfile.displayName || 'A friend'}</strong> has invited you to join Testify, a platform for believers to share testimonies, organize soul-winning campaigns, and track evangelism progress.</p>
+                            <p>Hi ${values.firstName},</p>
+                            <p><strong>${inviterName}</strong> has invited you to join Testify, a platform for believers to share testimonies, organize soul-winning campaigns, and track evangelism progress.</p>
                             <p>Join the movement and start your journey today!</p>
                             <div style="text-align: center; margin: 30px 0;">
                               <a href="${appUrl}" style="background-color: #3b82f6; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-size: 16px;">Join Testify</a>
@@ -192,42 +194,62 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps)
                         </div>
                     `,
                 },
-            });
+            }).then(() => {
+                toast({
+                    title: 'Invitation Sent!',
+                    description: `An invitation email has been sent to ${values.email}.`
+                });
+            }).catch(err => console.error("Failed to send invitation email:", err));
         }
-    }).then(() => {
-      toast({
-        title: "Soul Logged",
-        description: `${values.name} has been added to your list.`,
-      });
-      onSoulLogged();
-    }).catch((serverError) => {
-      const permissionError = new FirestorePermissionError({
-        path: `TRANSACTION:LOG_SOUL`,
-        operation: 'write',
-        requestResourceData: { soulData, campaignId },
-      });
-      errorEmitter.emit('permission-error', permissionError);
-    }).finally(() => {
+
+        toast({
+            title: "Soul Logged",
+            description: `${values.firstName} ${values.lastName} has been added to your list.`,
+        });
+        onSoulLogged();
+    } catch (serverError) {
+        const permissionError = new FirestorePermissionError({
+            path: `TRANSACTION:LOG_SOUL`,
+            operation: 'write',
+            requestResourceData: { soulData, campaignId },
+        });
+        errorEmitter.emit('permission-error', permissionError);
+    } finally {
         setIsLoading(false);
-    });
+    }
   }
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Name</FormLabel>
-              <FormControl>
-                <Input placeholder="John Doe" {...field} className="text-base"/>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <div className="grid grid-cols-2 gap-4">
+            <FormField
+            control={form.control}
+            name="firstName"
+            render={({ field }) => (
+                <FormItem>
+                <FormLabel>First Name</FormLabel>
+                <FormControl>
+                    <Input placeholder="John" {...field} className="text-base"/>
+                </FormControl>
+                <FormMessage />
+                </FormItem>
+            )}
+            />
+            <FormField
+            control={form.control}
+            name="lastName"
+            render={({ field }) => (
+                <FormItem>
+                <FormLabel>Last Name</FormLabel>
+                <FormControl>
+                    <Input placeholder="Doe" {...field} className="text-base"/>
+                </FormControl>
+                <FormMessage />
+                </FormItem>
+            )}
+            />
+        </div>
          <FormField
           control={form.control}
           name="wonAt"
@@ -428,3 +450,5 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps)
     </Form>
   );
 }
+
+    

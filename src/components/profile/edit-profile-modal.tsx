@@ -29,7 +29,8 @@ import { Label } from "../ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const formSchema = z.object({
-  displayName: z.string().min(2, "Name must be at least 2 characters.").max(50, "Name is too long."),
+  firstName: z.string().min(2, "First name must be at least 2 characters.").max(50, "Name is too long."),
+  lastName: z.string().min(2, "Last name must be at least 2 characters.").max(50, "Name is too long."),
   bio: z.string().max(280, "Bio is too long.").optional(),
   city: z.string().max(50, "City is too long.").optional(),
   country: z.string().max(50, "Country is too long.").optional(),
@@ -52,7 +53,8 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      displayName: userProfile.displayName || "",
+      firstName: userProfile.firstName || "",
+      lastName: userProfile.lastName || "",
       bio: userProfile.bio || "",
       city: userProfile.location?.city || "",
       country: userProfile.location?.country || "",
@@ -68,6 +70,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
     setIsSubmitting(true);
 
     try {
+      const displayName = `${values.firstName} ${values.lastName}`;
       // Prepare update payloads
       const firestoreUpdatePayload: { [key: string]: any } = {};
       const newLocation = {
@@ -77,11 +80,14 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
         country_lowercase: (values.country || "").toLowerCase(),
       };
 
-      if (values.displayName !== userProfile.displayName) {
-        firestoreUpdatePayload.displayName = values.displayName;
-        firestoreUpdatePayload.displayName_lowercase = values.displayName.toLowerCase();
-        firestoreUpdatePayload.displayName_tokens = values.displayName.toLowerCase().split(/\s+/).filter(Boolean);
+      if (values.firstName !== userProfile.firstName) firestoreUpdatePayload.firstName = values.firstName;
+      if (values.lastName !== userProfile.lastName) firestoreUpdatePayload.lastName = values.lastName;
+
+      if (values.firstName !== userProfile.firstName || values.lastName !== userProfile.lastName) {
+        firestoreUpdatePayload.fullName_lowercase = displayName.toLowerCase();
+        firestoreUpdatePayload.name_tokens = displayName.toLowerCase().split(/\s+/).filter(Boolean);
       }
+
       if (values.bio !== userProfile.bio) firestoreUpdatePayload.bio = values.bio || "";
       if (newLocation.city !== userProfile.location?.city || newLocation.country !== userProfile.location?.country) {
           firestoreUpdatePayload.location = newLocation;
@@ -89,7 +95,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
       if (values.phone !== userProfile.phone) firestoreUpdatePayload.phone = values.phone || "";
 
       const hasFirestoreUpdate = Object.keys(firestoreUpdatePayload).length > 0;
-      const hasAuthUpdate = auth.currentUser && (values.displayName !== auth.currentUser.displayName);
+      const hasAuthUpdate = auth.currentUser && (displayName !== auth.currentUser.displayName);
 
       if (!hasFirestoreUpdate && !hasAuthUpdate) {
           toast({ title: "No Changes", description: "You haven't made any changes to your profile." });
@@ -113,7 +119,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
 
       if (hasAuthUpdate && auth.currentUser) {
         await updateProfile(auth.currentUser, {
-          displayName: values.displayName,
+          displayName: displayName,
         });
       }
       
@@ -135,24 +141,39 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <div className="flex flex-col items-center gap-4">
           <Avatar className="h-24 w-24">
-            <AvatarImage src={userProfile.photoURL || undefined} alt={userProfile.displayName} />
-            <AvatarFallback>{userProfile.displayName?.charAt(0)}</AvatarFallback>
+            <AvatarImage src={userProfile.photoURL || undefined} alt={`${userProfile.firstName} ${userProfile.lastName}`} />
+            <AvatarFallback>{userProfile.firstName?.charAt(0)}{userProfile.lastName?.charAt(0)}</AvatarFallback>
           </Avatar>
         </div>
 
-        <FormField
-          control={form.control}
-          name="displayName"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Display Name</FormLabel>
-              <FormControl>
-                <Input placeholder="Your Name" {...field} className="text-base" />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <div className="grid grid-cols-2 gap-4">
+          <FormField
+            control={form.control}
+            name="firstName"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>First Name</FormLabel>
+                <FormControl>
+                  <Input placeholder="John" {...field} className="text-base" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="lastName"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Last Name</FormLabel>
+                <FormControl>
+                  <Input placeholder="Doe" {...field} className="text-base" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
         <FormField
           control={form.control}
           name="bio"
@@ -222,3 +243,5 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
     </Form>
   );
 }
+
+    

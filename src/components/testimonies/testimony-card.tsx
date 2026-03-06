@@ -47,6 +47,7 @@ export function TestimonyCard({ testimony }: { testimony: Testimony }) {
   const [showFullContent, setShowFullContent] = useState(false);
 
   const isAuthor = user?.uid === testimony.authorId;
+  const authorFullName = `${testimony.authorFirstName} ${testimony.authorLastName}`;
   
   const createdAtDate = testimony.createdAt
     ? new Date(testimony.createdAt.seconds * 1000)
@@ -106,7 +107,7 @@ export function TestimonyCard({ testimony }: { testimony: Testimony }) {
   
   const handleShare = (platform: "link" | "facebook" | "twitter") => {
     const url = typeof window !== "undefined" ? `${window.location.origin}/dashboard/testimonies` : '';
-    const text = `Read this inspiring testimony by ${testimony.authorName} on Testify!`;
+    const text = `Read this inspiring testimony by ${authorFullName} on Testify!`;
     let shareUrl = "";
 
     switch (platform) {
@@ -136,14 +137,14 @@ export function TestimonyCard({ testimony }: { testimony: Testimony }) {
             <Avatar className="h-10 w-10 border shrink-0">
               <AvatarImage
                 src={testimony.authorAvatarUrl ?? undefined}
-                alt={testimony.authorName}
+                alt={authorFullName}
               />
-              <AvatarFallback>{testimony.authorName?.charAt(0) ?? 'A'}</AvatarFallback>
+              <AvatarFallback>{testimony.authorFirstName?.charAt(0) ?? 'A'}{testimony.authorLastName?.charAt(0) ?? ''}</AvatarFallback>
             </Avatar>
           </a>
           <div className="min-w-0">
             <a href={`/dashboard/profile/${testimony.authorId}`} onClick={navigateToProfile}>
-                <CardTitle className="cursor-pointer hover:underline text-base font-semibold">{testimony.authorName}</CardTitle>
+                <CardTitle className="cursor-pointer hover:underline text-base font-semibold">{authorFullName}</CardTitle>
             </a>
             <CardDescription className="text-xs mt-1">
                 {displayDate}
@@ -163,7 +164,7 @@ export function TestimonyCard({ testimony }: { testimony: Testimony }) {
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-lg">
                     <DialogHeader>
-                        <DialogTitle>Testimony by {testimony.authorName}</DialogTitle>
+                        <DialogTitle>Testimony by {authorFullName}</DialogTitle>
                         <DialogDescription>Category: {testimony.category}</DialogDescription>
                     </DialogHeader>
                     <div className="max-h-[60vh] overflow-y-auto pr-4 space-y-4">
@@ -227,3 +228,5 @@ export function TestimonyCard({ testimony }: { testimony: Testimony }) {
     </Card>
   );
 }
+
+    

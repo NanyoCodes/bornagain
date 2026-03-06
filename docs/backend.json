@@ -6,17 +6,21 @@
       "description": "Represents a user's public profile information.",
       "type": "object",
       "properties": {
-        "displayName": {
+        "firstName": {
           "type": "string",
-          "description": "The user's display name."
+          "description": "The user's first name."
         },
-        "displayName_lowercase": {
+        "lastName": {
           "type": "string",
-          "description": "The user's full display name, lowercased for searching."
+          "description": "The user's last name."
         },
-        "displayName_tokens": {
+        "fullName_lowercase": {
+          "type": "string",
+          "description": "The user's full name, lowercased for searching."
+        },
+        "name_tokens": {
           "type": "array",
-          "description": "An array of lowercased words from the display name for searching.",
+          "description": "An array of lowercased words from the first and last name for searching.",
           "items": { "type": "string" }
         },
         "email": {
@@ -123,9 +127,13 @@
           "type": "string",
           "description": "The UID of the user's accountability partner."
         },
-        "accountabilityPartnerName": {
+        "accountabilityPartnerFirstName": {
           "type": "string",
-          "description": "The display name of the user's accountability partner."
+          "description": "The first name of the user's accountability partner."
+        },
+        "accountabilityPartnerLastName": {
+          "type": "string",
+          "description": "The last name of the user's accountability partner."
         },
         "lastChurchAttended": {
           "type": "string",
@@ -168,7 +176,8 @@
         }
       },
       "required": [
-        "displayName",
+        "firstName",
+        "lastName",
         "email"
       ]
     },
@@ -199,7 +208,10 @@
         "authorId": {
           "type": "string"
         },
-        "authorName": {
+        "authorFirstName": {
+          "type": "string"
+        },
+        "authorLastName": {
           "type": "string"
         },
         "authorAvatarUrl": {
@@ -214,7 +226,8 @@
         "content",
         "category",
         "authorId",
-        "authorName",
+        "authorFirstName",
+        "authorLastName",
         "createdAt"
       ]
     },
@@ -273,7 +286,10 @@
         "organizerId": {
           "type": "string"
         },
-        "organizerName": {
+        "organizerFirstName": {
+          "type": "string"
+        },
+        "organizerLastName": {
           "type": "string"
         },
         "status": {
@@ -324,7 +340,8 @@
         "endTime",
         "createdAt",
         "organizerId",
-        "organizerName"
+        "organizerFirstName",
+        "organizerLastName"
       ]
     },
     "Soul": {
@@ -335,7 +352,10 @@
         "userId": {
           "type": "string"
         },
-        "name": {
+        "firstName": {
+          "type": "string"
+        },
+        "lastName": {
           "type": "string"
         },
         "email": {
@@ -410,7 +430,8 @@
       },
       "required": [
         "userId",
-        "name",
+        "firstName",
+        "lastName",
         "source",
         "wonAt",
         "status"
@@ -441,7 +462,10 @@
         "userId": {
           "type": "string"
         },
-        "displayName": {
+        "firstName": {
+          "type": "string"
+        },
+        "lastName": {
           "type": "string"
         },
         "email": {
@@ -458,7 +482,8 @@
       },
       "required": [
         "userId",
-        "displayName",
+        "firstName",
+        "lastName",
         "joinedAt"
       ]
     },
@@ -555,10 +580,12 @@
       "type": "object",
       "properties": {
         "fromUserId": { "type": "string" },
-        "fromUserName": { "type": "string" },
+        "fromUserFirstName": { "type": "string" },
+        "fromUserLastName": { "type": "string" },
         "fromUserPhotoURL": { "type": "string", "format": "uri" },
         "toUserId": { "type": "string" },
-        "toUserName": { "type": "string" },
+        "toUserFirstName": { "type": "string" },
+        "toUserLastName": { "type": "string" },
         "toUserPhotoURL": { "type": "string", "format": "uri" },
         "status": {
           "type": "string",
@@ -572,7 +599,7 @@
             "description": "A sorted array of the two participants' UIDs."
         }
       },
-      "required": ["fromUserId", "fromUserName", "toUserId", "status", "createdAt", "participantIds"]
+      "required": ["fromUserId", "fromUserFirstName", "fromUserLastName", "toUserId", "toUserFirstName", "toUserLastName", "status", "createdAt", "participantIds"]
     },
     "Mail": {
       "title": "Mail",
@@ -716,3 +743,5 @@
     }
   }
 }
+
+    
