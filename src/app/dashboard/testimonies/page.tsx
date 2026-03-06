@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
@@ -99,7 +98,7 @@ export default function TestimoniesPage() {
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight font-headline">
             Testimonies
           </h1>
-          <p className="text-muted-foreground">
+          <p className="text-sm text-muted-foreground">
             Read and share what God has done.
           </p>
         </div>
