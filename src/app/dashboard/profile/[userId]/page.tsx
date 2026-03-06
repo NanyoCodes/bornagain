@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
@@ -168,7 +167,7 @@ export default function UserProfilePage() {
                                 Your Accountability Partner
                             </Badge>
                         )}
-                        <p className="text-muted-foreground mt-2">{bio || (isOwnProfile ? "You haven't shared your testimony yet. You can add one by editing your profile." : "This user hasn't shared a testimony yet.")}</p>
+                        <p className="text-muted-foreground mt-2">{bio || (isOwnProfile ? "You haven't set a bio yet. You can add one by editing your profile." : "This user has not set a bio.")}</p>
                     </div>
                     {isOwnProfile && (
                         <div className="mt-4 sm:mt-0 sm:ml-4 shrink-0">
