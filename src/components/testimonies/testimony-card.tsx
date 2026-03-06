@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useRouter } from "next/navigation";
@@ -14,7 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Testimony } from "@/lib/types";
 import { format, formatDistanceToNow, differenceInHours } from "date-fns";
-import { Share2, MoreVertical, Edit, Trash2, Loader2, Heart } from "lucide-react";
+import { Share2, MoreVertical, Edit, Trash2, Loader2 } from "lucide-react";
 import { useUser, useFirestore } from "@/firebase";
 import { useState, useRef, useEffect } from "react";
 import {
@@ -27,11 +28,10 @@ import {
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
-import { doc, deleteDoc, runTransaction } from "firebase/firestore";
+import { doc, deleteDoc } from "firebase/firestore";
 import { EditTestimonyForm } from "./edit-testimony-form";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
-import { cn } from "@/lib/utils";
 
 export function TestimonyCard({ testimony }: { testimony: Testimony }) {
   const { user } = useUser();
@@ -41,14 +41,12 @@ export function TestimonyCard({ testimony }: { testimony: Testimony }) {
 
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [isLoving, setIsLoving] = useState(false);
 
   const contentRef = useRef<HTMLParagraphElement>(null);
   const [isContentTruncated, setIsContentTruncated] = useState(false);
   const [showFullContent, setShowFullContent] = useState(false);
 
   const isAuthor = user?.uid === testimony.authorId;
-  const hasLoved = user?.uid ? testimony.lovedBy?.includes(user.uid) : false;
   
   const createdAtDate = testimony.createdAt
     ? new Date(testimony.createdAt.seconds * 1000)
@@ -100,43 +98,6 @@ export function TestimonyCard({ testimony }: { testimony: Testimony }) {
       setIsDeleting(false);
     }
   };
-  
-    const handleLove = async () => {
-        if (!user || !firestore) {
-            toast({ variant: 'destructive', title: 'Authentication Error', description: 'You must be logged in to love a testimony.' });
-            return;
-        }
-        setIsLoving(true);
-
-        const testimonyRef = doc(firestore, 'testimonies', testimony.id);
-        
-        try {
-            await runTransaction(firestore, async (transaction) => {
-                const testimonyDoc = await transaction.get(testimonyRef);
-                if (!testimonyDoc.exists()) {
-                    throw new Error("Testimony does not exist!");
-                }
-                const currentLovedBy = testimonyDoc.data().lovedBy || [];
-                const userHasLoved = currentLovedBy.includes(user.uid);
-                
-                const newLovedBy = userHasLoved
-                    ? currentLovedBy.filter((uid: string) => uid !== user.uid)
-                    : [...currentLovedBy, user.uid];
-
-                transaction.update(testimonyRef, { lovedBy: newLovedBy });
-            });
-        } catch (e: any) {
-            console.error("Love transaction failed: ", e);
-            const permissionError = new FirestorePermissionError({
-                path: testimonyRef.path,
-                operation: 'update',
-                requestResourceData: { lovedBy: '...' }
-            });
-            errorEmitter.emit('permission-error', permissionError);
-        } finally {
-            setIsLoving(false);
-        }
-    };
 
   const navigateToProfile = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
@@ -212,15 +173,7 @@ export function TestimonyCard({ testimony }: { testimony: Testimony }) {
             </Dialog>
         )}
       </CardContent>
-      <CardFooter className="pt-4 flex justify-between items-center mt-auto">
-        <Button variant="ghost" size="sm" onClick={handleLove} disabled={isLoving || !user} className="flex items-center gap-2">
-            {isLoving ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-                <Heart className={cn("h-4 w-4", hasLoved && "fill-red-500 text-red-500")} />
-            )}
-        </Button>
-
+      <CardFooter className="pt-4 flex justify-end items-center mt-auto">
         <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
           <AlertDialog>
             <DropdownMenu>
