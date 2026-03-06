@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   Card,
   CardContent,
@@ -37,6 +37,7 @@ export function TestimonyCard({ testimony }: { testimony: Testimony }) {
   const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
+  const router = useRouter();
 
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -129,13 +130,18 @@ export function TestimonyCard({ testimony }: { testimony: Testimony }) {
             const permissionError = new FirestorePermissionError({
                 path: testimonyRef.path,
                 operation: 'update',
-                requestResourceData: { action: hasLoved ? 'unlove' : 'love' }
+                requestResourceData: { lovedBy: '...' }
             });
             errorEmitter.emit('permission-error', permissionError);
         } finally {
             setIsLoving(false);
         }
     };
+
+  const navigateToProfile = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    router.push(`/dashboard/profile/${testimony.authorId}`);
+  };
   
   const handleShare = (platform: "link" | "facebook" | "twitter") => {
     const url = typeof window !== "undefined" ? `${window.location.origin}/dashboard/testimonies` : '';
@@ -165,7 +171,7 @@ export function TestimonyCard({ testimony }: { testimony: Testimony }) {
     <Card className="flex flex-col h-full overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300">
       <CardHeader className="flex flex-row items-start justify-between gap-4">
         <div className="flex flex-1 items-center gap-3 min-w-0">
-          <Link href={`/dashboard/profile/${testimony.authorId}`} passHref>
+          <a href={`/dashboard/profile/${testimony.authorId}`} onClick={navigateToProfile}>
             <Avatar className="h-10 w-10 border shrink-0">
               <AvatarImage
                 src={testimony.authorAvatarUrl ?? undefined}
@@ -173,11 +179,11 @@ export function TestimonyCard({ testimony }: { testimony: Testimony }) {
               />
               <AvatarFallback>{testimony.authorName?.charAt(0) ?? 'A'}</AvatarFallback>
             </Avatar>
-          </Link>
+          </a>
           <div className="min-w-0">
-            <Link href={`/dashboard/profile/${testimony.authorId}`}>
+            <a href={`/dashboard/profile/${testimony.authorId}`} onClick={navigateToProfile}>
                 <CardTitle className="cursor-pointer hover:underline text-base font-semibold">{testimony.authorName}</CardTitle>
-            </Link>
+            </a>
             <CardDescription className="text-xs mt-1">
                 {displayDate}
             </CardDescription>
