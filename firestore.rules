@@ -3,18 +3,36 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // User profile access rules
+    // User profile access rules and all subcollections
     match /users/{userId} {
-      // Any authenticated user can list users (for searching).
-      // The query will be filtered on the client, and this just allows the query to run.
-      allow list: if request.auth != null;
-
-      // Any authenticated user can get any profile.
-      allow get: if request.auth != null;
-
-      // Users can only write to their own profile.
+      // Allow any authenticated user to read user profiles
+      allow read: if request.auth != null;
+      
+      // Allow users to write only to their own profile
       allow write: if request.auth != null && request.auth.uid == userId;
 
+      // --- Subcollection Rules ---
+
+      // Any authenticated user can read souls won by any user.
+      match /souls/{soulId} {
+        allow read: if request.auth != null;
+        // Only the owner can write to their souls collection.
+        allow write: if request.auth != null && request.auth.uid == userId;
+      }
+
+      // Any authenticated user can read which campaigns another user has joined.
+      match /joinedCampaigns/{campaignId} {
+        allow read: if request.auth != null;
+        // Only the user can add/update their joined campaigns.
+        allow create, update: if request.auth != null && request.auth.uid == userId;
+        // The user or the campaign organizer can remove the user from a campaign.
+        allow delete: if request.auth != null && (
+          request.auth.uid == userId ||
+          get(/databases/$(database)/documents/campaigns/$(campaignId)).data.organizerId == request.auth.uid
+        );
+      }
+      
+      // Discipline history is only readable by the user and their accountability partner.
       match /disciplineHistory/{logId} {
         allow read: if request.auth != null && (
             request.auth.uid == userId ||
@@ -27,11 +45,19 @@ service cloud.firestore {
                 get(/databases/$(database)/documents/users/$(userId)).data.accountabilityPartnerId == request.auth.uid
             )
         );
+        // Only the user can write to their own discipline history.
         allow write: if request.auth != null && request.auth.uid == userId;
       }
 
+      // Bible highlights are private to the user.
       match /bibleHighlights/{highlightId} {
         allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+      
+      // Notifications are private to the user, though others can create them.
+      match /notifications/{notificationId} {
+        allow read, update, delete: if request.auth != null && request.auth.uid == userId;
+        allow create: if request.auth != null;
       }
     }
 
@@ -41,29 +67,6 @@ service cloud.firestore {
       // Allow a user to create a soul record if the userId in the document matches their auth uid.
       allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
       allow update, delete: if false; // Immutable
-    }
-
-    // Any authenticated user can read any user's soul records.
-    match /users/{userId}/souls/{soulId} {
-    	allow read: if request.auth != null;
-      allow write: if request.auth != null && request.auth.uid == userId;
-    }
-    
-    // Any authenticated user can read any user's joined campaign records. Organizer can remove.
-    match /users/{userId}/joinedCampaigns/{campaignId} {
-      allow read: if request.auth != null;
-      allow create, update: if request.auth != null && request.auth.uid == userId;
-      allow delete: if request.auth != null && (
-        request.auth.uid == userId ||
-        get(/databases/$(database)/documents/campaigns/$(campaignId)).data.organizerId == request.auth.uid
-      );
-    }
-
-    // Notifications are private to the user for read/update/delete.
-    // Any authenticated user can create a notification for another user.
-    match /users/{userId}/notifications/{notificationId} {
-      allow read, update, delete: if request.auth != null && request.auth.uid == userId;
-      allow create: if request.auth != null;
     }
 
     // Testimonies are public to all authenticated users, but only writable by the author.
