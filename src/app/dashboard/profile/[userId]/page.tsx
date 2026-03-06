@@ -56,22 +56,14 @@ export default function UserProfilePage() {
 
   const soulsQuery = useMemo(() => {
     if (!userId || !firestore) return null;
-    // Accountability partners can read each other's souls
-    if (currentUser?.uid === userProfile?.accountabilityPartnerId || userProfile?.accountabilityPartnerId === currentUser?.uid || userProfile?.privacySettings?.profileVisibility === 'public' || isOwnProfile) {
-        return query(collection(firestore, `users/${userId}/souls`));
-    }
-    return null;
-  }, [userId, firestore, currentUser, userProfile, isOwnProfile]);
+    return query(collection(firestore, `users/${userId}/souls`));
+  }, [userId, firestore]);
   const { data: soulsWon, loading: soulsLoading } = useCollection<Soul>(soulsQuery);
 
   const joinedCampaignsQuery = useMemo(() => {
     if (!userId || !firestore) return null;
-     // Accountability partners can read each other's joined campaigns
-    if (currentUser?.uid === userProfile?.accountabilityPartnerId || userProfile?.accountabilityPartnerId === currentUser?.uid || userProfile?.privacySettings?.profileVisibility === 'public' || isOwnProfile) {
-        return query(collection(firestore, `users/${userId}/joinedCampaigns`));
-    }
-    return null;
-  }, [userId, firestore, currentUser, userProfile, isOwnProfile]);
+    return query(collection(firestore, `users/${userId}/joinedCampaigns`));
+  }, [userId, firestore]);
   const { data: joinedCampaigns, loading: campaignsLoading } = useCollection<JoinedCampaign>(joinedCampaignsQuery);
   
   const createdCampaignsQuery = useMemo(() => {

@@ -117,24 +117,6 @@
             }
           }
         },
-        "privacySettings": {
-          "type": "object",
-          "description": "User's privacy preferences.",
-          "properties": {
-            "profileVisibility": {
-              "type": "string",
-              "enum": [
-                "public",
-                "private"
-              ],
-              "description": "Controls who can see the user's profile."
-            },
-            "showLocation": {
-              "type": "boolean",
-              "description": "Allow others to see the user's city and country."
-            }
-          }
-        },
         "accountabilityPartnerId": {
           "type": "string",
           "description": "The UID of the user's accountability partner."

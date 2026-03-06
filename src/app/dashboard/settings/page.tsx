@@ -27,13 +27,6 @@ import { useDoc, useFirestore, useUser } from '@/firebase';
 import { doc, updateDoc } from 'firebase/firestore';
 import type { UserProfile } from '@/lib/types';
 import { Separator } from '@/components/ui/separator';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   AlertDialog,
@@ -55,11 +48,6 @@ import { ChurchSettingsCard } from '@/components/settings/church-settings-card';
 const notificationFormSchema = z.object({
   newCampaignsInArea: z.boolean().default(false),
   weeklyDigest: z.boolean().default(false),
-});
-
-const privacyFormSchema = z.object({
-  profileVisibility: z.enum(['public', 'private']).default('public'),
-  showLocation: z.boolean().default(true),
 });
 
 // --- Settings Components ---
@@ -183,101 +171,6 @@ function NotificationSettingsForm({ userProfile, userId }: { userProfile: UserPr
             <Button type="submit" disabled={isSubmitting || !form.formState.isDirty}>
               {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Save Notifications
-            </Button>
-          </form>
-        </Form>
-      </CardContent>
-    </Card>
-  );
-}
-
-
-function PrivacySettingsForm({ userProfile, userId }: { userProfile: UserProfile, userId: string }) {
-  const { toast } = useToast();
-  const firestore = useFirestore();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const form = useForm<z.infer<typeof privacyFormSchema>>({
-    resolver: zodResolver(privacyFormSchema),
-    defaultValues: {
-      profileVisibility: userProfile.privacySettings?.profileVisibility ?? 'public',
-      showLocation: userProfile.privacySettings?.showLocation ?? true,
-    },
-  });
-
-   useEffect(() => {
-    form.reset({
-      profileVisibility: userProfile.privacySettings?.profileVisibility ?? 'public',
-      showLocation: userProfile.privacySettings?.showLocation ?? true,
-    });
-  }, [userProfile, form.reset]);
-
-  async function onSubmit(values: z.infer<typeof privacyFormSchema>) {
-    setIsSubmitting(true);
-    try {
-      const userRef = doc(firestore, 'users', userId);
-      await updateDoc(userRef, { privacySettings: values });
-      toast({ title: 'Success', description: 'Privacy settings saved.' });
-      form.reset(values); // Re-sync form state
-    } catch (error) {
-      console.error('Failed to save settings:', error);
-      toast({ variant: 'destructive', title: 'Error', description: 'Could not save privacy settings.' });
-    } finally {
-      setIsSubmitting(false);
-    }
-  }
-
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2"><Lock className="h-5 w-5" /> Privacy</CardTitle>
-        <CardDescription>Control who can see your profile and activity.</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            <FormField
-              control={form.control}
-              name="profileVisibility"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Profile Visibility</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select who can see your profile" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="public">Public</SelectItem>
-                      <SelectItem value="private">Private (Only you)</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormDescription>
-                    Public profiles are visible to all users. Private profiles are hidden.
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="showLocation"
-              render={({ field }) => (
-                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                  <div className="space-y-0.5">
-                    <FormLabel className="text-base">Show Location</FormLabel>
-                    <FormDescription>Allow others to see your city and country on your profile.</FormDescription>
-                  </div>
-                  <FormControl>
-                    <Switch checked={field.value} onCheckedChange={field.onChange} />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-            <Button type="submit" disabled={isSubmitting || !form.formState.isDirty}>
-              {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Save Privacy Settings
             </Button>
           </form>
         </Form>
@@ -427,7 +320,6 @@ export default function SettingsPage() {
           <ChurchSettingsCard userProfile={userProfile} userId={user.uid} />
           <AppearanceSettingsCard />
           <NotificationSettingsForm userProfile={userProfile} userId={user.uid} />
-          <PrivacySettingsForm userProfile={userProfile} userId={user.uid} />
           <ContactCard />
           <AccountSettingsCard />
         </div>

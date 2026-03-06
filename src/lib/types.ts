@@ -53,10 +53,6 @@ export type UserProfile = {
     newCampaignsInArea?: boolean;
     weeklyDigest?: boolean;
   };
-  privacySettings?: {
-    profileVisibility?: 'public' | 'private';
-    showLocation?: boolean;
-  };
   accountabilityPartnerId?: string;
   accountabilityPartnerName?: string;
   lastChurchAttended?: string;
