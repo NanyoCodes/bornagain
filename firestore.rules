@@ -12,8 +12,9 @@ service cloud.firestore {
       // Users can get their own profile, their accountability partner's profile, or a public profile.
       allow get: if request.auth != null && (
         request.auth.uid == userId ||
-        // Check if the profile is public. Default to public if not set.
-        get(/databases/$(database)/documents/users/$(userId)).data.get('privacySettings.profileVisibility', 'public') == 'public' ||
+        // A profile is considered public if its visibility is NOT 'private'.
+        // This covers cases where the setting is explicitly 'public' or not set at all.
+        get(/databases/$(database)/documents/users/$(userId)).data.privacySettings.profileVisibility != 'private' ||
         (
           // Allow reading partner's doc if my doc has their ID
           exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
@@ -61,7 +62,7 @@ service cloud.firestore {
     match /users/{userId}/souls/{soulId} {
     	allow read: if request.auth != null && (
         request.auth.uid == userId ||
-        get(/databases/$(database)/documents/users/$(userId)).data.get('privacySettings.profileVisibility', 'public') == 'public' ||
+        get(/databases/$(database)/documents/users/$(userId)).data.privacySettings.profileVisibility != 'private' ||
         (
           exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
           get(/databases/$(database)/documents/users/$(request.auth.uid)).data.get('accountabilityPartnerId', null) == userId
@@ -78,7 +79,7 @@ service cloud.firestore {
     match /users/{userId}/joinedCampaigns/{campaignId} {
       allow read: if request.auth != null && (
         request.auth.uid == userId ||
-        get(/databases/$(database)/documents/users/$(userId)).data.get('privacySettings.profileVisibility', 'public') == 'public' ||
+        get(/databases/$(database)/documents/users/$(userId)).data.privacySettings.profileVisibility != 'private' ||
         (
           exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
           get(/databases/$(database)/documents/users/$(request.auth.uid)).data.get('accountabilityPartnerId', null) == userId
