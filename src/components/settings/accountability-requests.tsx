@@ -66,7 +66,8 @@ export function AccountabilityRequests({ currentUserProfile }: { currentUserProf
                 const userRef = doc(firestore, 'users', user.uid);
                 updateDoc(userRef, {
                     accountabilityPartnerId: acceptedRequest.toUserId,
-                    accountabilityPartnerName: acceptedRequest.toUserName,
+                    accountabilityPartnerFirstName: acceptedRequest.toUserFirstName,
+                    accountabilityPartnerLastName: acceptedRequest.toUserLastName,
                 }).catch(() => {
                      const permissionError = new FirestorePermissionError({
                         path: userRef.path,
@@ -92,7 +93,8 @@ export function AccountabilityRequests({ currentUserProfile }: { currentUserProf
             const myRef = doc(firestore, 'users', user.uid);
             batch.update(myRef, {
                 accountabilityPartnerId: request.fromUserId,
-                accountabilityPartnerName: request.fromUserName,
+                accountabilityPartnerFirstName: request.fromUserFirstName,
+                accountabilityPartnerLastName: request.fromUserLastName,
             });
 
             // Update the request status
@@ -108,14 +110,14 @@ export function AccountabilityRequests({ currentUserProfile }: { currentUserProf
                  userId: request.fromUserId,
                 type: 'request_accepted',
                 title: 'Request Accepted!',
-                message: `${currentUserProfile.displayName} has accepted your accountability request.`,
+                message: `${currentUserProfile.firstName} ${currentUserProfile.lastName} has accepted your accountability request.`,
                 link: '/dashboard/accountability',
                 isRead: false,
                 createdAt: serverTimestamp(),
             });
 
             await batch.commit();
-            toast({ title: 'Partner Added!', description: `You are now accountability partners with ${request.fromUserName}.` });
+            toast({ title: 'Partner Added!', description: `You are now accountability partners with ${request.fromUserFirstName} ${request.fromUserLastName}.` });
 
         } catch (error) {
             toast({ variant: 'destructive', title: 'Error', description: 'Could not accept request.' });
@@ -139,7 +141,7 @@ export function AccountabilityRequests({ currentUserProfile }: { currentUserProf
                 userId: request.fromUserId,
                 type: 'request_declined',
                 title: 'Request Declined',
-                message: `${currentUserProfile.displayName} has declined your accountability request.`,
+                message: `${currentUserProfile.firstName} ${currentUserProfile.lastName} has declined your accountability request.`,
                 link: '/dashboard/accountability',
                 isRead: false,
                 createdAt: serverTimestamp(),
@@ -188,11 +190,11 @@ export function AccountabilityRequests({ currentUserProfile }: { currentUserProf
                         <div key={req.id} className="flex items-center justify-between p-3 rounded-lg border bg-muted/30">
                             <div className="flex items-center gap-3">
                                 <Avatar>
-                                    <AvatarImage src={req.fromUserPhotoURL ?? undefined} alt={req.fromUserName} />
-                                    <AvatarFallback>{req.fromUserName.charAt(0)}</AvatarFallback>
+                                    <AvatarImage src={req.fromUserPhotoURL ?? undefined} alt={`${req.fromUserFirstName} ${req.fromUserLastName}`} />
+                                    <AvatarFallback>{req.fromUserFirstName?.charAt(0)}{req.fromUserLastName?.charAt(0)}</AvatarFallback>
                                 </Avatar>
                                 <div>
-                                    <p className="font-semibold text-sm">{req.fromUserName}</p>
+                                    <p className="font-semibold text-sm">{req.fromUserFirstName} {req.fromUserLastName}</p>
                                     <p className="text-xs text-muted-foreground">
                                         Sent {req.createdAt ? formatDistanceToNow(req.createdAt.toDate(), { addSuffix: true }) : 'a moment ago'}
                                     </p>
@@ -231,11 +233,11 @@ export function AccountabilityRequests({ currentUserProfile }: { currentUserProf
                          <div key={req.id} className="flex items-center justify-between p-3 rounded-lg border">
                             <div className="flex items-center gap-3">
                                 <Avatar>
-                                    <AvatarImage src={req.toUserPhotoURL ?? undefined} alt={req.toUserName} />
-                                    <AvatarFallback>{req.toUserName.charAt(0)}</AvatarFallback>
+                                    <AvatarImage src={req.toUserPhotoURL ?? undefined} alt={`${req.toUserFirstName} ${req.toUserLastName}`} />
+                                    <AvatarFallback>{req.toUserFirstName?.charAt(0)}{req.toUserLastName?.charAt(0)}</AvatarFallback>
                                 </Avatar>
                                 <div>
-                                    <p className="font-semibold text-sm">{req.toUserName}</p>
+                                    <p className="font-semibold text-sm">{req.toUserFirstName} {req.toUserLastName}</p>
                                     <p className="text-xs text-muted-foreground">
                                         Sent {req.createdAt ? formatDistanceToNow(req.createdAt.toDate(), { addSuffix: true }) : 'a moment ago'}
                                     </p>
@@ -262,8 +264,8 @@ export function AccountabilityRequests({ currentUserProfile }: { currentUserProf
                         <div>
                              <p className="text-sm text-muted-foreground">
                                 {req.fromUserId === user?.uid 
-                                    ? `Your request to ${req.toUserName} was declined.`
-                                    : `You declined the request from ${req.fromUserName}.`
+                                    ? `Your request to ${req.toUserFirstName} ${req.toUserLastName} was declined.`
+                                    : `You declined the request from ${req.fromUserFirstName} ${req.fromUserLastName}.`
                                 }
                             </p>
                         </div>
@@ -285,7 +287,7 @@ export function AccountabilityRequests({ currentUserProfile }: { currentUserProf
                         <CheckCircle2 className="h-5 w-5 text-green-600 shrink-0 mt-0.5" />
                         <div>
                              <p className="text-sm text-green-700 dark:text-green-400 font-medium">
-                                You are now accountability partners with {acceptedRequest.fromUserId === user?.uid ? acceptedRequest.toUserName : acceptedRequest.fromUserName}.
+                                You are now accountability partners with {acceptedRequest.fromUserId === user?.uid ? `${acceptedRequest.toUserFirstName} ${acceptedRequest.toUserLastName}` : `${acceptedRequest.fromUserFirstName} ${acceptedRequest.fromUserLastName}`}.
                             </p>
                         </div>
                     </div>

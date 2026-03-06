@@ -242,5 +242,3 @@ export type AccountabilityRequest = {
   respondedAt?: Timestamp;
   participantIds: string[];
 };
-
-    

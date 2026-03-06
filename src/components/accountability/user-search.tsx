@@ -59,7 +59,7 @@ export function UserSearch({ currentUserProfile }: { currentUserProfile: UserPro
                 
                 const nameQuery = query(
                     usersRef,
-                    where('displayName_tokens', 'array-contains-any', searchTokens),
+                    where('name_tokens', 'array-contains-any', searchTokens),
                     limit(5)
                 );
                 
@@ -111,7 +111,7 @@ export function UserSearch({ currentUserProfile }: { currentUserProfile: UserPro
                 throw new Error('You already have an accountability partner. Please remove your current partner before sending a new request.');
             }
             if (targetUser.accountabilityPartnerId) {
-                throw new Error(`${targetUser.displayName} already has an accountability partner.`);
+                throw new Error(`${targetUser.firstName} ${targetUser.lastName} already has an accountability partner.`);
             }
 
             const participantIds = [user.uid, targetUser.id].sort();
@@ -120,10 +120,12 @@ export function UserSearch({ currentUserProfile }: { currentUserProfile: UserPro
 
             const newRequestData: Omit<AccountabilityRequest, 'id'> = {
                 fromUserId: user.uid,
-                fromUserName: currentUserProfile.displayName,
+                fromUserFirstName: currentUserProfile.firstName,
+                fromUserLastName: currentUserProfile.lastName,
                 fromUserPhotoURL: currentUserProfile.photoURL || '',
                 toUserId: targetUser.id,
-                toUserName: targetUser.displayName,
+                toUserFirstName: targetUser.firstName,
+                toUserLastName: targetUser.lastName,
                 toUserPhotoURL: targetUser.photoURL || '',
                 status: 'pending' as const,
                 createdAt: serverTimestamp() as any,
@@ -137,13 +139,13 @@ export function UserSearch({ currentUserProfile }: { currentUserProfile: UserPro
                 userId: targetUser.id,
                 type: 'accountability_request',
                 title: 'New Accountability Request',
-                message: `${currentUserProfile.displayName} wants to be your accountability partner.`,
+                message: `${currentUserProfile.firstName} ${currentUserProfile.lastName} wants to be your accountability partner.`,
                 link: '/dashboard/accountability',
                 isRead: false,
                 createdAt: serverTimestamp(),
             });
 
-            toast({ title: 'Request Sent!', description: `Your request has been sent to ${targetUser.displayName}.` });
+            toast({ title: 'Request Sent!', description: `Your request has been sent to ${targetUser.firstName} ${targetUser.lastName}.` });
 
         } catch (error: any) {
             console.error("Error sending request:", error);
@@ -186,11 +188,11 @@ export function UserSearch({ currentUserProfile }: { currentUserProfile: UserPro
                         <div key={foundUser.id} className="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between p-2 rounded-md hover:bg-muted/50">
                             <div className="flex items-center gap-3 w-full">
                                 <Avatar>
-                                    <AvatarImage src={foundUser.photoURL ?? undefined} alt={foundUser.displayName} />
-                                    <AvatarFallback>{foundUser.displayName.charAt(0)}</AvatarFallback>
+                                    <AvatarImage src={foundUser.photoURL ?? undefined} alt={`${foundUser.firstName} ${foundUser.lastName}`} />
+                                    <AvatarFallback>{foundUser.firstName?.charAt(0)}{foundUser.lastName?.charAt(0)}</AvatarFallback>
                                 </Avatar>
                                 <div className="min-w-0">
-                                    <p className="font-semibold text-sm truncate">{foundUser.displayName}</p>
+                                    <p className="font-semibold text-sm truncate">{foundUser.firstName} {foundUser.lastName}</p>
                                     <p className="text-xs text-muted-foreground truncate">{foundUser.email}</p>
                                 </div>
                             </div>

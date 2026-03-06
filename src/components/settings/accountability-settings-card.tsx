@@ -28,13 +28,15 @@ export function AccountabilitySettingsCard({ userProfile, userId }: { userProfil
         const currentUserRef = doc(firestore, 'users', user.uid);
         batch.update(currentUserRef, {
             accountabilityPartnerId: deleteField(),
-            accountabilityPartnerName: deleteField(),
+            accountabilityPartnerFirstName: deleteField(),
+            accountabilityPartnerLastName: deleteField(),
         });
 
         const partnerUserRef = doc(firestore, 'users', userProfile.accountabilityPartnerId);
         batch.update(partnerUserRef, {
             accountabilityPartnerId: deleteField(),
-            accountabilityPartnerName: deleteField(),
+            accountabilityPartnerFirstName: deleteField(),
+            accountabilityPartnerLastName: deleteField(),
         });
 
         await batch.commit();
@@ -58,6 +60,8 @@ export function AccountabilitySettingsCard({ userProfile, userId }: { userProfil
 
   const hasPartner = !!userProfile.accountabilityPartnerId;
   const hasPendingRequests = pendingRequests && pendingRequests.length > 0;
+  
+  const partnerFullName = [userProfile.accountabilityPartnerFirstName, userProfile.accountabilityPartnerLastName].filter(Boolean).join(' ');
 
   return (
     <Card>
@@ -65,7 +69,7 @@ export function AccountabilitySettingsCard({ userProfile, userId }: { userProfil
         <CardTitle className="flex items-center gap-2"><HeartHandshake className="h-5 w-5" /> Accountability Partner</CardTitle>
         <CardDescription>
           {hasPartner 
-            ? `Manage your partnership with ${userProfile.accountabilityPartnerName}.`
+            ? `Manage your partnership with ${partnerFullName}.`
             : "Manage requests or find a new accountability partner to help you stay on track."
           }
         </CardDescription>
@@ -81,7 +85,7 @@ export function AccountabilitySettingsCard({ userProfile, userId }: { userProfil
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Remove {userProfile.accountabilityPartnerName}?</AlertDialogTitle>
+                  <AlertDialogTitle>Remove {partnerFullName}?</AlertDialogTitle>
                   <AlertDialogDescription>
                     Are you sure you want to end this accountability partnership? This action cannot be undone.
                   </AlertDialogDescription>
