@@ -1,4 +1,3 @@
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -97,7 +96,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
     try {
       let newPhotoURL: string | undefined = undefined;
 
-      if (photoFile) {
+      if (photoFile && storage) {
         const filePath = `users/${user.uid}/profile.jpg`;
         const fileRef = storageRef(storage, filePath);
         await uploadBytes(fileRef, photoFile);
@@ -292,4 +291,3 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
     </Form>
   );
 }
-
