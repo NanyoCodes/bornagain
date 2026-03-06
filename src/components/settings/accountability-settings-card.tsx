@@ -109,10 +109,9 @@ export function AccountabilitySettingsCard({ userProfile, userId }: { userProfil
       <CardContent className="space-y-6">
         {hasPartner ? (
            <div className="space-y-4">
-            <p className="text-sm">You can view your partner's progress and interact with them on the <Link href="/dashboard/accountability" className="underline text-primary">Partner page</Link>.</p>
             <AlertDialog>
                 <AlertDialogTrigger asChild>
-                    <Button variant="destructive">
+                    <Button variant="destructive" className="w-full sm:w-auto">
                         <UserX className="mr-2 h-4 w-4" />
                         Remove Partner
                     </Button>
