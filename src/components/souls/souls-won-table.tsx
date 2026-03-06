@@ -481,7 +481,9 @@ function SoulCard({ soul }: { soul: ProcessedSoul }) {
                                         <DialogTitle>Edit Soul Details</DialogTitle>
                                         <DialogDescription>Make changes to the record for {soul.name}.</DialogDescription>
                                     </DialogHeader>
-                                    <EditSoulForm soul={soul} onSoulUpdated={() => setIsEditDialogOpen(false)} />
+                                    <div className="max-h-[70vh] overflow-y-auto pr-2">
+                                        <EditSoulForm soul={soul} onSoulUpdated={() => setIsEditDialogOpen(false)} />
+                                    </div>
                                 </DialogContent>
                             </Dialog>
                         </div>
@@ -706,7 +708,9 @@ export function SoulsWonTable({ souls, loading }: SoulsWonTableProps) {
                 <DialogTitle>Edit Soul Details</DialogTitle>
                 <DialogDescription>Make changes to the record for {editingSoul?.name}.</DialogDescription>
             </DialogHeader>
-            {editingSoul && <EditSoulForm soul={editingSoul} onSoulUpdated={() => { setIsEditDialogOpen(false); setEditingSoul(null); }} />}
+            <div className="max-h-[70vh] overflow-y-auto pr-2">
+              {editingSoul && <EditSoulForm soul={editingSoul} onSoulUpdated={() => { setIsEditDialogOpen(false); setEditingSoul(null); }} />}
+            </div>
         </DialogContent>
     </Dialog>
     </>
