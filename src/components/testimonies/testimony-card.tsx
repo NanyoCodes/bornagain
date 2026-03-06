@@ -134,11 +134,13 @@ export function TestimonyCard({ testimony }: { testimony: Testimony }) {
             </Avatar>
           </Link>
           <div className="min-w-0">
-            <Link href={`/dashboard/profile/${testimony.authorId}`} passHref>
-              <CardTitle className="cursor-pointer hover:underline text-base font-semibold">{testimony.authorName}</CardTitle>
-            </Link>
+            <CardTitle className="text-base font-semibold">{testimony.authorName}</CardTitle>
             <CardDescription className="text-xs mt-1">
-              {displayDate}
+                <Link href={`/dashboard/profile/${testimony.authorId}`} className="text-primary hover:underline">
+                    View Profile
+                </Link>
+                <span className="mx-1">&middot;</span>
+                {displayDate}
             </CardDescription>
           </div>
         </div>
