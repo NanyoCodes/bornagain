@@ -21,7 +21,7 @@ import { Loader2 } from "lucide-react";
 import type { Soul, Campaign } from "@/lib/types";
 import { format } from "date-fns";
 import { useFirestore, useUser, useCollection } from "@/firebase";
-import { collection, query, orderBy, doc, updateDoc, addDoc } from "firebase/firestore";
+import { collection, query, orderBy, doc, updateDoc, addDoc, deleteField } from "firebase/firestore";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -79,7 +79,7 @@ export function EditSoulForm({ soul, onSoulUpdated }: EditSoulFormProps) {
 
     const soulRef = doc(firestore, `users/${user.uid}/souls`, soul.id);
 
-    const soulUpdateData: Partial<Soul> = {
+    const soulUpdateData: { [key: string]: any } = {
       name: values.name,
       email: values.email,
       phone: values.phone,
@@ -91,18 +91,18 @@ export function EditSoulForm({ soul, onSoulUpdated }: EditSoulFormProps) {
     };
     
     const isCampaignSource = values.source === 'Campaign';
-    let campaignId: string | undefined;
-
+    
     if (isCampaignSource) {
       const campaign = campaigns?.find(c => c.title === values.sourceDetails);
       if (campaign) {
-          campaignId = campaign.id;
           soulUpdateData.campaignId = campaign.id;
       } else {
-          soulUpdateData.campaignId = undefined;
+          // If user selected Campaign but no specific campaign, remove the old ID
+          soulUpdateData.campaignId = deleteField(); 
       }
     } else {
-        soulUpdateData.campaignId = undefined;
+        // If the source is not a campaign, we want to remove the campaignId field.
+        soulUpdateData.campaignId = deleteField();
     }
     
     updateDoc(soulRef, soulUpdateData).then(() => {
