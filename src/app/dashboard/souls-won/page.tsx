@@ -63,11 +63,11 @@ export default function SoulsWonPage() {
     if (!souls) return [];
     return souls.map(soul => {
       const latestFollowUp = (soul.followUpLog && soul.followUpLog.length > 0)
-        ? [...soul.followUpLog].sort((a, b) => {
-            const dateA = a.date?.toDate ? a.date.toDate().getTime() : 0;
-            const dateB = b.date?.toDate ? b.date.toDate().getTime() : 0;
-            return dateB - dateA;
-          })[0]
+        ? soul.followUpLog.reduce((latest, current) => {
+            const latestTime = latest.date?.toDate ? latest.date.toDate().getTime() : 0;
+            const currentTime = current.date?.toDate ? current.date.toDate().getTime() : 0;
+            return currentTime > latestTime ? current : latest;
+          })
         : null;
 
       return {
@@ -246,9 +246,9 @@ export default function SoulsWonPage() {
               <DialogContent className="sm:max-w-lg">
                 <DialogHeader>
                   <DialogTitle>Log a New Soul</DialogTitle>
-                  <DialogDescription>
+                  <SheetDescription>
                     Record the details of the person you've ministered to.
-                  </DialogDescription>
+                  </SheetDescription>
                 </DialogHeader>
                 <div className="max-h-[70vh] overflow-y-auto pr-2">
                   {formContent}
