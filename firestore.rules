@@ -12,7 +12,8 @@ service cloud.firestore {
       // Users can get their own profile, their accountability partner's profile, or a public profile.
       allow get: if request.auth != null && (
         request.auth.uid == userId ||
-        get(/databases/$(database)/documents/users/$(userId)).data.get('privacySettings', {}).get('profileVisibility', 'public') == 'public' ||
+        // Check if the profile is public. Default to public if not set.
+        get(/databases/$(database)/documents/users/$(userId)).data.get('privacySettings.profileVisibility', 'public') == 'public' ||
         (
           // Allow reading partner's doc if my doc has their ID
           exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
@@ -60,7 +61,7 @@ service cloud.firestore {
     match /users/{userId}/souls/{soulId} {
     	allow read: if request.auth != null && (
         request.auth.uid == userId ||
-        get(/databases/$(database)/documents/users/$(userId)).data.get('privacySettings', {}).get('profileVisibility', 'public') == 'public' ||
+        get(/databases/$(database)/documents/users/$(userId)).data.get('privacySettings.profileVisibility', 'public') == 'public' ||
         (
           exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
           get(/databases/$(database)/documents/users/$(request.auth.uid)).data.get('accountabilityPartnerId', null) == userId
@@ -77,7 +78,7 @@ service cloud.firestore {
     match /users/{userId}/joinedCampaigns/{campaignId} {
       allow read: if request.auth != null && (
         request.auth.uid == userId ||
-        get(/databases/$(database)/documents/users/$(userId)).data.get('privacySettings', {}).get('profileVisibility', 'public') == 'public' ||
+        get(/databases/$(database)/documents/users/$(userId)).data.get('privacySettings.profileVisibility', 'public') == 'public' ||
         (
           exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
           get(/databases/$(database)/documents/users/$(request.auth.uid)).data.get('accountabilityPartnerId', null) == userId
@@ -103,11 +104,15 @@ service cloud.firestore {
 
     // Testimonies are public to all authenticated users, but only writable by the author.
     match /testimonies/{testimonyId} {
-      allow get: if request.auth != null;
-      allow list: if request.auth != null;
-      allow create: if request.auth != null && request.auth.uid == request.resource.data.authorId;
-      allow update: if request.auth != null && request.auth.uid == resource.data.authorId;
-      allow delete: if request.auth != null && request.auth.uid == resource.data.authorId;
+      allow get, list: if request.auth != null;
+      
+      // Author can create, update, or delete their own testimony.
+      allow write: if request.auth != null && (
+          // Create
+          (request.resource.data.authorId == request.auth.uid) ||
+          // Update / Delete
+          (resource.data.authorId == request.auth.uid)
+      );
     }
 
     // Campaigns are public to all authenticated users.
