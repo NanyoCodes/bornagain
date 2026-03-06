@@ -22,6 +22,10 @@ import {
 import { EditProfileModal } from "@/components/profile/edit-profile-modal";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useParams } from "next/navigation";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import Link from "next/link";
+import { format } from "date-fns";
 
 export default function UserProfilePage() {
   const { userId: userIdFromParams } = useParams();
@@ -32,8 +36,8 @@ export default function UserProfilePage() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const isMobile = useIsMobile();
-  const [activeJoinedCampaignsCount, setActiveJoinedCampaignsCount] = useState(0);
-  const [campaignsCountLoading, setCampaignsCountLoading] = useState(true);
+  const [activeJoinedCampaigns, setActiveJoinedCampaigns] = useState<Campaign[]>([]);
+  const [campaignsListLoading, setCampaignsListLoading] = useState(true);
 
   useEffect(() => {
     setMounted(true);
@@ -79,13 +83,13 @@ export default function UserProfilePage() {
     const joinedCampaignIds = joinedCampaigns.map(jc => jc.id);
 
     if (joinedCampaignIds.length === 0) {
-        setActiveJoinedCampaignsCount(0);
-        setCampaignsCountLoading(false);
+        setActiveJoinedCampaigns([]);
+        setCampaignsListLoading(false);
         return;
     }
 
     const fetchActiveCampaigns = async () => {
-        setCampaignsCountLoading(true);
+        setCampaignsListLoading(true);
         try {
             // Firestore 'in' query is limited to 30 elements per query.
             const chunks: string[][] = [];
@@ -103,21 +107,29 @@ export default function UserProfilePage() {
             });
 
             const snapshots = await Promise.all(campaignPromises);
-            const count = snapshots.reduce((acc, snapshot) => acc + snapshot.size, 0);
-            setActiveJoinedCampaignsCount(count);
+            const campaignsData: Campaign[] = [];
+            snapshots.forEach(snapshot => {
+                snapshot.forEach(doc => {
+                    campaignsData.push({ id: doc.id, ...doc.data() } as Campaign);
+                });
+            });
+
+            const joinedOnly = campaignsData.filter(c => c.organizerId !== userId);
+            setActiveJoinedCampaigns(joinedOnly);
+
         } catch (error) {
-            console.error("Error fetching active joined campaigns count:", error);
-            setActiveJoinedCampaignsCount(0);
+            console.error("Error fetching active joined campaigns:", error);
+            setActiveJoinedCampaigns([]);
         } finally {
-            setCampaignsCountLoading(false);
+            setCampaignsListLoading(false);
         }
     };
 
     fetchActiveCampaigns();
-}, [joinedCampaigns, campaignsLoading, firestore]);
+  }, [joinedCampaigns, campaignsLoading, firestore, userId]);
 
 
-  const loading = profileLoading || testimoniesLoading || soulsLoading || campaignsLoading || createdCampaignsLoading || campaignsCountLoading;
+  const loading = profileLoading || testimoniesLoading || soulsLoading || campaignsLoading || createdCampaignsLoading || campaignsListLoading;
 
   if (loading) {
     return <div className="flex items-center justify-center h-full"><Loader2 className="h-8 w-8 animate-spin" /></div>;
@@ -133,7 +145,7 @@ export default function UserProfilePage() {
   const stats = {
     testimonies: testimonies?.length ?? 0,
     soulsWon: soulsWon?.length ?? 0,
-    campaignsJoined: activeJoinedCampaignsCount,
+    campaignsJoined: activeJoinedCampaigns.length,
     campaignsCreated: createdCampaigns?.length ?? 0,
   };
   
@@ -221,12 +233,104 @@ export default function UserProfilePage() {
             <CardTitle>Activity Statistics</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="flex justify-between items-center rounded-lg border p-3"><span className="flex items-center gap-2 text-muted-foreground"><Newspaper className="h-4 w-4" />Testimonies Shared</span> <Badge variant="secondary">{stats.testimonies}</Badge></div>
-                <div className="flex justify-between items-center rounded-lg border p-3"><span className="flex items-center gap-2 text-muted-foreground"><Target className="h-4 w-4" />Campaigns Created</span> <Badge variant="secondary">{stats.campaignsCreated}</Badge></div>
-                <div className="flex justify-between items-center rounded-lg border p-3"><span className="flex items-center gap-2 text-muted-foreground"><Target className="h-4 w-4" />Campaigns Joined</span> <Badge variant="secondary">{stats.campaignsJoined}</Badge></div>
-                <div className="flex justify-between items-center rounded-lg border p-3"><span className="flex items-center gap-2 text-muted-foreground"><UserCheck2 className="h-4 w-4" />Souls Won</span> <Badge variant="secondary">{stats.soulsWon}</Badge></div>
-            </div>
+            <Accordion type="single" collapsible className="w-full space-y-2">
+                <AccordionItem value="testimonies" className="border rounded-lg">
+                    <AccordionTrigger className="p-3 hover:no-underline data-[state=open]:border-b">
+                        <div className="flex justify-between items-center w-full">
+                            <span className="flex items-center gap-2"><Newspaper className="h-4 w-4 text-muted-foreground" />Testimonies Shared</span>
+                            <Badge variant="secondary">{stats.testimonies}</Badge>
+                        </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="p-3 pt-0">
+                        <ScrollArea className="h-48">
+                            <div className="p-1 space-y-1">
+                                {testimonies && testimonies.length > 0 ? (
+                                    testimonies.map(t => (
+                                        <Link key={t.id} href="/dashboard/testimonies" className="block p-2 rounded-md hover:bg-muted">
+                                            <p className="font-medium text-sm truncate">{t.category}</p>
+                                            <p className="text-xs text-muted-foreground truncate">{t.content}</p>
+                                        </Link>
+                                    ))
+                                ) : (
+                                    <p className="text-sm text-center text-muted-foreground py-4">No testimonies shared yet.</p>
+                                )}
+                            </div>
+                        </ScrollArea>
+                    </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="campaigns-created" className="border rounded-lg">
+                    <AccordionTrigger className="p-3 hover:no-underline data-[state=open]:border-b">
+                        <div className="flex justify-between items-center w-full">
+                            <span className="flex items-center gap-2"><Target className="h-4 w-4 text-muted-foreground" />Campaigns Created</span>
+                            <Badge variant="secondary">{stats.campaignsCreated}</Badge>
+                        </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="p-3 pt-0">
+                        <ScrollArea className="h-48">
+                            <div className="p-1 space-y-1">
+                                {createdCampaigns && createdCampaigns.length > 0 ? (
+                                    createdCampaigns.map(c => (
+                                        <Link key={c.id} href={`/dashboard/campaigns#${c.id}`} className="block p-2 rounded-md hover:bg-muted">
+                                            <p className="font-medium text-sm truncate">{c.title}</p>
+                                            <p className="text-xs text-muted-foreground truncate">Created on {c.createdAt ? format(c.createdAt.toDate(), "PPP") : 'N/A'}</p>
+                                        </Link>
+                                    ))
+                                ) : (
+                                    <p className="text-sm text-center text-muted-foreground py-4">No campaigns created yet.</p>
+                                )}
+                            </div>
+                        </ScrollArea>
+                    </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="campaigns-joined" className="border rounded-lg">
+                    <AccordionTrigger className="p-3 hover:no-underline data-[state=open]:border-b">
+                        <div className="flex justify-between items-center w-full">
+                            <span className="flex items-center gap-2"><Target className="h-4 w-4 text-muted-foreground" />Campaigns Joined</span>
+                            <Badge variant="secondary">{stats.campaignsJoined}</Badge>
+                        </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="p-3 pt-0">
+                        <ScrollArea className="h-48">
+                            <div className="p-1 space-y-1">
+                                {activeJoinedCampaigns && activeJoinedCampaigns.length > 0 ? (
+                                    activeJoinedCampaigns.map(c => (
+                                        <Link key={c.id} href={`/dashboard/campaigns#${c.id}`} className="block p-2 rounded-md hover:bg-muted">
+                                            <p className="font-medium text-sm truncate">{c.title}</p>
+                                            <p className="text-xs text-muted-foreground truncate">Starts on {c.startDate ? format(c.startDate.toDate(), "PPP") : 'N/A'}</p>
+                                        </Link>
+                                    ))
+                                ) : (
+                                    <p className="text-sm text-center text-muted-foreground py-4">No other campaigns joined yet.</p>
+                                )}
+                            </div>
+                        </ScrollArea>
+                    </AccordionContent>
+                </AccordionItem>
+                 <AccordionItem value="souls-won" className="border rounded-lg">
+                    <AccordionTrigger className="p-3 hover:no-underline data-[state=open]:border-b">
+                        <div className="flex justify-between items-center w-full">
+                            <span className="flex items-center gap-2"><UserCheck2 className="h-4 w-4 text-muted-foreground" />Souls Won</span>
+                            <Badge variant="secondary">{stats.soulsWon}</Badge>
+                        </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="p-3 pt-0">
+                        <ScrollArea className="h-48">
+                            <div className="p-1 space-y-1">
+                                {soulsWon && soulsWon.length > 0 ? (
+                                    soulsWon.map(s => (
+                                        <Link key={s.id} href="/dashboard/souls-won" className="block p-2 rounded-md hover:bg-muted">
+                                            <p className="font-medium text-sm truncate">{s.name}</p>
+                                            <p className="text-xs text-muted-foreground truncate">Won on {s.wonAt ? format(s.wonAt.toDate(), "PPP") : 'N/A'}</p>
+                                        </Link>
+                                    ))
+                                ) : (
+                                    <p className="text-sm text-center text-muted-foreground py-4">No souls won yet.</p>
+                                )}
+                            </div>
+                        </ScrollArea>
+                    </AccordionContent>
+                </AccordionItem>
+            </Accordion>
           </CardContent>
         </Card>
       </div>
