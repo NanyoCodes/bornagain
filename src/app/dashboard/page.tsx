@@ -153,6 +153,9 @@ function GlobalSoulsCard({ location, userSouls }: { location: { city?: string, c
 
     useEffect(() => {
         fetchCounts();
+        const intervalId = setInterval(fetchCounts, 60000); // Refresh every 60 seconds
+
+        return () => clearInterval(intervalId); // Cleanup on unmount
     }, [fetchCounts]);
 
     return (
@@ -168,19 +171,12 @@ function GlobalSoulsCard({ location, userSouls }: { location: { city?: string, c
                 </Button>
             </CardHeader>
             <CardContent className="space-y-4">
-                {error && (
+                {error ? (
                     <div className="text-destructive text-sm p-3 rounded-md border border-destructive/50 bg-destructive/10 flex items-center gap-2">
                         <XCircle className="h-4 w-4" />
                         <p>{error} Please try again.</p>
                     </div>
-                )}
-                {loading && !error ? (
-                     <div className="space-y-4">
-                        <div className="flex items-center justify-between"><Skeleton className="h-5 w-24" /><Skeleton className="h-5 w-12" /></div>
-                        <div className="flex items-center justify-between"><Skeleton className="h-5 w-28" /><Skeleton className="h-5 w-12" /></div>
-                        <div className="flex items-center justify-between"><Skeleton className="h-5 w-20" /><Skeleton className="h-5 w-12" /></div>
-                    </div>
-                ) : !error && (
+                ) : (
                     <div className="space-y-4">
                         {location.city && (
                              <div className="flex items-center justify-between">
