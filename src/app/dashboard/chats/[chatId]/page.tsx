@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useLayoutEffect, useRef, useMemo } from 'react';
@@ -352,7 +353,7 @@ export default function ChatPage() {
     const otherParticipantInfo = otherParticipantId ? chat.participantInfo[otherParticipantId] : null;
 
     return (
-        <div className={cn("flex flex-col w-full h-full", "pb-16 md:pb-0")}>
+        <div className="flex flex-col w-full h-full">
             <div className="flex items-center gap-4 p-4 shrink-0 border-b">
                 <Button variant="outline" size="icon" onClick={() => router.back()}>
                     <ArrowLeft className="h-4 w-4" />
@@ -526,7 +527,7 @@ export default function ChatPage() {
                 </TooltipProvider>
             </div>
 
-            <div className="shrink-0 border-t p-4 bg-background">
+            <div className="shrink-0 border-t p-4 bg-background pb-20 md:pb-4">
                 {isChatFrozen ? (
                     <div className="p-3 text-center text-sm text-muted-foreground bg-muted/50">
                         This group chat has been frozen as the campaign ended more than 24 hours ago.
