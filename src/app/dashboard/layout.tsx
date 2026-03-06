@@ -3,7 +3,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname, useRouter, useParams } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import React, { useEffect, useMemo, useState } from "react";
 import {
   ArrowLeft,
@@ -54,9 +54,6 @@ const navItems = [
 
 function AppHeader() {
   const { user } = useUser();
-  const { chatId: rawChatId, userId: rawUserId } = useParams();
-  const chatId = rawChatId as string;
-  const userId = rawUserId as string;
   const pathname = usePathname();
   const auth = useAuth();
   const firestore = useFirestore();
