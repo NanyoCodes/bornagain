@@ -3,49 +3,18 @@
 
 import { useUser, useFirestore } from '@/firebase';
 import type { UserProfile, AccountabilityRequest } from '@/lib/types';
-import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { UserX, HeartHandshake } from 'lucide-react';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '../ui/alert-dialog';
+import { HeartHandshake } from 'lucide-react';
 import { UserSearch } from '@/components/accountability/user-search';
-import { doc, writeBatch, deleteField, query, collection, where } from 'firebase/firestore';
 import { AccountabilityRequests } from './accountability-requests';
 import { useCollection } from '@/firebase/firestore/use-collection';
 import { useMemo } from 'react';
+import { query, collection, where } from 'firebase/firestore';
+import Link from 'next/link';
 
 export function AccountabilitySettingsCard({ userProfile, userId }: { userProfile: UserProfile; userId: string }) {
-  const { toast } = useToast();
   const { user } = useUser();
   const firestore = useFirestore();
-  
-  const handleRemovePartner = async () => {
-    if (!user || !firestore || !userProfile.accountabilityPartnerId) return;
-    
-    try {
-        const batch = writeBatch(firestore);
-
-        const currentUserRef = doc(firestore, 'users', user.uid);
-        batch.update(currentUserRef, {
-            accountabilityPartnerId: deleteField(),
-            accountabilityPartnerFirstName: deleteField(),
-            accountabilityPartnerLastName: deleteField(),
-        });
-
-        const partnerUserRef = doc(firestore, 'users', userProfile.accountabilityPartnerId);
-        batch.update(partnerUserRef, {
-            accountabilityPartnerId: deleteField(),
-            accountabilityPartnerFirstName: deleteField(),
-            accountabilityPartnerLastName: deleteField(),
-        });
-
-        await batch.commit();
-
-        toast({ title: 'Partner Removed', description: 'Your accountability partnership has been ended.' });
-    } catch (error) {
-        toast({ variant: 'destructive', title: 'Error', description: 'Could not remove partner.' });
-    }
-  };
   
   const pendingRequestsQuery = useMemo(() => {
     if (!user) return null;
@@ -69,35 +38,15 @@ export function AccountabilitySettingsCard({ userProfile, userId }: { userProfil
         <CardTitle className="flex items-center gap-2"><HeartHandshake className="h-5 w-5" /> Accountability Partner</CardTitle>
         <CardDescription>
           {hasPartner 
-            ? `Manage your partnership with ${partnerFullName}.`
+            ? `You are partners with ${partnerFullName}.`
             : "Manage requests or find a new accountability partner to help you stay on track."
           }
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         {hasPartner ? (
-          <div>
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button variant="destructive">
-                  <UserX className="mr-2 h-4 w-4" /> Remove Partner
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Remove {partnerFullName}?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    Are you sure you want to end this accountability partnership? This action cannot be undone.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction onClick={handleRemovePartner} className="bg-destructive hover:bg-destructive/90">
-                    Confirm Removal
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
+           <div>
+            <p className="text-sm text-muted-foreground">You can manage your partnership on the <Link href="/dashboard/accountability" className="underline text-primary">Partner page</Link>.</p>
           </div>
         ) : (
             <div className="space-y-4">
