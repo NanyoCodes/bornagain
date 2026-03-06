@@ -106,7 +106,6 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
       
       const displayName = `${values.firstName} ${values.lastName}`;
       
-      // Firestore payload always includes all fields for simplicity and robustness
       const firestoreUpdatePayload: Partial<UserProfile> = {
         firstName: values.firstName,
         lastName: values.lastName,
@@ -122,19 +121,11 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
         phone: values.phone || "",
         photoURL: newPhotoURL || "",
       };
-
-      // Auth payload only includes fields that have changed
-      const authUpdatePayload: { displayName?: string; photoURL?: string } = {};
-      if (displayName !== user.displayName) {
-        authUpdatePayload.displayName = displayName;
-      }
-      if (newPhotoURL !== user.photoURL) {
-        authUpdatePayload.photoURL = newPhotoURL || "";
-      }
       
-      const authUpdatePromise = Object.keys(authUpdatePayload).length > 0
-        ? updateProfile(user, authUpdatePayload)
-        : Promise.resolve();
+      const authUpdatePromise = updateProfile(user, {
+        displayName: displayName,
+        photoURL: newPhotoURL || "",
+      });
 
       const firestoreUpdatePromise = updateDoc(doc(firestore, 'users', user.uid), firestoreUpdatePayload).catch((serverError) => {
         const permissionError = new FirestorePermissionError({
@@ -279,5 +270,3 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
     </Form>
   );
 }
-
-    
