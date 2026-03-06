@@ -59,30 +59,11 @@ export default function SoulsWonPage() {
   }, [user?.uid, firestore]);
   const { data: souls, loading } = useCollection<Soul>(soulsQuery);
 
-  const processedSouls = useMemo(() => {
-    if (!souls) return [];
-    return souls.map(soul => {
-      const latestFollowUp = (soul.followUpLog && soul.followUpLog.length > 0)
-        ? soul.followUpLog.reduce((latest, current) => {
-            const latestTime = latest.date?.toDate ? latest.date.toDate().getTime() : 0;
-            const currentTime = current.date?.toDate ? current.date.toDate().getTime() : 0;
-            return currentTime > latestTime ? current : latest;
-          })
-        : null;
-
-      return {
-        ...soul,
-        _wonAt: soul.wonAt?.toDate ? soul.wonAt.toDate() : new Date(),
-        _latestFollowUp: latestFollowUp,
-      };
-    });
-  }, [souls]);
-
   const filteredSouls = useMemo(() => {
-    if (!processedSouls) return [];
-    if (!searchTerm) return processedSouls;
+    if (!souls) return [];
+    if (!searchTerm) return souls;
     const term = searchTerm.toLowerCase();
-    return processedSouls.filter(soul => 
+    return souls.filter(soul => 
       soul.name.toLowerCase().includes(term) ||
       (soul.email && soul.email.toLowerCase().includes(term)) ||
       (soul.phone && soul.phone.toLowerCase().includes(term)) ||
@@ -90,7 +71,7 @@ export default function SoulsWonPage() {
       (soul.sourceDetails && soul.sourceDetails.toLowerCase().includes(term)) ||
       (soul.church && soul.church.toLowerCase().includes(term))
     );
-  }, [processedSouls, searchTerm]);
+  }, [souls, searchTerm]);
 
   const handleSoulLogged = () => {
     setIsLogDialogOpen(false);
@@ -113,7 +94,7 @@ export default function SoulsWonPage() {
 
     const body = filteredSouls.map(soul => {
         const lastFollowUp = soul.followUpLog && soul.followUpLog.length > 0
-            ? [...soul.followUpLog].sort((a, b) => b.date.toDate().getTime() - a.date.toDate().getTime())[0]
+            ? [...soul.followUpLog].sort((a, b) => (b.date?.toDate ? b.date.toDate().getTime() : 0) - (a.date?.toDate ? a.date.toDate().getTime() : 0))[0]
             : null;
 
         return [
@@ -122,14 +103,14 @@ export default function SoulsWonPage() {
             soul.phone || '',
             soul.church || '',
             soul.locationWon || '',
-            format(soul._wonAt, "yyyy-MM-dd"),
+            soul.wonAt?.toDate ? format(soul.wonAt.toDate(), "yyyy-MM-dd") : '',
             soul.source,
             soul.sourceDetails || '',
             soul.status,
             soul.attendingChurch ? 'Yes' : 'No',
             soul.inBibleStudy ? 'Yes' : 'No',
             soul.attendingPrayer ? 'Yes' : 'No',
-            lastFollowUp ? format(lastFollowUp.date.toDate(), 'yyyy-MM-dd') : '',
+            lastFollowUp?.date?.toDate ? format(lastFollowUp.date.toDate(), 'yyyy-MM-dd') : '',
             lastFollowUp ? lastFollowUp.note : ''
         ];
     });

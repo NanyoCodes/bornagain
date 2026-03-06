@@ -416,17 +416,24 @@ function ViewHistoryDialog({ soul, children }: { soul: Soul; children: React.Rea
   );
 }
 
-type ProcessedSoul = Soul & { _wonAt: Date; _latestFollowUp: FollowUpLogItem | null };
-
 type SoulsWonTableProps = {
-  souls: ProcessedSoul[];
+  souls: Soul[];
   loading: boolean;
 };
 
-function SoulCard({ soul }: { soul: ProcessedSoul }) {
+const SoulCard = React.memo(function SoulCard({ soul }: { soul: Soul }) {
     const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
     
-    const latestFollowUp = soul._latestFollowUp;
+    const latestFollowUp = React.useMemo(() => {
+        if (!soul.followUpLog || soul.followUpLog.length === 0) return null;
+        return soul.followUpLog.reduce((latest, current) => {
+            const latestTime = latest.date?.toDate ? latest.date.toDate().getTime() : 0;
+            const currentTime = current.date?.toDate ? current.date.toDate().getTime() : 0;
+            return currentTime > latestTime ? current : latest;
+        });
+    }, [soul.followUpLog]);
+
+    const wonAt = React.useMemo(() => soul.wonAt?.toDate ? soul.wonAt.toDate() : new Date(), [soul.wonAt]);
 
     return (
         <Card>
@@ -517,20 +524,107 @@ function SoulCard({ soul }: { soul: ProcessedSoul }) {
 
                         <div className="flex justify-between text-sm text-muted-foreground pt-4">
                             <span>{soul.source} {soul.sourceDetails ? `(${soul.sourceDetails})` : ''}</span>
-                            <span>{format(soul._wonAt, "PPP")}</span>
+                            <span>{format(wonAt, "PPP")}</span>
                         </div>
                     </div>
                 </CollapsibleContent>
             </Collapsible>
         </Card>
     );
-}
+});
+
+const SoulTableRow = React.memo(function SoulTableRow({ soul, onEditClick }: { soul: Soul, onEditClick: (soul: Soul) => void }) {
+    const latestFollowUp = React.useMemo(() => {
+        if (!soul.followUpLog || soul.followUpLog.length === 0) return null;
+        return soul.followUpLog.reduce((latest, current) => {
+            const latestTime = latest.date?.toDate ? latest.date.toDate().getTime() : 0;
+            const currentTime = current.date?.toDate ? current.date.toDate().getTime() : 0;
+            return currentTime > latestTime ? current : latest;
+        });
+    }, [soul.followUpLog]);
+
+    const wonAt = React.useMemo(() => soul.wonAt?.toDate ? soul.wonAt.toDate() : new Date(), [soul.wonAt]);
+
+    return (
+        <TableRow>
+            <TableCell className="font-medium">
+                <div>{soul.name}</div>
+                {soul.church && <div className="text-xs text-muted-foreground flex items-center gap-1"><Church className="h-3 w-3" />{soul.church}</div>}
+            </TableCell>
+            <TableCell>
+                {soul.email && <div>{soul.email}</div>}
+                {soul.phone && <div className="text-xs text-muted-foreground">{soul.phone}</div>}
+            </TableCell>
+            <TableCell>
+                <Badge className={cn("w-[150px] justify-center", getStatusClasses(soul.status))} variant="outline">{soul.status}</Badge>
+            </TableCell>
+            <TableCell>
+                {latestFollowUp ? (
+                    <div className="text-xs space-y-1">
+                        <div className="text-muted-foreground font-semibold">
+                            {format(latestFollowUp.date.toDate(), "PPP")}
+                        </div>
+                        {latestFollowUp.actions && latestFollowUp.actions.length > 0 && (
+                            <div className="flex flex-wrap gap-1">
+                                {latestFollowUp.actions.map(actionId => {
+                                    const action = actionItems.find(a => a.id === actionId);
+                                    return action ? <Badge key={actionId} variant="secondary" className="font-normal">{action.label}</Badge> : null
+                                })}
+                            </div>
+                        )}
+                    </div>
+                ) : (
+                    <div className="text-xs text-muted-foreground">No logs</div>
+                )}
+            </TableCell>
+            <TableCell>{format(wonAt, "PPP")}</TableCell>
+            <TableCell>
+                <div>{soul.source}</div>
+                {soul.sourceDetails && <div className="text-xs text-muted-foreground">{soul.sourceDetails}</div>}
+            </TableCell>
+            <TableCell>
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button
+                            aria-haspopup="true"
+                            size="icon"
+                            variant="ghost"
+                        >
+                            <MoreHorizontal className="h-4 w-4" />
+                            <span className="sr-only">Toggle menu</span>
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                        <DropdownMenuItem onSelect={() => onEditClick(soul)}>
+                            <Edit className="mr-2 h-4 w-4" />
+                            Edit
+                        </DropdownMenuItem>
+                        <LogFollowUpDialog soul={soul}>
+                            <DropdownMenuItem onSelect={(e) => e.preventDefault()}>Log Follow-up</DropdownMenuItem>
+                        </LogFollowUpDialog>
+                        <ViewHistoryDialog soul={soul}>
+                            <DropdownMenuItem onSelect={(e) => e.preventDefault()}>View History</DropdownMenuItem>
+                        </ViewHistoryDialog>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+            </TableCell>
+        </TableRow>
+    );
+});
+SoulTableRow.displayName = "SoulTableRow";
+
 
 export function SoulsWonTable({ souls, loading }: SoulsWonTableProps) {
   const isMobile = useIsMobile();
   const [mounted, setMounted] = React.useState(false);
   const [editingSoul, setEditingSoul] = React.useState<Soul | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
+  
+  const handleEditClick = React.useCallback((soul: Soul) => {
+    setEditingSoul(soul);
+    setIsEditDialogOpen(true);
+  }, []);
 
   React.useEffect(() => {
     setMounted(true);
@@ -622,77 +716,9 @@ export function SoulsWonTable({ souls, loading }: SoulsWonTableProps) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {souls.map((soul) => {
-              const latestFollowUp = soul._latestFollowUp;
-              return (
-              <TableRow key={soul.id}>
-                <TableCell className="font-medium">
-                  <div>{soul.name}</div>
-                  {soul.church && <div className="text-xs text-muted-foreground flex items-center gap-1"><Church className="h-3 w-3" />{soul.church}</div>}
-                </TableCell>
-                <TableCell>
-                  {soul.email && <div>{soul.email}</div>}
-                  {soul.phone && <div className="text-xs text-muted-foreground">{soul.phone}</div>}
-                </TableCell>
-                <TableCell>
-                  <Badge className={cn("w-[150px] justify-center", getStatusClasses(soul.status))} variant="outline">{soul.status}</Badge>
-                </TableCell>
-                <TableCell>
-                    {latestFollowUp ? (
-                        <div className="text-xs space-y-1">
-                            <div className="text-muted-foreground font-semibold">
-                                {format(latestFollowUp.date.toDate(), "PPP")}
-                            </div>
-                            {latestFollowUp.actions && latestFollowUp.actions.length > 0 && (
-                                <div className="flex flex-wrap gap-1">
-                                    {latestFollowUp.actions.map(actionId => {
-                                        const action = actionItems.find(a => a.id === actionId);
-                                        return action ? <Badge key={actionId} variant="secondary" className="font-normal">{action.label}</Badge> : null
-                                    })}
-                                </div>
-                            )}
-                        </div>
-                    ) : (
-                        <div className="text-xs text-muted-foreground">No logs</div>
-                    )}
-                </TableCell>
-                <TableCell>{format(soul._wonAt, "PPP")}</TableCell>
-                <TableCell>
-                  <div>{soul.source}</div>
-                  {soul.sourceDetails && <div className="text-xs text-muted-foreground">{soul.sourceDetails}</div>}
-                </TableCell>
-                <TableCell>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button
-                        aria-haspopup="true"
-                        size="icon"
-                        variant="ghost"
-                      >
-                        <MoreHorizontal className="h-4 w-4" />
-                        <span className="sr-only">Toggle menu</span>
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                       <DropdownMenuItem onSelect={() => {
-                          setEditingSoul(soul);
-                          setIsEditDialogOpen(true);
-                       }}>
-                          <Edit className="mr-2 h-4 w-4" />
-                          Edit
-                      </DropdownMenuItem>
-                      <LogFollowUpDialog soul={soul}>
-                          <DropdownMenuItem onSelect={(e) => e.preventDefault()}>Log Follow-up</DropdownMenuItem>
-                      </LogFollowUpDialog>
-                      <ViewHistoryDialog soul={soul}>
-                          <DropdownMenuItem onSelect={(e) => e.preventDefault()}>View History</DropdownMenuItem>
-                      </ViewHistoryDialog>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
-              </TableRow>
-            )})}
+            {souls.map((soul) => (
+              <SoulTableRow key={soul.id} soul={soul} onEditClick={handleEditClick} />
+            ))}
           </TableBody>
         </Table>
       </CardContent>
