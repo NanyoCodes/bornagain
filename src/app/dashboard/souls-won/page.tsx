@@ -15,7 +15,7 @@ import {
 import { PlusCircle, Download } from "lucide-react";
 import { SoulsWonTable } from "@/components/souls/souls-won-table";
 import { LogSoulForm } from "@/components/souls/log-soul-form";
-import type { Soul } from "@/lib/types";
+import type { Soul, FollowUpLogItem } from "@/lib/types";
 import { useCollection, useFirestore, useUser } from "@/firebase";
 import { collection, query, orderBy } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
@@ -61,10 +61,21 @@ export default function SoulsWonPage() {
 
   const processedSouls = useMemo(() => {
     if (!souls) return [];
-    return souls.map(soul => ({
+    return souls.map(soul => {
+      const latestFollowUp = (soul.followUpLog && soul.followUpLog.length > 0)
+        ? [...soul.followUpLog].sort((a, b) => {
+            const dateA = a.date?.toDate ? a.date.toDate().getTime() : 0;
+            const dateB = b.date?.toDate ? b.date.toDate().getTime() : 0;
+            return dateB - dateA;
+          })[0]
+        : null;
+
+      return {
         ...soul,
         _wonAt: soul.wonAt?.toDate ? soul.wonAt.toDate() : new Date(),
-    }));
+        _latestFollowUp: latestFollowUp,
+      };
+    });
   }, [souls]);
 
   const filteredSouls = useMemo(() => {

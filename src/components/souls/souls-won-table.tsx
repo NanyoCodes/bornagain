@@ -416,7 +416,7 @@ function ViewHistoryDialog({ soul, children }: { soul: Soul; children: React.Rea
   );
 }
 
-type ProcessedSoul = Soul & { _wonAt: Date };
+type ProcessedSoul = Soul & { _wonAt: Date; _latestFollowUp: FollowUpLogItem | null };
 
 type SoulsWonTableProps = {
   souls: ProcessedSoul[];
@@ -426,10 +426,7 @@ type SoulsWonTableProps = {
 function SoulCard({ soul }: { soul: ProcessedSoul }) {
     const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
     
-    const latestFollowUp = React.useMemo(() => {
-        if (!soul.followUpLog || soul.followUpLog.length === 0) return null;
-        return [...soul.followUpLog].sort((a, b) => b.date.toDate().getTime() - a.date.toDate().getTime())[0];
-    }, [soul.followUpLog]);
+    const latestFollowUp = soul._latestFollowUp;
 
     return (
         <Card>
@@ -626,9 +623,7 @@ export function SoulsWonTable({ souls, loading }: SoulsWonTableProps) {
           </TableHeader>
           <TableBody>
             {souls.map((soul) => {
-              const latestFollowUp = soul.followUpLog && soul.followUpLog.length > 0
-                ? [...soul.followUpLog].sort((a, b) => b.date.toDate().getTime() - a.date.toDate().getTime())[0]
-                : null;
+              const latestFollowUp = soul._latestFollowUp;
               return (
               <TableRow key={soul.id}>
                 <TableCell className="font-medium">
