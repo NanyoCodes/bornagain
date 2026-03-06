@@ -97,12 +97,14 @@ export default function SoulsWonPage() {
             ? [...soul.followUpLog].sort((a, b) => (b.date?.toDate ? b.date.toDate().getTime() : 0) - (a.date?.toDate ? a.date.toDate().getTime() : 0))[0]
             : null;
 
+        const locationWonString = soul.locationWon ? [soul.locationWon.city, soul.locationWon.state, soul.locationWon.country].filter(Boolean).join(', ') : '';
+
         return [
             soul.name,
             soul.email || '',
             soul.phone || '',
             soul.church || '',
-            soul.locationWon || '',
+            locationWonString,
             soul.wonAt?.toDate ? format(soul.wonAt.toDate(), "yyyy-MM-dd") : '',
             soul.source,
             soul.sourceDetails || '',

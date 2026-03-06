@@ -369,8 +369,13 @@
           }
         },
         "locationWon": {
-            "type": "string",
-            "description": "The location where the soul was won (e.g., street name, event)."
+          "type": "object",
+          "description": "The location where the soul was won.",
+          "properties": {
+            "city": { "type": "string" },
+            "state": { "type": "string" },
+            "country": { "type": "string" }
+          }
         },
         "wonAt": {
           "type": "object"

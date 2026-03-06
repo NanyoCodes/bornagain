@@ -426,14 +426,20 @@ const SoulCard = React.memo(function SoulCard({ soul }: { soul: Soul }) {
     
     const latestFollowUp = React.useMemo(() => {
         if (!soul.followUpLog || soul.followUpLog.length === 0) return null;
+        // This is a more performant way to find the latest item than sorting the whole array
         return soul.followUpLog.reduce((latest, current) => {
-            const latestTime = latest.date?.toDate ? latest.date.toDate().getTime() : 0;
-            const currentTime = current.date?.toDate ? current.date.toDate().getTime() : 0;
-            return currentTime > latestTime ? current : latest;
+            if (!latest.date?.toDate) return current;
+            if (!current.date?.toDate) return latest;
+            return current.date.toDate() > latest.date.toDate() ? current : latest;
         });
     }, [soul.followUpLog]);
 
     const wonAt = React.useMemo(() => soul.wonAt?.toDate ? soul.wonAt.toDate() : new Date(), [soul.wonAt]);
+    
+    const locationWonString = React.useMemo(() => {
+        if (!soul.locationWon) return null;
+        return [soul.locationWon.city, soul.locationWon.state, soul.locationWon.country].filter(Boolean).join(', ');
+    }, [soul.locationWon]);
 
     return (
         <Card>
@@ -454,7 +460,7 @@ const SoulCard = React.memo(function SoulCard({ soul }: { soul: Soul }) {
                                 {soul.email && <div className="truncate flex items-center gap-2"><Mail className="h-4 w-4"/>{soul.email}</div>}
                                 {soul.phone && <div className="truncate flex items-center gap-2 mt-1"><Phone className="h-4 w-4"/>{soul.phone}</div>}
                                 {soul.church && <div className="flex items-center gap-1 pt-2"><Church className="h-4 w-4" /> {soul.church}</div>}
-                                {soul.locationWon && <div className="flex items-center gap-1 pt-1"><MapPin className="h-4 w-4" /> {soul.locationWon}</div>}
+                                {locationWonString && <div className="flex items-center gap-1 pt-1"><MapPin className="h-4 w-4" /> {locationWonString}</div>}
                             </div>
                             <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
                                 <DropdownMenu>
@@ -532,6 +538,8 @@ const SoulCard = React.memo(function SoulCard({ soul }: { soul: Soul }) {
         </Card>
     );
 });
+SoulCard.displayName = 'SoulCard';
+
 
 const SoulTableRow = React.memo(function SoulTableRow({ soul, onEditClick }: { soul: Soul, onEditClick: (soul: Soul) => void }) {
     const latestFollowUp = React.useMemo(() => {

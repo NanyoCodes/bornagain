@@ -32,7 +32,9 @@ const formSchema = z.object({
   email: z.string().email("Please enter a valid email address.").optional().or(z.literal('')),
   phone: z.string().optional(),
   church: z.string().optional(),
-  locationWon: z.string().optional(),
+  locationWonCity: z.string().optional(),
+  locationWonState: z.string().optional(),
+  locationWonCountry: z.string().optional(),
   source: z.string({ required_error: "Please select a source." }),
   sourceDetails: z.string().optional(),
   initialNote: z.string().optional(),
@@ -68,7 +70,9 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps)
       email: "",
       phone: "",
       church: "",
-      locationWon: "",
+      locationWonCity: "",
+      locationWonState: "",
+      locationWonCountry: "",
       source: defaultCampaign ? "Campaign" : "Personal",
       sourceDetails: defaultCampaign ? defaultCampaign.title : "",
       initialNote: "",
@@ -111,7 +115,13 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps)
       email: values.email,
       phone: values.phone,
       church: values.church,
-      locationWon: values.locationWon,
+      locationWon: (values.locationWonCity || values.locationWonState || values.locationWonCountry)
+        ? {
+            city: values.locationWonCity,
+            state: values.locationWonState,
+            country: values.locationWonCountry,
+          }
+        : undefined,
       source: values.source as 'Personal' | 'Campaign' | 'Referral',
       sourceDetails: values.sourceDetails,
       userLocation: processedUserLocation,
@@ -351,19 +361,47 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps)
                             </FormItem>
                         )}
                         />
-                        <FormField
-                        control={form.control}
-                        name="locationWon"
-                        render={({ field }) => (
-                            <FormItem>
+                        <div className="space-y-2">
                             <FormLabel>Location Won</FormLabel>
-                            <FormControl>
-                                <Input placeholder="e.g., City Park, Nairobi" {...field} className="text-base"/>
-                            </FormControl>
-                            <FormMessage />
-                            </FormItem>
-                        )}
-                        />
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                               <FormField
+                                control={form.control}
+                                name="locationWonCity"
+                                render={({ field }) => (
+                                    <FormItem>
+                                    <FormControl>
+                                        <Input placeholder="City" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                    </FormItem>
+                                )}
+                                />
+                                <FormField
+                                control={form.control}
+                                name="locationWonState"
+                                render={({ field }) => (
+                                    <FormItem>
+                                    <FormControl>
+                                        <Input placeholder="State/Province" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                    </FormItem>
+                                )}
+                                />
+                                <FormField
+                                control={form.control}
+                                name="locationWonCountry"
+                                render={({ field }) => (
+                                    <FormItem>
+                                    <FormControl>
+                                        <Input placeholder="Country" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                    </FormItem>
+                                )}
+                                />
+                            </div>
+                        </div>
                         <FormField
                         control={form.control}
                         name="initialNote"

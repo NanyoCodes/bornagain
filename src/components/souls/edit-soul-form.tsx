@@ -31,7 +31,9 @@ const formSchema = z.object({
   email: z.string().email("Please enter a valid email address.").optional().or(z.literal('')),
   phone: z.string().optional(),
   church: z.string().optional(),
-  locationWon: z.string().optional(),
+  locationWonCity: z.string().optional(),
+  locationWonState: z.string().optional(),
+  locationWonCountry: z.string().optional(),
   source: z.string({ required_error: "Please select a source." }),
   sourceDetails: z.string().optional(),
   wonAt: z.date({
@@ -63,7 +65,9 @@ export function EditSoulForm({ soul, onSoulUpdated }: EditSoulFormProps) {
       email: soul.email || "",
       phone: soul.phone || "",
       church: soul.church || "",
-      locationWon: soul.locationWon || "",
+      locationWonCity: soul.locationWon?.city || "",
+      locationWonState: soul.locationWon?.state || "",
+      locationWonCountry: soul.locationWon?.country || "",
       source: soul.source || "Personal",
       sourceDetails: soul.sourceDetails || "",
       wonAt: soul.wonAt.toDate(),
@@ -84,7 +88,13 @@ export function EditSoulForm({ soul, onSoulUpdated }: EditSoulFormProps) {
       email: values.email,
       phone: values.phone,
       church: values.church,
-      locationWon: values.locationWon,
+      locationWon: (values.locationWonCity || values.locationWonState || values.locationWonCountry)
+        ? {
+            city: values.locationWonCity || null,
+            state: values.locationWonState || null,
+            country: values.locationWonCountry || null,
+          }
+        : deleteField(),
       source: values.source as 'Personal' | 'Campaign' | 'Referral',
       sourceDetails: values.sourceDetails,
       wonAt: values.wonAt as any,
@@ -307,19 +317,47 @@ export function EditSoulForm({ soul, onSoulUpdated }: EditSoulFormProps) {
                                 </FormItem>
                             )}
                             />
-                        <FormField
-                            control={form.control}
-                            name="locationWon"
-                            render={({ field }) => (
-                                <FormItem>
-                                <FormLabel>Location Won</FormLabel>
-                                <FormControl>
-                                    <Input placeholder="e.g., City Park, Nairobi" {...field} className="text-base"/>
-                                </FormControl>
-                                <FormMessage />
-                                </FormItem>
-                            )}
-                        />
+                        <div className="space-y-2">
+                            <FormLabel>Location Won</FormLabel>
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                               <FormField
+                                control={form.control}
+                                name="locationWonCity"
+                                render={({ field }) => (
+                                    <FormItem>
+                                    <FormControl>
+                                        <Input placeholder="City" {...field} value={field.value ?? ''} />
+                                    </FormControl>
+                                    <FormMessage />
+                                    </FormItem>
+                                )}
+                                />
+                                <FormField
+                                control={form.control}
+                                name="locationWonState"
+                                render={({ field }) => (
+                                    <FormItem>
+                                    <FormControl>
+                                        <Input placeholder="State/Province" {...field} value={field.value ?? ''} />
+                                    </FormControl>
+                                    <FormMessage />
+                                    </FormItem>
+                                )}
+                                />
+                                <FormField
+                                control={form.control}
+                                name="locationWonCountry"
+                                render={({ field }) => (
+                                    <FormItem>
+                                    <FormControl>
+                                        <Input placeholder="Country" {...field} value={field.value ?? ''} />
+                                    </FormControl>
+                                    <FormMessage />
+                                    </FormItem>
+                                )}
+                                />
+                            </div>
+                        </div>
                     </div>
                 </AccordionContent>
             </AccordionItem>
