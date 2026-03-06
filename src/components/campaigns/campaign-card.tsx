@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { format, formatDistanceToNow, parse, isSameDay, differenceInDays } from "date-fns";
-import { CalendarDays, MapPin, Users, Share2, Edit, MoreVertical, Loader2, MessagesSquare, UserCheck2, PlayCircle, UserPlus } from "lucide-react";
+import { CalendarDays, MapPin, Users, Share2, Edit, MoreVertical, Loader2, MessagesSquare, UserCheck2, PlayCircle, UserPlus, Newspaper } from "lucide-react";
 import type { Campaign, CampaignParticipant, UserProfile } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -29,6 +29,7 @@ import { ManageCampaignForm } from "./manage-campaign-form";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { LogSoulForm } from "../souls/log-soul-form";
+import { CreateTestimonyForm } from "../testimonies/create-testimony-form";
 import { Badge } from "../ui/badge";
 import { useRouter } from "next/navigation";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip";
@@ -81,7 +82,7 @@ function ParticipantsDialog({ campaign, children }: { campaign: Campaign; childr
                     <div className="space-y-3">
                         <h3 className="text-sm font-semibold text-muted-foreground">ORGANIZER</h3>
                         <div className="flex items-center justify-between rounded-lg p-3 bg-muted/50">
-                            <span className='font-medium'>{organizer.displayName}</span>
+                            <span className='font-medium'>{organizer.firstName} {organizer.lastName}</span>
                         </div>
                     </div>
                 )}
@@ -91,7 +92,7 @@ function ParticipantsDialog({ campaign, children }: { campaign: Campaign; childr
                     <div className="space-y-2">
                       {otherParticipants.map(p => (
                         <div key={p.id} className="flex items-center justify-between p-3 border rounded-lg">
-                          <span className='font-medium'>{p.displayName}</span>
+                          <span className='font-medium'>{p.firstName} {p.lastName}</span>
                            {p.email && <span className="text-sm text-muted-foreground">{p.email}</span>}
                         </div>
                       ))}
@@ -121,6 +122,7 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
   const isOwner = campaign.organizerId === userId;
   const [isManageOpen, setIsManageOpen] = useState(false);
   const [isLogSoulOpen, setIsLogSoulOpen] = useState(false);
+  const [isTestimonyDialogOpen, setIsTestimonyDialogOpen] = useState(false);
   const [isChatLoading, setIsChatLoading] = useState(false);
   const [isJoining, setIsJoining] = useState(false);
 
@@ -254,9 +256,13 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
             };
             transaction.set(joinedRef, joinData);
 
+            const [firstName, ...lastNameParts] = user.displayName?.split(' ') || ['Anonymous', ''];
+            const lastName = lastNameParts.join(' ');
+
             const participantData: { [key: string]: any; } = {
                 userId: user.uid,
-                displayName: user.displayName || 'Anonymous',
+                firstName,
+                lastName,
                 photoURL: user.photoURL || null,
                 joinedAt: serverTimestamp()
             };
@@ -334,16 +340,19 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
       } else {
          const organizerDoc = await getDoc(doc(firestore, "users", campaign.organizerId));
          const organizerProfile = organizerDoc.data() as UserProfile | undefined;
+         const [userFirstName, ...userLastNameParts] = user.displayName?.split(' ') || ['User', ''];
          const newChatData = {
               participantIds,
               participantInfo: {
                   [user.uid]: {
-                      displayName: user.displayName || 'User',
+                      firstName: userFirstName,
+                      lastName: userLastNameParts.join(' '),
                       photoURL: user.photoURL || '',
                       email: user.email || '',
                   },
                   [campaign.organizerId]: {
-                      displayName: campaign.organizerName,
+                      firstName: campaign.organizerFirstName,
+                      lastName: campaign.organizerLastName,
                       photoURL: organizerProfile?.photoURL || '', 
                       email: organizerProfile?.email || '',
                   },
@@ -495,6 +504,43 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
     </Dialog>
   );
 
+  const ShareTestimonyDialog = (
+    <Dialog open={isTestimonyDialogOpen} onOpenChange={setIsTestimonyDialogOpen}>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <DialogTrigger asChild>
+              <Button variant="outline" size="icon">
+                <Newspaper className="h-4 w-4" />
+              </Button>
+            </DialogTrigger>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Share Testimony</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+      <DialogContent className="sm:max-w-lg">
+        <DialogHeader>
+          <DialogTitle>Share Testimony for "{campaign.title}"</DialogTitle>
+          <DialogDescription>
+            Encourage others by sharing what God has done during this campaign.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="max-h-[70vh] overflow-y-auto pr-2">
+          <CreateTestimonyForm
+            onTestimonyCreated={() => {
+              setIsTestimonyDialogOpen(false);
+              toast({ title: "Testimony Shared!", description: "Thank you for sharing." });
+            }}
+            campaign={campaign}
+          />
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+
+
   const shareButton = (
     <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -627,6 +673,7 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
                 {isOwner ? (
                     <>
                       {status === 'Ongoing' && LogSoulDialog}
+                      {status === 'Ongoing' && ShareTestimonyDialog}
                       <Dialog open={isManageOpen} onOpenChange={setIsManageOpen}>
                         <DialogTrigger asChild>
                           <Button variant="outline" size="icon">
@@ -654,6 +701,7 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
                 ) : isJoined ? (
                      <>
                         {status === 'Ongoing' && LogSoulDialog}
+                        {status === 'Ongoing' && ShareTestimonyDialog}
                          <TooltipProvider>
                           <Tooltip>
                               <TooltipTrigger asChild>
@@ -668,6 +716,7 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
                     </>
                 ) : (
                     <>
+                        {status === 'Ongoing' && ShareTestimonyDialog}
                         <TooltipProvider>
                             <Tooltip>
                                 <TooltipTrigger asChild>
@@ -698,7 +747,7 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
             <span className="truncate">
                 Created by{" "}
                 <Link href={`/dashboard/profile/${campaign.organizerId}`} className="font-medium text-primary hover:underline px-1">
-                    {campaign.organizerName}
+                    {campaign.organizerFirstName} {campaign.organizerLastName}
                 </Link>
             </span>
             <span className="flex-shrink-0">{footerDateText}</span>

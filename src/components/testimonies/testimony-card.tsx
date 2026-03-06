@@ -1,6 +1,7 @@
 
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   Card,
@@ -174,12 +175,17 @@ export function TestimonyCard({ testimony }: { testimony: Testimony }) {
             </Dialog>
         )}
       </CardContent>
-      <CardFooter className="pt-4 flex justify-end items-center mt-auto">
+      <CardFooter className="pt-4 flex justify-between items-center mt-auto">
+        {testimony.campaignTitle && (
+            <div className="text-xs text-muted-foreground mr-auto truncate">
+                From: <Link href={`/dashboard/campaigns#${testimony.campaignId}`} className="font-semibold text-primary hover:underline">{testimony.campaignTitle}</Link>
+            </div>
+        )}
         <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
           <AlertDialog>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon">
+                <Button variant="ghost" size="icon" className="ml-auto">
                   <MoreVertical className="h-4 w-4" />
                   <span className="sr-only">More actions</span>
                 </Button>
@@ -228,5 +234,3 @@ export function TestimonyCard({ testimony }: { testimony: Testimony }) {
     </Card>
   );
 }
-
-    

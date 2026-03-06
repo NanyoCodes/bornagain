@@ -18,7 +18,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
-import type { TestimonyCategory } from "@/lib/types";
+import type { TestimonyCategory, Campaign } from "@/lib/types";
 import { useUser, useFirestore } from "@/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { FirestorePermissionError } from "@/firebase/errors";
@@ -34,9 +34,10 @@ const formSchema = z.object({
 
 type CreateTestimonyFormProps = {
   onTestimonyCreated: () => void;
+  campaign?: Campaign;
 };
 
-export function CreateTestimonyForm({ onTestimonyCreated }: CreateTestimonyFormProps) {
+export function CreateTestimonyForm({ onTestimonyCreated, campaign }: CreateTestimonyFormProps) {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   
@@ -70,6 +71,11 @@ export function CreateTestimonyForm({ onTestimonyCreated }: CreateTestimonyFormP
           createdAt: serverTimestamp(),
           category: values.category as TestimonyCategory,
       };
+
+      if (campaign) {
+        testimonyData.campaignId = campaign.id;
+        testimonyData.campaignTitle = campaign.title;
+      }
       
       await addDoc(testimonyCollectionRef, testimonyData).catch((serverError) => {
           const permissionError = new FirestorePermissionError({
@@ -153,5 +159,3 @@ export function CreateTestimonyForm({ onTestimonyCreated }: CreateTestimonyFormP
     </Form>
   );
 }
-
-    

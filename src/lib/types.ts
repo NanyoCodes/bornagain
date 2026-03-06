@@ -91,6 +91,8 @@ export type Testimony = {
   createdAt: Timestamp;
   updatedAt?: Timestamp;
   category: TestimonyCategory;
+  campaignId?: string;
+  campaignTitle?: string;
 };
 
 export type Campaign = {
@@ -219,7 +221,7 @@ export type ChatMessage = {
 export type Notification = {
   id: string;
   userId: string;
-  type: 'campaign_join' | 'new_chat_message' | 'accountability_nudge' | 'accountability_request' | 'request_accepted' | 'request_declined';
+  type: 'campaign_join' | 'new_chat_message' | 'accountability_nudge' | 'accountability_request' | 'request_accepted' | 'request_declined' | 'accountability_partner_removed';
   title: string;
   message: string;
   link?: string;
@@ -242,3 +244,4 @@ export type AccountabilityRequest = {
   respondedAt?: Timestamp;
   participantIds: string[];
 };
+

@@ -220,6 +220,14 @@
         },
         "createdAt": {
           "type": "object"
+        },
+        "campaignId": {
+          "type": "string",
+          "description": "The ID of the campaign this testimony is related to, if any."
+        },
+        "campaignTitle": {
+          "type": "string",
+          "description": "The title of the campaign this testimony is related to, if any."
         }
       },
       "required": [
