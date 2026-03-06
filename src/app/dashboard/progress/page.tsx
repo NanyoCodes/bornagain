@@ -87,15 +87,26 @@ function RecentSoulsList() {
     )
 }
 
-function GlobalSoulsCard({ location }: { location: { city?: string, country?: string } }) {
+function GlobalSoulsCard({ location, userSouls }: { location: { city?: string, country?: string }, userSouls: Soul[] }) {
     const firestore = useFirestore();
     const [cityCount, setCityCount] = useState(0);
     const [countryCount, setCountryCount] = useState(0);
+    const [globalCount, setGlobalCount] = useState(0);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
+    const yourCityCount = useMemo(() => 
+        userSouls.filter(s => s.userLocation?.city_lowercase === location.city?.toLowerCase()).length
+    , [userSouls, location.city]);
+
+    const yourCountryCount = useMemo(() =>
+        userSouls.filter(s => s.userLocation?.country_lowercase === location.country?.toLowerCase()).length
+    , [userSouls, location.country]);
+
+    const yourGlobalCount = userSouls.length;
+
     const fetchCounts = useCallback(async () => {
-        if (!firestore || (!location.city && !location.country)) {
+        if (!firestore) {
             setLoading(false);
             return;
         };
@@ -107,6 +118,10 @@ function GlobalSoulsCard({ location }: { location: { city?: string, country?: st
             
             const promises = [];
 
+            // Global query
+            promises.push(getCountFromServer(soulsCollection));
+
+            // City query
             if (location.city) {
                 const cityQuery = query(soulsCollection, where('userLocation.city_lowercase', '==', location.city.toLowerCase()));
                 promises.push(getCountFromServer(cityQuery));
@@ -114,6 +129,7 @@ function GlobalSoulsCard({ location }: { location: { city?: string, country?: st
                 promises.push(Promise.resolve(null));
             }
 
+            // Country query
             if (location.country) {
                 const countryQuery = query(soulsCollection, where('userLocation.country_lowercase', '==', location.country.toLowerCase()));
                 promises.push(getCountFromServer(countryQuery));
@@ -121,8 +137,9 @@ function GlobalSoulsCard({ location }: { location: { city?: string, country?: st
                 promises.push(Promise.resolve(null));
             }
 
-            const [citySnapshot, countrySnapshot] = await Promise.all(promises);
+            const [globalSnapshot, citySnapshot, countrySnapshot] = await Promise.all(promises);
             
+            setGlobalCount(globalSnapshot?.data().count ?? 0);
             setCityCount(citySnapshot?.data().count ?? 0);
             setCountryCount(countrySnapshot?.data().count ?? 0);
 
@@ -140,17 +157,17 @@ function GlobalSoulsCard({ location }: { location: { city?: string, country?: st
 
     return (
         <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
+            <CardHeader className="flex flex-row items-start justify-between pb-4">
                 <div>
                     <CardTitle>Community Impact</CardTitle>
-                    <CardDescription>Souls won by all users in your area.</CardDescription>
+                    <CardDescription>Souls won by all users.</CardDescription>
                 </div>
                 <Button variant="ghost" size="icon" onClick={fetchCounts} disabled={loading}>
                     {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
                     <span className="sr-only">Refresh stats</span>
                 </Button>
             </CardHeader>
-            <CardContent className="space-y-6">
+            <CardContent className="space-y-4">
                 {error && (
                     <div className="text-destructive text-sm p-3 rounded-md border border-destructive/50 bg-destructive/10 flex items-center gap-2">
                         <XCircle className="h-4 w-4" />
@@ -158,44 +175,44 @@ function GlobalSoulsCard({ location }: { location: { city?: string, country?: st
                     </div>
                 )}
                 {loading && !error ? (
-                    <div className="flex items-center gap-4">
-                         <div className="flex h-12 w-12 items-center justify-center rounded-lg">
-                            <Loader2 className="h-6 w-6 animate-spin"/>
-                        </div>
-                         <div>
-                            <p className="text-muted-foreground">Loading stats...</p>
-                        </div>
+                     <div className="space-y-4">
+                        <div className="flex items-center justify-between"><Skeleton className="h-5 w-24" /><Skeleton className="h-5 w-12" /></div>
+                        <div className="flex items-center justify-between"><Skeleton className="h-5 w-28" /><Skeleton className="h-5 w-12" /></div>
+                        <div className="flex items-center justify-between"><Skeleton className="h-5 w-20" /><Skeleton className="h-5 w-12" /></div>
                     </div>
                 ) : !error && (
-                    <>
+                    <div className="space-y-4">
                         {location.city && (
-                            <div className="flex items-center gap-4">
-                                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-secondary text-secondary-foreground">
-                                    <Globe className="h-6 w-6" />
-                                </div>
-                                <div>
-                                    <p className="text-muted-foreground">In {location.city}</p>
-                                    <p className="text-2xl font-bold">{cityCount}</p>
+                             <div className="flex items-center justify-between">
+                                <span className="font-medium text-muted-foreground">In {location.city}</span>
+                                <div className="text-right">
+                                    <p className="font-bold text-lg">{cityCount}</p>
+                                    <p className="text-xs text-muted-foreground">You: {yourCityCount}</p>
                                 </div>
                             </div>
                         )}
                         {location.country && (
-                            <div className="flex items-center gap-4">
-                                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-secondary text-secondary-foreground">
-                                    <Globe className="h-6 w-6" />
-                                </div>
-                                <div>
-                                    <p className="text-muted-foreground">In {location.country}</p>
-                                    <p className="text-2xl font-bold">{countryCount}</p>
+                            <div className="flex items-center justify-between">
+                                <span className="font-medium text-muted-foreground">In {location.country}</span>
+                                <div className="text-right">
+                                    <p className="font-bold text-lg">{countryCount}</p>
+                                    <p className="text-xs text-muted-foreground">You: {yourCountryCount}</p>
                                 </div>
                             </div>
                         )}
-                        {!location.city && !location.country && (
-                            <p className="text-sm text-center text-muted-foreground py-4">
-                                Add your location in your profile to see community stats.
-                            </p>
-                        )}
-                    </>
+                        <div className="flex items-center justify-between">
+                            <span className="font-medium text-muted-foreground">Globally</span>
+                            <div className="text-right">
+                                <p className="font-bold text-lg">{globalCount}</p>
+                                <p className="text-xs text-muted-foreground">You: {yourGlobalCount}</p>
+                            </div>
+                        </div>
+                    </div>
+                )}
+                {!location.city && !location.country && !loading && (
+                    <p className="text-sm text-center text-muted-foreground py-4">
+                        Add your location in your profile to see community stats.
+                    </p>
                 )}
             </CardContent>
         </Card>
@@ -473,7 +490,7 @@ export default function ProgressPage() {
                     </CardContent>
                 </Card>
                 
-                {userProfile?.location && <GlobalSoulsCard location={userProfile.location} />}
+                {userProfile?.location && <GlobalSoulsCard location={userProfile.location} userSouls={soulsWon || []} />}
 
                  <Card className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground">
                     <CardHeader>
