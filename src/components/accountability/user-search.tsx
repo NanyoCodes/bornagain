@@ -1,6 +1,7 @@
+
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useFirestore, useUser } from '@/firebase';
 import { collection, query, where, limit, getDocs, setDoc, serverTimestamp, doc } from 'firebase/firestore';
 import type { AccountabilityRequest, UserProfile } from '@/lib/types';
@@ -21,11 +22,20 @@ export function UserSearch({ currentUserProfile }: { currentUserProfile: UserPro
     const [searchResults, setSearchResults] = useState<UserProfile[]>([]);
     const [isProcessingRequest, setIsProcessingRequest] = useState<string | null>(null);
 
-    // Get all existing requests to disable buttons for users who have already been sent a request.
-    const requestsQuery = query(collection(firestore, 'accountabilityRequests'), where('participantIds', 'array-contains', user?.uid || ''));
+    // Get pending/accepted requests to disable buttons for users who have already been sent a request.
+    const requestsQuery = useMemo(() => {
+        if (!user) return null;
+        return query(
+            collection(firestore, 'accountabilityRequests'),
+            where('participantIds', 'array-contains', user.uid),
+            where('status', 'in', ['pending', 'accepted'])
+        );
+    }, [user, firestore]);
     const { data: existingRequests } = useCollection<AccountabilityRequest>(requestsQuery);
-
-    const existingRequestUserIds = new Set(existingRequests?.flatMap(r => r.participantIds).filter(id => id !== user?.uid));
+    
+    const existingRequestUserIds = useMemo(() => 
+        new Set(existingRequests?.flatMap(r => r.participantIds).filter(id => id !== user?.uid))
+    , [existingRequests, user]);
 
 
     useEffect(() => {

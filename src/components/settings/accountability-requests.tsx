@@ -20,19 +20,43 @@ export function AccountabilityRequests({ currentUserProfile }: { currentUserProf
     const { toast } = useToast();
     const [isProcessing, setIsProcessing] = useState<string | null>(null);
 
-    const requestsQuery = useMemo(() => {
+    // Query for INCOMING requests
+    const incomingRequestsQuery = useMemo(() => {
         if (!user) return null;
         return query(
             collection(firestore, 'accountabilityRequests'),
-            where('participantIds', 'array-contains', user.uid)
+            where('toUserId', '==', user.uid),
+            where('status', '==', 'pending')
         );
     }, [user, firestore]);
+    const { data: incomingRequests, loading: loadingIncoming } = useCollection<AccountabilityRequest>(incomingRequestsQuery);
 
-    const { data: requests, loading } = useCollection<AccountabilityRequest>(requestsQuery);
+    // Query for SENT requests
+    const sentRequestsQuery = useMemo(() => {
+        if (!user) return null;
+        return query(
+            collection(firestore, 'accountabilityRequests'),
+            where('fromUserId', '==', user.uid),
+            where('status', '==', 'pending')
+        );
+    }, [user, firestore]);
+    const { data: sentRequests, loading: loadingSent } = useCollection<AccountabilityRequest>(sentRequestsQuery);
+    
+    // Query for non-pending (completed) requests that need to be displayed for dismissal
+    const nonPendingRequestsQuery = useMemo(() => {
+        if (!user) return null;
+        return query(
+            collection(firestore, 'accountabilityRequests'),
+            where('participantIds', 'array-contains', user.uid),
+            where('status', 'in', ['accepted', 'declined'])
+        );
+    }, [user, firestore]);
+    const { data: nonPendingRequests, loading: loadingNonPending } = useCollection<AccountabilityRequest>(nonPendingRequestsQuery);
+    
+    const acceptedRequest = useMemo(() => nonPendingRequests?.find(r => r.status === 'accepted'), [nonPendingRequests]);
+    const declinedRequests = useMemo(() => nonPendingRequests?.filter(r => r.status === 'declined'), [nonPendingRequests]);
 
-    const incomingRequests = useMemo(() => requests?.filter(r => r.toUserId === user?.uid && r.status === 'pending'), [requests, user]);
-    const sentRequests = useMemo(() => requests?.filter(r => r.fromUserId === user?.uid && r.status === 'pending'), [requests, user]);
-    const acceptedRequest = useMemo(() => requests?.find(r => r.status === 'accepted'), [requests]);
+    const loading = loadingIncoming || loadingSent || loadingNonPending;
 
     // Effect to complete the partnership loop for the sender
     useEffect(() => {
@@ -151,7 +175,7 @@ export function AccountabilityRequests({ currentUserProfile }: { currentUserProf
         );
     }
 
-    if (!requests || requests.length === 0) {
+    if (!incomingRequests?.length && !sentRequests?.length && !nonPendingRequests?.length) {
         return null; // No requests, render nothing.
     }
     
@@ -231,7 +255,7 @@ export function AccountabilityRequests({ currentUserProfile }: { currentUserProf
                     ))}
                 </div>
             )}
-            {requests.filter(r => r.status === 'declined').map(req => (
+            {declinedRequests && declinedRequests.map(req => (
                 <div key={req.id} className="flex items-start justify-between gap-2 p-3 rounded-lg border border-dashed">
                     <div className="flex items-start gap-3">
                         <XCircle className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />
