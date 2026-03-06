@@ -2,12 +2,12 @@
 
 import { useMemo, useState } from 'react';
 import { useUser, useFirestore, useDoc, useCollection } from '@/firebase';
-import { doc, collection, addDoc, serverTimestamp, query, orderBy, limit, getDocs, where, writeBatch, deleteField } from 'firebase/firestore';
+import { doc, collection, addDoc, serverTimestamp, query, orderBy, limit, getDocs, where } from 'firebase/firestore';
 import type { UserProfile, DailyDisciplineLog } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Loader2, HeartHandshake, ShieldAlert, CheckCircle2, MessagesSquare, UserX } from 'lucide-react';
+import { Loader2, HeartHandshake, ShieldAlert, CheckCircle2, MessagesSquare } from 'lucide-react';
 import { format, isSameDay } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
@@ -27,7 +27,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Textarea } from '@/components/ui/textarea';
 
 const disciplines = [
   { id: 'pray', label: 'Pray' },
@@ -43,8 +42,6 @@ export default function AccountabilityPage() {
   const [isNudging, setIsNudging] = useState(false);
   const [isChatLoading, setIsChatLoading] = useState(false);
   const [date, setDate] = useState<Date | undefined>(new Date());
-  const [removalReason, setRemovalReason] = useState('');
-  const [isRemoving, setIsRemoving] = useState(false);
 
   const userDocRef = useMemo(() => {
     if (!user?.uid) return null;
@@ -109,60 +106,6 @@ export default function AccountabilityPage() {
     }
   };
   
-  const handleRemovePartner = async () => {
-    if (!user || !firestore || !partnerId || !userProfile) {
-        return;
-    }
-    if (!removalReason.trim()) {
-        toast({
-            variant: 'destructive',
-            title: 'Reason Required',
-            description: 'Please provide a reason for removing your partner.',
-        });
-        return;
-    }
-    setIsRemoving(true);
-    try {
-        const batch = writeBatch(firestore);
-
-        const currentUserRef = doc(firestore, 'users', user.uid);
-        batch.update(currentUserRef, {
-            accountabilityPartnerId: deleteField(),
-            accountabilityPartnerFirstName: deleteField(),
-            accountabilityPartnerLastName: deleteField(),
-        });
-
-        const partnerUserRef = doc(firestore, 'users', partnerId);
-        batch.update(partnerUserRef, {
-            accountabilityPartnerId: deleteField(),
-            accountabilityPartnerFirstName: deleteField(),
-            accountabilityPartnerLastName: deleteField(),
-        });
-        
-        const notificationsCollectionRef = collection(firestore, 'users', partnerId, 'notifications');
-        const notificationData = {
-            userId: partnerId,
-            type: 'accountability_partner_removed',
-            title: 'Accountability Partnership Ended',
-            message: `${userProfile.firstName} ${userProfile.lastName} has ended your accountability partnership. Reason: ${removalReason}`,
-            link: '/dashboard/accountability',
-            isRead: false,
-            createdAt: serverTimestamp(),
-        }
-        batch.set(doc(notificationsCollectionRef), notificationData);
-
-        await batch.commit();
-
-        toast({ title: 'Partner Removed', description: 'Your accountability partnership has been ended.' });
-    } catch (error) {
-        toast({ variant: 'destructive', title: 'Error', description: 'Could not remove partner.' });
-    } finally {
-        setIsRemoving(false);
-        setRemovalReason('');
-    }
-  };
-
-
   const handleInitiateChat = async () => {
     if (!user || !firestore || !partnerId || !userProfile || !partnerProfile) return;
     setIsChatLoading(true);
@@ -342,40 +285,6 @@ export default function AccountabilityPage() {
               {isChatLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <MessagesSquare className="mr-2 h-4 w-4" />}
               Chat with Partner
           </Button>
-           <AlertDialog>
-            <AlertDialogTrigger asChild>
-                <Button variant="destructive" className="w-full sm:w-auto">
-                    <UserX className="mr-2 h-4 w-4" />
-                    Remove Partner
-                </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-                <AlertDialogHeader>
-                    <AlertDialogTitle>Remove {partnerFullName}?</AlertDialogTitle>
-                    <AlertDialogDescription>
-                        Are you sure you want to end this accountability partnership? This action cannot be undone. Please provide a reason below.
-                    </AlertDialogDescription>
-                </AlertDialogHeader>
-                <div className="grid gap-4 py-4">
-                    <div className="grid gap-2">
-                        <Label htmlFor="removal-reason">Reason for Removal</Label>
-                        <Textarea
-                            id="removal-reason"
-                            value={removalReason}
-                            onChange={(e) => setRemovalReason(e.target.value)}
-                            placeholder="e.g., We've decided to find different partners."
-                        />
-                    </div>
-                </div>
-                <AlertDialogFooter>
-                    <AlertDialogCancel disabled={isRemoving}>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleRemovePartner} disabled={isRemoving || !removalReason.trim()}>
-                        {isRemoving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                        Confirm Removal
-                    </AlertDialogAction>
-                </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
         </CardFooter>
       </Card>
 
