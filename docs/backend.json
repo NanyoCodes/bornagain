@@ -38,7 +38,9 @@
           "description": "The user's location.",
           "properties": {
             "city": { "type": "string", "description": "The user's city." },
-            "country": { "type": "string", "description": "The user's country." }
+            "country": { "type": "string", "description": "The user's country." },
+            "city_lowercase": { "type": "string", "description": "Lowercase city for searching and aggregation." },
+            "country_lowercase": { "type": "string", "description": "Lowercase country for searching and aggregation." }
           }
         },
         "phone": {
@@ -365,7 +367,9 @@
           "description": "The location of the user who won the soul.",
           "properties": {
             "city": { "type": "string" },
-            "country": { "type": "string" }
+            "country": { "type": "string" },
+            "city_lowercase": { "type": "string", "description": "Lowercase city for aggregation." },
+            "country_lowercase": { "type": "string", "description": "Lowercase country for aggregation." }
           }
         },
         "locationWon": {
