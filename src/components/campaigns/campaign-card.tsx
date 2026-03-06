@@ -460,20 +460,21 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
 
   const LogSoulDialog = (
     <Dialog open={isLogSoulOpen} onOpenChange={setIsLogSoulOpen}>
-      <DialogTrigger asChild>
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <DialogTrigger asChild>
               <Button variant="outline" size="icon">
                 <UserCheck2 className="h-4 w-4" />
               </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Log Soul</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      </DialogTrigger>
+            </DialogTrigger>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Log Soul</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>Log a Soul Won in "{campaign.title}"</DialogTitle>
