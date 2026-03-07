@@ -139,6 +139,7 @@ export type CampaignParticipant = {
   email?: string;
   photoURL?: string;
   joinedAt: Timestamp;
+  joinReason?: string;
 };
 
 export type ProgressLog = {
@@ -244,4 +245,5 @@ export type AccountabilityRequest = {
   respondedAt?: Timestamp;
   participantIds: string[];
 };
+
 

@@ -185,7 +185,8 @@ export default function CampaignsPage() {
         campaign.description,
         campaign.goal,
         campaign.location,
-        campaign.organizerName,
+        campaign.organizerFirstName,
+        campaign.organizerLastName,
         campaign.scripture
       ];
 
@@ -342,6 +343,7 @@ export default function CampaignsPage() {
             key={campaign.id} 
             campaign={campaign} 
             userId={user?.uid}
+            userProfile={userProfile}
             isJoined={joinedCampaignIds.has(campaign.id)}
           />
         ))}

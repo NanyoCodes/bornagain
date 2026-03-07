@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -35,6 +36,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/
 import { Skeleton } from "../ui/skeleton";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { JoinCampaignDialog } from "./join-campaign-dialog";
 
 
 function ParticipantsDialog({ campaign, children }: { campaign: Campaign; children: React.ReactNode; }) {
@@ -90,9 +92,16 @@ function ParticipantsDialog({ campaign, children }: { campaign: Campaign; childr
                     <h3 className="text-sm font-semibold text-muted-foreground">PARTICIPANTS ({otherParticipants.length})</h3>
                     <div className="space-y-2">
                       {otherParticipants.map(p => (
-                        <div key={p.id} className="flex items-center justify-between p-3 border rounded-lg">
-                          <span className='font-medium'>{p.firstName} {p.lastName}</span>
-                           {p.email && <span className="text-sm text-muted-foreground">{p.email}</span>}
+                        <div key={p.id} className="p-3 border rounded-lg space-y-2">
+                          <div className="flex items-center justify-between">
+                            <span className='font-medium'>{p.firstName} {p.lastName}</span>
+                            {p.email && <span className="text-sm text-muted-foreground">{p.email}</span>}
+                          </div>
+                          {p.joinReason && (
+                            <blockquote className="border-l-2 pl-3 text-sm italic text-muted-foreground">
+                                {p.joinReason}
+                            </blockquote>
+                          )}
                         </div>
                       ))}
                     </div>
@@ -113,7 +122,7 @@ function ParticipantsDialog({ campaign, children }: { campaign: Campaign; childr
 }
 
 
-export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaign; userId?: string, isJoined: boolean }) {
+export function CampaignCard({ campaign, userId, userProfile, isJoined }: { campaign: Campaign; userId?: string, userProfile?: UserProfile | null, isJoined: boolean }) {
   const { toast } = useToast();
   const firestore = useFirestore();
   const { user } = useUser();
@@ -123,7 +132,7 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
   const [isLogSoulOpen, setIsLogSoulOpen] = useState(false);
   const [isTestimonyDialogOpen, setIsTestimonyDialogOpen] = useState(false);
   const [isChatLoading, setIsChatLoading] = useState(false);
-  const [isJoining, setIsJoining] = useState(false);
+  const [isJoinDialogOpen, setIsJoinDialogOpen] = useState(false);
 
   const descriptionRef = useRef<HTMLParagraphElement>(null);
   const [isDescriptionTruncated, setIsDescriptionTruncated] = useState(false);
@@ -222,91 +231,6 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
             title: "Group Chat Not Started",
             description: "The organizer has not started the group chat for this campaign yet.",
         });
-    }
-  };
-
-
-  const handleJoin = async () => {
-    if (!user || !firestore) return;
-    setIsJoining(true);
-
-    const campaignRef = doc(firestore, 'campaigns', campaign.id);
-    const joinedRef = doc(firestore, 'users', user.uid, 'joinedCampaigns', campaign.id);
-    const participantRef = doc(firestore, 'campaigns', campaign.id, 'participants', user.uid);
-
-    try {
-        await runTransaction(firestore, async (transaction) => {
-            const campaignDoc = await transaction.get(campaignRef);
-            if (!campaignDoc.exists()) {
-                throw "Campaign does not exist!";
-            }
-            
-            const currentCampaign = campaignDoc.data() as Campaign;
-            if (currentCampaign.maxParticipants && currentCampaign.participants >= currentCampaign.maxParticipants) {
-                throw new Error("This campaign is already full.");
-            }
-
-            const newParticipantCount = (currentCampaign.participants || 0) + 1;
-            transaction.update(campaignRef, { participants: newParticipantCount });
-
-            const joinData = {
-                campaignId: campaign.id,
-                joinedAt: serverTimestamp(),
-            };
-            transaction.set(joinedRef, joinData);
-
-            const [firstName, ...lastNameParts] = user.displayName?.split(' ') || ['Anonymous', ''];
-            const lastName = lastNameParts.join(' ');
-
-            const participantData: { [key: string]: any; } = {
-                userId: user.uid,
-                firstName,
-                lastName,
-                photoURL: user.photoURL || null,
-                joinedAt: serverTimestamp()
-            };
-            if (user.email) {
-                participantData.email = user.email;
-            }
-            transaction.set(participantRef, participantData);
-            
-            if (user.uid !== campaign.organizerId) {
-                const notificationRef = doc(collection(firestore, `users/${campaign.organizerId}/notifications`));
-                const notificationData = {
-                    userId: campaign.organizerId,
-                    type: 'campaign_join',
-                    title: 'New Participant!',
-                    message: `${user.displayName || 'A new user'} has joined your campaign: "${campaign.title}"`,
-                    link: `/dashboard/campaigns`,
-                    isRead: false,
-                    createdAt: serverTimestamp(),
-                };
-                transaction.set(notificationRef, notificationData);
-            }
-        });
-        
-        toast({
-            title: "Campaign Joined!",
-            description: `You have successfully joined the "${campaign.title}" campaign.`,
-        });
-
-    } catch (error: any) {
-        if (error.name === 'FirestoreError' && error.code === 'aborted') {
-            toast({ variant: 'destructive', title: "Join Failed", description: `Could not join campaign as it was updated during the process. It might be full. Please try again.` });
-        } else {
-            const permissionError = new FirestorePermissionError({
-                path: `TRANSACTION:JOIN_CAMPAIGN:${campaign.id}`,
-                operation: 'write',
-                requestResourceData: {
-                    action: 'User joining campaign',
-                    userId: user.uid,
-                    campaignId: campaign.id
-                }
-            });
-            errorEmitter.emit('permission-error', permissionError);
-        }
-    } finally {
-        setIsJoining(false);
     }
   };
   
@@ -571,6 +495,7 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
   );
 
   const isFull = campaign.maxParticipants && campaign.participants >= campaign.maxParticipants;
+  const joinButtonDisabled = !userId || status === 'Past' || isFull;
   const joinButtonText = isFull ? 'Full' : status === 'Past' ? 'Ended' : 'Join';
   const joinButtonTextLong = isFull ? 'Campaign Full' : status === 'Past' ? 'Ended' : 'Join';
 
@@ -672,7 +597,7 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
                 {isOwner ? (
                     <>
                       {status === 'Ongoing' && LogSoulDialog}
-                      {(status === 'Ongoing' || status === 'Past') && ShareTestimonyDialog}
+                      {isJoined && (status === 'Ongoing' || status === 'Past') && ShareTestimonyDialog}
                       <Dialog open={isManageOpen} onOpenChange={setIsManageOpen}>
                         <DialogTrigger asChild>
                           <Button variant="outline" size="icon">
@@ -727,13 +652,11 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
                         </TooltipProvider>
                         {shareButton}
                         {mounted && isMobile ? (
-                          <Button onClick={handleJoin} size="sm" disabled={!userId || isJoining || status === 'Past' || isFull}>
-                            {isJoining && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                          <Button onClick={() => setIsJoinDialogOpen(true)} size="sm" disabled={joinButtonDisabled}>
                             {joinButtonText}
                           </Button>
                         ) : (
-                          <Button onClick={handleJoin} disabled={!userId || isJoining || status === 'Past' || isFull}>
-                            {isJoining && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                          <Button onClick={() => setIsJoinDialogOpen(true)} disabled={joinButtonDisabled}>
                             {joinButtonTextLong}
                           </Button>
                         )}
@@ -751,6 +674,17 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
             <span className="flex-shrink-0">{footerDateText}</span>
         </CardFooter>
         </Card>
+        {userProfile && (
+            <JoinCampaignDialog
+              campaign={campaign}
+              userProfile={userProfile}
+              isOpen={isJoinDialogOpen}
+              onOpenChange={setIsJoinDialogOpen}
+              onCampaignJoined={() => {
+                // Re-fetch is handled by useCollection
+              }}
+            />
+        )}
     </>
   );
 }

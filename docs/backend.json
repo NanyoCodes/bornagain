@@ -486,6 +486,10 @@
         },
         "joinedAt": {
           "type": "object"
+        },
+        "joinReason": {
+          "type": "string",
+          "description": "The user's reason for joining the campaign."
         }
       },
       "required": [
