@@ -446,8 +446,8 @@ function SoulCard({ soul }: { soul: Soul }) {
             <Collapsible>
                 <CollapsibleTrigger className="group w-full p-4 text-left">
                      <div className="flex items-center justify-between">
-                        <div>
-                            <p className="font-semibold">{soul.firstName} {soul.lastName}</p>
+                        <div className="min-w-0">
+                            <p className="font-semibold truncate">{soul.firstName || 'Unknown'} {soul.lastName || ''}</p>
                             <Badge className={cn("mt-1", getStatusClasses(soul.status))} variant="outline">{soul.status}</Badge>
                         </div>
                         <ChevronDown className="h-5 w-5 text-muted-foreground transition-transform duration-200 group-data-[state=open]:rotate-180" />
@@ -554,7 +554,7 @@ function SoulTableRow({ soul, onEditClick }: { soul: Soul, onEditClick: (soul: S
     return (
         <TableRow>
             <TableCell className="font-medium">
-                <div>{soul.firstName} {soul.lastName}</div>
+                <div>{soul.firstName || 'Unknown'} {soul.lastName || ''}</div>
                 {soul.church && <div className="text-xs text-muted-foreground flex items-center gap-1"><Church className="h-3 w-3" />{soul.church}</div>}
             </TableCell>
             <TableCell>

@@ -73,10 +73,10 @@ function RecentSoulsList() {
             {souls.map(soul => (
                 <Link href="/dashboard/souls-won" key={soul.id} className="flex items-center gap-4 p-2 -mx-2 rounded-lg hover:bg-muted/50 transition-colors">
                     <Avatar className="h-10 w-10 border">
-                         <AvatarFallback>{soul.firstName.charAt(0)}</AvatarFallback>
+                         <AvatarFallback>{soul.firstName?.charAt(0) || 'S'}</AvatarFallback>
                     </Avatar>
                     <div className="flex-1">
-                        <p className="font-semibold leading-none">{soul.firstName} {soul.lastName}</p>
+                        <p className="font-semibold leading-none">{soul.firstName || 'Unknown'} {soul.lastName || ''}</p>
                         <p className="text-sm text-muted-foreground">
                             Won on {soul.wonAt ? format(soul.wonAt.toDate(), "PPP") : 'N/A'}
                         </p>
