@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { format, formatDistanceToNow, parse, isSameDay, differenceInDays } from "date-fns";
-import { CalendarDays, MapPin, Users, Share2, Edit, MoreVertical, Loader2, MessagesSquare, UserCheck2, PlayCircle, UserPlus, Newspaper } from "lucide-react";
+import { CalendarDays, MapPin, Users, Share2, Edit, MoreVertical, Loader2, MessagesSquare, UserCheck2, PlayCircle, UserPlus, Newspaper, CheckCircle2 } from "lucide-react";
 import type { Campaign, CampaignParticipant, UserProfile } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -496,15 +496,17 @@ export function CampaignCard({ campaign, userId, userProfile, isJoined }: { camp
 
   const isFull = campaign.maxParticipants && campaign.participants >= campaign.maxParticipants;
   const joinButtonDisabled = !userId || status === 'Past' || isFull;
-  const joinButtonText = isFull ? 'Full' : status === 'Past' ? 'Ended' : 'Join';
-  const joinButtonTextLong = isFull ? 'Campaign Full' : status === 'Past' ? 'Ended' : 'Join';
 
   return (
     <>
         <Card id={campaign.id} className={cn("flex flex-col h-full overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 scroll-mt-20 border-t-4", borderColorClass)}>
         <CardHeader className="p-6 flex flex-row items-start justify-between gap-4">
             <div className="flex-1 min-w-0">
-                <CardTitle className="font-bold text-xl truncate">{campaign.title}</CardTitle>
+                <CardTitle className="font-bold text-xl truncate">
+                    <Link href={`/dashboard/campaigns/${campaign.id}`} className="hover:underline">
+                        {campaign.title}
+                    </Link>
+                </CardTitle>
                 <CardDescription className="text-sm mt-1 truncate">{campaign.goal}</CardDescription>
             </div>
             <Badge variant={status === 'Ongoing' ? 'default' : status === 'Upcoming' ? 'secondary' : 'outline'}>
@@ -595,8 +597,7 @@ export function CampaignCard({ campaign, userId, userProfile, isJoined }: { camp
                 )}
 
                 {isOwner ? (
-                    <>
-                      {status === 'Ongoing' && LogSoulDialog}
+                    <div onClick={e => e.stopPropagation()} className="flex items-center gap-2">
                       {isJoined && (status === 'Ongoing' || status === 'Past') && ShareTestimonyDialog}
                       <Dialog open={isManageOpen} onOpenChange={setIsManageOpen}>
                         <DialogTrigger asChild>
@@ -621,10 +622,9 @@ export function CampaignCard({ campaign, userId, userProfile, isJoined }: { camp
                         </DialogContent>
                       </Dialog>
                       {shareButton}
-                    </>
+                    </div>
                 ) : isJoined ? (
-                     <>
-                        {status === 'Ongoing' && LogSoulDialog}
+                     <div onClick={e => e.stopPropagation()} className="flex items-center gap-2">
                         {(status === 'Ongoing' || status === 'Past') && ShareTestimonyDialog}
                          <TooltipProvider>
                           <Tooltip>
@@ -637,9 +637,10 @@ export function CampaignCard({ campaign, userId, userProfile, isJoined }: { camp
                           </Tooltip>
                          </TooltipProvider>
                         {shareButton}
-                    </>
+                        <Button disabled><CheckCircle2 className="h-4 w-4"/>Joined</Button>
+                    </div>
                 ) : (
-                    <>
+                    <div onClick={e => e.stopPropagation()} className="flex items-center gap-2">
                         <TooltipProvider>
                             <Tooltip>
                                 <TooltipTrigger asChild>
@@ -651,23 +652,17 @@ export function CampaignCard({ campaign, userId, userProfile, isJoined }: { camp
                             </Tooltip>
                         </TooltipProvider>
                         {shareButton}
-                        {mounted && isMobile ? (
-                          <Button onClick={() => setIsJoinDialogOpen(true)} size="sm" disabled={joinButtonDisabled}>
-                            {joinButtonText}
-                          </Button>
-                        ) : (
-                          <Button onClick={() => setIsJoinDialogOpen(true)} disabled={joinButtonDisabled}>
-                            {joinButtonTextLong}
-                          </Button>
-                        )}
-                    </>
+                        <Button onClick={() => setIsJoinDialogOpen(true)} disabled={joinButtonDisabled}>
+                           {isFull ? 'Campaign Full' : 'Join Campaign'}
+                        </Button>
+                    </div>
                 )}
             </div>
         </CardFooter>
         <CardFooter className="p-4 bg-muted/20 text-xs text-muted-foreground flex justify-between">
             <span className="truncate">
                 Created by{" "}
-                <Link href={`/dashboard/profile/${campaign.organizerId}`} className="font-medium text-primary hover:underline px-1">
+                <Link href={`/dashboard/profile/${campaign.organizerId}`} className="font-medium text-primary hover:underline px-1" onClick={e => e.stopPropagation()}>
                     {campaign.organizerFirstName} {campaign.organizerLastName}
                 </Link>
             </span>
@@ -688,3 +683,6 @@ export function CampaignCard({ campaign, userId, userProfile, isJoined }: { camp
     </>
   );
 }
+
+
+    
