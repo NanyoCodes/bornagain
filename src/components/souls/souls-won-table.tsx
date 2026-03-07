@@ -421,7 +421,7 @@ type SoulsWonTableProps = {
   loading: boolean;
 };
 
-const SoulCard = React.memo(function SoulCard({ soul }: { soul: Soul }) {
+function SoulCard({ soul }: { soul: Soul }) {
     const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
     
     const latestFollowUp = React.useMemo(() => {
@@ -537,11 +537,9 @@ const SoulCard = React.memo(function SoulCard({ soul }: { soul: Soul }) {
             </Collapsible>
         </Card>
     );
-});
-SoulCard.displayName = 'SoulCard';
+}
 
-
-const SoulTableRow = React.memo(function SoulTableRow({ soul, onEditClick }: { soul: Soul, onEditClick: (soul: Soul) => void }) {
+function SoulTableRow({ soul, onEditClick }: { soul: Soul, onEditClick: (soul: Soul) => void }) {
     const latestFollowUp = React.useMemo(() => {
         if (!soul.followUpLog || soul.followUpLog.length === 0) return null;
         return soul.followUpLog.reduce((latest, current) => {
@@ -619,9 +617,7 @@ const SoulTableRow = React.memo(function SoulTableRow({ soul, onEditClick }: { s
             </TableCell>
         </TableRow>
     );
-});
-SoulTableRow.displayName = "SoulTableRow";
-
+}
 
 export function SoulsWonTable({ souls, loading }: SoulsWonTableProps) {
   const isMobile = useIsMobile();
@@ -745,5 +741,3 @@ export function SoulsWonTable({ souls, loading }: SoulsWonTableProps) {
     </>
   );
 }
-
-    

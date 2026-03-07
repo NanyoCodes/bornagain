@@ -163,7 +163,7 @@ export type Soul = {
   email?: string;
   phone?: string;
   church?: string;
-  source: 'Campaign' | 'Personal' | 'Referral';
+  source: 'Campaign' | 'Personal';
   sourceDetails?: string; // e.g., Campaign name or referrer name
   campaignId?: string;
   userLocation?: {

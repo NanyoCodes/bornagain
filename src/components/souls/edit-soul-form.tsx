@@ -97,7 +97,7 @@ export function EditSoulForm({ soul, onSoulUpdated }: EditSoulFormProps) {
             country: values.locationWonCountry || null,
           }
         : deleteField(),
-      source: values.source as 'Personal' | 'Campaign' | 'Referral',
+      source: values.source as 'Personal' | 'Campaign',
       sourceDetails: values.sourceDetails,
       wonAt: values.wonAt as any,
     };
@@ -241,7 +241,6 @@ export function EditSoulForm({ soul, onSoulUpdated }: EditSoulFormProps) {
                 <SelectContent>
                   <SelectItem value="Personal">Personal Evangelism</SelectItem>
                   <SelectItem value="Campaign">Campaign</SelectItem>
-                  <SelectItem value="Referral">Referral</SelectItem>
                 </SelectContent>
               </Select>
               <FormMessage />
@@ -269,21 +268,6 @@ export function EditSoulForm({ soul, onSoulUpdated }: EditSoulFormProps) {
                     ))}
                   </SelectContent>
                 </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        )}
-        {form.watch("source") === "Referral" && (
-          <FormField
-            control={form.control}
-            name="sourceDetails"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Referred By</FormLabel>
-                <FormControl>
-                  <Input placeholder="e.g., Jane Smith" {...field} className="text-base"/>
-                </FormControl>
                 <FormMessage />
               </FormItem>
             )}
