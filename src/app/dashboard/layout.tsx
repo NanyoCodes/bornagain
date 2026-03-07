@@ -355,7 +355,7 @@ export default function DashboardLayout({
   const pathname = usePathname();
   const [showWelcomePopup, setShowWelcomePopup] = useState(false);
   const logo = PlaceHolderImages.find((img) => img.id === "logo");
-  const isChatPage = pathname.startsWith('/dashboard/chats/');
+  const isChatPage = /^\/dashboard\/chats\/.+/.test(pathname);
 
   useEffect(() => {
     if (!loading && user) {
@@ -421,7 +421,7 @@ export default function DashboardLayout({
         <AppHeader />
         <div className="flex-1 relative min-h-0">
           <main className={cn("absolute inset-0", !isChatPage && "overflow-y-auto")}>
-            <div className={cn("max-w-7xl mx-auto h-full", !isChatPage && "p-4 md:p-6 pb-20 md:pb-6")}>
+            <div className={cn("max-w-7xl mx-auto", !isChatPage && "p-4 md:p-6 pb-20 md:pb-6", isChatPage && "h-full")}>
               {children}
             </div>
           </main>
