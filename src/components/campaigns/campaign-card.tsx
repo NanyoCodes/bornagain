@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from "next/link";
@@ -673,7 +672,7 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
                 {isOwner ? (
                     <>
                       {status === 'Ongoing' && LogSoulDialog}
-                      {status === 'Ongoing' && ShareTestimonyDialog}
+                      {(status === 'Ongoing' || status === 'Past') && ShareTestimonyDialog}
                       <Dialog open={isManageOpen} onOpenChange={setIsManageOpen}>
                         <DialogTrigger asChild>
                           <Button variant="outline" size="icon">
@@ -701,7 +700,7 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
                 ) : isJoined ? (
                      <>
                         {status === 'Ongoing' && LogSoulDialog}
-                        {status === 'Ongoing' && ShareTestimonyDialog}
+                        {(status === 'Ongoing' || status === 'Past') && ShareTestimonyDialog}
                          <TooltipProvider>
                           <Tooltip>
                               <TooltipTrigger asChild>
@@ -716,7 +715,6 @@ export function CampaignCard({ campaign, userId, isJoined }: { campaign: Campaig
                     </>
                 ) : (
                     <>
-                        {status === 'Ongoing' && ShareTestimonyDialog}
                         <TooltipProvider>
                             <Tooltip>
                                 <TooltipTrigger asChild>
