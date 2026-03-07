@@ -3,9 +3,9 @@
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { useDoc, useFirestore, useUser, useCollection } from '@/firebase';
-import type { Campaign, UserProfile, JoinedCampaign, CampaignParticipant } from '@/lib/types';
-import { doc, collection, query, where, getDocs, documentId } from 'firebase/firestore';
+import { useDoc, useFirestore, useUser } from '@/firebase';
+import type { Campaign, UserProfile, JoinedCampaign } from '@/lib/types';
+import { doc, collection } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Loader2, ArrowLeft, MapPin, CalendarDays, Users, Share2, Edit, MessagesSquare, UserCheck2, PlayCircle, Newspaper, Target } from 'lucide-react';
@@ -112,10 +112,7 @@ export default function CampaignPage() {
     const joinedCampaignDocRef = useMemo(() => (user && campaignId) ? doc(firestore, `users/${user.uid}/joinedCampaigns`, campaignId as string) : null, [user, firestore, campaignId]);
     const { data: joinedCampaign, loading: joinedLoading } = useDoc<JoinedCampaign>(joinedCampaignDocRef);
     
-    const participantsQuery = useMemo(() => query(collection(firestore, `campaigns/${campaignId}/participants`)), [firestore, campaignId]);
-    const { data: participants, loading: participantsLoading } = useCollection<CampaignParticipant>(participantsQuery);
-    
-    const loading = campaignLoading || profileLoading || joinedLoading || participantsLoading;
+    const loading = campaignLoading || profileLoading || joinedLoading;
     
     const isOwner = useMemo(() => user?.uid === campaign?.organizerId, [user, campaign]);
     const isJoined = useMemo(() => !!joinedCampaign, [joinedCampaign]);
