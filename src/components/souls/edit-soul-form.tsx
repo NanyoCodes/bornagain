@@ -1,4 +1,3 @@
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -327,7 +326,7 @@ export function EditSoulForm({ soul, onSoulUpdated }: EditSoulFormProps) {
                             name="church"
                             render={({ field }) => (
                                 <FormItem>
-                                <FormLabel>Church</FormLabel>
+                                <FormLabel>Church and Address</FormLabel>
                                 <FormControl>
                                     <Input placeholder="e.g., New Life Church" {...field} className="text-base"/>
                                 </FormControl>
@@ -389,5 +388,3 @@ export function EditSoulForm({ soul, onSoulUpdated }: EditSoulFormProps) {
     </Form>
   );
 }
-
-    
