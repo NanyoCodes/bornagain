@@ -46,7 +46,7 @@ import { doc, updateDoc, arrayUnion } from "firebase/firestore";
 import { EditSoulForm } from "./edit-soul-form";
 import { cn } from "@/lib/utils";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/collapsible";
-import { Badge } from "../ui/badge";
+import { Badge } from "@/components/ui/badge";
 import { Loader2 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -416,11 +416,6 @@ function ViewHistoryDialog({ soul, children }: { soul: Soul; children: React.Rea
   );
 }
 
-type SoulsWonTableProps = {
-  souls: Soul[];
-  loading: boolean;
-};
-
 function SoulCard({ soul }: { soul: Soul }) {
     const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
     
@@ -619,6 +614,11 @@ function SoulTableRow({ soul, onEditClick }: { soul: Soul, onEditClick: (soul: S
     );
 }
 
+type SoulsWonTableProps = {
+  souls: Soul[];
+  loading: boolean;
+};
+
 export function SoulsWonTable({ souls, loading }: SoulsWonTableProps) {
   const isMobile = useIsMobile();
   const [mounted, setMounted] = React.useState(false);
@@ -741,3 +741,5 @@ export function SoulsWonTable({ souls, loading }: SoulsWonTableProps) {
     </>
   );
 }
+
+    
