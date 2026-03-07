@@ -1,7 +1,7 @@
 
 "use client";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { isSameMonth, format, differenceInHours, subDays } from "date-fns";
 import { ArrowRight, UserPlus, Globe, Loader2, RefreshCw, XCircle, Edit, UserCheck2 } from "lucide-react";
 import { useCollection, useFirestore, useUser, useDoc } from "@/firebase";
@@ -73,10 +73,10 @@ function RecentSoulsList() {
             {souls.map(soul => (
                 <Link href="/dashboard/souls-won" key={soul.id} className="flex items-center gap-4 p-2 -mx-2 rounded-lg hover:bg-muted/50 transition-colors">
                     <Avatar className="h-10 w-10 border">
-                         <AvatarFallback>{soul.name.charAt(0)}</AvatarFallback>
+                         <AvatarFallback>{soul.firstName.charAt(0)}</AvatarFallback>
                     </Avatar>
                     <div className="flex-1">
-                        <p className="font-semibold leading-none">{soul.name}</p>
+                        <p className="font-semibold leading-none">{soul.firstName} {soul.lastName}</p>
                         <p className="text-sm text-muted-foreground">
                             Won on {soul.wonAt ? format(soul.wonAt.toDate(), "PPP") : 'N/A'}
                         </p>
@@ -399,7 +399,7 @@ export default function DashboardPage() {
   return (
     <div className="space-y-8">
         <div className="space-y-2">
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight font-headline">
+            <h1 className="text-3xl sm:text-4xl font-bold tracking-tight font-headline">
                 Welcome back, {user?.displayName || 'User'}!
             </h1>
             <p className="text-muted-foreground">Here's your ministry overview.</p>
@@ -458,80 +458,67 @@ export default function DashboardPage() {
             </div>
 
             <div className="space-y-8">
-                 <Card>
+                <Card>
                     <CardHeader>
-                        <CardTitle>Statistics</CardTitle>
-                        <CardDescription>Your personal ministry impact.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-6">
-                        <div className="flex items-center gap-4">
-                            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                                <UserCheck2 className="h-6 w-6" />
-                            </div>
+                        <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-muted-foreground">Total Souls Won</p>
-                                {loading ? <Skeleton className="h-6 w-12 mt-1" /> : <p className="text-2xl font-bold">{soulsWonCount}</p>}
+                                <CardTitle className="text-lg">Monthly Goal</CardTitle>
+                                <CardDescription>{goalDate ? format(goalDate, 'MMMM yyyy') : '...'}</CardDescription>
                             </div>
+                            <Dialog 
+                                open={goalDialogOpen} 
+                                onOpenChange={(isOpen) => {
+                                if(isOpen) {
+                                    setNewGoal(monthlyGoal);
+                                    setNewGoalDate(goalDate);
+                                }
+                                setGoalDialogOpen(isOpen);
+                                }}
+                            >
+                                <DialogTrigger asChild>
+                                <Button variant="ghost" size="icon">
+                                    <Edit className="h-4 w-4 text-muted-foreground" />
+                                </Button>
+                                </DialogTrigger>
+                                <DialogContent className="sm:max-w-[425px]">
+                                <DialogHeader>
+                                    <DialogTitle>Set Monthly Goal</DialogTitle>
+                                    <DialogDescription>
+                                    Set your personal goal for souls won for a specific month.
+                                    </DialogDescription>
+                                </DialogHeader>
+                                <div className="grid gap-4 py-4">
+                                    <div className="grid grid-cols-4 items-center gap-4">
+                                    <Label htmlFor="goal" className="text-right">
+                                        Souls
+                                    </Label>
+                                    <Input
+                                        id="goal"
+                                        type="number"
+                                        value={newGoal}
+                                        onChange={(e) => setNewGoal(Number(e.target.value))}
+                                        className="col-span-3"
+                                    />
+                                    </div>
+                                    <div className="grid grid-cols-4 items-center gap-4">
+                                    <Label htmlFor="goal-month" className="text-right">
+                                        For Month
+                                    </Label>
+                                    <Input
+                                        id="goal-month"
+                                        type="month"
+                                        value={newGoalDateValue}
+                                        onChange={handleGoalDateChange}
+                                        className="col-span-3"
+                                    />
+                                    </div>
+                                </div>
+                                <DialogFooter>
+                                    <Button onClick={handleSaveGoal}>Save Goal</Button>
+                                </DialogFooter>
+                                </DialogContent>
+                            </Dialog>
                         </div>
-                    </CardContent>
-                </Card>
-
-                 <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">{goalDate ? format(goalDate, 'MMMM yyyy') : '...'} Goal</CardTitle>
-                    <Dialog 
-                        open={goalDialogOpen} 
-                        onOpenChange={(isOpen) => {
-                        if(isOpen) {
-                            setNewGoal(monthlyGoal);
-                            setNewGoalDate(goalDate);
-                        }
-                        setGoalDialogOpen(isOpen);
-                        }}
-                    >
-                        <DialogTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-5 w-5">
-                            <Edit className="h-4 w-4 text-muted-foreground" />
-                        </Button>
-                        </DialogTrigger>
-                        <DialogContent className="sm:max-w-[425px]">
-                        <DialogHeader>
-                            <DialogTitle>Set Monthly Goal</DialogTitle>
-                            <DialogDescription>
-                            Set your personal goal for souls won for a specific month.
-                            </DialogDescription>
-                        </DialogHeader>
-                        <div className="grid gap-4 py-4">
-                            <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="goal" className="text-right">
-                                Souls
-                            </Label>
-                            <Input
-                                id="goal"
-                                type="number"
-                                value={newGoal}
-                                onChange={(e) => setNewGoal(Number(e.target.value))}
-                                className="col-span-3"
-                            />
-                            </div>
-                            <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="goal-month" className="text-right">
-                                For Month
-                            </Label>
-                            <Input
-                                id="goal-month"
-                                type="month"
-                                value={newGoalDateValue}
-                                onChange={handleGoalDateChange}
-                                className="col-span-3"
-                            />
-                            </div>
-                        </div>
-                        <DialogFooter>
-                            <Button onClick={handleSaveGoal}>Save Goal</Button>
-                        </DialogFooter>
-                        </DialogContent>
-                    </Dialog>
                     </CardHeader>
                     <CardContent>
                     {goalDate ? (
@@ -551,6 +538,10 @@ export default function DashboardPage() {
                         </div>
                     )}
                     </CardContent>
+                    <CardFooter className="pt-4 flex items-center gap-2 text-sm text-muted-foreground">
+                        <UserCheck2 className="h-4 w-4" />
+                        <span>Total souls won: <span className="font-bold text-foreground">{soulsWonCount}</span></span>
+                    </CardFooter>
                 </Card>
                 
                 {userProfile?.location && <GlobalSoulsCard location={userProfile.location} userSouls={soulsWon || []} />}

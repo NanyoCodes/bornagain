@@ -1,16 +1,16 @@
+
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Edit, Loader2, Mail, MapPin, Newspaper, Phone, Target, UserCheck2, HeartHandshake } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { useCollection, useFirestore, useUser } from "@/firebase";
 import { useDoc } from "@/firebase/firestore/use-doc";
 import { collection, query, where, doc, getDocs, documentId } from "firebase/firestore";
 import type { Soul, Testimony, UserProfile, JoinedCampaign, Campaign } from "@/lib/types";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription as DialogDesc } from "@/components/ui/dialog";
 import {
   Sheet,
   SheetContent,
@@ -22,10 +22,24 @@ import {
 import { EditProfileModal } from "@/components/profile/edit-profile-modal";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useParams } from "next/navigation";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import Link from "next/link";
 import { format } from "date-fns";
+import { Badge } from "@/components/ui/badge";
+
+function StatCard({ title, value, icon: Icon }: { title: string, value: string | number, icon: React.ElementType }) {
+    return (
+        <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">{title}</CardTitle>
+                <Icon className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+                <div className="text-2xl font-bold">{value}</div>
+            </CardContent>
+        </Card>
+    )
+}
 
 export default function UserProfilePage() {
   const { userId: userIdFromParams } = useParams();
@@ -52,9 +66,9 @@ export default function UserProfilePage() {
   const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userDocRef);
 
   const testimoniesQuery = useMemo(() => {
-    if (!userId || !firestore || !currentUser) return null;
+    if (!userId || !firestore) return null;
     return query(collection(firestore, 'testimonies'), where('authorId', '==', userId));
-  }, [userId, firestore, currentUser]);
+  }, [userId, firestore]);
   const { data: testimonies, loading: testimoniesLoading } = useCollection<Testimony>(testimoniesQuery);
 
   const soulsQuery = useMemo(() => {
@@ -141,7 +155,8 @@ export default function UserProfilePage() {
     return <p>User profile not found.</p>
   }
   
-  const { displayName, email, photoURL, bio, location, phone } = userProfile;
+  const { firstName, lastName, email, photoURL, bio, location, phone } = userProfile;
+  const displayName = [firstName, lastName].filter(Boolean).join(' ');
   const { city, country } = location || {};
 
   const stats = {
@@ -168,7 +183,7 @@ export default function UserProfilePage() {
              <Avatar className="h-24 w-24 sm:h-32 sm:w-32 border-4 border-background shrink-0">
                 <AvatarImage src={photoURL ?? undefined} alt={displayName || 'user'} />
                 <AvatarFallback className="text-4xl sm:text-5xl">
-                    {displayName?.charAt(0) || email?.charAt(0) || 'U'}
+                    {firstName?.charAt(0) || email?.charAt(0) || 'U'}
                 </AvatarFallback>
             </Avatar>
             <div className="flex-grow">
@@ -206,9 +221,9 @@ export default function UserProfilePage() {
                                 <DialogContent className="sm:max-w-lg">
                                     <DialogHeader>
                                     <DialogTitle>Edit Profile</DialogTitle>
-                                    <DialogDescription>
+                                    <DialogDesc>
                                         Make changes to your public profile.
-                                    </DialogDescription>
+                                    </DialogDesc>
                                     </DialogHeader>
                                     <div className="max-h-[70vh] overflow-y-auto pr-2">
                                     {formContent}
@@ -229,53 +244,49 @@ export default function UserProfilePage() {
         </CardContent>
       </Card>
       
-      <div className="grid grid-cols-1 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Activity Statistics</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Accordion type="single" collapsible className="w-full space-y-2">
-                <AccordionItem value="testimonies" className="border rounded-lg">
-                    <AccordionTrigger className="p-3 hover:no-underline data-[state=open]:border-b">
-                        <div className="flex justify-between items-center w-full">
-                            <span className="flex items-center gap-2"><Newspaper className="h-4 w-4 text-muted-foreground" />Testimonies Shared</span>
-                            <Badge variant="secondary">{stats.testimonies}</Badge>
-                        </div>
-                    </AccordionTrigger>
-                    <AccordionContent className="p-3 pt-0">
-                        <ScrollArea className="h-48">
-                            <div className="p-1 space-y-1">
-                                {testimonies && testimonies.length > 0 ? (
-                                    testimonies.map(t => (
-                                        <Link key={t.id} href="/dashboard/testimonies" className="block p-2 rounded-md hover:bg-muted">
-                                            <p className="font-medium text-sm truncate">{t.category}</p>
-                                            <p className="text-xs text-muted-foreground truncate">{t.content}</p>
-                                        </Link>
-                                    ))
-                                ) : (
-                                    <p className="text-sm text-center text-muted-foreground py-4">No testimonies shared yet.</p>
-                                )}
-                            </div>
-                        </ScrollArea>
-                    </AccordionContent>
-                </AccordionItem>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <StatCard title="Testimonies Shared" value={stats.testimonies} icon={Newspaper} />
+            {isOwnProfile && (
+                <>
+                  <StatCard title="Souls Won" value={stats.soulsWon} icon={UserCheck2} />
+                  <StatCard title="Campaigns Created" value={stats.campaignsCreated} icon={Target} />
+                  <StatCard title="Campaigns Joined" value={stats.campaignsJoined} icon={Target} />
+                </>
+            )}
+        </div>
 
-                {isOwnProfile && (
-                  <>
-                    <AccordionItem value="campaigns-created" className="border rounded-lg">
-                        <AccordionTrigger className="p-3 hover:no-underline data-[state=open]:border-b">
-                            <div className="flex justify-between items-center w-full">
-                                <span className="flex items-center gap-2"><Target className="h-4 w-4 text-muted-foreground" />Campaigns Created</span>
-                                <Badge variant="secondary">{stats.campaignsCreated}</Badge>
-                            </div>
-                        </AccordionTrigger>
-                        <AccordionContent className="p-3 pt-0">
+        <div className="space-y-6">
+            <h2 className="text-xl font-semibold tracking-tight">Activity Details</h2>
+            <Card>
+                <CardHeader><CardTitle>Testimonies</CardTitle></CardHeader>
+                <CardContent>
+                    <ScrollArea className="h-48">
+                        <div className="p-1 space-y-1">
+                            {testimonies && testimonies.length > 0 ? (
+                                testimonies.map(t => (
+                                    <Link key={t.id} href="/dashboard/testimonies" className="block p-2 rounded-md hover:bg-muted">
+                                        <p className="font-medium text-sm truncate">{t.category}</p>
+                                        <p className="text-xs text-muted-foreground truncate">{t.content}</p>
+                                    </Link>
+                                ))
+                            ) : (
+                                <p className="text-sm text-center text-muted-foreground py-4">No testimonies shared yet.</p>
+                            )}
+                        </div>
+                    </ScrollArea>
+                </CardContent>
+            </Card>
+
+            {isOwnProfile && (
+                <>
+                    <Card>
+                        <CardHeader><CardTitle>Campaigns Created</CardTitle></CardHeader>
+                        <CardContent>
                             <ScrollArea className="h-48">
                                 <div className="p-1 space-y-1">
                                     {createdCampaigns && createdCampaigns.length > 0 ? (
                                         createdCampaigns.map(c => (
-                                            <Link key={c.id} href={`/dashboard/campaigns#${c.id}`} className="block p-2 rounded-md hover:bg-muted">
+                                            <Link key={c.id} href={`/dashboard/campaigns/${c.id}`} className="block p-2 rounded-md hover:bg-muted">
                                                 <p className="font-medium text-sm truncate">{c.title}</p>
                                                 <p className="text-xs text-muted-foreground truncate">Created on {c.createdAt ? format(c.createdAt.toDate(), "PPP") : 'N/A'}</p>
                                             </Link>
@@ -285,21 +296,17 @@ export default function UserProfilePage() {
                                     )}
                                 </div>
                             </ScrollArea>
-                        </AccordionContent>
-                    </AccordionItem>
-                    <AccordionItem value="campaigns-joined" className="border rounded-lg">
-                        <AccordionTrigger className="p-3 hover:no-underline data-[state=open]:border-b">
-                            <div className="flex justify-between items-center w-full">
-                                <span className="flex items-center gap-2"><Target className="h-4 w-4 text-muted-foreground" />Campaigns Joined</span>
-                                <Badge variant="secondary">{stats.campaignsJoined}</Badge>
-                            </div>
-                        </AccordionTrigger>
-                        <AccordionContent className="p-3 pt-0">
+                        </CardContent>
+                    </Card>
+
+                     <Card>
+                        <CardHeader><CardTitle>Campaigns Joined</CardTitle></CardHeader>
+                        <CardContent>
                             <ScrollArea className="h-48">
                                 <div className="p-1 space-y-1">
                                     {activeJoinedCampaigns && activeJoinedCampaigns.length > 0 ? (
                                         activeJoinedCampaigns.map(c => (
-                                            <Link key={c.id} href={`/dashboard/campaigns#${c.id}`} className="block p-2 rounded-md hover:bg-muted">
+                                            <Link key={c.id} href={`/dashboard/campaigns/${c.id}`} className="block p-2 rounded-md hover:bg-muted">
                                                 <p className="font-medium text-sm truncate">{c.title}</p>
                                                 <p className="text-xs text-muted-foreground truncate">Starts on {c.startDate ? format(c.startDate.toDate(), "PPP") : 'N/A'}</p>
                                             </Link>
@@ -309,22 +316,18 @@ export default function UserProfilePage() {
                                     )}
                                 </div>
                             </ScrollArea>
-                        </AccordionContent>
-                    </AccordionItem>
-                     <AccordionItem value="souls-won" className="border rounded-lg">
-                        <AccordionTrigger className="p-3 hover:no-underline data-[state=open]:border-b">
-                            <div className="flex justify-between items-center w-full">
-                                <span className="flex items-center gap-2"><UserCheck2 className="h-4 w-4 text-muted-foreground" />Souls Won</span>
-                                <Badge variant="secondary">{stats.soulsWon}</Badge>
-                            </div>
-                        </AccordionTrigger>
-                        <AccordionContent className="p-3 pt-0">
+                        </CardContent>
+                    </Card>
+
+                     <Card>
+                        <CardHeader><CardTitle>Souls Won</CardTitle></CardHeader>
+                        <CardContent>
                             <ScrollArea className="h-48">
                                 <div className="p-1 space-y-1">
                                     {soulsWon && soulsWon.length > 0 ? (
                                         soulsWon.map(s => (
                                             <Link key={s.id} href="/dashboard/souls-won" className="block p-2 rounded-md hover:bg-muted">
-                                                <p className="font-medium text-sm truncate">{s.name}</p>
+                                                <p className="font-medium text-sm truncate">{s.firstName} {s.lastName}</p>
                                                 <p className="text-xs text-muted-foreground truncate">Won on {s.wonAt ? format(s.wonAt.toDate(), "PPP") : 'N/A'}</p>
                                             </Link>
                                         ))
@@ -333,14 +336,11 @@ export default function UserProfilePage() {
                                     )}
                                 </div>
                             </ScrollArea>
-                        </AccordionContent>
-                    </AccordionItem>
-                  </>
-                )}
-            </Accordion>
-          </CardContent>
-        </Card>
-      </div>
+                        </CardContent>
+                    </Card>
+                </>
+            )}
+        </div>
     </div>
   );
 }
