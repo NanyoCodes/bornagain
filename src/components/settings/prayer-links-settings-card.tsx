@@ -1,5 +1,5 @@
 
-'use client';
+"use client";
 
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -155,7 +155,7 @@ export function PrayerLinksSettingsCard({ userProfile, userId }: { userProfile: 
                           isSubmitting={isSubmitting}
                         />
                       ) : (
-                        <div className="flex items-center justify-between gap-2 rounded-lg border p-3">
+                        <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border p-3">
                           <div className="flex-1 min-w-0">
                               <p className="font-medium truncate">{link.name}</p>
                               <p className="text-sm text-muted-foreground truncate">{link.url}</p>
@@ -195,12 +195,12 @@ export function PrayerLinksSettingsCard({ userProfile, userId }: { userProfile: 
         <Form {...addForm}>
           <form onSubmit={addForm.handleSubmit(handleAddLink)} className="space-y-4 rounded-lg border p-4">
             <h4 className="font-medium">Add a New Link</h4>
-            <div className="flex flex-col md:flex-row gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
                 control={addForm.control}
                 name="name"
                 render={({ field }) => (
-                  <FormItem className="flex-1">
+                  <FormItem>
                     <FormLabel>Name</FormLabel>
                     <FormControl>
                       <Input placeholder="e.g., Morning Prayer" {...field} />
@@ -213,7 +213,7 @@ export function PrayerLinksSettingsCard({ userProfile, userId }: { userProfile: 
                 control={addForm.control}
                 name="url"
                 render={({ field }) => (
-                  <FormItem className="flex-1">
+                  <FormItem>
                     <FormLabel>URL</FormLabel>
                     <FormControl>
                       <Input placeholder="https://..." {...field} />
