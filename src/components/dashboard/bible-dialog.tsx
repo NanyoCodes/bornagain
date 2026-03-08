@@ -11,7 +11,6 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '../ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
@@ -31,9 +30,7 @@ import { Textarea } from '../ui/textarea';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '../ui/sheet';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion';
 import { Separator } from '../ui/separator';
-
 
 const bibleVersions = [
     { id: 'kjv', name: 'King James (KJV)' },
@@ -52,7 +49,6 @@ const getNoteCardClass = (color?: string) => {
     if (!color) return '';
     return `note-card-${color}`;
 };
-
 
 // Helper function to format verse references
 const getVerseReference = (h: { book: string; chapter: number; verses: number[] }) => {
@@ -530,6 +526,75 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
             )}
         </div>
     );
+    
+    const ReaderContent = (
+      <div className="flex flex-col gap-2 sm:gap-4 min-h-0 h-full">
+          <div className="relative flex-grow min-h-0">
+              <ScrollArea ref={scrollAreaRef} onScroll={handleScroll} className="h-full border rounded-md p-2 sm:p-4">
+                  {isLoadingChapter && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-background/50 z-20">
+                      <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                  </div>
+                  )}
+                  {chapterError && !isLoadingChapter && (
+                  <div className="absolute inset-0 flex items-center justify-center p-4">
+                      <div className="text-center text-destructive bg-destructive/10 border border-destructive/50 p-4 rounded-md">
+                      <p className="font-semibold">Error Loading Chapter</p>
+                      <p className="text-sm">{chapterError}</p>
+                      </div>
+                  </div>
+                  )}
+                  {!isLoadingChapter && !chapterError && chapterContent && (
+                  <div className={cn("space-y-1 font-serif", fontSizeClasses[fontSize])}>
+                      {chapterContent.verses.map(v => {
+                              const verseNum = v.verse;
+                              const isSelected = selectedVerses.includes(verseNum);
+                              const highlightInfo = highlightsMap.get(verseNum);
+                              const isActiveHighlight = activeHighlight?.verses.includes(verseNum) ?? false;
+                              return (
+                                  <p
+                                      key={verseNum}
+                                      className={cn(
+                                          'rounded-sm transition-colors -mx-1 px-1 py-0.5',
+                                          'sm:leading-relaxed md:leading-loose',
+                                          highlightInfo && getHighlightClass(highlightInfo.color),
+                                          isSelected && 'verse-selected',
+                                          isActiveHighlight && 'ring-2 ring-primary ring-offset-2 ring-offset-background',
+                                          'cursor-pointer'
+                                      )}
+                                      onClick={() => handleVerseClick(verseNum)}
+                                  >
+                                      <sup className={cn("font-sans text-muted-foreground mr-1 sm:mr-1.5 select-none", subFontSizeClasses[fontSize])}>{v.verse}</sup>
+                                      {v.text}
+                                  </p>
+                              )
+                      })}
+                  </div>
+                  )}
+              </ScrollArea>
+              {selectedVerses.length > 0 && (
+                  <div className="absolute bottom-4 left-1/2 -translate-x-1/2 w-auto z-10">
+                      <div className="flex gap-2 p-2 bg-background/80 backdrop-blur-sm rounded-full shadow-lg border">
+                          {highlightColors.map((color) => (
+                              <button
+                                  key={color}
+                                  onClick={() => handleSaveHighlight(color)}
+                                  className={cn('h-6 w-6 rounded-full cursor-pointer transition-transform hover:scale-110', getHighlightClass(color))}
+                                  aria-label={`Highlight ${color}`}
+                              />
+                          ))}
+                      </div>
+                  </div>
+              )}
+          </div>
+          <DialogFooter>
+              <Button onClick={handleMarkAsRead} disabled={isSubmitting || isLoadingChapter || !!chapterError || !isScrolledToEnd}>
+              {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Mark as Read & Next Chapter
+              </Button>
+          </DialogFooter>
+      </div>
+    );
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -649,104 +714,37 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                     </div>
                 )}
               </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 flex-grow min-h-0">
-                <div className="md:col-span-2 flex flex-col gap-2 sm:gap-4 min-h-0">
-                    <div className="relative flex-grow min-h-0">
-                        <ScrollArea ref={scrollAreaRef} onScroll={handleScroll} className="h-full border rounded-md p-1 sm:p-2">
-                            {isLoadingChapter && (
-                            <div className="absolute inset-0 flex items-center justify-center bg-background/50 z-20">
-                                <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                            </div>
-                            )}
-                            {chapterError && !isLoadingChapter && (
-                            <div className="absolute inset-0 flex items-center justify-center p-4">
-                                <div className="text-center text-destructive bg-destructive/10 border border-destructive/50 p-4 rounded-md">
-                                <p className="font-semibold">Error Loading Chapter</p>
-                                <p className="text-sm">{chapterError}</p>
-                                </div>
-                            </div>
-                            )}
-                            {!isLoadingChapter && !chapterError && chapterContent && (
-                            <div className={cn("space-y-0 sm:space-y-0.5 font-serif", fontSizeClasses[fontSize])}>
-                                {chapterContent.verses.map(v => {
-                                        const verseNum = v.verse;
-                                        const isSelected = selectedVerses.includes(verseNum);
-                                        const highlightInfo = highlightsMap.get(verseNum);
-                                        const isActiveHighlight = activeHighlight?.verses.includes(verseNum) ?? false;
-                                        return (
-                                            <p
-                                                key={verseNum}
-                                                className={cn(
-                                                    'rounded-md transition-colors -mx-1 px-1 py-0.5 sm:leading-relaxed md:leading-loose',
-                                                    highlightInfo && getHighlightClass(highlightInfo.color),
-                                                    isSelected && 'verse-selected',
-                                                    isActiveHighlight && 'ring-2 ring-primary ring-offset-2 ring-offset-background',
-                                                    'cursor-pointer'
-                                                )}
-                                                onClick={() => handleVerseClick(verseNum)}
-                                            >
-                                                <sup className={cn("font-sans text-muted-foreground mr-1 sm:mr-1.5 select-none", subFontSizeClasses[fontSize])}>{v.verse}</sup>
-                                                {v.text}
-                                            </p>
-                                        )
-                                })}
-                            </div>
-                            )}
-                        </ScrollArea>
-                        {selectedVerses.length > 0 && (
-                            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 w-auto z-10">
-                                <DropdownMenu>
-                                    <DropdownMenuTrigger asChild>
-                                        <Button variant="outline" className="rounded-full shadow-lg">
-                                            <Highlighter className="mr-2 h-4 w-4" />
-                                            Highlight
-                                        </Button>
-                                    </DropdownMenuTrigger>
-                                    <DropdownMenuContent className="flex gap-2">
-                                        {highlightColors.map((color) => (
-                                        <DropdownMenuItem key={color} onSelect={() => handleSaveHighlight(color)} className="p-0">
-                                                <div className={cn('h-6 w-6 rounded-full cursor-pointer', getHighlightClass(color))} />
-                                        </DropdownMenuItem>
-                                        ))}
-                                    </DropdownMenuContent>
-                                </DropdownMenu>
-                            </div>
-                        )}
+            
+             {/* Mobile / Desktop Layout switch */}
+            {!mounted || !isMobile ? (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 flex-grow min-h-0">
+                    <div className="md:col-span-2 h-full">
+                        {ReaderContent}
                     </div>
-                    <DialogFooter>
-                        <Button onClick={handleMarkAsRead} disabled={isSubmitting || isLoadingChapter || !!chapterError || !isScrolledToEnd}>
-                        {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                        Mark as Read & Next Chapter
-                        </Button>
-                    </DialogFooter>
+                    <div className="hidden md:flex md:col-span-1 flex-col gap-4 h-full">
+                        <h3 className="text-lg font-semibold tracking-tight">Notes for {chapterContent?.book} {chapterContent?.chapter}</h3>
+                        <ScrollArea className="flex-grow h-full border rounded-md p-2">
+                            {NotesList}
+                        </ScrollArea>
+                    </div>
                 </div>
-                
-                {/* Desktop Notes View */}
-                <div className="hidden md:flex md:col-span-1 flex-col gap-4 h-full">
-                    <h3 className="text-lg font-semibold tracking-tight">Notes for {chapterContent?.book} {chapterContent?.chapter}</h3>
-                    <ScrollArea className="flex-grow h-full border rounded-md p-2">
-                        {NotesList}
-                    </ScrollArea>
-                </div>
-            </div>
-             {/* Mobile Notes View */}
-            {mounted && isMobile && (
-                <div className="md:hidden">
-                    <Accordion type="single" collapsible className="w-full border rounded-md bg-card">
-                        <AccordionItem value="notes" className="border-b-0">
-                            <AccordionTrigger className="px-4 py-3 hover:no-underline">
-                                <h3 className="text-lg font-semibold tracking-tight">Notes for {chapterContent?.book} {chapterContent?.chapter}</h3>
-                            </AccordionTrigger>
-                            <AccordionContent className="px-2 bg-background">
-                                <ScrollArea className="h-72 p-2">
-                                    {NotesList}
-                                </ScrollArea>
-                            </AccordionContent>
-                        </AccordionItem>
-                    </Accordion>
-                </div>
+            ) : (
+                <Tabs defaultValue="reader" className="flex-grow flex flex-col min-h-0">
+                    <TabsList className="grid w-full grid-cols-2">
+                        <TabsTrigger value="reader">Read</TabsTrigger>
+                        <TabsTrigger value="notes">Notes ({highlights?.length || 0})</TabsTrigger>
+                    </TabsList>
+                    <TabsContent value="reader" className="flex-grow flex flex-col min-h-0 mt-2">
+                        {ReaderContent}
+                    </TabsContent>
+                    <TabsContent value="notes" className="flex-grow min-h-0 mt-2">
+                         <ScrollArea className="h-full border rounded-md p-2">
+                            {NotesList}
+                        </ScrollArea>
+                    </TabsContent>
+                </Tabs>
             )}
+
           </TabsContent>
           
           <TabsContent value="history" className="flex-grow flex flex-col min-h-0 mt-4 space-y-4">
@@ -844,3 +842,5 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
     </Dialog>
   );
 }
+
+    
