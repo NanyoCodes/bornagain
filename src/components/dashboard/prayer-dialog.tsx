@@ -25,7 +25,6 @@ import { useUser } from '@/firebase';
 import { PrayerLinksSettingsCard } from '../settings/prayer-links-settings-card';
 import { useToast } from '@/hooks/use-toast';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { ScrollArea } from '../ui/scroll-area';
 
 const prayerVerses = [
     { verse: "Philippians 4:6-7", text: "Do not be anxious about anything, but in every situation, by prayer and petition, with thanksgiving, present your requests to God. And the peace of God, which transcends all understanding, will guard your hearts and your minds in Christ Jesus." },
@@ -164,11 +163,11 @@ export function PrayerDialog({ isOpen, onOpenChange, onDisciplineCompleted, user
                 <div className="p-4 border-b flex-shrink-0">
                     <Header isSheet />
                 </div>
-                <ScrollArea className="flex-grow min-h-0">
+                <div className="flex-grow min-h-0 overflow-y-auto">
                   <div className="p-4">
                     <DialogBody />
                   </div>
-                </ScrollArea>
+                </div>
                 {activeTab === 'pray' && (
                     <div className="p-4 border-t flex-shrink-0">
                          <Button onClick={handleComplete} disabled={isCompleting} className="w-full">
