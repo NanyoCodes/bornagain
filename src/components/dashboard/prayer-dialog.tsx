@@ -16,7 +16,6 @@ import {
   SheetTitle,
   SheetDescription,
 } from '@/components/ui/sheet';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '../ui/button';
 import { Loader2, Quote, PlayCircle } from 'lucide-react';
@@ -25,6 +24,7 @@ import { useUser } from '@/firebase';
 import { PrayerLinksSettingsCard } from '../settings/prayer-links-settings-card';
 import { useToast } from '@/hooks/use-toast';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion';
 
 const prayerVerses = [
     { verse: "Philippians 4:6-7", text: "Do not be anxious about anything, but in every situation, by prayer and petition, with thanksgiving, present your requests to God. And the peace of God, which transcends all understanding, will guard your hearts and your minds in Christ Jesus." },
@@ -42,7 +42,6 @@ export function PrayerDialog({ isOpen, onOpenChange, onDisciplineCompleted, user
   const { toast } = useToast();
   const isMobile = useIsMobile();
   const [mounted, setMounted] = useState(false);
-  const [activeTab, setActiveTab] = useState('pray');
 
   useEffect(() => {
     setMounted(true);
@@ -78,56 +77,53 @@ export function PrayerDialog({ isOpen, onOpenChange, onDisciplineCompleted, user
   }
 
   const DialogBody = () => (
-      <Tabs defaultValue="pray" onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="pray">Pray</TabsTrigger>
-              <TabsTrigger value="manage">Manage Links</TabsTrigger>
-          </TabsList>
-          <TabsContent value="pray" className="mt-4">
-              <Card>
-                  <CardContent className="p-6 space-y-6">
-                      {verse && (
-                          <div className="space-y-4">
-                              <blockquote className="relative border-l-2 pl-6 italic text-muted-foreground">
-                                  <Quote className="absolute -left-4 -top-2 h-6 w-6 text-muted-foreground/20" />
-                                  {verse.text}
-                              </blockquote>
-                              <p className="text-right font-semibold">- {verse.verse}</p>
-                          </div>
-                      )}
+      <div className="space-y-6">
+        <Card>
+            <CardContent className="p-6 space-y-6">
+                {verse && (
+                    <div className="space-y-4">
+                        <blockquote className="relative border-l-2 pl-6 italic text-muted-foreground">
+                            <Quote className="absolute -left-4 -top-2 h-6 w-6 text-muted-foreground/20" />
+                            {verse.text}
+                        </blockquote>
+                        <p className="text-right font-semibold">- {verse.verse}</p>
+                    </div>
+                )}
 
-                      {prayerLinks.length > 0 && (
-                          <div className="space-y-3 pt-4 border-t">
-                              <h4 className="font-medium text-sm text-muted-foreground">Join a Prayer Stream</h4>
-                              <div className="space-y-2">
-                                  {prayerLinks.map((link, index) => (
-                                      <Button
-                                          key={index}
-                                          variant="secondary"
-                                          className="w-full justify-start"
-                                          onClick={() => handleLinkClick(link.url)}
-                                          disabled={isCompleting}
-                                      >
-                                          <PlayCircle className="mr-2 h-4 w-4" />
-                                          {link.name}
-                                      </Button>
-                                  ))}
-                              </div>
-                          </div>
-                      )}
-                  </CardContent>
-              </Card>
-          </TabsContent>
-          <TabsContent value="manage" className="mt-4 space-y-4">
-            <div>
-                <h3 className="text-lg font-semibold tracking-tight">Manage Prayer Links</h3>
-                <p className="text-sm text-muted-foreground mt-1">Add, edit, or remove personal links to prayer meetings (up to 5).</p>
-            </div>
-            {user && userProfile && (
-                <PrayerLinksSettingsCard userProfile={userProfile} userId={user.uid} />
-            )}
-          </TabsContent>
-      </Tabs>
+                {prayerLinks.length > 0 && (
+                    <div className="space-y-3 pt-4 border-t">
+                        <h4 className="font-medium text-sm text-muted-foreground">Join a Prayer Stream</h4>
+                        <div className="space-y-2">
+                            {prayerLinks.map((link, index) => (
+                                <Button
+                                    key={index}
+                                    variant="secondary"
+                                    className="w-full justify-start"
+                                    onClick={() => handleLinkClick(link.url)}
+                                    disabled={isCompleting}
+                                >
+                                    <PlayCircle className="mr-2 h-4 w-4" />
+                                    {link.name}
+                                </Button>
+                            ))}
+                        </div>
+                    </div>
+                )}
+            </CardContent>
+        </Card>
+        
+        <Accordion type="single" collapsible className="w-full">
+            <AccordionItem value="manage-links">
+                <AccordionTrigger>Manage Prayer Links</AccordionTrigger>
+                <AccordionContent>
+                    <p className="text-sm text-muted-foreground mt-1 mb-4">Add, edit, or remove personal links to prayer meetings (up to 5).</p>
+                    {user && userProfile && (
+                        <PrayerLinksSettingsCard userProfile={userProfile} userId={user.uid} />
+                    )}
+                </AccordionContent>
+            </AccordionItem>
+        </Accordion>
+      </div>
   );
 
   const Header = ({ isSheet = false }: { isSheet?: boolean}) => (
@@ -168,14 +164,12 @@ export function PrayerDialog({ isOpen, onOpenChange, onDisciplineCompleted, user
                         <DialogBody />
                     </div>
                 </div>
-                {activeTab === 'pray' && (
-                    <div className="p-6 border-t flex-shrink-0">
-                         <Button onClick={handleComplete} disabled={isCompleting} className="w-full">
-                            {isCompleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                            Mark as Prayed
-                        </Button>
-                    </div>
-                )}
+                <div className="p-6 border-t flex-shrink-0">
+                     <Button onClick={handleComplete} disabled={isCompleting} className="w-full">
+                        {isCompleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                        Mark as Prayed
+                    </Button>
+                </div>
             </SheetContent>
         </Sheet>
     );
@@ -188,14 +182,12 @@ export function PrayerDialog({ isOpen, onOpenChange, onDisciplineCompleted, user
         <div className="flex-grow min-h-0 overflow-y-auto pr-4 -mr-4 mt-4">
           <DialogBody />
         </div>
-        {activeTab === 'pray' && (
-            <div className="flex-shrink-0 pt-4 border-t -mx-6 px-6 pb-4">
-                 <Button onClick={handleComplete} disabled={isCompleting} className="w-full">
-                    {isCompleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    Mark as Prayed
-                </Button>
-            </div>
-        )}
+        <div className="flex-shrink-0 pt-4 border-t -mx-6 px-6 pb-4">
+             <Button onClick={handleComplete} disabled={isCompleting} className="w-full">
+                {isCompleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Mark as Prayed
+            </Button>
+        </div>
       </DialogContent>
     </Dialog>
   );
