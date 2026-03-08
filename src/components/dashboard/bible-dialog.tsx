@@ -32,6 +32,12 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '../ui/sheet';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion';
 
+const bibleVersions = [
+    { id: 'kjv', name: 'King James Version' },
+    { id: 'web', name: 'World English Bible' },
+    { id: 'bbe', name: 'Bible in Basic English' },
+];
+
 const getHighlightClass = (color?: string) => {
     if (!color) return 'bg-blue-200/60 dark:bg-blue-800/50';
     return `highlight-${color}`;
@@ -594,7 +600,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                   )}
               </ScrollArea>
           </div>
-           <DialogFooter className="mt-auto pt-4 flex-col items-center sm:flex-row gap-2 sm:justify-between shrink-0">
+           <div className="flex-shrink-0 pt-4 flex flex-col items-center sm:flex-row gap-2 sm:justify-between">
             <div className="flex items-center justify-center min-h-[40px]">
                 {selectedVerses.length > 0 && !unfinishedHighlight && (
                     <Button onClick={handleSaveHighlight} disabled={isProcessingHighlight}>
@@ -631,7 +637,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
             {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Mark as Read & Next Chapter
             </Button>
-          </DialogFooter>
+          </div>
       </div>
     );
 
