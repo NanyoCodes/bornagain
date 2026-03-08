@@ -18,7 +18,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { Loader2, Camera } from "lucide-react";
-import { useAuth, useFirestore, useFirebase } from "@/firebase";
+import { useUser, useFirestore, useFirebase } from "@/firebase";
 import { doc, updateDoc } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { updateProfile } from "firebase/auth";
@@ -45,7 +45,7 @@ type EditProfileModalProps = {
 
 export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps) {
   const { toast } = useToast();
-  const { user } = useAuth();
+  const { user } = useUser();
   const firestore = useFirestore();
   const storage = getStorage(useFirebase().app);
   
