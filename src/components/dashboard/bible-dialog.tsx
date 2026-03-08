@@ -480,7 +480,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md md:max-w-4xl lg:max-w-6xl h-[90vh] flex flex-col">
+      <DialogContent className="sm:max-w-xl md:max-w-4xl lg:max-w-6xl h-[90vh] flex flex-col">
         <DialogHeader>
           <DialogTitle>
             Read the Bible
@@ -494,7 +494,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
             <TabsTrigger value="history">History</TabsTrigger>
           </TabsList>
           
-          <TabsContent value="read" className="flex-grow flex flex-col min-h-0 mt-4 gap-4">
+          <TabsContent value="read" className="flex-grow flex flex-col min-h-0 mt-2 sm:mt-4 gap-2 sm:gap-4">
               <div className="shrink-0">
                 {!mounted || !isMobile ? (
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -594,7 +594,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 flex-grow min-h-0">
                 <div className="md:col-span-2 flex flex-col gap-4 min-h-0">
                     <div className="relative flex-grow min-h-0">
-                        <ScrollArea ref={scrollAreaRef} onScroll={handleScroll} className="h-full border rounded-md p-4">
+                        <ScrollArea ref={scrollAreaRef} onScroll={handleScroll} className="h-full border rounded-md p-2 sm:p-4">
                             {isLoadingChapter && (
                             <div className="absolute inset-0 flex items-center justify-center bg-background/50 z-20">
                                 <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -609,7 +609,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                             </div>
                             )}
                             {!isLoadingChapter && !chapterError && chapterContent && (
-                            <div className="space-y-4 text-lg leading-relaxed font-serif">
+                            <div className="space-y-3 text-base leading-relaxed font-serif sm:text-lg">
                                 {chapterContent.verses.map(v => {
                                         const verseNum = v.verse;
                                         const isSelected = selectedVerses.includes(verseNum);
