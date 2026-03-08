@@ -41,7 +41,7 @@ const bibleVersions = [
     { id: 'bbe', name: 'Bible in Basic English' },
 ];
 
-const highlightColors = ['yellow', 'blue', 'green', 'pink'];
+const highlightColors = ['red', 'blue', 'pink', 'green'];
 
 const getHighlightClass = (color?: string) => {
     if (!color) return '';
@@ -182,7 +182,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
   
   type FontSize = 'sm' | 'base' | 'lg' | 'xl';
   const fontSizes: FontSize[] = ['sm', 'base', 'lg', 'xl'];
-  const [fontSize, setFontSize] = useState<FontSize>('base');
+  const [fontSize, setFontSize] = useState<FontSize>('sm');
   const fontSizeClasses: Record<FontSize, string> = { sm: 'text-xs sm:text-sm', base: 'text-sm sm:text-base', lg: 'text-base sm:text-lg', xl: 'text-lg sm:text-xl' };
   const subFontSizeClasses: Record<FontSize, string> = { sm: 'text-xs', base: 'text-xs', lg: 'text-sm', xl: 'text-sm' };
 
@@ -532,7 +532,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-xl md:max-w-3xl lg:max-w-5xl h-[90vh] flex flex-col p-2 sm:p-6">
+      <DialogContent className="sm:max-w-md md:max-w-3xl lg:max-w-5xl h-[90vh] flex flex-col p-2 sm:p-6">
         <DialogHeader>
           <DialogTitle className="flex items-center justify-between">
              <div className="flex items-center">
@@ -652,7 +652,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 flex-grow min-h-0">
                 <div className="md:col-span-2 flex flex-col gap-2 sm:gap-4 min-h-0">
                     <div className="relative flex-grow min-h-0">
-                        <ScrollArea ref={scrollAreaRef} onScroll={handleScroll} className="h-full border rounded-md p-1 sm:p-2 md:p-4">
+                        <ScrollArea ref={scrollAreaRef} onScroll={handleScroll} className="h-full border rounded-md p-1 sm:p-2">
                             {isLoadingChapter && (
                             <div className="absolute inset-0 flex items-center justify-center bg-background/50 z-20">
                                 <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -677,9 +677,9 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                                             <p
                                                 key={verseNum}
                                                 className={cn(
-                                                    'rounded-md transition-colors -mx-1 px-1 py-0.5 leading-relaxed sm:leading-loose',
+                                                    'rounded-md transition-colors -mx-1 px-1 py-0.5 sm:leading-relaxed md:leading-loose',
                                                     highlightInfo && getHighlightClass(highlightInfo.color),
-                                                    isSelected && 'bg-destructive/30',
+                                                    isSelected && 'verse-selected',
                                                     isActiveHighlight && 'ring-2 ring-primary ring-offset-2 ring-offset-background',
                                                     'cursor-pointer'
                                                 )}

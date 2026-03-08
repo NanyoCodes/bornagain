@@ -75,8 +75,8 @@
 }
 
 @layer utilities {
-  .highlight-yellow {
-    @apply bg-yellow-200/60 dark:bg-yellow-800/50;
+  .highlight-red {
+    @apply bg-red-200/60 dark:bg-red-800/50;
   }
   .highlight-blue {
     @apply bg-blue-200/60 dark:bg-blue-800/50;
@@ -87,8 +87,8 @@
   .highlight-pink {
     @apply bg-pink-200/60 dark:bg-pink-800/50;
   }
-  .note-card-yellow {
-    @apply bg-yellow-50 dark:bg-yellow-950 border-yellow-200 dark:border-yellow-900;
+  .note-card-red {
+    @apply bg-red-50 dark:bg-red-950 border-red-200 dark:border-red-900;
   }
   .note-card-blue {
     @apply bg-blue-50 dark:bg-blue-950 border-blue-200 dark:border-blue-900;
@@ -100,6 +100,6 @@
     @apply bg-pink-50 dark:bg-pink-950 border-pink-200 dark:border-pink-900;
   }
   .verse-selected {
-    @apply bg-primary/20;
+    @apply bg-destructive/30;
   }
 }
