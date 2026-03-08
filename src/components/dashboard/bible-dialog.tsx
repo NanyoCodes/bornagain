@@ -39,12 +39,12 @@ const bibleVersions = [
 ];
 
 const getHighlightClass = (color?: string) => {
-    if (!color) return '';
+    if (!color) return 'bg-blue-200/60 dark:bg-blue-800/50';
     return `highlight-${color}`;
 };
 
 const getNoteCardClass = (color?: string) => {
-    if (!color) return '';
+    if (!color) return 'note-card-blue';
     return `note-card-${color}`;
 };
 
@@ -409,6 +409,10 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                 title: "Finish Your Note",
                 description: "Please add a note to your previous highlight before selecting new verses.",
             });
+            setActiveHighlightId(unfinishedHighlight.id);
+            if (isMobile) {
+                setMobileTab('notes');
+            }
             return;
         }
 
@@ -548,13 +552,13 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
     );
     
     const ReaderContent = (
-      <div className="flex flex-col gap-2 sm:gap-4 min-h-0 h-full">
+      <div className="flex flex-col gap-2 sm:gap-4 flex-grow min-h-0">
           <div className="relative flex-grow min-h-0">
-              <div className="absolute top-2 right-2 z-10 flex items-center justify-end gap-2 px-2 sm:px-0">
-                <span className="text-xs text-muted-foreground">Font Size</span>
-                <Button variant="outline" size="icon" className="h-7 w-7" onClick={decreaseFontSize} disabled={fontSize === 'sm'}><Minus className="h-4 w-4" /></Button>
-                <Button variant="outline" size="icon" className="h-7 w-7" onClick={increaseFontSize} disabled={fontSize === 'xl'}><Plus className="h-4 w-4" /></Button>
-              </div>
+               <div className="absolute top-2 right-2 z-10 flex items-center justify-end gap-2 px-2 sm:px-0">
+                 <span className="text-xs text-muted-foreground">Font Size</span>
+                 <Button variant="outline" size="icon" className="h-7 w-7" onClick={decreaseFontSize} disabled={fontSize === 'sm'}><Minus className="h-4 w-4" /></Button>
+                 <Button variant="outline" size="icon" className="h-7 w-7" onClick={increaseFontSize} disabled={fontSize === 'xl'}><Plus className="h-4 w-4" /></Button>
+               </div>
               <ScrollArea ref={scrollAreaRef} onScroll={handleScroll} className="h-full border rounded-md p-2 sm:p-4 pt-12">
                   {isLoadingChapter && (
                   <div className="absolute inset-0 flex items-center justify-center bg-background/50 z-20">
@@ -598,7 +602,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                   )}
               </ScrollArea>
           </div>
-          <DialogFooter className="mt-4 flex-col items-center sm:flex-row gap-2 sm:justify-between shrink-0">
+           <DialogFooter className="mt-auto pt-4 flex-col items-center sm:flex-row gap-2 sm:justify-between shrink-0">
             <div className="flex items-center justify-center min-h-[40px]">
                 {selectedVerses.length > 0 && !unfinishedHighlight && (
                     <Button onClick={handleSaveHighlight} disabled={isProcessingHighlight}>
@@ -757,7 +761,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
              {/* Mobile / Desktop Layout switch */}
             {!mounted || !isMobile ? (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 flex-grow min-h-0">
-                    <div className="md:col-span-2 h-full">
+                    <div className="md:col-span-2 flex flex-col">
                         {ReaderContent}
                     </div>
                     <div className="hidden md:block md:col-span-1 h-full">
