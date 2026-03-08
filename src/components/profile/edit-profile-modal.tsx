@@ -1,4 +1,3 @@
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -17,10 +16,9 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
-import { Loader2, Camera } from "lucide-react";
-import { useUser, useFirestore, useStorage, useAuth } from "@/firebase";
+import { Loader2 } from "lucide-react";
+import { useUser, useFirestore, useAuth } from "@/firebase";
 import { doc, updateDoc } from "firebase/firestore";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { updateProfile } from "firebase/auth";
 import type { UserProfile } from "@/lib/types";
 import { errorEmitter } from "@/firebase/error-emitter";
@@ -28,7 +26,6 @@ import { FirestorePermissionError } from "@/firebase/errors";
 import { LocationProfileInput } from "../common/location-profile-input";
 import { Label } from "../ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { cn } from "@/lib/utils";
 
 const formSchema = z.object({
   firstName: z.string().min(2, "First name must be at least 2 characters.").max(50, "Name is too long."),
@@ -48,66 +45,9 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
   const { toast } = useToast();
   const { user } = useUser();
   const firestore = useFirestore();
-  const storage = useStorage();
   const auth = useAuth();
   
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
-  const [previewImageUrl, setPreviewImageUrl] = useState<string | null>(null);
-
-  const handleImageChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file || !user) return;
-
-    if (file.size > 5 * 1024 * 1024) { // 5MB limit
-      toast({
-        variant: "destructive",
-        title: "File too large",
-        description: "Please select an image smaller than 5MB.",
-      });
-      return;
-    }
-    
-    setIsUploading(true);
-    setPreviewImageUrl(URL.createObjectURL(file));
-
-    try {
-      // Step 1: Upload the file to Firebase Storage
-      const imageRef = ref(storage, `profile-pictures/${user.uid}/profile.jpg`);
-      await uploadBytes(imageRef, file);
-      
-      // Step 2: Get the public URL for the uploaded file
-      const newPhotoURL = await getDownloadURL(imageRef);
-
-      // Step 3: Update the user's document in Firestore
-      const userDocRef = doc(firestore, 'users', user.uid);
-      await updateDoc(userDocRef, { photoURL: newPhotoURL });
-
-      // Step 4: Update the user's profile in Firebase Authentication using the current user from the auth instance
-      if (auth.currentUser) {
-        await updateProfile(auth.currentUser, { photoURL: newPhotoURL });
-      } else {
-        throw new Error("Authentication session could not be found.");
-      }
-
-      toast({
-        title: "Profile Photo Updated!",
-        description: "Your new photo has been saved.",
-      });
-
-    } catch (error) {
-      console.error("Photo upload and save failed:", error);
-      toast({
-        variant: "destructive",
-        title: "Upload Failed",
-        description: "Could not save your new profile photo. Please check your network connection and try again.",
-      });
-      // Revert preview on failure
-      setPreviewImageUrl(null); 
-    } finally {
-      setIsUploading(false);
-    }
-  };
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -177,32 +117,10 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <div className="flex flex-col items-center gap-2">
-            <div className="relative group">
-                <label htmlFor="photo-upload" className={cn("cursor-pointer", isUploading && "cursor-not-allowed")}>
-                    <Avatar className="h-24 w-24">
-                        <AvatarImage src={previewImageUrl || userProfile.photoURL || undefined} alt={`${userProfile.firstName} ${userProfile.lastName}`} />
-                        <AvatarFallback>{userProfile.firstName?.charAt(0)}{userProfile.lastName?.charAt(0)}</AvatarFallback>
-                    </Avatar>
-                     {isUploading ? (
-                        <div className="absolute inset-0 bg-black/60 flex items-center justify-center rounded-full">
-                            <Loader2 className="h-8 w-8 text-white animate-spin" />
-                        </div>
-                    ) : (
-                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
-                            <Camera className="h-8 w-8 text-white" />
-                        </div>
-                    )}
-                </label>
-                <Input
-                    id="photo-upload"
-                    type="file"
-                    className="sr-only"
-                    accept="image/png, image/jpeg, image/gif"
-                    onChange={handleImageChange}
-                    disabled={isUploading}
-                />
-            </div>
-            <p className="text-sm text-muted-foreground text-center px-4">Click the image to upload a new profile photo.</p>
+            <Avatar className="h-24 w-24">
+                <AvatarImage src={userProfile.photoURL || undefined} alt={`${userProfile.firstName} ${userProfile.lastName}`} />
+                <AvatarFallback>{userProfile.firstName?.charAt(0)}{userProfile.lastName?.charAt(0)}</AvatarFallback>
+            </Avatar>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
@@ -294,7 +212,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
             </FormItem>
           )}
         />
-        <Button type="submit" className="w-full" disabled={isSubmitting || isUploading}>
+        <Button type="submit" className="w-full" disabled={isSubmitting}>
           {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           Save Changes
         </Button>
@@ -302,5 +220,3 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
     </Form>
   );
 }
-
-    
