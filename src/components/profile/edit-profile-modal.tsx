@@ -57,11 +57,11 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
     const file = event.target.files?.[0];
     if (!file) return;
 
-    if (!user || !firestore || !storage) {
+    if (!user || !storage || !firestore) {
       toast({
         variant: "destructive",
-        title: "Error",
-        description: "Cannot upload photo. Services not available or user not logged in.",
+        title: "Authentication Error",
+        description: "Cannot upload photo. User session not found. Please try logging in again.",
       });
       return;
     }
@@ -76,19 +76,23 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
     }
     
     setIsUploading(true);
-    setPreviewImageUrl(URL.createObjectURL(file)); // Show preview immediately
+    setPreviewImageUrl(URL.createObjectURL(file));
 
     try {
       const imageRef = ref(storage, `profile-pictures/${user.uid}/profile.jpg`);
-      const uploadResult = await uploadBytes(imageRef, file);
-      const newPhotoURL = await getDownloadURL(uploadResult.ref);
+      
+      // Step 1: Upload the file to Firebase Storage
+      await uploadBytes(imageRef, file);
+      
+      // Step 2: Get the public URL for the uploaded file
+      const newPhotoURL = await getDownloadURL(imageRef);
 
+      // Step 3: Update the user's document in Firestore
       const userDocRef = doc(firestore, 'users', user.uid);
-      
-      const authUpdatePromise = updateProfile(user, { photoURL: newPhotoURL });
-      const firestoreUpdatePromise = updateDoc(userDocRef, { photoURL: newPhotoURL });
-      
-      await Promise.all([authUpdatePromise, firestoreUpdatePromise]);
+      await updateDoc(userDocRef, { photoURL: newPhotoURL });
+
+      // Step 4: Update the user's profile in Firebase Authentication
+      await updateProfile(user, { photoURL: newPhotoURL });
 
       toast({
         title: "Profile Photo Updated!",
@@ -96,13 +100,14 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
       });
 
     } catch (error) {
-      console.error("Photo upload failed:", error);
+      console.error("Photo upload and save failed:", error);
       toast({
         variant: "destructive",
         title: "Upload Failed",
-        description: "Could not upload your new profile photo. Please try again.",
+        description: "Could not save your new profile photo. Please check your network connection and try again.",
       });
-      setPreviewImageUrl(null); // Revert preview on failure
+      // Revert preview on failure
+      setPreviewImageUrl(null); 
     } finally {
       setIsUploading(false);
     }
