@@ -160,16 +160,16 @@ export function PrayerDialog({ isOpen, onOpenChange, onDisciplineCompleted, user
     return (
         <Sheet open={isOpen} onOpenChange={onOpenChange}>
             <SheetContent side="bottom" className="p-0 flex flex-col h-auto max-h-[90dvh]">
-                <div className="p-4 border-b flex-shrink-0">
+                <div className="p-6 border-b flex-shrink-0">
                     <Header isSheet />
                 </div>
                 <div className="flex-grow min-h-0 overflow-y-auto">
-                  <div className="p-4">
-                    <DialogBody />
-                  </div>
+                    <div className="p-6">
+                        <DialogBody />
+                    </div>
                 </div>
                 {activeTab === 'pray' && (
-                    <div className="p-4 border-t flex-shrink-0">
+                    <div className="p-6 border-t flex-shrink-0">
                          <Button onClick={handleComplete} disabled={isCompleting} className="w-full">
                             {isCompleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                             Mark as Prayed
