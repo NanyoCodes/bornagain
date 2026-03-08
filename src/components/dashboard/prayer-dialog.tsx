@@ -17,7 +17,7 @@ import {
   SheetDescription,
 } from '@/components/ui/sheet';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '../ui/button';
 import { Loader2, Quote, PlayCircle } from 'lucide-react';
 import type { UserProfile } from '@/lib/types';
@@ -43,6 +43,7 @@ export function PrayerDialog({ isOpen, onOpenChange, onDisciplineCompleted, user
   const { toast } = useToast();
   const isMobile = useIsMobile();
   const [mounted, setMounted] = useState(false);
+  const [activeTab, setActiveTab] = useState('pray');
 
   useEffect(() => {
     setMounted(true);
@@ -52,13 +53,11 @@ export function PrayerDialog({ isOpen, onOpenChange, onDisciplineCompleted, user
 
   useEffect(() => {
     if (isOpen) {
-      // Select a random verse when the dialog opens, but only if one isn't already selected
       if (!verse) {
         const randomIndex = Math.floor(Math.random() * prayerVerses.length);
         setVerse(prayerVerses[randomIndex]);
       }
     } else {
-        // Reset state on close to avoid flicker on reopen
         setIsCompleting(false);
     }
   }, [isOpen, verse]);
@@ -66,7 +65,6 @@ export function PrayerDialog({ isOpen, onOpenChange, onDisciplineCompleted, user
   const handleComplete = () => {
     setIsCompleting(true);
     onDisciplineCompleted();
-    // Add a small delay to show loader before closing
     setTimeout(() => {
         onOpenChange(false);
         toast({ title: 'Discipline Completed', description: 'You have completed the prayer discipline for today.'});
@@ -80,8 +78,8 @@ export function PrayerDialog({ isOpen, onOpenChange, onDisciplineCompleted, user
     toast({ title: 'Discipline Completed', description: 'You have completed the prayer discipline for today.'});
   }
 
-  const PrayerContent = () => (
-      <Tabs defaultValue="pray" className="w-full">
+  const DialogBody = () => (
+      <Tabs defaultValue="pray" onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="pray">Pray</TabsTrigger>
               <TabsTrigger value="manage">Manage Links</TabsTrigger>
@@ -118,12 +116,6 @@ export function PrayerDialog({ isOpen, onOpenChange, onDisciplineCompleted, user
                               </div>
                           </div>
                       )}
-                  </CardContent>
-                  <CardContent className="p-6 pt-0 border-t">
-                       <Button onClick={handleComplete} disabled={isCompleting} className="w-full mt-6">
-                          {isCompleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                          Mark as Prayed
-                      </Button>
                   </CardContent>
               </Card>
           </TabsContent>
@@ -169,14 +161,22 @@ export function PrayerDialog({ isOpen, onOpenChange, onDisciplineCompleted, user
     return (
         <Sheet open={isOpen} onOpenChange={onOpenChange}>
             <SheetContent side="bottom" className="p-0 flex flex-col h-auto max-h-[90dvh]">
-                <div className="p-4 border-b">
+                <div className="p-4 border-b flex-shrink-0">
                     <Header isSheet />
                 </div>
                 <ScrollArea className="flex-grow min-h-0">
                   <div className="p-4">
-                    <PrayerContent />
+                    <DialogBody />
                   </div>
                 </ScrollArea>
+                {activeTab === 'pray' && (
+                    <div className="p-4 border-t flex-shrink-0">
+                         <Button onClick={handleComplete} disabled={isCompleting} className="w-full">
+                            {isCompleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                            Mark as Prayed
+                        </Button>
+                    </div>
+                )}
             </SheetContent>
         </Sheet>
     );
@@ -184,11 +184,19 @@ export function PrayerDialog({ isOpen, onOpenChange, onDisciplineCompleted, user
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-xl">
+      <DialogContent className="sm:max-w-xl flex flex-col max-h-[80vh]">
         <Header />
-        <div className="max-h-[70vh] overflow-y-auto pr-4 -mr-4 mt-4">
-          <PrayerContent />
+        <div className="flex-grow min-h-0 overflow-y-auto pr-4 -mr-4 mt-4">
+          <DialogBody />
         </div>
+        {activeTab === 'pray' && (
+            <div className="flex-shrink-0 pt-4 border-t -mx-6 px-6 pb-4">
+                 <Button onClick={handleComplete} disabled={isCompleting} className="w-full">
+                    {isCompleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    Mark as Prayed
+                </Button>
+            </div>
+        )}
       </DialogContent>
     </Dialog>
   );
