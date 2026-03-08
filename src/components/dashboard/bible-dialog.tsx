@@ -11,6 +11,7 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '../ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
@@ -42,6 +43,17 @@ const bibleVersions = [
 
 const highlightColors = ['yellow', 'blue', 'green', 'pink'];
 
+const getHighlightClass = (color?: string) => {
+    if (!color) return '';
+    return `highlight-${color}`;
+};
+
+const getNoteCardClass = (color?: string) => {
+    if (!color) return '';
+    return `note-card-${color}`;
+};
+
+
 // Helper function to format verse references
 const getVerseReference = (h: { book: string; chapter: number; verses: number[] }) => {
     if (!h || !h.verses) return '';
@@ -69,15 +81,6 @@ const getVerseReference = (h: { book: string; chapter: number; verses: number[] 
     return `${h.book} ${h.chapter}:${ranges.join(', ')}`;
 };
 
-const getHighlightClass = (color?: string) => {
-    if (!color) return '';
-    return `highlight-${color}`;
-};
-
-const getNoteCardClass = (color?: string) => {
-    if (!color) return '';
-    return `note-card-${color}`;
-};
 
 
 // Internal component for the note editor
@@ -529,7 +532,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-4xl lg:max-w-5xl h-[90vh] flex flex-col">
+      <DialogContent className="sm:max-w-4xl lg:max-w-5xl h-[90vh] flex flex-col p-4 sm:p-6">
         <DialogHeader>
           <DialogTitle className="flex items-center justify-between">
              <div className="flex items-center">
@@ -676,7 +679,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                                                 className={cn(
                                                     'rounded-md transition-colors -mx-1 px-1 py-0.5 leading-relaxed',
                                                     highlightInfo && getHighlightClass(highlightInfo.color),
-                                                    isSelected && 'bg-primary/50',
+                                                    isSelected && 'bg-destructive/20',
                                                     isActiveHighlight && 'ring-2 ring-primary ring-offset-2 ring-offset-background',
                                                     'cursor-pointer'
                                                 )}
@@ -692,24 +695,29 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                         </ScrollArea>
                         {selectedVerses.length > 0 && (
                             <div className="absolute bottom-4 left-1/2 -translate-x-1/2 w-auto z-10">
-                                <div className="flex items-center gap-1 sm:gap-2 p-1.5 sm:p-2 rounded-full border bg-background shadow-lg">
-                                    {highlightColors.map((color) => (
-                                      <Button
-                                        key={color}
-                                        variant="outline"
-                                        size="icon"
-                                        className="rounded-full h-8 w-8 sm:h-9 sm:w-9"
-                                        onClick={() => handleSaveHighlight(color)}
-                                        disabled={isProcessingHighlight}
-                                      >
-                                        <div className={cn('h-5 w-5 rounded-full', getHighlightClass(color))} />
-                                      </Button>
-                                    ))}
-                                    <Separator orientation="vertical" className="h-6 mx-1" />
+                                <div className="flex items-center gap-2 p-2 rounded-full border bg-background shadow-lg">
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                            <Button variant="outline" size="sm" className="rounded-full gap-2">
+                                                <Highlighter className="h-4 w-4" />
+                                                Highlight
+                                            </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent className="flex gap-1 p-2">
+                                            {highlightColors.map((color) => (
+                                                <DropdownMenuItem key={color} onSelect={() => handleSaveHighlight(color)} className="p-0.5 rounded-full cursor-pointer focus:bg-accent">
+                                                    <div className={cn('h-6 w-6 rounded-full', getHighlightClass(color))} />
+                                                </DropdownMenuItem>
+                                            ))}
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
+
+                                    <Separator orientation="vertical" className="h-6" />
+
                                     <Button
                                       variant="ghost"
                                       size="icon"
-                                      className="rounded-full h-8 w-8 sm:h-9 sm:w-9"
+                                      className="rounded-full"
                                       onClick={() => setSelectedVerses([])}
                                     >
                                       <XCircle className="h-5 w-5" />
@@ -729,7 +737,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                 {/* Desktop Notes View */}
                 <div className="hidden md:flex md:col-span-1 flex-col gap-4 h-full">
                     <h3 className="text-lg font-semibold tracking-tight">Notes for {chapterContent?.book} {chapterContent?.chapter}</h3>
-                    <ScrollArea className="flex-grow h-full border rounded-md p-2 bg-background">
+                    <ScrollArea className="flex-grow h-full border rounded-md p-2 bg-card">
                         {NotesList}
                     </ScrollArea>
                 </div>
@@ -737,7 +745,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
              {/* Mobile Notes View */}
             {mounted && isMobile && (
                 <div className="md:hidden">
-                    <Accordion type="single" collapsible className="w-full border rounded-md bg-background">
+                    <Accordion type="single" collapsible className="w-full border rounded-md bg-card">
                         <AccordionItem value="notes" className="border-b-0">
                             <AccordionTrigger className="px-4 py-3 hover:no-underline">
                                 <h3 className="text-lg font-semibold tracking-tight">Notes for {chapterContent?.book} {chapterContent?.chapter}</h3>
