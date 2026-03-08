@@ -3,13 +3,16 @@ rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
     
-    // Allow public read for all files.
-    match /{allPaths=**} {
+    // Allow public read for profile pictures.
+    match /profile-pictures/{userId}/{allPaths=**} {
       allow read;
+      // Allow a user to write ONLY to their own folder.
+      allow write: if request.auth != null && request.auth.uid == userId;
     }
 
-    // Disallow user-specific writes as photo upload is removed.
-    match /users/{userId}/{allPaths=**} {
+    // Default deny all other writes.
+    match /{allPaths=**} {
+      allow read; // Maintain public read for other assets if needed.
       allow write: if false;
     }
   }

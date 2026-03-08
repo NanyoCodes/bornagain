@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -16,9 +17,10 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
-import { Loader2 } from "lucide-react";
-import { useAuth, useFirestore, useUser } from "@/firebase";
+import { Loader2, Camera } from "lucide-react";
+import { useAuth, useFirestore, useFirebase } from "@/firebase";
 import { doc, updateDoc } from "firebase/firestore";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { updateProfile } from "firebase/auth";
 import type { UserProfile } from "@/lib/types";
 import { errorEmitter } from "@/firebase/error-emitter";
@@ -43,11 +45,29 @@ type EditProfileModalProps = {
 
 export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps) {
   const { toast } = useToast();
-  const { user } = useUser();
-  const auth = useAuth();
+  const { user } = useAuth();
   const firestore = useFirestore();
+  const storage = getStorage(useFirebase().app);
   
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [newImageFile, setNewImageFile] = useState<File | null>(null);
+  const [previewImageUrl, setPreviewImageUrl] = useState<string | null>(null);
+
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) { // 5MB limit
+        toast({
+          variant: "destructive",
+          title: "File too large",
+          description: "Please select an image smaller than 5MB.",
+        });
+        return;
+      }
+      setNewImageFile(file);
+      setPreviewImageUrl(URL.createObjectURL(file));
+    }
+  };
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -62,13 +82,21 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    if (!user || !auth || !firestore) {
+    if (!user || !firestore) {
       toast({ variant: 'destructive', title: 'Not authenticated or Firebase not ready' });
       return;
     }
     setIsSubmitting(true);
 
     try {
+      let photoURL = userProfile.photoURL;
+
+      if (newImageFile) {
+        const imageRef = ref(storage, `profile-pictures/${user.uid}/profile.jpg`);
+        const uploadResult = await uploadBytes(imageRef, newImageFile);
+        photoURL = await getDownloadURL(uploadResult.ref);
+      }
+      
       const displayName = `${values.firstName} ${values.lastName}`;
       
       const firestoreUpdatePayload = {
@@ -84,10 +112,12 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
           country_lowercase: (values.country || "").toLowerCase(),
         },
         phone: values.phone || "",
+        photoURL: photoURL,
       };
       
       const authUpdatePromise = updateProfile(user, {
         displayName: displayName,
+        photoURL: photoURL
       });
 
       const firestoreUpdatePromise = updateDoc(doc(firestore, 'users', user.uid), firestoreUpdatePayload).catch((serverError) => {
@@ -119,11 +149,25 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <div className="flex flex-col items-center gap-2">
-          <Avatar className="h-24 w-24">
-            <AvatarImage src={userProfile.photoURL || undefined} alt={`${userProfile.firstName} ${userProfile.lastName}`} />
-            <AvatarFallback>{userProfile.firstName?.charAt(0)}{userProfile.lastName?.charAt(0)}</AvatarFallback>
-          </Avatar>
-           <p className="text-sm text-muted-foreground text-center px-4">Profile photo is synced from your social login (e.g., Google). To change it, update your photo on that platform.</p>
+            <div className="relative group">
+                <label htmlFor="photo-upload" className="cursor-pointer">
+                    <Avatar className="h-24 w-24">
+                        <AvatarImage src={previewImageUrl || userProfile.photoURL || undefined} alt={`${userProfile.firstName} ${userProfile.lastName}`} />
+                        <AvatarFallback>{userProfile.firstName?.charAt(0)}{userProfile.lastName?.charAt(0)}</AvatarFallback>
+                    </Avatar>
+                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                        <Camera className="h-8 w-8 text-white" />
+                    </div>
+                </label>
+                <Input
+                    id="photo-upload"
+                    type="file"
+                    className="sr-only"
+                    accept="image/png, image/jpeg, image/gif"
+                    onChange={handleImageChange}
+                />
+            </div>
+            <p className="text-sm text-muted-foreground text-center px-4">Click the image to upload a new profile photo.</p>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
