@@ -53,9 +53,9 @@ function EditPrayerLinkForm({ link, index, onUpdate, onCancel, isSubmitting }: {
             </FormItem>
           )}
         />
-        <div className="flex justify-end gap-2">
-          <Button type="button" size="sm" variant="ghost" onClick={onCancel} disabled={isSubmitting}>Cancel</Button>
-          <Button type="submit" size="sm" disabled={isSubmitting}>
+        <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2 pt-2">
+          <Button type="button" size="sm" variant="ghost" onClick={onCancel} disabled={isSubmitting} className="w-full sm:w-auto">Cancel</Button>
+          <Button type="submit" size="sm" disabled={isSubmitting} className="w-full sm:w-auto">
             {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Save
           </Button>
