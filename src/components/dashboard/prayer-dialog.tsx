@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -126,18 +127,14 @@ export function PrayerDialog({ isOpen, onOpenChange, onDisciplineCompleted, user
                   </CardContent>
               </Card>
           </TabsContent>
-          <TabsContent value="manage" className="mt-4">
-              <Card>
-                  <CardHeader>
-                      <CardTitle className="text-base">Manage Prayer Links</CardTitle>
-                      <CardDescription>Add, edit, or remove personal links to prayer meetings (up to 5).</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                      {user && userProfile && (
-                          <PrayerLinksSettingsCard userProfile={userProfile} userId={user.uid} />
-                      )}
-                  </CardContent>
-              </Card>
+          <TabsContent value="manage" className="mt-4 space-y-4">
+            <div>
+                <h3 className="text-lg font-semibold tracking-tight">Manage Prayer Links</h3>
+                <p className="text-sm text-muted-foreground mt-1">Add, edit, or remove personal links to prayer meetings (up to 5).</p>
+            </div>
+            {user && userProfile && (
+                <PrayerLinksSettingsCard userProfile={userProfile} userId={user.uid} />
+            )}
           </TabsContent>
       </Tabs>
   );
@@ -171,10 +168,12 @@ export function PrayerDialog({ isOpen, onOpenChange, onDisciplineCompleted, user
   if (isMobile) {
     return (
         <Sheet open={isOpen} onOpenChange={onOpenChange}>
-            <SheetContent side="bottom" className="p-4 flex flex-col h-auto max-h-[90dvh]">
-                <Header isSheet />
-                <ScrollArea className="flex-grow min-h-0 mt-4">
-                  <div className="px-1 pb-4">
+            <SheetContent side="bottom" className="p-0 flex flex-col h-auto max-h-[90dvh]">
+                <div className="p-4 border-b">
+                    <Header isSheet />
+                </div>
+                <ScrollArea className="flex-grow min-h-0">
+                  <div className="p-4">
                     <PrayerContent />
                   </div>
                 </ScrollArea>
