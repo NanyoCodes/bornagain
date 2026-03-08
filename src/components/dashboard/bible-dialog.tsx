@@ -133,7 +133,7 @@ function NoteEditor({ highlight, onSave, onDelete, onCancel }: { highlight: Bibl
           </AlertDialog>
           <div className="flex flex-col-reverse sm:flex-row items-center justify-end gap-2">
             <Button variant="ghost" size="sm" onClick={onCancel} disabled={isSaving}>Cancel</Button>
-            <Button size="sm" onClick={handleSave} disabled={isSaving || note === (highlight.note || '')}>
+            <Button size="sm" onClick={handleSave} disabled={isSaving || note.trim() === (highlight.note || '')}>
               {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>}
               Save
             </Button>
@@ -174,6 +174,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
   const [isChapterSheetOpen, setIsChapterSheetOpen] = useState(false);
   const [isVersionSheetOpen, setIsVersionSheetOpen] = useState(false);
   const [bookSearchTerm, setBookSearchTerm] = useState('');
+  const [mobileTab, setMobileTab] = useState('reader');
   
   type FontSize = 'sm' | 'base' | 'lg' | 'xl';
   const fontSizes: FontSize[] = ['sm', 'base', 'lg', 'xl'];
@@ -197,6 +198,11 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
 
   const { data: highlights } = useCollection<BibleHighlight>(highlightsQuery);
   
+  const unfinishedHighlight = useMemo(() => {
+    if (!highlights) return null;
+    return highlights.find(h => !h.note || h.note.trim() === '');
+  }, [highlights]);
+
   const activeHighlight = useMemo(() => {
     if (!activeHighlightId || !highlights) return null;
     return highlights.find(h => h.id === activeHighlightId) || null;
@@ -391,6 +397,18 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
 
         if (existingHighlight) {
             setActiveHighlightId(existingHighlight.id);
+            if (isMobile) {
+                setMobileTab('notes');
+            }
+            return;
+        }
+
+        if (unfinishedHighlight) {
+            toast({
+                variant: "default",
+                title: "Finish Your Note",
+                description: "Please add a note to your previous highlight before selecting new verses.",
+            });
             return;
         }
 
@@ -402,7 +420,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
     };
 
     const handleSaveHighlight = async () => {
-        if (!user || !firestore || selectedVerses.length === 0 || !chapterContent) return;
+        if (!user || !firestore || selectedVerses.length === 0 || !chapterContent || unfinishedHighlight) return;
 
         setIsProcessingHighlight(true);
         try {
@@ -420,6 +438,9 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
             
             setSelectedVerses([]);
             setActiveHighlightId(newHighlightRef.id);
+            if (isMobile) {
+              setMobileTab('notes');
+            }
         } catch (error) {
             toast({ variant: 'destructive', title: 'Error', description: 'Could not save highlight.' });
         } finally {
@@ -576,13 +597,37 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                   </div>
                   )}
               </ScrollArea>
-              {selectedVerses.length > 0 && (
-                  <div className="absolute bottom-4 left-1/2 -translate-x-1/2 w-auto z-10">
-                       <Button onClick={handleSaveHighlight} disabled={isProcessingHighlight}>
-                          <Highlighter className="mr-2 h-4 w-4" />
-                          {isProcessingHighlight ? 'Saving...' : 'Highlight & Note'}
-                      </Button>
-                  </div>
+          </div>
+          <div className="mt-4 flex items-center justify-center h-16 shrink-0">
+              {selectedVerses.length > 0 && !unfinishedHighlight && (
+                  <Button onClick={handleSaveHighlight} disabled={isProcessingHighlight}>
+                      <Highlighter className="mr-2 h-4 w-4" />
+                      {isProcessingHighlight ? 'Saving...' : 'Highlight & Note'}
+                  </Button>
+              )}
+              {unfinishedHighlight && (
+                  <Card className="border-amber-500/50 bg-amber-500/10 p-3 w-full max-w-md">
+                      <div className="flex items-center justify-between gap-4">
+                          <div className="text-amber-700 dark:text-amber-400">
+                              <p className="font-semibold text-sm">Meditation Required</p>
+                              <p className="text-xs">Please add a note to your last highlight before creating another.</p>
+                          </div>
+                          <Button 
+                              size="sm" 
+                              variant="outline"
+                              onClick={() => {
+                                  if (unfinishedHighlight) {
+                                    setActiveHighlightId(unfinishedHighlight.id);
+                                    if (isMobile) {
+                                        setMobileTab('notes');
+                                    }
+                                  }
+                              }}
+                          >
+                              Go to Note
+                          </Button>
+                      </div>
+                  </Card>
               )}
           </div>
           <DialogFooter>
@@ -731,7 +776,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                     </div>
                 </div>
             ) : (
-                <Tabs defaultValue="reader" className="flex-grow flex flex-col min-h-0">
+                <Tabs value={mobileTab} onValueChange={setMobileTab} className="flex-grow flex flex-col min-h-0">
                     <TabsList className="grid w-full grid-cols-2">
                         <TabsTrigger value="reader">Read</TabsTrigger>
                         <TabsTrigger value="notes">Notes ({highlights?.length || 0})</TabsTrigger>
