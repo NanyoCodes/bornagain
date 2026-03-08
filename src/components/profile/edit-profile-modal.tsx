@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -17,7 +18,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { Loader2, Camera } from "lucide-react";
-import { useUser, useFirestore, useStorage } from "@/firebase";
+import { useUser, useFirestore, useStorage, useAuth } from "@/firebase";
 import { doc, updateDoc } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { updateProfile } from "firebase/auth";
@@ -48,6 +49,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
   const { user } = useUser();
   const firestore = useFirestore();
   const storage = useStorage();
+  const auth = useAuth();
   
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -55,16 +57,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
 
   const handleImageChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (!file) return;
-
-    if (!user || !storage || !firestore) {
-      toast({
-        variant: "destructive",
-        title: "Authentication Error",
-        description: "Cannot upload photo. User session not found. Please try logging in again.",
-      });
-      return;
-    }
+    if (!file || !user) return;
 
     if (file.size > 5 * 1024 * 1024) { // 5MB limit
       toast({
@@ -79,9 +72,8 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
     setPreviewImageUrl(URL.createObjectURL(file));
 
     try {
-      const imageRef = ref(storage, `profile-pictures/${user.uid}/profile.jpg`);
-      
       // Step 1: Upload the file to Firebase Storage
+      const imageRef = ref(storage, `profile-pictures/${user.uid}/profile.jpg`);
       await uploadBytes(imageRef, file);
       
       // Step 2: Get the public URL for the uploaded file
@@ -91,8 +83,12 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
       const userDocRef = doc(firestore, 'users', user.uid);
       await updateDoc(userDocRef, { photoURL: newPhotoURL });
 
-      // Step 4: Update the user's profile in Firebase Authentication
-      await updateProfile(user, { photoURL: newPhotoURL });
+      // Step 4: Update the user's profile in Firebase Authentication using the current user from the auth instance
+      if (auth.currentUser) {
+        await updateProfile(auth.currentUser, { photoURL: newPhotoURL });
+      } else {
+        throw new Error("Authentication session could not be found.");
+      }
 
       toast({
         title: "Profile Photo Updated!",
@@ -150,7 +146,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
         phone: values.phone || "",
       };
       
-      const authUpdatePromise = user.displayName !== displayName ? updateProfile(user, { displayName }) : Promise.resolve();
+      const authUpdatePromise = user.displayName !== displayName && auth.currentUser ? updateProfile(auth.currentUser, { displayName }) : Promise.resolve();
 
       const firestoreUpdatePromise = updateDoc(doc(firestore, 'users', user.uid), firestoreUpdatePayload).catch((serverError) => {
         const permissionError = new FirestorePermissionError({
@@ -306,3 +302,5 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
     </Form>
   );
 }
+
+    
