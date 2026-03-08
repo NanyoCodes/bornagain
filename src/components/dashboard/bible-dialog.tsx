@@ -30,6 +30,7 @@ import { Textarea } from '../ui/textarea';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '../ui/sheet';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion';
 
 
 const bibleVersions = [
@@ -444,6 +445,42 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
         setIsVersionSheetOpen(false);
     }
 
+    const NotesList = (
+        <div className="space-y-2 p-1">
+            {activeHighlight && (
+                <NoteEditor 
+                    highlight={activeHighlight} 
+                    onSave={handleUpdateNote} 
+                    onDelete={handleDeleteHighlight}
+                    onCancel={() => setActiveHighlightId(null)} 
+                />
+            )}
+
+            {highlights && highlights
+                .filter(h => h.id !== activeHighlightId)
+                .sort((a, b) => (a.createdAt?.seconds ?? 0) - (b.createdAt?.seconds ?? 0))
+                .map(h => (
+                    <Card key={h.id} onClick={() => setActiveHighlightId(h.id)} className={cn("cursor-pointer hover:bg-muted/50", getHighlightClass(h.color), 'bg-opacity-20 dark:bg-opacity-10')}>
+                        <CardHeader className="p-2 flex flex-row items-center justify-between">
+                            <CardTitle className="text-sm font-medium truncate pr-2">{getVerseReference(h)}</CardTitle>
+                            {h.updatedAt && (
+                                <p className="text-xs text-muted-foreground shrink-0">
+                                    {formatDistanceToNow(h.updatedAt.toDate(), { addSuffix: true })}
+                                </p>
+                            )}
+                        </CardHeader>
+                    </Card>
+                ))}
+
+            {highlights?.length === 0 && (
+                <div className="text-center text-muted-foreground py-10">
+                    <p>No notes for this chapter.</p>
+                    <p className="text-xs mt-1">Highlight some text to get started.</p>
+                </div>
+            )}
+        </div>
+    );
+
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-4xl h-[90vh] flex flex-col">
@@ -624,45 +661,31 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                     </DialogFooter>
                 </div>
                 
-                <div className="md:col-span-1 flex flex-col gap-4 h-full">
+                {/* Desktop Notes View */}
+                <div className="hidden md:flex md:col-span-1 flex-col gap-4 h-full">
                     <h3 className="text-lg font-semibold tracking-tight">Notes for {chapterContent?.book} {chapterContent?.chapter}</h3>
                     <ScrollArea className="flex-grow h-full border rounded-md p-2">
-                        <div className="space-y-2 p-1">
-                            {activeHighlight && (
-                                <NoteEditor 
-                                    highlight={activeHighlight} 
-                                    onSave={handleUpdateNote} 
-                                    onDelete={handleDeleteHighlight}
-                                    onCancel={() => setActiveHighlightId(null)} 
-                                />
-                            )}
-
-                            {highlights && highlights
-                                .filter(h => h.id !== activeHighlightId)
-                                .sort((a, b) => (a.createdAt?.seconds ?? 0) - (b.createdAt?.seconds ?? 0))
-                                .map(h => (
-                                    <Card key={h.id} onClick={() => setActiveHighlightId(h.id)} className={cn("cursor-pointer hover:bg-muted/50", getHighlightClass(h.color), 'bg-opacity-20 dark:bg-opacity-10')}>
-                                        <CardHeader className="p-2 flex flex-row items-center justify-between">
-                                            <CardTitle className="text-sm font-medium truncate pr-2">{getVerseReference(h)}</CardTitle>
-                                            {h.updatedAt && (
-                                                <p className="text-xs text-muted-foreground shrink-0">
-                                                    {formatDistanceToNow(h.updatedAt.toDate(), { addSuffix: true })}
-                                                </p>
-                                            )}
-                                        </CardHeader>
-                                    </Card>
-                                ))}
-
-                            {highlights?.length === 0 && (
-                                <div className="text-center text-muted-foreground py-10">
-                                    <p>No notes for this chapter.</p>
-                                    <p className="text-xs mt-1">Highlight some text to get started.</p>
-                                </div>
-                            )}
-                        </div>
+                        {NotesList}
                     </ScrollArea>
                 </div>
             </div>
+             {/* Mobile Notes View */}
+            {mounted && isMobile && (
+                <div className="md:hidden">
+                    <Accordion type="single" collapsible className="w-full border rounded-md">
+                        <AccordionItem value="notes" className="border-b-0">
+                            <AccordionTrigger className="px-4 py-3 hover:no-underline">
+                                <h3 className="text-lg font-semibold tracking-tight">Notes for {chapterContent?.book} {chapterContent?.chapter}</h3>
+                            </AccordionTrigger>
+                            <AccordionContent className="px-2">
+                                <ScrollArea className="h-72 p-2">
+                                    {NotesList}
+                                </ScrollArea>
+                            </AccordionContent>
+                        </AccordionItem>
+                    </Accordion>
+                </div>
+            )}
           </TabsContent>
           
           <TabsContent value="history" className="flex-grow flex flex-col min-h-0 mt-4 space-y-4">
@@ -760,4 +783,3 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
     </Dialog>
   );
 }
-
