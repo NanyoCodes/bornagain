@@ -630,6 +630,11 @@ export function SoulsWonTable({ souls, loading }: SoulsWonTableProps) {
     setIsEditDialogOpen(true);
   }, []);
 
+  const handleCloseDialog = () => {
+    setIsEditDialogOpen(false);
+    setEditingSoul(null);
+  }
+
   React.useEffect(() => {
     setMounted(true);
   }, []);
@@ -727,14 +732,14 @@ export function SoulsWonTable({ souls, loading }: SoulsWonTableProps) {
         </Table>
       </CardContent>
     </Card>
-    <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+    <Dialog open={isEditDialogOpen} onOpenChange={(open) => !open && handleCloseDialog()}>
         <DialogContent>
             <DialogHeader>
                 <DialogTitle>Edit Soul Details</DialogTitle>
                 <DialogDescription>Make changes to the record for {editingSoul?.firstName} {editingSoul?.lastName}.</DialogDescription>
             </DialogHeader>
             <div className="max-h-[70vh] overflow-y-auto pr-2">
-              {editingSoul && <EditSoulForm soul={editingSoul} onSoulUpdated={() => { setIsEditDialogOpen(false); setEditingSoul(null); }} />}
+              {editingSoul && <EditSoulForm soul={editingSoul} onSoulUpdated={handleCloseDialog} />}
             </div>
         </DialogContent>
     </Dialog>
