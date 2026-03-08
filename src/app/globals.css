@@ -76,16 +76,16 @@
 
 @layer utilities {
   .highlight-yellow {
-    @apply bg-yellow-200 dark:bg-yellow-700/40;
+    @apply bg-yellow-200 dark:bg-yellow-800/60;
   }
   .highlight-blue {
-    @apply bg-blue-200 dark:bg-blue-700/40;
+    @apply bg-blue-200 dark:bg-blue-800/60;
   }
   .highlight-green {
-    @apply bg-green-200 dark:bg-green-700/40;
+    @apply bg-green-200 dark:bg-green-800/60;
   }
   .highlight-pink {
-    @apply bg-pink-200 dark:bg-pink-700/40;
+    @apply bg-pink-200 dark:bg-pink-800/60;
   }
   .verse-selected {
     @apply bg-primary/20;

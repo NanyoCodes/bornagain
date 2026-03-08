@@ -22,7 +22,7 @@ import { doc, updateDoc, arrayUnion, collection, query, where, addDoc, serverTim
 import type { UserProfile, ReadingHistoryItem, BibleHighlight } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { format, isSameDay, formatDistanceToNow } from 'date-fns';
-import { Loader2, XCircle, BookOpen, Trash2, ChevronRight } from 'lucide-react';
+import { Loader2, XCircle, BookOpen, Trash2, ChevronRight, Minus, Plus } from 'lucide-react';
 import { Skeleton } from '../ui/skeleton';
 import { getBibleChapter, type BibleChapterOutput } from '@/ai/flows/get-bible-chapter-flow';
 import { Input } from '../ui/input';
@@ -157,6 +157,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
   const [selectedVerses, setSelectedVerses] = useState<number[]>([]);
   const [isProcessingHighlight, setIsProcessingHighlight] = useState(false);
   const [activeHighlightId, setActiveHighlightId] = useState<string | null>(null);
+  const activeNoteRef = useRef<HTMLDivElement>(null);
 
   const isMobile = useIsMobile();
   const [mounted, setMounted] = useState(false);
@@ -164,6 +165,12 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
   const [isChapterSheetOpen, setIsChapterSheetOpen] = useState(false);
   const [isVersionSheetOpen, setIsVersionSheetOpen] = useState(false);
   const [bookSearchTerm, setBookSearchTerm] = useState('');
+  
+  type FontSize = 'sm' | 'base' | 'lg' | 'xl';
+  const fontSizes: FontSize[] = ['sm', 'base', 'lg', 'xl'];
+  const [fontSize, setFontSize] = useState<FontSize>('base');
+  const fontSizeClasses: Record<FontSize, string> = { sm: 'text-sm sm:text-base', base: 'text-base sm:text-lg', lg: 'text-lg sm:text-xl', xl: 'text-xl sm:text-2xl' };
+  const subFontSizeClasses: Record<FontSize, string> = { sm: 'text-xs', base: 'text-xs', lg: 'text-sm', xl: 'text-sm' };
 
   const userDocRef = useMemo(() => (user ? doc(firestore, 'users', user.uid) : null), [user, firestore]);
   const { data: userProfile, loading: loadingProfile } = useDoc<UserProfile>(userDocRef);
@@ -186,6 +193,12 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
     return highlights.find(h => h.id === activeHighlightId) || null;
   }, [activeHighlightId, highlights]);
   
+  useEffect(() => {
+    if (activeHighlightId && activeNoteRef.current) {
+        activeNoteRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, [activeHighlightId]);
+
   useEffect(() => {
     setSelectedChapterNumber(1);
     setActiveHighlightId(null);
@@ -444,35 +457,62 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
         setSelectedVersion(version);
         setIsVersionSheetOpen(false);
     }
+    
+    const increaseFontSize = () => {
+        const currentIndex = fontSizes.indexOf(fontSize);
+        if (currentIndex < fontSizes.length - 1) {
+            setFontSize(fontSizes[currentIndex + 1]);
+        }
+    };
+    
+    const decreaseFontSize = () => {
+        const currentIndex = fontSizes.indexOf(fontSize);
+        if (currentIndex > 0) {
+            setFontSize(fontSizes[currentIndex - 1]);
+        }
+    };
 
     const NotesList = (
         <div className="space-y-2 p-1">
-            {activeHighlight && (
-                <NoteEditor 
-                    highlight={activeHighlight} 
-                    onSave={handleUpdateNote} 
-                    onDelete={handleDeleteHighlight}
-                    onCancel={() => setActiveHighlightId(null)} 
-                />
-            )}
-
             {highlights && highlights
-                .filter(h => h.id !== activeHighlightId)
                 .sort((a, b) => (a.createdAt?.seconds ?? 0) - (b.createdAt?.seconds ?? 0))
-                .map(h => (
-                    <Card key={h.id} onClick={() => setActiveHighlightId(h.id)} className={cn("cursor-pointer hover:bg-muted/50", getHighlightClass(h.color), 'bg-opacity-20 dark:bg-opacity-10')}>
-                        <CardHeader className="p-2 flex flex-row items-center justify-between">
-                            <CardTitle className="text-sm font-medium truncate pr-2">{getVerseReference(h)}</CardTitle>
-                            {h.updatedAt && (
-                                <p className="text-xs text-muted-foreground shrink-0">
-                                    {formatDistanceToNow(h.updatedAt.toDate(), { addSuffix: true })}
-                                </p>
+                .map(h => {
+                    if (h.id === activeHighlightId) {
+                        return (
+                            <div key={h.id} ref={activeNoteRef}>
+                                <NoteEditor 
+                                    highlight={h} 
+                                    onSave={handleUpdateNote} 
+                                    onDelete={handleDeleteHighlight}
+                                    onCancel={() => setActiveHighlightId(null)} 
+                                />
+                            </div>
+                        )
+                    }
+                    return (
+                        <Card 
+                            key={h.id} 
+                            onClick={() => !activeHighlightId && setActiveHighlightId(h.id)} 
+                            className={cn(
+                                "cursor-pointer hover:bg-muted/50 transition-all", 
+                                getHighlightClass(h.color),
+                                activeHighlightId && h.id !== activeHighlightId && "opacity-50 cursor-not-allowed"
                             )}
-                        </CardHeader>
-                    </Card>
-                ))}
+                        >
+                             <CardHeader className="p-2 flex flex-row items-center justify-between">
+                                <CardTitle className="text-sm font-medium truncate pr-2">{getVerseReference(h)}</CardTitle>
+                                {h.updatedAt && (
+                                    <p className="text-xs text-muted-foreground shrink-0">
+                                        {formatDistanceToNow(h.updatedAt.toDate(), { addSuffix: true })}
+                                    </p>
+                                )}
+                            </CardHeader>
+                        </Card>
+                    )
+                })
+            }
 
-            {highlights?.length === 0 && (
+            {(!highlights || highlights.length === 0) && (
                 <div className="text-center text-muted-foreground py-10">
                     <p>No notes for this chapter.</p>
                     <p className="text-xs mt-1">Highlight some text to get started.</p>
@@ -483,11 +523,17 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md md:max-w-4xl lg:max-w-6xl h-[90vh] flex flex-col">
+      <DialogContent className="sm:max-w-md md:max-w-3xl lg:max-w-5xl h-[90vh] flex flex-col">
         <DialogHeader>
-          <DialogTitle>
-            Read the Bible
-             {chapterContent?.translation && <span className="text-muted-foreground text-sm font-normal ml-2">({chapterContent.translation})</span>}
+          <DialogTitle className="flex items-center justify-between">
+             <div className="flex items-center">
+                Read the Bible
+                {chapterContent?.translation && <span className="text-muted-foreground text-sm font-normal ml-2">({chapterContent.translation})</span>}
+             </div>
+             <div className="flex items-center gap-2">
+                <Button variant="outline" size="icon" onClick={decreaseFontSize} disabled={fontSize === 'sm'}><Minus className="h-4 w-4" /></Button>
+                <Button variant="outline" size="icon" onClick={increaseFontSize} disabled={fontSize === 'xl'}><Plus className="h-4 w-4" /></Button>
+            </div>
           </DialogTitle>
         </DialogHeader>
 
@@ -597,7 +643,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 flex-grow min-h-0">
                 <div className="md:col-span-2 flex flex-col gap-2 sm:gap-4 min-h-0">
                     <div className="relative flex-grow min-h-0">
-                        <ScrollArea ref={scrollAreaRef} onScroll={handleScroll} className="h-full border rounded-md p-1 sm:p-2 md:p-4">
+                        <ScrollArea ref={scrollAreaRef} onScroll={handleScroll} className="h-full border rounded-md p-2 sm:p-3 md:p-4">
                             {isLoadingChapter && (
                             <div className="absolute inset-0 flex items-center justify-center bg-background/50 z-20">
                                 <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -612,7 +658,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                             </div>
                             )}
                             {!isLoadingChapter && !chapterError && chapterContent && (
-                            <div className="space-y-1 sm:space-y-3 text-sm sm:text-base leading-relaxed font-serif md:text-lg">
+                            <div className={cn("space-y-1 sm:space-y-1.5 font-serif", fontSizeClasses[fontSize])}>
                                 {chapterContent.verses.map(v => {
                                         const verseNum = v.verse;
                                         const isSelected = selectedVerses.includes(verseNum);
@@ -622,7 +668,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                                             <p
                                                 key={verseNum}
                                                 className={cn(
-                                                    'rounded-md transition-colors -mx-1 px-1 sm:-mx-2 sm:px-2 py-1',
+                                                    'rounded-md transition-colors -mx-1 px-1 py-0.5 leading-relaxed',
                                                     highlightInfo && getHighlightClass(highlightInfo.color),
                                                     isSelected && 'verse-selected',
                                                     isActiveHighlight && 'ring-2 ring-primary ring-offset-2 ring-offset-background',
@@ -630,7 +676,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                                                 )}
                                                 onClick={() => handleVerseClick(verseNum)}
                                             >
-                                                <sup className="text-xs sm:text-sm font-sans text-muted-foreground mr-2 select-none">{v.verse}</sup>
+                                                <sup className={cn("font-sans text-muted-foreground mr-2 select-none", subFontSizeClasses[fontSize])}>{v.verse}</sup>
                                                 {v.text}
                                             </p>
                                         )
