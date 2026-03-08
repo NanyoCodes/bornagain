@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect, useRef, useLayoutEffect } from 'react';
@@ -68,6 +69,17 @@ const getVerseReference = (h: { book: string; chapter: number; verses: number[] 
     return `${h.book} ${h.chapter}:${ranges.join(', ')}`;
 };
 
+const getHighlightClass = (color?: string) => {
+    if (!color) return '';
+    return `highlight-${color}`;
+};
+
+const getNoteCardClass = (color?: string) => {
+    if (!color) return '';
+    return `note-card-${color}`;
+};
+
+
 // Internal component for the note editor
 function NoteEditor({ highlight, onSave, onDelete, onCancel }: { highlight: BibleHighlight; onSave: (id: string, note: string) => Promise<void>; onDelete: (id: string) => Promise<void>; onCancel: () => void; }) {
   const [note, setNote] = useState(highlight.note || '');
@@ -121,8 +133,8 @@ function NoteEditor({ highlight, onSave, onDelete, onCancel }: { highlight: Bibl
                 </AlertDialogFooter>
              </AlertDialogContent>
           </AlertDialog>
-          <div className="flex flex-wrap items-center justify-end gap-2">
-            <Button variant="ghost" size="sm" onClick={onCancel}>Cancel</Button>
+          <div className="flex flex-col-reverse sm:flex-row items-center justify-end gap-2">
+            <Button variant="ghost" size="sm" onClick={onCancel} disabled={isSaving}>Cancel</Button>
             <Button size="sm" onClick={handleSave} disabled={isSaving || note === (highlight.note || '')}>
               {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>}
               Save
@@ -361,16 +373,6 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
     }
   };
   
-    const getHighlightClass = (color?: string) => {
-        if (!color) return '';
-        return `highlight-${color}`;
-    };
-
-    const getNoteCardClass = (color?: string) => {
-        if (!color) return '';
-        return `note-card-${color}`;
-    };
-
     const handleVerseClick = (verseNumber: number) => {
         if (activeHighlightId) return;
 
@@ -727,7 +729,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                 {/* Desktop Notes View */}
                 <div className="hidden md:flex md:col-span-1 flex-col gap-4 h-full">
                     <h3 className="text-lg font-semibold tracking-tight">Notes for {chapterContent?.book} {chapterContent?.chapter}</h3>
-                    <ScrollArea className="flex-grow h-full border rounded-md p-2 bg-muted/30">
+                    <ScrollArea className="flex-grow h-full border rounded-md p-2 bg-background">
                         {NotesList}
                     </ScrollArea>
                 </div>
@@ -735,7 +737,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
              {/* Mobile Notes View */}
             {mounted && isMobile && (
                 <div className="md:hidden">
-                    <Accordion type="single" collapsible className="w-full border rounded-md bg-card">
+                    <Accordion type="single" collapsible className="w-full border rounded-md bg-background">
                         <AccordionItem value="notes" className="border-b-0">
                             <AccordionTrigger className="px-4 py-3 hover:no-underline">
                                 <h3 className="text-lg font-semibold tracking-tight">Notes for {chapterContent?.book} {chapterContent?.chapter}</h3>
