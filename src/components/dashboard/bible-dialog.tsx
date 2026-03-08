@@ -376,14 +376,26 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
     }
   };
   
+    const handleDeleteHighlight = async (highlightId: string) => {
+        if (!user || !firestore) return;
+        try {
+            await deleteDoc(doc(firestore, 'users', user.uid, 'bibleHighlights', highlightId));
+            toast({ title: 'Highlight Removed' });
+            if (activeHighlightId === highlightId) {
+                setActiveHighlightId(null);
+            }
+        } catch (error) {
+            toast({ variant: 'destructive', title: 'Error', description: 'Could not remove highlight.' });
+        }
+    };
+
     const handleVerseClick = (verseNumber: number) => {
         if (activeHighlightId) return;
 
         const existingHighlight = highlightsMap.get(verseNumber);
 
         if (existingHighlight) {
-            setActiveHighlightId(existingHighlight.id);
-            setSelectedVerses([]);
+            handleDeleteHighlight(existingHighlight.id);
             return;
         }
 
@@ -431,18 +443,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
         }
     };
 
-    const handleDeleteHighlight = async (highlightId: string) => {
-        if (!user || !firestore) return;
-        try {
-            await deleteDoc(doc(firestore, 'users', user.uid, 'bibleHighlights', highlightId));
-            toast({ title: 'Highlight Removed' });
-            if (activeHighlightId === highlightId) {
-                setActiveHighlightId(null);
-            }
-        } catch (error) {
-            toast({ variant: 'destructive', title: 'Error', description: 'Could not remove highlight.' });
-        }
-    };
+
 
     useEffect(() => {
         setMounted(true);
@@ -695,30 +696,21 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                         </ScrollArea>
                         {selectedVerses.length > 0 && (
                             <div className="absolute bottom-4 left-1/2 -translate-x-1/2 w-auto z-10">
-                                <div className="flex items-center gap-2 p-2 rounded-full border bg-background shadow-lg">
-                                    {highlightColors.map((color) => (
-                                        <Button
-                                            key={color}
-                                            variant="outline"
-                                            size="icon"
-                                            className="rounded-full"
-                                            onClick={() => handleSaveHighlight(color)}
-                                        >
-                                            <div className={cn('h-5 w-5 rounded-full', getHighlightClass(color))} />
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <Button variant="outline" className="rounded-full shadow-lg">
+                                            <Highlighter className="mr-2 h-4 w-4" />
+                                            Highlight
                                         </Button>
-                                    ))}
-
-                                    <Separator orientation="vertical" className="h-6" />
-
-                                    <Button
-                                      variant="ghost"
-                                      size="icon"
-                                      className="rounded-full"
-                                      onClick={() => setSelectedVerses([])}
-                                    >
-                                      <XCircle className="h-5 w-5" />
-                                    </Button>
-                                </div>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent className="flex gap-2">
+                                        {highlightColors.map((color) => (
+                                        <DropdownMenuItem key={color} onSelect={() => handleSaveHighlight(color)} className="p-0">
+                                                <div className={cn('h-6 w-6 rounded-full cursor-pointer', getHighlightClass(color))} />
+                                        </DropdownMenuItem>
+                                        ))}
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
                             </div>
                         )}
                     </div>
@@ -746,7 +738,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                             <AccordionTrigger className="px-4 py-3 hover:no-underline">
                                 <h3 className="text-lg font-semibold tracking-tight">Notes for {chapterContent?.book} {chapterContent?.chapter}</h3>
                             </AccordionTrigger>
-                            <AccordionContent className="px-2">
+                            <AccordionContent className="px-2 bg-background">
                                 <ScrollArea className="h-72 p-2">
                                     {NotesList}
                                 </ScrollArea>
