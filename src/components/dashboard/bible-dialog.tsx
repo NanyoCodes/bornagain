@@ -31,6 +31,7 @@ import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '../ui/sheet';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion';
+import { Separator } from '../ui/separator';
 
 
 const bibleVersions = [
@@ -38,6 +39,8 @@ const bibleVersions = [
     { id: 'web', name: 'World English Bible (WEB)' },
     { id: 'bbe', name: 'Bible in Basic English' },
 ];
+
+const highlightColors = ['yellow', 'blue', 'green', 'pink'];
 
 // Helper function to format verse references
 const getVerseReference = (h: { book: string; chapter: number; verses: number[] }) => {
@@ -119,7 +122,7 @@ function NoteEditor({ highlight, onSave, onDelete, onCancel }: { highlight: Bibl
                 </AlertDialogFooter>
              </AlertDialogContent>
           </AlertDialog>
-          <div className="flex items-center flex-wrap justify-end gap-2">
+          <div className="flex flex-wrap items-center justify-end gap-2">
             <Button variant="ghost" size="sm" onClick={onCancel}>Cancel</Button>
             <Button size="sm" onClick={handleSave} disabled={isSaving || note === (highlight.note || '')}>
               {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>}
@@ -480,7 +483,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-xl md:max-w-4xl lg:max-w-6xl h-[90vh] flex flex-col">
+      <DialogContent className="sm:max-w-md md:max-w-4xl lg:max-w-6xl h-[90vh] flex flex-col">
         <DialogHeader>
           <DialogTitle>
             Read the Bible
@@ -592,9 +595,9 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
               </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 flex-grow min-h-0">
-                <div className="md:col-span-2 flex flex-col gap-4 min-h-0">
+                <div className="md:col-span-2 flex flex-col gap-2 sm:gap-4 min-h-0">
                     <div className="relative flex-grow min-h-0">
-                        <ScrollArea ref={scrollAreaRef} onScroll={handleScroll} className="h-full border rounded-md p-2 sm:p-4">
+                        <ScrollArea ref={scrollAreaRef} onScroll={handleScroll} className="h-full border rounded-md p-1 sm:p-2 md:p-4">
                             {isLoadingChapter && (
                             <div className="absolute inset-0 flex items-center justify-center bg-background/50 z-20">
                                 <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -609,7 +612,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                             </div>
                             )}
                             {!isLoadingChapter && !chapterError && chapterContent && (
-                            <div className="space-y-3 text-base leading-relaxed font-serif sm:text-lg">
+                            <div className="space-y-1 sm:space-y-3 text-sm sm:text-base leading-relaxed font-serif md:text-lg">
                                 {chapterContent.verses.map(v => {
                                         const verseNum = v.verse;
                                         const isSelected = selectedVerses.includes(verseNum);
@@ -619,7 +622,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                                             <p
                                                 key={verseNum}
                                                 className={cn(
-                                                    'rounded-md transition-colors -mx-2 px-2 py-1',
+                                                    'rounded-md transition-colors -mx-1 px-1 sm:-mx-2 sm:px-2 py-1',
                                                     highlightInfo && getHighlightClass(highlightInfo.color),
                                                     isSelected && 'verse-selected',
                                                     isActiveHighlight && 'ring-2 ring-primary ring-offset-2 ring-offset-background',
@@ -627,7 +630,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                                                 )}
                                                 onClick={() => handleVerseClick(verseNum)}
                                             >
-                                                <sup className="text-sm font-sans text-muted-foreground mr-2 select-none">{v.verse}</sup>
+                                                <sup className="text-xs sm:text-sm font-sans text-muted-foreground mr-2 select-none">{v.verse}</sup>
                                                 {v.text}
                                             </p>
                                         )
@@ -637,12 +640,27 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                         </ScrollArea>
                         {selectedVerses.length > 0 && (
                             <div className="absolute bottom-4 left-1/2 -translate-x-1/2 w-auto z-10">
-                                <div className="flex items-center gap-2 p-2 rounded-full border bg-background shadow-lg">
-                                    <Button variant="outline" size="icon" className="rounded-full" onClick={() => handleSaveHighlight('yellow')} disabled={isProcessingHighlight}>
-                                        <div className={cn("h-5 w-5 rounded-full", getHighlightClass('yellow'))} />
-                                    </Button>
-                                    <Button variant="ghost" size="icon" className="rounded-full" onClick={() => setSelectedVerses([])}>
-                                        <XCircle className="h-5 w-5" />
+                                <div className="flex items-center gap-1 sm:gap-2 p-1.5 sm:p-2 rounded-full border bg-background shadow-lg">
+                                    {highlightColors.map((color) => (
+                                      <Button
+                                        key={color}
+                                        variant="outline"
+                                        size="icon"
+                                        className="rounded-full h-8 w-8 sm:h-9 sm:w-9"
+                                        onClick={() => handleSaveHighlight(color)}
+                                        disabled={isProcessingHighlight}
+                                      >
+                                        <div className={cn('h-5 w-5 rounded-full', getHighlightClass(color))} />
+                                      </Button>
+                                    ))}
+                                    <Separator orientation="vertical" className="h-6 mx-1" />
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      className="rounded-full h-8 w-8 sm:h-9 sm:w-9"
+                                      onClick={() => setSelectedVerses([])}
+                                    >
+                                      <XCircle className="h-5 w-5" />
                                     </Button>
                                 </div>
                             </div>
