@@ -39,9 +39,6 @@ const bibleVersions = [
     { id: 'bbe', name: 'Bible in Basic English' },
 ];
 
-const highlightColors = ['yellow', 'green', 'blue', 'pink'];
-
-
 // Helper function to format verse references
 const getVerseReference = (h: { book: string; chapter: number; verses: number[] }) => {
     if (!h || !h.verses) return '';
@@ -483,7 +480,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="md:max-w-4xl h-[90vh] flex flex-col">
+      <DialogContent className="sm:max-w-md md:max-w-4xl lg:max-w-6xl h-[90vh] flex flex-col">
         <DialogHeader>
           <DialogTitle>
             Read the Bible
@@ -641,11 +638,9 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                         {selectedVerses.length > 0 && (
                             <div className="absolute bottom-4 left-1/2 -translate-x-1/2 w-auto z-10">
                                 <div className="flex items-center gap-2 p-2 rounded-full border bg-background shadow-lg">
-                                    {highlightColors.map(color => (
-                                        <Button key={color} variant="outline" size="icon" className="rounded-full" onClick={() => handleSaveHighlight(color)} disabled={isProcessingHighlight}>
-                                            <div className={cn("h-5 w-5 rounded-full", getHighlightClass(color))} />
-                                        </Button>
-                                    ))}
+                                    <Button variant="outline" size="icon" className="rounded-full" onClick={() => handleSaveHighlight('yellow')} disabled={isProcessingHighlight}>
+                                        <div className={cn("h-5 w-5 rounded-full", getHighlightClass('yellow'))} />
+                                    </Button>
                                     <Button variant="ghost" size="icon" className="rounded-full" onClick={() => setSelectedVerses([])}>
                                         <XCircle className="h-5 w-5" />
                                     </Button>
