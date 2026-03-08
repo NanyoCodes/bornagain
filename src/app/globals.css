@@ -76,16 +76,28 @@
 
 @layer utilities {
   .highlight-yellow {
-    @apply bg-yellow-200 dark:bg-yellow-800/60;
+    @apply bg-yellow-200/60 dark:bg-yellow-800/50;
   }
   .highlight-blue {
-    @apply bg-blue-200 dark:bg-blue-800/60;
+    @apply bg-blue-200/60 dark:bg-blue-800/50;
   }
   .highlight-green {
-    @apply bg-green-200 dark:bg-green-800/60;
+    @apply bg-green-200/60 dark:bg-green-800/50;
   }
   .highlight-pink {
-    @apply bg-pink-200 dark:bg-pink-800/60;
+    @apply bg-pink-200/60 dark:bg-pink-800/50;
+  }
+  .note-card-yellow {
+    @apply bg-yellow-50 dark:bg-yellow-950 border-yellow-200 dark:border-yellow-900;
+  }
+  .note-card-blue {
+    @apply bg-blue-50 dark:bg-blue-950 border-blue-200 dark:border-blue-900;
+  }
+  .note-card-green {
+    @apply bg-green-50 dark:bg-green-950 border-green-200 dark:border-green-900;
+  }
+  .note-card-pink {
+    @apply bg-pink-50 dark:bg-pink-950 border-pink-200 dark:border-pink-900;
   }
   .verse-selected {
     @apply bg-primary/20;
