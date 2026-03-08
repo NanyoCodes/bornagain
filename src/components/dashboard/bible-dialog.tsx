@@ -529,7 +529,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md md:max-w-3xl lg:max-w-5xl h-[90vh] flex flex-col">
+      <DialogContent className="sm:max-w-4xl lg:max-w-5xl h-[90vh] flex flex-col">
         <DialogHeader>
           <DialogTitle className="flex items-center justify-between">
              <div className="flex items-center">
@@ -676,7 +676,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                                                 className={cn(
                                                     'rounded-md transition-colors -mx-1 px-1 py-0.5 leading-relaxed',
                                                     highlightInfo && getHighlightClass(highlightInfo.color),
-                                                    isSelected && 'bg-primary/40',
+                                                    isSelected && 'bg-primary/50',
                                                     isActiveHighlight && 'ring-2 ring-primary ring-offset-2 ring-offset-background',
                                                     'cursor-pointer'
                                                 )}
