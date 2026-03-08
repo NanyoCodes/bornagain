@@ -103,7 +103,7 @@ function NoteEditor({ highlight, onSave, onDelete, onCancel }: { highlight: Bibl
             className="text-sm"
         />
       </CardContent>
-      <CardFooter className="p-3 pt-0 justify-between">
+      <CardFooter className="p-3 pt-0 flex flex-wrap items-center justify-between gap-y-2">
           <AlertDialog>
              <AlertDialogTrigger asChild>
                 <Button variant="destructive" size="sm" disabled={isDeleting}>
@@ -122,7 +122,7 @@ function NoteEditor({ highlight, onSave, onDelete, onCancel }: { highlight: Bibl
                 </AlertDialogFooter>
              </AlertDialogContent>
           </AlertDialog>
-          <div className="flex gap-2">
+          <div className="flex items-center flex-wrap justify-end gap-2">
             <Button variant="ghost" size="sm" onClick={onCancel}>Cancel</Button>
             <Button size="sm" onClick={handleSave} disabled={isSaving || note === (highlight.note || '')}>
               {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>}
@@ -483,7 +483,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-4xl h-[90vh] flex flex-col">
+      <DialogContent className="md:max-w-4xl h-[90vh] flex flex-col">
         <DialogHeader>
           <DialogTitle>
             Read the Bible
