@@ -549,13 +549,13 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
     
     const ReaderContent = (
       <div className="flex flex-col gap-2 sm:gap-4 min-h-0 h-full">
-          <div className="flex items-center justify-end gap-2 px-2 sm:px-0">
-            <span className="text-xs text-muted-foreground">Font Size</span>
-            <Button variant="outline" size="icon" className="h-7 w-7" onClick={decreaseFontSize} disabled={fontSize === 'sm'}><Minus className="h-4 w-4" /></Button>
-            <Button variant="outline" size="icon" className="h-7 w-7" onClick={increaseFontSize} disabled={fontSize === 'xl'}><Plus className="h-4 w-4" /></Button>
-          </div>
           <div className="relative flex-grow min-h-0">
-              <ScrollArea ref={scrollAreaRef} onScroll={handleScroll} className="h-full border rounded-md p-2 sm:p-4">
+              <div className="absolute top-2 right-2 z-10 flex items-center justify-end gap-2 px-2 sm:px-0">
+                <span className="text-xs text-muted-foreground">Font Size</span>
+                <Button variant="outline" size="icon" className="h-7 w-7" onClick={decreaseFontSize} disabled={fontSize === 'sm'}><Minus className="h-4 w-4" /></Button>
+                <Button variant="outline" size="icon" className="h-7 w-7" onClick={increaseFontSize} disabled={fontSize === 'xl'}><Plus className="h-4 w-4" /></Button>
+              </div>
+              <ScrollArea ref={scrollAreaRef} onScroll={handleScroll} className="h-full border rounded-md p-2 sm:p-4 pt-12">
                   {isLoadingChapter && (
                   <div className="absolute inset-0 flex items-center justify-center bg-background/50 z-20">
                       <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -598,43 +598,43 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                   )}
               </ScrollArea>
           </div>
-          <div className="mt-4 flex items-center justify-center h-16 shrink-0">
-              {selectedVerses.length > 0 && !unfinishedHighlight && (
-                  <Button onClick={handleSaveHighlight} disabled={isProcessingHighlight}>
-                      <Highlighter className="mr-2 h-4 w-4" />
-                      {isProcessingHighlight ? 'Saving...' : 'Highlight & Note'}
-                  </Button>
-              )}
-              {unfinishedHighlight && (
-                  <Card className="border-amber-500/50 bg-amber-500/10 p-3 w-full max-w-md">
-                      <div className="flex items-center justify-between gap-4">
-                          <div className="text-amber-700 dark:text-amber-400">
-                              <p className="font-semibold text-sm">Meditation Required</p>
-                              <p className="text-xs">Please add a note to your last highlight before creating another.</p>
-                          </div>
-                          <Button 
-                              size="sm" 
-                              variant="outline"
-                              onClick={() => {
-                                  if (unfinishedHighlight) {
-                                    setActiveHighlightId(unfinishedHighlight.id);
-                                    if (isMobile) {
-                                        setMobileTab('notes');
+          <DialogFooter className="mt-4 flex-col items-center sm:flex-row gap-2 sm:justify-between shrink-0">
+            <div className="flex items-center justify-center min-h-[40px]">
+                {selectedVerses.length > 0 && !unfinishedHighlight && (
+                    <Button onClick={handleSaveHighlight} disabled={isProcessingHighlight}>
+                        <Highlighter className="mr-2 h-4 w-4" />
+                        {isProcessingHighlight ? 'Saving...' : 'Highlight & Note'}
+                    </Button>
+                )}
+                {unfinishedHighlight && (
+                    <Card className="border-amber-500/50 bg-amber-500/10 p-3 w-full max-w-md">
+                        <div className="flex items-center justify-between gap-4">
+                            <div className="text-amber-700 dark:text-amber-400">
+                                <p className="font-semibold text-sm">Meditation Required</p>
+                                <p className="text-xs">Please add a note to your last highlight before creating another.</p>
+                            </div>
+                            <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => {
+                                    if (unfinishedHighlight) {
+                                      setActiveHighlightId(unfinishedHighlight.id);
+                                      if (isMobile) {
+                                          setMobileTab('notes');
+                                      }
                                     }
-                                  }
-                              }}
-                          >
-                              Go to Note
-                          </Button>
-                      </div>
-                  </Card>
-              )}
-          </div>
-          <DialogFooter>
-              <Button onClick={handleMarkAsRead} disabled={isSubmitting || isLoadingChapter || !!chapterError || !isScrolledToEnd}>
-              {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Mark as Read & Next Chapter
-              </Button>
+                                }}
+                            >
+                                Go to Note
+                            </Button>
+                        </div>
+                    </Card>
+                )}
+            </div>
+            <Button onClick={handleMarkAsRead} disabled={isSubmitting || isLoadingChapter || !!chapterError || !isScrolledToEnd}>
+            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Mark as Read & Next Chapter
+            </Button>
           </DialogFooter>
       </div>
     );
@@ -767,7 +767,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                               <h3 className="font-semibold tracking-tight text-base">Notes for {chapterContent?.book} {chapterContent?.chapter}</h3>
                             </AccordionTrigger>
                             <AccordionContent className="px-2">
-                               <ScrollArea className="flex-grow h-full max-h-[calc(80vh-250px)]">
+                               <ScrollArea className="flex-grow h-full max-h-[50vh]">
                                   {NotesList}
                               </ScrollArea>
                             </AccordionContent>
