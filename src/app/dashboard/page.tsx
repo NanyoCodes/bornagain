@@ -154,7 +154,7 @@ function GlobalSoulsCard({ location, userSouls }: { location: { city?: string, c
 
     useEffect(() => {
         fetchCounts();
-        const intervalId = setInterval(fetchCounts, 60000); // Refresh every 60 seconds
+        const intervalId = setInterval(fetchCounts, 30000); // Refresh every 30 seconds
 
         return () => clearInterval(intervalId); // Cleanup on unmount
     }, [fetchCounts]);
@@ -163,7 +163,13 @@ function GlobalSoulsCard({ location, userSouls }: { location: { city?: string, c
         <Card>
             <CardHeader className="flex flex-row items-start justify-between pb-4">
                 <div>
-                    <CardTitle>Community Impact</CardTitle>
+                    <CardTitle className="flex items-center gap-2">
+                        Community Impact
+                        <span className="flex h-2 w-2 relative">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                        </span>
+                    </CardTitle>
                     <CardDescription>Souls won by all users.</CardDescription>
                 </div>
                 <Button variant="ghost" size="icon" onClick={fetchCounts} disabled={loading}>
@@ -183,7 +189,7 @@ function GlobalSoulsCard({ location, userSouls }: { location: { city?: string, c
                              <div className="flex items-center justify-between">
                                 <span className="font-medium text-muted-foreground">In {location.city}</span>
                                 <div className="text-right">
-                                    <p className="font-bold text-lg">{cityCount}</p>
+                                    <p className="font-bold text-lg">{loading && cityCount === 0 ? <Skeleton className="h-6 w-10"/> : cityCount}</p>
                                     <p className="text-xs text-muted-foreground">You: {yourCityCount}</p>
                                 </div>
                             </div>
@@ -192,7 +198,7 @@ function GlobalSoulsCard({ location, userSouls }: { location: { city?: string, c
                             <div className="flex items-center justify-between">
                                 <span className="font-medium text-muted-foreground">In {location.country}</span>
                                 <div className="text-right">
-                                    <p className="font-bold text-lg">{countryCount}</p>
+                                    <p className="font-bold text-lg">{loading && countryCount === 0 ? <Skeleton className="h-6 w-12"/> : countryCount}</p>
                                     <p className="text-xs text-muted-foreground">You: {yourCountryCount}</p>
                                 </div>
                             </div>
@@ -200,7 +206,7 @@ function GlobalSoulsCard({ location, userSouls }: { location: { city?: string, c
                         <div className="flex items-center justify-between">
                             <span className="font-medium text-muted-foreground">Globally</span>
                             <div className="text-right">
-                                <p className="font-bold text-lg">{globalCount}</p>
+                                <p className="font-bold text-lg">{loading && globalCount === 0 ? <Skeleton className="h-6 w-16"/> : globalCount}</p>
                                 <p className="text-xs text-muted-foreground">You: {yourGlobalCount}</p>
                             </div>
                         </div>
