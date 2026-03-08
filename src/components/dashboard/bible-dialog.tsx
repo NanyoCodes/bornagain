@@ -32,12 +32,6 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '../ui/sheet';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion';
 
-const bibleVersions = [
-    { id: 'kjv', name: 'King James (KJV)' },
-    { id: 'web', name: 'World English Bible (WEB)' },
-    { id: 'bbe', name: 'Bible in Basic English' },
-];
-
 const getHighlightClass = (color?: string) => {
     if (!color) return 'bg-blue-200/60 dark:bg-blue-800/50';
     return `highlight-${color}`;
@@ -391,8 +385,6 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
     };
 
     const handleVerseClick = (verseNumber: number) => {
-        if (activeHighlightId) return;
-
         const existingHighlight = highlightsMap.get(verseNumber);
 
         if (existingHighlight) {
@@ -649,7 +641,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
         <DialogHeader>
           <DialogTitle className="flex items-center justify-between">
              <div className="flex items-center">
-                Read the Bible
+                Bible
                 {chapterContent?.translation && <span className="text-muted-foreground text-sm font-normal ml-2">({chapterContent.translation})</span>}
              </div>
           </DialogTitle>
@@ -657,7 +649,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
 
         <Tabs defaultValue="read" className="flex-grow flex flex-col min-h-0">
           <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="read">Read</TabsTrigger>
+            <TabsTrigger value="read">Bible</TabsTrigger>
             <TabsTrigger value="history">History</TabsTrigger>
           </TabsList>
           
@@ -782,7 +774,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
             ) : (
                 <Tabs value={mobileTab} onValueChange={setMobileTab} className="flex-grow flex flex-col min-h-0">
                     <TabsList className="grid w-full grid-cols-2">
-                        <TabsTrigger value="reader">Read</TabsTrigger>
+                        <TabsTrigger value="reader">Bible</TabsTrigger>
                         <TabsTrigger value="notes">Notes ({highlights?.length || 0})</TabsTrigger>
                     </TabsList>
                     <TabsContent value="reader" className="flex-grow flex flex-col min-h-0 mt-2">
