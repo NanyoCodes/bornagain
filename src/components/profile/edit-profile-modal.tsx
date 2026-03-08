@@ -1,4 +1,3 @@
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -18,9 +17,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { Loader2, Camera } from "lucide-react";
-import { useUser, useFirestore, useFirebase } from "@/firebase";
+import { useUser, useFirestore, useStorage } from "@/firebase";
 import { doc, updateDoc } from "firebase/firestore";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { updateProfile } from "firebase/auth";
 import type { UserProfile } from "@/lib/types";
 import { errorEmitter } from "@/firebase/error-emitter";
@@ -47,7 +46,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
   const { toast } = useToast();
   const { user } = useUser();
   const firestore = useFirestore();
-  const storage = getStorage(useFirebase().app);
+  const storage = useStorage();
   
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [newImageFile, setNewImageFile] = useState<File | null>(null);
@@ -91,7 +90,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
     try {
       let photoURL = userProfile.photoURL;
 
-      if (newImageFile) {
+      if (newImageFile && storage) {
         const imageRef = ref(storage, `profile-pictures/${user.uid}/profile.jpg`);
         const uploadResult = await uploadBytes(imageRef, newImageFile);
         photoURL = await getDownloadURL(uploadResult.ref);
