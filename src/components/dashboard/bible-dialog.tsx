@@ -31,15 +31,12 @@ import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '../ui/sheet';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion';
-import { Separator } from '../ui/separator';
 
 const bibleVersions = [
     { id: 'kjv', name: 'King James (KJV)' },
     { id: 'web', name: 'World English Bible (WEB)' },
     { id: 'bbe', name: 'Bible in Basic English' },
 ];
-
-const highlightColors = ['red', 'blue', 'pink', 'green'];
 
 const getHighlightClass = (color?: string) => {
     if (!color) return '';
@@ -50,6 +47,7 @@ const getNoteCardClass = (color?: string) => {
     if (!color) return '';
     return `note-card-${color}`;
 };
+
 
 // Helper function to format verse references
 const getVerseReference = (h: { book: string; chapter: number; verses: number[] }) => {
@@ -392,7 +390,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
         const existingHighlight = highlightsMap.get(verseNumber);
 
         if (existingHighlight) {
-            handleDeleteHighlight(existingHighlight.id);
+            setActiveHighlightId(existingHighlight.id);
             return;
         }
 
@@ -403,7 +401,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
         );
     };
 
-    const handleSaveHighlight = async (color: string) => {
+    const handleSaveHighlight = async () => {
         if (!user || !firestore || selectedVerses.length === 0 || !chapterContent) return;
 
         setIsProcessingHighlight(true);
@@ -415,12 +413,13 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                 book: chapterContent.book,
                 chapter: chapterContent.chapter,
                 verses: selectedVerses,
-                color: color,
+                color: 'blue',
                 createdAt: serverTimestamp(),
                 note: '',
             });
             
             setSelectedVerses([]);
+            setActiveHighlightId(newHighlightRef.id);
         } catch (error) {
             toast({ variant: 'destructive', title: 'Error', description: 'Could not save highlight.' });
         } finally {
@@ -529,6 +528,11 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
     
     const ReaderContent = (
       <div className="flex flex-col gap-2 sm:gap-4 min-h-0 h-full">
+          <div className="flex items-center justify-end gap-2 px-2 sm:px-0">
+            <span className="text-xs text-muted-foreground">Font Size</span>
+            <Button variant="outline" size="icon" className="h-7 w-7" onClick={decreaseFontSize} disabled={fontSize === 'sm'}><Minus className="h-4 w-4" /></Button>
+            <Button variant="outline" size="icon" className="h-7 w-7" onClick={increaseFontSize} disabled={fontSize === 'xl'}><Plus className="h-4 w-4" /></Button>
+          </div>
           <div className="relative flex-grow min-h-0">
               <ScrollArea ref={scrollAreaRef} onScroll={handleScroll} className="h-full border rounded-md p-2 sm:p-4">
                   {isLoadingChapter && (
@@ -558,7 +562,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                                           'rounded-sm transition-colors -mx-1 px-1 py-0.5',
                                           'sm:leading-relaxed md:leading-loose',
                                           highlightInfo && getHighlightClass(highlightInfo.color),
-                                          isSelected && 'verse-selected',
+                                          isSelected && 'bg-destructive/20',
                                           isActiveHighlight && 'ring-2 ring-primary ring-offset-2 ring-offset-background',
                                           'cursor-pointer'
                                       )}
@@ -574,16 +578,10 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
               </ScrollArea>
               {selectedVerses.length > 0 && (
                   <div className="absolute bottom-4 left-1/2 -translate-x-1/2 w-auto z-10">
-                      <div className="flex gap-2 p-2 bg-background/80 backdrop-blur-sm rounded-full shadow-lg border">
-                          {highlightColors.map((color) => (
-                              <button
-                                  key={color}
-                                  onClick={() => handleSaveHighlight(color)}
-                                  className={cn('h-6 w-6 rounded-full cursor-pointer transition-transform hover:scale-110', getHighlightClass(color))}
-                                  aria-label={`Highlight ${color}`}
-                              />
-                          ))}
-                      </div>
+                       <Button onClick={handleSaveHighlight} disabled={isProcessingHighlight}>
+                          <Highlighter className="mr-2 h-4 w-4" />
+                          {isProcessingHighlight ? 'Saving...' : 'Highlight & Note'}
+                      </Button>
                   </div>
               )}
           </div>
@@ -605,10 +603,6 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                 Read the Bible
                 {chapterContent?.translation && <span className="text-muted-foreground text-sm font-normal ml-2">({chapterContent.translation})</span>}
              </div>
-             <div className="flex items-center gap-2">
-                <Button variant="outline" size="icon" onClick={decreaseFontSize} disabled={fontSize === 'sm'}><Minus className="h-4 w-4" /></Button>
-                <Button variant="outline" size="icon" onClick={increaseFontSize} disabled={fontSize === 'xl'}><Plus className="h-4 w-4" /></Button>
-            </div>
           </DialogTitle>
         </DialogHeader>
 
@@ -721,9 +715,9 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                     <div className="md:col-span-2 h-full">
                         {ReaderContent}
                     </div>
-                    <div className="hidden md:flex md:col-span-1 flex-col gap-4 h-full">
+                    <div className="hidden md:block md:col-span-1 h-full">
                          <Accordion type="single" collapsible defaultValue='item-1' className="w-full">
-                          <AccordionItem value="item-1" className="border rounded-md">
+                          <AccordionItem value="item-1" className="border rounded-md bg-muted/30">
                             <AccordionTrigger className="px-4 py-3 hover:no-underline">
                               <h3 className="font-semibold tracking-tight text-base">Notes for {chapterContent?.book} {chapterContent?.chapter}</h3>
                             </AccordionTrigger>
@@ -746,7 +740,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                         {ReaderContent}
                     </TabsContent>
                     <TabsContent value="notes" className="flex-grow min-h-0 mt-2">
-                         <ScrollArea className="h-full border rounded-md p-2">
+                         <ScrollArea className="h-full border rounded-md p-2 bg-muted/30">
                             {NotesList}
                         </ScrollArea>
                     </TabsContent>
