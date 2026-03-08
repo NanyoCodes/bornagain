@@ -27,6 +27,7 @@ import { FirestorePermissionError } from "@/firebase/errors";
 import { LocationProfileInput } from "../common/location-profile-input";
 import { Label } from "../ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { cn } from "@/lib/utils";
 
 const formSchema = z.object({
   firstName: z.string().min(2, "First name must be at least 2 characters.").max(50, "Name is too long."),
@@ -49,22 +50,61 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
   const storage = useStorage();
   
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [newImageFile, setNewImageFile] = useState<File | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
   const [previewImageUrl, setPreviewImageUrl] = useState<string | null>(null);
 
-  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (file) {
-      if (file.size > 5 * 1024 * 1024) { // 5MB limit
-        toast({
-          variant: "destructive",
-          title: "File too large",
-          description: "Please select an image smaller than 5MB.",
-        });
-        return;
-      }
-      setNewImageFile(file);
-      setPreviewImageUrl(URL.createObjectURL(file));
+    if (!file) return;
+
+    if (!user || !firestore || !storage) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Cannot upload photo. Services not available.",
+      });
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) { // 5MB limit
+      toast({
+        variant: "destructive",
+        title: "File too large",
+        description: "Please select an image smaller than 5MB.",
+      });
+      return;
+    }
+    
+    setIsUploading(true);
+    setPreviewImageUrl(URL.createObjectURL(file)); // Show preview immediately
+
+    try {
+      const imageRef = ref(storage, `profile-pictures/${user.uid}/profile.jpg`);
+      const uploadResult = await uploadBytes(imageRef, file);
+      const newPhotoURL = await getDownloadURL(uploadResult.ref);
+
+      const userDocRef = doc(firestore, 'users', user.uid);
+      
+      const authUpdatePromise = updateProfile(user, { photoURL: newPhotoURL });
+      const firestoreUpdatePromise = updateDoc(userDocRef, { photoURL: newPhotoURL });
+      
+      await Promise.all([authUpdatePromise, firestoreUpdatePromise]);
+
+      toast({
+        title: "Profile Photo Updated!",
+        description: "Your new photo has been saved.",
+      });
+
+    } catch (error) {
+      console.error("Photo upload failed:", error);
+      toast({
+        variant: "destructive",
+        title: "Upload Failed",
+        description: "Could not upload your new profile photo. Please try again.",
+      });
+      setPreviewImageUrl(null); // Revert preview on failure
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -88,14 +128,6 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
     setIsSubmitting(true);
 
     try {
-      let photoURL = userProfile.photoURL;
-
-      if (newImageFile && storage) {
-        const imageRef = ref(storage, `profile-pictures/${user.uid}/profile.jpg`);
-        const uploadResult = await uploadBytes(imageRef, newImageFile);
-        photoURL = await getDownloadURL(uploadResult.ref);
-      }
-      
       const displayName = `${values.firstName} ${values.lastName}`;
       
       const firestoreUpdatePayload = {
@@ -111,13 +143,9 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
           country_lowercase: (values.country || "").toLowerCase(),
         },
         phone: values.phone || "",
-        photoURL: photoURL,
       };
       
-      const authUpdatePromise = updateProfile(user, {
-        displayName: displayName,
-        photoURL: photoURL
-      });
+      const authUpdatePromise = user.displayName !== displayName ? updateProfile(user, { displayName }) : Promise.resolve();
 
       const firestoreUpdatePromise = updateDoc(doc(firestore, 'users', user.uid), firestoreUpdatePayload).catch((serverError) => {
         const permissionError = new FirestorePermissionError({
@@ -131,7 +159,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
       
       await Promise.all([authUpdatePromise, firestoreUpdatePromise]);
       
-      toast({ title: "Profile Updated", description: "Your changes have been saved." });
+      toast({ title: "Profile Updated", description: "Your profile details have been saved." });
       onClose();
 
     } catch (error: any) {
@@ -149,14 +177,20 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <div className="flex flex-col items-center gap-2">
             <div className="relative group">
-                <label htmlFor="photo-upload" className="cursor-pointer">
+                <label htmlFor="photo-upload" className={cn("cursor-pointer", isUploading && "cursor-not-allowed")}>
                     <Avatar className="h-24 w-24">
                         <AvatarImage src={previewImageUrl || userProfile.photoURL || undefined} alt={`${userProfile.firstName} ${userProfile.lastName}`} />
                         <AvatarFallback>{userProfile.firstName?.charAt(0)}{userProfile.lastName?.charAt(0)}</AvatarFallback>
                     </Avatar>
-                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
-                        <Camera className="h-8 w-8 text-white" />
-                    </div>
+                     {isUploading ? (
+                        <div className="absolute inset-0 bg-black/60 flex items-center justify-center rounded-full">
+                            <Loader2 className="h-8 w-8 text-white animate-spin" />
+                        </div>
+                    ) : (
+                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                            <Camera className="h-8 w-8 text-white" />
+                        </div>
+                    )}
                 </label>
                 <Input
                     id="photo-upload"
@@ -164,6 +198,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                     className="sr-only"
                     accept="image/png, image/jpeg, image/gif"
                     onChange={handleImageChange}
+                    disabled={isUploading}
                 />
             </div>
             <p className="text-sm text-muted-foreground text-center px-4">Click the image to upload a new profile photo.</p>
@@ -258,7 +293,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
             </FormItem>
           )}
         />
-        <Button type="submit" className="w-full" disabled={isSubmitting}>
+        <Button type="submit" className="w-full" disabled={isSubmitting || isUploading}>
           {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           Save Changes
         </Button>
