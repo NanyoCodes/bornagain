@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from 'react';
@@ -54,9 +53,9 @@ function EditPrayerLinkForm({ link, index, onUpdate, onCancel, isSubmitting }: {
             </FormItem>
           )}
         />
-        <div className="flex flex-col-reverse md:flex-row md:justify-end gap-2 pt-2">
-          <Button type="button" size="sm" variant="ghost" onClick={onCancel} disabled={isSubmitting} className="w-full md:w-auto">Cancel</Button>
-          <Button type="submit" size="sm" disabled={isSubmitting} className="w-full md:w-auto">
+        <div className="flex flex-col-reverse gap-2 pt-2">
+          <Button type="button" size="sm" variant="ghost" onClick={onCancel} disabled={isSubmitting} className="w-full">Cancel</Button>
+          <Button type="submit" size="sm" disabled={isSubmitting} className="w-full">
             {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Save
           </Button>
@@ -195,7 +194,7 @@ export function PrayerLinksSettingsCard({ userProfile, userId }: { userProfile: 
         <Form {...addForm}>
           <form onSubmit={addForm.handleSubmit(handleAddLink)} className="space-y-4 rounded-lg border p-4">
             <h4 className="font-medium">Add a New Link</h4>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-4">
               <FormField
                 control={addForm.control}
                 name="name"
@@ -223,7 +222,7 @@ export function PrayerLinksSettingsCard({ userProfile, userId }: { userProfile: 
                 )}
               />
             </div>
-            <Button type="submit" disabled={isSubmitting} className="w-full md:w-auto">
+            <Button type="submit" disabled={isSubmitting} className="w-full">
               {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               <Plus className="mr-2 h-4 w-4" /> Add Link
             </Button>
