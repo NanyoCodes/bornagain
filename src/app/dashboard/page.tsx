@@ -189,7 +189,7 @@ function GlobalSoulsCard({ location, userSouls }: { location: { city?: string, c
                              <div className="flex items-center justify-between">
                                 <span className="font-medium text-muted-foreground">In {location.city}</span>
                                 <div className="text-right">
-                                    <p className="font-bold text-lg">{loading && cityCount === 0 ? <Skeleton className="h-6 w-10"/> : cityCount}</p>
+                                    <div className="font-bold text-lg">{loading && cityCount === 0 ? <Skeleton className="h-6 w-10"/> : cityCount}</div>
                                     <p className="text-xs text-muted-foreground">You: {yourCityCount}</p>
                                 </div>
                             </div>
@@ -198,7 +198,7 @@ function GlobalSoulsCard({ location, userSouls }: { location: { city?: string, c
                             <div className="flex items-center justify-between">
                                 <span className="font-medium text-muted-foreground">In {location.country}</span>
                                 <div className="text-right">
-                                    <p className="font-bold text-lg">{loading && countryCount === 0 ? <Skeleton className="h-6 w-12"/> : countryCount}</p>
+                                    <div className="font-bold text-lg">{loading && countryCount === 0 ? <Skeleton className="h-6 w-12"/> : countryCount}</div>
                                     <p className="text-xs text-muted-foreground">You: {yourCountryCount}</p>
                                 </div>
                             </div>
@@ -206,7 +206,7 @@ function GlobalSoulsCard({ location, userSouls }: { location: { city?: string, c
                         <div className="flex items-center justify-between">
                             <span className="font-medium text-muted-foreground">Globally</span>
                             <div className="text-right">
-                                <p className="font-bold text-lg">{loading && globalCount === 0 ? <Skeleton className="h-6 w-16"/> : globalCount}</p>
+                                <div className="font-bold text-lg">{loading && globalCount === 0 ? <Skeleton className="h-6 w-16"/> : globalCount}</div>
                                 <p className="text-xs text-muted-foreground">You: {yourGlobalCount}</p>
                             </div>
                         </div>
