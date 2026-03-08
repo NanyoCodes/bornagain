@@ -30,6 +30,7 @@ import { Textarea } from '../ui/textarea';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '../ui/sheet';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion';
 import { Separator } from '../ui/separator';
 
 const bibleVersions = [
@@ -419,7 +420,6 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                 note: '',
             });
             
-            setActiveHighlightId(newHighlightRef.id);
             setSelectedVerses([]);
         } catch (error) {
             toast({ variant: 'destructive', title: 'Error', description: 'Could not save highlight.' });
@@ -722,10 +722,18 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                         {ReaderContent}
                     </div>
                     <div className="hidden md:flex md:col-span-1 flex-col gap-4 h-full">
-                        <h3 className="text-lg font-semibold tracking-tight">Notes for {chapterContent?.book} {chapterContent?.chapter}</h3>
-                        <ScrollArea className="flex-grow h-full border rounded-md p-2">
-                            {NotesList}
-                        </ScrollArea>
+                         <Accordion type="single" collapsible defaultValue='item-1' className="w-full">
+                          <AccordionItem value="item-1" className="border rounded-md">
+                            <AccordionTrigger className="px-4 py-3 hover:no-underline">
+                              <h3 className="font-semibold tracking-tight text-base">Notes for {chapterContent?.book} {chapterContent?.chapter}</h3>
+                            </AccordionTrigger>
+                            <AccordionContent className="px-2">
+                               <ScrollArea className="flex-grow h-full max-h-[calc(80vh-250px)]">
+                                  {NotesList}
+                              </ScrollArea>
+                            </AccordionContent>
+                          </AccordionItem>
+                        </Accordion>
                     </div>
                 </div>
             ) : (
@@ -842,5 +850,3 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
     </Dialog>
   );
 }
-
-    
