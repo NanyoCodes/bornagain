@@ -60,7 +60,11 @@ export function useDoc<T>(
 
     // Clean up the listener when the component unmounts or dependencies change.
     return () => unsubscribe();
-  }, [docRef, options?.snapshotOptions]);
+    // The dependency array is intentionally simple. We don't want to re-run this effect
+    // for every change in snapshotOptions, as that would re-create the listener.
+    // The options are passed directly to `doc.data()`, which uses them on-the-fly.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [docRef]);
 
   return { data, loading, error };
 }
