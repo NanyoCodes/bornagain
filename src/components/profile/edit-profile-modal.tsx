@@ -17,7 +17,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { Loader2, Camera } from "lucide-react";
-import { useUser, useFirestore, useStorage } from "@/firebase";
+import { useAuth, useFirestore, useStorage } from "@/firebase";
 import { doc, updateDoc } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { updateProfile } from "firebase/auth";
@@ -45,7 +45,7 @@ type EditProfileModalProps = {
 
 export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps) {
   const { toast } = useToast();
-  const { user } = useUser();
+  const auth = useAuth();
   const firestore = useFirestore();
   const storage = useStorage();
   
@@ -57,11 +57,12 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
     const file = event.target.files?.[0];
     if (!file) return;
 
-    if (!user || !firestore || !storage) {
+    const currentUser = auth.currentUser;
+    if (!currentUser || !firestore || !storage) {
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Cannot upload photo. Services not available.",
+        description: "Cannot upload photo. Services not available or user not logged in.",
       });
       return;
     }
@@ -79,13 +80,13 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
     setPreviewImageUrl(URL.createObjectURL(file)); // Show preview immediately
 
     try {
-      const imageRef = ref(storage, `profile-pictures/${user.uid}/profile.jpg`);
+      const imageRef = ref(storage, `profile-pictures/${currentUser.uid}/profile.jpg`);
       const uploadResult = await uploadBytes(imageRef, file);
       const newPhotoURL = await getDownloadURL(uploadResult.ref);
 
-      const userDocRef = doc(firestore, 'users', user.uid);
+      const userDocRef = doc(firestore, 'users', currentUser.uid);
       
-      const authUpdatePromise = updateProfile(user, { photoURL: newPhotoURL });
+      const authUpdatePromise = updateProfile(currentUser, { photoURL: newPhotoURL });
       const firestoreUpdatePromise = updateDoc(userDocRef, { photoURL: newPhotoURL });
       
       await Promise.all([authUpdatePromise, firestoreUpdatePromise]);
@@ -121,7 +122,8 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    if (!user || !firestore) {
+    const currentUser = auth.currentUser;
+    if (!currentUser || !firestore) {
       toast({ variant: 'destructive', title: 'Not authenticated or Firebase not ready' });
       return;
     }
@@ -145,11 +147,11 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
         phone: values.phone || "",
       };
       
-      const authUpdatePromise = user.displayName !== displayName ? updateProfile(user, { displayName }) : Promise.resolve();
+      const authUpdatePromise = currentUser.displayName !== displayName ? updateProfile(currentUser, { displayName }) : Promise.resolve();
 
-      const firestoreUpdatePromise = updateDoc(doc(firestore, 'users', user.uid), firestoreUpdatePayload).catch((serverError) => {
+      const firestoreUpdatePromise = updateDoc(doc(firestore, 'users', currentUser.uid), firestoreUpdatePayload).catch((serverError) => {
         const permissionError = new FirestorePermissionError({
-            path: `users/${user.uid}`,
+            path: `users/${currentUser.uid}`,
             operation: 'update',
             requestResourceData: firestoreUpdatePayload,
         });
