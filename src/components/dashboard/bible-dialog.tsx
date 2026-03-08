@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect, useRef, useLayoutEffect } from 'react';
@@ -28,7 +27,7 @@ import { getBibleChapter, type BibleChapterOutput } from '@/ai/flows/get-bible-c
 import { Input } from '../ui/input';
 import { Textarea } from '../ui/textarea';
 import { cn } from '@/lib/utils';
-import { useIsMobile } from '@/hooks/use-is-mobile';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '../ui/sheet';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion';
 import { Separator } from '../ui/separator';
@@ -89,7 +88,7 @@ function NoteEditor({ highlight, onSave, onDelete, onCancel }: { highlight: Bibl
   }
 
   return (
-    <Card className="bg-muted border-primary/20 shadow-lg">
+    <Card className={cn("bg-card border shadow-lg", getNoteCardClass(highlight.color))}>
       <CardHeader className="p-3">
         <CardTitle className="text-base">Editing Note</CardTitle>
         <CardDescription>{getVerseReference(highlight)}</CardDescription>
@@ -528,7 +527,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg md:max-w-3xl lg:max-w-4xl h-[90vh] flex flex-col">
+      <DialogContent className="sm:max-w-md md:max-w-3xl lg:max-w-5xl h-[90vh] flex flex-col">
         <DialogHeader>
           <DialogTitle className="flex items-center justify-between">
              <div className="flex items-center">
@@ -648,7 +647,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 flex-grow min-h-0">
                 <div className="md:col-span-2 flex flex-col gap-2 sm:gap-4 min-h-0">
                     <div className="relative flex-grow min-h-0">
-                        <ScrollArea ref={scrollAreaRef} onScroll={handleScroll} className="h-full border rounded-md p-1.5 sm:p-4">
+                        <ScrollArea ref={scrollAreaRef} onScroll={handleScroll} className="h-full border rounded-md p-1.5 sm:p-2 md:p-4">
                             {isLoadingChapter && (
                             <div className="absolute inset-0 flex items-center justify-center bg-background/50 z-20">
                                 <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -663,7 +662,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                             </div>
                             )}
                             {!isLoadingChapter && !chapterError && chapterContent && (
-                            <div className={cn("space-y-0.5 sm:space-y-1 font-serif", fontSizeClasses[fontSize])}>
+                            <div className={cn("space-y-0 sm:space-y-0.5 font-serif", fontSizeClasses[fontSize])}>
                                 {chapterContent.verses.map(v => {
                                         const verseNum = v.verse;
                                         const isSelected = selectedVerses.includes(verseNum);
@@ -675,13 +674,13 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                                                 className={cn(
                                                     'rounded-md transition-colors -mx-1 px-1 py-0.5 leading-relaxed',
                                                     highlightInfo && getHighlightClass(highlightInfo.color),
-                                                    isSelected && 'bg-primary/30',
+                                                    isSelected && 'bg-primary/40',
                                                     isActiveHighlight && 'ring-2 ring-primary ring-offset-2 ring-offset-background',
                                                     'cursor-pointer'
                                                 )}
                                                 onClick={() => handleVerseClick(verseNum)}
                                             >
-                                                <sup className={cn("font-sans text-muted-foreground mr-1.5 sm:mr-2 select-none", subFontSizeClasses[fontSize])}>{v.verse}</sup>
+                                                <sup className={cn("font-sans text-muted-foreground mr-1 sm:mr-1.5 select-none", subFontSizeClasses[fontSize])}>{v.verse}</sup>
                                                 {v.text}
                                             </p>
                                         )
@@ -736,7 +735,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
              {/* Mobile Notes View */}
             {mounted && isMobile && (
                 <div className="md:hidden">
-                    <Accordion type="single" collapsible className="w-full border rounded-md bg-muted">
+                    <Accordion type="single" collapsible className="w-full border rounded-md bg-card">
                         <AccordionItem value="notes" className="border-b-0">
                             <AccordionTrigger className="px-4 py-3 hover:no-underline">
                                 <h3 className="text-lg font-semibold tracking-tight">Notes for {chapterContent?.book} {chapterContent?.chapter}</h3>
