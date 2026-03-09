@@ -72,6 +72,15 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      const MAX_FILE_SIZE_MB = 5;
+      if (file.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
+        toast({
+          variant: 'destructive',
+          title: 'File Too Large',
+          description: `Please select an image smaller than ${MAX_FILE_SIZE_MB}MB.`,
+        });
+        return;
+      }
       setNewPhoto(file);
       setPhotoPreview(URL.createObjectURL(file));
     }
@@ -272,5 +281,3 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
     </Form>
   );
 }
-
-    
