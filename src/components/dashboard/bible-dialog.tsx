@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect, useRef, useLayoutEffect } from 'react';
@@ -655,7 +654,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
 
         <Tabs defaultValue="read" className="flex-grow flex flex-col min-h-0">
           <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="read">Bible</TabsTrigger>
+            <TabsTrigger value="read">Read</TabsTrigger>
             <TabsTrigger value="history">History</TabsTrigger>
           </TabsList>
           
@@ -780,7 +779,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
             ) : (
                 <Tabs value={mobileTab} onValueChange={setMobileTab} className="flex-grow flex flex-col min-h-0">
                     <TabsList className="grid w-full grid-cols-2">
-                        <TabsTrigger value="reader">Bible</TabsTrigger>
+                        <TabsTrigger value="reader">Read</TabsTrigger>
                         <TabsTrigger value="notes">Notes ({highlights?.length || 0})</TabsTrigger>
                     </TabsList>
                     <TabsContent value="reader" className="flex-grow flex flex-col min-h-0 mt-2">
