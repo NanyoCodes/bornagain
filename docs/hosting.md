@@ -26,7 +26,7 @@ By default, your application will be available at a Firebase-provided subdomain 
     *   The console will guide you through the process, which typically involves:
         *   Entering the domain name you want to connect (e.g., `www.yourdomain.com`).
         *   Verifying that you own the domain. This is usually done by adding a `TXT` record to your domain's DNS settings.
-        *   Updating your domain's DNS `A` records to point to the IP addresses provided by Firebase.
+        *   Updating your domain's `A` records to point to the IP addresses provided by Firebase.
 
 3.  **Wait for Propagation:**
     *   DNS changes can take anywhere from a few minutes to 48 hours to propagate across the internet.
