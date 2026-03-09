@@ -121,7 +121,8 @@ export function AttendChurchDialog({ isOpen, onOpenChange, onDisciplineCompleted
             {view === 'confirm' && userProfile?.churchInfo?.name
               ? 'Confirm your attendance for today.'
               : "That's great! Which church did you attend today?"}
-             {scheduleString && (
+          </DialogDescription>
+            {scheduleString && (
                 <div className="mt-2 text-xs text-muted-foreground">
                     {scheduleString}
                 </div>
@@ -131,7 +132,6 @@ export function AttendChurchDialog({ isOpen, onOpenChange, onDisciplineCompleted
                     Note: Today is not one of your scheduled worship days. You can still log your attendance.
                 </div>
             )}
-          </DialogDescription>
         </DialogHeader>
 
         {view === 'confirm' && userProfile?.churchInfo?.name ? (
