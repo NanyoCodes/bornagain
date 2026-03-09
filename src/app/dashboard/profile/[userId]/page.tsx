@@ -2,6 +2,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
+import { useParams } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Edit, Loader2, Mail, MapPin, Newspaper, Phone, Target, UserCheck2, HeartHandshake } from "lucide-react";
@@ -40,8 +41,9 @@ function StatCard({ title, value, icon: Icon }: { title: string, value: string |
     )
 }
 
-export default function UserProfilePage({ params }: { params: { userId: string } }) {
-  const { userId } = params;
+export default function UserProfilePage() {
+  const params = useParams();
+  const userId = params.userId as string;
 
   const { user: currentUser } = useUser();
   const firestore = useFirestore();

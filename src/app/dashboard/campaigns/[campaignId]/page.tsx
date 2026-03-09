@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { useDoc, useFirestore, useUser } from '@/firebase';
 import type { Campaign, UserProfile, JoinedCampaign } from '@/lib/types';
 import { doc, collection } from 'firebase/firestore';
@@ -92,8 +92,9 @@ function CampaignMap({ campaign }: { campaign: Campaign }) {
 }
 
 
-export default function CampaignPage({ params }: { params: { campaignId: string } }) {
-    const { campaignId } = params;
+export default function CampaignPage() {
+    const params = useParams();
+    const campaignId = params.campaignId as string;
     const router = useRouter();
     const firestore = useFirestore();
     const { user } = useUser();
