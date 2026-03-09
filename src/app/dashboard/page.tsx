@@ -1,4 +1,3 @@
-
 "use client";
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -237,6 +236,15 @@ const chartColors = [
   "hsl(var(--chart-5))",
 ];
 
+const welcomeScriptures = [
+    { text: "Be strong and courageous", verse: "For the LORD your God is with you wherever you go. - Joshua 1:9" },
+    { text: "The LORD is my shepherd; I shall not want", verse: "He makes me lie down in green pastures. - Psalm 23:1-2" },
+    { text: "I can do all things through Christ who strengthens me", verse: "Philippians 4:13" },
+    { text: "For I know the plans I have for you", verse: "declares the LORD, plans to prosper you and not to harm you, plans to give you hope and a future. - Jeremiah 29:11" },
+    { text: "Trust in the LORD with all your heart", verse: "and lean not on your own understanding; in all your ways submit to him, and he will make your paths straight. - Proverbs 3:5-6" },
+    { text: "The steadfast love of the Lord never ceases", verse: "his mercies never come to an end; they are new every morning; great is your faithfulness. - Lamentations 3:22-23" }
+];
+
 export default function DashboardPage() {
   const { user, loading: authLoading } = useUser();
   const firestore = useFirestore();
@@ -267,6 +275,14 @@ export default function DashboardPage() {
     soulsWonCount: number;
     recentDisciplines: { date: string; completed: boolean }[];
   } | null>(null);
+
+  const [welcomeMessage, setWelcomeMessage] = useState<{text: string; verse: string} | null>(null);
+
+  useEffect(() => {
+    // Select a random scripture when the component mounts client-side
+    const randomScripture = welcomeScriptures[Math.floor(Math.random() * welcomeScriptures.length)];
+    setWelcomeMessage(randomScripture);
+  }, []);
 
   useEffect(() => {
     const today = new Date();
@@ -406,9 +422,11 @@ export default function DashboardPage() {
     <div className="space-y-8">
         <div className="space-y-2">
             <h1 className="text-3xl sm:text-4xl font-bold tracking-tight font-headline">
-                Be strong and courageous, {user?.displayName || 'User'}.
+                {welcomeMessage?.text || "Welcome back"}, {user?.displayName || 'User'}.
             </h1>
-            <p className="text-muted-foreground">"For the LORD your God is with you wherever you go." - Joshua 1:9</p>
+            <p className="text-muted-foreground">
+                {welcomeMessage ? `"${welcomeMessage.verse}"` : ''}
+            </p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
