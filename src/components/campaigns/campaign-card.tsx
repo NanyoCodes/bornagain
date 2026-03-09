@@ -590,7 +590,7 @@ export function CampaignCard({ campaign, userId, userProfile, isJoined }: { camp
 
         </CardContent>
         <CardFooter className="p-6 pt-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mt-auto border-t bg-muted/50">
-            <div className="flex items-center gap-4 text-sm text-muted-foreground">
+            <div className="flex items-center flex-wrap gap-x-4 gap-y-2 text-sm text-muted-foreground">
                 <ParticipantsDialog campaign={campaign}>
                     <Button variant="ghost" className="h-auto p-0 justify-start text-sm font-normal text-muted-foreground hover:bg-transparent hover:text-primary" onClick={stopPropagation}>
                         <Users className="h-4 w-4" />
