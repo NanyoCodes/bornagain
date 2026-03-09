@@ -144,6 +144,14 @@ export function CampaignCard({ campaign, userId, userProfile, isJoined }: { camp
     setMounted(true);
   }, []);
 
+  const handleCardClick = () => {
+    router.push(`/dashboard/campaigns/${campaign.id}`);
+  };
+
+  const stopPropagation = (e: React.MouseEvent) => {
+    e.stopPropagation();
+  };
+
   const safeToDate = (value: any): Date | null => {
     if (!value) return null;
     if (value instanceof Date) return value;
@@ -499,13 +507,18 @@ export function CampaignCard({ campaign, userId, userProfile, isJoined }: { camp
 
   return (
     <>
-        <Card id={campaign.id} className={cn("flex flex-col h-full overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 scroll-mt-20 border-t-4", borderColorClass)}>
+      <Card
+        id={campaign.id}
+        className={cn(
+          "flex flex-col h-full overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 scroll-mt-20 border-t-4 cursor-pointer",
+          borderColorClass
+        )}
+        onClick={handleCardClick}
+      >
         <CardHeader className="p-6 flex flex-row items-start justify-between gap-4">
             <div className="flex-1 min-w-0">
                 <CardTitle className="font-bold text-xl truncate">
-                    <Link href={`/dashboard/campaigns/${campaign.id}`} className="hover:underline">
-                        {campaign.title}
-                    </Link>
+                  {campaign.title}
                 </CardTitle>
                 <CardDescription className="text-sm mt-1 truncate">{campaign.goal}</CardDescription>
             </div>
@@ -520,7 +533,7 @@ export function CampaignCard({ campaign, userId, userProfile, isJoined }: { camp
                 {isDescriptionTruncated && (
                     <Dialog open={showFullDescription} onOpenChange={setShowFullDescription}>
                         <DialogTrigger asChild>
-                        <Button variant="link" className="p-0 h-auto text-sm">Read More</Button>
+                          <Button variant="link" className="p-0 h-auto text-sm" onClick={stopPropagation}>Read More</Button>
                         </DialogTrigger>
                         <DialogContent className="sm:max-w-md">
                         <DialogHeader>
@@ -570,7 +583,7 @@ export function CampaignCard({ campaign, userId, userProfile, isJoined }: { camp
         <CardFooter className="p-6 pt-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mt-auto border-t bg-muted/50">
             <div className="flex items-center gap-4 text-sm text-muted-foreground">
                 <ParticipantsDialog campaign={campaign}>
-                    <Button variant="ghost" className="h-auto p-0 justify-start text-sm font-normal text-muted-foreground hover:bg-transparent hover:text-primary">
+                    <Button variant="ghost" className="h-auto p-0 justify-start text-sm font-normal text-muted-foreground hover:bg-transparent hover:text-primary" onClick={stopPropagation}>
                         <Users className="h-4 w-4" />
                         <span>
                             {campaign.participants}
@@ -586,7 +599,7 @@ export function CampaignCard({ campaign, userId, userProfile, isJoined }: { camp
                 )}
             </div>
 
-            <div className="w-full sm:w-auto flex items-center flex-wrap justify-end gap-2">
+            <div className="w-full sm:w-auto flex items-center flex-wrap justify-end gap-2" onClick={stopPropagation}>
                 {status === 'Ongoing' && campaign.streamUrl && (
                     <Button asChild className="w-full sm:w-auto">
                         <Link href={campaign.streamUrl} target="_blank" rel="noopener noreferrer">
@@ -597,7 +610,7 @@ export function CampaignCard({ campaign, userId, userProfile, isJoined }: { camp
                 )}
 
                 {isOwner ? (
-                    <div onClick={e => e.stopPropagation()} className="flex items-center gap-2">
+                    <div onClick={stopPropagation} className="flex items-center gap-2">
                       {isJoined && (status === 'Ongoing' || status === 'Past') && ShareTestimonyDialog}
                       <Dialog open={isManageOpen} onOpenChange={setIsManageOpen}>
                         <DialogTrigger asChild>
@@ -624,7 +637,7 @@ export function CampaignCard({ campaign, userId, userProfile, isJoined }: { camp
                       {shareButton}
                     </div>
                 ) : isJoined ? (
-                     <div onClick={e => e.stopPropagation()} className="flex items-center gap-2">
+                     <div onClick={stopPropagation} className="flex items-center gap-2">
                         {(status === 'Ongoing' || status === 'Past') && ShareTestimonyDialog}
                          <TooltipProvider>
                           <Tooltip>
@@ -637,10 +650,10 @@ export function CampaignCard({ campaign, userId, userProfile, isJoined }: { camp
                           </Tooltip>
                          </TooltipProvider>
                         {shareButton}
-                        <Button disabled><CheckCircle2 className="h-4 w-4"/>Joined</Button>
+                        <Button disabled><CheckCircle2 className="h-4 w-4"/> Joined</Button>
                     </div>
                 ) : (
-                    <div onClick={e => e.stopPropagation()} className="flex items-center gap-2">
+                    <div onClick={stopPropagation} className="flex items-center gap-2">
                         <TooltipProvider>
                             <Tooltip>
                                 <TooltipTrigger asChild>
@@ -662,27 +675,25 @@ export function CampaignCard({ campaign, userId, userProfile, isJoined }: { camp
         <CardFooter className="p-4 bg-muted/20 text-xs text-muted-foreground flex justify-between">
             <span className="truncate">
                 Created by{" "}
-                <Link href={`/dashboard/profile/${campaign.organizerId}`} className="font-medium text-primary hover:underline px-1" onClick={e => e.stopPropagation()}>
+                <Link href={`/dashboard/profile/${campaign.organizerId}`} className="font-medium text-primary hover:underline px-1" onClick={stopPropagation}>
                     {campaign.organizerFirstName} {campaign.organizerLastName}
                 </Link>
             </span>
             <span className="flex-shrink-0">{footerDateText}</span>
         </CardFooter>
-        </Card>
-        {userProfile && (
-            <JoinCampaignDialog
-              campaign={campaign}
-              userProfile={userProfile}
-              isOpen={isJoinDialogOpen}
-              onOpenChange={setIsJoinDialogOpen}
-              onCampaignJoined={() => {
-                // Re-fetch is handled by useCollection
-              }}
-            />
-        )}
+      </Card>
+      {userProfile && (
+          <JoinCampaignDialog
+            campaign={campaign}
+            userProfile={userProfile}
+            isOpen={isJoinDialogOpen}
+            onOpenChange={setIsJoinDialogOpen}
+            onCampaignJoined={() => {
+              // Re-fetch is handled by useCollection
+            }}
+          />
+      )}
     </>
   );
 }
 
-
-    
