@@ -131,7 +131,7 @@ export function JoinCampaignDialog({
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Join Campaign: {campaign.title}</DialogTitle>
+          <DialogTitle>Join: {campaign.title}</DialogTitle>
           <DialogDescription>
             You're about to join this campaign. You can add an optional note for the organizer.
           </DialogDescription>

@@ -92,8 +92,7 @@ function CampaignMap({ campaign }: { campaign: Campaign }) {
 }
 
 
-export default function CampaignPage() {
-    const params = useParams();
+export default function CampaignPage({ params }: { params: { campaignId: string } }) {
     const campaignId = params.campaignId as string;
     const router = useRouter();
     const firestore = useFirestore();
@@ -341,7 +340,7 @@ export default function CampaignPage() {
                                     ) : (
                                         <>
                                             <Button onClick={() => setIsJoinDialogOpen(true)} disabled={joinButtonDisabled}>
-                                                {isFull ? 'Full' : 'Join Campaign'}
+                                                {isFull ? 'Full' : 'Join'}
                                             </Button>
                                              <Button variant="outline" onClick={handleShare}><Share2 className="mr-2 h-4 w-4" /> Share</Button>
                                         </>

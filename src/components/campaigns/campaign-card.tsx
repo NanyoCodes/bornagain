@@ -144,7 +144,16 @@ export function CampaignCard({ campaign, userId, userProfile, isJoined }: { camp
     setMounted(true);
   }, []);
 
-  const handleCardClick = () => {
+  const handleCardClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    // Prevent navigation if a button, link or interactive element was clicked
+    if (
+      (e.target as HTMLElement).closest('button') ||
+      (e.target as HTMLElement).closest('a') ||
+      (e.target as HTMLElement).closest('[role="dialog"]') ||
+      (e.target as HTMLElement).closest('[role="menu"]')
+    ) {
+      return;
+    }
     router.push(`/dashboard/campaigns/${campaign.id}`);
   };
 
@@ -191,7 +200,7 @@ export function CampaignCard({ campaign, userId, userProfile, isJoined }: { camp
         const [hours, minutes] = campaign.startTime.split(':').map(Number);
         startDateTime.setHours(hours, minutes, 0, 0);
     } else {
-        startDateTime.setHours(0,0,0,0);
+        startDateTime.setHours(0, 0, 0, 0);
     }
 
     if (startDateTime > now) return "Upcoming";
@@ -666,7 +675,7 @@ export function CampaignCard({ campaign, userId, userProfile, isJoined }: { camp
                         </TooltipProvider>
                         {shareButton}
                         <Button onClick={() => setIsJoinDialogOpen(true)} disabled={joinButtonDisabled}>
-                           {isFull ? 'Campaign Full' : 'Join Campaign'}
+                           {isFull ? 'Full' : 'Join'}
                         </Button>
                     </div>
                 )}
@@ -696,4 +705,3 @@ export function CampaignCard({ campaign, userId, userProfile, isJoined }: { camp
     </>
   );
 }
-
