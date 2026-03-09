@@ -369,8 +369,9 @@ export function SoulsWonList({ userId }: { userId: string }) {
     if (!souls) return [];
     return souls.filter(soul => {
       const searchLower = searchTerm.toLowerCase();
+      const soulName = `${soul.firstName} ${soul.lastName}`;
       const matchesSearch = searchTerm ?
-        soul.name.toLowerCase().includes(searchLower) ||
+        soulName.toLowerCase().includes(searchLower) ||
         soul.source.toLowerCase().includes(searchLower) ||
         (soul.sourceDetails && soul.sourceDetails.toLowerCase().includes(searchLower))
         : true;
@@ -405,7 +406,7 @@ export function SoulsWonList({ userId }: { userId: string }) {
             <ListItem 
                 key={soul.id}
                 href="/dashboard/souls-won"
-                title={soul.name}
+                title={`${soul.firstName} ${soul.lastName}`}
                 subtitle={`Won on ${format(soul.wonAt.toDate(), 'PPP')}`}
             />
         ))

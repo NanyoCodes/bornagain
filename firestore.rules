@@ -65,7 +65,7 @@ service cloud.firestore {
     match /souls/{soulId} {
       allow list, get: if request.auth != null;
       // Allow a user to create a soul record if the userId in the document matches their auth uid.
-      allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
+      allow create: if request.auth.uid == request.resource.data.userId;
       allow update, delete: if false; // Immutable
     }
 
