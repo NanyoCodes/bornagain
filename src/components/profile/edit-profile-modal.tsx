@@ -111,18 +111,22 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                 setUploadProgress(progress);
               },
               (uploadError) => {
-                console.error("Firebase Storage upload error:", uploadError);
-                let errorMessage = "Could not upload your photo. Please try again.";
+                console.error("!!! IMPORTANT: Firebase Storage Upload Error Occurred !!!");
+                console.error("Full Error Object:", uploadError);
+                console.error("Error Code:", uploadError.code);
+                console.error("Error Message:", uploadError.message);
+                
+                let errorMessage = "Could not upload your photo. Please check the browser console for more details.";
                 if (uploadError.code) {
                     switch (uploadError.code) {
                         case 'storage/unauthorized':
-                            errorMessage = "You do not have permission to upload this file. Please check your connection and security rules.";
+                            errorMessage = "Permission Denied. Please check your Storage security rules and ensure the CORS policy is correctly set on your bucket.";
                             break;
                         case 'storage/canceled':
                             errorMessage = "The upload was canceled. Please try again.";
                             break;
                         case 'storage/unknown':
-                            errorMessage = "An unknown error occurred during upload. Please check your network connection.";
+                            errorMessage = "An unknown error occurred. This could be a network issue or a CORS policy problem. Please check the browser console.";
                             break;
                         case 'storage/object-not-found':
                             errorMessage = "File not found. Please try re-selecting the file.";
@@ -132,7 +136,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                             break;
                     }
                 }
-                toast({ variant: 'destructive', title: 'Photo Upload Failed', description: errorMessage });
+                toast({ variant: 'destructive', title: 'Photo Upload Failed', description: errorMessage, duration: 10000 });
                 reject(uploadError);
               },
               () => {
