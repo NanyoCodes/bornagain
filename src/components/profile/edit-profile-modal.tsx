@@ -98,9 +98,36 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
 
       // 1. Upload photo if a new one is selected
       if (newPhoto) {
-        const storageRef = ref(storage, `profile-pictures/${user.uid}/profile-photo.jpg`);
-        const snapshot = await uploadBytes(storageRef, newPhoto);
-        photoURL = await getDownloadURL(snapshot.ref);
+        try {
+          const storageRef = ref(storage, `profile-pictures/${user.uid}/profile-photo.jpg`);
+          const snapshot = await uploadBytes(storageRef, newPhoto);
+          photoURL = await getDownloadURL(snapshot.ref);
+        } catch (uploadError: any) {
+            console.error("Firebase Storage upload error:", uploadError);
+            let errorMessage = "Could not upload your photo. Please try again.";
+            if (uploadError.code) {
+                switch (uploadError.code) {
+                    case 'storage/unauthorized':
+                        errorMessage = "You do not have permission to upload this file. Please check your connection and security rules.";
+                        break;
+                    case 'storage/canceled':
+                        errorMessage = "The upload was canceled. Please try again.";
+                        break;
+                    case 'storage/unknown':
+                        errorMessage = "An unknown error occurred during upload. Please check your network connection.";
+                        break;
+                    case 'storage/object-not-found':
+                        errorMessage = "File not found. Please try re-selecting the file.";
+                        break;
+                    case 'storage/quota-exceeded':
+                        errorMessage = "Storage quota exceeded. You may have run out of space on your account.";
+                        break;
+                }
+            }
+            toast({ variant: 'destructive', title: 'Photo Upload Failed', description: errorMessage });
+            setIsSubmitting(false);
+            return;
+        }
       }
       
       const displayName = `${values.firstName} ${values.lastName}`;
@@ -152,9 +179,9 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
       onClose();
 
     } catch (error: any) {
-      console.error("Profile update error:", error);
+      console.error("Profile update error (Auth/Firestore):", error);
        if (error.name !== 'FirestorePermissionError') {
-         toast({ variant: 'destructive', title: "Update Failed", description: error.message || "Could not update profile." });
+         toast({ variant: 'destructive', title: "Update Failed", description: error.message || "Could not update profile details." });
        }
     } finally {
       setIsSubmitting(false);
