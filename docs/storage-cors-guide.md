@@ -4,7 +4,7 @@ You have correctly identified that a Cross-Origin Resource Sharing (CORS) policy
 
 To fix this, you must tell your Firebase Storage bucket to accept requests originating from your web application's domain. This guide will walk you through applying the necessary CORS configuration to your bucket using the `gsutil` command-line tool.
 
-**This is a one-time setup step that must be performed in your local terminal.**
+**This is a one-time setup step that must be performed in a terminal on your local computer.**
 
 ---
 
@@ -17,9 +17,9 @@ You will use these values in the next step.
 
 ---
 
-### Step 2: Create a CORS Configuration File
+### Step 2: Locate Your CORS Configuration File
 
-On your local machine, create a new file named `cors.json`. Paste the following content into it. This configuration is ready to use for your project.
+A configuration file named `cors.json` has already been created for you in the main directory (the "root") of your project. Its contents are ready to use:
 
 ```json
 [
@@ -64,8 +64,8 @@ gcloud auth login
 
 ### Step 4: Apply the CORS Policy to Your Bucket
 
-1.  Open a terminal on your local machine.
-2.  Navigate to the directory where you saved your `cors.json` file.
+1.  **Open a terminal on your local machine.**
+2.  **Navigate to your project's root directory.** This is the main folder of your application, the same one that contains your `package.json` and `cors.json` files. If you are using a standard terminal, you'll use the `cd` (change directory) command to get there. For example: `cd path/to/your/project-folder`.
 3.  Run the following command, using your bucket name from Step 1:
 
     ```bash
