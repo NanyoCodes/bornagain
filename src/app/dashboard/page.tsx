@@ -1,3 +1,4 @@
+
 "use client";
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -237,12 +238,12 @@ const chartColors = [
 ];
 
 const welcomeScriptures = [
-    { text: "Be strong and courageous", verse: "For the LORD your God is with you wherever you go. - Joshua 1:9" },
-    { text: "The LORD is my shepherd; I shall not want", verse: "He makes me lie down in green pastures. - Psalm 23:1-2" },
-    { text: "I can do all things through Christ who strengthens me", verse: "Philippians 4:13" },
-    { text: "For I know the plans I have for you", verse: "declares the LORD, plans to prosper you and not to harm you, plans to give you hope and a future. - Jeremiah 29:11" },
-    { text: "Trust in the LORD with all your heart", verse: "and lean not on your own understanding; in all your ways submit to him, and he will make your paths straight. - Proverbs 3:5-6" },
-    { text: "The steadfast love of the Lord never ceases", verse: "his mercies never come to an end; they are new every morning; great is your faithfulness. - Lamentations 3:22-23" }
+    { text: "Be strong and courageous, {name}", verse: "For the LORD your God is with you wherever you go. - Joshua 1:9" },
+    { text: "The LORD is my shepherd, {name}; I shall not want", verse: "He makes me lie down in green pastures. - Psalm 23:1-2" },
+    { text: "{name}, you can do all things through Christ who strengthens you", verse: "Philippians 4:13" },
+    { text: "For I know the plans I have for you, {name}", verse: "declares the LORD, plans to prosper you and not to harm you, plans to give you hope and a future. - Jeremiah 29:11" },
+    { text: "Trust in the LORD with all your heart, {name}", verse: "and lean not on your own understanding; in all your ways submit to him, and he will make your paths straight. - Proverbs 3:5-6" },
+    { text: "The steadfast love of the Lord never ceases for you, {name}", verse: "his mercies never come to an end; they are new every morning; great is your faithfulness. - Lamentations 3:22-23" }
 ];
 
 export default function DashboardPage() {
@@ -373,13 +374,13 @@ export default function DashboardPage() {
 
   const progressData = useMemo(() => {
     if (!soulsWon) return [];
-    const monthlyData: { [key: string]: { date: string, soulsWon: number } } = {};
-    const sixMonthsAgo = new Date();
-    sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 5);
-    sixMonthsAgo.setDate(1);
+    const monthlyData: { [key: string]: { date: string; soulsWon: number } } = {};
+    const threeMonthsAgo = new Date();
+    threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 2);
+    threeMonthsAgo.setDate(1);
 
-    for (let i = 0; i < 6; i++) {
-        const date = new Date(sixMonthsAgo.getFullYear(), sixMonthsAgo.getMonth() + i, 1);
+    for (let i = 0; i < 3; i++) {
+        const date = new Date(threeMonthsAgo.getFullYear(), threeMonthsAgo.getMonth() + i, 1);
         const monthKey = format(date, "MMM");
         monthlyData[monthKey] = { date: monthKey, soulsWon: 0 };
     }
@@ -387,7 +388,7 @@ export default function DashboardPage() {
     soulsWon.forEach(soul => {
       if (soul.wonAt) {
         const wonDate = soul.wonAt.toDate ? soul.wonAt.toDate() : new Date(soul.wonAt as any);
-        if (wonDate >= sixMonthsAgo) {
+        if (wonDate >= threeMonthsAgo) {
             const monthKey = format(wonDate, "MMM");
             if (monthlyData[monthKey]) {
                 monthlyData[monthKey].soulsWon++;
@@ -417,12 +418,14 @@ export default function DashboardPage() {
   };
 
   const soulsWonCount = soulsWon?.length ?? 0;
+  
+  const displayName = user?.displayName || 'User';
 
   return (
     <div className="space-y-8">
         <div className="space-y-2">
             <h1 className="text-3xl sm:text-4xl font-bold tracking-tight font-headline">
-                {welcomeMessage?.text || "Welcome back"}, {user?.displayName || 'User'}.
+                {welcomeMessage?.text.replace('{name}', displayName) || `Welcome back, ${displayName}!`}
             </h1>
             <p className="text-muted-foreground">
                 {welcomeMessage ? `"${welcomeMessage.verse}"` : ''}
@@ -436,7 +439,7 @@ export default function DashboardPage() {
                 <Card>
                     <CardHeader>
                         <CardTitle>Monthly Statistics</CardTitle>
-                        <CardDescription>Souls won in the last 6 months.</CardDescription>
+                        <CardDescription>Souls won in the last 3 months.</CardDescription>
                     </CardHeader>
                     <CardContent>
                     <ChartContainer config={chartConfig} className="h-[300px] w-full">
