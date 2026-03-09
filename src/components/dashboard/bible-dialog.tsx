@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect, useRef, useLayoutEffect } from 'react';
@@ -642,7 +643,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md md:max-w-3xl lg:max-w-5xl h-[90vh] flex flex-col p-2 sm:p-6">
+      <DialogContent className="sm:max-w-md md:max-w-5xl lg:max-w-7xl h-[90vh] flex flex-col p-2 sm:p-6">
         <DialogHeader>
           <DialogTitle className="flex items-center justify-between">
              <div className="flex items-center">
@@ -757,22 +758,24 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
             
              {/* Mobile / Desktop Layout switch */}
             {!mounted || !isMobile ? (
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 flex-grow min-h-0">
-                    <div className="md:col-span-2 flex flex-col">
+                <div className="flex flex-col md:flex-row gap-6 flex-grow min-h-0">
+                    {/* Reader Column */}
+                    <div className="flex flex-col md:w-2/3 min-h-0">
                         {ReaderContent}
                     </div>
-                    <div className="hidden md:block md:col-span-1 h-full">
-                         <Accordion type="single" collapsible defaultValue='item-1' className="w-full">
-                          <AccordionItem value="item-1" className="border rounded-md bg-muted/30">
-                            <AccordionTrigger className="px-4 py-3 hover:no-underline">
-                              <h3 className="font-semibold tracking-tight text-base">Notes for {chapterContent?.book} {chapterContent?.chapter}</h3>
-                            </AccordionTrigger>
-                            <AccordionContent className="px-2">
-                               <ScrollArea className="flex-grow h-full max-h-[50vh]">
-                                  {NotesList}
-                              </ScrollArea>
-                            </AccordionContent>
-                          </AccordionItem>
+                    {/* Notes Column */}
+                    <div className="hidden md:flex md:w-1/3 flex-col">
+                        <Accordion type="single" collapsible defaultValue='item-1' className="w-full flex-grow flex flex-col">
+                            <AccordionItem value="item-1" className="border rounded-md bg-muted/30 flex-grow flex flex-col">
+                                <AccordionTrigger className="px-4 py-3 hover:no-underline flex-shrink-0">
+                                <h3 className="font-semibold tracking-tight text-base">Notes for {chapterContent?.book} {chapterContent?.chapter}</h3>
+                                </AccordionTrigger>
+                                <AccordionContent className="px-2 pb-2 flex-grow min-h-0">
+                                    <ScrollArea className="h-full">
+                                        {NotesList}
+                                    </ScrollArea>
+                                </AccordionContent>
+                            </AccordionItem>
                         </Accordion>
                     </div>
                 </div>
