@@ -8,6 +8,21 @@ To fix this, you must tell your Firebase Storage bucket to accept requests origi
 
 ---
 
+### Why Use a Local Terminal?
+
+This is a great question. It can seem confusing to use a terminal on your own computer when your files are here in Firebase Studio.
+
+Here's the simple reason:
+
+*   **Firebase Studio** is for editing your **application code**.
+*   The `gsutil` command is a powerful **backend administration tool**. It doesn't run your app's code; it directly changes settings on your project's servers in Google Cloud.
+
+Think of it this way: Firebase Studio is the kitchen where you prepare the food (your app). The `gsutil` command is like calling the utility company to change the building's main water supply. You have to make that call from an authorized phone line (your authenticated local computer), not from inside the kitchen itself.
+
+To make these backend changes, you must prove you are the project owner. You do this by installing the Google Cloud CLI on your computer and logging in with `gcloud auth login`. The terminal inside Firebase Studio does not have this level of access to your Google account.
+
+---
+
 ### Step 1: Your Project and Bucket Information
 
 1.  **Project ID**: Your Firebase Project ID is `studio-6220967431-56fe2`.
@@ -54,7 +69,7 @@ A configuration file named `cors.json` has already been created for you in the m
 
 The `gsutil` tool is part of the Google Cloud CLI. If you don't already have it installed, follow the official instructions to [install the gcloud CLI](https://cloud.google.com/sdk/docs/install).
 
-After installation, open a new terminal and authenticate by running the following command:
+After installation, open a new terminal on your local machine and authenticate by running the following command:
 
 ```bash
 gcloud auth login
