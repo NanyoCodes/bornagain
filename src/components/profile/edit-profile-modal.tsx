@@ -28,7 +28,7 @@ import { FirestorePermissionError } from "@/firebase/errors";
 import { LocationProfileInput } from "../common/location-profile-input";
 import { Label } from "../ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 
 const formSchema = z.object({
   firstName: z.string().min(2, "First name must be at least 2 characters.").max(50, "Name is too long."),
@@ -54,6 +54,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [newPhoto, setNewPhoto] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [uploadProgress, setUploadProgress] = useState<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
 
@@ -92,6 +93,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
       return;
     }
     setIsSubmitting(true);
+    setUploadProgress(null);
 
     try {
       let photoURL = userProfile.photoURL || null;
@@ -100,32 +102,49 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
       if (newPhoto) {
         try {
           const storageRef = ref(storage, `profile-pictures/${user.uid}/profile-photo.jpg`);
-          const snapshot = await uploadBytes(storageRef, newPhoto);
-          photoURL = await getDownloadURL(snapshot.ref);
-        } catch (uploadError: any) {
-            console.error("Firebase Storage upload error:", uploadError);
-            let errorMessage = "Could not upload your photo. Please try again.";
-            if (uploadError.code) {
-                switch (uploadError.code) {
-                    case 'storage/unauthorized':
-                        errorMessage = "You do not have permission to upload this file. Please check your connection and security rules.";
-                        break;
-                    case 'storage/canceled':
-                        errorMessage = "The upload was canceled. Please try again.";
-                        break;
-                    case 'storage/unknown':
-                        errorMessage = "An unknown error occurred during upload. Please check your network connection.";
-                        break;
-                    case 'storage/object-not-found':
-                        errorMessage = "File not found. Please try re-selecting the file.";
-                        break;
-                    case 'storage/quota-exceeded':
-                        errorMessage = "Storage quota exceeded. You may have run out of space on your account.";
-                        break;
+          const uploadTask = uploadBytesResumable(storageRef, newPhoto);
+
+          photoURL = await new Promise<string>((resolve, reject) => {
+            uploadTask.on('state_changed',
+              (snapshot) => {
+                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                setUploadProgress(progress);
+              },
+              (uploadError) => {
+                console.error("Firebase Storage upload error:", uploadError);
+                let errorMessage = "Could not upload your photo. Please try again.";
+                if (uploadError.code) {
+                    switch (uploadError.code) {
+                        case 'storage/unauthorized':
+                            errorMessage = "You do not have permission to upload this file. Please check your connection and security rules.";
+                            break;
+                        case 'storage/canceled':
+                            errorMessage = "The upload was canceled. Please try again.";
+                            break;
+                        case 'storage/unknown':
+                            errorMessage = "An unknown error occurred during upload. Please check your network connection.";
+                            break;
+                        case 'storage/object-not-found':
+                            errorMessage = "File not found. Please try re-selecting the file.";
+                            break;
+                        case 'storage/quota-exceeded':
+                            errorMessage = "Storage quota exceeded. You may have run out of space on your account.";
+                            break;
+                    }
                 }
-            }
-            toast({ variant: 'destructive', title: 'Photo Upload Failed', description: errorMessage });
+                toast({ variant: 'destructive', title: 'Photo Upload Failed', description: errorMessage });
+                reject(uploadError);
+              },
+              () => {
+                getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+                  resolve(downloadURL);
+                });
+              }
+            );
+          });
+        } catch (uploadError) {
             setIsSubmitting(false);
+            setUploadProgress(null);
             return;
         }
       }
@@ -180,11 +199,12 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
 
     } catch (error: any) {
       console.error("Profile update error (Auth/Firestore):", error);
-       if (error.name !== 'FirestorePermissionError') {
+       if (error.name !== 'FirestorePermissionError' && error.name !== 'storage/unauthorized') {
          toast({ variant: 'destructive', title: "Update Failed", description: error.message || "Could not update profile details." });
        }
     } finally {
       setIsSubmitting(false);
+      setUploadProgress(null);
     }
   }
 
@@ -299,10 +319,11 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
           )}
         />
         <Button type="submit" className="w-full" disabled={isSubmitting}>
-          {isSubmitting ? (
-             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          ) : null}
-          {isSubmitting ? (newPhoto ? 'Uploading Photo...' : 'Saving...') : 'Save Changes'}
+          {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          {isSubmitting 
+            ? (uploadProgress !== null ? `Uploading... ${Math.round(uploadProgress)}%` : 'Saving...') 
+            : 'Save Changes'
+          }
         </Button>
       </form>
     </Form>
