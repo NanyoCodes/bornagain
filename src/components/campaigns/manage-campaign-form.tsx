@@ -616,14 +616,28 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
         <Card>
             <CardHeader>
                 <CardTitle>Group Communication</CardTitle>
-                <CardDescription>Start a group chat with all campaign participants.</CardDescription>
+                <CardDescription>
+                  {campaign.hasGroupChat 
+                    ? "View the group chat for all campaign participants." 
+                    : "Start a group chat with all campaign participants."
+                  }
+                </CardDescription>
             </CardHeader>
             <CardContent>
-                <Button onClick={handleStartGroupChat} disabled={isChatLoading || participantsLoading || !participants || participants.length <= 1}>
-                    {isChatLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <MessagesSquare className="mr-2 h-4 w-4" />}
-                    Start Group Chat
-                </Button>
-                 {participants && participants.length <= 1 && <p className="text-xs text-muted-foreground mt-2">You need at least one other participant to start a group chat.</p>}
+                {campaign.hasGroupChat ? (
+                  <Button onClick={() => router.push(`/dashboard/chats/${campaign.id}`)}>
+                      <MessagesSquare className="mr-2 h-4 w-4" />
+                      View Group Chat
+                  </Button>
+                ) : (
+                  <>
+                    <Button onClick={handleStartGroupChat} disabled={isChatLoading || participantsLoading || !participants || participants.length <= 1}>
+                        {isChatLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <MessagesSquare className="mr-2 h-4 w-4" />}
+                        Start Group Chat
+                    </Button>
+                    {participants && participants.length <= 1 && <p className="text-xs text-muted-foreground mt-2">You need at least one other participant to start a group chat.</p>}
+                  </>
+                )}
             </CardContent>
         </Card>
 
@@ -658,3 +672,5 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
     </div>
   );
 }
+
+    
