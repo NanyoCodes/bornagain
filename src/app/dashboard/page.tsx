@@ -406,9 +406,9 @@ export default function DashboardPage() {
     <div className="space-y-8">
         <div className="space-y-2">
             <h1 className="text-3xl sm:text-4xl font-bold tracking-tight font-headline">
-                Welcome back, {user?.displayName || 'User'}!
+                Be strong and courageous, {user?.displayName || 'User'}.
             </h1>
-            <p className="text-muted-foreground">Here's your ministry overview.</p>
+            <p className="text-muted-foreground">"For the LORD your God is with you wherever you go." - Joshua 1:9</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
