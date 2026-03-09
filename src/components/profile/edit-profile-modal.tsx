@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -15,9 +16,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { useState } from "react";
-import { Loader2 } from "lucide-react";
-import { useUser, useFirestore, useAuth } from "@/firebase";
+import { useState, useRef } from "react";
+import type { ChangeEvent } from "react";
+import { Loader2, Edit } from "lucide-react";
+import { useUser, useFirestore, useAuth, useStorage } from "@/firebase";
 import { doc, updateDoc } from "firebase/firestore";
 import { updateProfile } from "firebase/auth";
 import type { UserProfile } from "@/lib/types";
@@ -26,6 +28,7 @@ import { FirestorePermissionError } from "@/firebase/errors";
 import { LocationProfileInput } from "../common/location-profile-input";
 import { Label } from "../ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 const formSchema = z.object({
   firstName: z.string().min(2, "First name must be at least 2 characters.").max(50, "Name is too long."),
@@ -46,8 +49,13 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
   const { user } = useUser();
   const firestore = useFirestore();
   const auth = useAuth();
+  const storage = useStorage();
   
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [newPhoto, setNewPhoto] = useState<File | null>(null);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -61,16 +69,47 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
     },
   });
 
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setNewPhoto(file);
+      setPhotoPreview(URL.createObjectURL(file));
+    }
+  };
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    if (!user || !firestore) {
+    if (!user || !firestore || !auth.currentUser) {
       toast({ variant: 'destructive', title: 'Not authenticated or Firebase not ready' });
       return;
     }
     setIsSubmitting(true);
 
     try {
-      const displayName = `${values.firstName} ${values.lastName}`;
+      let photoURL = userProfile.photoURL || null;
+
+      // 1. Upload photo if a new one is selected
+      if (newPhoto) {
+        const storageRef = ref(storage, `profile-pictures/${user.uid}/profile-photo.jpg`);
+        const snapshot = await uploadBytes(storageRef, newPhoto);
+        photoURL = await getDownloadURL(snapshot.ref);
+      }
       
+      const displayName = `${values.firstName} ${values.lastName}`;
+
+      // 2. Prepare auth profile update
+      const authUpdatePayload: { displayName?: string; photoURL?: string | null } = {};
+      if (user.displayName !== displayName) {
+        authUpdatePayload.displayName = displayName;
+      }
+      if (user.photoURL !== photoURL) {
+        authUpdatePayload.photoURL = photoURL;
+      }
+      
+      const authUpdatePromise = Object.keys(authUpdatePayload).length > 0 
+        ? updateProfile(auth.currentUser, authUpdatePayload) 
+        : Promise.resolve();
+
+      // 3. Prepare Firestore document update
       const firestoreUpdatePayload = {
         firstName: values.firstName,
         lastName: values.lastName,
@@ -84,10 +123,9 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
           country_lowercase: (values.country || "").toLowerCase(),
         },
         phone: values.phone || "",
+        photoURL: photoURL,
       };
       
-      const authUpdatePromise = user.displayName !== displayName && auth.currentUser ? updateProfile(auth.currentUser, { displayName }) : Promise.resolve();
-
       const firestoreUpdatePromise = updateDoc(doc(firestore, 'users', user.uid), firestoreUpdatePayload).catch((serverError) => {
         const permissionError = new FirestorePermissionError({
             path: `users/${user.uid}`,
@@ -98,6 +136,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
         throw permissionError;
       });
       
+      // 4. Run updates in parallel
       await Promise.all([authUpdatePromise, firestoreUpdatePromise]);
       
       toast({ title: "Profile Updated", description: "Your profile details have been saved." });
@@ -117,10 +156,21 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <div className="flex flex-col items-center gap-2">
-            <Avatar className="h-24 w-24">
-                <AvatarImage src={userProfile.photoURL || undefined} alt={`${userProfile.firstName} ${userProfile.lastName}`} />
-                <AvatarFallback>{userProfile.firstName?.charAt(0)}{userProfile.lastName?.charAt(0)}</AvatarFallback>
-            </Avatar>
+          <Avatar className="h-24 w-24">
+            <AvatarImage src={photoPreview || userProfile.photoURL || undefined} alt={`${userProfile.firstName} ${userProfile.lastName}`} />
+            <AvatarFallback>{userProfile.firstName?.charAt(0)}{userProfile.lastName?.charAt(0)}</AvatarFallback>
+          </Avatar>
+          <Button type="button" variant="outline" size="sm" onClick={() => fileInputRef.current?.click()}>
+              <Edit className="mr-2 h-4 w-4" />
+              Change Photo
+          </Button>
+          <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileChange}
+              accept="image/png, image/jpeg"
+              className="hidden"
+          />
         </div>
 
         <div className="grid grid-cols-2 gap-4">
@@ -213,10 +263,14 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
           )}
         />
         <Button type="submit" className="w-full" disabled={isSubmitting}>
-          {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Save Changes
+          {isSubmitting ? (
+             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          ) : null}
+          {isSubmitting ? (newPhoto ? 'Uploading Photo...' : 'Saving...') : 'Save Changes'}
         </Button>
       </form>
     </Form>
   );
 }
+
+    
