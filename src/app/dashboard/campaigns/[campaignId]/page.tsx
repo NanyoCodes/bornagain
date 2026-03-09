@@ -315,14 +315,10 @@ export default function CampaignPage() {
                                         <Button onClick={() => setIsManageOpen(true)}><Edit className="mr-2 h-4 w-4" /> Manage</Button>
                                         <Button variant="outline" onClick={handleShare}><Share2 className="mr-2 h-4 w-4" /> Share</Button>
                                         {status === 'Ongoing' && (
-                                            <DialogTrigger asChild>
-                                                <Button variant="secondary" className="col-span-2" onClick={() => setIsLogSoulOpen(true)}><UserCheck2 className="mr-2 h-4 w-4" /> Log Soul</Button>
-                                            </DialogTrigger>
+                                            <Button variant="secondary" className="col-span-2" onClick={() => setIsLogSoulOpen(true)}><UserCheck2 className="mr-2 h-4 w-4" /> Log Soul</Button>
                                         )}
                                         {isJoined && (status === 'Ongoing' || status === 'Past') && (
-                                            <DialogTrigger asChild>
-                                                <Button variant="secondary" className="col-span-2" onClick={() => setIsTestimonyDialogOpen(true)}><Newspaper className="mr-2 h-4 w-4" /> Share Testimony</Button>
-                                            </DialogTrigger>
+                                            <Button variant="secondary" className="col-span-2" onClick={() => setIsTestimonyDialogOpen(true)}><Newspaper className="mr-2 h-4 w-4" /> Share Testimony</Button>
                                         )}
                                     </>
                                 ) : isJoined ? (
