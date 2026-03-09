@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useLayoutEffect, useRef, useMemo } from 'react';
@@ -20,7 +19,8 @@ import type { Chat, ChatMessage, Campaign } from '@/lib/types';
 import { Loader2, Send, ArrowLeft, Reply, X } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
-import { useRouter, useParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
+import type { Params } from 'next/dist/shared/lib/router/utils/route-matcher';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import Link from 'next/link';
@@ -29,11 +29,10 @@ import { format, isSameDay, differenceInHours } from 'date-fns';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 
-export default function ChatPage() {
+export default function ChatPage({ params }: { params: { chatId: string } }) {
     const { user, loading: userLoading } = useUser();
     const firestore = useFirestore();
-    const params = useParams();
-    const chatId = params.chatId as string;
+    const { chatId } = params;
     const router = useRouter();
     const { toast } = useToast();
 
@@ -368,7 +367,7 @@ export default function ChatPage() {
                         </Avatar>
                         <div>
                             <h2 className="font-semibold">
-                                <Link href={`/dashboard/campaigns#${chat.campaignId}`} className="hover:underline">
+                                <Link href={`/dashboard/campaigns/${chat.campaignId}`} className="hover:underline">
                                     {chat.campaignTitle}
                                 </Link>
                                  (Group)
@@ -390,9 +389,9 @@ export default function ChatPage() {
                                     {otherParticipantInfo.displayName}
                                 </Link>
                             </h2>
-                            {chat.campaignTitle ? (
+                            {chat.campaignTitle && chat.campaignId ? (
                                 <p className="text-sm text-muted-foreground">
-                                    Regarding: <Link href={`/dashboard/campaigns#${chat.campaignId}`} className="hover:underline">{chat.campaignTitle}</Link>
+                                    Regarding: <Link href={`/dashboard/campaigns/${chat.campaignId}`} className="hover:underline">{chat.campaignTitle}</Link>
                                 </p>
                             ) : (
                                 <p className="text-sm text-muted-foreground">Accountability Partner</p>

@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from "next/link";
@@ -176,9 +175,9 @@ export function TestimonyCard({ testimony }: { testimony: Testimony }) {
         )}
       </CardContent>
       <CardFooter className="pt-4 flex justify-between items-center mt-auto">
-        {testimony.campaignTitle && (
+        {testimony.campaignTitle && testimony.campaignId && (
             <div className="text-xs text-muted-foreground mr-auto truncate">
-                From: <Link href={`/dashboard/campaigns#${testimony.campaignId}`} className="font-semibold text-primary hover:underline">{testimony.campaignTitle}</Link>
+                From: <Link href={`/dashboard/campaigns/${testimony.campaignId}`} className="font-semibold text-primary hover:underline">{testimony.campaignTitle}</Link>
             </div>
         )}
         <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>

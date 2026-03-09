@@ -35,7 +35,7 @@ function ChatListItem({ chat, currentUserId, isUnread }: { chat: Chat, currentUs
                     <div className="flex-1 min-w-0">
                         <div className="flex justify-between items-start">
                             <div className={cn("font-semibold truncate", isUnread && "text-primary")}>
-                                <Link href={`/dashboard/campaigns#${chat.campaignId}`} onClick={(e) => e.stopPropagation()} className="hover:underline">
+                                <Link href={`/dashboard/campaigns/${chat.campaignId}`} onClick={(e) => e.stopPropagation()} className="hover:underline">
                                     {chat.campaignTitle}
                                 </Link>
                                  (Group)
@@ -80,9 +80,9 @@ function ChatListItem({ chat, currentUserId, isUnread }: { chat: Chat, currentUs
                         </div>
                     </div>
                     <p className="text-sm text-muted-foreground truncate">
-                       {chat.campaignTitle ? (
+                       {chat.campaignTitle && chat.campaignId ? (
                           <>
-                            Re: <Link href={`/dashboard/campaigns#${chat.campaignId}`} onClick={(e) => e.stopPropagation()} className="hover:underline">{chat.campaignTitle}</Link>
+                            Re: <Link href={`/dashboard/campaigns/${chat.campaignId}`} onClick={(e) => e.stopPropagation()} className="hover:underline">{chat.campaignTitle}</Link>
                           </>
                         ) : (
                           <span>Accountability Chat</span>
