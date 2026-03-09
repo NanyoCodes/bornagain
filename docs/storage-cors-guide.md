@@ -1,8 +1,8 @@
 # How to Fix Firebase Storage CORS Policy (Visual Guide)
 
-You have correctly identified that a Cross-Origin Resource Sharing (CORS) policy issue is preventing your web application from uploading photos to Firebase Storage. This is a standard browser security feature.
+The error `Firebase Storage: Max retry time for operation exceeded...` almost always indicates that a Cross-Origin Resource Sharing (CORS) policy issue is preventing your web application from uploading photos to Firebase Storage. This is a standard browser security feature.
 
-The previous command-line instructions have proven to be difficult. This guide provides a more straightforward, visual method using the Google Cloud Console website.
+This guide provides a straightforward, visual method using the Google Cloud Console website, which is more reliable than the command-line tools.
 
 ---
 
