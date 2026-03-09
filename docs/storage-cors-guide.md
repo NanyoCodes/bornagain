@@ -25,7 +25,7 @@ To make these backend changes, you must prove you are the project owner. You do 
 
 ### Prerequisite: Enable Firebase Storage
 
-Before you can apply a CORS policy, the Storage bucket must exist. Firebase does not create it automatically.
+Before you can apply a CORS policy, the Storage bucket must exist. Firebase does not create it automatically. The `NotFoundException: 404 The specified bucket does not exist` error happens if this step is missed.
 
 1.  Go to the [Firebase Console](https://console.firebase.google.com/).
 2.  Select your project: **studio-6220967431-56fe2**.
@@ -92,15 +92,29 @@ This will open a browser window for you to log in to your Google account.
 
 ---
 
+### Step 3a: Set Your Active Project (Crucial Step)
+
+This is the most likely source of the "bucket not found" error. After logging in, you must explicitly tell the command-line tool which of your Google Cloud projects to work on.
+
+1.  **Run the following command** in your terminal to set the active project.
+
+    ```bash
+    gcloud config set project studio-6220967431-56fe2
+    ```
+
+2.  This command ensures that `gsutil` looks for your storage bucket in the correct place.
+
+---
+
 ### Step 4: Apply the CORS Policy to Your Bucket
 
 1.  **Open a terminal on your local machine** (e.g., Terminal on Mac, Command Prompt or PowerShell on Windows).
 
-2.  **Navigate to your project's root directory.** This is the crucial step where the previous error occurred. You must use the `cd` (change directory) command to move into the folder containing your project and the `cors.json` file.
+2.  **Navigate to your project's root directory.** This is the crucial step where errors often occur. You must use the `cd` (change directory) command to move into the folder containing your project and the `cors.json` file.
     
     For example, if your project is in a folder named `my-testify-app` on your desktop, the command would be:
     ```bash
-    cd C:\Users\HP\Desktop\my-testify-app
+    cd C:\Users\YourUsername\Desktop\my-testify-app
     ```
     Replace the path with the actual location of your project folder.
     
