@@ -89,6 +89,12 @@ This will open a browser window for you to log in to your Google account.
     cd C:\Users\HP\Desktop\my-testify-app
     ```
     Replace the path with the actual location of your project folder.
+    
+    **Important:** You must navigate to the **folder** (directory), not the file itself.
+    
+    ❌ **Wrong:** `cd C:\Users\HP\Downloads\testify-main\cors.json` (This will fail)
+    
+    ✅ **Right:** `cd C:\Users\HP\Downloads\testify-main` (This will succeed)
 
 3.  **Run the `gsutil` command.** Once you are in the correct directory, run the following command, using your bucket name from Step 1:
 
