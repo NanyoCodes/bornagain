@@ -1,4 +1,3 @@
-
 "use client";
 
 import * as React from "react";
@@ -61,6 +60,10 @@ const actionItems = [
   { id: 'visited_home', label: 'Visited their home' },
   { id: 'introduced_friend', label: 'Introduced to a friend' },
   { id: 'gave_gift', label: 'Gave a gift' },
+  { id: 'phone_call', label: 'Made a phone call' },
+  { id: 'text_message', label: 'Sent a text message' },
+  { id: 'helped_with_need', label: 'Helped with a need' },
+  { id: 'invited_to_event', label: 'Invited to an event' },
 ];
 
 const getStatusClasses = (status: FollowUpStatus | undefined): string => {
@@ -182,16 +185,17 @@ function LogFollowUpDialog({ soul, children }: { soul: Soul; children: React.Rea
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => { if (!isLoading) { setIsOpen(open); } }}>
-        <DialogTrigger asChild>{children}</DialogTrigger>
-        <DialogContent className="sm:max-w-md">
-            <DialogHeader>
-                <DialogTitle>Log Follow-up for {soul.firstName} {soul.lastName}</DialogTitle>
-                <DialogDescription>
-                    Record your interaction and update their progress.
-                </DialogDescription>
-            </DialogHeader>
+      <DialogTrigger asChild>{children}</DialogTrigger>
+      <DialogContent className="sm:max-w-md flex flex-col max-h-[90vh]">
+        <DialogHeader>
+            <DialogTitle>Log Follow-up for {soul.firstName} {soul.lastName}</DialogTitle>
+            <DialogDescription>
+                Record your interaction and update their progress.
+            </DialogDescription>
+        </DialogHeader>
+        <div className="flex-grow overflow-y-auto -mx-6 px-6">
             <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <form id="log-follow-up-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                     <FormField
                         control={form.control}
                         name="note"
@@ -345,16 +349,16 @@ function LogFollowUpDialog({ soul, children }: { soul: Soul; children: React.Rea
                              </AccordionContent>
                         </AccordionItem>
                     </Accordion>
-
-                    <DialogFooter>
-                        <Button type="submit" disabled={isLoading}>
-                            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                            Save Log
-                        </Button>
-                    </DialogFooter>
                 </form>
             </Form>
-        </DialogContent>
+        </div>
+        <DialogFooter className="flex-shrink-0 pt-4 border-t">
+            <Button type="submit" form="log-follow-up-form" disabled={isLoading}>
+                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Save Log
+            </Button>
+        </DialogFooter>
+      </DialogContent>
     </Dialog>
   );
 }
@@ -632,7 +636,10 @@ export function SoulsWonTable({ souls, loading }: SoulsWonTableProps) {
 
   const handleCloseDialog = () => {
     setIsEditDialogOpen(false);
-    setEditingSoul(null);
+    // Add a small delay to allow the dialog to close before clearing the data, preventing a flicker
+    setTimeout(() => {
+        setEditingSoul(null);
+    }, 150);
   }
 
   React.useEffect(() => {
@@ -746,5 +753,3 @@ export function SoulsWonTable({ souls, loading }: SoulsWonTableProps) {
     </>
   );
 }
-
-    
