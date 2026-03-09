@@ -23,6 +23,20 @@ To make these backend changes, you must prove you are the project owner. You do 
 
 ---
 
+### Prerequisite: Enable Firebase Storage
+
+Before you can apply a CORS policy, the Storage bucket must exist. Firebase does not create it automatically.
+
+1.  Go to the [Firebase Console](https://console.firebase.google.com/).
+2.  Select your project: **studio-6220967431-56fe2**.
+3.  In the left-hand menu, find the **Build** section and click on **Storage**.
+4.  Click the **"Get started"** button.
+5.  Follow the on-screen prompts to set up your default Storage bucket. You can accept the default settings for the security rules and location.
+
+Once you see the Storage dashboard with "Upload file" and "Create folder" buttons, your bucket has been created, and you can proceed with the steps below.
+
+---
+
 ### Step 1: Your Project and Bucket Information
 
 1.  **Project ID**: Your Firebase Project ID is `studio-6220967431-56fe2`.
