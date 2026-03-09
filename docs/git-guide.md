@@ -64,3 +64,29 @@ Your code is now safely stored in your remote repository. For future changes, yo
 2.  `git add .`
 3.  `git commit -m "Describe your new changes"`
 4.  `git push`
+
+---
+
+## Troubleshooting: Managing Remotes
+
+If you made a mistake when adding your remote repository, or if you want to change it, you can manage your remotes using these commands.
+
+### How to See Your Connected Repositories
+
+To see which remote repositories are currently connected to your project, run:
+
+```bash
+git remote -v
+```
+
+This will show you the name of the remote (usually `origin`) and the URL it points to.
+
+### How to Remove a Repository
+
+If you need to remove a connected repository, use the `git remote remove` command. You'll need the name of the remote from the command above (again, it's usually `origin`).
+
+```bash
+git remote remove origin
+```
+
+After running this, you can run `git remote -v` again to confirm that it has been removed. Then, you can follow Step 2 from the guide above to add the correct repository.
