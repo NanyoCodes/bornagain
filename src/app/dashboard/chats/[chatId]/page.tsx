@@ -20,7 +20,7 @@ import type { Chat, ChatMessage, Campaign } from '@/lib/types';
 import { Loader2, Send, ArrowLeft, Reply, X } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
-import { useParams, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import Link from 'next/link';
@@ -29,13 +29,12 @@ import { format, isSameDay, differenceInHours } from 'date-fns';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 
-export default function ChatPage() {
+export default function ChatPage({ params }: { params: { chatId: string } }) {
     const { user, loading: userLoading } = useUser();
     const firestore = useFirestore();
-    const { chatId: rawChatId } = useParams();
+    const { chatId } = params;
     const router = useRouter();
     const { toast } = useToast();
-    const chatId = rawChatId as string;
 
     const [newMessage, setNewMessage] = useState('');
     const [isSending, setIsSending] = useState(false);

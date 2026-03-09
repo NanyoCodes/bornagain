@@ -21,7 +21,6 @@ import {
 } from "@/components/ui/sheet";
 import { EditProfileModal } from "@/components/profile/edit-profile-modal";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useParams } from "next/navigation";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import Link from "next/link";
 import { format } from "date-fns";
@@ -41,9 +40,8 @@ function StatCard({ title, value, icon: Icon }: { title: string, value: string |
     )
 }
 
-export default function UserProfilePage() {
-  const { userId: userIdFromParams } = useParams();
-  const userId = userIdFromParams as string;
+export default function UserProfilePage({ params }: { params: { userId: string } }) {
+  const { userId } = params;
 
   const { user: currentUser } = useUser();
   const firestore = useFirestore();
