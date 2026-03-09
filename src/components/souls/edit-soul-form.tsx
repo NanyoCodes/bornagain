@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -154,6 +155,11 @@ export function EditSoulForm({ soul, onSoulUpdated }: EditSoulFormProps) {
                         </div>
                     `,
                 },
+            }).then(() => {
+                toast({
+                    title: 'Invitation Sent!',
+                    description: `An invitation email has been sent to ${values.email}.`
+                });
             }).catch(err => console.error("Failed to send invitation email:", err));
         }
 
