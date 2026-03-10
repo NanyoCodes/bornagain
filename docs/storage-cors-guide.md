@@ -6,6 +6,15 @@ This guide provides a straightforward, visual method using the Google Cloud Cons
 
 ---
 
+### Understanding Firebase vs. Google Cloud Console
+
+Your question is excellent. Here's a simple way to understand the difference:
+
+*   **Firebase Console:** This is where you **create** the storage bucket. Clicking "Get started" in Firebase Storage is like turning on the lights for that service. It makes the bucket exist. You must do this first.
+*   **Google Cloud Console:** This is where you manage the **advanced settings** for that same bucket. Because Firebase is built on top of Google Cloud, the bucket you created lives in Google Cloud, and this console gives you access to deeper settings, like the CORS policy we need to configure.
+
+---
+
 ### Prerequisite: Enable Firebase Storage
 
 Before you can apply a CORS policy, the Storage bucket must exist. This is the most likely cause of a "bucket not found" error.
@@ -74,8 +83,6 @@ It might take a minute or two for the settings to apply. Once saved, photo uploa
 ## Alternative Method: Using the Command Line
 
 This method is for users comfortable with the command line. If the visual guide above worked, you do not need to do this.
-
-The `gsutil` tool is part of the Google Cloud CLI. If you don't already have it installed, follow the official instructions to [install the gcloud CLI](https://cloud.google.com/sdk/docs/install).
 
 #### 1. Authenticate and Set Project
 
