@@ -33,16 +33,17 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { useUser, useAuth, useFirestore, useCollection } from "@/firebase";
+import { useUser, useAuth, useFirestore, useCollection, useDoc } from "@/firebase";
 import { signOut } from "firebase/auth";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { SearchProvider, useSearch } from "@/context/search-context";
 import { collection, doc, limit, orderBy, query, where, writeBatch, updateDoc, serverTimestamp } from "firebase/firestore";
-import type { Notification } from "@/lib/types";
+import type { Notification, UserProfile } from "@/lib/types";
 import { formatDistanceToNow } from "date-fns";
 import { WelcomePopup } from "@/components/auth/welcome-popup";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 const navItems = [
   { href: "/dashboard", label: "Progress", icon: TrendingUp },
@@ -357,6 +358,9 @@ export default function DashboardLayout({
   const logo = PlaceHolderImages.find((img) => img.id === "logo");
   const isChatPage = /^\/dashboard\/chats\/.+/.test(pathname);
 
+  const userDocRef = useMemo(() => user ? doc(firestore, 'users', user.uid) : null, [user, firestore]);
+  const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userDocRef);
+
   useEffect(() => {
     if (!loading && user) {
       // Update last active timestamp
@@ -396,7 +400,10 @@ export default function DashboardLayout({
     return 'Loading your dashboard...';
   };
 
-  if (loading || !user?.uid) {
+  const isProfileIncomplete = userProfile && (!userProfile.firstName || !userProfile.lastName);
+  const showProfileAlert = isProfileIncomplete && !pathname.startsWith('/dashboard/profile') && !pathname.startsWith('/dashboard/settings');
+
+  if (loading || profileLoading || !user?.uid) {
     return (
       <div className="flex min-h-screen w-full flex-col items-center justify-center bg-background">
         {logo && (
@@ -422,6 +429,18 @@ export default function DashboardLayout({
         <div className="flex-1 relative min-h-0">
           <main className={cn("absolute inset-0", !isChatPage && "overflow-y-auto")}>
             <div className={cn("max-w-7xl mx-auto", !isChatPage && "p-4 md:p-6 pb-20 md:pb-6", isChatPage && "h-full")}>
+              {showProfileAlert && (
+                <Alert className="mb-6">
+                    <User className="h-4 w-4" />
+                    <AlertTitle>Complete Your Profile</AlertTitle>
+                    <AlertDescription>
+                        Please set your name to personalize your experience.{" "}
+                        <Link href="/dashboard/profile" className="font-semibold underline">
+                            Update profile now.
+                        </Link>
+                    </AlertDescription>
+                </Alert>
+              )}
               {children}
             </div>
           </main>
