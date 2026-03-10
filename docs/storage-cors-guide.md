@@ -20,6 +20,17 @@ Once you see the Storage dashboard with "Upload file" and "Create folder" button
 
 ---
 
+### Important Note on Bucket Naming
+
+The name of your storage bucket can be confusing.
+
+*   In some places, you might see URLs ending in `firebasestorage.app`.
+*   However, the actual bucket name in the Google Cloud Console (which you must use for this guide) will end in **`.appspot.com`**.
+
+For this project, the correct bucket name you need to find and click on is: **`studio-6220967431-56fe2.appspot.com`**
+
+---
+
 ### Step 1: Go to Google Cloud Storage
 
 1.  **[Click here to go to the Google Cloud Storage browser](https://console.cloud.google.com/storage/browser)**.
