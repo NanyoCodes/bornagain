@@ -3,7 +3,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { useFirestore, useUser } from '@/firebase';
-import { collection, query, where, doc, writeBatch, deleteDoc, serverTimestamp, updateDoc } from 'firebase/firestore';
+import { collection, query, where, doc, writeBatch, deleteDoc, serverTimestamp } from 'firebase/firestore';
 import type { AccountabilityRequest, UserProfile } from '@/lib/types';
 import { useCollection } from '@/firebase/firestore/use-collection';
 import { Loader2, Check, X, Hourglass, Trash2, UserPlus, CheckCircle2, XCircle } from 'lucide-react';
@@ -11,8 +11,6 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { formatDistanceToNow } from 'date-fns';
-import { errorEmitter } from '@/firebase/error-emitter';
-import { FirestorePermissionError } from '@/firebase/errors';
 
 export function AccountabilityRequests({ currentUserProfile }: { currentUserProfile: UserProfile }) {
     const { user } = useUser();
@@ -58,28 +56,6 @@ export function AccountabilityRequests({ currentUserProfile }: { currentUserProf
 
     const loading = loadingIncoming || loadingSent || loadingNonPending;
 
-    // Effect to complete the partnership loop for the sender
-    useEffect(() => {
-        if (acceptedRequest && acceptedRequest.fromUserId === user?.uid) {
-            const myPartnerId = currentUserProfile.accountabilityPartnerId;
-            if (!myPartnerId) {
-                const userRef = doc(firestore, 'users', user.uid);
-                updateDoc(userRef, {
-                    accountabilityPartnerId: acceptedRequest.toUserId,
-                    accountabilityPartnerFirstName: acceptedRequest.toUserFirstName,
-                    accountabilityPartnerLastName: acceptedRequest.toUserLastName,
-                }).catch(() => {
-                     const permissionError = new FirestorePermissionError({
-                        path: userRef.path,
-                        operation: 'update',
-                        requestResourceData: { accountabilityPartnerId: acceptedRequest.toUserId },
-                    });
-                    errorEmitter.emit('permission-error', permissionError);
-                });
-            }
-        }
-    }, [acceptedRequest, user, firestore, currentUserProfile]);
-
     const handleAccept = async (request: AccountabilityRequest) => {
         if (!user || !firestore || currentUserProfile.accountabilityPartnerId) {
             toast({ variant: 'destructive', title: 'Cannot Accept', description: 'You already have a partner. Please remove your current partner first.' });
@@ -89,12 +65,20 @@ export function AccountabilityRequests({ currentUserProfile }: { currentUserProf
         try {
             const batch = writeBatch(firestore);
 
-            // Update my user doc
+            // Update my user doc (the acceptor)
             const myRef = doc(firestore, 'users', user.uid);
             batch.update(myRef, {
                 accountabilityPartnerId: request.fromUserId,
                 accountabilityPartnerFirstName: request.fromUserFirstName,
                 accountabilityPartnerLastName: request.fromUserLastName,
+            });
+
+            // Update sender's user doc
+            const senderRef = doc(firestore, 'users', request.fromUserId);
+            batch.update(senderRef, {
+                accountabilityPartnerId: user.uid,
+                accountabilityPartnerFirstName: currentUserProfile.firstName,
+                accountabilityPartnerLastName: currentUserProfile.lastName,
             });
 
             // Update the request status

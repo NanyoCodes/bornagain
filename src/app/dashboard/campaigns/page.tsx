@@ -196,6 +196,12 @@ export default function CampaignsPage() {
     if (!filtered || !mounted) return filtered;
 
     return [...filtered].sort((a, b) => {
+        const isAOwner = a.organizerId === user?.uid;
+        const isBOwner = b.organizerId === user?.uid;
+
+        if (isAOwner && !isBOwner) return -1;
+        if (!isAOwner && isBOwner) return 1;
+
         // Status is primary sort key: Ongoing (1) < Upcoming (2) < Past (3)
         if (a._status !== b._status) {
             return a._status - b._status;

@@ -7,7 +7,7 @@ import type { UserProfile, DailyDisciplineLog } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Loader2, HeartHandshake, ShieldAlert, CheckCircle2, MessagesSquare } from 'lucide-react';
+import { Loader2, HeartHandshake, Send, CheckCircle2, MessagesSquare } from 'lucide-react';
 import { format, isSameDay } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
@@ -27,6 +27,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { Textarea } from '@/components/ui/textarea';
 
 const disciplines = [
   { id: 'pray', label: 'Pray' },
@@ -42,6 +43,7 @@ export default function AccountabilityPage() {
   const [isNudging, setIsNudging] = useState(false);
   const [isChatLoading, setIsChatLoading] = useState(false);
   const [date, setDate] = useState<Date | undefined>(new Date());
+  const [prayerMessage, setPrayerMessage] = useState('');
 
   const userDocRef = useMemo(() => {
     if (!user?.uid) return null;
@@ -81,25 +83,31 @@ export default function AccountabilityPage() {
     if (!user || !firestore || !partnerId || !userProfile) return;
     setIsNudging(true);
     try {
+      const message = prayerMessage.trim() ? prayerMessage.trim() : 'Keep up with your daily disciplines! You can do it.';
+      const title = prayerMessage.trim() 
+        ? `${userProfile.firstName} sent you a prayer!` 
+        : `${userProfile.firstName} sent you a nudge!`;
+
       const notificationsCollectionRef = collection(firestore, 'users', partnerId, 'notifications');
       await addDoc(notificationsCollectionRef, {
         userId: partnerId,
         type: 'accountability_nudge',
-        title: `${userProfile.firstName} ${userProfile.lastName} sent you a nudge!`,
-        message: 'Keep up with your daily disciplines! You can do it.',
+        title: title,
+        message: message,
         link: '/dashboard/accountability',
         isRead: false,
         createdAt: serverTimestamp()
       });
       toast({
-        title: 'Nudge Sent!',
-        description: `You've sent an encouragement to ${partnerProfile?.firstName} ${partnerProfile?.lastName}.`
+        title: 'Encouragement Sent!',
+        description: `You've sent a message to ${partnerProfile?.firstName} ${partnerProfile?.lastName}.`
       });
+      setPrayerMessage('');
     } catch (error) {
       toast({
         variant: 'destructive',
         title: 'Error',
-        description: 'Could not send nudge. Please try again.'
+        description: 'Could not send encouragement. Please try again.'
       });
     } finally {
       setIsNudging(false);
@@ -264,20 +272,30 @@ export default function AccountabilityPage() {
           <AlertDialog>
             <AlertDialogTrigger asChild>
                <Button variant="outline" disabled={isNudging} className="w-full sm:w-auto">
-                {isNudging ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ShieldAlert className="mr-2 h-4 w-4" />}
-                Send a Nudge
+                {isNudging ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
+                Send Encouragement
               </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
                 <AlertDialogHeader>
-                    <AlertDialogTitle>Send a Nudge?</AlertDialogTitle>
+                    <AlertDialogTitle>Send Encouragement</AlertDialogTitle>
                     <AlertDialogDescription>
-                        This will send a friendly notification to {partnerFullName} to encourage them.
+                        Send a prayer or an encouraging message to {partnerFullName}.
                     </AlertDialogDescription>
                 </AlertDialogHeader>
+                <div className="py-4">
+                  <Textarea 
+                    placeholder="Type your prayer or message here... (optional)"
+                    value={prayerMessage}
+                    onChange={(e) => setPrayerMessage(e.target.value)}
+                  />
+                </div>
                 <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleNudge}>Send</AlertDialogAction>
+                    <AlertDialogCancel onClick={() => setPrayerMessage('')}>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleNudge} disabled={isNudging}>
+                        {isNudging && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                        Send
+                    </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
