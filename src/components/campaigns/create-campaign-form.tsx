@@ -31,6 +31,7 @@ import { FirestorePermissionError } from "@/firebase/errors";
 import { format, differenceInDays, isSameDay } from "date-fns";
 import { LocationMapPicker } from "../common/location-map-picker";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import type { UserProfile } from "@/lib/types";
 
 const formSchema = z.object({
   goal: z.string({
@@ -84,9 +85,10 @@ type CampaignIdeas = {
 
 type CreateCampaignFormProps = {
   onCampaignCreated: () => void;
+  userProfile: UserProfile;
 };
 
-export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProps) {
+export function CreateCampaignForm({ onCampaignCreated, userProfile }: CreateCampaignFormProps) {
   const { toast } = useToast();
   const { user } = useUser();
   const firestore = useFirestore();
@@ -210,7 +212,8 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
             maxParticipants: values.maxParticipants || null,
             createdAt: serverTimestamp(),
             organizerId: user.uid,
-            organizerName: user.displayName || 'Anonymous',
+            organizerFirstName: userProfile.firstName,
+            organizerLastName: userProfile.lastName,
             status: 'active' as const,
             scripture: values.scripture,
             scriptureTestimony: values.scriptureTestimony,
@@ -231,8 +234,9 @@ export function CreateCampaignForm({ onCampaignCreated }: CreateCampaignFormProp
         const participantRef = doc(firestore, 'campaigns', campaignDocRef.id, 'participants', user.uid);
         const participantPayload: { [key: string]: any; } = {
             userId: user.uid,
-            displayName: user.displayName || 'Anonymous',
-            photoURL: user.photoURL || null,
+            firstName: userProfile.firstName,
+            lastName: userProfile.lastName,
+            photoURL: userProfile.photoURL || null,
             joinedAt: serverTimestamp()
         };
         if (user.email) {

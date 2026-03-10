@@ -99,7 +99,7 @@ function ParticipantList({ campaign, participants, loading, onRemove }: { campai
             <div className="space-y-3">
                 <h4 className="text-sm font-semibold text-muted-foreground">ORGANIZER</h4>
                 <div className="flex items-center justify-between border rounded-lg p-3 bg-muted/50">
-                    <span className='font-medium'>{organizer.displayName}</span>
+                    <span className='font-medium'>{organizer.firstName} {organizer.lastName}</span>
                     <span className="text-sm text-muted-foreground">You</span>
                 </div>
             </div>
@@ -112,7 +112,7 @@ function ParticipantList({ campaign, participants, loading, onRemove }: { campai
                 {otherParticipants.map(p => (
                     <div key={p.id} className="flex items-center justify-between p-2 hover:bg-muted/50 rounded-md">
                         <div>
-                          <p className='font-medium'>{p.displayName}</p>
+                          <p className='font-medium'>{p.firstName} {p.lastName}</p>
                           {p.email && <p className="text-xs text-muted-foreground">{p.email}</p>}
                         </div>
                         <AlertDialog>
@@ -123,7 +123,7 @@ function ParticipantList({ campaign, participants, loading, onRemove }: { campai
                           </AlertDialogTrigger>
                           <AlertDialogContent>
                             <AlertDialogHeader>
-                              <AlertDialogTitle>Remove {p.displayName}?</AlertDialogTitle>
+                              <AlertDialogTitle>Remove {p.firstName} {p.lastName}?</AlertDialogTitle>
                               <AlertDialogDescription>
                                 Are you sure you want to remove this participant? They will be notified and this action cannot be undone.
                               </AlertDialogDescription>
@@ -250,7 +250,9 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
         const participantInfo: { [key: string]: any } = {};
         participants.forEach(p => {
             participantInfo[p.id] = {
-                displayName: p.displayName,
+                displayName: `${p.firstName} ${p.lastName}`,
+                firstName: p.firstName,
+                lastName: p.lastName,
                 photoURL: p.photoURL || '',
                 email: p.email || '',
             };
@@ -672,5 +674,3 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
     </div>
   );
 }
-
-    

@@ -3,7 +3,7 @@
 
 import { useMemo, useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { PlusCircle, Target } from "lucide-react";
+import { PlusCircle, Target, Loader2 } from "lucide-react";
 import { CreateCampaignForm } from "@/components/campaigns/create-campaign-form";
 import {
   Dialog,
@@ -265,13 +265,13 @@ export default function CampaignsPage() {
   }, [processedCampaigns, searchTerm, mounted, filter, user?.uid, joinedCampaignIds, statusFilter]);
 
   const triggerButton = (
-    <Button disabled={!user}>
-      <PlusCircle className="h-4 w-4" />
+    <Button disabled={!user || profileLoading}>
+      {profileLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <PlusCircle className="h-4 w-4" />}
       <span className="hidden md:inline">Create Campaign</span>
     </Button>
   );
 
-  const formContent = <CreateCampaignForm onCampaignCreated={handleCampaignCreated} />;
+  const formContent = userProfile ? <CreateCampaignForm onCampaignCreated={handleCampaignCreated} userProfile={userProfile} /> : <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin"/></div>;
 
   let noResultsMessage = "No campaigns found.";
     if (filter === 'created') {
@@ -370,5 +370,3 @@ export default function CampaignsPage() {
     </div>
   );
 }
-
-    
