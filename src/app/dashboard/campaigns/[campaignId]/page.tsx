@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
@@ -92,7 +91,8 @@ function CampaignMap({ campaign }: { campaign: Campaign }) {
 }
 
 
-export default function CampaignPage({ params }: { params: { campaignId: string } }) {
+export default function CampaignPage() {
+    const params = useParams();
     const campaignId = params.campaignId as string;
     const router = useRouter();
     const firestore = useFirestore();
