@@ -29,6 +29,7 @@ import { LocationProfileInput } from "../common/location-profile-input";
 import { Label } from "../ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { ToastAction } from "@/components/ui/toast";
 
 const formSchema = z.object({
   firstName: z.string().min(2, "First name must be at least 2 characters.").max(50, "Name is too long."),
@@ -117,16 +118,18 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                 console.error("Error Message:", uploadError.message);
                 
                 let errorMessage = "Could not upload your photo. Please check the browser console for more details.";
+                let isCorsError = false;
+
                 if (uploadError.code) {
                     switch (uploadError.code) {
                         case 'storage/unauthorized':
-                            errorMessage = "Permission Denied. Please check your Storage security rules and ensure the CORS policy is correctly set on your bucket.";
+                        case 'storage/retry-limit-exceeded':
+                        case 'storage/unknown': // 'unknown' is often a CORS issue
+                            errorMessage = "The upload failed due to a permission error. This is almost always caused by an incorrect CORS policy on your Firebase Storage bucket.";
+                            isCorsError = true;
                             break;
                         case 'storage/canceled':
                             errorMessage = "The upload was canceled. Please try again.";
-                            break;
-                        case 'storage/unknown':
-                            errorMessage = "An unknown error occurred. This could be a network issue or a CORS policy problem. Please check the browser console.";
                             break;
                         case 'storage/object-not-found':
                             errorMessage = "File not found. Please try re-selecting the file.";
@@ -136,7 +139,26 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                             break;
                     }
                 }
-                toast({ variant: 'destructive', title: 'Photo Upload Failed', description: errorMessage, duration: 10000 });
+
+                toast({ 
+                    variant: 'destructive', 
+                    title: 'Photo Upload Failed', 
+                    description: (
+                        <div>
+                            <p>{errorMessage}</p>
+                            {isCorsError && (
+                                <p className="mt-2 font-semibold">
+                                    Please follow the visual setup guide to fix this:
+                                </p>
+                            )}
+                        </div>
+                    ),
+                    action: isCorsError ? (
+                        <ToastAction altText="Open Guide" onClick={() => window.open('/docs/storage-cors-guide.md', '_blank')}>Open Guide</ToastAction>
+                    ) : undefined,
+                    duration: 30000 
+                });
+                
                 reject(uploadError);
               },
               () => {
