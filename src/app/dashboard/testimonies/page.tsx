@@ -127,10 +127,10 @@ export default function TestimoniesPage() {
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div className="space-y-2">
-          <h1 className="text-xl sm:text-2xl font-bold tracking-tight font-headline">
-            Testimonies & Prayer Requests
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight font-headline">
+            Testimonies &amp; Prayer Requests
           </h1>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted-foreground">
             Read testimonies of what God has done and pray for others' needs.
           </p>
         </div>
@@ -143,7 +143,7 @@ export default function TestimoniesPage() {
           ) : (
             <Dialog open={isTestimonyDialogOpen} onOpenChange={setIsTestimonyDialogOpen}>
               <DialogTrigger asChild>{testimonyTrigger}</DialogTrigger>
-              <DialogContent className="sm:max-w-lg"><DialogHeader><SheetTitle>Share Your Testimony</SheetTitle><DialogDescription>Encourage others by sharing what God has done in your life.</DialogDescription></DialogHeader><div className="max-h-[70vh] overflow-y-auto pr-2">{testimonyFormContent}</div></DialogContent>
+              <DialogContent className="sm:max-w-lg"><DialogHeader><DialogTitle>Share Your Testimony</DialogTitle><DialogDescription>Encourage others by sharing what God has done in your life.</DialogDescription></DialogHeader><div className="max-h-[70vh] overflow-y-auto pr-2">{testimonyFormContent}</div></DialogContent>
             </Dialog>
           )
         ) : (
@@ -155,7 +155,7 @@ export default function TestimoniesPage() {
           ) : (
             <Dialog open={isPrayerDialogOpen} onOpenChange={setIsPrayerDialogOpen}>
               <DialogTrigger asChild>{prayerTrigger}</DialogTrigger>
-              <DialogContent className="sm:max-w-lg"><DialogHeader><SheetTitle>Share Prayer Request</SheetTitle><DialogDescription>Share your request anonymously with the community.</DialogDescription></DialogHeader><div className="max-h-[70vh] overflow-y-auto pr-2">{prayerFormContent}</div></DialogContent>
+              <DialogContent className="sm:max-w-lg"><DialogHeader><DialogTitle>Share Prayer Request</DialogTitle><DialogDescription>Share your request anonymously with the community.</DialogDescription></DialogHeader><div className="max-h-[70vh] overflow-y-auto pr-2">{prayerFormContent}</div></DialogContent>
             </Dialog>
           )
         )}
@@ -212,3 +212,5 @@ export default function TestimoniesPage() {
     </div>
   );
 }
+
+    
