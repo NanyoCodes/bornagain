@@ -1,7 +1,6 @@
-
 'use client';
 
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useDoc, useFirestore, useUser } from '@/firebase';
 import type { Campaign, UserProfile, JoinedCampaign } from '@/lib/types';
@@ -11,10 +10,8 @@ import { Button } from '@/components/ui/button';
 import { Loader2, ArrowLeft, MapPin, CalendarDays, Users, Share2, Edit, MessagesSquare, UserCheck2, PlayCircle, Newspaper, Target, CheckCircle2 } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
 import { format, isSameDay, differenceInDays, formatDistanceToNow, parse } from 'date-fns';
-import { useIsMobile } from '@/hooks/use-mobile';
 import { JoinCampaignDialog } from '@/components/campaigns/join-campaign-dialog';
 import { ManageCampaignForm } from '@/components/campaigns/manage-campaign-form';
 import { LogSoulForm } from "@/components/souls/log-soul-form";
@@ -23,7 +20,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { useJsApiLoader, GoogleMap, MarkerF, CircleF } from '@react-google-maps/api';
 import { Skeleton } from '@/components/ui/skeleton';
 import Link from 'next/link';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import { cn } from '@/lib/utils';
 
 const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 const libraries: ('places')[] = ['places'];
@@ -96,6 +93,9 @@ function ScriptureDisplay({ reference, caption }: { reference: string; caption?:
   const [scriptureText, setScriptureText] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const scriptureRef = useRef<HTMLParagraphElement>(null);
+  const [isTruncated, setIsTruncated] = useState(false);
 
   useEffect(() => {
     if (!reference) {
@@ -106,6 +106,8 @@ function ScriptureDisplay({ reference, caption }: { reference: string; caption?:
     setIsLoading(true);
     setScriptureText(null);
     setError(null);
+    setIsExpanded(false);
+    setIsTruncated(false);
 
     const fetchScripture = async () => {
       try {
@@ -119,7 +121,7 @@ function ScriptureDisplay({ reference, caption }: { reference: string; caption?:
         }
         setScriptureText(data.text.trim());
       } catch (e: any) {
-        console.warn(`Could not fetch scripture for "${reference}":`, e.message);
+        console.warn(`Could not fetch scripture for "${reference}"`, e.message);
         setError(e.message);
       } finally {
         setIsLoading(false);
@@ -128,6 +130,29 @@ function ScriptureDisplay({ reference, caption }: { reference: string; caption?:
 
     fetchScripture();
   }, [reference]);
+  
+  useEffect(() => {
+    const checkTruncation = () => {
+        if (scriptureRef.current) {
+            setIsTruncated(scriptureRef.current.scrollHeight > scriptureRef.current.clientHeight);
+        }
+    }
+    // Only check for truncation if the content is not expanded.
+    if (scriptureText && !isExpanded) {
+        // Use a timeout to allow the DOM to render before checking height.
+        const timeoutId = setTimeout(checkTruncation, 100);
+        window.addEventListener('resize', checkTruncation);
+
+        return () => {
+            clearTimeout(timeoutId);
+            window.removeEventListener('resize', checkTruncation);
+        };
+    } else if (isExpanded) {
+        // When expanded, we know it's not truncated anymore.
+        setIsTruncated(false);
+    }
+  }, [scriptureText, isExpanded]);
+
 
   if (isLoading) {
     return (
@@ -148,17 +173,20 @@ function ScriptureDisplay({ reference, caption }: { reference: string; caption?:
     );
   }
 
-  const isLongText = scriptureText.length > 500;
-
   // Success display
   return (
     <blockquote className="mt-6 border-l-2 pl-6 italic">
-        {isLongText ? (
-            <ScrollArea className="max-h-48 pr-4">
-                <p className="whitespace-pre-wrap">&ldquo;{scriptureText}&rdquo;</p>
-            </ScrollArea>
-        ) : (
-             <p className="whitespace-pre-wrap">&ldquo;{scriptureText}&rdquo;</p>
+        <p ref={scriptureRef} className={cn("whitespace-pre-wrap", !isExpanded && "line-clamp-5")}>
+            &ldquo;{scriptureText}&rdquo;
+        </p>
+        {isTruncated && !isExpanded && (
+            <Button
+                variant="link"
+                className="p-0 h-auto text-sm"
+                onClick={() => setIsExpanded(true)}
+            >
+                Read More
+            </Button>
         )}
         <footer className="text-right text-sm not-italic mt-2">
             - {reference}
