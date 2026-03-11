@@ -121,6 +121,82 @@ function ParticipantsDialog({ campaign, children }: { campaign: Campaign; childr
   );
 }
 
+function ScriptureDisplay({ reference, caption }: { reference: string; caption?: string; }) {
+  const [scriptureText, setScriptureText] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!reference) {
+        setIsLoading(false);
+        return;
+    };
+
+    setIsLoading(true);
+    setScriptureText(null);
+    setError(null);
+
+    const fetchScripture = async () => {
+      try {
+        const response = await fetch(`https://bible-api.com/${encodeURIComponent(reference)}`);
+        if (!response.ok) {
+          throw new Error(`Failed to fetch scripture. Status: ${response.status}`);
+        }
+        const data = await response.json();
+        if (data.error) {
+            throw new Error(data.error);
+        }
+        setScriptureText(data.text.trim());
+      } catch (e: any) {
+        console.warn(`Could not fetch scripture for "${reference}":`, e.message);
+        setError(e.message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchScripture();
+  }, [reference]);
+
+  if (isLoading) {
+    return (
+        <div className="mt-4 space-y-2">
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-5/6" />
+            <Skeleton className="h-4 w-1/2" />
+        </div>
+    );
+  }
+
+  // Fallback to old display if fetch fails or reference is bad
+  if (error || !scriptureText) {
+    if (caption) {
+        return (
+            <blockquote className="mt-4 border-l-2 pl-4 italic">
+                &ldquo;{caption}&rdquo;
+                <footer className="text-right text-sm not-italic mt-2">- Inspired by {reference}</footer>
+            </blockquote>
+        );
+    }
+    return (
+         <div className="mt-4 text-sm text-muted-foreground">
+            <span className="font-semibold">Inspirational Scripture:</span> {reference}
+        </div>
+    );
+  }
+
+  // Success display
+  return (
+    <blockquote className="mt-4 border-l-2 pl-4 italic">
+        &ldquo;{scriptureText}&rdquo;
+        <footer className="text-right text-sm not-italic mt-2">
+            - {reference}
+            {caption && <div className="mt-1 opacity-80">&ldquo;{caption}&rdquo;</div>}
+        </footer>
+    </blockquote>
+  );
+}
+
 
 export function CampaignCard({ campaign, userId, userProfile, isJoined }: { campaign: Campaign; userId?: string, userProfile?: UserProfile | null, isJoined: boolean }) {
   const { toast } = useToast();
@@ -557,18 +633,9 @@ export function CampaignCard({ campaign, userId, userProfile, isJoined }: { camp
                 )}
             </div>
             
-            {campaign.scriptureTestimony ? (
-                <blockquote className="mt-4 border-l-2 pl-4 italic text-muted-foreground">
-                    &ldquo;{campaign.scriptureTestimony}&rdquo;
-                    {campaign.scripture && (
-                        <footer className="text-right text-xs not-italic mt-1">- Inspired by {campaign.scripture}</footer>
-                    )}
-                </blockquote>
-            ) : campaign.scripture ? (
-                <div className="mt-4 text-sm text-muted-foreground">
-                    <span className="font-semibold">Inspirational Scripture:</span> {campaign.scripture}
-                </div>
-            ) : null}
+            {campaign.scripture && (
+                <ScriptureDisplay reference={campaign.scripture} caption={campaign.scriptureTestimony} />
+            )}
 
             <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                 <div className="rounded-lg border p-3 flex items-start gap-3">
