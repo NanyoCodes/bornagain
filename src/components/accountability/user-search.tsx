@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -12,7 +11,8 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useToast } from '@/hooks/use-toast';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useCollection } from '@/firebase/firestore/use-collection';
-import { FirestorePermissionError, errorEmitter } from '@/firebase/errors';
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError } from '@/firebase/errors';
 
 export function UserSearch({ currentUserProfile }: { currentUserProfile: UserProfile }) {
     const { user } = useUser();
