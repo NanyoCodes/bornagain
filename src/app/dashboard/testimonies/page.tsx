@@ -138,12 +138,12 @@ export default function TestimoniesPage() {
           mounted && isMobile ? (
             <Sheet open={isTestimonyDialogOpen} onOpenChange={setIsTestimonyDialogOpen}>
               <SheetTrigger asChild>{testimonyTrigger}</SheetTrigger>
-              <SheetContent side="bottom"><SheetHeader><SheetTitle>Share Your Testimony</SheetTitle><DialogDescription>Encourage others by sharing what God has done in your life.</DialogDescription></SheetHeader><div className="max-h-[80vh] overflow-y-auto p-1 mt-4">{testimonyFormContent}</div></SheetContent>
+              <SheetContent side="bottom"><SheetHeader><SheetTitle>Share Testimony</SheetTitle><DialogDescription>Encourage others by sharing what God has done in your life.</DialogDescription></SheetHeader><div className="max-h-[80vh] overflow-y-auto p-1 mt-4">{testimonyFormContent}</div></SheetContent>
             </Sheet>
           ) : (
             <Dialog open={isTestimonyDialogOpen} onOpenChange={setIsTestimonyDialogOpen}>
               <DialogTrigger asChild>{testimonyTrigger}</DialogTrigger>
-              <DialogContent className="sm:max-w-lg"><DialogHeader><DialogTitle>Share Your Testimony</DialogTitle><DialogDescription>Encourage others by sharing what God has done in your life.</DialogDescription></DialogHeader><div className="max-h-[70vh] overflow-y-auto pr-2">{testimonyFormContent}</div></DialogContent>
+              <DialogContent className="sm:max-w-lg"><DialogHeader><DialogTitle>Share Testimony</DialogTitle><DialogDescription>Encourage others by sharing what God has done in your life.</DialogDescription></DialogHeader><div className="max-h-[70vh] overflow-y-auto pr-2">{testimonyFormContent}</div></DialogContent>
             </Dialog>
           )
         ) : (
@@ -212,5 +212,3 @@ export default function TestimoniesPage() {
     </div>
   );
 }
-
-    
