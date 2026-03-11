@@ -69,9 +69,9 @@ service cloud.firestore {
       allow update, delete: if false; // Immutable
     }
 
-    // Testimonies are public to all authenticated users, but only writable by the author.
+    // Testimonies are public, but only writable by the author.
     match /testimonies/{testimonyId} {
-      allow get, list: if request.auth != null;
+      allow get, list: if true;
       
       // Author can create, update, or delete their own testimony.
       allow write: if request.auth != null && (
@@ -82,7 +82,7 @@ service cloud.firestore {
       );
     }
     
-    // Prayer Requests
+    // Prayer Requests are public.
     match /prayerRequests/{requestId} {
       allow get, list: if true; // Publicly readable for the community to pray
 
@@ -102,11 +102,10 @@ service cloud.firestore {
     }
 
 
-    // Campaigns are public to all authenticated users.
+    // Campaigns are public to read.
     // Updates are restricted to the organizer, except for changing participant count.
     match /campaigns/{campaignId} {
-    	allow get: if request.auth != null;
-      allow list: if request.auth != null;
+    	allow get, list: if true;
       allow create: if request.auth != null;
       allow update: if request.auth != null && (
         // Case 1: A user is joining the campaign.
