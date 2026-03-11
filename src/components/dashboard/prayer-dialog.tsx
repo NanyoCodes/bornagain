@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -39,6 +40,7 @@ const prayerPoints = [
     { label: 'Prophets & Pastors' },
     { label: 'Governments' },
     { label: 'Other Believers' },
+    { label: 'The Earth' },
 ];
 
 export function PrayerDialog({ isOpen, onOpenChange, onDisciplineCompleted, userProfile }: { isOpen: boolean; onOpenChange: (open: boolean) => void; onDisciplineCompleted: () => void; userProfile: UserProfile | null; }) {
