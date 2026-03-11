@@ -84,7 +84,7 @@ service cloud.firestore {
     
     // Prayer Requests
     match /prayerRequests/{requestId} {
-      allow get, list: if request.auth != null;
+      allow get, list: if true; // Publicly readable for the community to pray
 
       // Author can create their own prayer request. authorId is required.
       allow create: if request.auth != null && request.auth.uid == request.resource.data.authorId;
