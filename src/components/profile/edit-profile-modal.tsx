@@ -112,51 +112,18 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                 setUploadProgress(progress);
               },
               (uploadError) => {
-                console.error("!!! IMPORTANT: Firebase Storage Upload Error Occurred !!!");
-                console.error("Full Error Object:", uploadError);
-                console.error("Error Code:", uploadError.code);
-                console.error("Error Message:", uploadError.message);
-                
-                let errorMessage = "Could not upload your photo. Please check the browser console for more details.";
-                let isCorsError = false;
+                console.error("Firebase Storage Upload Error:", uploadError);
 
-                if (uploadError.code) {
-                    switch (uploadError.code) {
-                        case 'storage/unauthorized':
-                        case 'storage/retry-limit-exceeded':
-                        case 'storage/unknown': // 'unknown' is often a CORS issue
-                            errorMessage = "The upload failed due to a permission error. This is almost always caused by an incorrect CORS policy on your Firebase Storage bucket.";
-                            isCorsError = true;
-                            break;
-                        case 'storage/canceled':
-                            errorMessage = "The upload was canceled. Please try again.";
-                            break;
-                        case 'storage/object-not-found':
-                            errorMessage = "File not found. Please try re-selecting the file.";
-                            break;
-                        case 'storage/quota-exceeded':
-                            errorMessage = "Storage quota exceeded. You may have run out of space on your account.";
-                            break;
-                    }
+                let description = "Could not upload photo. Please try again.";
+                if (uploadError.code === 'storage/unauthorized') {
+                    description = "Permission denied. This can be caused by incorrect Firebase Storage CORS configuration or Security Rules. Please check both and try again.";
                 }
 
-                toast({ 
-                    variant: 'destructive', 
-                    title: 'Photo Upload Failed', 
-                    description: (
-                        <div>
-                            <p>{errorMessage}</p>
-                            {isCorsError && (
-                                <p className="mt-2 font-semibold">
-                                    Please follow the visual setup guide to fix this:
-                                </p>
-                            )}
-                        </div>
-                    ),
-                    action: isCorsError ? (
-                        <ToastAction altText="Open Guide" onClick={() => window.open('/docs/storage-cors-guide.md', '_blank')}>Open Guide</ToastAction>
-                    ) : undefined,
-                    duration: 30000 
+                toast({
+                    variant: 'destructive',
+                    title: 'Photo Upload Failed',
+                    description: description,
+                    duration: 10000,
                 });
                 
                 reject(uploadError);
@@ -225,7 +192,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
 
     } catch (error: any) {
       console.error("Profile update error (Auth/Firestore):", error);
-       if (error.name !== 'FirestorePermissionError' && error.name !== 'storage/unauthorized') {
+       if (error.name !== 'FirestorePermissionError' && error.code !== 'storage/unauthorized') {
          toast({ variant: 'destructive', title: "Update Failed", description: error.message || "Could not update profile details." });
        }
     } finally {
@@ -355,3 +322,5 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
     </Form>
   );
 }
+
+    
