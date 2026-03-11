@@ -95,6 +95,15 @@ export type Testimony = {
   campaignTitle?: string;
 };
 
+export type PrayerRequest = {
+  id: string;
+  authorId: string;
+  content: string;
+  category: TestimonyCategory;
+  createdAt: Timestamp;
+  usersWhoPrayed?: string[];
+};
+
 export type Campaign = {
   id: string;
   title: string;
@@ -245,5 +254,3 @@ export type AccountabilityRequest = {
   respondedAt?: Timestamp;
   participantIds: string[];
 };
-
-

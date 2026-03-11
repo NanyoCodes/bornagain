@@ -239,6 +239,31 @@
         "createdAt"
       ]
     },
+    "PrayerRequest": {
+      "title": "Prayer Request",
+      "description": "A user's prayer request, shared anonymously with the community.",
+      "type": "object",
+      "properties": {
+        "content": {
+          "type": "string"
+        },
+        "category": {
+          "type": "string"
+        },
+        "authorId": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "object"
+        },
+        "usersWhoPrayed": {
+          "type": "array",
+          "description": "A list of UIDs of users who have prayed for this request.",
+          "items": { "type": "string" }
+        }
+      },
+      "required": ["content", "category", "authorId", "createdAt"]
+    },
     "Campaign": {
       "title": "Campaign",
       "description": "A user-created evangelism campaign.",
@@ -716,6 +741,12 @@
         "$ref": "#/entities/Testimony"
       },
       "description": "Stores user-submitted testimonies."
+    },
+    "/prayerRequests/{requestId}": {
+      "schema": {
+        "$ref": "#/entities/PrayerRequest"
+      },
+      "description": "Stores user-submitted prayer requests, intended to be anonymous."
     },
     "/campaigns/{campaignId}": {
       "schema": {
