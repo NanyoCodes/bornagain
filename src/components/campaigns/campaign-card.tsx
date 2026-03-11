@@ -37,6 +37,7 @@ import { Skeleton } from "../ui/skeleton";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { JoinCampaignDialog } from "./join-campaign-dialog";
+import { ScrollArea } from "../ui/scroll-area";
 
 
 function ParticipantsDialog({ campaign, children }: { campaign: Campaign; children: React.ReactNode; }) {
@@ -125,6 +126,9 @@ function ScriptureDisplay({ reference, caption }: { reference: string; caption?:
   const [scriptureText, setScriptureText] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const scriptureRef = useRef<HTMLParagraphElement>(null);
+  const [isTruncated, setIsTruncated] = useState(false);
+  const [showFullScripture, setShowFullScripture] = useState(false);
 
   useEffect(() => {
     if (!reference) {
@@ -135,6 +139,7 @@ function ScriptureDisplay({ reference, caption }: { reference: string; caption?:
     setIsLoading(true);
     setScriptureText(null);
     setError(null);
+    setIsTruncated(false);
 
     const fetchScripture = async () => {
       try {
@@ -157,6 +162,23 @@ function ScriptureDisplay({ reference, caption }: { reference: string; caption?:
 
     fetchScripture();
   }, [reference]);
+
+  useEffect(() => {
+    const checkTruncation = () => {
+      if (scriptureRef.current) {
+        setIsTruncated(scriptureRef.current.scrollHeight > scriptureRef.current.clientHeight);
+      }
+    };
+    if (scriptureText) {
+      // Delay to allow for rendering
+      const timeoutId = setTimeout(checkTruncation, 100);
+      window.addEventListener('resize', checkTruncation);
+      return () => {
+        clearTimeout(timeoutId);
+        window.removeEventListener('resize', checkTruncation);
+      };
+    }
+  }, [scriptureText]);
 
   if (isLoading) {
     return (
@@ -188,7 +210,23 @@ function ScriptureDisplay({ reference, caption }: { reference: string; caption?:
   // Success display
   return (
     <blockquote className="mt-4 border-l-2 pl-4 italic">
-        &ldquo;{scriptureText}&rdquo;
+        <p ref={scriptureRef} className="line-clamp-3">&ldquo;{scriptureText}&rdquo;</p>
+        {isTruncated && (
+            <Dialog open={showFullScripture} onOpenChange={setShowFullScripture}>
+                <DialogTrigger asChild>
+                    <Button variant="link" className="p-0 h-auto text-sm -mt-1" onClick={(e) => e.stopPropagation()}>Read More</Button>
+                </DialogTrigger>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>{reference}</DialogTitle>
+                        <DialogDescription>Full scripture text.</DialogDescription>
+                    </DialogHeader>
+                    <ScrollArea className="max-h-[60vh] pr-4">
+                        <p className="whitespace-pre-wrap">&ldquo;{scriptureText}&rdquo;</p>
+                    </ScrollArea>
+                </DialogContent>
+            </Dialog>
+        )}
         <footer className="text-right text-sm not-italic mt-2">
             - {reference}
             {caption && <div className="mt-1 opacity-80">&ldquo;{caption}&rdquo;</div>}

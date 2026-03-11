@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import { useRouter, useParams } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import { useDoc, useFirestore, useUser } from '@/firebase';
 import type { Campaign, UserProfile, JoinedCampaign } from '@/lib/types';
 import { doc, collection } from 'firebase/firestore';
@@ -23,6 +23,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { useJsApiLoader, GoogleMap, MarkerF, CircleF } from '@react-google-maps/api';
 import { Skeleton } from '@/components/ui/skeleton';
 import Link from 'next/link';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 const libraries: ('places')[] = ['places'];
@@ -147,10 +148,18 @@ function ScriptureDisplay({ reference, caption }: { reference: string; caption?:
     );
   }
 
+  const isLongText = scriptureText.length > 500;
+
   // Success display
   return (
     <blockquote className="mt-6 border-l-2 pl-6 italic">
-        &ldquo;{scriptureText}&rdquo;
+        {isLongText ? (
+            <ScrollArea className="max-h-48 pr-4">
+                <p className="whitespace-pre-wrap">&ldquo;{scriptureText}&rdquo;</p>
+            </ScrollArea>
+        ) : (
+             <p className="whitespace-pre-wrap">&ldquo;{scriptureText}&rdquo;</p>
+        )}
         <footer className="text-right text-sm not-italic mt-2">
             - {reference}
             {caption && <div className="mt-1 opacity-80">&ldquo;{caption}&rdquo;</div>}
