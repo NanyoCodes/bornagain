@@ -24,6 +24,7 @@ import { useToast } from '@/hooks/use-toast';
 import { ScrollArea } from '../ui/scroll-area';
 import { Separator } from '../ui/separator';
 import { format, parse } from 'date-fns';
+import { FirestorePermissionError, errorEmitter } from '@/firebase/errors';
 
 const formSchema = z.object({
   churchName: z.string().min(2, { message: 'Church name must be at least 2 characters.' }).max(100, { message: 'Church name is too long.' }),
@@ -68,56 +69,58 @@ export function AttendChurchDialog({ isOpen, onOpenChange, onDisciplineCompleted
     }
   }, [isOpen, userProfile, form, initialView]);
 
-  const logAttendance = async (churchName: string) => {
-    if (!user || !firestore) return;
+  const logAttendance = (churchName: string) => {
+    if (!user || !firestore) return Promise.reject(new Error("User or firestore not available"));
     setIsSubmitting(true);
     
-    try {
-      const userRef = doc(firestore, 'users', user.uid);
-      await updateDoc(userRef, { 
-        lastChurchAttended: churchName,
-        attendanceHistory: arrayUnion({
-            churchName: churchName,
-            attendedAt: new Date(),
-        })
-      });
-      
-      onDisciplineCompleted();
-      toast({
-        title: 'Attendance Logged!',
-        description: `Great job attending ${churchName} today.`,
-      });
-      onOpenChange(false);
-    } catch (error) {
-        console.error('Failed to update church attendance:', error);
+    const userRef = doc(firestore, 'users', user.uid);
+    const updatePayload = { 
+      lastChurchAttended: churchName,
+      attendanceHistory: arrayUnion({
+          churchName: churchName,
+          attendedAt: new Date(),
+      })
+    };
+
+    return updateDoc(userRef, updatePayload)
+      .then(() => {
+        onDisciplineCompleted();
         toast({
-            variant: 'destructive',
-            title: 'Error',
-            description: 'Could not save church attendance. Please try again.',
+          title: 'Attendance Logged!',
+          description: `Great job attending ${churchName} today.`,
         });
+        onOpenChange(false);
+      })
+      .catch((serverError) => {
+        const permissionError = new FirestorePermissionError({
+            path: userRef.path,
+            operation: 'update',
+            requestResourceData: updatePayload
+        });
+        errorEmitter.emit('permission-error', permissionError);
         setIsSubmitting(false); // only set to false on error, success closes dialog
-        throw error; // re-throw to be caught by the caller
-    }
-    // No finally block, as we want loading to persist until dialog closes on success
+        throw serverError; // re-throw to be caught by the caller
+      });
   };
 
-  const handleConfirmDefaultChurch = async () => {
+  const handleConfirmDefaultChurch = () => {
     if (!userProfile?.churchInfo?.name) return;
-    await logAttendance(userProfile.churchInfo.name).catch(() => {});
+    logAttendance(userProfile.churchInfo.name).catch(() => {});
   };
   
-  const handleFormSubmit = async (values: z.infer<typeof formSchema>) => {
-    await logAttendance(values.churchName).catch(() => {});
+  const handleFormSubmit = (values: z.infer<typeof formSchema>) => {
+    logAttendance(values.churchName).catch(() => {});
   };
   
-  const handleJoinStream = async (schedule: { day: string; time: string; url?: string; }) => {
+  const handleJoinStream = (schedule: { day: string; time: string; url?: string; }) => {
     if (!userProfile?.churchInfo?.name || !schedule.url) return;
-    try {
-        await logAttendance(userProfile.churchInfo.name);
-        window.open(schedule.url, '_blank', 'noopener, noreferrer');
-    } catch {
-        // Error is handled/toasted inside logAttendance
-    }
+    logAttendance(userProfile.churchInfo.name)
+        .then(() => {
+            window.open(schedule.url, '_blank', 'noopener, noreferrer');
+        })
+        .catch(() => {
+            // Error is handled/toasted inside logAttendance
+        });
   };
 
   const attendanceHistory = userProfile?.attendanceHistory ? [...userProfile.attendanceHistory].reverse() : [];

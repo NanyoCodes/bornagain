@@ -76,7 +76,7 @@ function AppHeader() {
   const unreadChatCount = unreadChatNotifications?.length ?? 0;
 
   // Query for other notifications (for the bell dropdown)
-  const otherNotificationTypes = ['campaign_join', 'accountability_nudge', 'accountability_request', 'request_accepted', 'request_declined'];
+  const otherNotificationTypes = ['campaign_join', 'accountability_nudge', 'accountability_request', 'request_accepted', 'request_declined', 'accountability_partner_removed'];
   const otherNotificationsQuery = useMemo(() => {
     if (!user?.uid || !firestore) return null;
     return query(
@@ -109,15 +109,17 @@ function AppHeader() {
     router.push("/login");
   };
   
-  const handleMarkAllAsRead = async () => {
+  const handleMarkAllAsRead = () => {
     if (!user || !firestore || !otherNotifications) return;
     
     const unreadNotifications = otherNotifications.filter(n => !n.isRead);
     if (unreadNotifications.length === 0) return;
 
     const batch = writeBatch(firestore);
+    const notificationRefs: string[] = [];
     unreadNotifications.forEach(notification => {
         const notifRef = doc(firestore, `users/${user.uid}/notifications`, notification.id);
+        notificationRefs.push(notifRef.path);
         batch.update(notifRef, { isRead: true });
     });
     
@@ -125,7 +127,7 @@ function AppHeader() {
         const permissionError = new FirestorePermissionError({
             path: `users/${user.uid}/notifications`,
             operation: 'update',
-            requestResourceData: { isRead: true },
+            requestResourceData: { isRead: true, updatedDocs: notificationRefs },
         });
         errorEmitter.emit('permission-error', permissionError);
     });
@@ -362,12 +364,18 @@ export default function DashboardLayout({
   const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userDocRef);
 
   useEffect(() => {
-    if (!loading && user) {
+    if (!loading && user && firestore) {
       // Update last active timestamp
       const userRef = doc(firestore, 'users', user.uid);
-      updateDoc(userRef, { lastActive: serverTimestamp() }).catch(err => {
-        // This is a non-critical background task.
-        console.warn("Failed to update last active time:", err);
+      const updatePayload = { lastActive: serverTimestamp() };
+      updateDoc(userRef, updatePayload).catch(() => {
+        // Non-critical background task. We still want to emit a debuggable error.
+        const permissionError = new FirestorePermissionError({
+          path: userRef.path,
+          operation: 'update',
+          requestResourceData: updatePayload,
+        });
+        errorEmitter.emit('permission-error', permissionError);
       });
 
       // Check if it's a new user to show the welcome popup

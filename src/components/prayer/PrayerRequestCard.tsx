@@ -48,48 +48,54 @@ export function PrayerRequestCard({ prayerRequest }: { prayerRequest: PrayerRequ
       ? "Shared " + formatDistanceToNow(createdAtDate, { addSuffix: true })
       : formatDistanceToNow(createdAtDate, { addSuffix: true });
 
-  const handlePray = async () => {
+  const handlePray = () => {
     if (!user || !firestore || hasPrayed || isAuthor) return;
     setIsPraying(true);
     
     const requestRef = doc(firestore, 'prayerRequests', prayerRequest.id);
-    
-    try {
-        await updateDoc(requestRef, {
-            usersWhoPrayed: arrayUnion(user.uid)
+    const updatePayload = { usersWhoPrayed: arrayUnion(user.uid) };
+
+    updateDoc(requestRef, updatePayload)
+        .then(() => {
+            toast({ title: "Thank You!", description: "Thank you for praying." });
+        })
+        .catch(() => {
+            const permissionError = new FirestorePermissionError({
+              path: requestRef.path,
+              operation: 'update',
+              requestResourceData: { usersWhoPrayed: `(arrayUnion: ${user.uid})` },
+            });
+            errorEmitter.emit('permission-error', permissionError);
+        })
+        .finally(() => {
+            setIsPraying(false);
         });
-        toast({ title: "Thank You!", description: "Thank you for praying." });
-    } catch (error) {
-        const permissionError = new FirestorePermissionError({
-          path: requestRef.path,
-          operation: 'update',
-          requestResourceData: { usersWhoPrayed: `(arrayUnion: ${user.uid})` },
-        });
-        errorEmitter.emit('permission-error', permissionError);
-    } finally {
-        setIsPraying(false);
-    }
   }
 
-  const handleDelete = async () => {
+  const handleDelete = () => {
     if (!isAuthor || !firestore) return;
     setIsDeleting(true);
 
     const requestRef = doc(firestore, "prayerRequests", prayerRequest.id);
-    try {
-      await deleteDoc(requestRef);
-      toast({
-        title: "Request Deleted",
-        description: "Your prayer request has been removed.",
-      });
-    } catch (error) {
-      const permissionError = new FirestorePermissionError({
-          path: requestRef.path,
-          operation: 'delete',
-      });
-      errorEmitter.emit('permission-error', permissionError);
-      setIsDeleting(false);
-    }
+    
+    deleteDoc(requestRef)
+        .then(() => {
+            toast({
+                title: "Request Deleted",
+                description: "Your prayer request has been removed.",
+            });
+        })
+        .catch(() => {
+            const permissionError = new FirestorePermissionError({
+              path: requestRef.path,
+              operation: 'delete',
+            });
+            errorEmitter.emit('permission-error', permissionError);
+        })
+        .finally(() => {
+            // If the component is still mounted (e.g. error occurred)
+            setIsDeleting(false);
+        });
   };
 
   return (

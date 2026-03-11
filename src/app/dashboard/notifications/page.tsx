@@ -23,7 +23,7 @@ export default function NotificationsPage() {
   const notificationsQuery = useMemo(() => {
     if (!user?.uid || !firestore) return null;
     // Exclude chat notifications from this page
-    const otherNotificationTypes = ['campaign_join', 'accountability_nudge', 'accountability_request', 'request_accepted', 'request_declined'];
+    const otherNotificationTypes = ['campaign_join', 'accountability_nudge', 'accountability_request', 'request_accepted', 'request_declined', 'accountability_partner_removed'];
     return query(
         collection(firestore, `users/${user.uid}/notifications`),
         where('type', 'in', otherNotificationTypes)
@@ -42,22 +42,20 @@ export default function NotificationsPage() {
     });
   }, [notificationsData]);
 
-  const handleNotificationClick = async (notification: Notification) => {
+  const handleNotificationClick = (notification: Notification) => {
     if (!user || !firestore) return;
     
-    try {
-      if (!notification.isRead) {
-        const notifRef = doc(firestore, `users/${user.uid}/notifications`, notification.id);
-        await updateDoc(notifRef, { isRead: true });
-      }
-    } catch (error) {
-       const permissionError = new FirestorePermissionError({
-            path: `users/${user.uid}/notifications/${notification.id}`,
-            operation: 'update',
-            requestResourceData: { isRead: true },
-        });
-        errorEmitter.emit('permission-error', permissionError);
-        // Continue to navigate even if marking as read fails
+    if (!notification.isRead) {
+      const notifRef = doc(firestore, `users/${user.uid}/notifications`, notification.id);
+      updateDoc(notifRef, { isRead: true }).catch(() => {
+         const permissionError = new FirestorePermissionError({
+              path: notifRef.path,
+              operation: 'update',
+              requestResourceData: { isRead: true },
+          });
+          errorEmitter.emit('permission-error', permissionError);
+          // Continue to navigate even if marking as read fails
+      });
     }
 
     if (notification.link) {
@@ -65,14 +63,16 @@ export default function NotificationsPage() {
     }
   };
   
-  const handleMarkAllAsRead = async () => {
+  const handleMarkAllAsRead = () => {
     if (!user || !firestore || !notifications) return;
     const unreadNotifications = notifications.filter(n => !n.isRead);
     if (unreadNotifications.length === 0) return;
 
     const batch = writeBatch(firestore);
+    const notificationRefs: string[] = [];
     unreadNotifications.forEach(notification => {
         const notifRef = doc(firestore, `users/${user.uid}/notifications`, notification.id);
+        notificationRefs.push(notifRef.path);
         batch.update(notifRef, { isRead: true });
     });
     
@@ -80,7 +80,7 @@ export default function NotificationsPage() {
         const permissionError = new FirestorePermissionError({
             path: `users/${user.uid}/notifications`,
             operation: 'update',
-            requestResourceData: { isRead: true },
+            requestResourceData: { isRead: true, updatedDocs: notificationRefs },
         });
         errorEmitter.emit('permission-error', permissionError);
     });

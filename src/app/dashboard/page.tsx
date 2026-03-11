@@ -149,7 +149,12 @@ function GlobalSoulsCard({ location, userSouls }: { location: { city?: string, c
             setCountryCount(countrySnapshot?.data().count ?? 0);
 
         } catch (error) {
-            console.error("Error fetching global soul counts:", error);
+            
+            const permissionError = new FirestorePermissionError({
+                path: 'souls',
+                operation: 'list',
+            });
+            errorEmitter.emit('permission-error', permissionError);
             setError("Could not load community stats.");
         } finally {
             setLoading(false);

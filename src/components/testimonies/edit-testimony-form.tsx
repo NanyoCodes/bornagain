@@ -52,7 +52,7 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
   });
 
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  const onSubmit = (values: z.infer<typeof formSchema>) => {
     if (!user || !firestore) {
       toast({ variant: 'destructive', title: 'Authentication Error', description: 'Please log in again.' });
       return;
@@ -64,41 +64,33 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
 
     setIsSubmitting(true);
     
-    try {
-        const testimonyUpdate: { [key: string]: any } = {
-            category: values.category,
-            content: values.content,
-            updatedAt: serverTimestamp(),
-        };
+    const testimonyUpdate: { [key: string]: any } = {
+        category: values.category,
+        content: values.content,
+        updatedAt: serverTimestamp(),
+    };
 
-        const testimonyRef = doc(firestore, "testimonies", testimony.id);
-        await updateDoc(testimonyRef, testimonyUpdate).catch((serverError) => {
+    const testimonyRef = doc(firestore, "testimonies", testimony.id);
+    
+    updateDoc(testimonyRef, testimonyUpdate)
+        .then(() => {
+            toast({
+                title: "Testimony Updated!",
+                description: "Your changes have been saved successfully.",
+            });
+            onTestimonyUpdated();
+        })
+        .catch(() => {
             const permissionError = new FirestorePermissionError({
                 path: testimonyRef.path,
                 operation: 'update',
                 requestResourceData: testimonyUpdate,
             });
             errorEmitter.emit('permission-error', permissionError);
-            throw permissionError;
+        })
+        .finally(() => {
+            setIsSubmitting(false);
         });
-
-        toast({
-            title: "Testimony Updated!",
-            description: "Your changes have been saved successfully.",
-        });
-        onTestimonyUpdated();
-    } catch (error: any) {
-        console.error("Update error:", error);
-        if (error.name !== 'FirestorePermissionError') {
-            toast({
-                variant: "destructive",
-                title: "Update Error",
-                description: error.message || "An unexpected error occurred. Please try again.",
-            });
-        }
-    } finally {
-        setIsSubmitting(false);
-    }
   }
 
   return (

@@ -3,7 +3,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { useFirestore, useUser } from '@/firebase';
-import { collection, query, where, limit, getDocs, setDoc, serverTimestamp, doc } from 'firebase/firestore';
+import { collection, query, where, limit, getDocs, setDoc, serverTimestamp, doc, addDoc } from 'firebase/firestore';
 import type { AccountabilityRequest, UserProfile } from '@/lib/types';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -12,6 +12,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useToast } from '@/hooks/use-toast';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useCollection } from '@/firebase/firestore/use-collection';
+import { FirestorePermissionError, errorEmitter } from '@/firebase/errors';
 
 export function UserSearch({ currentUserProfile }: { currentUserProfile: UserProfile }) {
     const { user } = useUser();
@@ -101,58 +102,67 @@ export function UserSearch({ currentUserProfile }: { currentUserProfile: UserPro
         return () => clearTimeout(debounceSearch);
     }, [searchTerm, user, firestore, toast]);
     
-    const handleSendRequest = async (targetUser: UserProfile) => {
+    const handleSendRequest = (targetUser: UserProfile) => {
         if (!user || !firestore || !currentUserProfile) return;
+        
+        if (currentUserProfile.accountabilityPartnerId) {
+            toast({ variant: 'destructive', title: 'Error', description: 'You already have an accountability partner. Please remove your current partner before sending a new request.' });
+            return;
+        }
+        if (targetUser.accountabilityPartnerId) {
+            toast({ variant: 'destructive', title: 'Error', description: `${targetUser.firstName} ${targetUser.lastName} already has an accountability partner.` });
+            return;
+        }
         
         setIsProcessingRequest(targetUser.id);
 
-        try {
-            if (currentUserProfile.accountabilityPartnerId) {
-                throw new Error('You already have an accountability partner. Please remove your current partner before sending a new request.');
-            }
-            if (targetUser.accountabilityPartnerId) {
-                throw new Error(`${targetUser.firstName} ${targetUser.lastName} already has an accountability partner.`);
-            }
+        const participantIds = [user.uid, targetUser.id].sort();
+        const requestId = participantIds.join('_');
+        const requestRef = doc(firestore, 'accountabilityRequests', requestId);
 
-            const participantIds = [user.uid, targetUser.id].sort();
-            const requestId = participantIds.join('_');
-            const requestRef = doc(firestore, 'accountabilityRequests', requestId);
+        const newRequestData: Omit<AccountabilityRequest, 'id'> = {
+            fromUserId: user.uid,
+            fromUserFirstName: currentUserProfile.firstName,
+            fromUserLastName: currentUserProfile.lastName,
+            fromUserPhotoURL: currentUserProfile.photoURL || '',
+            toUserId: targetUser.id,
+            toUserFirstName: targetUser.firstName,
+            toUserLastName: targetUser.lastName,
+            toUserPhotoURL: targetUser.photoURL || '',
+            status: 'pending' as const,
+            createdAt: serverTimestamp() as any,
+            participantIds,
+        };
 
-            const newRequestData: Omit<AccountabilityRequest, 'id'> = {
-                fromUserId: user.uid,
-                fromUserFirstName: currentUserProfile.firstName,
-                fromUserLastName: currentUserProfile.lastName,
-                fromUserPhotoURL: currentUserProfile.photoURL || '',
-                toUserId: targetUser.id,
-                toUserFirstName: targetUser.firstName,
-                toUserLastName: targetUser.lastName,
-                toUserPhotoURL: targetUser.photoURL || '',
-                status: 'pending' as const,
-                createdAt: serverTimestamp() as any,
-                participantIds,
-            };
+        const notificationData = {
+            userId: targetUser.id,
+            type: 'accountability_request' as const,
+            title: 'New Accountability Request',
+            message: `${currentUserProfile.firstName} ${currentUserProfile.lastName} wants to be your accountability partner.`,
+            link: '/dashboard/accountability',
+            isRead: false,
+            createdAt: serverTimestamp(),
+        };
 
-            await setDoc(requestRef, newRequestData);
-
-            const notificationsRef = collection(firestore, 'users', targetUser.id, 'notifications');
-            await setDoc(doc(notificationsRef), {
-                userId: targetUser.id,
-                type: 'accountability_request',
-                title: 'New Accountability Request',
-                message: `${currentUserProfile.firstName} ${currentUserProfile.lastName} wants to be your accountability partner.`,
-                link: '/dashboard/accountability',
-                isRead: false,
-                createdAt: serverTimestamp(),
+        setDoc(requestRef, newRequestData)
+            .then(() => {
+                const notificationsRef = collection(firestore, 'users', targetUser.id, 'notifications');
+                return addDoc(notificationsRef, notificationData);
+            })
+            .then(() => {
+                toast({ title: 'Request Sent!', description: `Your request has been sent to ${targetUser.firstName} ${targetUser.lastName}.` });
+            })
+            .catch((serverError) => {
+                 const permissionError = new FirestorePermissionError({
+                    path: requestRef.path,
+                    operation: 'create',
+                    requestResourceData: newRequestData
+                });
+                errorEmitter.emit('permission-error', permissionError);
+            })
+            .finally(() => {
+                setIsProcessingRequest(null);
             });
-
-            toast({ title: 'Request Sent!', description: `Your request has been sent to ${targetUser.firstName} ${targetUser.lastName}.` });
-
-        } catch (error: any) {
-            console.error("Error sending request:", error);
-            toast({ variant: 'destructive', title: 'Error', description: error.message || 'Could not send request.' });
-        } finally {
-            setIsProcessingRequest(null);
-        }
     };
 
     return (

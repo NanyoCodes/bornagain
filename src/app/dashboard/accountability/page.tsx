@@ -28,6 +28,7 @@ import { Label } from '@/components/ui/label';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Textarea } from '@/components/ui/textarea';
+import { FirestorePermissionError, errorEmitter } from '@/firebase/errors';
 
 const disciplines = [
   { id: 'pray', label: 'Pray' },
@@ -79,39 +80,46 @@ export default function AccountabilityPage() {
   }, [date, partnerHistory]);
 
 
-  const handleNudge = async () => {
-    if (!user || !firestore || !partnerId || !userProfile) return;
+  const handleNudge = () => {
+    if (!user || !firestore || !partnerId || !userProfile || !partnerProfile) return;
+    
     setIsNudging(true);
-    try {
-      const message = prayerMessage.trim() ? prayerMessage.trim() : 'Keep up with your daily disciplines! You can do it.';
-      const title = prayerMessage.trim() 
-        ? `${userProfile.firstName} sent you a prayer!` 
-        : `${userProfile.firstName} sent you a nudge!`;
+    
+    const notificationsCollectionRef = collection(firestore, 'users', partnerId, 'notifications');
+    const message = prayerMessage.trim() ? prayerMessage.trim() : 'Keep up with your daily disciplines! You can do it.';
+    const title = prayerMessage.trim() 
+      ? `${userProfile.firstName} sent you a prayer!` 
+      : `${userProfile.firstName} sent you a nudge!`;
+    
+    const notificationData = {
+      userId: partnerId,
+      type: 'accountability_nudge' as const,
+      title: title,
+      message: message,
+      link: '/dashboard/accountability',
+      isRead: false,
+      createdAt: serverTimestamp()
+    };
 
-      const notificationsCollectionRef = collection(firestore, 'users', partnerId, 'notifications');
-      await addDoc(notificationsCollectionRef, {
-        userId: partnerId,
-        type: 'accountability_nudge',
-        title: title,
-        message: message,
-        link: '/dashboard/accountability',
-        isRead: false,
-        createdAt: serverTimestamp()
+    addDoc(notificationsCollectionRef, notificationData)
+      .then(() => {
+        toast({
+          title: 'Encouragement Sent!',
+          description: `You've sent a message to ${partnerProfile.firstName} ${partnerProfile.lastName}.`
+        });
+        setPrayerMessage('');
+      })
+      .catch((serverError) => {
+        const permissionError = new FirestorePermissionError({
+          path: notificationsCollectionRef.path,
+          operation: 'create',
+          requestResourceData: notificationData
+        });
+        errorEmitter.emit('permission-error', permissionError);
+      })
+      .finally(() => {
+        setIsNudging(false);
       });
-      toast({
-        title: 'Encouragement Sent!',
-        description: `You've sent a message to ${partnerProfile?.firstName} ${partnerProfile?.lastName}.`
-      });
-      setPrayerMessage('');
-    } catch (error) {
-      toast({
-        variant: 'destructive',
-        title: 'Error',
-        description: 'Could not send encouragement. Please try again.'
-      });
-    } finally {
-      setIsNudging(false);
-    }
   };
   
   const handleInitiateChat = async () => {
@@ -162,8 +170,12 @@ export default function AccountabilityPage() {
         router.push(`/dashboard/chats/${chatId}`);
 
     } catch (error) {
-        console.error("Error initiating partner chat:", error);
-        toast({ variant: 'destructive', title: 'Chat Error', description: 'Could not start the chat session.'});
+        const permissionError = new FirestorePermissionError({
+          path: `chats`,
+          operation: 'create',
+          requestResourceData: { action: 'initiate partner chat', userId: user.uid }
+        });
+        errorEmitter.emit('permission-error', permissionError);
     } finally {
         setIsChatLoading(false);
     }

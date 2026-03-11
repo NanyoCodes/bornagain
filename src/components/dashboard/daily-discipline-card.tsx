@@ -56,7 +56,9 @@ export function DailyDisciplineCard() {
   }, [userProfile]);
   
   const updateDisciplineState = async (disciplineId: string) => {
-    if (!user || !firestore) return;
+    if (!user || !firestore) {
+        throw new Error("User not authenticated or Firestore not available.");
+    }
 
     const wasCompleted = completedToday.includes(disciplineId);
     const newCompleted = wasCompleted
@@ -83,18 +85,18 @@ export function DailyDisciplineCard() {
         date: serverTimestamp()
     }, { merge: true });
 
-    await batch.commit()
+    return batch.commit()
         .then(() => {
             setCompletedToday(newCompleted);
         })
-        .catch((error) => {
+        .catch((serverError) => {
             const permissionError = new FirestorePermissionError({
                 path: userRef.path, // This is a simplification for the batch
                 operation: 'update',
                 requestResourceData: updateData,
             });
             errorEmitter.emit('permission-error', permissionError);
-            throw error; // Re-throw to be caught by handleDisciplineClick
+            throw serverError; // Re-throw to be caught by handleDisciplineClick
         });
   };
 

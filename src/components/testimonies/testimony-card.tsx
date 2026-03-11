@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -77,27 +78,30 @@ export function TestimonyCard({ testimony }: { testimony: Testimony }) {
         return () => window.removeEventListener('resize', checkTruncation);
       }, [testimony.content]);
 
-  const handleDelete = async () => {
+  const handleDelete = () => {
     if (!isAuthor || !firestore) return;
 
     setIsDeleting(true);
     const testimonyRef = doc(firestore, "testimonies", testimony.id);
-    try {
-      await deleteDoc(testimonyRef);
-      toast({
-        title: "Testimony Deleted",
-        description: "Your testimony has been successfully removed.",
+    
+    deleteDoc(testimonyRef)
+      .then(() => {
+        toast({
+          title: "Testimony Deleted",
+          description: "Your testimony has been successfully removed.",
+        });
+        // The component will unmount as the parent's `useCollection` hook updates.
+      })
+      .catch(() => {
+        const permissionError = new FirestorePermissionError({
+            path: testimonyRef.path,
+            operation: 'delete',
+        });
+        errorEmitter.emit('permission-error', permissionError);
+      })
+      .finally(() => {
+        setIsDeleting(false);
       });
-      // Do not set isDeleting to false; the component will unmount.
-    } catch (error) {
-      console.error("Error deleting testimony:", error);
-      const permissionError = new FirestorePermissionError({
-          path: testimonyRef.path,
-          operation: 'delete',
-      });
-      errorEmitter.emit('permission-error', permissionError);
-      setIsDeleting(false);
-    }
   };
 
   const navigateToProfile = (e: React.MouseEvent<HTMLAnchorElement>) => {
