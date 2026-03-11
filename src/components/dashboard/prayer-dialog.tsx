@@ -26,26 +26,18 @@ import { useToast } from '@/hooks/use-toast';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion';
 
-const prayerVerses = [
-    { verse: "Philippians 4:6-7", text: "Do not be anxious about anything, but in every situation, by prayer and petition, with thanksgiving, present your requests to God. And the peace of God, which transcends all understanding, will guard your hearts and your minds in Christ Jesus." },
-    { verse: "Jeremiah 29:12", text: "Then you will call on me and come and pray to me, and I will listen to you." },
-    { verse: "Matthew 6:6", text: "But when you pray, go into your room, close the door and pray to your Father, who is unseen. Then your Father, who sees what is done in secret, will reward you." },
-    { verse: "1 Thessalonians 5:16-18", text: "Rejoice always, pray continually, give thanks in all circumstances; for this is God’s will for you in Christ Jesus." },
-    { verse: "Mark 11:24", text: "Therefore I tell you, whatever you ask for in prayer, believe that you have received it, and it will be yours." },
-    { verse: "James 5:16", text: "Therefore confess your sins to each other and pray for each other so that you may be healed. The prayer of a righteous person is powerful and effective." }
-];
-
 const prayerPoints = [
-    { label: 'The Kingdom' },
-    { label: 'Prophets & Pastors' },
-    { label: 'Governments' },
-    { label: 'Other Believers' },
-    { label: 'The Earth' },
+    { label: 'The Kingdom', verse: 'Matthew 6:10', text: 'Your kingdom come, your will be done, on earth as it is in heaven.' },
+    { label: 'Prophets & Pastors', verse: 'Colossians 4:3', text: 'And pray for us, too, that God may open a door for our message, so that we may proclaim the mystery of Christ, for which I am in chains.' },
+    { label: 'Governments', verse: '1 Timothy 2:1-2', text: 'I urge, then, first of all, that petitions, prayers, intercession and thanksgiving be made for all people— for kings and all those in authority, that we may live peaceful and quiet lives in all godliness and holiness.' },
+    { label: 'Other Believers', verse: 'Ephesians 6:18', text: 'And pray in the Spirit on all occasions with all kinds of prayers and requests. With this in mind, be alert and always keep on praying for all the Lord’s people.' },
+    { label: 'The Earth', verse: 'Psalm 24:1', text: 'The earth is the LORD’s, and everything in it, the world, and all who live in it.' },
+    { label: 'Souls', verse: '2 Peter 3:9', text: 'The Lord is not slow in keeping his promise, as some understand slowness. Instead he is patient with you, not wanting anyone to perish, but everyone to come to repentance.' },
+    { label: 'You', verse: 'Mark 11:24', text: 'Therefore I tell you, whatever you ask for in prayer, believe that you have received it, and it will be yours.' },
 ];
 
 export function PrayerDialog({ isOpen, onOpenChange, onDisciplineCompleted, userProfile }: { isOpen: boolean; onOpenChange: (open: boolean) => void; onDisciplineCompleted: () => void; userProfile: UserProfile | null; }) {
   const { user } = useUser();
-  const [verse, setVerse] = useState<{ verse: string; text: string; } | null>(null);
   const [isCompleting, setIsCompleting] = useState(false);
   const { toast } = useToast();
   const isMobile = useIsMobile();
@@ -58,15 +50,10 @@ export function PrayerDialog({ isOpen, onOpenChange, onDisciplineCompleted, user
   const prayerLinks = userProfile?.prayerLinks || [];
 
   useEffect(() => {
-    if (isOpen) {
-      if (!verse) {
-        const randomIndex = Math.floor(Math.random() * prayerVerses.length);
-        setVerse(prayerVerses[randomIndex]);
-      }
-    } else {
+    if (!isOpen) {
         setIsCompleting(false);
     }
-  }, [isOpen, verse]);
+  }, [isOpen]);
 
   const handleComplete = () => {
     setIsCompleting(true);
@@ -101,14 +88,22 @@ export function PrayerDialog({ isOpen, onOpenChange, onDisciplineCompleted, user
         <Card>
             <CardHeader>
                 <CardTitle>Prayer Focus</CardTitle>
+                <CardDescription>Key prayer points with related scripture.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-                 <div>
-                    <h4 className="font-medium text-sm text-muted-foreground mb-2">Key Prayer Points</h4>
-                    <ul className="list-disc list-inside space-y-1">
-                        {prayerPoints.map((point, i) => <li key={i}>{point.label}</li>)}
-                    </ul>
-                </div>
+                 <Accordion type="single" collapsible className="w-full">
+                    {prayerPoints.map((point, i) => (
+                        <AccordionItem value={`item-${i}`} key={i}>
+                            <AccordionTrigger>{point.label}</AccordionTrigger>
+                            <AccordionContent>
+                                <blockquote className="border-l-2 pl-4 italic text-sm text-muted-foreground">
+                                    {point.text}
+                                    <footer className="text-right not-italic mt-2">- {point.verse}</footer>
+                                </blockquote>
+                            </AccordionContent>
+                        </AccordionItem>
+                    ))}
+                </Accordion>
                 
                 {prayerLinks.length > 0 && (
                     <div className="space-y-3 pt-4 border-t">
@@ -131,18 +126,6 @@ export function PrayerDialog({ isOpen, onOpenChange, onDisciplineCompleted, user
                 )}
             </CardContent>
         </Card>
-
-        {verse && (
-            <Card>
-                <CardContent className="p-6">
-                    <blockquote className="relative border-l-2 pl-6 italic text-muted-foreground">
-                        <Quote className="absolute -left-4 -top-2 h-6 w-6 text-muted-foreground/20" />
-                        {verse.text}
-                    </blockquote>
-                    <p className="text-right font-semibold mt-4">- {verse.verse}</p>
-                </CardContent>
-            </Card>
-        )}
       </div>
   );
 
