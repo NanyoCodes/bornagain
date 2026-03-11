@@ -35,7 +35,7 @@ declare module 'jspdf' {
 }
 
 export default function SoulsWonPage() {
-  const { user } = useUser();
+  const { user, loading: userLoading } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
   const [isLogDialogOpen, setIsLogDialogOpen] = useState(false);
@@ -57,7 +57,9 @@ export default function SoulsWonPage() {
     if (!user?.uid || !firestore) return null;
     return query(collection(firestore, `users/${user.uid}/souls`), orderBy("wonAt", "desc"));
   }, [user?.uid, firestore]);
-  const { data: souls, loading } = useCollection<Soul>(soulsQuery);
+  const { data: souls, loading: soulsLoading } = useCollection<Soul>(soulsQuery);
+
+  const loading = userLoading || soulsLoading;
 
   const filteredSouls = useMemo(() => {
     if (!souls) return [];

@@ -99,7 +99,7 @@ function ChatListItem({ chat, currentUserId, isUnread }: { chat: Chat, currentUs
 
 
 export default function ChatsPage() {
-    const { user } = useUser();
+    const { user, loading: userLoading } = useUser();
     const firestore = useFirestore();
 
     const chatsQuery = useMemo(() => {
@@ -121,7 +121,7 @@ export default function ChatsPage() {
     }, [user?.uid, firestore]);
     const { data: unreadNotifications, loading: loadingNotifications } = useCollection<Notification>(notificationsQuery);
 
-    const loading = loadingChats || loadingNotifications;
+    const loading = userLoading || loadingChats || loadingNotifications;
 
     const unreadChatIds = useMemo(() => {
         if (!unreadNotifications) return new Set<string>();

@@ -38,7 +38,7 @@ const disciplines = [
 ];
 
 export default function AccountabilityPage() {
-  const { user } = useUser();
+  const { user, loading: userLoading } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
   const router = useRouter();
@@ -182,8 +182,9 @@ export default function AccountabilityPage() {
     }
   };
 
+  const isLoading = userLoading || loadingProfile || (partnerId && (loadingPartner || loadingHistory));
 
-  if (loadingProfile || (partnerId && (loadingPartner || loadingHistory))) {
+  if (isLoading) {
     return (
       <div className="flex h-full w-full flex-col items-center justify-center">
         <Loader2 className="h-12 w-12 animate-spin text-primary" />

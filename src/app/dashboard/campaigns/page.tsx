@@ -78,7 +78,7 @@ const getStatus = (campaign: { _startDate: Date | null, _endDate: Date | null, s
 
 
 export default function CampaignsPage() {
-  const { user } = useUser();
+  const { user, loading: userLoading } = useUser();
   const firestore = useFirestore();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -125,7 +125,7 @@ export default function CampaignsPage() {
   }, [user?.uid, firestore]);
   const { data: joinedCampaigns, loading: joinedCampaignsLoading } = useCollection<JoinedCampaign>(joinedCampaignsQuery);
   
-  const loading = profileLoading || campaignsLoading || joinedCampaignsLoading;
+  const loading = userLoading || profileLoading || campaignsLoading || joinedCampaignsLoading;
 
   const joinedCampaignIds = useMemo(() => {
     if (!joinedCampaigns) return new Set();

@@ -26,7 +26,7 @@ const disciplines = [
 ];
 
 export function DailyDisciplineCard() {
-  const { user } = useUser();
+  const { user, loading: userLoading } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
   const [completedToday, setCompletedToday] = useState<string[]>([]);
@@ -41,7 +41,9 @@ export function DailyDisciplineCard() {
     if (!user?.uid || !firestore) return null;
     return doc(firestore, 'users', user.uid);
   }, [user?.uid, firestore]);
-  const { data: userProfile, loading } = useDoc<UserProfile>(userDocRef);
+  const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userDocRef);
+
+  const loading = userLoading || profileLoading;
 
   useEffect(() => {
     if (userProfile?.dailyDiscipline) {

@@ -42,7 +42,7 @@ export default function TestimoniesPage() {
   const [activeTab, setActiveTab] = useState("testimonies");
 
   const firestore = useFirestore();
-  const { user } = useUser();
+  const { user, loading: userLoading } = useUser();
 
   const testimoniesQuery = useMemo(() => {
     if (!firestore || !user) return null;
@@ -58,7 +58,7 @@ export default function TestimoniesPage() {
 
   const { data: prayerRequests, loading: loadingPrayers } = useCollection<PrayerRequest>(prayerRequestsQuery);
 
-  const loading = loadingTestimonies || loadingPrayers;
+  const loading = userLoading || loadingTestimonies || loadingPrayers;
 
   useEffect(() => {
     setMounted(true);
