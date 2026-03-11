@@ -16,7 +16,7 @@ import {
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form';
-import { Loader2 } from 'lucide-react';
+import { Loader2, PlayCircle } from 'lucide-react';
 import type { UserProfile } from '@/lib/types';
 import { useUser, useFirestore } from '@/firebase';
 import { doc, updateDoc, arrayUnion } from 'firebase/firestore';
@@ -110,6 +110,16 @@ export function AttendChurchDialog({ isOpen, onOpenChange, onDisciplineCompleted
     await logAttendance(values.churchName).catch(() => {});
   };
   
+  const handleJoinStream = async (schedule: { day: string; time: string; url?: string; }) => {
+    if (!userProfile?.churchInfo?.name || !schedule.url) return;
+    try {
+        await logAttendance(userProfile.churchInfo.name);
+        window.open(schedule.url, '_blank', 'noopener, noreferrer');
+    } catch {
+        // Error is handled/toasted inside logAttendance
+    }
+  };
+
   const attendanceHistory = userProfile?.attendanceHistory ? [...userProfile.attendanceHistory].reverse() : [];
 
   return (
@@ -135,15 +145,26 @@ export function AttendChurchDialog({ isOpen, onOpenChange, onDisciplineCompleted
         </DialogHeader>
 
         {view === 'confirm' && userProfile?.churchInfo?.name ? (
-          <div className="space-y-6 py-4">
+          <div className="space-y-4 py-4">
             <div className="text-center">
               <p className="text-muted-foreground">Did you attend</p>
               <p className="text-2xl font-semibold font-headline">{userProfile.churchInfo.name}?</p>
             </div>
+            
+            {hasScheduleForToday && todaysSchedules.map((schedule, index) => (
+                schedule.url && (
+                    <Button key={index} onClick={() => handleJoinStream(schedule)} disabled={isSubmitting} variant="secondary" className="w-full">
+                        {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                        <PlayCircle className="mr-2 h-4 w-4" />
+                        Join Stream ({format(parse(schedule.time, 'HH:mm', new Date()), 'p')})
+                    </Button>
+                )
+            ))}
+
             <div className="flex flex-col gap-2">
               <Button onClick={handleConfirmDefaultChurch} disabled={isSubmitting} size="lg">
                 {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Yes, I Attended
+                Yes, I Attended Physically
               </Button>
               <Button variant="outline" onClick={() => setView('form')} disabled={isSubmitting}>
                 I Attended a Different Church

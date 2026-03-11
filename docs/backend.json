@@ -151,7 +151,8 @@
                     "type": "object",
                     "properties": {
                       "day": { "type": "string" },
-                      "time": { "type": "string" }
+                      "time": { "type": "string" },
+                      "url": { "type": "string", "format": "uri", "description": "The URL for the live stream of the service." }
                     },
                     "required": ["day", "time"]
                   }

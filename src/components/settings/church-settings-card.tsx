@@ -24,6 +24,7 @@ const churchSettingsSchema = z.object({
   schedule: z.array(z.object({
     day: z.string(),
     time: z.string().refine(val => val, { message: "Time is required." }),
+    url: z.string().url({ message: "Please enter a valid URL." }).optional().or(z.literal('')),
   })).optional(),
 });
 
@@ -116,7 +117,7 @@ export function ChurchSettingsCard({ userProfile, userId }: { userProfile: UserP
                                   size="sm"
                                   onClick={() => {
                                       const currentSchedule = form.getValues('schedule') || [];
-                                      form.setValue('schedule', [...currentSchedule, { day, time: '10:00' }], { shouldDirty: true });
+                                      form.setValue('schedule', [...currentSchedule, { day, time: '10:00', url: '' }], { shouldDirty: true });
                                   }}
                               >
                                   <Plus className="mr-2 h-4 w-4" />
@@ -124,32 +125,46 @@ export function ChurchSettingsCard({ userProfile, userId }: { userProfile: UserP
                               </Button>
                           </div>
                           {daySchedules.length === 0 && <p className="text-xs text-muted-foreground pt-1">No services scheduled for {day}.</p>}
-                          {daySchedules.map(item => (
-                              <div key={item.originalIndex} className="flex items-center gap-2">
-                                  <Input
-                                      type="time"
-                                      className="flex-grow"
-                                      value={item.time}
-                                      onChange={(e) => {
-                                          const updatedSchedule = [...(form.getValues('schedule') || [])];
-                                          updatedSchedule[item.originalIndex].time = e.target.value;
-                                          form.setValue('schedule', updatedSchedule, { shouldDirty: true });
-                                      }}
-                                  />
-                                  <Button
-                                      type="button"
-                                      variant="ghost"
-                                      size="icon"
-                                      className="shrink-0"
-                                      onClick={() => {
-                                          const updatedSchedule = (form.getValues('schedule') || []).filter((_, i) => i !== item.originalIndex);
-                                          form.setValue('schedule', updatedSchedule, { shouldDirty: true });
-                                      }}
-                                  >
-                                      <X className="h-4 w-4 text-destructive" />
-                                  </Button>
-                              </div>
-                          ))}
+                           {daySchedules.map(item => (
+                                <div key={item.originalIndex} className="space-y-3 rounded-lg border bg-background p-3">
+                                    <div className="flex items-center justify-between gap-2">
+                                        <Label className="text-sm font-medium">Service Time</Label>
+                                        <Button
+                                            type="button"
+                                            variant="ghost"
+                                            size="icon"
+                                            className="h-7 w-7 shrink-0"
+                                            onClick={() => {
+                                                const updatedSchedule = (form.getValues('schedule') || []).filter((_, i) => i !== item.originalIndex);
+                                                form.setValue('schedule', updatedSchedule, { shouldDirty: true });
+                                            }}
+                                        >
+                                            <X className="h-4 w-4 text-destructive" />
+                                        </Button>
+                                    </div>
+                                    <Input
+                                        type="time"
+                                        value={item.time}
+                                        onChange={(e) => {
+                                            const updatedSchedule = [...(form.getValues('schedule') || [])];
+                                            updatedSchedule[item.originalIndex].time = e.target.value;
+                                            form.setValue('schedule', updatedSchedule, { shouldDirty: true });
+                                        }}
+                                    />
+                                    <Label className="text-sm font-medium pt-2 block">Live Stream URL <span className="text-muted-foreground">(Optional)</span></Label>
+                                    <Input
+                                        type="url"
+                                        placeholder="https://..."
+                                        value={item.url || ''}
+                                        onChange={(e) => {
+                                            const updatedSchedule = [...(form.getValues('schedule') || [])];
+                                            if (!updatedSchedule[item.originalIndex]) return;
+                                            updatedSchedule[item.originalIndex].url = e.target.value;
+                                            form.setValue('schedule', updatedSchedule, { shouldDirty: true });
+                                        }}
+                                    />
+                                </div>
+                            ))}
                       </div>
                     )
                 })}

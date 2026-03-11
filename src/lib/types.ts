@@ -63,6 +63,7 @@ export type UserProfile = {
     schedule?: {
       day: string;
       time: string;
+      url?: string;
     }[];
   };
   attendanceHistory?: {
