@@ -138,7 +138,7 @@ export default function TestimoniesPage() {
           mounted && isMobile ? (
             <Sheet open={isTestimonyDialogOpen} onOpenChange={setIsTestimonyDialogOpen}>
               <SheetTrigger asChild>{testimonyTrigger}</SheetTrigger>
-              <SheetContent side="bottom"><SheetHeader><SheetTitle>Share Testimony</SheetTitle><DialogDescription>Encourage others by sharing what God has done in your life.</DialogDescription></SheetHeader><div className="max-h-[80vh] overflow-y-auto p-1 mt-4">{testimonyFormContent}</div></SheetContent>
+              <SheetContent side="bottom"><SheetHeader><SheetTitle>Share Testimony</SheetTitle><SheetDescription>Encourage others by sharing what God has done in your life.</SheetDescription></SheetHeader><div className="max-h-[80vh] overflow-y-auto p-1 mt-4">{testimonyFormContent}</div></SheetContent>
             </Sheet>
           ) : (
             <Dialog open={isTestimonyDialogOpen} onOpenChange={setIsTestimonyDialogOpen}>
@@ -150,7 +150,7 @@ export default function TestimoniesPage() {
            mounted && isMobile ? (
             <Sheet open={isPrayerDialogOpen} onOpenChange={setIsPrayerDialogOpen}>
               <SheetTrigger asChild>{prayerTrigger}</SheetTrigger>
-              <SheetContent side="bottom"><SheetHeader><SheetTitle>Share Prayer Request</SheetTitle><DialogDescription>Share your request anonymously with the community.</DialogDescription></SheetHeader><div className="max-h-[80vh] overflow-y-auto p-1 mt-4">{prayerFormContent}</div></SheetContent>
+              <SheetContent side="bottom"><SheetHeader><SheetTitle>Share Prayer Request</SheetTitle><SheetDescription>Share your request anonymously with the community.</SheetDescription></SheetHeader><div className="max-h-[80vh] overflow-y-auto p-1 mt-4">{prayerFormContent}</div></SheetContent>
             </Sheet>
           ) : (
             <Dialog open={isPrayerDialogOpen} onOpenChange={setIsPrayerDialogOpen}>
