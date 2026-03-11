@@ -4,13 +4,17 @@ import { Toaster } from '@/components/ui/toaster';
 import { ThemeProvider } from '@/components/theme-provider';
 import { FirebaseClientProvider } from '@/firebase/client-provider';
 
+const testifyLogoUrl = 'https://i.postimg.cc/5HnLbRH6/testify-logoo-(2).jpg';
+
 export const metadata: Metadata = {
   title: 'Testify',
   description:
     'A platform for believers to share testimonies, organize soul-winning campaigns, and track evangelism progress.',
   manifest: '/manifest.webmanifest',
   icons: {
-    icon: 'https://i.postimg.cc/5HnLbRH6/testify-logoo-(2).jpg',
+    icon: testifyLogoUrl,
+    shortcut: testifyLogoUrl,
+    apple: testifyLogoUrl,
   },
 };
 
