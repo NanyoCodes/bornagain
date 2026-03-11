@@ -21,6 +21,7 @@ import { useJsApiLoader, GoogleMap, MarkerF, CircleF } from '@react-google-maps/
 import { Skeleton } from '@/components/ui/skeleton';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
+import { safeToDate } from '@/lib/utils';
 
 const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 const libraries: ('places')[] = ['places'];
@@ -251,14 +252,6 @@ export default function CampaignPage() {
         }
     };
     
-    const safeToDate = (value: any): Date | null => {
-        if (!value) return null;
-        if (value instanceof Date) return value;
-        if (typeof value.toDate === 'function') return value.toDate();
-        try { if (typeof value === 'object' && value.seconds) { const d = new Date(value.seconds * 1000); if(!isNaN(d.getTime())) return d; } } catch(e) {}
-        return null;
-    };
-
     const status = useMemo(() => {
         const now = new Date();
         const startDate = safeToDate(campaign?.startDate);

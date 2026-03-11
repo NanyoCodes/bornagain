@@ -26,6 +26,7 @@ import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
 import { format, isSameDay, differenceInHours } from 'date-fns';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { safeToDate } from '@/lib/utils';
 
 
 export default function ChatPage() {
@@ -136,19 +137,6 @@ export default function ChatPage() {
         if (!chat || !campaign) return false;
         if (!chat.isGroupChat) return false;
 
-        const safeToDate = (value: any): Date | null => {
-            if (!value) return null;
-            if (value instanceof Date) return value;
-            if (typeof value.toDate === 'function') return value.toDate();
-            try {
-                if (typeof value === 'object' && value.seconds) {
-                    const d = new Date(value.seconds * 1000);
-                    if(!isNaN(d.getTime())) return d;
-                }
-            } catch(e) {}
-            return null;
-        };
-
         const endDate = safeToDate(campaign.endDate);
         if (!endDate) return false;
 
@@ -171,7 +159,9 @@ export default function ChatPage() {
         const groups: { date: Date; messages: ChatMessage[] }[] = [];
         messages.forEach(message => {
             if (!message.createdAt) return;
-            const messageDate = message.createdAt.toDate();
+            const messageDate = safeToDate(message.createdAt);
+            if (!messageDate) return;
+
             const lastGroup = groups[groups.length - 1];
             if (lastGroup && isSameDay(lastGroup.date, messageDate)) {
                 lastGroup.messages.push(message);
@@ -416,6 +406,7 @@ export default function ChatPage() {
                                     {group.messages.map(msg => {
                                         const senderInfo = chat.participantInfo[msg.senderId];
                                         const isOwnMessage = msg.senderId === user?.uid;
+                                        const createdAtDate = safeToDate(msg.createdAt);
                                         return (
                                         <div key={msg.id} id={`message-${msg.id}`} className={cn(
                                             "group flex w-full items-end gap-2",
@@ -503,12 +494,12 @@ export default function ChatPage() {
                                                             </Link>
                                                         )}
                                                         {msg.text && <p className="text-sm">{msg.text}</p>}
-                                                        {msg.createdAt && (
+                                                        {createdAtDate && (
                                                             <p className={cn(
                                                                 "text-xs mt-1 self-end",
                                                                 isOwnMessage ? "text-primary-foreground/70" : "text-muted-foreground/70"
                                                             )}>
-                                                                {format(msg.createdAt.toDate(), 'p')}
+                                                                {format(createdAtDate, 'p')}
                                                             </p>
                                                         )}
                                                 </div>

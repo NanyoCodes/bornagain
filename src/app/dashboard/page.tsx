@@ -23,6 +23,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Progress } from "@/components/ui/progress";
 import { WelcomeBackDialog } from "@/components/dashboard/welcome-back-dialog";
+import { safeToDate } from "@/lib/utils";
 
 
 function RecentSoulsList() {
@@ -70,20 +71,23 @@ function RecentSoulsList() {
 
     return (
         <div className="space-y-1">
-            {souls.map(soul => (
-                <Link href="/dashboard/souls-won" key={soul.id} className="flex items-center gap-4 p-2 -mx-2 rounded-lg hover:bg-muted/50 transition-colors">
-                    <Avatar className="h-10 w-10 border">
-                         <AvatarFallback>{soul.firstName?.charAt(0) || 'S'}</AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1">
-                        <p className="font-semibold leading-none">{soul.firstName || 'Unknown'} {soul.lastName || ''}</p>
-                        <p className="text-sm text-muted-foreground">
-                            Won on {soul.wonAt ? format(soul.wonAt.toDate(), "PPP") : 'N/A'}
-                        </p>
-                    </div>
-                    <ArrowRight className="h-4 w-4 text-muted-foreground" />
-                </Link>
-            ))}
+            {souls.map(soul => {
+                const wonDate = safeToDate(soul.wonAt);
+                return (
+                    <Link href="/dashboard/souls-won" key={soul.id} className="flex items-center gap-4 p-2 -mx-2 rounded-lg hover:bg-muted/50 transition-colors">
+                        <Avatar className="h-10 w-10 border">
+                            <AvatarFallback>{soul.firstName?.charAt(0) || 'S'}</AvatarFallback>
+                        </Avatar>
+                        <div className="flex-1">
+                            <p className="font-semibold leading-none">{soul.firstName || 'Unknown'} {soul.lastName || ''}</p>
+                            <p className="text-sm text-muted-foreground">
+                                Won on {wonDate ? format(wonDate, "PPP") : 'N/A'}
+                            </p>
+                        </div>
+                        <ArrowRight className="h-4 w-4 text-muted-foreground" />
+                    </Link>
+                );
+            })}
         </div>
     )
 }
@@ -296,7 +300,7 @@ export default function DashboardPage() {
   useEffect(() => {
     if (loading || !userProfile || !firestore || !user) return;
 
-    const lastActive = userProfile.lastActive?.toDate();
+    const lastActive = safeToDate(userProfile.lastActive);
     const now = new Date();
 
     // Show summary if last active was more than 48 hours ago
@@ -322,7 +326,7 @@ export default function DashboardPage() {
             where('date', '>=', threeDaysAgo)
           );
           const disciplineSnapshot = await getDocs(disciplineHistoryQuery);
-          const historyMap = new Map(disciplineSnapshot.docs.map(d => [format(d.data().date.toDate(), 'yyyy-MM-dd'), d.data().completed.length > 0]));
+          const historyMap = new Map(disciplineSnapshot.docs.map(d => [format(safeToDate(d.data().date)!, 'yyyy-MM-dd'), d.data().completed.length > 0]));
           
           for (let i = 1; i <= 3; i++) {
               const date = subDays(now, i);
@@ -366,8 +370,8 @@ export default function DashboardPage() {
   const soulsThisMonth = useMemo(() => {
     if (!soulsWon || !goalDate) return 0;
     return soulsWon.filter(soul => {
-      if (!soul.wonAt) return false;
-      const wonDate = soul.wonAt.toDate ? soul.wonAt.toDate() : new Date(soul.wonAt as any);
+      const wonDate = safeToDate(soul.wonAt);
+      if (!wonDate) return false;
       return isSameMonth(wonDate, goalDate);
     }).length;
   }, [soulsWon, goalDate]);
@@ -386,14 +390,12 @@ export default function DashboardPage() {
     }
 
     soulsWon.forEach(soul => {
-      if (soul.wonAt) {
-        const wonDate = soul.wonAt.toDate ? soul.wonAt.toDate() : new Date(soul.wonAt as any);
-        if (wonDate >= threeMonthsAgo) {
-            const monthKey = format(wonDate, "MMM");
-            if (monthlyData[monthKey]) {
-                monthlyData[monthKey].soulsWon++;
-            }
-        }
+      const wonDate = safeToDate(soul.wonAt);
+      if (wonDate && wonDate >= threeMonthsAgo) {
+          const monthKey = format(wonDate, "MMM");
+          if (monthlyData[monthKey]) {
+              monthlyData[monthKey].soulsWon++;
+          }
       }
     });
     return Object.values(monthlyData);

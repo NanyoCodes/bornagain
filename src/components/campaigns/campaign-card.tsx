@@ -38,6 +38,7 @@ import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { JoinCampaignDialog } from "./join-campaign-dialog";
 import { ScrollArea } from "../ui/scroll-area";
+import { safeToDate } from "@/lib/utils";
 
 
 function ParticipantsDialog({ campaign, children }: { campaign: Campaign; children: React.ReactNode; }) {
@@ -273,23 +274,6 @@ export function CampaignCard({ campaign, userId, userProfile, isJoined }: { camp
 
   const stopPropagation = (e: React.MouseEvent) => {
     e.stopPropagation();
-  };
-
-  const safeToDate = (value: any): Date | null => {
-    if (!value) return null;
-    if (value instanceof Date) return value;
-    if (typeof value.toDate === 'function') return value.toDate();
-    try {
-      const d = new Date(value);
-      if (!isNaN(d.getTime())) return d;
-    } catch (e) {}
-    try {
-      if (typeof value === 'object' && value.seconds) {
-         const d = new Date(value.seconds * 1000);
-         if(!isNaN(d.getTime())) return d;
-      }
-    } catch(e) {}
-    return null;
   };
 
   const startDate = safeToDate(campaign.startDate);

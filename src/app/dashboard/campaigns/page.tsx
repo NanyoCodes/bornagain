@@ -31,6 +31,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useSearch } from "@/context/search-context";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { safeToDate } from "@/lib/utils";
 
 
 function CampaignSkeletons() {
@@ -48,16 +49,6 @@ function CampaignSkeletons() {
     </>
   )
 }
-
-const safeToDate = (value: any): Date | null => {
-  if (!value) return null;
-  if (typeof value.toDate === 'function') return value.toDate();
-  if (value instanceof Date) return value;
-  if (typeof value === 'object' && typeof value.seconds === 'number') {
-    return new Date(value.seconds * 1000);
-  }
-  return null;
-};
 
 const getStatus = (campaign: { _startDate: Date | null, _endDate: Date | null, startTime?: string, endTime?: string }, now: Date): number => {
     const { _startDate, _endDate } = campaign;
@@ -257,8 +248,8 @@ export default function CampaignsPage() {
         }
 
         // Fallback sort
-        const createdAtA = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : 0;
-        const createdAtB = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : 0;
+        const createdAtA = safeToDate(a.createdAt)?.getTime() ?? 0;
+        const createdAtB = safeToDate(b.createdAt)?.getTime() ?? 0;
         return createdAtB - createdAtA;
     });
 
