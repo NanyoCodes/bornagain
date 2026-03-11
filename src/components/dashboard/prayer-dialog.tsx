@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -16,7 +15,7 @@ import {
   SheetTitle,
   SheetDescription,
 } from '@/components/ui/sheet';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '../ui/button';
 import { Loader2, Quote, PlayCircle } from 'lucide-react';
 import type { UserProfile } from '@/lib/types';
@@ -33,6 +32,13 @@ const prayerVerses = [
     { verse: "1 Thessalonians 5:16-18", text: "Rejoice always, pray continually, give thanks in all circumstances; for this is God’s will for you in Christ Jesus." },
     { verse: "Mark 11:24", text: "Therefore I tell you, whatever you ask for in prayer, believe that you have received it, and it will be yours." },
     { verse: "James 5:16", text: "Therefore confess your sins to each other and pray for each other so that you may be healed. The prayer of a righteous person is powerful and effective." }
+];
+
+const prayerPoints = [
+    { label: 'The Kingdom' },
+    { label: 'Prophets & Pastors' },
+    { label: 'Governments' },
+    { label: 'Other Believers' },
 ];
 
 export function PrayerDialog({ isOpen, onOpenChange, onDisciplineCompleted, userProfile }: { isOpen: boolean; onOpenChange: (open: boolean) => void; onDisciplineCompleted: () => void; userProfile: UserProfile | null; }) {
@@ -78,18 +84,30 @@ export function PrayerDialog({ isOpen, onOpenChange, onDisciplineCompleted, user
 
   const DialogBody = () => (
       <div className="space-y-6">
-        <Card>
-            <CardContent className="p-6 space-y-6">
-                {verse && (
-                    <div className="space-y-4">
-                        <blockquote className="relative border-l-2 pl-6 italic text-muted-foreground">
-                            <Quote className="absolute -left-4 -top-2 h-6 w-6 text-muted-foreground/20" />
-                            {verse.text}
-                        </blockquote>
-                        <p className="text-right font-semibold">- {verse.verse}</p>
-                    </div>
-                )}
+        <Accordion type="single" collapsible className="w-full">
+            <AccordionItem value="manage-links">
+                <AccordionTrigger>Manage Prayer Links</AccordionTrigger>
+                <AccordionContent>
+                    <p className="text-sm text-muted-foreground mt-1 mb-4">Add, edit, or remove personal links to prayer meetings (up to 5).</p>
+                    {user && userProfile && (
+                        <PrayerLinksSettingsCard userProfile={userProfile} userId={user.uid} />
+                    )}
+                </AccordionContent>
+            </AccordionItem>
+        </Accordion>
 
+        <Card>
+            <CardHeader>
+                <CardTitle>Prayer Focus</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+                 <div>
+                    <h4 className="font-medium text-sm text-muted-foreground mb-2">Key Prayer Points</h4>
+                    <ul className="list-disc list-inside space-y-1">
+                        {prayerPoints.map((point, i) => <li key={i}>{point.label}</li>)}
+                    </ul>
+                </div>
+                
                 {prayerLinks.length > 0 && (
                     <div className="space-y-3 pt-4 border-t">
                         <h4 className="font-medium text-sm text-muted-foreground">Join a Prayer Stream</h4>
@@ -111,18 +129,18 @@ export function PrayerDialog({ isOpen, onOpenChange, onDisciplineCompleted, user
                 )}
             </CardContent>
         </Card>
-        
-        <Accordion type="single" collapsible className="w-full">
-            <AccordionItem value="manage-links">
-                <AccordionTrigger>Manage Prayer Links</AccordionTrigger>
-                <AccordionContent>
-                    <p className="text-sm text-muted-foreground mt-1 mb-4">Add, edit, or remove personal links to prayer meetings (up to 5).</p>
-                    {user && userProfile && (
-                        <PrayerLinksSettingsCard userProfile={userProfile} userId={user.uid} />
-                    )}
-                </AccordionContent>
-            </AccordionItem>
-        </Accordion>
+
+        {verse && (
+            <Card>
+                <CardContent className="p-6">
+                    <blockquote className="relative border-l-2 pl-6 italic text-muted-foreground">
+                        <Quote className="absolute -left-4 -top-2 h-6 w-6 text-muted-foreground/20" />
+                        {verse.text}
+                    </blockquote>
+                    <p className="text-right font-semibold mt-4">- {verse.verse}</p>
+                </CardContent>
+            </Card>
+        )}
       </div>
   );
 
