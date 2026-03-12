@@ -44,6 +44,7 @@ import { WelcomePopup } from "@/components/auth/welcome-popup";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { PageTransition } from "@/components/page-transition";
 
 const navItems = [
   { href: "/dashboard", label: "Progress", icon: TrendingUp },
@@ -438,7 +439,7 @@ export default function DashboardLayout({
 
   return (
     <SearchProvider>
-      <div className="flex h-dvh w-full flex-col bg-muted/30 overflow-hidden">
+      <div className="flex h-dvh w-full flex-col bg-muted/30 overflow-x-hidden">
         <AppHeader unreadChatCount={unreadChatCount} />
         <div className="flex-1 relative min-h-0">
           <main className={cn("absolute inset-0", !isChatPage && "overflow-y-auto")}>
@@ -455,7 +456,7 @@ export default function DashboardLayout({
                     </AlertDescription>
                 </Alert>
               )}
-              {children}
+              <PageTransition>{children}</PageTransition>
             </div>
           </main>
         </div>

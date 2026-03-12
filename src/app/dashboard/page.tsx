@@ -25,7 +25,7 @@ import { Progress } from "@/components/ui/progress";
 import { WelcomeBackDialog } from "@/components/dashboard/welcome-back-dialog";
 import { safeToDate } from "@/lib/utils";
 
-function DisplayPassage({ reference }: { reference: string }) {
+function DisplayPassage({ reference, userName }: { reference: string, userName?: string }) {
   const [passage, setPassage] = useState<{text: string; reference: string} | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -67,9 +67,14 @@ function DisplayPassage({ reference }: { reference: string }) {
     return null;
   }
   
+  // Replace the first case-insensitive 'you' with the user's name
+  const personalizedText = userName 
+    ? passage.text.replace(/you/i, userName) 
+    : passage.text;
+
   return (
     <blockquote className="border-l-2 pl-6 italic">
-      <p>&ldquo;{passage.text}&rdquo;</p>
+      <p>&ldquo;{personalizedText}&rdquo;</p>
       <footer className="text-right text-sm not-italic mt-2">- {passage.reference}</footer>
     </blockquote>
   );
@@ -497,7 +502,7 @@ export default function DashboardPage() {
                 <h1 className="text-3xl sm:text-4xl font-bold tracking-tight font-headline">
                     A favorite for you, {displayName}
                 </h1>
-                <DisplayPassage reference={favoritePassage} />
+                <DisplayPassage reference={favoritePassage} userName={displayName} />
             </div>
         ) : (
             <div className="space-y-2">
