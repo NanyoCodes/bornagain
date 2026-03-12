@@ -39,7 +39,7 @@ import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { SearchProvider, useSearch } from "@/context/search-context";
 import { collection, doc, limit, orderBy, query, where, writeBatch, updateDoc, serverTimestamp } from "firebase/firestore";
 import type { Notification, UserProfile } from "@/lib/types";
-import { formatDistanceToNow } from "date-fns";
+import { format, isToday } from "date-fns";
 import { WelcomePopup } from "@/components/auth/welcome-popup";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
@@ -234,17 +234,20 @@ function AppHeader({ unreadChatCount }: { unreadChatCount: number }) {
                 <Loader2 className="h-4 w-4 animate-spin mx-auto" />
               </div>
             ) : otherNotifications && otherNotifications.length > 0 ? (
-                otherNotifications.map((notification) => (
-                  <DropdownMenuItem key={notification.id} asChild className="cursor-pointer data-[disabled]:opacity-100 data-[disabled]:pointer-events-auto">
-                    <Link href={notification.link || '#'} className={cn("flex flex-col items-start gap-1 p-2 w-full", !notification.isRead && "bg-accent/50", notification.isRead && "opacity-60 hover:opacity-100")}>
-                        <p className="font-semibold text-sm">{notification.title}</p>
-                        <p className="text-xs text-muted-foreground whitespace-normal">{notification.message}</p>
-                         <p className="text-xs text-muted-foreground self-end">
-                            {notification.createdAt ? formatDistanceToNow(notification.createdAt.toDate(), { addSuffix: true }) : ''}
-                        </p>
-                    </Link>
-                  </DropdownMenuItem>
-                ))
+                otherNotifications.map((notification) => {
+                  const createdAt = notification.createdAt.toDate();
+                  return (
+                    <DropdownMenuItem key={notification.id} asChild className="cursor-pointer data-[disabled]:opacity-100 data-[disabled]:pointer-events-auto">
+                      <Link href={notification.link || '#'} className={cn("flex flex-col items-start gap-1 p-2 w-full", !notification.isRead && "bg-accent/50", notification.isRead && "opacity-60 hover:opacity-100")}>
+                          <p className="font-semibold text-sm">{notification.title}</p>
+                          <p className="text-xs text-muted-foreground whitespace-normal">{notification.message}</p>
+                           <p className="text-xs text-muted-foreground self-end">
+                              {isToday(createdAt) ? format(createdAt, 'p') : format(createdAt, 'P')}
+                          </p>
+                      </Link>
+                    </DropdownMenuItem>
+                  );
+                })
             ) : (
                 <div className="p-4 text-sm text-center text-muted-foreground">
                   No new notifications.

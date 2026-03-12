@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Skeleton } from '@/components/ui/skeleton';
 import Link from 'next/link';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { formatDistanceToNow } from 'date-fns';
+import { format, isToday } from 'date-fns';
 import { useMemo } from 'react';
 import { MessagesSquare } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -42,7 +42,7 @@ function ChatListItem({ chat, currentUserId, isUnread }: { chat: Chat, currentUs
                                  (Group)
                             </div>
                             <div className="text-xs text-muted-foreground whitespace-nowrap">
-                                {formatDistanceToNow(lastUpdatedAt, { addSuffix: true })}
+                                {isToday(lastUpdatedAt) ? format(lastUpdatedAt, 'p') : format(lastUpdatedAt, 'P')}
                             </div>
                         </div>
                         <ChatParticipantsDialog chat={chat}>
@@ -81,7 +81,7 @@ function ChatListItem({ chat, currentUserId, isUnread }: { chat: Chat, currentUs
                     <div className="flex justify-between items-start">
                         <div className={cn("font-semibold truncate", isUnread && "text-primary")}>{otherParticipantInfo.displayName}</div>
                         <div className="text-xs text-muted-foreground whitespace-nowrap">
-                            {formatDistanceToNow(lastUpdatedAt, { addSuffix: true })}
+                            {isToday(lastUpdatedAt) ? format(lastUpdatedAt, 'p') : format(lastUpdatedAt, 'P')}
                         </div>
                     </div>
                     <p className="text-sm text-muted-foreground truncate">

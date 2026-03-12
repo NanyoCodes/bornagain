@@ -21,7 +21,7 @@ import { useUser, useFirestore, useDoc, useCollection } from '@/firebase';
 import { doc, updateDoc, arrayUnion, collection, query, where, addDoc, serverTimestamp, deleteDoc, setDoc } from 'firebase/firestore';
 import type { UserProfile, ReadingHistoryItem, BibleHighlight } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
-import { format, isSameDay, formatDistanceToNow } from 'date-fns';
+import { format, isSameDay, isToday } from 'date-fns';
 import { Loader2, XCircle, BookOpen, Trash2, ChevronRight, Minus, Plus, Highlighter } from 'lucide-react';
 import { Skeleton } from '../ui/skeleton';
 import { getBibleChapter, type BibleChapterOutput } from '@/ai/flows/get-bible-chapter-flow';
@@ -505,6 +505,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
             {highlights && highlights
                 .sort((a, b) => (a.createdAt?.seconds ?? 0) - (b.createdAt?.seconds ?? 0))
                 .map(h => {
+                    const updatedAt = h.updatedAt?.toDate();
                     if (h.id === activeHighlightId) {
                         return (
                             <div key={h.id} ref={activeNoteRef}>
@@ -529,9 +530,9 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                         >
                              <CardHeader className="p-2 flex flex-row items-center justify-between">
                                 <CardTitle className="text-sm font-medium truncate pr-2">{getVerseReference(h)}</CardTitle>
-                                {h.updatedAt && (
+                                {updatedAt && (
                                     <p className="text-xs text-muted-foreground shrink-0">
-                                        {formatDistanceToNow(h.updatedAt.toDate(), { addSuffix: true })}
+                                        {isToday(updatedAt) ? format(updatedAt, 'p') : format(updatedAt, 'P')}
                                     </p>
                                 )}
                             </CardHeader>

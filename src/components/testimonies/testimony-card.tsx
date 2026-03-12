@@ -1,5 +1,6 @@
 "use client";
 
+import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -15,7 +16,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Testimony } from "@/lib/types";
-import { format, formatDistanceToNow, differenceInHours } from "date-fns";
+import { format, isToday } from "date-fns";
 import { Share2, MoreVertical, Edit, Trash2, Loader2 } from "lucide-react";
 import { useUser, useFirestore } from "@/firebase";
 import { useState } from "react";
@@ -34,7 +35,7 @@ import { EditTestimonyForm } from "./edit-testimony-form";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 
-export function TestimonyCard({ testimony }: { testimony: Testimony }) {
+export const TestimonyCard = React.memo(function TestimonyCard({ testimony }: { testimony: Testimony }) {
   const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
@@ -50,14 +51,10 @@ export function TestimonyCard({ testimony }: { testimony: Testimony }) {
   const createdAtDate = testimony.createdAt
     ? new Date(testimony.createdAt.seconds * 1000)
     : new Date();
-  
-  const now = new Date();
-  const hoursDifference = differenceInHours(now, createdAtDate);
 
-  const displayDate =
-    hoursDifference >= 24
-      ? format(createdAtDate, "PPP 'at' p")
-      : formatDistanceToNow(createdAtDate, { addSuffix: true });
+  const displayDate = isToday(createdAtDate)
+    ? format(createdAtDate, "p")
+    : format(createdAtDate, "PPP");
 
   const handleDelete = () => {
     if (!isAuthor || !firestore) return;
@@ -215,4 +212,4 @@ export function TestimonyCard({ testimony }: { testimony: Testimony }) {
       </AlertDialog>
     </>
   );
-}
+});

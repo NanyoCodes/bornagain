@@ -2,7 +2,7 @@
 "use client";
 
 import Link from "next/link";
-import { format, formatDistanceToNow, parse, isSameDay, differenceInDays } from "date-fns";
+import { format, parse, isSameDay, differenceInDays } from "date-fns";
 import { CalendarDays, MapPin, Users, Share2, Edit, MoreVertical, Loader2, MessagesSquare, UserCheck2, PlayCircle, UserPlus, Newspaper, CheckCircle2 } from "lucide-react";
 import type { Campaign, CampaignParticipant, UserProfile } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
@@ -493,16 +493,9 @@ export function CampaignCard({ campaign, userId, userProfile, isJoined }: { camp
     const createdAtDate = safeToDate(campaign.createdAt);
     if (!createdAtDate) return '';
     if (status === 'Past' && endDate) {
-        const endDateTime = new Date(endDate);
-        if (campaign.endTime && /^\d{2}:\d{2}$/.test(campaign.endTime)) {
-            const [hours, minutes] = campaign.endTime.split(':').map(Number);
-            endDateTime.setHours(hours, minutes, 59, 999);
-        } else {
-            endDateTime.setHours(23, 59, 59, 999);
-        }
-        return `Ended ${formatDistanceToNow(endDateTime, { addSuffix: true })}`;
+        return `Ended on ${format(endDate, 'PPP')}`;
     }
-    return `Created ${formatDistanceToNow(createdAtDate, { addSuffix: true })}`;
+    return `Created on ${format(createdAtDate, 'PPP')}`;
   })();
 
   const LogSoulDialog = (

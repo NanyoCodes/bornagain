@@ -10,7 +10,7 @@ import { Loader2, Check, X, Hourglass, Trash2, UserPlus, CheckCircle2, XCircle }
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { formatDistanceToNow } from 'date-fns';
+import { format, isToday } from 'date-fns';
 
 export function AccountabilityRequests({ currentUserProfile }: { currentUserProfile: UserProfile }) {
     const { user } = useUser();
@@ -170,7 +170,9 @@ export function AccountabilityRequests({ currentUserProfile }: { currentUserProf
             {incomingRequests && incomingRequests.length > 0 && (
                 <div className="space-y-3">
                     <h3 className="text-sm font-semibold flex items-center gap-2 text-muted-foreground"><UserPlus className="h-4 w-4" /> INCOMING REQUESTS</h3>
-                    {incomingRequests.map(req => (
+                    {incomingRequests.map(req => {
+                        const createdAt = req.createdAt.toDate();
+                        return (
                         <div key={req.id} className="flex items-center justify-between p-3 rounded-lg border bg-muted/30">
                             <div className="flex items-center gap-3">
                                 <Avatar>
@@ -180,7 +182,7 @@ export function AccountabilityRequests({ currentUserProfile }: { currentUserProf
                                 <div>
                                     <p className="font-semibold text-sm">{req.fromUserFirstName} {req.fromUserLastName}</p>
                                     <p className="text-xs text-muted-foreground">
-                                        Sent {req.createdAt ? formatDistanceToNow(req.createdAt.toDate(), { addSuffix: true }) : 'a moment ago'}
+                                        Sent {isToday(createdAt) ? format(createdAt, 'p') : format(createdAt, 'PPP')}
                                     </p>
                                 </div>
                             </div>
@@ -207,13 +209,15 @@ export function AccountabilityRequests({ currentUserProfile }: { currentUserProf
                                 </Button>
                             </div>
                         </div>
-                    ))}
+                    )})}
                 </div>
             )}
              {sentRequests && sentRequests.length > 0 && (
                 <div className="space-y-3">
                     <h3 className="text-sm font-semibold flex items-center gap-2 text-muted-foreground"><Hourglass className="h-4 w-4" /> SENT REQUESTS</h3>
-                    {sentRequests.map(req => (
+                    {sentRequests.map(req => {
+                        const createdAt = req.createdAt.toDate();
+                        return (
                          <div key={req.id} className="flex items-center justify-between p-3 rounded-lg border">
                             <div className="flex items-center gap-3">
                                 <Avatar>
@@ -223,7 +227,7 @@ export function AccountabilityRequests({ currentUserProfile }: { currentUserProf
                                 <div>
                                     <p className="font-semibold text-sm">{req.toUserFirstName} {req.toUserLastName}</p>
                                     <p className="text-xs text-muted-foreground">
-                                        Sent {req.createdAt ? formatDistanceToNow(req.createdAt.toDate(), { addSuffix: true }) : 'a moment ago'}
+                                        Sent {isToday(createdAt) ? format(createdAt, 'p') : format(createdAt, 'PPP')}
                                     </p>
                                 </div>
                             </div>
@@ -238,7 +242,7 @@ export function AccountabilityRequests({ currentUserProfile }: { currentUserProf
                                 Cancel
                             </Button>
                         </div>
-                    ))}
+                    )})}
                 </div>
             )}
             {declinedRequests && declinedRequests.map(req => (

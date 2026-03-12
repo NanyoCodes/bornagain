@@ -1,4 +1,3 @@
-
 "use client";
 
 import {
@@ -12,10 +11,10 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import type { PrayerRequest } from "@/lib/types";
-import { formatDistanceToNow, differenceInHours } from "date-fns";
+import { format, isToday } from "date-fns";
 import { HandHeart, Users, Trash2, Loader2 } from "lucide-react";
 import { useUser, useFirestore } from "@/firebase";
-import { useState, useMemo } from "react";
+import { useState, useMemo, memo } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { doc, updateDoc, arrayUnion, deleteDoc } from "firebase/firestore";
 import { errorEmitter } from "@/firebase/error-emitter";
@@ -23,7 +22,7 @@ import { FirestorePermissionError } from "@/firebase/errors";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { cn } from "@/lib/utils";
 
-export function PrayerRequestCard({ prayerRequest }: { prayerRequest: PrayerRequest }) {
+export const PrayerRequestCard = memo(function PrayerRequestCard({ prayerRequest }: { prayerRequest: PrayerRequest }) {
   const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
@@ -41,13 +40,10 @@ export function PrayerRequestCard({ prayerRequest }: { prayerRequest: PrayerRequ
     ? new Date(prayerRequest.createdAt.seconds * 1000)
     : new Date();
   
-  const now = new Date();
-  const hoursDifference = differenceInHours(now, createdAtDate);
+  const displayDate = "Shared " + (isToday(createdAtDate)
+      ? format(createdAtDate, 'p')
+      : format(createdAtDate, 'PPP'));
 
-  const displayDate =
-    hoursDifference >= 24
-      ? "Shared " + formatDistanceToNow(createdAtDate, { addSuffix: true })
-      : formatDistanceToNow(createdAtDate, { addSuffix: true });
 
   const handlePray = () => {
     if (!user || !firestore || hasPrayed || isAuthor) return;
@@ -152,4 +148,4 @@ export function PrayerRequestCard({ prayerRequest }: { prayerRequest: PrayerRequ
       </AlertDialog>
     </>
   );
-}
+});
