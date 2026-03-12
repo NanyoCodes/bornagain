@@ -46,7 +46,7 @@ export default function SoulsWonPage() {
   useEffect(() => {
     setMounted(true);
     setIsSearchVisible(true);
-    setSearchPlaceholder("Search by name, phone..."); // email removed for privacy
+    setSearchPlaceholder("Search by name, phone...");
     return () => {
       setIsSearchVisible(false);
       setSearchTerm("");
@@ -67,7 +67,7 @@ export default function SoulsWonPage() {
     const term = searchTerm.toLowerCase();
     return souls.filter(soul => 
       `${soul.firstName} ${soul.lastName}`.toLowerCase().includes(term) ||
-      (soul.phone && soul.phone.toLowerCase().includes(term)) || // email search removed for privacy
+      (soul.phone && soul.phone.toLowerCase().includes(term)) ||
       soul.source.toLowerCase().includes(term) ||
       (soul.sourceDetails && soul.sourceDetails.toLowerCase().includes(term)) ||
       (soul.church && soul.church.toLowerCase().includes(term))
@@ -89,7 +89,7 @@ export default function SoulsWonPage() {
     }
 
     const headers = [
-      "First Name", "Last Name", "Phone", "Church", "Location Won", "Date Won", "Source", "Source Details", "Status", // Email removed
+      "First Name", "Last Name", "Phone", "Church", "Location Won", "Date Won", "Source", "Source Details", "Status",
       "Attending Church", "In Bible Study", "Attending Prayer", "Last Follow Up Date", "Last Follow Up Note"
     ];
 
@@ -103,7 +103,7 @@ export default function SoulsWonPage() {
         return [
             soul.firstName,
             soul.lastName,
-            soul.phone || '', // email removed
+            soul.phone || '',
             soul.church || '',
             locationWonString,
             soul.wonAt?.toDate ? format(soul.wonAt.toDate(), "yyyy-MM-dd") : '',
@@ -187,7 +187,7 @@ export default function SoulsWonPage() {
       <div className="flex items-center justify-between">
         <div className="space-y-2">
           <h1 className="text-xl sm:text-2xl font-bold tracking-tight font-headline">Souls Won</h1>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-xs text-muted-foreground">
             Track and nurture individuals you've led to Christ.
           </p>
         </div>
