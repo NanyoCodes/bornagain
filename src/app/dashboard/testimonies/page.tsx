@@ -33,7 +33,6 @@ import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card"
 import { useSearch } from "@/context/search-context";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { format, isToday } from 'date-fns';
-import { AdCard } from "@/components/ads/ad-card";
 
 export default function TestimoniesPage() {
   const [isTestimonyDialogOpen, setIsTestimonyDialogOpen] = useState(false);
@@ -175,11 +174,8 @@ export default function TestimoniesPage() {
                     <Card key={i}><CardHeader><div className="flex items-center gap-4"><Skeleton className="h-12 w-12 rounded-full" /><div className="w-full space-y-2"><Skeleton className="h-4 w-1/4" /><Skeleton className="h-4 w-1/5" /></div></div></CardHeader><CardContent className="space-y-4"><Skeleton className="h-5 w-3/4" /><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-4/5" /></CardContent><CardFooter><Skeleton className="h-8 w-24 ml-auto" /></CardFooter></Card>
                   ))
                 )}
-                {!loading && filteredTestimonies?.map((testimony, index) => (
-                  <React.Fragment key={testimony.id}>
-                    <TestimonyCard testimony={testimony} />
-                    {(index + 1) % 4 === 0 && <AdCard key={`ad-testimony-${index}`} />}
-                  </React.Fragment>
+                {!loading && filteredTestimonies?.map((testimony) => (
+                  <TestimonyCard key={testimony.id} testimony={testimony} />
                 ))}
                  {!loading && filteredTestimonies?.length === 0 && (
                   <div className="col-span-full text-center py-12 flex flex-col items-center">
@@ -199,11 +195,8 @@ export default function TestimoniesPage() {
                     <Card key={i}><CardHeader><div className="flex items-center gap-4"><Skeleton className="h-12 w-12 rounded-full" /><div className="w-full space-y-2"><Skeleton className="h-4 w-1/4" /><Skeleton className="h-4 w-1/5" /></div></div></CardHeader><CardContent className="space-y-4"><Skeleton className="h-5 w-3/4" /><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-4/5" /></CardContent><CardFooter><Skeleton className="h-8 w-24 ml-auto" /></CardFooter></Card>
                   ))
                 )}
-                {!loading && filteredPrayerRequests?.map((req, index) => (
-                  <React.Fragment key={req.id}>
-                    <PrayerRequestCard prayerRequest={req} />
-                    {(index + 1) % 4 === 0 && <AdCard key={`ad-prayer-${index}`} />}
-                  </React.Fragment>
+                {!loading && filteredPrayerRequests?.map((req) => (
+                  <PrayerRequestCard key={req.id} prayerRequest={req} />
                 ))}
                 {!loading && filteredPrayerRequests?.length === 0 && (
                   <div className="col-span-full text-center py-12 flex flex-col items-center">

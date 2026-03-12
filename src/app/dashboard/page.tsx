@@ -24,7 +24,6 @@ import { useToast } from "@/hooks/use-toast";
 import { Progress } from "@/components/ui/progress";
 import { WelcomeBackDialog } from "@/components/dashboard/welcome-back-dialog";
 import { safeToDate } from "@/lib/utils";
-import { AdCard } from "@/components/ads/ad-card";
 
 function DisplayPassage({ reference, userName }: { reference: string, userName?: string }) {
   const [passage, setPassage] = useState<{text: string; reference: string} | null>(null);
@@ -659,8 +658,6 @@ export default function DashboardPage() {
                 </Card>
                 
                 {userProfile?.location && <GlobalSoulsCard location={userProfile.location} userSouls={soulsWon || []} />}
-
-                <AdCard />
 
                  <Card className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground">
                     <CardHeader>
