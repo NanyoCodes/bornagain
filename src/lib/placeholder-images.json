@@ -47,6 +47,12 @@
       "description": "Image for evangelism event",
       "imageUrl": "https://images.unsplash.com/photo-1531537571171-a707bf2683da?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxwZW9wbGUlMjBsaXN0ZW5pbmd8ZW58MHx8fHwxNzcxMzQxNTQyfDA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "people listening"
+    },
+    {
+      "id": "ad-placeholder-1",
+      "description": "Placeholder for an advertisement",
+      "imageUrl": "https://picsum.photos/seed/ad1/600/400",
+      "imageHint": "advertisement product"
     }
   ]
 }
