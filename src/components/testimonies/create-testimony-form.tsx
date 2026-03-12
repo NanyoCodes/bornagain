@@ -23,8 +23,7 @@ import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { errorEmitter } from "@/firebase/error-emitter";
 import Image from "next/image";
-import { ref, uploadBytesResumable, getDownloadURL, type FirebaseStorageError } from "firebase/storage";
-import { Progress } from "../ui/progress";
+import { Input } from "../ui/input";
 
 
 const testimonyCategories: TestimonyCategory[] = ['Healing', 'Financial Breakthrough', 'Salvation', 'Relationships', 'Deliverance', 'General'];
@@ -43,14 +42,9 @@ type CreateTestimonyFormProps = {
 export function CreateTestimonyForm({ onTestimonyCreated, campaign }: CreateTestimonyFormProps) {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [uploadFile, setUploadFile] = useState<File | null>(null);
-  const [photoPreview, setPhotoPreview] = useState("");
-  const [uploadProgress, setUploadProgress] = useState(0);
-  const fileInputRef = useRef<HTMLInputElement>(null);
   
   const { user } = useUser();
   const firestore = useFirestore();
-  const storage = useStorage();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -60,34 +54,6 @@ export function CreateTestimonyForm({ onTestimonyCreated, campaign }: CreateTest
     },
   });
 
-  useEffect(() => {
-    return () => {
-      if (photoPreview && photoPreview.startsWith("blob:")) {
-        URL.revokeObjectURL(photoPreview);
-      }
-    };
-  }, [photoPreview]);
-
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    if (!file.type.startsWith('image/')) {
-        toast({ variant: 'destructive', title: 'Invalid File Type', description: 'Please select an image file.' });
-        return;
-    }
-
-    if (file.size > 5 * 1024 * 1024) { // 5MB limit
-        toast({ variant: 'destructive', title: 'File Too Large', description: 'Please select an image smaller than 5MB.' });
-        return;
-    }
-    
-    setUploadFile(file);
-    const previewUrl = URL.createObjectURL(file);
-    setPhotoPreview(previewUrl);
-    form.setValue('imageUrl', previewUrl, { shouldDirty: true });
-  };
-
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (!user || !firestore) {
       toast({ variant: 'destructive', title: 'Not Authenticated', description: 'You must be logged in to share a testimony.'});
@@ -95,37 +61,6 @@ export function CreateTestimonyForm({ onTestimonyCreated, campaign }: CreateTest
     }
 
     setIsSubmitting(true);
-    let finalImageUrl = "";
-
-    if (uploadFile) {
-      if (!storage) {
-        toast({ variant: 'destructive', title: 'Storage service not available.'});
-        setIsSubmitting(false);
-        return;
-      }
-      const storageRef = ref(storage, `testimony-images/${user.uid}/${Date.now()}-${uploadFile.name}`);
-      const uploadTask = uploadBytesResumable(storageRef, uploadFile);
-
-      try {
-        finalImageUrl = await new Promise((resolve, reject) => {
-          uploadTask.on('state_changed',
-            (snapshot) => {
-              const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-              setUploadProgress(progress);
-            },
-            (error) => reject(error),
-            async () => {
-              const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-              resolve(downloadURL);
-            }
-          );
-        });
-      } catch (error) {
-        toast({ variant: "destructive", title: "Upload Failed", description: "Could not upload image. Please check your project configuration." });
-        setIsSubmitting(false);
-        return;
-      }
-    }
     
     try {
       const nameParts = user.displayName?.split(' ') || [];
@@ -136,7 +71,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, campaign }: CreateTest
           authorLastName: nameParts.slice(1).join(' ') || '',
           authorAvatarUrl: user.photoURL || null,
           content: values.content,
-          imageUrl: finalImageUrl,
+          imageUrl: values.imageUrl || null,
           createdAt: serverTimestamp(),
           category: values.category as TestimonyCategory,
       };
@@ -220,38 +155,19 @@ export function CreateTestimonyForm({ onTestimonyCreated, campaign }: CreateTest
           )}
         />
 
-        <FormItem>
-            <FormLabel>Image (Optional)</FormLabel>
-            {photoPreview ? (
-                <div className="relative aspect-video w-full overflow-hidden rounded-md border">
-                    <Image src={photoPreview} alt="Testimony image preview" fill className="object-cover" />
-                </div>
-            ) : (
-                <div className="flex items-center justify-center w-full">
-                    <label htmlFor="testimony-image-upload" className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-muted/50 hover:bg-muted">
-                        <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                            <ImageIcon className="w-8 h-8 mb-2 text-muted-foreground" />
-                            <p className="mb-2 text-sm text-muted-foreground"><span className="font-semibold">Click to upload</span></p>
-                            <p className="text-xs text-muted-foreground">PNG, JPG or GIF (max 5MB)</p>
-                        </div>
-                        <input id="testimony-image-upload" ref={fileInputRef} type="file" className="hidden" onChange={handleFileChange} accept="image/*" />
-                    </label>
-                </div> 
-            )}
-             {photoPreview && (
-                <Button type="button" variant="outline" size="sm" className="mt-2" onClick={() => {
-                  setPhotoPreview('');
-                  setUploadFile(null);
-                  form.setValue('imageUrl', '');
-                }}>Remove Image</Button>
-             )}
-              {uploadProgress > 0 && uploadProgress < 100 && (
-                <div className="w-full text-center mt-2">
-                    <Progress value={uploadProgress} className="w-full" />
-                    <p className="text-xs text-muted-foreground mt-1">Uploading...</p>
-                </div>
-            )}
-        </FormItem>
+        <FormField
+          control={form.control}
+          name="imageUrl"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Image URL (Optional)</FormLabel>
+              <FormControl>
+                <Input placeholder="https://example.com/image.jpg" {...field} value={field.value ?? ''} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         
         <Button type="submit" className="w-full" disabled={isSubmitting}>
           {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

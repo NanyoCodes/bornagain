@@ -15,7 +15,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { ToastAction } from "@/components/ui/toast";
 import { useState, useRef, useEffect } from "react";
 import { Loader2, UploadCloud } from "lucide-react";
 import { useUser, useFirestore, useAuth, useStorage } from "@/firebase";
@@ -53,23 +52,8 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
   const { user } = useUser();
   const firestore = useFirestore();
   const auth = useAuth();
-  const storage = useStorage();
   
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [uploadFile, setUploadFile] = useState<File | null>(null);
-  const [photoPreview, setPhotoPreview] = useState(userProfile.photoURL || "");
-  const [uploadProgress, setUploadProgress] = useState(0);
-  const [storageError, setStorageError] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    // Clean up the object URL when the component unmounts or the preview changes
-    return () => {
-      if (photoPreview && photoPreview.startsWith("blob:")) {
-        URL.revokeObjectURL(photoPreview);
-      }
-    };
-  }, [photoPreview]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -83,34 +67,6 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
       phone: userProfile.phone || "",
     },
   });
-  
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    if (!file.type.startsWith('image/')) {
-        toast({
-            variant: 'destructive',
-            title: 'Invalid File Type',
-            description: 'Please select an image file.',
-        });
-        return;
-    }
-
-    if (file.size > 5 * 1024 * 1024) { // 5MB limit
-        toast({
-            variant: 'destructive',
-            title: 'File Too Large',
-            description: 'Please select an image smaller than 5MB.',
-        });
-        return;
-    }
-
-    setUploadFile(file);
-    setPhotoPreview(URL.createObjectURL(file));
-    form.setValue('photoURL', URL.createObjectURL(file), { shouldDirty: true });
-    setStorageError(null);
-  };
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (!user || !firestore || !auth.currentUser) {
@@ -118,52 +74,11 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
       return;
     }
     setIsSubmitting(true);
-    setStorageError(null);
-
-    let finalPhotoUrl = userProfile.photoURL || "";
-
-    if (uploadFile) {
-        if (!storage) {
-            toast({ variant: 'destructive', title: 'Storage service not available.'});
-            setIsSubmitting(false);
-            return;
-        }
-        const storageRef = ref(storage, `profile-pictures/${user.uid}/profile-photo`);
-        const uploadTask = uploadBytesResumable(storageRef, uploadFile);
-
-        try {
-            finalPhotoUrl = await new Promise((resolve, reject) => {
-                uploadTask.on('state_changed',
-                    (snapshot) => {
-                        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                        setUploadProgress(progress);
-                    },
-                    (error) => {
-                        reject(error);
-                    },
-                    async () => {
-                        const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-                        resolve(downloadURL);
-                    }
-                );
-            });
-        } catch (error) {
-            const storageErr = error as FirebaseStorageError;
-            console.error("Upload failed:", storageErr);
-             if (storageErr.code === 'storage/unauthorized' || storageErr.code === 'storage/unknown') {
-                setStorageError("You do not have permission to upload files. This is almost always caused by a misconfiguration in your Google Cloud project, not a bug in the code.");
-            } else {
-                setStorageError(`An unknown storage error occurred: ${storageErr.message}`);
-            }
-            setIsSubmitting(false);
-            return;
-        }
-    } else {
-        finalPhotoUrl = values.photoURL || "";
-    }
 
     try {
       const displayName = `${values.firstName} ${values.lastName}`;
+      const finalPhotoUrl = values.photoURL || "";
+
       const authUpdatePayload: { displayName?: string; photoURL?: string } = {};
       if (auth.currentUser.displayName !== displayName) { authUpdatePayload.displayName = displayName; }
       if (auth.currentUser.photoURL !== finalPhotoUrl) { authUpdatePayload.photoURL = finalPhotoUrl; }
@@ -210,8 +125,6 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
        }
     } finally {
       setIsSubmitting(false);
-      setUploadProgress(0);
-      setUploadFile(null);
     }
   }
 
@@ -219,47 +132,26 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
     <>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-           {storageError && (
-              <Alert variant="destructive">
-                <AlertTitle>Upload Still Not Working?</AlertTitle>
-                <AlertDescription>
-                    {storageError} If you're having issues, please follow our definitive{' '}
-                    <Link href="/docs/storage-cors-guide.md" target="_blank" className="font-bold underline">
-                        Troubleshooting Guide
-                    </Link>
-                    .
-                </AlertDescription>
-              </Alert>
-          )}
-
           <div className="flex flex-col items-center gap-4">
             <Avatar className="h-24 w-24">
-              <AvatarImage src={photoPreview || undefined} alt={`${form.watch('firstName')} ${form.watch('lastName')}`} />
+              <AvatarImage src={form.watch('photoURL') || undefined} alt={`${form.watch('firstName')} ${form.watch('lastName')}`} />
               <AvatarFallback>{(form.watch('firstName') || '').charAt(0)}{(form.watch('lastName') || '').charAt(0)}</AvatarFallback>
             </Avatar>
-             <input
-                type="file"
-                ref={fileInputRef}
-                onChange={handleFileChange}
-                className="hidden"
-                accept="image/*"
-              />
-            <Button
-                type="button"
-                variant="outline"
-                onClick={() => fileInputRef.current?.click()}
-                disabled={isSubmitting}
-            >
-                <UploadCloud className="mr-2 h-4 w-4" />
-                Upload Photo
-            </Button>
-            {uploadProgress > 0 && uploadProgress < 100 && (
-                <div className="w-full text-center">
-                    <Progress value={uploadProgress} className="w-full" />
-                    <p className="text-xs text-muted-foreground mt-1">Uploading...</p>
-                </div>
-            )}
           </div>
+
+          <FormField
+            control={form.control}
+            name="photoURL"
+            render={({ field }) => (
+                <FormItem>
+                <FormLabel>Photo URL</FormLabel>
+                <FormControl>
+                    <Input placeholder="https://example.com/photo.jpg" {...field} value={field.value ?? ''} className="text-base" />
+                </FormControl>
+                <FormMessage />
+                </FormItem>
+            )}
+            />
 
           <div className="grid grid-cols-2 gap-4">
             <FormField
