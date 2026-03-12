@@ -29,7 +29,7 @@ import { LocationProfileInput } from "../common/location-profile-input";
 import { Label } from "../ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ref, uploadString, getDownloadURL } from "firebase/storage";
-import { ToastAction } from "@/components/ui/toast";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 const formSchema = z.object({
   firstName: z.string().min(2, "First name must be at least 2 characters.").max(50, "Name is too long."),
@@ -116,44 +116,19 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
 
       // 1. Upload photo if a new one is selected
       if (newPhoto) {
-        console.log("New photo selected. Reading as data URL...");
         const storageRef = ref(storage, `profile-pictures/${user.uid}/profile-photo.jpg`);
         try {
+            console.log("Reading file as data URL...");
             const dataUrl = await readFileAsDataURL(newPhoto);
-            console.log("Read success. Attempting to upload string to storage path:", storageRef.fullPath);
+            console.log(`File read successfully. Data URL length: ${dataUrl.length}`);
+            
+            console.log("Uploading string to storage...");
             const uploadTask = await uploadString(storageRef, dataUrl, 'data_url');
             console.log("Upload successful. Getting download URL...");
             photoURL = await getDownloadURL(uploadTask.ref);
             console.log("Download URL obtained:", photoURL);
         } catch (uploadError: any) {
             console.error("Firebase Storage Upload Error. Raw error object:", uploadError);
-            
-            let description = "Please check the browser console for more details. The error code might provide a hint.";
-            if (uploadError.code === 'storage/unauthorized' || uploadError.message?.includes('CORS')) {
-                description = "Permission denied by CORS policy. This means the Storage Bucket is not configured to allow uploads from this website. This must be fixed in the Google Cloud Console.";
-            } else if (uploadError.code === 'storage/object-not-found') {
-                description = "The file location could not be found. This might indicate an issue with your Storage bucket setup.";
-            }
-            
-            toast({
-                variant: 'destructive',
-                title: 'Photo Upload Failed',
-                description: description,
-                duration: 20000,
-                action: (
-                  <ToastAction
-                    altText="Review Storage Guide"
-                    onClick={() => {
-                        // This is a placeholder; in a real app, you might link to a specific doc.
-                        // For now, we log the doc path to console.
-                        console.log("Please review the guide at `docs/storage-cors-guide.md`");
-                    }}
-                  >
-                    Open Console
-                  </ToastAction>
-                ),
-            });
-            
             setIsSubmitting(false);
             return;
         }
@@ -218,123 +193,136 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
   }
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <div className="flex flex-col items-center gap-2">
-          <Avatar className="h-24 w-24">
-            <AvatarImage src={photoPreview || userProfile.photoURL || undefined} alt={`${userProfile.firstName} ${userProfile.lastName}`} />
-            <AvatarFallback>{userProfile.firstName?.charAt(0)}{userProfile.lastName?.charAt(0)}</AvatarFallback>
-          </Avatar>
-          <Button type="button" variant="outline" size="sm" onClick={() => fileInputRef.current?.click()}>
-              <Edit className="mr-2 h-4 w-4" />
-              Change Photo
+    <>
+      <Alert variant="destructive" className="mb-6">
+        <AlertTitle>Photo Upload Issues?</AlertTitle>
+        <AlertDescription>
+          If photo uploads are failing, it is an issue with your Firebase Storage configuration, not the app code. Please follow the troubleshooting guide.
+          <Button asChild variant="link" className="p-0 h-auto ml-1 font-semibold">
+            <a href="/docs/storage-cors-guide.md" target="_blank" rel="noopener noreferrer">
+              Open Troubleshooting Guide
+            </a>
           </Button>
-          <input
-              type="file"
-              ref={fileInputRef}
-              onChange={handleFileChange}
-              accept="image/png, image/jpeg"
-              className="hidden"
-          />
-        </div>
+        </AlertDescription>
+      </Alert>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <div className="flex flex-col items-center gap-2">
+            <Avatar className="h-24 w-24">
+              <AvatarImage src={photoPreview || userProfile.photoURL || undefined} alt={`${userProfile.firstName} ${userProfile.lastName}`} />
+              <AvatarFallback>{userProfile.firstName?.charAt(0)}{userProfile.lastName?.charAt(0)}</AvatarFallback>
+            </Avatar>
+            <Button type="button" variant="outline" size="sm" onClick={() => fileInputRef.current?.click()}>
+                <Edit className="mr-2 h-4 w-4" />
+                Change Photo
+            </Button>
+            <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileChange}
+                accept="image/png, image/jpeg"
+                className="hidden"
+            />
+          </div>
 
-        <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-4">
+            <FormField
+              control={form.control}
+              name="firstName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>First Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="John" {...field} className="text-base" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="lastName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Last Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Doe" {...field} className="text-base" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
           <FormField
             control={form.control}
-            name="firstName"
+            name="bio"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>First Name</FormLabel>
+                <FormLabel>Bio</FormLabel>
                 <FormControl>
-                  <Input placeholder="John" {...field} className="text-base" />
+                  <Textarea placeholder="Share your personal testimony to encourage others..." className="resize-none text-base" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
+          <div className="space-y-2">
+              <Label>Location Search</Label>
+              <LocationProfileInput form={form} />
+              <p className="text-sm text-muted-foreground">
+                  Search for a location to autofill your city and country below.
+              </p>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+              <FormField
+              control={form.control}
+              name="city"
+              render={({ field }) => (
+                  <FormItem>
+                  <FormLabel>City</FormLabel>
+                  <FormControl>
+                      <Input placeholder="e.g., Nairobi" {...field} value={field.value ?? ""} className="text-base" />
+                  </FormControl>
+                  <FormMessage />
+                  </FormItem>
+              )}
+              />
+              <FormField
+              control={form.control}
+              name="country"
+              render={({ field }) => (
+                  <FormItem>
+                  <FormLabel>Country</FormLabel>
+                  <FormControl>
+                      <Input placeholder="e.g., Kenya" {...field} value={field.value ?? ""} className="text-base" />
+                  </FormControl>
+                  <FormMessage />
+                  </FormItem>
+              )}
+              />
+          </div>
           <FormField
             control={form.control}
-            name="lastName"
+            name="phone"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Last Name</FormLabel>
+                <FormLabel>Phone</FormLabel>
                 <FormControl>
-                  <Input placeholder="Doe" {...field} className="text-base" />
+                  <Input placeholder="123 456 7890" {...field} value={field.value ?? ""} className="text-base" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-        </div>
-        <FormField
-          control={form.control}
-          name="bio"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Bio</FormLabel>
-              <FormControl>
-                <Textarea placeholder="Share your personal testimony to encourage others..." className="resize-none text-base" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <div className="space-y-2">
-            <Label>Location Search</Label>
-            <LocationProfileInput form={form} />
-            <p className="text-sm text-muted-foreground">
-                Search for a location to autofill your city and country below.
-            </p>
-        </div>
-         <div className="grid grid-cols-2 gap-4">
-            <FormField
-            control={form.control}
-            name="city"
-            render={({ field }) => (
-                <FormItem>
-                <FormLabel>City</FormLabel>
-                <FormControl>
-                    <Input placeholder="e.g., Nairobi" {...field} value={field.value ?? ""} className="text-base" />
-                </FormControl>
-                <FormMessage />
-                </FormItem>
-            )}
-            />
-            <FormField
-            control={form.control}
-            name="country"
-            render={({ field }) => (
-                <FormItem>
-                <FormLabel>Country</FormLabel>
-                <FormControl>
-                    <Input placeholder="e.g., Kenya" {...field} value={field.value ?? ""} className="text-base" />
-                </FormControl>
-                <FormMessage />
-                </FormItem>
-            )}
-            />
-         </div>
-         <FormField
-          control={form.control}
-          name="phone"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Phone</FormLabel>
-              <FormControl>
-                <Input placeholder="123 456 7890" {...field} value={field.value ?? ""} className="text-base" />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <Button type="submit" className="w-full" disabled={isSubmitting}>
-          {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          {isSubmitting 
-            ? (newPhoto ? 'Uploading...' : 'Saving...') 
-            : 'Save Changes'
-          }
-        </Button>
-      </form>
-    </Form>
+          <Button type="submit" className="w-full" disabled={isSubmitting}>
+            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {isSubmitting 
+              ? (newPhoto ? 'Uploading...' : 'Saving...') 
+              : 'Save Changes'
+            }
+          </Button>
+        </form>
+      </Form>
+    </>
   );
 }
