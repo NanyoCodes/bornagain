@@ -67,10 +67,13 @@ function DisplayPassage({ reference, userName }: { reference: string, userName?:
     return null;
   }
   
-  // Replace the first case-insensitive 'you' with the user's name
-  const personalizedText = userName 
-    ? passage.text.replace(/you/i, userName) 
-    : passage.text;
+  let personalizedText = passage.text;
+  if (userName) {
+    // Replace "your" with "{userName}'s" and "you" with "{userName}", using word boundaries for accuracy.
+    personalizedText = personalizedText
+      .replace(/\byour\b/gi, `${userName}'s`)
+      .replace(/\byou\b/gi, userName);
+  }
 
   return (
     <blockquote className="border-l-2 pl-6 italic">
