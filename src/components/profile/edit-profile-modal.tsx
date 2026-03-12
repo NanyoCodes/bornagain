@@ -16,7 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { ToastAction } from "@/components/ui/toast";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Loader2, UploadCloud } from "lucide-react";
 import { useUser, useFirestore, useAuth, useStorage } from "@/firebase";
 import { doc, updateDoc } from "firebase/firestore";
@@ -29,6 +29,8 @@ import { Label } from "../ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ref, uploadBytesResumable, getDownloadURL, type FirebaseStorageError } from "firebase/storage";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import Link from 'next/link';
+import { Progress } from "../ui/progress";
 
 const formSchema = z.object({
   firstName: z.string().min(2, "First name must be at least 2 characters.").max(50, "Name is too long."),
@@ -51,10 +53,23 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
   const { user } = useUser();
   const firestore = useFirestore();
   const auth = useAuth();
+  const storage = useStorage();
   
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isUploading, setIsUploading] = useState(false); // For file reading loader
+  const [uploadFile, setUploadFile] = useState<File | null>(null);
+  const [photoPreview, setPhotoPreview] = useState(userProfile.photoURL || "");
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [storageError, setStorageError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    // Clean up the object URL when the component unmounts or the preview changes
+    return () => {
+      if (photoPreview && photoPreview.startsWith("blob:")) {
+        URL.revokeObjectURL(photoPreview);
+      }
+    };
+  }, [photoPreview]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -69,8 +84,6 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
     },
   });
   
-  const photoPreview = form.watch('photoURL');
-
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -93,23 +106,10 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
         return;
     }
 
-    const reader = new FileReader();
-    reader.onloadstart = () => setIsUploading(true);
-    reader.onerror = () => {
-        setIsUploading(false);
-        toast({
-            variant: 'destructive',
-            title: 'File Read Error',
-            description: 'Could not read the selected file.',
-        });
-    };
-    reader.onload = () => {
-        if (typeof reader.result === 'string') {
-            form.setValue('photoURL', reader.result, { shouldDirty: true });
-        }
-        setIsUploading(false);
-    };
-    reader.readAsDataURL(file);
+    setUploadFile(file);
+    setPhotoPreview(URL.createObjectURL(file));
+    form.setValue('photoURL', URL.createObjectURL(file), { shouldDirty: true });
+    setStorageError(null);
   };
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
@@ -118,17 +118,55 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
       return;
     }
     setIsSubmitting(true);
+    setStorageError(null);
+
+    let finalPhotoUrl = userProfile.photoURL || "";
+
+    if (uploadFile) {
+        if (!storage) {
+            toast({ variant: 'destructive', title: 'Storage service not available.'});
+            setIsSubmitting(false);
+            return;
+        }
+        const storageRef = ref(storage, `profile-pictures/${user.uid}/profile-photo`);
+        const uploadTask = uploadBytesResumable(storageRef, uploadFile);
+
+        try {
+            finalPhotoUrl = await new Promise((resolve, reject) => {
+                uploadTask.on('state_changed',
+                    (snapshot) => {
+                        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                        setUploadProgress(progress);
+                    },
+                    (error) => {
+                        reject(error);
+                    },
+                    async () => {
+                        const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+                        resolve(downloadURL);
+                    }
+                );
+            });
+        } catch (error) {
+            const storageErr = error as FirebaseStorageError;
+            console.error("Upload failed:", storageErr);
+             if (storageErr.code === 'storage/unauthorized' || storageErr.code === 'storage/unknown') {
+                setStorageError("You do not have permission to upload files. This is almost always caused by a misconfiguration in your Google Cloud project, not a bug in the code.");
+            } else {
+                setStorageError(`An unknown storage error occurred: ${storageErr.message}`);
+            }
+            setIsSubmitting(false);
+            return;
+        }
+    } else {
+        finalPhotoUrl = values.photoURL || "";
+    }
 
     try {
       const displayName = `${values.firstName} ${values.lastName}`;
-
       const authUpdatePayload: { displayName?: string; photoURL?: string } = {};
-      if (user.displayName !== displayName) {
-        authUpdatePayload.displayName = displayName;
-      }
-      if (user.photoURL !== values.photoURL) {
-        authUpdatePayload.photoURL = values.photoURL;
-      }
+      if (auth.currentUser.displayName !== displayName) { authUpdatePayload.displayName = displayName; }
+      if (auth.currentUser.photoURL !== finalPhotoUrl) { authUpdatePayload.photoURL = finalPhotoUrl; }
       
       const authUpdatePromise = Object.keys(authUpdatePayload).length > 0 
         ? updateProfile(auth.currentUser, authUpdatePayload) 
@@ -147,7 +185,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
           country_lowercase: (values.country || "").toLowerCase(),
         },
         phone: values.phone || "",
-        photoURL: values.photoURL || null,
+        photoURL: finalPhotoUrl,
       };
       
       const firestoreUpdatePromise = updateDoc(doc(firestore, 'users', user.uid), firestoreUpdatePayload).catch((serverError) => {
@@ -172,6 +210,8 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
        }
     } finally {
       setIsSubmitting(false);
+      setUploadProgress(0);
+      setUploadFile(null);
     }
   }
 
@@ -179,6 +219,19 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
     <>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+           {storageError && (
+              <Alert variant="destructive">
+                <AlertTitle>Upload Still Not Working?</AlertTitle>
+                <AlertDescription>
+                    {storageError} If you're having issues, please follow our definitive{' '}
+                    <Link href="/docs/storage-cors-guide.md" target="_blank" className="font-bold underline">
+                        Troubleshooting Guide
+                    </Link>
+                    .
+                </AlertDescription>
+              </Alert>
+          )}
+
           <div className="flex flex-col items-center gap-4">
             <Avatar className="h-24 w-24">
               <AvatarImage src={photoPreview || undefined} alt={`${form.watch('firstName')} ${form.watch('lastName')}`} />
@@ -195,15 +248,17 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                 type="button"
                 variant="outline"
                 onClick={() => fileInputRef.current?.click()}
-                disabled={isUploading}
+                disabled={isSubmitting}
             >
-                {isUploading ? (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : (
-                    <UploadCloud className="mr-2 h-4 w-4" />
-                )}
-                {isUploading ? 'Processing...' : 'Upload Photo'}
+                <UploadCloud className="mr-2 h-4 w-4" />
+                Upload Photo
             </Button>
+            {uploadProgress > 0 && uploadProgress < 100 && (
+                <div className="w-full text-center">
+                    <Progress value={uploadProgress} className="w-full" />
+                    <p className="text-xs text-muted-foreground mt-1">Uploading...</p>
+                </div>
+            )}
           </div>
 
           <div className="grid grid-cols-2 gap-4">

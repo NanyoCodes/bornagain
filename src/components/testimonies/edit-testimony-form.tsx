@@ -12,18 +12,19 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Loader2, Image as ImageIcon } from "lucide-react";
 import { Testimony, TestimonyCategory } from "@/lib/types";
-import { useFirestore, useUser } from "@/firebase";
+import { useFirestore, useUser, useStorage } from "@/firebase";
 import { doc, updateDoc, serverTimestamp } from "firebase/firestore";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import Image from 'next/image';
+import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { Progress } from "../ui/progress";
 
 const testimonyCategories: TestimonyCategory[] = ['Healing', 'Financial Breakthrough', 'Salvation', 'Relationships', 'Deliverance', 'General'];
 
@@ -41,11 +42,14 @@ type EditTestimonyFormProps = {
 export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimonyFormProps) {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
+  const [uploadFile, setUploadFile] = useState<File | null>(null);
+  const [photoPreview, setPhotoPreview] = useState(testimony.imageUrl || "");
+  const [uploadProgress, setUploadProgress] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { user } = useUser();
   const firestore = useFirestore();
+  const storage = useStorage();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -55,8 +59,15 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
       imageUrl: testimony.imageUrl || '',
     },
   });
+  
+  useEffect(() => {
+    return () => {
+      if (photoPreview && photoPreview.startsWith("blob:")) {
+        URL.revokeObjectURL(photoPreview);
+      }
+    };
+  }, [photoPreview]);
 
-  const imagePreview = form.watch('imageUrl');
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -72,22 +83,13 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
         return;
     }
 
-    const reader = new FileReader();
-    reader.onloadstart = () => setIsUploading(true);
-    reader.onerror = () => {
-        setIsUploading(false);
-        toast({ variant: 'destructive', title: 'File Read Error', description: 'Could not read the selected file.' });
-    };
-    reader.onload = () => {
-        if (typeof reader.result === 'string') {
-            form.setValue('imageUrl', reader.result, { shouldDirty: true });
-        }
-        setIsUploading(false);
-    };
-    reader.readAsDataURL(file);
+    setUploadFile(file);
+    const previewUrl = URL.createObjectURL(file);
+    setPhotoPreview(previewUrl);
+    form.setValue('imageUrl', previewUrl, { shouldDirty: true });
   };
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
     if (!user || !firestore) {
       toast({ variant: 'destructive', title: 'Authentication Error', description: 'Please log in again.' });
       return;
@@ -98,11 +100,45 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
     }
 
     setIsSubmitting(true);
+    let finalImageUrl = testimony.imageUrl || "";
     
+    if (uploadFile) {
+       if (!storage) {
+        toast({ variant: 'destructive', title: 'Storage service not available.'});
+        setIsSubmitting(false);
+        return;
+      }
+      const storageRef = ref(storage, `testimony-images/${user.uid}/${Date.now()}-${uploadFile.name}`);
+      const uploadTask = uploadBytesResumable(storageRef, uploadFile);
+
+      try {
+        finalImageUrl = await new Promise((resolve, reject) => {
+          uploadTask.on('state_changed',
+            (snapshot) => {
+              const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+              setUploadProgress(progress);
+            },
+            (error) => reject(error),
+            async () => {
+              const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+              resolve(downloadURL);
+            }
+          );
+        });
+      } catch (error) {
+        toast({ variant: "destructive", title: "Upload Failed", description: "Could not upload image. Please check your project configuration." });
+        setIsSubmitting(false);
+        return;
+      }
+    } else {
+        finalImageUrl = values.imageUrl || "";
+    }
+
+
     const testimonyUpdate: { [key: string]: any } = {
         category: values.category,
         content: values.content,
-        imageUrl: values.imageUrl || null,
+        imageUrl: finalImageUrl,
         updatedAt: serverTimestamp(),
     };
 
@@ -165,9 +201,9 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
         />
         <FormItem>
             <FormLabel>Image (Optional)</FormLabel>
-            {imagePreview ? (
+            {photoPreview ? (
                 <div className="relative aspect-video w-full overflow-hidden rounded-md border">
-                    <Image src={imagePreview} alt="Testimony image preview" fill className="object-cover" />
+                    <Image src={photoPreview} alt="Testimony image preview" fill className="object-cover" />
                 </div>
             ) : (
                 <div className="flex items-center justify-center w-full">
@@ -181,14 +217,24 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
                     </label>
                 </div> 
             )}
-             {imagePreview && (
-                <Button type="button" variant="outline" size="sm" className="mt-2" onClick={() => form.setValue('imageUrl', '')}>Remove Image</Button>
+             {photoPreview && (
+                <Button type="button" variant="outline" size="sm" className="mt-2" onClick={() => {
+                  setPhotoPreview('');
+                  setUploadFile(null);
+                  form.setValue('imageUrl', '');
+                }}>Remove Image</Button>
              )}
+             {uploadProgress > 0 && uploadProgress < 100 && (
+                <div className="w-full text-center mt-2">
+                    <Progress value={uploadProgress} className="w-full" />
+                    <p className="text-xs text-muted-foreground mt-1">Uploading...</p>
+                </div>
+            )}
         </FormItem>
 
-        <Button type="submit" className="w-full" disabled={isSubmitting || isUploading}>
-          {(isSubmitting || isUploading) && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          {isSubmitting ? 'Saving...' : isUploading ? 'Processing Image...' : 'Save Changes'}
+        <Button type="submit" className="w-full" disabled={isSubmitting}>
+          {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          {isSubmitting ? 'Saving...' : 'Save Changes'}
         </Button>
       </form>
     </Form>
