@@ -28,7 +28,7 @@ import { FirestorePermissionError } from "@/firebase/errors";
 import { LocationProfileInput } from "../common/location-profile-input";
 import { Label } from "../ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { ToastAction } from "@/components/ui/toast";
 
 const formSchema = z.object({
@@ -55,7 +55,6 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [newPhoto, setNewPhoto] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
-  const [uploadProgress, setUploadProgress] = useState<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
 
@@ -94,7 +93,6 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
       return;
     }
     setIsSubmitting(true);
-    setUploadProgress(null);
 
     try {
       let photoURL = userProfile.photoURL || null;
@@ -102,38 +100,24 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
       // 1. Upload photo if a new one is selected
       if (newPhoto) {
         const storageRef = ref(storage, `profile-pictures/${user.uid}/profile-photo.jpg`);
-        const uploadTask = uploadBytesResumable(storageRef, newPhoto);
-
-        photoURL = await new Promise<string>((resolve, reject) => {
-          uploadTask.on('state_changed',
-            (snapshot) => {
-              const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-              setUploadProgress(progress);
-            },
-            (uploadError) => {
-              console.error("Firebase Storage Upload Error:", uploadError);
-
-              let description = "Could not upload photo. Please try again.";
-              if (uploadError.code === 'storage/unauthorized') {
-                  description = "Permission denied. This can be caused by incorrect Firebase Storage CORS configuration or Security Rules. Please check both and try again.";
-              }
-
-              toast({
-                  variant: 'destructive',
-                  title: 'Photo Upload Failed',
-                  description: description,
-                  duration: 10000,
-              });
-              
-              reject(uploadError);
-            },
-            () => {
-              getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-                resolve(downloadURL);
-              });
+        try {
+            const uploadTask = await uploadBytes(storageRef, newPhoto);
+            photoURL = await getDownloadURL(uploadTask.ref);
+        } catch (uploadError: any) {
+            console.error("Firebase Storage Upload Error:", uploadError);
+            let description = "Could not upload photo. Please try again.";
+            if (uploadError.code === 'storage/unauthorized') {
+                description = "Permission denied. This can be caused by incorrect Firebase Storage CORS configuration or Security Rules. Please check both and try again.";
             }
-          );
-        });
+            toast({
+                variant: 'destructive',
+                title: 'Photo Upload Failed',
+                description: description,
+                duration: 10000,
+            });
+            // Re-throw the error to stop the rest of the function
+            throw uploadError;
+        }
       }
       
       const displayName = `${values.firstName} ${values.lastName}`;
@@ -185,15 +169,12 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
       onClose();
 
     } catch (error: any) {
-      // This will now catch the rejected promise from the upload
-      console.error("Profile update error:", error);
-       // Only show a generic toast if a more specific one (like from the uploader) hasn't already been shown.
+       console.error("Profile update error:", error);
        if (error.name !== 'FirestorePermissionError' && error.code !== 'storage/unauthorized') {
          toast({ variant: 'destructive', title: "Update Failed", description: "Could not update profile details." });
        }
     } finally {
       setIsSubmitting(false);
-      setUploadProgress(null);
     }
   }
 
@@ -310,7 +291,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
         <Button type="submit" className="w-full" disabled={isSubmitting}>
           {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           {isSubmitting 
-            ? (uploadProgress !== null ? `Uploading... ${Math.round(uploadProgress)}%` : 'Saving...') 
+            ? (newPhoto ? 'Uploading...' : 'Saving...') 
             : 'Save Changes'
           }
         </Button>
