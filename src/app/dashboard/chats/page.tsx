@@ -72,15 +72,15 @@ function ChatListItem({ chat, currentUserId, isUnread }: { chat: Chat, currentUs
                  <div className="relative">
                     <Link href={`/dashboard/profile/${otherParticipantId}`} onClick={(e) => e.stopPropagation()} className="relative z-10">
                         <Avatar className="h-12 w-12">
-                            <AvatarImage src={otherParticipantInfo.photoURL} alt={otherParticipantInfo.displayName} />
-                            <AvatarFallback>{otherParticipantInfo.displayName?.charAt(0) ?? 'U'}</AvatarFallback>
+                            <AvatarImage src={otherParticipantInfo.photoURL} />
+                            <AvatarFallback>{otherParticipantInfo.firstName?.charAt(0)}</AvatarFallback>
                         </Avatar>
                     </Link>
                     {isUnread && <div className="absolute top-0 right-0 h-3 w-3 rounded-full bg-primary border-2 border-background" />}
                 </div>
                 <div className="flex-1 min-w-0">
                     <div className="flex justify-between items-start">
-                        <div className={cn("font-semibold truncate", isUnread && "text-primary")}>{otherParticipantInfo.displayName}</div>
+                        <div className={cn("font-semibold truncate", isUnread && "text-primary")}>{otherParticipantInfo.firstName} {otherParticipantInfo.lastName}</div>
                         <div className="text-xs text-muted-foreground whitespace-nowrap">
                             {isToday(lastUpdatedAt) ? format(lastUpdatedAt, 'p') : format(lastUpdatedAt, 'P')}
                         </div>
@@ -125,7 +125,7 @@ export default function ChatsPage() {
             where('type', '==', 'new_chat_message')
         );
     }, [user?.uid, firestore]);
-    const { data: unreadNotifications, loading: loadingNotifications } = useCollection<Notification>(unreadNotificationsQuery);
+    const { data: unreadNotifications, loading: loadingNotifications } = useCollection<Notification>(notificationsQuery);
 
     const loading = userLoading || loadingChats || loadingNotifications;
 
