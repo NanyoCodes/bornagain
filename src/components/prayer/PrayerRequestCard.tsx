@@ -20,7 +20,7 @@ import { useToast } from "@/hooks/use-toast";
 import { doc, updateDoc, arrayUnion, deleteDoc } from "firebase/firestore";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { cn } from "@/lib/utils";
 
 export function PrayerRequestCard({ prayerRequest }: { prayerRequest: PrayerRequest }) {
@@ -30,6 +30,7 @@ export function PrayerRequestCard({ prayerRequest }: { prayerRequest: PrayerRequ
   
   const [isPraying, setIsPraying] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   const isAuthor = user?.uid === prayerRequest.authorId;
   const usersWhoPrayed = prayerRequest.usersWhoPrayed || [];
@@ -99,56 +100,56 @@ export function PrayerRequestCard({ prayerRequest }: { prayerRequest: PrayerRequ
   };
 
   return (
-    <Card className="flex flex-col h-full overflow-hidden shadow-md">
-      <CardHeader className="flex flex-row items-start justify-between gap-4">
-        <div className="min-w-0">
-          <CardTitle className="text-base font-semibold">{prayerRequest.category}</CardTitle>
-          <CardDescription className="text-xs mt-1">
-            {displayDate}
-          </CardDescription>
-        </div>
-        <Badge variant="outline" className="shrink-0 flex items-center gap-1.5">
-            <Users className="h-3 w-3" />
-            {prayerCount}
-        </Badge>
-      </CardHeader>
-      <CardContent className="flex-grow py-0">
-        <p className="text-sm text-muted-foreground whitespace-pre-wrap line-clamp-4">
-          {prayerRequest.content}
-        </p>
-      </CardContent>
-      <CardFooter className="pt-4 flex justify-between items-center mt-auto">
-        {isAuthor ? (
-           <AlertDialog>
-            <AlertDialogTrigger asChild>
-                <Button variant="destructive" size="sm" disabled={isDeleting}>
-                    {isDeleting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Trash2 className="mr-2 h-4 w-4" />}
-                    Delete
-                </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  This will permanently delete your prayer request.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={handleDelete} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90">
-                  {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Confirm
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-        ) : (
-            <Button onClick={handlePray} disabled={hasPrayed || isPraying || !user}>
-                {isPraying ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <HandHeart className={cn("mr-2 h-4 w-4", hasPrayed && "fill-current")} />}
-                {hasPrayed ? 'You Prayed' : 'Pray'}
+    <>
+      <Card className="flex flex-col h-full overflow-hidden shadow-md">
+        <CardHeader className="flex flex-row items-start justify-between gap-4">
+          <div className="min-w-0">
+            <CardTitle className="text-base font-semibold">{prayerRequest.category}</CardTitle>
+            <CardDescription className="text-xs mt-1">
+              {displayDate}
+            </CardDescription>
+          </div>
+          <Badge variant="outline" className="shrink-0 flex items-center gap-1.5">
+              <Users className="h-3 w-3" />
+              {prayerCount}
+          </Badge>
+        </CardHeader>
+        <CardContent className="flex-grow py-0">
+          <p className="text-sm text-muted-foreground whitespace-pre-wrap line-clamp-4">
+            {prayerRequest.content}
+          </p>
+        </CardContent>
+        <CardFooter className="pt-4 flex justify-between items-center mt-auto">
+          {isAuthor ? (
+            <Button variant="destructive" size="sm" disabled={isDeleting} onClick={() => setIsDeleteDialogOpen(true)}>
+                {isDeleting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Trash2 className="mr-2 h-4 w-4" />}
+                Delete
             </Button>
-        )}
-      </CardFooter>
-    </Card>
+          ) : (
+              <Button onClick={handlePray} disabled={hasPrayed || isPraying || !user}>
+                  {isPraying ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <HandHeart className={cn("mr-2 h-4 w-4", hasPrayed && "fill-current")} />}
+                  {hasPrayed ? 'You Prayed' : 'Pray'}
+              </Button>
+          )}
+        </CardFooter>
+      </Card>
+      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently delete your prayer request.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90">
+              {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Confirm
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }
