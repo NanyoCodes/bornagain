@@ -28,7 +28,7 @@ import { FirestorePermissionError } from "@/firebase/errors";
 import { LocationProfileInput } from "../common/location-profile-input";
 import { Label } from "../ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { ref, uploadString, getDownloadURL } from "firebase/storage";
 import { ToastAction } from "@/components/ui/toast";
 
 const formSchema = z.object({
@@ -44,6 +44,23 @@ type EditProfileModalProps = {
   userProfile: UserProfile;
   onClose: () => void;
 };
+
+// Helper function to read file as data URL
+const readFileAsDataURL = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            if (typeof reader.result === 'string') {
+                resolve(reader.result);
+            } else {
+                reject(new Error('Failed to read file as Data URL.'));
+            }
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
+};
+
 
 export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps) {
   const { toast } = useToast();
@@ -99,11 +116,12 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
 
       // 1. Upload photo if a new one is selected
       if (newPhoto) {
-        console.log("New photo selected. Starting upload process...");
+        console.log("New photo selected. Reading as data URL...");
         const storageRef = ref(storage, `profile-pictures/${user.uid}/profile-photo.jpg`);
         try {
-            console.log("Attempting to upload to storage path:", storageRef.fullPath);
-            const uploadTask = await uploadBytes(storageRef, newPhoto);
+            const dataUrl = await readFileAsDataURL(newPhoto);
+            console.log("Read success. Attempting to upload string to storage path:", storageRef.fullPath);
+            const uploadTask = await uploadString(storageRef, dataUrl, 'data_url');
             console.log("Upload successful. Getting download URL...");
             photoURL = await getDownloadURL(uploadTask.ref);
             console.log("Download URL obtained:", photoURL);
@@ -111,8 +129,8 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
             console.error("Firebase Storage Upload Error. Raw error object:", uploadError);
             
             let description = "Please check the browser console for more details. The error code might provide a hint.";
-            if (uploadError.code === 'storage/unauthorized') {
-                description = "Permission denied. This is almost always caused by an incorrect CORS policy or missing Firebase Storage Rules. Please check both in your Firebase console.";
+            if (uploadError.code === 'storage/unauthorized' || uploadError.message?.includes('CORS')) {
+                description = "Permission denied by CORS policy. This means the Storage Bucket is not configured to allow uploads from this website. This must be fixed in the Google Cloud Console.";
             } else if (uploadError.code === 'storage/object-not-found') {
                 description = "The file location could not be found. This might indicate an issue with your Storage bucket setup.";
             }
@@ -121,19 +139,23 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                 variant: 'destructive',
                 title: 'Photo Upload Failed',
                 description: description,
-                duration: 20000, // Keep toast open longer
+                duration: 20000,
                 action: (
                   <ToastAction
-                    altText="Review Storage Config"
-                    onClick={() => window.open(`https://console.cloud.google.com/storage/browser/${storage.app.options.storageBucket}`, '_blank')}
+                    altText="Review Storage Guide"
+                    onClick={() => {
+                        // This is a placeholder; in a real app, you might link to a specific doc.
+                        // For now, we log the doc path to console.
+                        console.log("Please review the guide at `docs/storage-cors-guide.md`");
+                    }}
                   >
-                    Review Storage Config
+                    Open Console
                   </ToastAction>
                 ),
             });
             
             setIsSubmitting(false);
-            return; // Stop the function from proceeding
+            return;
         }
       }
       
