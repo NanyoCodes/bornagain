@@ -39,9 +39,9 @@ const formSchema = z.object({
   lastName: z.string().min(2, "Last name must be at least 2 characters.").max(50, "Name is too long."),
   photoFile: z
     .any()
-    .refine((files) => !files || files?.[0]?.size <= MAX_FILE_SIZE, `Max image size is 5MB.`)
+    .refine((files) => !files || files?.length === 0 || files?.[0]?.size <= MAX_FILE_SIZE, `Max image size is 5MB.`)
     .refine(
-      (files) => !files || ACCEPTED_IMAGE_TYPES.includes(files?.[0]?.type),
+      (files) => !files || files?.length === 0 || ACCEPTED_IMAGE_TYPES.includes(files?.[0]?.type),
       "Only .jpg, .jpeg, .png and .webp formats are supported."
     ).optional(),
   bio: z.string().max(280, "Bio is too long.").optional(),
@@ -96,7 +96,8 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
       // 1. Upload photo if a new one is selected
       if (photoFile && storage) {
         const storageRef = ref(storage, `profile-pictures/${user.uid}/profile-photo.jpg`);
-        const uploadTask = uploadBytesResumable(storageRef, photoFile);
+        const metadata = { contentType: photoFile.type };
+        const uploadTask = uploadBytesResumable(storageRef, photoFile, metadata);
         
         await new Promise<void>((resolve, reject) => {
             uploadTask.on('state_changed',
@@ -205,12 +206,12 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
           <div className="flex flex-col items-center gap-4">
             <Avatar className="h-24 w-24">
               <AvatarImage src={photoPreview || undefined} alt={`${form.watch('firstName')} ${form.watch('lastName')}`} />
-              <AvatarFallback>{form.watch('firstName')?.charAt(0)}{form.watch('lastName')?.charAt(0)}</AvatarFallback>
+              <AvatarFallback>{(form.watch('firstName') || '').charAt(0)}{(form.watch('lastName') || '').charAt(0)}</AvatarFallback>
             </Avatar>
              <FormField
                 control={form.control}
                 name="photoFile"
-                render={({ field: { onChange, ...fieldProps } }) => (
+                render={({ field: { onChange, value, ...fieldProps } }) => (
                     <FormItem className="w-full">
                     <FormLabel>Change Photo</FormLabel>
                     <FormControl>
