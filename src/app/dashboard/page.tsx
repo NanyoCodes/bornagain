@@ -24,7 +24,6 @@ import { useToast } from "@/hooks/use-toast";
 import { Progress } from "@/components/ui/progress";
 import { WelcomeBackDialog } from "@/components/dashboard/welcome-back-dialog";
 import { safeToDate } from "@/lib/utils";
-import { OnboardingPassages } from "@/components/dashboard/onboarding-passages";
 
 function DisplayPassage({ reference }: { reference: string }) {
   const [passage, setPassage] = useState<{text: string; reference: string} | null>(null);
@@ -338,13 +337,6 @@ export default function DashboardPage() {
   } | null>(null);
 
   const [welcomeMessage, setWelcomeMessage] = useState<{text: string; verse: string} | null>(null);
-  const [showOnboarding, setShowOnboarding] = useState(false);
-
-  useEffect(() => {
-    if (!profileLoading && userProfile && userProfile.favoritePassages === undefined) {
-        setShowOnboarding(true);
-    }
-  }, [userProfile, profileLoading]);
 
   useEffect(() => {
     // Select a random scripture when the component mounts client-side
@@ -488,21 +480,14 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-8">
-        {showOnboarding && user && (
-            <OnboardingPassages 
-                userId={user.uid} 
-                isOpen={showOnboarding}
-                onComplete={() => setShowOnboarding(false)} 
-            />
-        )}
-        {userProfile?.favoritePassages ? (
+        {userProfile?.favoritePassages && userProfile.favoritePassages.length > 0 ? (
             <div className="space-y-4">
                 <h1 className="text-3xl sm:text-4xl font-bold tracking-tight font-headline">
                     Welcome back, {displayName}!
                 </h1>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {userProfile.favoritePassages.map((passageRef, index) => (
-                        <DisplayPassage key={index} reference={passageRef} />
+                        passageRef ? <DisplayPassage key={index} reference={passageRef} /> : null
                     ))}
                 </div>
             </div>
@@ -512,7 +497,7 @@ export default function DashboardPage() {
                     {welcomeMessage?.text.replace('{name}', displayName) || `Welcome back, ${displayName}!`}
                 </h1>
                 <p className="text-muted-foreground">
-                    {welcomeMessage ? `"${welcomeMessage.verse}"` : ''}
+                    {welcomeMessage ? `"${welcomeMessage.verse}"` : 'Set your favorite passages in your profile to personalize this section.'}
                 </p>
             </div>
         )}
