@@ -1,4 +1,3 @@
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -193,16 +192,6 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
     <>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-           <Alert variant="destructive">
-            <UploadCloud className="h-4 w-4" />
-            <AlertTitle>Upload Still Not Working?</AlertTitle>
-            <AlertDescription>
-                File uploads require correct Firebase project configuration. If you're having issues, please follow our definitive{' '}
-                <a href="/docs/storage-cors-guide.md" target="_blank" rel="noopener noreferrer" className="font-semibold underline">
-                    Troubleshooting Guide
-                </a>.
-            </AlertDescription>
-           </Alert>
           <div className="flex flex-col items-center gap-4">
             <Avatar className="h-24 w-24">
               <AvatarImage src={photoPreview || undefined} alt={`${form.watch('firstName')} ${form.watch('lastName')}`} />
@@ -326,5 +315,3 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
     </>
   );
 }
-
-    
