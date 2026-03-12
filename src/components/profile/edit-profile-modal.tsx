@@ -99,29 +99,41 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
 
       // 1. Upload photo if a new one is selected
       if (newPhoto) {
+        console.log("New photo selected. Starting upload process...");
         const storageRef = ref(storage, `profile-pictures/${user.uid}/profile-photo.jpg`);
         try {
+            console.log("Attempting to upload to storage path:", storageRef.fullPath);
             const uploadTask = await uploadBytes(storageRef, newPhoto);
+            console.log("Upload successful. Getting download URL...");
             photoURL = await getDownloadURL(uploadTask.ref);
+            console.log("Download URL obtained:", photoURL);
         } catch (uploadError: any) {
-            console.error("Firebase Storage Upload Error. Full error object:", uploadError);
+            console.error("Firebase Storage Upload Error. Raw error object:", uploadError);
+            
+            let description = "Please check the browser console for more details. The error code might provide a hint.";
+            if (uploadError.code === 'storage/unauthorized') {
+                description = "Permission denied. This is almost always caused by an incorrect CORS policy or missing Firebase Storage Rules. Please check both in your Firebase console.";
+            } else if (uploadError.code === 'storage/object-not-found') {
+                description = "The file location could not be found. This might indicate an issue with your Storage bucket setup.";
+            }
             
             toast({
                 variant: 'destructive',
                 title: 'Photo Upload Failed',
-                description: 'This is almost always caused by a missing CORS policy on your Firebase Storage bucket. Please follow the guide to fix it.',
-                duration: 20000,
+                description: description,
+                duration: 20000, // Keep toast open longer
                 action: (
                   <ToastAction
-                    altText="Fix CORS Policy"
-                    onClick={() => window.open('https://console.cloud.google.com/storage/browser', '_blank')}
+                    altText="Review Storage Config"
+                    onClick={() => window.open(`https://console.cloud.google.com/storage/browser/${storage.app.options.storageBucket}`, '_blank')}
                   >
-                    Fix CORS Policy
+                    Review Storage Config
                   </ToastAction>
                 ),
             });
-            // Re-throw the error to stop the rest of the function
-            throw uploadError;
+            
+            setIsSubmitting(false);
+            return; // Stop the function from proceeding
         }
       }
       
@@ -174,8 +186,8 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
       onClose();
 
     } catch (error: any) {
-       console.error("Profile update error:", error);
-       if (error.name !== 'FirestorePermissionError' && error.code !== 'storage/unauthorized') {
+       console.error("Profile update process failed:", error);
+       if (error.name !== 'FirestorePermissionError' && !error.code?.startsWith('storage/')) {
          toast({ variant: 'destructive', title: "Update Failed", description: "Could not update profile details." });
        }
     } finally {
