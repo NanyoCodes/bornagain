@@ -50,6 +50,7 @@ import { Loader2 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 
 const statusOptions: FollowUpStatus[] = ['New', 'Contacted', 'Established'];
@@ -445,9 +446,15 @@ function SoulCard({ soul }: { soul: Soul }) {
             <Collapsible>
                 <CollapsibleTrigger className="group w-full p-4 text-left">
                      <div className="flex items-center justify-between">
-                        <div className="min-w-0">
-                            <p className="font-semibold truncate">{soul.firstName || 'Unknown'} {soul.lastName || ''}</p>
-                            <Badge className={cn("mt-1", getStatusClasses(soul.status))} variant="outline">{soul.status}</Badge>
+                        <div className="flex items-center gap-3 min-w-0">
+                            <Avatar>
+                                <AvatarImage src={soul.photoURL ?? undefined} alt={`${soul.firstName} ${soul.lastName}`} />
+                                <AvatarFallback>{soul.firstName?.charAt(0)}{soul.lastName?.charAt(0)}</AvatarFallback>
+                            </Avatar>
+                            <div className="min-w-0">
+                                <p className="font-semibold truncate">{soul.firstName || 'Unknown'} {soul.lastName || ''}</p>
+                                <Badge className={cn("mt-1", getStatusClasses(soul.status))} variant="outline">{soul.status}</Badge>
+                            </div>
                         </div>
                         <ChevronDown className="h-5 w-5 text-muted-foreground transition-transform duration-200 group-data-[state=open]:rotate-180" />
                     </div>
@@ -553,8 +560,16 @@ function SoulTableRow({ soul, onEditClick }: { soul: Soul, onEditClick: (soul: S
     return (
         <TableRow>
             <TableCell className="font-medium">
-                <div>{soul.firstName || 'Unknown'} {soul.lastName || ''}</div>
-                {soul.church && <div className="text-xs text-muted-foreground flex items-center gap-1"><Church className="h-3 w-3" />{soul.church}</div>}
+                <div className="flex items-center gap-3">
+                    <Avatar className="hidden sm:inline-flex h-9 w-9">
+                        <AvatarImage src={soul.photoURL ?? undefined} alt={`${soul.firstName} ${soul.lastName}`} />
+                        <AvatarFallback>{soul.firstName?.charAt(0)}{soul.lastName?.charAt(0)}</AvatarFallback>
+                    </Avatar>
+                    <div>
+                        <div>{soul.firstName || 'Unknown'} {soul.lastName || ''}</div>
+                        {soul.church && <div className="text-xs text-muted-foreground flex items-center gap-1"><Church className="h-3 w-3" />{soul.church}</div>}
+                    </div>
+                </div>
             </TableCell>
             <TableCell>
                 {soul.email && <div>{soul.email}</div>}

@@ -172,6 +172,7 @@ export type Soul = {
   firstName: string;
   lastName: string;
   email?: string;
+  photoURL?: string;
   phone?: string;
   church?: string;
   source: 'Campaign' | 'Personal';

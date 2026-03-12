@@ -30,6 +30,7 @@ const formSchema = z.object({
   firstName: z.string().min(2, "First name must be at least 2 characters."),
   lastName: z.string().min(2, "Last name must be at least 2 characters."),
   email: z.string().email("Please enter a valid email address.").optional().or(z.literal('')),
+  photoURL: z.string().url({ message: "Please enter a valid URL." }).optional().or(z.literal('')),
   phone: z.string().optional(),
   church: z.string().optional(),
   locationWonCity: z.string().optional(),
@@ -69,6 +70,7 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps)
       firstName: "",
       lastName: "",
       email: "",
+      photoURL: "",
       phone: "",
       church: "",
       locationWonCity: "",
@@ -115,6 +117,7 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps)
       firstName: values.firstName,
       lastName: values.lastName,
       email: values.email,
+      photoURL: values.photoURL,
       phone: values.phone,
       church: values.church,
       locationWon: (values.locationWonCity || values.locationWonState || values.locationWonCountry)
@@ -327,6 +330,19 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps)
                 <AccordionTrigger>Optional Details</AccordionTrigger>
                 <AccordionContent>
                     <div className="space-y-4 pt-4">
+                        <FormField
+                            control={form.control}
+                            name="photoURL"
+                            render={({ field }) => (
+                                <FormItem>
+                                <FormLabel>Photo URL</FormLabel>
+                                <FormControl>
+                                    <Input placeholder="https://..." {...field} className="text-base"/>
+                                </FormControl>
+                                <FormMessage />
+                                </FormItem>
+                            )}
+                        />
                         <FormField
                         control={form.control}
                         name="email"
