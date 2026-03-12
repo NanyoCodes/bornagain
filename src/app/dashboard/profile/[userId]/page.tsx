@@ -5,11 +5,11 @@ import { useState, useEffect, useMemo } from "react";
 import { useParams } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Edit, Loader2, Mail, MapPin, Newspaper, Phone, Target, UserCheck2, HeartHandshake } from "lucide-react";
+import { Edit, Loader2, Mail, MapPin, Newspaper, Phone, Target, UserCheck2, HeartHandshake, HandHeart } from "lucide-react";
 import { useCollection, useFirestore, useUser } from "@/firebase";
 import { useDoc } from "@/firebase/firestore/use-doc";
 import { collection, query, where, doc, getDocs, documentId } from "firebase/firestore";
-import type { Soul, Testimony, UserProfile, JoinedCampaign, Campaign } from "@/lib/types";
+import type { Soul, Testimony, UserProfile, JoinedCampaign, Campaign, PrayerRequest } from "@/lib/types";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription as DialogDesc } from "@/components/ui/dialog";
 import {
@@ -70,6 +70,12 @@ export default function UserProfilePage() {
     return query(collection(firestore, 'testimonies'), where('authorId', '==', userId));
   }, [userId, firestore]);
   const { data: testimonies, loading: testimoniesLoading } = useCollection<Testimony>(testimoniesQuery);
+
+  const prayerRequestsQuery = useMemo(() => {
+    if (!userId || !firestore || !isOwnProfile) return null;
+    return query(collection(firestore, 'prayerRequests'), where('authorId', '==', userId));
+  }, [userId, firestore, isOwnProfile]);
+  const { data: prayerRequests, loading: prayerRequestsLoading } = useCollection<PrayerRequest>(prayerRequestsQuery);
 
   const soulsQuery = useMemo(() => {
     if (!userId || !firestore || !isOwnProfile) return null;
@@ -145,7 +151,7 @@ export default function UserProfilePage() {
   }, [joinedCampaigns, campaignsLoading, firestore, userId, isOwnProfile]);
 
 
-  const loading = profileLoading || testimoniesLoading || (isOwnProfile && (soulsLoading || campaignsLoading || createdCampaignsLoading || campaignsListLoading));
+  const loading = profileLoading || testimoniesLoading || (isOwnProfile && (soulsLoading || campaignsLoading || createdCampaignsLoading || campaignsListLoading || prayerRequestsLoading));
 
   if (loading) {
     return <div className="flex items-center justify-center h-full"><Loader2 className="h-8 w-8 animate-spin" /></div>;
@@ -164,6 +170,7 @@ export default function UserProfilePage() {
     soulsWon: soulsWon?.length ?? 0,
     campaignsJoined: activeJoinedCampaigns.length,
     campaignsCreated: createdCampaigns?.length ?? 0,
+    prayerRequests: prayerRequests?.length ?? 0,
   };
   
   const triggerButton = (
@@ -244,11 +251,12 @@ export default function UserProfilePage() {
         </CardContent>
       </Card>
       
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
             <StatCard title="Testimonies Shared" value={stats.testimonies} icon={Newspaper} />
             {isOwnProfile && (
                 <>
                   <StatCard title="Souls Won" value={stats.soulsWon} icon={UserCheck2} />
+                  <StatCard title="Prayer Requests" value={stats.prayerRequests} icon={HandHeart} />
                   <StatCard title="Campaigns Created" value={stats.campaignsCreated} icon={Target} />
                   <StatCard title="Campaigns Joined" value={stats.campaignsJoined} icon={Target} />
                 </>
@@ -279,6 +287,26 @@ export default function UserProfilePage() {
 
             {isOwnProfile && (
                 <>
+                    <Card>
+                        <CardHeader><CardTitle>Prayer Requests</CardTitle></CardHeader>
+                        <CardContent>
+                            <ScrollArea className="h-48">
+                                <div className="p-1 space-y-1">
+                                    {prayerRequests && prayerRequests.length > 0 ? (
+                                        prayerRequests.map(p => (
+                                            <Link key={p.id} href="/dashboard/testimonies" className="block p-2 rounded-md hover:bg-muted">
+                                                <p className="font-medium text-sm truncate">{p.category}</p>
+                                                <p className="text-xs text-muted-foreground truncate">{p.content}</p>
+                                            </Link>
+                                        ))
+                                    ) : (
+                                        <p className="text-sm text-center text-muted-foreground py-4">No prayer requests submitted yet.</p>
+                                    )}
+                                </div>
+                            </ScrollArea>
+                        </CardContent>
+                    </Card>
+
                     <Card>
                         <CardHeader><CardTitle>Campaigns Created</CardTitle></CardHeader>
                         <CardContent>
@@ -344,3 +372,5 @@ export default function UserProfilePage() {
     </div>
   );
 }
+
+    
