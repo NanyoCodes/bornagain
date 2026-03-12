@@ -70,6 +70,7 @@ export type UserProfile = {
     churchName: string;
     attendedAt: Timestamp;
   }[];
+  favoritePassages?: string[];
   lastActive?: Timestamp;
 };
 

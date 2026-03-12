@@ -171,6 +171,11 @@
                 "required": ["churchName", "attendedAt"]
             }
         },
+        "favoritePassages": {
+          "type": "array",
+          "description": "An array of references to the user's favorite Bible passages.",
+          "items": { "type": "string" }
+        },
         "lastActive": {
           "type": "object",
           "description": "Timestamp of the user's last activity."

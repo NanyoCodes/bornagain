@@ -24,6 +24,57 @@ import { useToast } from "@/hooks/use-toast";
 import { Progress } from "@/components/ui/progress";
 import { WelcomeBackDialog } from "@/components/dashboard/welcome-back-dialog";
 import { safeToDate } from "@/lib/utils";
+import { OnboardingPassages } from "@/components/dashboard/onboarding-passages";
+
+function DisplayPassage({ reference }: { reference: string }) {
+  const [passage, setPassage] = useState<{text: string; reference: string} | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchPassage = async () => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const response = await fetch(`https://bible-api.com/${encodeURIComponent(reference)}?translation=kjv`);
+        if (!response.ok) throw new Error('Failed to fetch scripture.');
+        const data = await response.json();
+        if (data.error) throw new Error(data.error);
+        setPassage({ text: data.text.trim(), reference: data.reference });
+      } catch (err: any) {
+        console.error("Error fetching passage:", err);
+        setError(`Could not load scripture for "${reference}". Please check the reference.`);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchPassage();
+  }, [reference]);
+
+  if (isLoading) {
+    return <Skeleton className="h-28 w-full" />;
+  }
+
+  if (error) {
+     return (
+        <div className="border-l-2 border-destructive pl-6 italic text-sm text-destructive">
+            <p className="font-semibold">Error</p>
+            <p>{error}</p>
+        </div>
+    );
+  }
+
+  if (!passage) {
+    return null;
+  }
+  
+  return (
+    <blockquote className="border-l-2 pl-6 italic">
+      <p>&ldquo;{passage.text}&rdquo;</p>
+      <footer className="text-right text-sm not-italic mt-2">- {passage.reference}</footer>
+    </blockquote>
+  );
+}
 
 
 function RecentSoulsList() {
@@ -287,6 +338,13 @@ export default function DashboardPage() {
   } | null>(null);
 
   const [welcomeMessage, setWelcomeMessage] = useState<{text: string; verse: string} | null>(null);
+  const [showOnboarding, setShowOnboarding] = useState(false);
+
+  useEffect(() => {
+    if (!profileLoading && userProfile && userProfile.favoritePassages === undefined) {
+        setShowOnboarding(true);
+    }
+  }, [userProfile, profileLoading]);
 
   useEffect(() => {
     // Select a random scripture when the component mounts client-side
@@ -430,14 +488,34 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-8">
-        <div className="space-y-2">
-            <h1 className="text-3xl sm:text-4xl font-bold tracking-tight font-headline">
-                {welcomeMessage?.text.replace('{name}', displayName) || `Welcome back, ${displayName}!`}
-            </h1>
-            <p className="text-muted-foreground">
-                {welcomeMessage ? `"${welcomeMessage.verse}"` : ''}
-            </p>
-        </div>
+        {showOnboarding && user && (
+            <OnboardingPassages 
+                userId={user.uid} 
+                isOpen={showOnboarding}
+                onComplete={() => setShowOnboarding(false)} 
+            />
+        )}
+        {userProfile?.favoritePassages ? (
+            <div className="space-y-4">
+                <h1 className="text-3xl sm:text-4xl font-bold tracking-tight font-headline">
+                    Welcome back, {displayName}!
+                </h1>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {userProfile.favoritePassages.map((passageRef, index) => (
+                        <DisplayPassage key={index} reference={passageRef} />
+                    ))}
+                </div>
+            </div>
+        ) : (
+            <div className="space-y-2">
+                <h1 className="text-3xl sm:text-4xl font-bold tracking-tight font-headline">
+                    {welcomeMessage?.text.replace('{name}', displayName) || `Welcome back, ${displayName}!`}
+                </h1>
+                <p className="text-muted-foreground">
+                    {welcomeMessage ? `"${welcomeMessage.verse}"` : ''}
+                </p>
+            </div>
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 space-y-8">
