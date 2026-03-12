@@ -235,7 +235,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                 <FormItem>
                   <FormLabel>First Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="John" {...field} className="text-base" />
+                    <Input placeholder="John" {...field} value={field.value ?? ''} className="text-base" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -248,7 +248,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                 <FormItem>
                   <FormLabel>Last Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="Doe" {...field} className="text-base" />
+                    <Input placeholder="Doe" {...field} value={field.value ?? ''} className="text-base" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -325,5 +325,3 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
     </>
   );
 }
-
-    
