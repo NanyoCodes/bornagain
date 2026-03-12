@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Newspaper, UserPlus, TrendingUp, CheckCircle2, XCircle } from 'lucide-react';
-import { formatDistanceToNowStrict } from 'date-fns';
+import { format } from 'date-fns';
 import type { UserProfile } from '@/lib/types';
 import { Card, CardContent } from '../ui/card';
 
@@ -29,13 +29,13 @@ type WelcomeBackDialogProps = {
 export function WelcomeBackDialog({ isOpen, onClose, userProfile, summaryData }: WelcomeBackDialogProps) {
 
   const lastActiveDate = userProfile.lastActive?.toDate();
-  const lastActiveString = lastActiveDate ? formatDistanceToNowStrict(lastActiveDate, { addSuffix: true }) : 'a while ago';
+  const lastActiveString = lastActiveDate ? `on ${format(lastActiveDate, 'PPP')}` : 'a while ago';
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="font-headline text-2xl">Welcome Back, {userProfile.displayName}!</DialogTitle>
+          <DialogTitle className="font-headline text-2xl">Welcome Back, {userProfile.firstName}!</DialogTitle>
           <DialogDescription>
             You were last here {lastActiveString}. Here's a quick summary.
           </DialogDescription>

@@ -426,7 +426,7 @@ export default function DashboardPage() {
 
   const soulsWonCount = soulsWon?.length ?? 0;
   
-  const displayName = user?.displayName || 'User';
+  const displayName = userProfile?.firstName || user?.displayName || 'User';
 
   return (
     <div className="space-y-8">

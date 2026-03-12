@@ -9,7 +9,7 @@ import type { Notification } from '@/lib/types';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Bell } from 'lucide-react';
-import { formatDistanceToNow } from 'date-fns';
+import { format, isToday } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { errorEmitter } from '@/firebase/error-emitter';
@@ -131,29 +131,32 @@ export default function NotificationsPage() {
             </div>
           )}
           <div className="divide-y">
-            {!loading && user && notifications?.map(notification => (
-                <button
-                    key={notification.id} 
-                    onClick={() => handleNotificationClick(notification)}
-                    disabled={!notification.link}
-                    className={cn(
-                        "block w-full text-left p-4 hover:bg-muted/50 active:bg-muted/50 transition-colors",
-                        !notification.link && "cursor-default",
-                        notification.isRead && "opacity-60"
-                    )}
-                >
-                    <div className="flex items-start gap-4">
-                        <div className={cn("mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full", !notification.isRead ? "bg-primary" : "bg-border")} />
-                        <div className="flex-1 space-y-1">
-                            <p className="font-semibold">{notification.title}</p>
-                            <p className="text-sm text-muted-foreground">{notification.message}</p>
-                            <p className="text-xs text-muted-foreground">
-                                {notification.createdAt ? formatDistanceToNow(notification.createdAt.toDate(), { addSuffix: true }) : ''}
-                            </p>
+            {!loading && user && notifications?.map(notification => {
+                const createdAt = notification.createdAt.toDate();
+                return (
+                    <button
+                        key={notification.id} 
+                        onClick={() => handleNotificationClick(notification)}
+                        disabled={!notification.link}
+                        className={cn(
+                            "block w-full text-left p-4 hover:bg-muted/50 active:bg-muted/50 transition-colors",
+                            !notification.link && "cursor-default",
+                            notification.isRead && "opacity-60"
+                        )}
+                    >
+                        <div className="flex items-start gap-4">
+                            <div className={cn("mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full", !notification.isRead ? "bg-primary" : "bg-border")} />
+                            <div className="flex-1 space-y-1">
+                                <p className="font-semibold">{notification.title}</p>
+                                <p className="text-sm text-muted-foreground">{notification.message}</p>
+                                <p className="text-xs text-muted-foreground">
+                                    {isToday(createdAt) ? format(createdAt, 'p') : format(createdAt, 'P')}
+                                </p>
+                            </div>
                         </div>
-                    </div>
-                </button>
-            ))}
+                    </button>
+                )
+            })}
           </div>
         </CardContent>
       </Card>
