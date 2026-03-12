@@ -210,19 +210,6 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                   <p className="text-xs text-center text-muted-foreground mt-1">{Math.round(uploadProgress)}%</p>
                 </div>
               )}
-              {storageError && (
-                 <Alert variant="destructive">
-                  <AlertTitle>Upload Error</AlertTitle>
-                  <AlertDescription>
-                    {storageError}{' '}
-                    {storageError.includes("CORS") && (
-                      <Link href="/docs/storage-cors-guide.md" className="underline font-semibold" target="_blank">
-                        See troubleshooting guide.
-                      </Link>
-                    )}
-                  </AlertDescription>
-                </Alert>
-              )}
           </div>
 
           <div className="grid grid-cols-2 gap-4">

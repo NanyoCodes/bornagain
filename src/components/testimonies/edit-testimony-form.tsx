@@ -208,19 +208,6 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
                 <Progress value={uploadProgress} className="h-2" />
               </div>
             )}
-             {storageError && (
-                 <Alert variant="destructive" className="text-xs">
-                  <AlertTitle>Upload Error</AlertTitle>
-                  <AlertDescription>
-                    {storageError}{' '}
-                    {storageError.includes("CORS") && (
-                      <Link href="/docs/storage-cors-guide.md" className="underline font-semibold" target="_blank">
-                        See troubleshooting guide.
-                      </Link>
-                    )}
-                  </AlertDescription>
-                </Alert>
-              )}
         </div>
 
 
