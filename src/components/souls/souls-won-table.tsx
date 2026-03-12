@@ -366,17 +366,19 @@ function LogFollowUpDialog({ soul, children }: { soul: Soul; children: React.Rea
 
 // --- ViewHistoryDialog Component Definition ---
 function ViewHistoryDialog({ soul, children }: { soul: Soul; children: React.ReactNode; }) {
+  const [isOpen, setIsOpen] = React.useState(false);
+
   const sortedHistory = React.useMemo(() => {
-    if (!soul.followUpLog || soul.followUpLog.length === 0) return [];
+    if (!isOpen || !soul.followUpLog || soul.followUpLog.length === 0) return [];
     return [...soul.followUpLog].sort((a, b) => {
       const dateA = a.date?.toDate ? a.date.toDate().getTime() : 0;
       const dateB = b.date?.toDate ? b.date.toDate().getTime() : 0;
       return dateB - dateA;
     });
-  }, [soul.followUpLog]);
+  }, [soul.followUpLog, isOpen]);
 
   return (
-    <Dialog>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
