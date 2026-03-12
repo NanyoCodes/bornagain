@@ -1,4 +1,3 @@
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -104,16 +103,15 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
             const uploadTask = await uploadBytes(storageRef, newPhoto);
             photoURL = await getDownloadURL(uploadTask.ref);
         } catch (uploadError: any) {
-            console.error("Firebase Storage Upload Error:", uploadError);
-            let description = "Could not upload photo. Please try again.";
-            if (uploadError.code === 'storage/unauthorized') {
-                description = "Permission denied. This can be caused by incorrect Firebase Storage CORS configuration or Security Rules. Please check both and try again.";
-            }
+            console.error("Firebase Storage Upload Error. Full error object:", uploadError);
+            const code = uploadError.code || 'unknown';
+            const message = uploadError.message || 'An unknown error occurred.';
+
             toast({
                 variant: 'destructive',
-                title: 'Photo Upload Failed',
-                description: description,
-                duration: 10000,
+                title: `Photo Upload Failed (Code: ${code})`,
+                description: message,
+                duration: 15000, // Longer duration to read
             });
             // Re-throw the error to stop the rest of the function
             throw uploadError;
