@@ -25,7 +25,7 @@ import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { LocationProfileInput } from "../common/location-profile-input";
 import { Label } from "../ui/label";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { ImageUpload } from "../common/image-upload";
 
 const formSchema = z.object({
   firstName: z.string().min(2, "First name must be at least 2 characters.").max(50, "Name is too long."),
@@ -128,27 +128,14 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
     <>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <div className="flex flex-col items-center gap-4">
-             <Avatar className="h-24 w-24">
-                <AvatarImage src={form.watch('photoURL') || undefined} alt={`${form.watch('firstName')} ${form.watch('lastName')}`} />
-                <AvatarFallback>{(form.watch('firstName') || '').charAt(0)}{(form.watch('lastName') || '').charAt(0)}</AvatarFallback>
-              </Avatar>
-          </div>
-          
-          <FormField
-            control={form.control}
-            name="photoURL"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Photo URL</FormLabel>
-                <FormControl>
-                  <Input placeholder="https://example.com/photo.jpg" {...field} value={field.value ?? ''} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+          <ImageUpload
+            initialImageUrl={form.getValues('photoURL')}
+            onUploadComplete={(url) => {
+              form.setValue('photoURL', url, { shouldDirty: true });
+            }}
+            storagePath="profile-pictures"
           />
-
+          
           <div className="grid grid-cols-2 gap-4">
             <FormField
               control={form.control}

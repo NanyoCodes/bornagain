@@ -22,7 +22,7 @@ import { useFirestore, useUser } from "@/firebase";
 import { doc, updateDoc, serverTimestamp } from "firebase/firestore";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
-import { Input } from "../ui/input";
+import { ImageUpload } from "../common/image-upload";
 
 const testimonyCategories: TestimonyCategory[] = ['Healing', 'Financial Breakthrough', 'Salvation', 'Relationships', 'Deliverance', 'General'];
 
@@ -129,19 +129,17 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
             </FormItem>
           )}
         />
-        <FormField
-          control={form.control}
-          name="imageUrl"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Image URL (Optional)</FormLabel>
-              <FormControl>
-                <Input placeholder="https://example.com/image.jpg" {...field} value={field.value ?? ''} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <FormItem>
+            <FormLabel>Image (Optional)</FormLabel>
+            <ImageUpload
+              initialImageUrl={form.getValues('imageUrl')}
+              onUploadComplete={(url) => {
+                  form.setValue('imageUrl', url, { shouldDirty: true });
+              }}
+              storagePath="testimony-images"
+            />
+            <FormMessage>{form.formState.errors.imageUrl?.message}</FormMessage>
+        </FormItem>
         <Button type="submit" className="w-full" disabled={isSubmitting}>
           {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           {isSubmitting ? 'Saving...' : 'Save Changes'}

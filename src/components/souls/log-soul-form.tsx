@@ -25,6 +25,7 @@ import { collection, query, orderBy, serverTimestamp, doc, runTransaction, addDo
 import { FirestorePermissionError } from "@/firebase/errors";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { ImageUpload } from "../common/image-upload";
 
 const formSchema = z.object({
   firstName: z.string().min(2, "First name must be at least 2 characters."),
@@ -330,19 +331,16 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps)
                 <AccordionTrigger>Optional Details</AccordionTrigger>
                 <AccordionContent>
                     <div className="space-y-4 pt-4">
-                        <FormField
-                            control={form.control}
-                            name="photoURL"
-                            render={({ field }) => (
-                                <FormItem>
-                                <FormLabel>Photo URL</FormLabel>
-                                <FormControl>
-                                    <Input placeholder="https://..." {...field} className="text-base"/>
-                                </FormControl>
-                                <FormMessage />
-                                </FormItem>
-                            )}
-                        />
+                        <FormItem>
+                            <FormLabel>Photo (Optional)</FormLabel>
+                            <ImageUpload
+                                onUploadComplete={(url) => {
+                                    form.setValue('photoURL', url, { shouldDirty: true });
+                                }}
+                                storagePath="profile-pictures"
+                            />
+                            <FormMessage>{form.formState.errors.photoURL?.message}</FormMessage>
+                        </FormItem>
                         <FormField
                         control={form.control}
                         name="email"
