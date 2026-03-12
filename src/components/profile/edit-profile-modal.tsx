@@ -101,45 +101,39 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
 
       // 1. Upload photo if a new one is selected
       if (newPhoto) {
-        try {
-          const storageRef = ref(storage, `profile-pictures/${user.uid}/profile-photo.jpg`);
-          const uploadTask = uploadBytesResumable(storageRef, newPhoto);
+        const storageRef = ref(storage, `profile-pictures/${user.uid}/profile-photo.jpg`);
+        const uploadTask = uploadBytesResumable(storageRef, newPhoto);
 
-          photoURL = await new Promise<string>((resolve, reject) => {
-            uploadTask.on('state_changed',
-              (snapshot) => {
-                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                setUploadProgress(progress);
-              },
-              (uploadError) => {
-                console.error("Firebase Storage Upload Error:", uploadError);
+        photoURL = await new Promise<string>((resolve, reject) => {
+          uploadTask.on('state_changed',
+            (snapshot) => {
+              const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+              setUploadProgress(progress);
+            },
+            (uploadError) => {
+              console.error("Firebase Storage Upload Error:", uploadError);
 
-                let description = "Could not upload photo. Please try again.";
-                if (uploadError.code === 'storage/unauthorized') {
-                    description = "Permission denied. This can be caused by incorrect Firebase Storage CORS configuration or Security Rules. Please check both and try again.";
-                }
-
-                toast({
-                    variant: 'destructive',
-                    title: 'Photo Upload Failed',
-                    description: description,
-                    duration: 10000,
-                });
-                
-                reject(uploadError);
-              },
-              () => {
-                getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-                  resolve(downloadURL);
-                });
+              let description = "Could not upload photo. Please try again.";
+              if (uploadError.code === 'storage/unauthorized') {
+                  description = "Permission denied. This can be caused by incorrect Firebase Storage CORS configuration or Security Rules. Please check both and try again.";
               }
-            );
-          });
-        } catch (uploadError) {
-            setIsSubmitting(false);
-            setUploadProgress(null);
-            return;
-        }
+
+              toast({
+                  variant: 'destructive',
+                  title: 'Photo Upload Failed',
+                  description: description,
+                  duration: 10000,
+              });
+              
+              reject(uploadError);
+            },
+            () => {
+              getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+                resolve(downloadURL);
+              });
+            }
+          );
+        });
       }
       
       const displayName = `${values.firstName} ${values.lastName}`;
@@ -191,9 +185,11 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
       onClose();
 
     } catch (error: any) {
-      console.error("Profile update error (Auth/Firestore):", error);
+      // This will now catch the rejected promise from the upload
+      console.error("Profile update error:", error);
+       // Only show a generic toast if a more specific one (like from the uploader) hasn't already been shown.
        if (error.name !== 'FirestorePermissionError' && error.code !== 'storage/unauthorized') {
-         toast({ variant: 'destructive', title: "Update Failed", description: error.message || "Could not update profile details." });
+         toast({ variant: 'destructive', title: "Update Failed", description: "Could not update profile details." });
        }
     } finally {
       setIsSubmitting(false);
@@ -322,5 +318,3 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
     </Form>
   );
 }
-
-    
