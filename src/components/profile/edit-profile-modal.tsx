@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -104,14 +105,20 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
             photoURL = await getDownloadURL(uploadTask.ref);
         } catch (uploadError: any) {
             console.error("Firebase Storage Upload Error. Full error object:", uploadError);
-            const code = uploadError.code || 'unknown';
-            const message = uploadError.message || 'An unknown error occurred.';
-
+            
             toast({
                 variant: 'destructive',
-                title: `Photo Upload Failed (Code: ${code})`,
-                description: message,
-                duration: 15000, // Longer duration to read
+                title: 'Photo Upload Failed',
+                description: 'This is almost always caused by a missing CORS policy on your Firebase Storage bucket. Please follow the guide to fix it.',
+                duration: 20000,
+                action: (
+                  <ToastAction
+                    altText="Fix CORS Policy"
+                    onClick={() => window.open('https://console.cloud.google.com/storage/browser', '_blank')}
+                  >
+                    Fix CORS Policy
+                  </ToastAction>
+                ),
             });
             // Re-throw the error to stop the rest of the function
             throw uploadError;
