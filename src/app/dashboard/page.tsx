@@ -337,12 +337,24 @@ export default function DashboardPage() {
   } | null>(null);
 
   const [welcomeMessage, setWelcomeMessage] = useState<{text: string; verse: string} | null>(null);
+  const [favoritePassage, setFavoritePassage] = useState<string | null>(null);
 
-  useEffect(() => {
-    // Select a random scripture when the component mounts client-side
-    const randomScripture = welcomeScriptures[Math.floor(Math.random() * welcomeScriptures.length)];
-    setWelcomeMessage(randomScripture);
-  }, []);
+    useEffect(() => {
+    // This effect runs on the client after hydration.
+    // It's safe to use Math.random() here.
+    if (profileLoading) return; // Wait for profile to load
+
+    const passages = userProfile?.favoritePassages?.filter(p => p && p.trim() !== '');
+    if (passages && passages.length > 0) {
+        // Randomly select one passage to display
+        const randomIndex = Math.floor(Math.random() * passages.length);
+        setFavoritePassage(passages[randomIndex]);
+    } else {
+        // Fallback to generic welcome scripture if no favorite is set
+        const randomScripture = welcomeScriptures[Math.floor(Math.random() * welcomeScriptures.length)];
+        setWelcomeMessage(randomScripture);
+    }
+  }, [userProfile, profileLoading]);
 
   useEffect(() => {
     const today = new Date();
@@ -480,16 +492,12 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-8">
-        {userProfile?.favoritePassages && userProfile.favoritePassages.length > 0 ? (
+        {favoritePassage ? (
             <div className="space-y-4">
                 <h1 className="text-3xl sm:text-4xl font-bold tracking-tight font-headline">
-                    Welcome back, {displayName}!
+                    A favorite for you, {displayName}
                 </h1>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {userProfile.favoritePassages.map((passageRef, index) => (
-                        passageRef ? <DisplayPassage key={index} reference={passageRef} /> : null
-                    ))}
-                </div>
+                <DisplayPassage reference={favoritePassage} />
             </div>
         ) : (
             <div className="space-y-2">
@@ -669,3 +677,5 @@ export default function DashboardPage() {
     </div>
   );
 }
+
+    
