@@ -326,3 +326,5 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
     </>
   );
 }
+
+    
