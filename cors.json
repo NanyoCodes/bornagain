@@ -3,7 +3,8 @@
       "origin": [
         "http://localhost:3000",
         "https://studio-6220967431-56fe2.web.app",
-        "https://studio-6220967431-56fe2.firebaseapp.com"
+        "https://studio-6220967431-56fe2.firebaseapp.com",
+        "https://studio--studio-6220967431-56fe2.us-central1.hosted.app"
       ],
       "method": [
         "GET",

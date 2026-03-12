@@ -58,6 +58,7 @@ Once you are in the correct project, you will see a table listing your storage b
         *   Type `http://localhost:3000` and press Enter.
         *   Type `https://studio-6220967431-56fe2.web.app` and press Enter.
         *   Type `https://studio-6220967431-56fe2.firebaseapp.com` and press Enter.
+        *   Type `https://studio--studio-6220967431-56fe2.us-central1.hosted.app` and press Enter.
     *   **Methods:**
         *   Check the boxes for `GET`, `PUT`, `POST`, and `DELETE`.
     *   **Response headers:**
