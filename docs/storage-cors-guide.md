@@ -30,21 +30,22 @@ This is the most important step. At the top of the Google Cloud page, you will s
 
 If you do not see this project in the list, you may be logged in with the wrong Google account.
 
-### Step 3: Find and Select Your Bucket
+### Step 3: Find and Click Your Bucket Link
 
-Once you are in the correct project, you will see a list of storage buckets.
+Once you are in the correct project, you will see a table listing your storage buckets.
 
-**Visual Check:** The page should have a table with columns like "Name", "Location", "Default storage class", etc. You are looking for an entry in the "Name" column.
+1.  Look for the **"Name"** column in the table.
+2.  You will see a single entry that is a blue, underlined link. It will start with `studio-6220967431-56fe2...`
 
-1.  In that table, click on the bucket **NAME** that is **EXACTLY** `studio-6220967431-56fe2.appspot.com`.
+    **CRITICAL:** Click this link. This is your storage bucket.
 
-    **IMPORTANT:** The name ends in **`.appspot.com`**. Do NOT look for anything ending in `.firebasestorage.app`. That is a URL for accessing files, not the bucket's name for configuration. The name you click on must be the one with `.appspot.com`.
+    **Note on Naming:** Google Cloud's interface can be confusing. The text of this link might say `...firebasestorage.app` or it might say `...appspot.com`. **It does not matter what the text says.** The important thing is to click the link in the "Name" column to open your bucket's settings.
 
-    *   **Troubleshooting:** If you have selected the correct project but you *still* do not see this bucket in the list, it means Storage was not enabled correctly. Please go back to the [Firebase Console](https://console.firebase.google.com/project/studio-6220967431-56fe2/storage), select your project, go to **Build > Storage**, and click **"Get started"**. After it's created, refresh the Google Cloud page.
+*   **Troubleshooting:** If you have selected the correct project but you do not see *any* buckets in this list, it means Storage was not enabled correctly. Please go back to the [Firebase Console](https://console.firebase.google.com/project/studio-6220967431-56fe2/storage), select your project, go to **Build > Storage**, and click **"Get started"**. After it's created, refresh the Google Cloud page.
 
 ### Step 4: Configure CORS
 
-1.  After clicking on your bucket, you will see several tabs like "Objects", "Configuration", etc. Click the **"Permissions"** tab.
+1.  After clicking on your bucket link, you will see several tabs like "Objects", "Configuration", etc. Click the **"Permissions"** tab.
 
 2.  On the Permissions page, scroll down until you see the **Cross-origin resource sharing (CORS)** section.
 
