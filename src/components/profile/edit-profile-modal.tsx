@@ -16,7 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { ToastAction } from "@/components/ui/toast";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Loader2, UploadCloud } from "lucide-react";
 import { useUser, useFirestore, useAuth, useStorage } from "@/firebase";
 import { doc, updateDoc } from "firebase/firestore";
@@ -53,6 +53,8 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
   const auth = useAuth();
   
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isUploading, setIsUploading] = useState(false); // For file reading loader
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -67,7 +69,48 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
     },
   });
   
-  const photoPreview = form.watch('photoURL') || userProfile.photoURL;
+  const photoPreview = form.watch('photoURL');
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+        toast({
+            variant: 'destructive',
+            title: 'Invalid File Type',
+            description: 'Please select an image file.',
+        });
+        return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) { // 5MB limit
+        toast({
+            variant: 'destructive',
+            title: 'File Too Large',
+            description: 'Please select an image smaller than 5MB.',
+        });
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onloadstart = () => setIsUploading(true);
+    reader.onerror = () => {
+        setIsUploading(false);
+        toast({
+            variant: 'destructive',
+            title: 'File Read Error',
+            description: 'Could not read the selected file.',
+        });
+    };
+    reader.onload = () => {
+        if (typeof reader.result === 'string') {
+            form.setValue('photoURL', reader.result, { shouldDirty: true });
+        }
+        setIsUploading(false);
+    };
+    reader.readAsDataURL(file);
+  };
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (!user || !firestore || !auth.currentUser) {
@@ -141,23 +184,26 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
               <AvatarImage src={photoPreview || undefined} alt={`${form.watch('firstName')} ${form.watch('lastName')}`} />
               <AvatarFallback>{(form.watch('firstName') || '').charAt(0)}{(form.watch('lastName') || '').charAt(0)}</AvatarFallback>
             </Avatar>
-             <FormField
-                control={form.control}
-                name="photoURL"
-                render={({ field }) => (
-                    <FormItem className="w-full">
-                    <FormLabel>Photo URL</FormLabel>
-                    <FormControl>
-                        <Input
-                            placeholder="https://example.com/photo.jpg"
-                            {...field}
-                            value={field.value ?? ''}
-                        />
-                    </FormControl>
-                    <FormMessage />
-                    </FormItem>
+             <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileChange}
+                className="hidden"
+                accept="image/*"
+              />
+            <Button
+                type="button"
+                variant="outline"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isUploading}
+            >
+                {isUploading ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                    <UploadCloud className="mr-2 h-4 w-4" />
                 )}
-            />
+                {isUploading ? 'Processing...' : 'Upload Photo'}
+            </Button>
           </div>
 
           <div className="grid grid-cols-2 gap-4">

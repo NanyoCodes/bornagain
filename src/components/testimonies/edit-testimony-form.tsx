@@ -1,4 +1,3 @@
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -17,13 +16,14 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { useState } from "react";
-import { Loader2 } from "lucide-react";
+import { useState, useRef } from "react";
+import { Loader2, Image as ImageIcon } from "lucide-react";
 import { Testimony, TestimonyCategory } from "@/lib/types";
 import { useFirestore, useUser } from "@/firebase";
 import { doc, updateDoc, serverTimestamp } from "firebase/firestore";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
+import Image from 'next/image';
 
 const testimonyCategories: TestimonyCategory[] = ['Healing', 'Financial Breakthrough', 'Salvation', 'Relationships', 'Deliverance', 'General'];
 
@@ -41,6 +41,8 @@ type EditTestimonyFormProps = {
 export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimonyFormProps) {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { user } = useUser();
   const firestore = useFirestore();
@@ -54,6 +56,36 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
     },
   });
 
+  const imagePreview = form.watch('imageUrl');
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+        toast({ variant: 'destructive', title: 'Invalid File Type', description: 'Please select an image file.' });
+        return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) { // 5MB limit
+        toast({ variant: 'destructive', title: 'File Too Large', description: 'Please select an image smaller than 5MB.' });
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onloadstart = () => setIsUploading(true);
+    reader.onerror = () => {
+        setIsUploading(false);
+        toast({ variant: 'destructive', title: 'File Read Error', description: 'Could not read the selected file.' });
+    };
+    reader.onload = () => {
+        if (typeof reader.result === 'string') {
+            form.setValue('imageUrl', reader.result, { shouldDirty: true });
+        }
+        setIsUploading(false);
+    };
+    reader.readAsDataURL(file);
+  };
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     if (!user || !firestore) {
@@ -131,23 +163,32 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
             </FormItem>
           )}
         />
-        <FormField
-          control={form.control}
-          name="imageUrl"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Image URL (Optional)</FormLabel>
-              <FormControl>
-                <Input placeholder="https://example.com/image.jpg" {...field} value={field.value ?? ''} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <FormItem>
+            <FormLabel>Image (Optional)</FormLabel>
+            {imagePreview ? (
+                <div className="relative aspect-video w-full overflow-hidden rounded-md border">
+                    <Image src={imagePreview} alt="Testimony image preview" fill className="object-cover" />
+                </div>
+            ) : (
+                <div className="flex items-center justify-center w-full">
+                    <label htmlFor="edit-testimony-image-upload" className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-muted/50 hover:bg-muted">
+                        <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                            <ImageIcon className="w-8 h-8 mb-2 text-muted-foreground" />
+                            <p className="mb-2 text-sm text-muted-foreground"><span className="font-semibold">Click to upload</span></p>
+                            <p className="text-xs text-muted-foreground">PNG, JPG or GIF (max 5MB)</p>
+                        </div>
+                        <input id="edit-testimony-image-upload" ref={fileInputRef} type="file" className="hidden" onChange={handleFileChange} accept="image/*" />
+                    </label>
+                </div> 
+            )}
+             {imagePreview && (
+                <Button type="button" variant="outline" size="sm" className="mt-2" onClick={() => form.setValue('imageUrl', '')}>Remove Image</Button>
+             )}
+        </FormItem>
 
-        <Button type="submit" className="w-full" disabled={isSubmitting}>
-          {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          {isSubmitting ? 'Saving...' : 'Save Changes'}
+        <Button type="submit" className="w-full" disabled={isSubmitting || isUploading}>
+          {(isSubmitting || isUploading) && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          {isSubmitting ? 'Saving...' : isUploading ? 'Processing Image...' : 'Save Changes'}
         </Button>
       </form>
     </Form>
