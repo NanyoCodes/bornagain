@@ -1,4 +1,3 @@
-
 "use client";
 
 import {
@@ -12,7 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import type { PrayerRequest } from "@/lib/types";
-import { format, isToday } from "date-fns";
+import { format } from "date-fns";
 import { HandHeart, Users, Trash2, Loader2 } from "lucide-react";
 import { useUser, useFirestore } from "@/firebase";
 import { useState, useMemo, memo } from "react";
@@ -42,9 +41,7 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({ prayerRequest
       ? new Date(prayerRequest.createdAt.seconds * 1000)
       : new Date();
     
-    return "Shared " + (isToday(createdAtDate)
-      ? format(createdAtDate, 'p')
-      : format(createdAtDate, 'PPP'));
+    return "Shared " + format(createdAtDate, "PPP 'at' p");
   }, [prayerRequest.createdAt]);
 
 

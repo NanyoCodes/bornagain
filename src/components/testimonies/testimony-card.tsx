@@ -1,4 +1,3 @@
-
 "use client";
 
 import * as React from "react";
@@ -17,7 +16,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Testimony } from "@/lib/types";
-import { format, isToday } from "date-fns";
+import { format } from "date-fns";
 import { Share2, MoreVertical, Edit, Trash2, Loader2 } from "lucide-react";
 import { useUser, useFirestore } from "@/firebase";
 import { useState, useMemo } from "react";
@@ -53,9 +52,8 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony }: { 
     const createdAtDate = testimony.createdAt
       ? new Date(testimony.createdAt.seconds * 1000)
       : new Date();
-    return isToday(createdAtDate)
-      ? format(createdAtDate, "p")
-      : format(createdAtDate, "PPP");
+    
+    return format(createdAtDate, "PPP 'at' p");
   }, [testimony.createdAt]);
 
 
