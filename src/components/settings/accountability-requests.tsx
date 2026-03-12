@@ -11,6 +11,8 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { format, isToday } from 'date-fns';
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError } from '@/firebase/errors';
 
 export function AccountabilityRequests({ currentUserProfile }: { currentUserProfile: UserProfile }) {
     const { user } = useUser();
@@ -62,96 +64,123 @@ export function AccountabilityRequests({ currentUserProfile }: { currentUserProf
             return;
         }
         setIsProcessing(request.id);
-        try {
-            const batch = writeBatch(firestore);
+        const batch = writeBatch(firestore);
 
-            // Update my user doc (the acceptor)
-            const myRef = doc(firestore, 'users', user.uid);
-            batch.update(myRef, {
-                accountabilityPartnerId: request.fromUserId,
-                accountabilityPartnerFirstName: request.fromUserFirstName,
-                accountabilityPartnerLastName: request.fromUserLastName,
+        // Update my user doc (the acceptor)
+        const myRef = doc(firestore, 'users', user.uid);
+        batch.update(myRef, {
+            accountabilityPartnerId: request.fromUserId,
+            accountabilityPartnerFirstName: request.fromUserFirstName,
+            accountabilityPartnerLastName: request.fromUserLastName,
+        });
+
+        // Update sender's user doc
+        const senderRef = doc(firestore, 'users', request.fromUserId);
+        batch.update(senderRef, {
+            accountabilityPartnerId: user.uid,
+            accountabilityPartnerFirstName: currentUserProfile.firstName,
+            accountabilityPartnerLastName: currentUserProfile.lastName,
+        });
+
+        // Update the request status
+        const requestRef = doc(firestore, 'accountabilityRequests', request.id);
+        batch.update(requestRef, {
+            status: 'accepted',
+            respondedAt: serverTimestamp(),
+        });
+        
+        // Add notification for the sender
+        const notificationRef = doc(collection(firestore, 'users', request.fromUserId, 'notifications'));
+        batch.set(notificationRef, {
+                userId: request.fromUserId,
+            type: 'request_accepted',
+            title: 'Request Accepted!',
+            message: `${currentUserProfile.firstName} ${currentUserProfile.lastName} has accepted your accountability request.`,
+            link: '/dashboard/accountability',
+            isRead: false,
+            createdAt: serverTimestamp(),
+        });
+
+        batch.commit()
+            .then(() => {
+                toast({ title: 'Partner Added!', description: `You are now accountability partners with ${request.fromUserFirstName} ${request.fromUserLastName}.` });
+            })
+            .catch(() => {
+                 const permissionError = new FirestorePermissionError({
+                    path: `BATCH_WRITE:ACCEPT_REQUEST:${request.id}`,
+                    operation: 'write',
+                });
+                errorEmitter.emit('permission-error', permissionError);
+            })
+            .finally(() => {
+                setIsProcessing(null);
             });
-
-            // Update sender's user doc
-            const senderRef = doc(firestore, 'users', request.fromUserId);
-            batch.update(senderRef, {
-                accountabilityPartnerId: user.uid,
-                accountabilityPartnerFirstName: currentUserProfile.firstName,
-                accountabilityPartnerLastName: currentUserProfile.lastName,
-            });
-
-            // Update the request status
-            const requestRef = doc(firestore, 'accountabilityRequests', request.id);
-            batch.update(requestRef, {
-                status: 'accepted',
-                respondedAt: serverTimestamp(),
-            });
-            
-            // Add notification for the sender
-            const notificationRef = doc(collection(firestore, 'users', request.fromUserId, 'notifications'));
-            batch.set(notificationRef, {
-                 userId: request.fromUserId,
-                type: 'request_accepted',
-                title: 'Request Accepted!',
-                message: `${currentUserProfile.firstName} ${currentUserProfile.lastName} has accepted your accountability request.`,
-                link: '/dashboard/accountability',
-                isRead: false,
-                createdAt: serverTimestamp(),
-            });
-
-            await batch.commit();
-            toast({ title: 'Partner Added!', description: `You are now accountability partners with ${request.fromUserFirstName} ${request.fromUserLastName}.` });
-
-        } catch (error) {
-            toast({ variant: 'destructive', title: 'Error', description: 'Could not accept request.' });
-            setIsProcessing(null);
-        }
     };
 
     const handleDecline = async (request: AccountabilityRequest) => {
         setIsProcessing(request.id);
-        try {
-            const batch = writeBatch(firestore);
-
-            const requestRef = doc(firestore, 'accountabilityRequests', request.id);
-            batch.update(requestRef, {
-                status: 'declined',
-                respondedAt: serverTimestamp(),
+        const batch = writeBatch(firestore);
+        const requestRef = doc(firestore, 'accountabilityRequests', request.id);
+        batch.update(requestRef, {
+            status: 'declined',
+            respondedAt: serverTimestamp(),
+        });
+        
+        const notificationRef = doc(collection(firestore, 'users', request.fromUserId, 'notifications'));
+        batch.set(notificationRef, {
+            userId: request.fromUserId,
+            type: 'request_declined',
+            title: 'Request Declined',
+            message: `${currentUserProfile.firstName} ${currentUserProfile.lastName} has declined your accountability request.`,
+            link: '/dashboard/accountability',
+            isRead: false,
+            createdAt: serverTimestamp(),
+        });
+        
+        batch.commit()
+            .then(() => {
+                toast({ title: 'Request Declined' });
+            })
+            .catch(() => {
+                const permissionError = new FirestorePermissionError({
+                    path: `BATCH_WRITE:DECLINE_REQUEST:${request.id}`,
+                    operation: 'write',
+                });
+                errorEmitter.emit('permission-error', permissionError);
+            })
+            .finally(() => {
+                setIsProcessing(null);
             });
-            
-            const notificationRef = doc(collection(firestore, 'users', request.fromUserId, 'notifications'));
-            batch.set(notificationRef, {
-                userId: request.fromUserId,
-                type: 'request_declined',
-                title: 'Request Declined',
-                message: `${currentUserProfile.firstName} ${currentUserProfile.lastName} has declined your accountability request.`,
-                link: '/dashboard/accountability',
-                isRead: false,
-                createdAt: serverTimestamp(),
-            });
-            
-            await batch.commit();
-
-            toast({ title: 'Request Declined' });
-
-        } catch (error) {
-            toast({ variant: 'destructive', title: 'Error', description: 'Could not decline request.' });
-            setIsProcessing(null);
-        }
     };
 
     const handleCancel = async (request: AccountabilityRequest) => {
         setIsProcessing(request.id);
-        try {
-            const requestRef = doc(firestore, 'accountabilityRequests', request.id);
-            await deleteDoc(requestRef);
-            toast({ title: 'Request Canceled' });
-        } catch (error) {
-            toast({ variant: 'destructive', title: 'Error', description: 'Could not cancel request.' });
-            setIsProcessing(null);
-        }
+        const requestRef = doc(firestore, 'accountabilityRequests', request.id);
+        
+        deleteDoc(requestRef)
+            .then(() => {
+                toast({ title: 'Request Canceled' });
+            })
+            .catch(() => {
+                const permissionError = new FirestorePermissionError({
+                    path: requestRef.path,
+                    operation: 'delete',
+                });
+                errorEmitter.emit('permission-error', permissionError);
+            })
+            .finally(() => {
+                setIsProcessing(null);
+            });
     };
+
+    const dismissRequest = (requestId: string) => {
+        if (!firestore) return;
+        const reqRef = doc(firestore, 'accountabilityRequests', requestId);
+        deleteDoc(reqRef).catch(() => {
+            const permissionError = new FirestorePermissionError({ path: reqRef.path, operation: 'delete' });
+            errorEmitter.emit('permission-error', permissionError);
+        });
+    }
 
     if (loading) {
         return (
@@ -261,7 +290,7 @@ export function AccountabilityRequests({ currentUserProfile }: { currentUserProf
                     <Button
                         size="icon"
                         variant="ghost"
-                        onClick={() => deleteDoc(doc(firestore, 'accountabilityRequests', req.id))}
+                        onClick={() => dismissRequest(req.id)}
                         className="h-8 w-8 shrink-0"
                     >
                         <X className="h-4 w-4 text-muted-foreground" />
@@ -282,7 +311,7 @@ export function AccountabilityRequests({ currentUserProfile }: { currentUserProf
                     <Button
                         size="icon"
                         variant="ghost"
-                        onClick={() => deleteDoc(doc(firestore, 'accountabilityRequests', acceptedRequest.id))}
+                        onClick={() => dismissRequest(acceptedRequest.id)}
                         className="h-8 w-8 shrink-0"
                     >
                         <X className="h-4 w-4 text-muted-foreground" />

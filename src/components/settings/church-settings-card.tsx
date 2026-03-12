@@ -16,6 +16,8 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Loader2, Church, Plus, X } from 'lucide-react';
 import { doc, updateDoc } from 'firebase/firestore';
 import { Label } from '../ui/label';
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError } from '@/firebase/errors';
 
 const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
@@ -57,22 +59,31 @@ export function ChurchSettingsCard({ userProfile, userId }: { userProfile: UserP
   const handleSaveChanges = async (values: z.infer<typeof churchSettingsSchema>) => {
     if (!firestore || !userId) return;
     setIsSubmitting(true);
+    
+    const userRef = doc(firestore, 'users', userId);
+    const payload = {
+      churchInfo: {
+        name: values.name || null,
+        schedule: values.schedule || [],
+      },
+    };
 
-    try {
-      const userRef = doc(firestore, 'users', userId);
-      await updateDoc(userRef, {
-        churchInfo: {
-          name: values.name || null,
-          schedule: values.schedule || [],
-        },
+    updateDoc(userRef, payload)
+      .then(() => {
+        toast({ title: 'Church Info Saved', description: 'Your church details have been updated.' });
+        form.reset(values); // Re-sync form state
+      })
+      .catch(() => {
+        const permissionError = new FirestorePermissionError({
+          path: userRef.path,
+          operation: 'update',
+          requestResourceData: payload,
+        });
+        errorEmitter.emit('permission-error', permissionError);
+      })
+      .finally(() => {
+        setIsSubmitting(false);
       });
-      toast({ title: 'Church Info Saved', description: 'Your church details have been updated.' });
-      form.reset(values); // Re-sync form state
-    } catch (error) {
-      toast({ variant: 'destructive', title: 'Error', description: 'Could not save your church details.' });
-    } finally {
-      setIsSubmitting(false);
-    }
   };
 
   return (

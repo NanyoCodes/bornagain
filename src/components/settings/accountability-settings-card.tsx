@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useUser, useFirestore } from '@/firebase';
@@ -15,6 +16,8 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { useToast } from '@/hooks/use-toast';
 import { Label } from '../ui/label';
 import { Textarea } from '../ui/textarea';
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError } from '@/firebase/errors';
 
 
 export function AccountabilitySettingsCard({ userProfile, userId }: { userProfile: UserProfile; userId: string }) {
@@ -53,45 +56,51 @@ export function AccountabilitySettingsCard({ userProfile, userId }: { userProfil
         return;
     }
     setIsRemoving(true);
-    try {
-        const batch = writeBatch(firestore);
-        const partnerId = userProfile.accountabilityPartnerId;
+    
+    const batch = writeBatch(firestore);
+    const partnerId = userProfile.accountabilityPartnerId;
 
-        const currentUserRef = doc(firestore, 'users', user.uid);
-        batch.update(currentUserRef, {
-            accountabilityPartnerId: deleteField(),
-            accountabilityPartnerFirstName: deleteField(),
-            accountabilityPartnerLastName: deleteField(),
-        });
+    const currentUserRef = doc(firestore, 'users', user.uid);
+    batch.update(currentUserRef, {
+        accountabilityPartnerId: deleteField(),
+        accountabilityPartnerFirstName: deleteField(),
+        accountabilityPartnerLastName: deleteField(),
+    });
 
-        const partnerUserRef = doc(firestore, 'users', partnerId);
-        batch.update(partnerUserRef, {
-            accountabilityPartnerId: deleteField(),
-            accountabilityPartnerFirstName: deleteField(),
-            accountabilityPartnerLastName: deleteField(),
-        });
-        
-        const notificationsCollectionRef = collection(firestore, 'users', partnerId, 'notifications');
-        const notificationData = {
-            userId: partnerId,
-            type: 'accountability_partner_removed',
-            title: 'Accountability Partnership Ended',
-            message: `${userProfile.firstName} ${userProfile.lastName} has ended your accountability partnership. Reason: ${removalReason}`,
-            link: '/dashboard/accountability',
-            isRead: false,
-            createdAt: serverTimestamp(),
-        }
-        batch.set(doc(notificationsCollectionRef), notificationData);
-
-        await batch.commit();
-
-        toast({ title: 'Partner Removed', description: 'Your accountability partnership has been ended.' });
-    } catch (error) {
-        toast({ variant: 'destructive', title: 'Error', description: 'Could not remove partner.' });
-    } finally {
-        setIsRemoving(false);
-        setRemovalReason('');
+    const partnerUserRef = doc(firestore, 'users', partnerId);
+    batch.update(partnerUserRef, {
+        accountabilityPartnerId: deleteField(),
+        accountabilityPartnerFirstName: deleteField(),
+        accountabilityPartnerLastName: deleteField(),
+    });
+    
+    const notificationsCollectionRef = collection(firestore, 'users', partnerId, 'notifications');
+    const notificationData = {
+        userId: partnerId,
+        type: 'accountability_partner_removed',
+        title: 'Accountability Partnership Ended',
+        message: `${userProfile.firstName} ${userProfile.lastName} has ended your accountability partnership. Reason: ${removalReason}`,
+        link: '/dashboard/accountability',
+        isRead: false,
+        createdAt: serverTimestamp(),
     }
+    batch.set(doc(notificationsCollectionRef), notificationData);
+
+    batch.commit()
+        .then(() => {
+            toast({ title: 'Partner Removed', description: 'Your accountability partnership has been ended.' });
+        })
+        .catch(() => {
+            const permissionError = new FirestorePermissionError({
+                path: `BATCH_WRITE:REMOVE_PARTNER:${user.uid}`,
+                operation: 'write',
+            });
+            errorEmitter.emit('permission-error', permissionError);
+        })
+        .finally(() => {
+            setIsRemoving(false);
+            setRemovalReason('');
+        });
   };
 
 

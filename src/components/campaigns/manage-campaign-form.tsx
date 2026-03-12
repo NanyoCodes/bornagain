@@ -245,47 +245,50 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
         return;
     }
     
-    try {
-        const participantIds = participants.map(p => p.id);
-        const participantInfo: { [key: string]: any } = {};
-        participants.forEach(p => {
-            participantInfo[p.id] = {
-                displayName: `${p.firstName} ${p.lastName}`,
-                firstName: p.firstName,
-                lastName: p.lastName,
-                photoURL: p.photoURL || '',
-                email: p.email || '',
-            };
-        });
-        
-        const batch = writeBatch(firestore);
-
-        const chatDocRef = doc(firestore, 'chats', campaign.id);
-        const chatData = {
-            participantIds,
-            participantInfo,
-            campaignId: campaign.id,
-            campaignTitle: campaign.title,
-            lastUpdatedAt: serverTimestamp(),
-            isGroupChat: true,
-            hasMessages: false,
+    const participantIds = participants.map(p => p.id);
+    const participantInfo: { [key: string]: any } = {};
+    participants.forEach(p => {
+        participantInfo[p.id] = {
+            displayName: `${p.firstName} ${p.lastName}`,
+            firstName: p.firstName,
+            lastName: p.lastName,
+            photoURL: p.photoURL || '',
+            email: p.email || '',
         };
-        batch.set(chatDocRef, chatData, { merge: true });
+    });
+    
+    const batch = writeBatch(firestore);
 
-        const campaignDocRef = doc(firestore, 'campaigns', campaign.id);
-        batch.update(campaignDocRef, { hasGroupChat: true });
-        
-        await batch.commit();
-        
-        onCampaignUpdated();
-        router.push(`/dashboard/chats/${campaign.id}`);
+    const chatDocRef = doc(firestore, 'chats', campaign.id);
+    const chatData = {
+        participantIds,
+        participantInfo,
+        campaignId: campaign.id,
+        campaignTitle: campaign.title,
+        lastUpdatedAt: serverTimestamp(),
+        isGroupChat: true,
+        hasMessages: false,
+    };
+    batch.set(chatDocRef, chatData, { merge: true });
 
-    } catch (error) {
-        console.error("Error starting group chat:", error);
-        toast({ variant: 'destructive', title: 'Chat Error', description: 'Could not start the group chat.' });
-    } finally {
-        setIsChatLoading(false);
-    }
+    const campaignDocRef = doc(firestore, 'campaigns', campaign.id);
+    batch.update(campaignDocRef, { hasGroupChat: true });
+    
+    batch.commit()
+        .then(() => {
+            onCampaignUpdated();
+            router.push(`/dashboard/chats/${campaign.id}`);
+        })
+        .catch(() => {
+            const permissionError = new FirestorePermissionError({
+                path: `BATCH_WRITE:START_GROUP_CHAT:${campaign.id}`,
+                operation: 'write',
+            });
+            errorEmitter.emit('permission-error', permissionError);
+        })
+        .finally(() => {
+            setIsChatLoading(false);
+        });
   };
 
 

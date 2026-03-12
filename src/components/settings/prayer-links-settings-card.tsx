@@ -14,6 +14,8 @@ import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Loader2, Plus, Trash2, Edit } from 'lucide-react';
 import { doc, updateDoc } from 'firebase/firestore';
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError } from '@/firebase/errors';
 
 const prayerLinkSchema = z.object({
   name: z.string().min(2, { message: 'Link name must be at least 2 characters.' }).max(30),
@@ -92,32 +94,41 @@ export function PrayerLinksSettingsCard({ userProfile, userId }: { userProfile: 
 
     setIsSubmitting(true);
     const newLinks = [...prayerLinks, values];
-
-    try {
-      const userRef = doc(firestore, 'users', userId);
-      await updateDoc(userRef, { prayerLinks: newLinks });
-      toast({ title: 'Link Added', description: 'Your new prayer link has been saved.' });
-      addForm.reset();
-    } catch (error) {
-      toast({ variant: 'destructive', title: 'Error', description: 'Could not save your link.' });
-    } finally {
-      setIsSubmitting(false);
-    }
+    const userRef = doc(firestore, 'users', userId);
+    const payload = { prayerLinks: newLinks };
+    
+    updateDoc(userRef, payload)
+        .then(() => {
+            toast({ title: 'Link Added', description: 'Your new prayer link has been saved.' });
+            addForm.reset();
+        })
+        .catch(() => {
+            const permissionError = new FirestorePermissionError({ path: userRef.path, operation: 'update', requestResourceData: payload });
+            errorEmitter.emit('permission-error', permissionError);
+        })
+        .finally(() => {
+            setIsSubmitting(false);
+        });
   };
 
   const handleRemoveLink = async (indexToRemove: number) => {
     if (!firestore || !userId) return;
     setIsSubmitting(true);
     const newLinks = prayerLinks.filter((_, index) => index !== indexToRemove);
-    try {
-      const userRef = doc(firestore, 'users', userId);
-      await updateDoc(userRef, { prayerLinks: newLinks });
-      toast({ title: 'Link Removed', description: 'The prayer link has been deleted.' });
-    } catch (error) {
-      toast({ variant: 'destructive', title: 'Error', description: 'Could not remove the link.' });
-    } finally {
-      setIsSubmitting(false);
-    }
+    const userRef = doc(firestore, 'users', userId);
+    const payload = { prayerLinks: newLinks };
+    
+    updateDoc(userRef, payload)
+        .then(() => {
+            toast({ title: 'Link Removed', description: 'The prayer link has been deleted.' });
+        })
+        .catch(() => {
+             const permissionError = new FirestorePermissionError({ path: userRef.path, operation: 'update', requestResourceData: payload });
+            errorEmitter.emit('permission-error', permissionError);
+        })
+        .finally(() => {
+            setIsSubmitting(false);
+        });
   };
 
   const handleUpdateLink = async (index: number, values: z.infer<typeof prayerLinkSchema>) => {
@@ -126,17 +137,21 @@ export function PrayerLinksSettingsCard({ userProfile, userId }: { userProfile: 
 
     const newLinks = [...prayerLinks];
     newLinks[index] = values;
-
-    try {
-        const userRef = doc(firestore, 'users', userId);
-        await updateDoc(userRef, { prayerLinks: newLinks });
-        toast({ title: 'Link Updated' });
-        setEditingIndex(null);
-    } catch (error) {
-        toast({ variant: 'destructive', title: 'Error', description: 'Could not update link.' });
-    } finally {
-        setIsSubmitting(false);
-    }
+    const userRef = doc(firestore, 'users', userId);
+    const payload = { prayerLinks: newLinks };
+    
+    updateDoc(userRef, payload)
+        .then(() => {
+            toast({ title: 'Link Updated' });
+            setEditingIndex(null);
+        })
+        .catch(() => {
+            const permissionError = new FirestorePermissionError({ path: userRef.path, operation: 'update', requestResourceData: payload });
+            errorEmitter.emit('permission-error', permissionError);
+        })
+        .finally(() => {
+            setIsSubmitting(false);
+        });
   };
 
   return (

@@ -31,6 +31,8 @@ import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '../ui/sheet';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion';
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError } from '@/firebase/errors';
 
 const bibleVersions = [
     { id: 'kjv', name: 'King James Version' },
@@ -287,49 +289,54 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
     }
     setIsSubmitting(true);
     
-    try {
-      const userRef = doc(firestore, 'users', user.uid);
-      await updateDoc(userRef, {
-        readingHistory: arrayUnion({
-          book: chapterContent.book,
-          chapter: chapterContent.chapter,
-          readAt: new Date(),
-        })
-      });
-      
-      if (!completedToday.includes('read_bible')) {
-        onDisciplineCompleted();
-      }
-      toast({ title: 'Chapter Marked as Read', description: `${''}${chapterContent.book} ${chapterContent.chapter} has been added to your history.`});
-      
-      const currentBookIndex = bibleData.findIndex(b => b.name === selectedBookName);
-      const currentBook = bibleData[currentBookIndex];
-      if (!currentBook) {
+    const userRef = doc(firestore, 'users', user.uid);
+    const updatePayload = {
+      readingHistory: arrayUnion({
+        book: chapterContent.book,
+        chapter: chapterContent.chapter,
+        readAt: new Date(),
+      })
+    };
+
+    updateDoc(userRef, updatePayload)
+      .then(() => {
+        if (!completedToday.includes('read_bible')) {
+          onDisciplineCompleted();
+        }
+        toast({ title: 'Chapter Marked as Read', description: `${''}${chapterContent.book} ${chapterContent.chapter} has been added to your history.`});
+        
+        const currentBookIndex = bibleData.findIndex(b => b.name === selectedBookName);
+        const currentBook = bibleData[currentBookIndex];
+        if (!currentBook) {
+          return;
+        }
+
+        const isLastChapter = selectedChapterNumber >= currentBook.chapters.length;
+
+        if (isLastChapter) {
+            const isLastBook = currentBookIndex >= bibleData.length - 1;
+            if (!isLastBook) {
+                const nextBook = bibleData[currentBookIndex + 1];
+                setSelectedBookName(nextBook.name);
+            } else {
+                toast({ title: 'Congratulations!', description: 'You have finished reading the entire Bible!' });
+                onOpenChange(false);
+            }
+        } else {
+            setSelectedChapterNumber(prev => prev + 1);
+        }
+      })
+      .catch(() => {
+        const permissionError = new FirestorePermissionError({
+            path: userRef.path,
+            operation: 'update',
+            requestResourceData: updatePayload
+        });
+        errorEmitter.emit('permission-error', permissionError);
+      })
+      .finally(() => {
         setIsSubmitting(false);
-        return;
-      }
-
-      const isLastChapter = selectedChapterNumber >= currentBook.chapters.length;
-
-      if (isLastChapter) {
-          const isLastBook = currentBookIndex >= bibleData.length - 1;
-          if (!isLastBook) {
-              const nextBook = bibleData[currentBookIndex + 1];
-              setSelectedBookName(nextBook.name);
-          } else {
-              toast({ title: 'Congratulations!', description: 'You have finished reading the entire Bible!' });
-              onOpenChange(false);
-          }
-      } else {
-          setSelectedChapterNumber(prev => prev + 1);
-      }
-
-    } catch (error) {
-      console.error("Failed to mark as read:", error);
-      toast({ variant: 'destructive', title: 'Error', description: 'Could not update your reading history.' });
-    } finally {
-      setIsSubmitting(false);
-    }
+      });
   };
 
   const completedToday = useMemo(() => {
@@ -379,15 +386,21 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
   
     const handleDeleteHighlight = async (highlightId: string) => {
         if (!user || !firestore) return;
-        try {
-            await deleteDoc(doc(firestore, 'users', user.uid, 'bibleHighlights', highlightId));
-            toast({ title: 'Highlight Removed' });
-            if (activeHighlightId === highlightId) {
-                setActiveHighlightId(null);
-            }
-        } catch (error) {
-            toast({ variant: 'destructive', title: 'Error', description: 'Could not remove highlight.' });
-        }
+        const highlightRef = doc(firestore, 'users', user.uid, 'bibleHighlights', highlightId);
+        deleteDoc(highlightRef)
+            .then(() => {
+                 toast({ title: 'Highlight Removed' });
+                if (activeHighlightId === highlightId) {
+                    setActiveHighlightId(null);
+                }
+            })
+            .catch(() => {
+                const permissionError = new FirestorePermissionError({
+                    path: highlightRef.path,
+                    operation: 'delete'
+                });
+                errorEmitter.emit('permission-error', permissionError);
+            });
     };
 
     const handleVerseClick = (verseNumber: number) => {
@@ -425,40 +438,56 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
         if (!user || !firestore || selectedVerses.length === 0 || !chapterContent || unfinishedHighlight) return;
 
         setIsProcessingHighlight(true);
-        try {
-            const newHighlightRef = doc(collection(firestore, 'users', user.uid, 'bibleHighlights'));
-            
-            await setDoc(newHighlightRef, {
-                userId: user.uid,
-                book: chapterContent.book,
-                chapter: chapterContent.chapter,
-                verses: selectedVerses,
-                color: 'blue',
-                createdAt: serverTimestamp(),
-                note: '',
+        const newHighlightRef = doc(collection(firestore, 'users', user.uid, 'bibleHighlights'));
+        const newHighlightData = {
+            userId: user.uid,
+            book: chapterContent.book,
+            chapter: chapterContent.chapter,
+            verses: selectedVerses,
+            color: 'blue',
+            createdAt: serverTimestamp(),
+            note: '',
+        };
+
+        setDoc(newHighlightRef, newHighlightData)
+            .then(() => {
+                setSelectedVerses([]);
+                setActiveHighlightId(newHighlightRef.id);
+                if (isMobile) {
+                    setMobileTab('notes');
+                }
+            })
+            .catch(() => {
+                const permissionError = new FirestorePermissionError({
+                    path: newHighlightRef.path,
+                    operation: 'create',
+                    requestResourceData: newHighlightData
+                });
+                errorEmitter.emit('permission-error', permissionError);
+            })
+            .finally(() => {
+                setIsProcessingHighlight(false);
             });
-            
-            setSelectedVerses([]);
-            setActiveHighlightId(newHighlightRef.id);
-            if (isMobile) {
-              setMobileTab('notes');
-            }
-        } catch (error) {
-            toast({ variant: 'destructive', title: 'Error', description: 'Could not save highlight.' });
-        } finally {
-            setIsProcessingHighlight(false);
-        }
     };
     
     const handleUpdateNote = async (highlightId: string, noteText: string) => {
         if (!user || !firestore) return;
-        try {
-            const highlightRef = doc(firestore, 'users', user.uid, 'bibleHighlights', highlightId);
-            await updateDoc(highlightRef, { note: noteText, updatedAt: serverTimestamp() });
-            toast({ title: 'Note Saved' });
-        } catch (error) {
-            toast({ variant: 'destructive', title: 'Error', description: 'Could not save note.' });
-        }
+
+        const highlightRef = doc(firestore, 'users', user.uid, 'bibleHighlights', highlightId);
+        const payload = { note: noteText, updatedAt: serverTimestamp() };
+
+        return updateDoc(highlightRef, payload)
+            .then(() => {
+                toast({ title: 'Note Saved' });
+            })
+            .catch(() => {
+                const permissionError = new FirestorePermissionError({
+                    path: highlightRef.path,
+                    operation: 'update',
+                    requestResourceData: payload
+                });
+                errorEmitter.emit('permission-error', permissionError);
+            });
     };
 
 

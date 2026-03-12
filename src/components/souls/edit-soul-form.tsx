@@ -131,7 +131,7 @@ export function EditSoulForm({ soul, onSoulUpdated }: EditSoulFormProps) {
             const mailCollectionRef = collection(firestore, 'mail');
             const appUrl = window.location.origin;
             const inviterName = user.displayName || 'A friend';
-            addDoc(mailCollectionRef, {
+            const mailPayload = {
                 to: [values.email],
                 message: {
                     subject: `You're invited to join Testify!`,
@@ -157,12 +157,22 @@ export function EditSoulForm({ soul, onSoulUpdated }: EditSoulFormProps) {
                         </div>
                     `,
                 },
-            }).then(() => {
-                toast({
-                    title: 'Invitation Sent!',
-                    description: `An invitation email has been sent to ${values.email}.`
+            };
+            addDoc(mailCollectionRef, mailPayload)
+                .then(() => {
+                    toast({
+                        title: 'Invitation Sent!',
+                        description: `An invitation email has been sent to ${values.email}.`
+                    });
+                })
+                .catch(() => {
+                    const permissionError = new FirestorePermissionError({
+                        path: mailCollectionRef.path,
+                        operation: 'create',
+                        requestResourceData: mailPayload
+                    });
+                    errorEmitter.emit('permission-error', permissionError);
                 });
-            }).catch(err => console.error("Failed to send invitation email:", err));
         }
 
         onSoulUpdated();
@@ -307,7 +317,7 @@ export function EditSoulForm({ soul, onSoulUpdated }: EditSoulFormProps) {
                                 <FormItem>
                                 <FormLabel>Email</FormLabel>
                                 <FormControl>
-                                    <Input placeholder="john.doe@example.com" {...field} className="text-base"/>
+                                    <Input placeholder="john.doe@example.com" {...field} value={field.value ?? ''} className="text-base"/>
                                 </FormControl>
                                 <FormMessage />
                                 </FormItem>
@@ -320,7 +330,7 @@ export function EditSoulForm({ soul, onSoulUpdated }: EditSoulFormProps) {
                                 <FormItem>
                                 <FormLabel>Phone Number</FormLabel>
                                 <FormControl>
-                                    <Input placeholder="+1 123 456 7890" {...field} className="text-base"/>
+                                    <Input placeholder="+1 123 456 7890" {...field} value={field.value ?? ''} className="text-base"/>
                                 </FormControl>
                                 <FormMessage />
                                 </FormItem>
@@ -333,7 +343,7 @@ export function EditSoulForm({ soul, onSoulUpdated }: EditSoulFormProps) {
                                 <FormItem>
                                 <FormLabel>Church and Address</FormLabel>
                                 <FormControl>
-                                    <Input placeholder="e.g., New Life Church" {...field} className="text-base"/>
+                                    <Input placeholder="e.g., New Life Church" {...field} value={field.value ?? ''} className="text-base"/>
                                 </FormControl>
                                 <FormMessage />
                                 </FormItem>

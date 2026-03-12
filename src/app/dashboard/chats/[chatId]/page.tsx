@@ -28,6 +28,8 @@ import { format, isSameDay, differenceInHours } from 'date-fns';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { safeToDate } from '@/lib/utils';
 import { ChatParticipantsDialog } from '@/components/chat/participants-dialog';
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError } from '@/firebase/errors';
 
 
 export default function ChatPage() {
@@ -204,7 +206,7 @@ export default function ChatPage() {
                 newDocData.replyTo = {
                     messageId: replyingTo.id,
                     text: replyingTo.text?.substring(0, 100) || '',
-                    senderName: chat.participantInfo[replyingTo.senderId]?.displayName || 'User',
+                    senderName: chat.participantInfo[replyingTo.senderId]?.firstName || 'User',
                 };
             }
 
@@ -258,7 +260,7 @@ export default function ChatPage() {
                                 <div style="text-align: center; margin-bottom: 20px;">
                                   <img src="https://i.postimg.cc/5HnLbRH6/testify-logoo-(2).jpg" alt="Testify Logo" style="width: 80px; height: 80px; border-radius: 8px;">
                                 </div>
-                                <p>Hi ${recipientInfo?.displayName || 'there'},</p>
+                                <p>Hi ${recipientInfo?.firstName || 'there'},</p>
                                 <p>You have a new ${replyingTo ? 'reply' : 'message'} from <strong>${user.displayName || 'a user'}</strong> ${chat.campaignTitle ? `in the chat for the campaign "<strong>${chat.campaignTitle}</strong>"` : ''}.</p>
                                 <blockquote style="border-left: 4px solid #ccc; padding-left: 1rem; margin-left: 0; font-style: italic; color: #666;">${newMessage}</blockquote>
                                 <p>You can view the full conversation and reply by clicking the button below:</p>
@@ -288,11 +290,12 @@ export default function ChatPage() {
             setReplyingTo(null);
         } catch (error) {
             console.error("Error sending message:", error);
-            toast({
-              variant: "destructive",
-              title: "Error Sending Message",
-              description: "Could not send your message. Please try again.",
+            const permissionError = new FirestorePermissionError({
+                path: `chats/${chatId}/messages`,
+                operation: 'create',
+                requestResourceData: { text: newMessage, sender: user.uid }
             });
+            errorEmitter.emit('permission-error', permissionError);
         } finally {
             setIsSending(false);
         }
@@ -373,13 +376,13 @@ export default function ChatPage() {
                         <Link href={`/dashboard/profile/${otherParticipantId}`}>
                             <Avatar>
                                 <AvatarImage src={otherParticipantInfo.photoURL} />
-                                <AvatarFallback>{otherParticipantInfo.displayName.charAt(0)}</AvatarFallback>
+                                <AvatarFallback>{otherParticipantInfo.firstName?.charAt(0)}</AvatarFallback>
                             </Avatar>
                         </Link>
                         <div className="flex-grow">
                             <h2 className="font-semibold">
                                 <Link href={`/dashboard/profile/${otherParticipantId}`} className="hover:underline">
-                                    {otherParticipantInfo.displayName}
+                                    {otherParticipantInfo.firstName} {otherParticipantInfo.lastName}
                                 </Link>
                             </h2>
                             {chat.campaignTitle && chat.campaignId ? (
@@ -421,12 +424,12 @@ export default function ChatPage() {
                                                         <Link href={`/dashboard/profile/${msg.senderId}`}>
                                                             <Avatar className="h-8 w-8">
                                                                 <AvatarImage src={senderInfo.photoURL} />
-                                                                <AvatarFallback>{senderInfo.displayName.charAt(0)}</AvatarFallback>
+                                                                <AvatarFallback>{senderInfo.firstName?.charAt(0)}</AvatarFallback>
                                                             </Avatar>
                                                         </Link>
                                                     </TooltipTrigger>
                                                     <TooltipContent>
-                                                        <p>{senderInfo.displayName}</p>
+                                                        <p>{senderInfo.firstName} {senderInfo.lastName}</p>
                                                     </TooltipContent>
                                                 </Tooltip>
                                             )}
@@ -493,7 +496,7 @@ export default function ChatPage() {
 
                                                         {chat.isGroupChat && !isOwnMessage && senderInfo && (
                                                             <Link href={`/dashboard/profile/${msg.senderId}`} className="text-xs font-bold mb-1 hover:underline">
-                                                            {senderInfo.displayName}
+                                                            {senderInfo.firstName} {senderInfo.lastName}
                                                             </Link>
                                                         )}
                                                         {msg.text && <p className="text-sm">{msg.text}</p>}
@@ -532,7 +535,7 @@ export default function ChatPage() {
                     {replyingTo && (
                         <div className="relative rounded-t-lg border bg-muted/50 p-3 pt-2 pb-3 mb-2">
                             <p className="text-xs font-bold">
-                                Replying to {chat.participantInfo[replyingTo.senderId]?.displayName || 'User'}
+                                Replying to {chat.participantInfo[replyingTo.senderId]?.firstName || 'User'}
                             </p>
                             <p className="line-clamp-1 text-sm text-muted-foreground">{replyingTo.text}</p>
                             <Button

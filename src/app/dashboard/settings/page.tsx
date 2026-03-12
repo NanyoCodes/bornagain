@@ -44,6 +44,8 @@ import Link from 'next/link';
 import { useEffect, useState, useMemo } from 'react';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { ChurchSettingsCard } from '@/components/settings/church-settings-card';
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError } from '@/firebase/errors';
 
 // --- Validation Schemas ---
 const notificationFormSchema = z.object({
@@ -117,17 +119,25 @@ function NotificationSettingsForm({ userProfile, userId }: { userProfile: UserPr
 
   async function onSubmit(values: z.infer<typeof notificationFormSchema>) {
     setIsSubmitting(true);
-    try {
-      const userRef = doc(firestore, 'users', userId);
-      await updateDoc(userRef, { notificationSettings: values });
-      toast({ title: 'Success', description: 'Notification settings saved.' });
-      form.reset(values); // Re-sync form state to prevent "dirty" state after submit
-    } catch (error) {
-      console.error('Failed to save settings:', error);
-      toast({ variant: 'destructive', title: 'Error', description: 'Could not save notification settings.' });
-    } finally {
-      setIsSubmitting(false);
-    }
+    const userRef = doc(firestore, 'users', userId);
+    const payload = { notificationSettings: values };
+    
+    updateDoc(userRef, payload)
+        .then(() => {
+            toast({ title: 'Success', description: 'Notification settings saved.' });
+            form.reset(values); // Re-sync form state to prevent "dirty" state after submit
+        })
+        .catch(() => {
+             const permissionError = new FirestorePermissionError({
+                path: userRef.path,
+                operation: 'update',
+                requestResourceData: payload,
+            });
+            errorEmitter.emit('permission-error', permissionError);
+        })
+        .finally(() => {
+            setIsSubmitting(false);
+        });
   }
   
   return (
