@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
@@ -127,7 +128,7 @@ export default function TestimoniesPage() {
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div className="space-y-2">
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight font-headline">
+          <h1 className="text-xl sm:text-2xl font-bold tracking-tight font-headline">
             Testimonies &amp; Prayer Requests
           </h1>
           <p className="text-sm text-muted-foreground">
