@@ -276,10 +276,10 @@ export function CampaignCard({ campaign, userId, userProfile, isJoined }: { camp
     e.stopPropagation();
   };
 
-  const startDate = safeToDate(campaign.startDate);
-  const endDate = safeToDate(campaign.endDate);
+  const startDate = useMemo(() => safeToDate(campaign.startDate), [campaign.startDate]);
+  const endDate = useMemo(() => safeToDate(campaign.endDate), [campaign.endDate]);
 
-  const getStatus = (): "Ongoing" | "Upcoming" | "Past" => {
+  const status = useMemo(() => {
     const now = new Date();
     if (!startDate || !endDate) return "Past";
     
@@ -303,8 +303,8 @@ export function CampaignCard({ campaign, userId, userProfile, isJoined }: { camp
 
     if (startDateTime > now) return "Upcoming";
     return "Ongoing";
-  };
-  const status = getStatus();
+  }, [startDate, endDate, campaign.startTime, campaign.endTime]);
+
 
   const borderColorClass = useMemo(() => {
     switch (status) {
@@ -465,38 +465,39 @@ export function CampaignCard({ campaign, userId, userProfile, isJoined }: { camp
   };
 
 
-  const startTimeFormatted = campaign.startTime && /^\d{2}:\d{2}$/.test(campaign.startTime)
+  const startTimeFormatted = useMemo(() => campaign.startTime && /^\d{2}:\d{2}$/.test(campaign.startTime)
     ? format(parse(campaign.startTime, 'HH:mm', new Date()), 'p')
-    : campaign.startTime;
+    : campaign.startTime, [campaign.startTime]);
 
-  const endTimeFormatted = campaign.endTime && /^\d{2}:\d{2}$/.test(campaign.endTime)
+  const endTimeFormatted = useMemo(() => campaign.endTime && /^\d{2}:\d{2}$/.test(campaign.endTime)
     ? format(parse(campaign.endTime, 'HH:mm', new Date()), 'p')
-    : campaign.endTime;
+    : campaign.endTime, [campaign.endTime]);
 
-  let dateString;
-  if (startDate && endDate) {
-      const startFormatted = format(startDate, "PPP");
-      if (isSameDay(startDate, endDate)) {
-          dateString = startFormatted;
-      } else {
-          const endFormatted = format(endDate, "PPP");
-          const days = differenceInDays(endDate, startDate) + 1;
-          dateString = `${startFormatted} to ${endFormatted} (${days} days)`;
-      }
-  } else {
-      dateString = "Date not set";
-  }
+  const dateString = useMemo(() => {
+    if (startDate && endDate) {
+        const startFormatted = format(startDate, "PPP");
+        if (isSameDay(startDate, endDate)) {
+            return startFormatted;
+        } else {
+            const endFormatted = format(endDate, "PPP");
+            const days = differenceInDays(endDate, startDate) + 1;
+            return `${startFormatted} to ${endFormatted} (${days} days)`;
+        }
+    } else {
+        return "Date not set";
+    }
+  }, [startDate, endDate]);
   
-  const timeString = campaign.startTime && campaign.endTime ? `${startTimeFormatted} - ${endTimeFormatted}` : "Time not set";
+  const timeString = useMemo(() => campaign.startTime && campaign.endTime ? `${startTimeFormatted} - ${endTimeFormatted}` : "Time not set", [startTimeFormatted, endTimeFormatted, campaign.startTime, campaign.endTime]);
   
-  const footerDateText = (() => {
+  const footerDateText = useMemo(() => {
     const createdAtDate = safeToDate(campaign.createdAt);
     if (!createdAtDate) return '';
     if (status === 'Past' && endDate) {
         return `Ended on ${format(endDate, 'PPP')}`;
     }
     return `Created on ${format(createdAtDate, 'PPP')}`;
-  })();
+  }, [campaign.createdAt, status, endDate]);
 
   const LogSoulDialog = (
     <Dialog open={isLogSoulOpen} onOpenChange={setIsLogSoulOpen}>

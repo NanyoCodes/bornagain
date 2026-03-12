@@ -1,3 +1,4 @@
+
 "use client";
 
 import * as React from "react";
@@ -19,7 +20,7 @@ import { Testimony } from "@/lib/types";
 import { format, isToday } from "date-fns";
 import { Share2, MoreVertical, Edit, Trash2, Loader2 } from "lucide-react";
 import { useUser, useFirestore } from "@/firebase";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -48,13 +49,15 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony }: { 
   const isAuthor = user?.uid === testimony.authorId;
   const authorFullName = `${testimony.authorFirstName} ${testimony.authorLastName}`;
   
-  const createdAtDate = testimony.createdAt
-    ? new Date(testimony.createdAt.seconds * 1000)
-    : new Date();
+  const displayDate = useMemo(() => {
+    const createdAtDate = testimony.createdAt
+      ? new Date(testimony.createdAt.seconds * 1000)
+      : new Date();
+    return isToday(createdAtDate)
+      ? format(createdAtDate, "p")
+      : format(createdAtDate, "PPP");
+  }, [testimony.createdAt]);
 
-  const displayDate = isToday(createdAtDate)
-    ? format(createdAtDate, "p")
-    : format(createdAtDate, "PPP");
 
   const handleDelete = () => {
     if (!isAuthor || !firestore) return;

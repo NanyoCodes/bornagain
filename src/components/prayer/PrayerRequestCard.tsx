@@ -1,3 +1,4 @@
+
 "use client";
 
 import {
@@ -36,13 +37,15 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({ prayerRequest
   const prayerCount = usersWhoPrayed.length;
   const hasPrayed = useMemo(() => user ? usersWhoPrayed.includes(user.uid) : false, [user, usersWhoPrayed]);
 
-  const createdAtDate = prayerRequest.createdAt
-    ? new Date(prayerRequest.createdAt.seconds * 1000)
-    : new Date();
-  
-  const displayDate = "Shared " + (isToday(createdAtDate)
+  const displayDate = useMemo(() => {
+    const createdAtDate = prayerRequest.createdAt
+      ? new Date(prayerRequest.createdAt.seconds * 1000)
+      : new Date();
+    
+    return "Shared " + (isToday(createdAtDate)
       ? format(createdAtDate, 'p')
       : format(createdAtDate, 'PPP'));
+  }, [prayerRequest.createdAt]);
 
 
   const handlePray = () => {

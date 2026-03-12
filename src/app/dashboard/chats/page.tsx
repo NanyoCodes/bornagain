@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useCollection, useFirestore, useUser } from '@/firebase';
@@ -16,7 +17,7 @@ import { ChatParticipantsDialog } from '@/components/chat/participants-dialog';
 
 function ChatListItem({ chat, currentUserId, isUnread }: { chat: Chat, currentUserId: string, isUnread: boolean }) {
     const router = useRouter();
-    const lastUpdatedAt = chat.lastUpdatedAt?.toDate ? chat.lastUpdatedAt.toDate() : new Date();
+    const lastUpdatedAt = useMemo(() => chat.lastUpdatedAt?.toDate ? chat.lastUpdatedAt.toDate() : new Date(), [chat.lastUpdatedAt]);
 
     const containerClasses = cn(
         "block hover:bg-muted/50 active:bg-muted/50 transition-colors cursor-pointer",
@@ -124,7 +125,7 @@ export default function ChatsPage() {
             where('type', '==', 'new_chat_message')
         );
     }, [user?.uid, firestore]);
-    const { data: unreadNotifications, loading: loadingNotifications } = useCollection<Notification>(notificationsQuery);
+    const { data: unreadNotifications, loading: loadingNotifications } = useCollection<Notification>(unreadNotificationsQuery);
 
     const loading = userLoading || loadingChats || loadingNotifications;
 
