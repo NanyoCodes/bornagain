@@ -46,7 +46,7 @@ export default function SoulsWonPage() {
   useEffect(() => {
     setMounted(true);
     setIsSearchVisible(true);
-    setSearchPlaceholder("Search by name, email, phone...");
+    setSearchPlaceholder("Search by name, phone..."); // email removed for privacy
     return () => {
       setIsSearchVisible(false);
       setSearchTerm("");
@@ -67,8 +67,7 @@ export default function SoulsWonPage() {
     const term = searchTerm.toLowerCase();
     return souls.filter(soul => 
       `${soul.firstName} ${soul.lastName}`.toLowerCase().includes(term) ||
-      (soul.email && soul.email.toLowerCase().includes(term)) ||
-      (soul.phone && soul.phone.toLowerCase().includes(term)) ||
+      (soul.phone && soul.phone.toLowerCase().includes(term)) || // email search removed for privacy
       soul.source.toLowerCase().includes(term) ||
       (soul.sourceDetails && soul.sourceDetails.toLowerCase().includes(term)) ||
       (soul.church && soul.church.toLowerCase().includes(term))
@@ -90,7 +89,7 @@ export default function SoulsWonPage() {
     }
 
     const headers = [
-      "First Name", "Last Name", "Email", "Phone", "Church", "Location Won", "Date Won", "Source", "Source Details", "Status",
+      "First Name", "Last Name", "Phone", "Church", "Location Won", "Date Won", "Source", "Source Details", "Status", // Email removed
       "Attending Church", "In Bible Study", "Attending Prayer", "Last Follow Up Date", "Last Follow Up Note"
     ];
 
@@ -104,8 +103,7 @@ export default function SoulsWonPage() {
         return [
             soul.firstName,
             soul.lastName,
-            soul.email || '',
-            soul.phone || '',
+            soul.phone || '', // email removed
             soul.church || '',
             locationWonString,
             soul.wonAt?.toDate ? format(soul.wonAt.toDate(), "yyyy-MM-dd") : '',
@@ -188,7 +186,7 @@ export default function SoulsWonPage() {
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div className="space-y-2">
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight font-headline">Souls Won</h1>
+          <h1 className="text-xl sm:text-2xl font-bold tracking-tight font-headline">Souls Won</h1>
           <p className="text-sm text-muted-foreground">
             Track and nurture individuals you've led to Christ.
           </p>
@@ -252,5 +250,3 @@ export default function SoulsWonPage() {
     </div>
   );
 }
-
-    
