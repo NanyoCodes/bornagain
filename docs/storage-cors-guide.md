@@ -1,6 +1,6 @@
 # How to Fix Firebase Storage CORS Policy (Visual Guide)
 
-If you are seeing errors like `Max retry time for operation exceeded` or `storage/retry-limit-exceeded`, it almost always means that a Cross-Origin Resource Sharing (CORS) policy issue is preventing your web application from uploading photos to Firebase Storage. This is a standard browser security feature.
+If you are seeing errors like `Max retry time for operation exceeded` or `storage/unauthorized`, it almost always means that a Cross-Origin Resource Sharing (CORS) policy issue is preventing your web application from uploading photos to Firebase Storage. This is a standard browser security feature.
 
 **This guide provides a straightforward, visual method using the Google Cloud Console website, which is more reliable than command-line tools like `gsutil`.**
 
@@ -34,11 +34,13 @@ If you do not see this project in the list, you may be logged in with the wrong 
 
 Once you are in the correct project, you will see a list of storage buckets.
 
-1.  Click on the bucket named **`studio-6220967431-56fe2.appspot.com`**.
+**Visual Check:** The page should have a table with columns like "Name", "Location", "Default storage class", etc. You are looking for an entry in the "Name" column.
 
-    **IMPORTANT:** The name ends in **`.appspot.com`**, not `.firebasestorage.app`. This is a common point of confusion. You must click the one with `.appspot.com`.
+1.  In that table, click on the bucket **NAME** that is **EXACTLY** `studio-6220967431-56fe2.appspot.com`.
 
-    *   **Troubleshooting:** If you have selected the correct project but you *still* do not see this bucket, it means Storage was not enabled correctly. Please go back to the [Firebase Console](https://console.firebase.google.com/project/studio-6220967431-56fe2/storage), select your project, go to **Build > Storage**, and click **"Get started"**. After it's created, refresh the Google Cloud page.
+    **IMPORTANT:** The name ends in **`.appspot.com`**. Do NOT look for anything ending in `.firebasestorage.app`. That is a URL for accessing files, not the bucket's name for configuration. The name you click on must be the one with `.appspot.com`.
+
+    *   **Troubleshooting:** If you have selected the correct project but you *still* do not see this bucket in the list, it means Storage was not enabled correctly. Please go back to the [Firebase Console](https://console.firebase.google.com/project/studio-6220967431-56fe2/storage), select your project, go to **Build > Storage**, and click **"Get started"**. After it's created, refresh the Google Cloud page.
 
 ### Step 4: Configure CORS
 
