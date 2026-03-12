@@ -33,11 +33,9 @@ import { CreateTestimonyForm } from "../testimonies/create-testimony-form";
 import { Badge } from "../ui/badge";
 import { useRouter } from "next/navigation";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip";
-import { Skeleton } from "../ui/skeleton";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { JoinCampaignDialog } from "./join-campaign-dialog";
-import { ScrollArea } from "../ui/scroll-area";
 import { safeToDate } from "@/lib/utils";
 
 
@@ -74,9 +72,9 @@ function ParticipantsDialog({ campaign, children }: { campaign: Campaign; childr
         <div className="max-h-[60vh] overflow-y-auto pr-4">
           {loading && (
             <div className="space-y-2">
-              <Skeleton className="h-10 w-full" />
-              <Skeleton className="h-10 w-full" />
-              <Skeleton className="h-10 w-full" />
+              <div className="h-10 w-full" />
+              <div className="h-10 w-full" />
+              <div className="h-10 w-full" />
             </div>
           )}
           {!loading && participants && (
@@ -122,120 +120,6 @@ function ParticipantsDialog({ campaign, children }: { campaign: Campaign; childr
     </Dialog>
   );
 }
-
-function ScriptureDisplay({ reference, caption }: { reference: string; caption?: string; }) {
-  const [scriptureText, setScriptureText] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const scriptureRef = useRef<HTMLParagraphElement>(null);
-  const [isTruncated, setIsTruncated] = useState(false);
-  const [showFullScripture, setShowFullScripture] = useState(false);
-
-  useEffect(() => {
-    if (!reference) {
-        setIsLoading(false);
-        return;
-    };
-
-    setIsLoading(true);
-    setScriptureText(null);
-    setError(null);
-    setIsTruncated(false);
-
-    const fetchScripture = async () => {
-      try {
-        const response = await fetch(`https://bible-api.com/${encodeURIComponent(reference)}`);
-        if (!response.ok) {
-          throw new Error(`Failed to fetch scripture. Status: ${response.status}`);
-        }
-        const data = await response.json();
-        if (data.error) {
-            throw new Error(data.error);
-        }
-        setScriptureText(data.text.trim());
-      } catch (e: any) {
-        console.warn(`Could not fetch scripture for "${reference}":`, e.message);
-        setError(e.message);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchScripture();
-  }, [reference]);
-
-  useEffect(() => {
-    const checkTruncation = () => {
-      if (scriptureRef.current) {
-        setIsTruncated(scriptureRef.current.scrollHeight > scriptureRef.current.clientHeight);
-      }
-    };
-    if (scriptureText) {
-      // Delay to allow for rendering
-      const timeoutId = setTimeout(checkTruncation, 100);
-      window.addEventListener('resize', checkTruncation);
-      return () => {
-        clearTimeout(timeoutId);
-        window.removeEventListener('resize', checkTruncation);
-      };
-    }
-  }, [scriptureText]);
-
-  if (isLoading) {
-    return (
-        <div className="mt-4 space-y-2">
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-4 w-5/6" />
-            <Skeleton className="h-4 w-1/2" />
-        </div>
-    );
-  }
-
-  // Fallback to old display if fetch fails or reference is bad
-  if (error || !scriptureText) {
-    if (caption) {
-        return (
-            <blockquote className="mt-4 border-l-2 pl-4 italic">
-                &ldquo;{caption}&rdquo;
-                <footer className="text-right text-sm not-italic mt-2">- Inspired by {reference}</footer>
-            </blockquote>
-        );
-    }
-    return (
-         <div className="mt-4 text-sm text-muted-foreground">
-            <span className="font-semibold">Inspirational Scripture:</span> {reference}
-        </div>
-    );
-  }
-
-  // Success display
-  return (
-    <blockquote className="mt-4 border-l-2 pl-4 italic">
-        <p ref={scriptureRef} className="line-clamp-3">&ldquo;{scriptureText}&rdquo;</p>
-        {isTruncated && (
-            <Dialog open={showFullScripture} onOpenChange={setShowFullScripture}>
-                <DialogTrigger asChild>
-                    <Button variant="link" className="p-0 h-auto text-sm -mt-1" onClick={(e) => e.stopPropagation()}>Read More</Button>
-                </DialogTrigger>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>{reference}</DialogTitle>
-                        <DialogDescription>Full scripture text.</DialogDescription>
-                    </DialogHeader>
-                    <ScrollArea className="max-h-[60vh] pr-4">
-                        <p className="whitespace-pre-wrap">&ldquo;{scriptureText}&rdquo;</p>
-                    </ScrollArea>
-                </DialogContent>
-            </Dialog>
-        )}
-        <footer className="text-right text-sm not-italic mt-2">
-            - {reference}
-            {caption && <div className="mt-1 opacity-80">&ldquo;{caption}&rdquo;</div>}
-        </footer>
-    </blockquote>
-  );
-}
-
 
 export function CampaignCard({ campaign, userId, userProfile, isJoined }: { campaign: Campaign; userId?: string, userProfile?: UserProfile | null, isJoined: boolean }) {
   const { toast } = useToast();
@@ -649,10 +533,6 @@ export function CampaignCard({ campaign, userId, userProfile, isJoined }: { camp
                 )}
             </div>
             
-            {campaign.scripture && (
-                <ScriptureDisplay reference={campaign.scripture} caption={campaign.scriptureTestimony} />
-            )}
-
             <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                 <div className="rounded-lg border p-3 flex items-start gap-3">
                     <MapPin className="h-5 w-5 text-primary shrink-0 mt-1" />
