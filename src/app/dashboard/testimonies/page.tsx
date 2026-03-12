@@ -131,7 +131,7 @@ export default function TestimoniesPage() {
           <h1 className="text-xl sm:text-2xl font-bold tracking-tight font-headline">
             Testimonies &amp; Prayer Requests
           </h1>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-xs text-muted-foreground">
             Read testimonies of what God has done and pray for others' needs.
           </p>
         </div>
