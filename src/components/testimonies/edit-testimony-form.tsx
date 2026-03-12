@@ -13,6 +13,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
@@ -29,6 +30,7 @@ const testimonyCategories: TestimonyCategory[] = ['Healing', 'Financial Breakthr
 const formSchema = z.object({
   category: z.string({ required_error: "Please select a category." }),
   content: z.string().min(50, "Testimony must be at least 50 characters.").max(5000, "Testimony is too long."),
+  imageUrl: z.string().url({ message: "Please enter a valid URL." }).optional().or(z.literal('')),
 });
 
 type EditTestimonyFormProps = {
@@ -48,6 +50,7 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
     defaultValues: {
       category: testimony.category,
       content: testimony.content,
+      imageUrl: testimony.imageUrl || '',
     },
   });
 
@@ -67,6 +70,7 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
     const testimonyUpdate: { [key: string]: any } = {
         category: values.category,
         content: values.content,
+        imageUrl: values.imageUrl || null,
         updatedAt: serverTimestamp(),
     };
 
@@ -122,6 +126,19 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
               <FormLabel>Your Testimony</FormLabel>
               <FormControl>
                 <Textarea className="min-h-[150px] text-base" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="imageUrl"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Image URL (Optional)</FormLabel>
+              <FormControl>
+                <Input placeholder="https://example.com/image.jpg" {...field} value={field.value ?? ''} />
               </FormControl>
               <FormMessage />
             </FormItem>

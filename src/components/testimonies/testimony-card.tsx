@@ -3,6 +3,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import {
   Card,
   CardContent,
@@ -157,7 +158,17 @@ export function TestimonyCard({ testimony }: { testimony: Testimony }) {
         </div>
         <Badge variant="secondary" className="shrink-0">{testimony.category}</Badge>
       </CardHeader>
-      <CardContent className="flex-grow py-0 space-y-4">
+      {testimony.imageUrl && (
+        <div className="aspect-video w-full relative">
+            <Image
+                src={testimony.imageUrl}
+                alt={`Image for testimony by ${authorFullName}`}
+                fill
+                className="object-cover"
+            />
+        </div>
+       )}
+      <CardContent className="flex-grow pt-6 space-y-4">
         <p ref={contentRef} className="text-sm text-muted-foreground whitespace-pre-wrap line-clamp-4">
           {testimony.content}
         </p>
@@ -172,6 +183,16 @@ export function TestimonyCard({ testimony }: { testimony: Testimony }) {
                         <DialogDescription>Category: {testimony.category}</DialogDescription>
                     </DialogHeader>
                     <div className="max-h-[60vh] overflow-y-auto pr-4 space-y-4">
+                        {testimony.imageUrl && (
+                            <div className="aspect-video relative overflow-hidden rounded-md">
+                                <Image
+                                    src={testimony.imageUrl}
+                                    alt={`Image for testimony by ${authorFullName}`}
+                                    fill
+                                    className="object-cover"
+                                />
+                            </div>
+                        )}
                         <p className="text-sm text-muted-foreground whitespace-pre-wrap">{testimony.content}</p>
                     </div>
                 </DialogContent>

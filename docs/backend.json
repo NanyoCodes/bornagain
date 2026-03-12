@@ -219,6 +219,11 @@
           "type": "string",
           "format": "uri"
         },
+        "imageUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "An optional URL for an image related to the testimony."
+        },
         "createdAt": {
           "type": "object"
         },

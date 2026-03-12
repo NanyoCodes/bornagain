@@ -30,19 +30,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ref, uploadBytesResumable, getDownloadURL, type FirebaseStorageError } from "firebase/storage";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
-const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
-const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
-
 const formSchema = z.object({
   firstName: z.string().min(2, "First name must be at least 2 characters.").max(50, "Name is too long."),
   lastName: z.string().min(2, "Last name must be at least 2 characters.").max(50, "Name is too long."),
-  photoFile: z
-    .any()
-    .refine((files) => !files || files?.length === 0 || files?.[0]?.size <= MAX_FILE_SIZE, `Max image size is 5MB.`)
-    .refine(
-      (files) => !files || files?.length === 0 || ACCEPTED_IMAGE_TYPES.includes(files?.[0]?.type),
-      "Only .jpg, .jpeg, .png and .webp formats are supported."
-    ).optional(),
+  photoURL: z.string().url({ message: "Please enter a valid URL." }).optional().or(z.literal('')),
   bio: z.string().max(280, "Bio is too long.").optional(),
   city: z.string().max(50, "City is too long.").optional(),
   country: z.string().max(50, "Country is too long.").optional(),
@@ -60,16 +51,15 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
   const { user } = useUser();
   const firestore = useFirestore();
   const auth = useAuth();
-  const storage = useStorage();
   
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState<number | null>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       firstName: userProfile.firstName || "",
       lastName: userProfile.lastName || "",
+      photoURL: userProfile.photoURL || "",
       bio: userProfile.bio || "",
       city: userProfile.location?.city || "",
       country: userProfile.location?.country || "",
@@ -77,8 +67,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
     },
   });
   
-  const photoFile = form.watch('photoFile');
-  const photoPreview = photoFile?.[0] ? URL.createObjectURL(photoFile[0]) : userProfile.photoURL;
+  const photoPreview = form.watch('photoURL') || userProfile.photoURL;
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (!user || !firestore || !auth.currentUser) {
@@ -86,57 +75,22 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
       return;
     }
     setIsSubmitting(true);
-    setUploadProgress(null);
 
     try {
-      let photoURL = userProfile.photoURL;
-      const photoFile = values.photoFile?.[0];
-
-      // 1. Upload photo if a new one is selected
-      if (photoFile && storage) {
-        const storageRef = ref(storage, `profile-pictures/${user.uid}/profile-photo.jpg`);
-        const metadata = { contentType: photoFile.type };
-        const uploadTask = uploadBytesResumable(storageRef, photoFile, metadata);
-        
-        await new Promise<void>((resolve, reject) => {
-            uploadTask.on('state_changed',
-            (snapshot) => {
-                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                setUploadProgress(progress);
-            },
-            (error: FirebaseStorageError) => {
-                console.error("Upload failed:", error);
-                setUploadProgress(null);
-                reject(error);
-            },
-            async () => {
-                try {
-                    photoURL = await getDownloadURL(uploadTask.snapshot.ref);
-                    setUploadProgress(null);
-                    resolve();
-                } catch (error) {
-                    reject(error)
-                }
-            });
-        });
-      }
-      
       const displayName = `${values.firstName} ${values.lastName}`;
 
-      // 2. Prepare auth profile update
-      const authUpdatePayload: { displayName?: string; photoURL?: string | null } = {};
+      const authUpdatePayload: { displayName?: string; photoURL?: string } = {};
       if (user.displayName !== displayName) {
         authUpdatePayload.displayName = displayName;
       }
-      if (user.photoURL !== photoURL) {
-        authUpdatePayload.photoURL = photoURL;
+      if (user.photoURL !== values.photoURL) {
+        authUpdatePayload.photoURL = values.photoURL;
       }
       
       const authUpdatePromise = Object.keys(authUpdatePayload).length > 0 
         ? updateProfile(auth.currentUser, authUpdatePayload) 
         : Promise.resolve();
-
-      // 3. Prepare Firestore document update
+      
       const firestoreUpdatePayload = {
         firstName: values.firstName,
         lastName: values.lastName,
@@ -150,7 +104,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
           country_lowercase: (values.country || "").toLowerCase(),
         },
         phone: values.phone || "",
-        photoURL: photoURL || null,
+        photoURL: values.photoURL || null,
       };
       
       const firestoreUpdatePromise = updateDoc(doc(firestore, 'users', user.uid), firestoreUpdatePayload).catch((serverError) => {
@@ -163,7 +117,6 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
         throw permissionError;
       });
       
-      // 4. Run updates in parallel
       await Promise.all([authUpdatePromise, firestoreUpdatePromise]);
       
       toast({ title: "Profile Updated", description: "Your profile details have been saved." });
@@ -171,20 +124,11 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
 
     } catch (error: any) {
        console.error("Profile update process failed:", error);
-       if (error.code && error.code.startsWith('storage/')) {
-         toast({
-           variant: 'destructive',
-           title: 'Upload Failed: Check Configuration',
-           description: 'Your browser is being blocked from uploading. This is almost always a project configuration issue (CORS, Billing, or APIs). Please follow the troubleshooting guide.',
-           action: <ToastAction altText="Troubleshoot" onClick={() => window.open('/docs/storage-cors-guide.md', '_blank')}>View Guide</ToastAction>,
-           duration: 20000,
-         });
-       } else if (error.name !== 'FirestorePermissionError') {
+       if (error.name !== 'FirestorePermissionError') {
          toast({ variant: 'destructive', title: "Update Failed", description: error.message || "Could not update profile details." });
        }
     } finally {
       setIsSubmitting(false);
-      setUploadProgress(null);
     }
   }
 
@@ -199,16 +143,15 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
             </Avatar>
              <FormField
                 control={form.control}
-                name="photoFile"
-                render={({ field: { onChange, value, ...fieldProps } }) => (
+                name="photoURL"
+                render={({ field }) => (
                     <FormItem className="w-full">
-                    <FormLabel>Change Photo</FormLabel>
+                    <FormLabel>Photo URL</FormLabel>
                     <FormControl>
-                        <Input 
-                            type="file" 
-                            accept="image/png, image/jpeg, image/webp"
-                            {...fieldProps}
-                            onChange={(e) => onChange(e.target.files)}
+                        <Input
+                            placeholder="https://example.com/photo.jpg"
+                            {...field}
+                            value={field.value ?? ''}
                         />
                     </FormControl>
                     <FormMessage />
@@ -307,8 +250,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
             )}
           />
           <Button type="submit" className="w-full" disabled={isSubmitting}>
-            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {uploadProgress !== null ? `Uploading: ${Math.round(uploadProgress)}%` : isSubmitting ? 'Saving...' : 'Save Changes'}
+            {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 'Save Changes'}
           </Button>
         </form>
       </Form>
