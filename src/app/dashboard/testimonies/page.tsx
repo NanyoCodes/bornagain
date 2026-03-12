@@ -31,6 +31,7 @@ import { collection, query, orderBy } from "firebase/firestore";
 import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card";
 import { useSearch } from "@/context/search-context";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { format, isToday } from 'date-fns';
 
 export default function TestimoniesPage() {
   const [isTestimonyDialogOpen, setIsTestimonyDialogOpen] = useState(false);
@@ -129,7 +130,7 @@ export default function TestimoniesPage() {
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight font-headline">
             Testimonies &amp; Prayer Requests
           </h1>
-          <p className="text-muted-foreground">
+          <p className="text-sm text-muted-foreground">
             Read testimonies of what God has done and pray for others' needs.
           </p>
         </div>
