@@ -16,10 +16,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { useState, useRef } from "react";
-import type { ChangeEvent } from "react";
-import { Loader2, Edit } from "lucide-react";
-import { useUser, useFirestore, useAuth, useStorage } from "@/firebase";
+import { useState } from "react";
+import { Loader2 } from "lucide-react";
+import { useUser, useFirestore, useAuth } from "@/firebase";
 import { doc, updateDoc } from "firebase/firestore";
 import { updateProfile } from "firebase/auth";
 import type { UserProfile } from "@/lib/types";
@@ -28,12 +27,11 @@ import { FirestorePermissionError } from "@/firebase/errors";
 import { LocationProfileInput } from "../common/location-profile-input";
 import { Label } from "../ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ref, uploadString, getDownloadURL } from "firebase/storage";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 const formSchema = z.object({
   firstName: z.string().min(2, "First name must be at least 2 characters.").max(50, "Name is too long."),
   lastName: z.string().min(2, "Last name must be at least 2 characters.").max(50, "Name is too long."),
+  photoURL: z.string().url("Please enter a valid image URL.").optional().or(z.literal('')),
   bio: z.string().max(280, "Bio is too long.").optional(),
   city: z.string().max(50, "City is too long.").optional(),
   country: z.string().max(50, "Country is too long.").optional(),
@@ -45,64 +43,27 @@ type EditProfileModalProps = {
   onClose: () => void;
 };
 
-// Helper function to read file as data URL
-const readFileAsDataURL = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-            if (typeof reader.result === 'string') {
-                resolve(reader.result);
-            } else {
-                reject(new Error('Failed to read file as Data URL.'));
-            }
-        };
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-    });
-};
-
 
 export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps) {
   const { toast } = useToast();
   const { user } = useUser();
   const firestore = useFirestore();
   const auth = useAuth();
-  const storage = useStorage();
   
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [newPhoto, setNewPhoto] = useState<File | null>(null);
-  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       firstName: userProfile.firstName || "",
       lastName: userProfile.lastName || "",
+      photoURL: userProfile.photoURL || "",
       bio: userProfile.bio || "",
       city: userProfile.location?.city || "",
       country: userProfile.location?.country || "",
       phone: userProfile.phone || "",
     },
   });
-
-  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const MAX_FILE_SIZE_MB = 5;
-      if (file.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
-        toast({
-          variant: 'destructive',
-          title: 'File Too Large',
-          description: `Please select an image smaller than ${MAX_FILE_SIZE_MB}MB.`,
-        });
-        return;
-      }
-      setNewPhoto(file);
-      setPhotoPreview(URL.createObjectURL(file));
-    }
-  };
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (!user || !firestore || !auth.currentUser) {
@@ -112,27 +73,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
     setIsSubmitting(true);
 
     try {
-      let photoURL = userProfile.photoURL || null;
-
-      // 1. Upload photo if a new one is selected
-      if (newPhoto) {
-        const storageRef = ref(storage, `profile-pictures/${user.uid}/profile-photo.jpg`);
-        try {
-            console.log("Reading file as data URL...");
-            const dataUrl = await readFileAsDataURL(newPhoto);
-            console.log(`File read successfully. Data URL length: ${dataUrl.length}`);
-            
-            console.log("Uploading string to storage...");
-            const uploadTask = await uploadString(storageRef, dataUrl, 'data_url');
-            console.log("Upload successful. Getting download URL...");
-            photoURL = await getDownloadURL(uploadTask.ref);
-            console.log("Download URL obtained:", photoURL);
-        } catch (uploadError: any) {
-            console.error("Firebase Storage Upload Error. Raw error object:", uploadError);
-            setIsSubmitting(false);
-            return;
-        }
-      }
+      const photoURL = values.photoURL || null;
       
       const displayName = `${values.firstName} ${values.lastName}`;
 
@@ -194,34 +135,25 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
 
   return (
     <>
-      <Alert variant="destructive" className="mb-6">
-        <AlertTitle>Photo Upload Issues?</AlertTitle>
-        <AlertDescription>
-          If photo uploads are failing, it is an issue with your Firebase Storage configuration, not the app code. Please follow the troubleshooting guide.
-          <Button asChild variant="link" className="p-0 h-auto ml-1 font-semibold">
-            <a href="/docs/storage-cors-guide.md" target="_blank" rel="noopener noreferrer">
-              Open Troubleshooting Guide
-            </a>
-          </Button>
-        </AlertDescription>
-      </Alert>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <div className="flex flex-col items-center gap-2">
+          <div className="flex flex-col items-center gap-4">
             <Avatar className="h-24 w-24">
-              <AvatarImage src={photoPreview || userProfile.photoURL || undefined} alt={`${userProfile.firstName} ${userProfile.lastName}`} />
-              <AvatarFallback>{userProfile.firstName?.charAt(0)}{userProfile.lastName?.charAt(0)}</AvatarFallback>
+              <AvatarImage src={form.watch('photoURL') || undefined} alt={`${form.watch('firstName')} ${form.watch('lastName')}`} />
+              <AvatarFallback>{form.watch('firstName')?.charAt(0)}{form.watch('lastName')?.charAt(0)}</AvatarFallback>
             </Avatar>
-            <Button type="button" variant="outline" size="sm" onClick={() => fileInputRef.current?.click()}>
-                <Edit className="mr-2 h-4 w-4" />
-                Change Photo
-            </Button>
-            <input
-                type="file"
-                ref={fileInputRef}
-                onChange={handleFileChange}
-                accept="image/png, image/jpeg"
-                className="hidden"
+             <FormField
+                control={form.control}
+                name="photoURL"
+                render={({ field }) => (
+                    <FormItem className="w-full">
+                    <FormLabel>Photo URL</FormLabel>
+                    <FormControl>
+                        <Input placeholder="https://example.com/photo.jpg" {...field} value={field.value ?? ''} className="text-base" />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
             />
           </div>
 
@@ -316,10 +248,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
           />
           <Button type="submit" className="w-full" disabled={isSubmitting}>
             {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {isSubmitting 
-              ? (newPhoto ? 'Uploading...' : 'Saving...') 
-              : 'Save Changes'
-            }
+            {isSubmitting ? 'Saving...' : 'Save Changes'}
           </Button>
         </form>
       </Form>
