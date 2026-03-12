@@ -50,10 +50,10 @@ const navItems = [
   { href: "/dashboard/souls-won", label: "Souls Won", icon: UserPlus },
   { href: "/dashboard/testimonies", label: "Testimonies", icon: Newspaper },
   { href: "/dashboard/campaigns", label: "Campaigns", icon: Target },
-  { href: "/dashboard/accountability", label: "Partner", icon: HeartHandshake },
+  { href: "/dashboard/chats", label: "Chats", icon: MessagesSquare },
 ];
 
-function AppHeader() {
+function AppHeader({ unreadChatCount }: { unreadChatCount: number }) {
   const { user } = useUser();
   const pathname = usePathname();
   const auth = useAuth();
@@ -62,18 +62,6 @@ function AppHeader() {
   const logo = PlaceHolderImages.find((img) => img.id === "logo");
   const { searchTerm, setSearchTerm, searchPlaceholder, isSearchVisible } = useSearch();
   const [showMobileSearch, setShowMobileSearch] = useState(false);
-  
-  // Query for unread chat notifications
-  const unreadChatNotifsQuery = useMemo(() => {
-    if (!user?.uid || !firestore) return null;
-    return query(
-      collection(firestore, `users/${user.uid}/notifications`),
-      where('type', '==', 'new_chat_message'),
-      where('isRead', '==', false)
-    );
-  }, [user?.uid, firestore]);
-  const { data: unreadChatNotifications } = useCollection<Notification>(unreadChatNotifsQuery);
-  const unreadChatCount = unreadChatNotifications?.length ?? 0;
 
   // Query for other notifications (for the bell dropdown)
   const otherNotificationTypes = ['campaign_join', 'accountability_nudge', 'accountability_request', 'request_accepted', 'request_declined', 'accountability_partner_removed'];
@@ -176,17 +164,23 @@ function AppHeader() {
         <nav className="hidden items-center gap-5 text-sm font-medium md:flex lg:gap-6">
             {navItems.map((item) => {
               const isActive = item.href === '/dashboard' ? pathname === item.href : pathname.startsWith(item.href);
+              const isChats = item.label === 'Chats';
               return (
                 <Link
                     key={item.href}
                     href={item.href}
                     prefetch={true}
                     className={cn(
-                    "transition-colors hover:text-foreground whitespace-nowrap",
+                    "transition-colors hover:text-foreground whitespace-nowrap relative flex items-center gap-2",
                     isActive ? "text-foreground font-semibold" : "text-muted-foreground"
                     )}
                 >
                     {item.label}
+                    {isChats && unreadChatCount > 0 && (
+                      <span className="flex h-5 w-5 items-center justify-center rounded-full bg-destructive text-xs font-bold text-destructive-foreground">
+                        {unreadChatCount}
+                      </span>
+                    )}
                 </Link>
               );
             })}
@@ -216,17 +210,6 @@ function AppHeader() {
             <span className="sr-only">Search</span>
           </Button>
         )}
-        <Button variant="ghost" size="icon" asChild>
-            <Link href="/dashboard/chats" className="relative">
-                <MessagesSquare className="h-5 w-5" />
-                {unreadChatCount > 0 && (
-                    <div className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-xs font-bold text-destructive-foreground">
-                        {unreadChatCount}
-                    </div>
-                )}
-                <span className="sr-only">Chats</span>
-            </Link>
-        </Button>
         <DropdownMenu onOpenChange={(open) => {
           if (!open && unreadCount > 0) {
             handleMarkAllAsRead();
@@ -301,6 +284,12 @@ function AppHeader() {
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
+              <Link href="/dashboard/accountability">
+                <HeartHandshake className="mr-2 h-4 w-4" />
+                <span>Partner</span>
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
               <Link href="/dashboard/settings">
                 <Settings className="mr-2 h-4 w-4" />
                 <span>Settings</span>
@@ -318,7 +307,7 @@ function AppHeader() {
   );
 }
 
-function BottomNavBar() {
+function BottomNavBar({ unreadChatCount }: { unreadChatCount: number }) {
     const pathname = usePathname();
   
     return (
@@ -326,16 +315,22 @@ function BottomNavBar() {
         <div className="grid h-16 grid-cols-5 items-center">
           {navItems.map((item) => {
             const isActive = item.href === '/dashboard' ? pathname === item.href : pathname.startsWith(item.href);
+            const isChats = item.label === 'Chats';
             return (
               <Link
                 key={item.href}
                 href={item.href}
                 prefetch={true}
                 className={cn(
-                  "flex flex-col items-center justify-center gap-0.5 p-1 text-[10px] transition-colors hover:text-primary",
+                  "relative flex flex-col items-center justify-center gap-0.5 p-1 text-[10px] transition-colors hover:text-primary",
                   isActive ? "text-primary" : "text-muted-foreground"
                 )}
               >
+                 {isChats && unreadChatCount > 0 && (
+                    <div className="absolute top-1 right-2 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[9px] font-bold text-destructive-foreground">
+                        {unreadChatCount}
+                    </div>
+                )}
                 <item.icon className="h-5 w-5" />
                 <span className="text-center">{item.label}</span>
               </Link>
@@ -362,6 +357,17 @@ export default function DashboardLayout({
 
   const userDocRef = useMemo(() => user ? doc(firestore, 'users', user.uid) : null, [user, firestore]);
   const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userDocRef);
+
+  const unreadChatNotifsQuery = useMemo(() => {
+    if (!user?.uid || !firestore) return null;
+    return query(
+      collection(firestore, `users/${user.uid}/notifications`),
+      where('type', '==', 'new_chat_message'),
+      where('isRead', '==', false)
+    );
+  }, [user?.uid, firestore]);
+  const { data: unreadChatNotifications } = useCollection<Notification>(unreadChatNotifsQuery);
+  const unreadChatCount = unreadChatNotifications?.length ?? 0;
 
   useEffect(() => {
     if (!loading && user && firestore) {
@@ -433,7 +439,7 @@ export default function DashboardLayout({
   return (
     <SearchProvider>
       <div className="flex h-dvh w-full flex-col bg-muted/30 overflow-hidden">
-        <AppHeader />
+        <AppHeader unreadChatCount={unreadChatCount} />
         <div className="flex-1 relative min-h-0">
           <main className={cn("absolute inset-0", !isChatPage && "overflow-y-auto")}>
             <div className={cn("max-w-7xl mx-auto", !isChatPage && "p-4 md:p-6 pb-20 md:pb-6", isChatPage && "h-full")}>
@@ -453,7 +459,7 @@ export default function DashboardLayout({
             </div>
           </main>
         </div>
-        <BottomNavBar />
+        <BottomNavBar unreadChatCount={unreadChatCount} />
         <WelcomePopup 
           isOpen={showWelcomePopup}
           onClose={() => setShowWelcomePopup(false)}

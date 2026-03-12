@@ -27,6 +27,7 @@ import { useToast } from '@/hooks/use-toast';
 import { format, isSameDay, differenceInHours } from 'date-fns';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { safeToDate } from '@/lib/utils';
+import { ChatParticipantsDialog } from '@/components/chat/participants-dialog';
 
 
 export default function ChatPage() {
@@ -350,7 +351,7 @@ export default function ChatPage() {
                     <ArrowLeft className="h-4 w-4" />
                     <span className="sr-only">Back</span>
                 </Button>
-                {chat.isGroupChat ? (
+                {chat.isGroupChat && campaign ? (
                     <div className="flex items-center gap-3">
                         <Avatar>
                             <AvatarFallback>{chat.participantIds.length}</AvatarFallback>
@@ -362,7 +363,9 @@ export default function ChatPage() {
                                 </Link>
                                  (Group)
                             </h2>
-                            <p className="text-sm text-muted-foreground">{chat.participantIds.length} participants</p>
+                            <ChatParticipantsDialog chat={chat}>
+                                <p className="text-sm text-muted-foreground hover:underline cursor-pointer">{chat.participantIds.length} participants</p>
+                            </ChatParticipantsDialog>
                         </div>
                     </div>
                 ) : otherParticipantInfo && otherParticipantId ? (

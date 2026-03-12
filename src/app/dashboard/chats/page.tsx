@@ -12,6 +12,7 @@ import { useMemo } from 'react';
 import { MessagesSquare } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
+import { ChatParticipantsDialog } from '@/components/chat/participants-dialog';
 
 function ChatListItem({ chat, currentUserId, isUnread }: { chat: Chat, currentUserId: string, isUnread: boolean }) {
     const router = useRouter();
@@ -44,7 +45,11 @@ function ChatListItem({ chat, currentUserId, isUnread }: { chat: Chat, currentUs
                                 {formatDistanceToNow(lastUpdatedAt, { addSuffix: true })}
                             </div>
                         </div>
-                        <p className="text-sm text-muted-foreground truncate">{chat.participantIds.length} participants</p>
+                        <ChatParticipantsDialog chat={chat}>
+                            <p className="text-sm text-muted-foreground truncate hover:underline cursor-pointer" onClick={(e) => e.stopPropagation()}>
+                                {chat.participantIds.length} participants
+                            </p>
+                        </ChatParticipantsDialog>
                         <p className="text-sm text-muted-foreground truncate mt-1">
                             {chat.hasMessages ? 'Click to view messages' : 'No messages yet.'}
                         </p>
