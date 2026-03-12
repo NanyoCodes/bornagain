@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from "next/link";
@@ -19,7 +18,7 @@ import { Testimony } from "@/lib/types";
 import { format, formatDistanceToNow, differenceInHours } from "date-fns";
 import { Share2, MoreVertical, Edit, Trash2, Loader2 } from "lucide-react";
 import { useUser, useFirestore } from "@/firebase";
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -27,8 +26,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { doc, deleteDoc } from "firebase/firestore";
 import { EditTestimonyForm } from "./edit-testimony-form";
@@ -45,10 +44,6 @@ export function TestimonyCard({ testimony }: { testimony: Testimony }) {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const contentRef = useRef<HTMLParagraphElement>(null);
-  const [isContentTruncated, setIsContentTruncated] = useState(false);
-  const [showFullContent, setShowFullContent] = useState(false);
-
   const isAuthor = user?.uid === testimony.authorId;
   const authorFullName = `${testimony.authorFirstName} ${testimony.authorLastName}`;
   
@@ -63,22 +58,6 @@ export function TestimonyCard({ testimony }: { testimony: Testimony }) {
     hoursDifference >= 24
       ? format(createdAtDate, "PPP 'at' p")
       : formatDistanceToNow(createdAtDate, { addSuffix: true });
-
-    useEffect(() => {
-        const checkTruncation = () => {
-          if (contentRef.current) {
-            setIsContentTruncated(
-              contentRef.current.scrollHeight > contentRef.current.clientHeight
-            );
-          }
-        };
-    
-        // We need to check after a small delay to ensure rendering is complete
-        setTimeout(checkTruncation, 100);
-        window.addEventListener('resize', checkTruncation);
-    
-        return () => window.removeEventListener('resize', checkTruncation);
-      }, [testimony.content]);
 
   const handleDelete = () => {
     if (!isAuthor || !firestore) return;
@@ -171,35 +150,9 @@ export function TestimonyCard({ testimony }: { testimony: Testimony }) {
           </div>
         )}
         <CardContent className="flex-grow pt-6 space-y-4">
-          <p ref={contentRef} className="text-sm text-muted-foreground whitespace-pre-wrap line-clamp-4">
+          <p className="text-sm text-muted-foreground whitespace-pre-wrap line-clamp-4">
             {testimony.content}
           </p>
-          {isContentTruncated && (
-              <Dialog open={showFullContent} onOpenChange={setShowFullContent}>
-                  <DialogTrigger asChild>
-                      <Button variant="link" className="p-0 h-auto text-sm -mt-2">Read More</Button>
-                  </DialogTrigger>
-                  <DialogContent className="sm:max-w-lg">
-                      <DialogHeader>
-                          <DialogTitle>Testimony by {authorFullName}</DialogTitle>
-                          <DialogDescription>Category: {testimony.category}</DialogDescription>
-                      </DialogHeader>
-                      <div className="max-h-[60vh] overflow-y-auto pr-4 space-y-4">
-                          {testimony.imageUrl && (
-                              <div className="aspect-video relative overflow-hidden rounded-md">
-                                  <Image
-                                      src={testimony.imageUrl}
-                                      alt={`Image for testimony by ${authorFullName}`}
-                                      fill
-                                      className="object-cover"
-                                  />
-                              </div>
-                          )}
-                          <p className="text-sm text-muted-foreground whitespace-pre-wrap">{testimony.content}</p>
-                      </div>
-                  </DialogContent>
-              </Dialog>
-          )}
         </CardContent>
         <CardFooter className="pt-4 flex justify-between items-center mt-auto">
           {testimony.campaignTitle && testimony.campaignId && (
