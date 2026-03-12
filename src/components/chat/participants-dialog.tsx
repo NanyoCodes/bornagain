@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -37,7 +38,6 @@ export function ChatParticipantsDialog({ chat, children }: { chat: Chat; childre
                   <Link href={`/dashboard/profile/${id}`}>
                     <p className="font-semibold hover:underline">{p.firstName} {p.lastName}</p>
                   </Link>
-                  <p className="text-sm text-muted-foreground">{p.email}</p>
                 </div>
               </div>
             ))}

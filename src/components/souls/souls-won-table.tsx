@@ -1,3 +1,4 @@
+
 "use client";
 
 import * as React from "react";
@@ -465,7 +466,6 @@ function SoulCard({ soul }: { soul: Soul }) {
                     <div className="border-t pt-4 space-y-4">
                         <div className="flex justify-between items-start">
                             <div className="text-sm text-muted-foreground space-y-1">
-                                {soul.email && <div className="truncate flex items-center gap-2"><Mail className="h-4 w-4"/>{soul.email}</div>}
                                 {soul.phone && <div className="truncate flex items-center gap-2 mt-1"><Phone className="h-4 w-4"/>{soul.phone}</div>}
                                 {soul.church && <div className="flex items-center gap-1 pt-2"><Church className="h-4 w-4" /> {soul.church}</div>}
                                 {locationWonString && <div className="flex items-center gap-1 pt-1"><MapPin className="h-4 w-4" /> {locationWonString}</div>}
@@ -574,7 +574,6 @@ function SoulTableRow({ soul, onEditClick }: { soul: Soul, onEditClick: (soul: S
                 </div>
             </TableCell>
             <TableCell>
-                {soul.email && <div>{soul.email}</div>}
                 {soul.phone && <div className="text-xs text-muted-foreground">{soul.phone}</div>}
             </TableCell>
             <TableCell>
