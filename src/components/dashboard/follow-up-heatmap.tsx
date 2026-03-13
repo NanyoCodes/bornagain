@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { DayPicker } from 'react-day-picker';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import type { Soul } from '@/lib/types';
@@ -9,9 +9,15 @@ import { cn, safeToDate } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Tooltip, TooltipProvider, TooltipTrigger, TooltipContent } from '../ui/tooltip';
+import { Skeleton } from '../ui/skeleton';
 
 export function FollowUpHeatmap({ souls }: { souls: Soul[] }) {
-  const [month, setMonth] = useState<Date>(startOfMonth(new Date()));
+  const [month, setMonth] = useState<Date | undefined>(undefined);
+
+  useEffect(() => {
+    // Set initial month on client to prevent hydration mismatch
+    setMonth(startOfMonth(new Date()));
+  }, []);
 
   const activityMap = useMemo(() => {
     const map = new Map<string, number>();
@@ -54,14 +60,15 @@ export function FollowUpHeatmap({ souls }: { souls: Soul[] }) {
   }, [activityMap]);
 
   const handlePreviousMonth = () => {
-    setMonth(prev => new Date(prev.getFullYear(), prev.getMonth() - 1, 1));
+    setMonth(prev => (prev ? new Date(prev.getFullYear(), prev.getMonth() - 1, 1) : undefined));
   };
 
   const handleNextMonth = () => {
-    setMonth(prev => new Date(prev.getFullYear(), prev.getMonth() + 1, 1));
+    setMonth(prev => (prev ? new Date(prev.getFullYear(), prev.getMonth() + 1, 1) : undefined));
   };
   
   const isNextMonthDisabled = useMemo(() => {
+    if (!month) return true;
     const currentMonth = startOfMonth(new Date());
     return month >= currentMonth;
   }, [month]);
@@ -74,7 +81,10 @@ export function FollowUpHeatmap({ souls }: { souls: Soul[] }) {
           A visual overview of your follow-up activity intensity.
         </CardDescription>
       </CardHeader>
-      <CardContent className="flex justify-center">
+      <CardContent className="flex justify-center items-center min-h-[350px]">
+        {!month ? (
+          <Skeleton className="h-[350px] w-[340px]" />
+        ) : (
         <TooltipProvider>
             <DayPicker
                 month={month}
@@ -154,6 +164,7 @@ export function FollowUpHeatmap({ souls }: { souls: Soul[] }) {
                 }}
             />
         </TooltipProvider>
+        )}
       </CardContent>
     </Card>
   );
