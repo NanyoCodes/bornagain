@@ -42,7 +42,7 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";
 import { useFirestore, useUser } from "@/firebase";
-import { doc, updateDoc, arrayUnion } from "firebase/firestore";
+import { doc, updateDoc, arrayUnion, serverTimestamp } from "firebase/firestore";
 import { EditSoulForm } from "./edit-soul-form";
 import { cn } from "@/lib/utils";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/collapsible";
@@ -145,7 +145,7 @@ function LogFollowUpDialog({ soul, children }: { soul: Soul; children: React.Rea
       const soulRef = doc(firestore, `users/${user.uid}/souls`, soul.id);
       
       const newLogEntry: FollowUpLogItem = {
-        date: new Date() as any,
+        date: serverTimestamp() as any,
         note: values.note || '',
         actions: values.actions || [],
       };
