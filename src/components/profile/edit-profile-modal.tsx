@@ -25,7 +25,6 @@ import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { LocationProfileInput } from "../common/location-profile-input";
 import { Label } from "../ui/label";
-import { ImageUpload } from "../common/image-upload";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../ui/accordion";
 
 const formSchema = z.object({
@@ -129,14 +128,6 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
     <>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <ImageUpload
-            initialImageUrl={form.getValues('photoURL')}
-            onUploadComplete={(url) => {
-              form.setValue('photoURL', url, { shouldDirty: true });
-            }}
-            storagePath="profile-pictures"
-          />
-          
           <div className="grid grid-cols-2 gap-4">
             <FormField
               control={form.control}
