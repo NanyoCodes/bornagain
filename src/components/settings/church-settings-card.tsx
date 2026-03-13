@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -23,6 +24,8 @@ const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Fri
 
 const churchSettingsSchema = z.object({
   name: z.string().min(2, { message: 'Church name must be at least 2 characters.' }).max(100).optional(),
+  branch: z.string().max(100).optional(),
+  location: z.string().max(100).optional(),
   schedule: z.array(z.object({
     day: z.string(),
     time: z.string().refine(val => val, { message: "Time is required." }),
@@ -40,6 +43,8 @@ export function ChurchSettingsCard({ userProfile, userId }: { userProfile: UserP
     resolver: zodResolver(churchSettingsSchema),
     defaultValues: {
       name: userProfile.churchInfo?.name || userProfile.lastChurchAttended || '',
+      branch: userProfile.churchInfo?.branch || '',
+      location: userProfile.churchInfo?.location || '',
       schedule: userProfile.churchInfo?.schedule || [],
     },
   });
@@ -64,6 +69,8 @@ export function ChurchSettingsCard({ userProfile, userId }: { userProfile: UserP
     const payload = {
       churchInfo: {
         name: values.name || null,
+        branch: values.branch || null,
+        location: values.location || null,
         schedule: values.schedule || [],
       },
     };
@@ -110,6 +117,34 @@ export function ChurchSettingsCard({ userProfile, userId }: { userProfile: UserP
                 </FormItem>
               )}
             />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="branch"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Branch (Optional)</FormLabel>
+                    <FormControl>
+                      <Input placeholder="e.g., Downtown Campus" {...field} value={field.value ?? ''} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="location"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Location (Optional)</FormLabel>
+                    <FormControl>
+                      <Input placeholder="e.g., Nairobi, Kenya" {...field} value={field.value ?? ''} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
             <FormItem>
               <div className="mb-4">
                 <FormLabel className="text-base">Worship Schedule</FormLabel>

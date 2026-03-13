@@ -144,6 +144,8 @@
             "description": "The user's primary church details.",
             "properties": {
                 "name": { "type": "string", "description": "The name of the user's church." },
+                "branch": { "type": "string", "description": "The specific branch of the church, if applicable." },
+                "location": { "type": "string", "description": "The city or area of the church." },
                 "schedule": {
                   "type": "array",
                   "description": "The user's worship schedule, with each item containing a day and time.",
@@ -165,7 +167,9 @@
             "items": {
                 "type": "object",
                 "properties": {
-                    "churchName": { "type": "string" },
+                    "churchName": { "type": "string", "description": "Name of the church attended." },
+                    "branch": { "type": "string", "description": "The specific branch of the church, if applicable." },
+                    "location": { "type": "string", "description": "The city or area of the church." },
                     "attendedAt": { "type": "object" },
                     "reason": { "type": "string", "description": "The reason or notes for attending the service." }
                 },

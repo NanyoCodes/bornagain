@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -31,6 +32,8 @@ import { Label } from '../ui/label';
 
 const formSchema = z.object({
   churchName: z.string().min(2, { message: 'Church name must be at least 2 characters.' }).max(100, { message: 'Church name is too long.' }),
+  branch: z.string().max(100, { message: 'Branch name is too long.' }).optional(),
+  location: z.string().max(100, { message: 'Location is too long.' }).optional(),
   reason: z.string().max(500, { message: 'Reason is too long.' }).optional(),
 });
 
@@ -54,6 +57,8 @@ export function AttendChurchDialog({ isOpen, onOpenChange, onDisciplineCompleted
     resolver: zodResolver(formSchema),
     defaultValues: {
       churchName: '',
+      branch: '',
+      location: '',
       reason: '',
     },
   });
@@ -70,25 +75,31 @@ export function AttendChurchDialog({ isOpen, onOpenChange, onDisciplineCompleted
     if (isOpen) {
       setView(initialView);
       form.reset({
-        churchName: userProfile?.churchInfo?.name || userProfile?.lastChurchAttended || '',
+        churchName: userProfile?.lastChurchAttended || '',
+        branch: '',
+        location: '',
         reason: '',
       });
       setReason('');
     }
   }, [isOpen, userProfile, form, initialView]);
 
-  const logAttendance = (churchName: string, reason?: string) => {
+  const logAttendance = (churchName: string, reason?: string, branch?: string, location?: string) => {
     if (!user || !firestore) return Promise.reject(new Error("User or firestore not available"));
     setIsSubmitting(true);
     
     const userRef = doc(firestore, 'users', user.uid);
+    const historyEntry: any = {
+        churchName: churchName,
+        attendedAt: new Date(),
+        reason: reason || "",
+    };
+    if (branch) historyEntry.branch = branch;
+    if (location) historyEntry.location = location;
+    
     const updatePayload = { 
       lastChurchAttended: churchName,
-      attendanceHistory: arrayUnion({
-          churchName: churchName,
-          attendedAt: new Date(),
-          reason: reason || "",
-      })
+      attendanceHistory: arrayUnion(historyEntry)
     };
 
     return updateDoc(userRef, updatePayload)
@@ -114,16 +125,26 @@ export function AttendChurchDialog({ isOpen, onOpenChange, onDisciplineCompleted
 
   const handleConfirmDefaultChurch = () => {
     if (!userProfile?.churchInfo?.name) return;
-    logAttendance(userProfile.churchInfo.name, reason).catch(() => {});
+    logAttendance(
+        userProfile.churchInfo.name, 
+        reason,
+        userProfile.churchInfo.branch,
+        userProfile.churchInfo.location
+    ).catch(() => {});
   };
   
   const handleFormSubmit = (values: z.infer<typeof formSchema>) => {
-    logAttendance(values.churchName, values.reason).catch(() => {});
+    logAttendance(values.churchName, values.reason, values.branch, values.location).catch(() => {});
   };
   
   const handleJoinStream = (schedule: { day: string; time: string; url?: string; }) => {
     if (!userProfile?.churchInfo?.name || !schedule.url) return;
-    logAttendance(userProfile.churchInfo.name, reason)
+    logAttendance(
+        userProfile.churchInfo.name,
+        reason,
+        userProfile.churchInfo.branch,
+        userProfile.churchInfo.location
+    )
         .then(() => {
             window.open(schedule.url, '_blank', 'noopener, noreferrer');
         })
@@ -142,7 +163,7 @@ export function AttendChurchDialog({ isOpen, onOpenChange, onDisciplineCompleted
            <DialogDescription>
             {view === 'confirm' && userProfile?.churchInfo?.name
               ? 'Confirm your attendance for today.'
-              : "That's great! Which church did you attend today?"}
+              : "Attended a different church? Please provide the details below."}
           </DialogDescription>
             {scheduleString && (
                 <div className="mt-2 text-xs text-muted-foreground">
@@ -160,7 +181,8 @@ export function AttendChurchDialog({ isOpen, onOpenChange, onDisciplineCompleted
           <div className="space-y-4 py-4">
             <div className="text-center">
               <p className="text-muted-foreground">Did you attend</p>
-              <p className="text-2xl font-semibold font-headline">{userProfile.churchInfo.name}?</p>
+              <p className="text-2xl font-semibold font-headline">{[userProfile.churchInfo.name, userProfile.churchInfo.branch].filter(Boolean).join(', ')}</p>
+              {userProfile.churchInfo.location && <p className="text-sm text-muted-foreground">{userProfile.churchInfo.location}</p>}
             </div>
             
             <div className="space-y-2">
@@ -209,6 +231,32 @@ export function AttendChurchDialog({ isOpen, onOpenChange, onDisciplineCompleted
                   </FormItem>
                 )}
               />
+               <FormField
+                control={form.control}
+                name="branch"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Branch (Optional)</FormLabel>
+                    <FormControl>
+                      <Input placeholder="e.g., Downtown Campus" {...field} value={field.value ?? ''} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+               <FormField
+                control={form.control}
+                name="location"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Location (Optional)</FormLabel>
+                    <FormControl>
+                      <Input placeholder="e.g., Nairobi, Kenya" {...field} value={field.value ?? ''} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
               <FormField
                 control={form.control}
                 name="reason"
@@ -216,7 +264,7 @@ export function AttendChurchDialog({ isOpen, onOpenChange, onDisciplineCompleted
                   <FormItem>
                     <FormLabel>Reason/Notes (Optional)</FormLabel>
                     <FormControl>
-                      <Textarea placeholder="e.g., Visited a different church today..." {...field} />
+                      <Textarea placeholder="e.g., I was visiting a friend and attended their church..." {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -243,6 +291,11 @@ export function AttendChurchDialog({ isOpen, onOpenChange, onDisciplineCompleted
                             {attendanceHistory.map((item, index) => (
                                 <div key={index} className="text-sm">
                                     <p className="font-semibold">{item.churchName}</p>
+                                    {(item.branch || item.location) && (
+                                        <p className="text-xs text-muted-foreground">
+                                            {[item.branch, item.location].filter(Boolean).join(' - ')}
+                                        </p>
+                                    )}
                                     <p className="text-xs text-muted-foreground">
                                         {item.attendedAt ? format(item.attendedAt.toDate(), "PPP") : 'Date unavailable'}
                                     </p>

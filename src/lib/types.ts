@@ -61,6 +61,8 @@ export type UserProfile = {
   lastChurchAttended?: string;
   churchInfo?: {
     name?: string;
+    branch?: string;
+    location?: string;
     schedule?: {
       day: string;
       time: string;
@@ -69,6 +71,8 @@ export type UserProfile = {
   };
   attendanceHistory?: {
     churchName: string;
+    branch?: string;
+    location?: string;
     attendedAt: Timestamp;
     reason?: string;
   }[];
