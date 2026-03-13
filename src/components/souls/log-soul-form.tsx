@@ -25,13 +25,11 @@ import { collection, query, orderBy, serverTimestamp, doc, runTransaction, addDo
 import { FirestorePermissionError } from "@/firebase/errors";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { ImageUpload } from "../common/image-upload";
 
 const formSchema = z.object({
   firstName: z.string().min(2, "First name must be at least 2 characters."),
   lastName: z.string().min(2, "Last name must be at least 2 characters."),
   email: z.string().email("Please enter a valid email address.").optional().or(z.literal('')),
-  photoURL: z.string().url().optional().or(z.literal('')),
   phone: z.string().optional(),
   church: z.string().optional(),
   locationWonCity: z.string().optional(),
@@ -71,7 +69,6 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps)
       firstName: "",
       lastName: "",
       email: "",
-      photoURL: "",
       phone: "",
       church: "",
       locationWonCity: "",
@@ -120,12 +117,11 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps)
         country_lowercase: (userProfile.location.country || "").toLowerCase(),
     } : undefined;
 
-    const soulData: Omit<Soul, 'id'> = {
+    const soulData: Omit<Soul, 'id' | 'photoURL'> = {
       userId: user.uid,
       firstName: values.firstName,
       lastName: values.lastName,
       email: values.email,
-      photoURL: values.photoURL,
       phone: values.phone,
       church: values.church,
       locationWon: (values.locationWonCity || values.locationWonState || values.locationWonCountry)
@@ -154,7 +150,7 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps)
       const campaign = defaultCampaign || campaigns?.find(c => c.title === values.sourceDetails);
       if (campaign) {
           campaignId = campaign.id;
-          soulData.campaignId = campaign.id;
+          (soulData as Soul).campaignId = campaign.id;
       }
     }
 
@@ -338,16 +334,6 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps)
                 <AccordionTrigger>Optional Details</AccordionTrigger>
                 <AccordionContent>
                     <div className="space-y-4 pt-4">
-                        <FormItem>
-                            <FormLabel>Photo (Optional)</FormLabel>
-                            <ImageUpload
-                                onUploadComplete={(url) => {
-                                    form.setValue('photoURL', url, { shouldDirty: true });
-                                }}
-                                storagePath="profile-pictures"
-                            />
-                            <FormMessage>{form.formState.errors.photoURL?.message}</FormMessage>
-                        </FormItem>
                         <FormField
                         control={form.control}
                         name="email"

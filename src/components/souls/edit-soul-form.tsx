@@ -24,13 +24,11 @@ import { collection, query, orderBy, doc, updateDoc, addDoc, deleteField } from 
 import { FirestorePermissionError } from "@/firebase/errors";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { ImageUpload } from "../common/image-upload";
 
 const formSchema = z.object({
   firstName: z.string().min(2, "First name must be at least 2 characters."),
   lastName: z.string().min(2, "Last name must be at least 2 characters."),
   email: z.string().email("Please enter a valid email address.").optional().or(z.literal('')),
-  photoURL: z.string().url().optional().or(z.literal('')),
   phone: z.string().optional(),
   church: z.string().optional(),
   locationWonCity: z.string().optional(),
@@ -66,7 +64,6 @@ export function EditSoulForm({ soul, onSoulUpdated }: EditSoulFormProps) {
       firstName: soul.firstName || "",
       lastName: soul.lastName || "",
       email: soul.email || "",
-      photoURL: soul.photoURL || "",
       phone: soul.phone || "",
       church: soul.church || "",
       locationWonCity: soul.locationWon?.city || "",
@@ -98,7 +95,6 @@ export function EditSoulForm({ soul, onSoulUpdated }: EditSoulFormProps) {
       firstName: values.firstName,
       lastName: values.lastName,
       email: values.email,
-      photoURL: values.photoURL,
       phone: values.phone,
       church: values.church,
       locationWon: (values.locationWonCity || values.locationWonState || values.locationWonCountry)
@@ -305,17 +301,6 @@ export function EditSoulForm({ soul, onSoulUpdated }: EditSoulFormProps) {
                 <AccordionTrigger>Optional Details</AccordionTrigger>
                 <AccordionContent>
                     <div className="space-y-4 pt-4">
-                        <FormItem>
-                            <FormLabel>Photo (Optional)</FormLabel>
-                            <ImageUpload
-                                initialImageUrl={form.getValues('photoURL')}
-                                onUploadComplete={(url) => {
-                                    form.setValue('photoURL', url, { shouldDirty: true });
-                                }}
-                                storagePath="profile-pictures"
-                            />
-                            <FormMessage>{form.formState.errors.photoURL?.message}</FormMessage>
-                        </FormItem>
                         <FormField
                             control={form.control}
                             name="email"
