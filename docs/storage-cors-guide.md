@@ -70,7 +70,7 @@ This is the most common point of failure. Follow these steps exactly.
         *   `3600`
 
     Your final configuration should look like this:
-    ![Correct CORS Configuration](https://i.ibb.co/VMy1kM5/cors-final-config.png)
+    ![Correct CORS Configuration](https://i.postimg.cc/kXG2bVjB/cors-final-config.png)
 
 6.  Click the **"Save"** button.
 
@@ -79,5 +79,3 @@ This is the most common point of failure. Follow these steps exactly.
 ### Final Check
 
 After completing all of the above steps, wait about 1-2 minutes for the settings to apply globally. Then, refresh your application and try uploading a photo again. If you have followed all steps, the upload will now succeed.
-
-    
