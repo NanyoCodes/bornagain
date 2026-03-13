@@ -1111,7 +1111,7 @@ export default function DashboardPage() {
                     Prayer Reminders
                 </CardTitle>
                 <CardDescription>
-                    Follow up with these individuals.
+                    which individuals?
                 </CardDescription>
             </CardHeader>
             <CardContent className="space-y-2">
