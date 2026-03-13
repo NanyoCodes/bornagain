@@ -52,21 +52,8 @@ import { Switch } from "@/components/ui/switch";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { actionItems, statusOptions } from "@/lib/follow-up-data";
 
-
-const statusOptions: FollowUpStatus[] = ['New', 'Contacted', 'Established'];
-const actionItems = [
-  { id: 'prayed_together', label: 'Prayed together' },
-  { id: 'studied_bible', label: 'Studied Bible' },
-  { id: 'shared_meal', label: 'Shared a meal' },
-  { id: 'visited_home', label: 'Visited their home' },
-  { id: 'introduced_friend', label: 'Introduced to a friend' },
-  { id: 'gave_gift', label: 'Gave a gift' },
-  { id: 'phone_call', label: 'Made a phone call' },
-  { id: 'text_message', label: 'Sent a text message' },
-  { id: 'helped_with_need', label: 'Helped with a need' },
-  { id: 'invited_to_event', label: 'Invited to an event' },
-];
 
 const getStatusClasses = (status: FollowUpStatus | undefined): string => {
     if (!status) return 'bg-secondary text-secondary-foreground border-border';

@@ -76,6 +76,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
 import { WelcomeBackDialog } from '@/components/dashboard/welcome-back-dialog';
 import { safeToDate } from '@/lib/utils';
+import { actionItems } from '@/lib/follow-up-data';
 
 function RecentSoulsList() {
   const { user } = useUser();
@@ -498,6 +499,90 @@ const welcomeScriptures = [
     { text: "But the fruit of the Spirit is love, joy, peace, forbearance, kindness, goodness, faithfulness, gentleness and self-control, {name}.", verse: "Against such things there is no law. - Galatians 5:22-23" }
 ];
 
+function ActionAnalyticsCard({ souls }: { souls: Soul[] }) {
+  const chartConfig = {
+    count: {
+      label: 'Times',
+      color: 'hsl(var(--chart-2))',
+    },
+  } satisfies import('@/components/ui/chart').ChartConfig;
+
+  const actionData = useMemo(() => {
+    if (!souls) return [];
+
+    const actionCounts: { [key: string]: number } = {};
+    actionItems.forEach((item) => (actionCounts[item.id] = 0));
+
+    souls.forEach((soul) => {
+      soul.followUpLog?.forEach((log) => {
+        log.actions?.forEach((actionId) => {
+          if (actionCounts[actionId] !== undefined) {
+            actionCounts[actionId]++;
+          }
+        });
+      });
+    });
+
+    return actionItems
+      .map((item) => ({
+        action: item.label,
+        count: actionCounts[item.id],
+      }))
+      .sort((a, b) => b.count - a.count);
+  }, [souls]);
+
+  if (!souls || souls.length === 0) {
+    return null;
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Follow-up Actions Tracker</CardTitle>
+        <CardDescription>
+          Frequency of actions taken across all souls.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <ChartContainer config={chartConfig} className="h-[350px] w-full">
+          <ResponsiveContainer>
+            <BarChart
+              layout="vertical"
+              data={actionData}
+              margin={{ left: 20, right: 20 }}
+            >
+              <CartesianGrid horizontal={false} />
+              <YAxis
+                dataKey="action"
+                type="category"
+                tickLine={false}
+                axisLine={false}
+                tickMargin={10}
+                width={120}
+                className="text-xs"
+                interval={0}
+              />
+              <XAxis dataKey="count" type="number" hide />
+              <ChartTooltip
+                cursor={false}
+                content={<ChartTooltipContent indicator="line" />}
+              />
+              <Bar dataKey="count" layout="vertical" radius={5} barSize={20}>
+                {actionData.map((_entry, index) => (
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={chartColors[index % chartColors.length]}
+                  />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </ChartContainer>
+      </CardContent>
+    </Card>
+  );
+}
+
 export default function DashboardPage() {
   const { user, loading: authLoading } = useUser();
   const firestore = useFirestore();
@@ -735,7 +820,7 @@ export default function DashboardPage() {
         </h1>
         <p className="text-muted-foreground uppercase">
           {welcomeMessage
-            ? `"${welcomeMessage.verse}"`
+            ? welcomeMessage.verse
             : ''}
         </p>
       </div>
@@ -781,6 +866,8 @@ export default function DashboardPage() {
               </ChartContainer>
             </CardContent>
           </Card>
+
+          <ActionAnalyticsCard souls={soulsWon || []} />
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
