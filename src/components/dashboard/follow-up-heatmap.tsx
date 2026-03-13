@@ -6,10 +6,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import type { Soul } from '@/lib/types';
 import { format, startOfMonth } from 'date-fns';
 import { cn, safeToDate } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Tooltip, TooltipProvider, TooltipTrigger, TooltipContent } from '../ui/tooltip';
 import { Skeleton } from '../ui/skeleton';
+import { Input } from '../ui/input';
 
 export function FollowUpHeatmap({ souls }: { souls: Soul[] }) {
   const [month, setMonth] = useState<Date | undefined>(undefined);
@@ -59,19 +58,19 @@ export function FollowUpHeatmap({ souls }: { souls: Soul[] }) {
     return styles;
   }, [activityMap]);
 
-  const handlePreviousMonth = () => {
-    setMonth(prev => (prev ? new Date(prev.getFullYear(), prev.getMonth() - 1, 1) : undefined));
+  const handleMonthChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+    if (value) {
+        const [year, month] = value.split('-').map(Number);
+        const newMonth = new Date(year, month - 1, 1);
+        const currentMonth = startOfMonth(new Date());
+
+        if (newMonth <= currentMonth) {
+            setMonth(newMonth);
+        }
+    }
   };
 
-  const handleNextMonth = () => {
-    setMonth(prev => (prev ? new Date(prev.getFullYear(), prev.getMonth() + 1, 1) : undefined));
-  };
-  
-  const isNextMonthDisabled = useMemo(() => {
-    if (!month) return true;
-    const currentMonth = startOfMonth(new Date());
-    return month >= currentMonth;
-  }, [month]);
 
   return (
     <Card>
@@ -132,25 +131,13 @@ export function FollowUpHeatmap({ souls }: { souls: Soul[] }) {
                     Caption: (props) => (
                          <div className="flex justify-between items-center px-1 mb-4">
                             <h2 className="font-medium text-sm">{format(props.displayMonth, 'MMMM yyyy')}</h2>
-                            <div className="flex items-center gap-1">
-                               <Button
-                                    variant="outline"
-                                    size="icon"
-                                    className="h-7 w-7"
-                                    onClick={handlePreviousMonth}
-                                >
-                                    <ChevronLeft className="h-4 w-4" />
-                               </Button>
-                               <Button
-                                    variant="outline"
-                                    size="icon"
-                                    className="h-7 w-7"
-                                    onClick={handleNextMonth}
-                                    disabled={isNextMonthDisabled}
-                                >
-                                    <ChevronRight className="h-4 w-4" />
-                               </Button>
-                            </div>
+                             <Input
+                                type="month"
+                                value={month ? format(month, 'yyyy-MM') : ''}
+                                onChange={handleMonthChange}
+                                className="w-auto border-none p-1 text-sm bg-transparent focus-visible:ring-0"
+                                max={format(new Date(), 'yyyy-MM')}
+                            />
                         </div>
                     )
                 }}
