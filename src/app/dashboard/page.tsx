@@ -1,4 +1,3 @@
-
 'use client';
 
 import {
@@ -594,7 +593,7 @@ export default function DashboardPage() {
           {welcomeMessage?.text.replace('{name}', displayName) ||
             `Welcome back, ${displayName}!`}
         </h1>
-        <p className="text-muted-foreground lowercase">
+        <p className="text-muted-foreground uppercase">
           {welcomeMessage
             ? `"${welcomeMessage.verse}"`
             : ''}
