@@ -64,9 +64,8 @@ service cloud.firestore {
     // Global souls collection for aggregation.
     match /souls/{soulId} {
       allow list, get: if request.auth != null;
-      // Allow any authenticated user to create a soul record.
-      // The data is duplicated from the user's private collection and ownership is enforced there.
-      allow create: if request.auth != null;
+      // Allow any authenticated user to create a soul record, as long as it's for themselves.
+      allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
       allow update, delete: if false; // Immutable
     }
 
@@ -128,7 +127,7 @@ service cloud.firestore {
         // Case 4: Any authenticated user is logging a soul for the campaign, which only increments the soulsLogged count.
         (
           request.resource.data.diff(resource.data).affectedKeys().hasOnly(['soulsLogged']) &&
-          request.resource.data.soulsLogged == (resource.data.soulsLogged || 0) + 1
+          request.resource.data.soulsLogged == (resource.data.soulsLogged == null ? 1 : resource.data.soulsLogged + 1)
         )
       );
       allow delete: if false; // Hard deletes are disallowed.
