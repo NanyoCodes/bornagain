@@ -1,3 +1,4 @@
+
 'use client';
 
 import {
@@ -53,11 +54,11 @@ import {
   ResponsiveContainer,
   XAxis,
   YAxis,
-  Tooltip,
   Cell,
 } from 'recharts';
 import {
   ChartContainer,
+  ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart';
 import {
@@ -766,7 +767,7 @@ export default function DashboardPage() {
                         (dataMax: number) => Math.max(dataMax || 0, monthlyGoal),
                       ]}
                     />
-                    <Tooltip cursor={false} content={<ChartTooltipContent />} />
+                    <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
                     <Bar dataKey="soulsWon" radius={8}>
                       {progressData.map((_entry, index) => (
                         <Cell
