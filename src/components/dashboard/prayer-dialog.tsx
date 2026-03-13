@@ -24,7 +24,7 @@ import {
   CardDescription,
 } from '@/components/ui/card';
 import { Button } from '../ui/button';
-import { Loader2, Quote, PlayCircle } from 'lucide-react';
+import { Loader2, Quote, PlayCircle, ChevronDown } from 'lucide-react';
 import type { UserProfile } from '@/lib/types';
 import { useUser } from '@/firebase';
 import { PrayerLinksSettingsCard } from '../settings/prayer-links-settings-card';
@@ -34,9 +34,10 @@ import {
   Accordion,
   AccordionContent,
   AccordionItem,
-  AccordionTrigger,
 } from '../ui/accordion';
+import * as AccordionPrimitive from "@radix-ui/react-accordion";
 import { Checkbox } from '../ui/checkbox';
+import { cn } from '@/lib/utils';
 
 const prayerPoints = [
   {
@@ -138,7 +139,12 @@ export function PrayerDialog({
     <div className="space-y-6">
       <Accordion type="single" collapsible className="w-full">
         <AccordionItem value="manage-links">
-          <AccordionTrigger>Manage Prayer Links</AccordionTrigger>
+          <AccordionPrimitive.Header>
+            <AccordionPrimitive.Trigger className="flex w-full flex-1 items-center justify-between py-4 font-medium transition-all hover:underline [&[data-state=open]>svg]:rotate-180">
+              Manage Prayer Links
+              <ChevronDown className="h-4 w-4 shrink-0 transition-transform duration-200" />
+            </AccordionPrimitive.Trigger>
+          </AccordionPrimitive.Header>
           <AccordionContent>
             <p className="text-sm text-muted-foreground mt-1 mb-4">
               Add, edit, or remove personal links to prayer meetings (up to 5).
@@ -159,27 +165,29 @@ export function PrayerDialog({
           <Accordion type="single" collapsible className="w-full">
             {prayerPoints.map((point, i) => (
               <AccordionItem value={`item-${i}`} key={i}>
-                <AccordionTrigger>
-                  <div className="flex items-center gap-3 w-full">
-                    <Checkbox
-                      id={`prayer-${point.label}`}
-                      checked={checkedPrayers.includes(point.label)}
-                      onCheckedChange={(checked) => {
-                        if (checked) {
-                          setCheckedPrayers((prev) => [...prev, point.label]);
-                        } else {
-                          setCheckedPrayers((prev) =>
-                            prev.filter((p) => p !== point.label)
-                          );
-                        }
-                      }}
-                      onClick={(e) => e.stopPropagation()} // Prevent trigger from firing
-                    />
-                    {point.label}
+                <AccordionPrimitive.Header className="flex w-full items-center justify-between py-4 font-medium border-b">
+                   <div className="flex items-center gap-3">
+                      <Checkbox
+                        id={`prayer-${point.label}`}
+                        checked={checkedPrayers.includes(point.label)}
+                        onCheckedChange={(checked) => {
+                          if (checked) {
+                            setCheckedPrayers((prev) => [...prev, point.label]);
+                          } else {
+                            setCheckedPrayers((prev) =>
+                              prev.filter((p) => p !== point.label)
+                            );
+                          }
+                        }}
+                      />
+                      <label htmlFor={`prayer-${point.label}`} className="cursor-pointer font-normal">{point.label}</label>
                   </div>
-                </AccordionTrigger>
+                   <AccordionPrimitive.Trigger className={cn("transition-transform duration-200 [&[data-state=open]>svg]:rotate-180")}>
+                      <ChevronDown className="h-4 w-4" />
+                  </AccordionPrimitive.Trigger>
+                </AccordionPrimitive.Header>
                 <AccordionContent>
-                  <blockquote className="border-l-2 pl-4 italic text-sm text-muted-foreground">
+                  <blockquote className="border-l-2 pl-4 italic text-sm text-muted-foreground pt-4">
                     {point.text}
                     <footer className="text-right not-italic mt-2">
                       - {point.verse}
