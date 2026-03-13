@@ -15,7 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Loader2 } from "lucide-react";
 import type { Soul, Campaign } from "@/lib/types";
 import { format } from "date-fns";
@@ -30,7 +30,7 @@ const formSchema = z.object({
   firstName: z.string().min(2, "First name must be at least 2 characters."),
   lastName: z.string().min(2, "Last name must be at least 2 characters."),
   email: z.string().email("Please enter a valid email address.").optional().or(z.literal('')),
-  photoURL: z.string().optional(),
+  photoURL: z.string().url().optional().or(z.literal('')),
   phone: z.string().optional(),
   church: z.string().optional(),
   locationWonCity: z.string().optional(),
@@ -77,6 +77,13 @@ export function EditSoulForm({ soul, onSoulUpdated }: EditSoulFormProps) {
       wonAt: soul.wonAt.toDate(),
     },
   });
+  
+  const sourceValue = form.watch("source");
+  useEffect(() => {
+    if (sourceValue !== 'Campaign') {
+        form.setValue('sourceDetails', '');
+    }
+  }, [sourceValue, form]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (!user || !firestore) {
