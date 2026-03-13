@@ -517,7 +517,7 @@ export default function DashboardPage() {
     text: string;
     verse: string;
   } | null>(null);
-  const [favoritePassage, setFavoritePassage] = useState<string | null>(null);
+  const [favoritePassages, setFavoritePassages] = useState<string[] | null>(null);
 
   useEffect(() => {
     // This effect runs on the client after hydration.
@@ -526,9 +526,7 @@ export default function DashboardPage() {
 
     const passages = userProfile?.favoritePassages?.filter((p) => p && p.trim() !== '');
     if (passages && passages.length > 0) {
-      // Randomly select one passage to display
-      const randomIndex = Math.floor(Math.random() * passages.length);
-      setFavoritePassage(passages[randomIndex]);
+      setFavoritePassages(passages);
     } else {
       // Fallback to generic welcome scripture if no favorite is set
       const randomScripture =
@@ -683,12 +681,16 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-8">
-      {favoritePassage ? (
+      {favoritePassages && favoritePassages.length > 0 ? (
         <div className="space-y-4">
           <h1 className="text-3xl sm:text-4xl font-bold tracking-tight font-headline">
-            A favorite for you, {displayName}
+            Your favorite passages, {displayName}
           </h1>
-          <DisplayPassage reference={favoritePassage} userName={displayName} />
+          <div className="space-y-6">
+            {favoritePassages.map((passage, index) => (
+              <DisplayPassage key={index} reference={passage} userName={displayName} />
+            ))}
+          </div>
         </div>
       ) : (
         <div className="space-y-2">
