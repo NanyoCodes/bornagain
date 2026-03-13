@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useMemo, useState } from 'react';
@@ -6,7 +5,7 @@ import { DayPicker } from 'react-day-picker';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import type { Soul } from '@/lib/types';
 import { format, startOfMonth } from 'date-fns';
-import { cn } from '@/lib/utils';
+import { cn, safeToDate } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Tooltip, TooltipProvider, TooltipTrigger, TooltipContent } from '../ui/tooltip';
@@ -20,8 +19,9 @@ export function FollowUpHeatmap({ souls }: { souls: Soul[] }) {
 
     souls.forEach(soul => {
       soul.followUpLog?.forEach(log => {
-        if (log.date?.toDate) {
-          const dateString = format(log.date.toDate(), 'yyyy-MM-dd');
+        const date = safeToDate(log.date);
+        if (date) {
+          const dateString = format(date, 'yyyy-MM-dd');
           map.set(dateString, (map.get(dateString) || 0) + 1);
         }
       });
@@ -32,8 +32,8 @@ export function FollowUpHeatmap({ souls }: { souls: Soul[] }) {
   const modifiers = useMemo(() => {
     const mods: Record<string, Date[]> = {};
     activityMap.forEach((_, dateString) => {
-      // Create a new Date object from the string, ensuring it's in UTC to avoid timezone issues.
-      const date = new Date(dateString + 'T00:00:00');
+      const [year, month, day] = dateString.split('-').map(Number);
+      const date = new Date(year, month - 1, day);
       mods[`activity-${dateString}`] = [date];
     });
     return mods;
