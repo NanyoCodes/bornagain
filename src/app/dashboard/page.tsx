@@ -1,4 +1,3 @@
-
 'use client';
 
 import {
@@ -142,12 +141,19 @@ function DisplayPassage({
   let personalizedText = passage.text;
   if (userName) {
     // Replace pronouns and common terms with the user's name for personalization.
-    personalizedText = personalizedText
+    const textWithReplacement = personalizedText
       .replace(/\bthat man\b/gi, userName)
       .replace(/\bthe man\b/gi, userName)
       .replace(/\bman\b/gi, userName)
       .replace(/\byour\b/gi, `${userName}'s`)
       .replace(/\byou\b/gi, userName);
+
+    // If no replacement was made, append the name.
+    if (textWithReplacement === passage.text) {
+      personalizedText = `${passage.text}, ${userName}`;
+    } else {
+      personalizedText = textWithReplacement;
+    }
   }
 
   return (
