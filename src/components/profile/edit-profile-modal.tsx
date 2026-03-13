@@ -26,6 +26,7 @@ import { FirestorePermissionError } from "@/firebase/errors";
 import { LocationProfileInput } from "../common/location-profile-input";
 import { Label } from "../ui/label";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../ui/accordion";
+import { ImageUpload } from "../common/image-upload";
 
 const formSchema = z.object({
   firstName: z.string().min(2, "First name must be at least 2 characters.").max(50, "Name is too long."),
@@ -128,6 +129,22 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
     <>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+           <FormField
+                control={form.control}
+                name="photoURL"
+                render={({ field }) => (
+                    <FormItem className="flex flex-col items-center">
+                        <FormControl>
+                            <ImageUpload
+                                initialImageUrl={field.value}
+                                onUploadComplete={(url) => field.onChange(url)}
+                                storagePath="profile-pictures"
+                            />
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                )}
+            />
           <div className="grid grid-cols-2 gap-4">
             <FormField
               control={form.control}
