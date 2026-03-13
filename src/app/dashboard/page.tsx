@@ -1,4 +1,3 @@
-
 'use client';
 
 import {
@@ -255,7 +254,7 @@ function GlobalSoulsCard({
 
   useEffect(() => {
     fetchCounts();
-    const intervalId = setInterval(fetchCounts, 30000); // Refresh every 30 seconds
+    const intervalId = setInterval(fetchCounts, 15000); // Refresh every 15 seconds
 
     return () => clearInterval(intervalId); // Cleanup on unmount
   }, [fetchCounts]);
@@ -264,14 +263,8 @@ function GlobalSoulsCard({
     <Card>
       <CardHeader className="flex flex-row items-start justify-between pb-4">
         <div>
-          <CardTitle className="flex items-center gap-2">
-            Community Impact
-            <span className="flex h-2 w-2 relative">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
-            </span>
-          </CardTitle>
-          <CardDescription>Souls won by all users.</CardDescription>
+          <CardTitle>Community Impact</CardTitle>
+          <CardDescription>Community stats, updated periodically.</CardDescription>
         </div>
         <Button variant="ghost" size="icon" onClick={fetchCounts} disabled={loading}>
           {loading ? (
