@@ -96,7 +96,7 @@ export function FollowUpHeatmap({ souls }: { souls: Soul[] }) {
                 components={{
                     Day: (props) => {
                         if (!props.date || isNaN(props.date.getTime())) {
-                            return <div className="h-9 w-9 p-0" />;
+                            return <></>;
                         }
                         const dateString = format(props.date, 'yyyy-MM-dd');
                         const count = activityMap.get(dateString);
