@@ -81,7 +81,6 @@ import { WelcomeBackDialog } from '@/components/dashboard/welcome-back-dialog';
 import { safeToDate } from '@/lib/utils';
 import { actionItems, statusOptions } from '@/lib/follow-up-data';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { FollowUpHeatmap } from '@/components/dashboard/follow-up-heatmap';
 
 function RecentSoulsList() {
   const { user } = useUser();
@@ -385,7 +384,7 @@ const welcomeScriptures = [
     { text: "Look to the Lord and his strength; seek his face always, {name}.", verse: "1 Chronicles 16:11" },
     { text: "The Lord is my light and my salvation, {name}—whom shall I fear?", verse: "The Lord is the stronghold of my life—of whom shall I be afraid? - Psalm 27:1" },
     { text: "Be on your guard; stand firm in the faith; be courageous; be strong, {name}.", verse: "1 Corinthians 16:13" },
-    { text: 'But he said to me, “My grace is sufficient for you, {name}, for my power is made perfect in weakness.”', verse: "2 Corinthians 12:9" },
+    { text: 'But he said to me, "My grace is sufficient for you, {name}, for my power is made perfect in weakness."', verse: "2 Corinthians 12:9" },
     { text: "For who is God besides the Lord? And who is the Rock except our God? It is God who arms you with strength, {name}.", verse: "Psalm 18:31-32" },
     { text: "The Sovereign Lord is my strength; he makes my feet like the feet of a deer, he enables me to tread on the heights, {name}.", verse: "Habakkuk 3:19" },
 
@@ -437,7 +436,7 @@ const welcomeScriptures = [
     { text: "The Lord is good to those whose hope is in him, to the one who seeks him, {name}.", verse: "Lamentations 3:25" },
     { text: "For nothing will be impossible with God, {name}.", verse: "Luke 1:37" },
     { text: "Therefore, since we have been justified through faith, we have peace with God through our Lord Jesus Christ, {name}.", verse: "Romans 5:1" },
-    { text: "Jesus said to her, “I am the resurrection and the life. The one who believes in me will live, even though they die; and whoever lives by believing in me will never die. Do you believe this, {name}?”", verse: "John 11:25-26" },
+    { text: "Jesus said to her, 'I am the resurrection and the life. The one who believes in me will live, even though they die; and whoever lives by believing in me will never die. Do you believe this, {name}?'", verse: "John 11:25-26" },
     { text: "For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal life, {name}.", verse: "John 3:16" },
 
     // Love & Relationships (15)
@@ -1139,8 +1138,6 @@ export default function DashboardPage() {
                 )}
             </CardContent>
           </Card>
-
-          <FollowUpHeatmap souls={soulsWon || []} />
 
           {userProfile?.location && (
             <GlobalSoulsCard
