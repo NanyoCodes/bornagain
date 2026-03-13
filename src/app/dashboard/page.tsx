@@ -692,7 +692,7 @@ export default function DashboardPage() {
   return (
     <div className="space-y-8">
       <div className="space-y-2">
-        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight font-headline lowercase">
+        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight font-headline">
           {welcomeMessage?.text.replace('{name}', displayName) ||
             `Welcome back, ${displayName}!`}
         </h1>
