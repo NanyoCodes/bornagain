@@ -542,11 +542,9 @@ function ActionAnalyticsCard({ souls }: { souls: Soul[] }) {
     return null;
   }
   
-  const yAxisWidth = !mounted ? 180 : isMobile ? 130 : 180;
-  const margin = !mounted ? { left: 170, right: 30 } : isMobile ? { left: 120, right: 20 } : { left: 170, right: 30 };
+  // Responsive settings
+  const yAxisWidth = !mounted ? 150 : isMobile ? 120 : 150;
   const barSize = !mounted ? 20 : isMobile ? 14 : 20;
-  const tickClassName = 'text-xs';
-
 
   return (
     <Card>
@@ -562,7 +560,10 @@ function ActionAnalyticsCard({ souls }: { souls: Soul[] }) {
             <BarChart
               layout="vertical"
               data={actionData}
-              margin={margin}
+              margin={{
+                right: 20,
+                left: !mounted ? 20 : isMobile ? 10 : 20,
+              }}
             >
               <CartesianGrid horizontal={false} />
               <YAxis
@@ -570,9 +571,9 @@ function ActionAnalyticsCard({ souls }: { souls: Soul[] }) {
                 type="category"
                 tickLine={false}
                 axisLine={false}
-                tickMargin={10}
+                tickMargin={5}
                 width={yAxisWidth}
-                className={tickClassName}
+                tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }}
                 interval={0}
               />
               <XAxis dataKey="count" type="number" hide />
