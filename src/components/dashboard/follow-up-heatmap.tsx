@@ -95,6 +95,9 @@ export function FollowUpHeatmap({ souls }: { souls: Soul[] }) {
                 fixedWeeks
                 components={{
                     Day: (props) => {
+                        if (!props.date || isNaN(props.date.getTime())) {
+                            return <div className="h-9 w-9 p-0" />;
+                        }
                         const dateString = format(props.date, 'yyyy-MM-dd');
                         const count = activityMap.get(dateString);
                         const isDayOutside = props.displayMonth.getMonth() !== props.date.getMonth();
