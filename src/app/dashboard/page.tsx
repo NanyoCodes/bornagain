@@ -509,17 +509,21 @@ function ActionAnalyticsCard({ souls }: { souls: Soul[] }) {
 
   const actionData = useMemo(() => {
     if (!souls) return [];
+    const now = new Date();
 
     const actionCounts: { [key: string]: number } = {};
     actionItems.forEach((item) => (actionCounts[item.id] = 0));
 
     souls.forEach((soul) => {
       soul.followUpLog?.forEach((log) => {
-        log.actions?.forEach((actionId) => {
-          if (actionCounts[actionId] !== undefined) {
-            actionCounts[actionId]++;
-          }
-        });
+        const logDate = safeToDate(log.date);
+        if (logDate && isSameMonth(logDate, now)) {
+          log.actions?.forEach((actionId) => {
+            if (actionCounts[actionId] !== undefined) {
+              actionCounts[actionId]++;
+            }
+          });
+        }
       });
     });
 
@@ -540,7 +544,7 @@ function ActionAnalyticsCard({ souls }: { souls: Soul[] }) {
       <CardHeader>
         <CardTitle>Follow-up Actions Tracker</CardTitle>
         <CardDescription>
-          Frequency of actions taken across all souls.
+          Frequency of actions taken this month.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -549,7 +553,7 @@ function ActionAnalyticsCard({ souls }: { souls: Soul[] }) {
             <BarChart
               layout="vertical"
               data={actionData}
-              margin={{ left: 30, right: 20 }}
+              margin={{ left: 100, right: 20 }}
             >
               <CartesianGrid horizontal={false} />
               <YAxis
