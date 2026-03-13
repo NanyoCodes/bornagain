@@ -1,3 +1,4 @@
+
 'use client';
 
 import {
@@ -80,6 +81,7 @@ import { WelcomeBackDialog } from '@/components/dashboard/welcome-back-dialog';
 import { safeToDate } from '@/lib/utils';
 import { actionItems, statusOptions } from '@/lib/follow-up-data';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { FollowUpHeatmap } from '@/components/dashboard/follow-up-heatmap';
 
 function RecentSoulsList() {
   const { user } = useUser();
@@ -383,7 +385,7 @@ const welcomeScriptures = [
     { text: "Look to the Lord and his strength; seek his face always, {name}.", verse: "1 Chronicles 16:11" },
     { text: "The Lord is my light and my salvation, {name}—whom shall I fear?", verse: "The Lord is the stronghold of my life—of whom shall I be afraid? - Psalm 27:1" },
     { text: "Be on your guard; stand firm in the faith; be courageous; be strong, {name}.", verse: "1 Corinthians 16:13" },
-    { text: "But he said to me, “My grace is sufficient for you, {name}, for my power is made perfect in weakness.”", verse: "2 Corinthians 12:9" },
+    { text: 'But he said to me, “My grace is sufficient for you, {name}, for my power is made perfect in weakness.”', verse: "2 Corinthians 12:9" },
     { text: "For who is God besides the Lord? And who is the Rock except our God? It is God who arms you with strength, {name}.", verse: "Psalm 18:31-32" },
     { text: "The Sovereign Lord is my strength; he makes my feet like the feet of a deer, he enables me to tread on the heights, {name}.", verse: "Habakkuk 3:19" },
 
@@ -479,7 +481,7 @@ const welcomeScriptures = [
     { text: "A good man obtains favor from the LORD, {name}.", verse: "Proverbs 12:2" },
     { text: "For the Lord God is a sun and shield; the Lord bestows favor and honor; no good thing does he withhold from those whose walk is blameless, {name}.", verse: "Psalm 84:11" },
     { text: "But seek first his kingdom and his righteousness, and all these things will be given to you as well, {name}.", verse: "Matthew 6:33" },
-    { text: "Bring the whole tithe into the storehouse, that there may be food in my house. Test me in this, says the Lord Almighty, and see if I will not throw open the floodgates of heaven and pour out so much blessing that there will not be room enough to store it for you, {name}.", verse: "Malachi 3:10" },
+    { text: "Bring the whole tithe into the storehouse, that there may be food in my house. Test me in this,” says the Lord Almighty, “and see if I will not throw open the floodgates of heaven and pour out so much blessing that there will not be room enough to store it for you, {name}.", verse: "Malachi 3:10" },
     { text: "Taste and see that the Lord is good; blessed is the one who takes refuge in him, {name}.", verse: "Psalm 34:8" },
     { text: "The blessing of the Lord brings wealth, without painful toil for it, {name}.", verse: "Proverbs 10:22" },
     { text: "Ask and it will be given to you, {name}; seek and you will find; knock and the door will be opened to you.", verse: "Matthew 7:7" },
@@ -1137,6 +1139,8 @@ export default function DashboardPage() {
                 )}
             </CardContent>
           </Card>
+
+          <FollowUpHeatmap souls={soulsWon || []} />
 
           {userProfile?.location && (
             <GlobalSoulsCard
