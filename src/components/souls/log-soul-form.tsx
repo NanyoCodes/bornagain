@@ -121,7 +121,6 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps)
       email: values.email || "",
       phone: values.phone || "",
       church: values.church || "",
-      photoURL: "",
       locationWon: (values.locationWonCity || values.locationWonState || values.locationWonCountry)
         ? {
             city: values.locationWonCity,
@@ -148,7 +147,7 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps)
       const campaign = defaultCampaign || campaigns?.find(c => c.title === values.sourceDetails);
       if (campaign) {
           campaignId = campaign.id;
-          (soulData as Soul).campaignId = campaign.id;
+          (soulData as any).campaignId = campaign.id;
       }
     }
 
