@@ -13,6 +13,7 @@ import {
   format,
   differenceInHours,
   subDays,
+  differenceInDays,
 } from 'date-fns';
 import {
   ArrowRight,
@@ -23,6 +24,8 @@ import {
   XCircle,
   Edit,
   UserCheck2,
+  Flame,
+  Heart,
 } from 'lucide-react';
 import { useCollection, useFirestore, useUser, useDoc } from '@/firebase';
 import {
@@ -817,6 +820,49 @@ export default function DashboardPage() {
     ];
   }, [soulsWon]);
 
+  const evangelismStreak = useMemo(() => {
+    if (!soulsWon || soulsWon.length === 0) return 0;
+    const wonDates = new Set(
+        soulsWon.map(s => format(safeToDate(s.wonAt)!, 'yyyy-MM-dd'))
+    );
+
+    let streak = 0;
+    let currentDate = new Date();
+    // If there was no activity today, start checking from yesterday
+    if (!wonDates.has(format(currentDate, 'yyyy-MM-dd'))) {
+        currentDate.setDate(currentDate.getDate() - 1);
+    }
+
+    while (wonDates.has(format(currentDate, 'yyyy-MM-dd'))) {
+        streak++;
+        currentDate.setDate(currentDate.getDate() - 1);
+    }
+
+    return streak;
+  }, [soulsWon]);
+
+  const prayerReminders = useMemo(() => {
+    if (!soulsWon) return [];
+    const now = new Date();
+
+    return soulsWon
+      .filter(soul => soul.status !== 'Established')
+      .map(soul => {
+        const lastFollowUp = (soul.followUpLog && soul.followUpLog.length > 0)
+          ? [...soul.followUpLog].sort((a, b) => (safeToDate(b.date)?.getTime() ?? 0) - (safeToDate(a.date)?.getTime() ?? 0))[0]
+          : null;
+        
+        const lastContactDate = lastFollowUp ? safeToDate(lastFollowUp.date) : safeToDate(soul.wonAt);
+        const daysSinceContact = lastContactDate ? differenceInDays(now, lastContactDate) : 0;
+        
+        return { ...soul, daysSinceContact };
+      })
+      .filter(soul => soul.daysSinceContact > 7) // Only if not contacted in over a week
+      .sort((a, b) => b.daysSinceContact - a.daysSinceContact) // Show longest ago first
+      .slice(0, 3);
+  }, [soulsWon]);
+
+
   const followUpStatusColors: Record<Soul['status'], string> = {
     New: 'hsl(var(--status-new))',
     Contacted: 'hsl(var(--status-contacted))',
@@ -1049,6 +1095,48 @@ export default function DashboardPage() {
               </ChartContainer>
             </CardContent>
           </Card>
+          
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium">Evangelism Streak</CardTitle>
+                <Flame className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+                <div className="text-2xl font-bold">{evangelismStreak} {evangelismStreak === 1 ? 'day' : 'days'}</div>
+                <p className="text-xs text-muted-foreground">
+                    Consecutive days with souls won.
+                </p>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                    <Heart className="h-4 w-4" />
+                    Prayer Reminders
+                </CardTitle>
+                <CardDescription>
+                    Follow up with these individuals.
+                </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-2">
+                {prayerReminders.length > 0 ? (
+                    prayerReminders.map(soul => (
+                        <div key={soul.id} className="flex items-center justify-between p-2 -mx-2 rounded-lg hover:bg-muted/50">
+                            <div>
+                                <p className="font-semibold text-sm">{soul.firstName} {soul.lastName}</p>
+                                <p className="text-xs text-muted-foreground">Last contacted {soul.daysSinceContact} days ago</p>
+                            </div>
+                            <Button asChild variant="ghost" size="sm">
+                                <Link href="/dashboard/souls-won">View</Link>
+                            </Button>
+                        </div>
+                    ))
+                ) : (
+                    <p className="text-sm text-center text-muted-foreground py-4">Everyone has been contacted recently!</p>
+                )}
+            </CardContent>
+          </Card>
 
           {userProfile?.location && (
             <GlobalSoulsCard
@@ -1085,5 +1173,3 @@ export default function DashboardPage() {
     </div>
   );
 }
-
-    
