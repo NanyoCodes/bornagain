@@ -76,19 +76,36 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath }: 
       (error) => {
         setIsUploading(false);
         setUploadProgress(null);
-        console.error("Upload error:", error);
+        console.error("Firebase Storage Upload Error:", error);
         
-        let description = 'An unknown error occurred during upload. Please try again.';
-        if (error.code === 'storage/unauthorized') {
-            description = "You do not have permission to upload. Please ensure your project's Storage Security Rules and CORS policy are configured correctly. Refer to the storage setup guide in the documentation.";
-        } else if (error.code === 'storage/canceled') {
+        let description = `An unknown error occurred. (Code: ${error.code})`;
+        
+        switch (error.code) {
+          case 'storage/unauthorized':
+            description = `Permission Denied: Your security rules or CORS policy are blocking the upload. Please review the setup guide.`;
+            break;
+          case 'storage/canceled':
             description = "The upload was canceled.";
+            break;
+          case 'storage/unknown':
+             description = "An unknown error occurred. This is often related to a misconfigured CORS policy or a network issue. Please check the browser's developer console for more details.";
+            break;
+           case 'storage/object-not-found':
+            description = "The file could not be found. This should not happen during an upload. Please try again.";
+            break;
+          case 'storage/project-not-found':
+            description = "Your Firebase project could not be found. Please check your Firebase configuration.";
+            break;
+          case 'storage/quota-exceeded':
+            description = "You have exceeded your storage quota. Please upgrade your plan or free up space.";
+            break;
         }
         
         toast({
           variant: 'destructive',
           title: 'Upload Failed',
-          description,
+          description: description,
+          duration: 9000, // Show the error for longer
         });
       },
       () => {
