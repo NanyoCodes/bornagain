@@ -69,8 +69,11 @@ function DisplayPassage({ reference, userName }: { reference: string, userName?:
   
   let personalizedText = passage.text;
   if (userName) {
-    // Replace "your" with "{userName}'s" and "you" with "{userName}", using word boundaries for accuracy.
+    // Replace pronouns and common terms with the user's name for personalization.
     personalizedText = personalizedText
+      .replace(/\bthat man\b/gi, userName)
+      .replace(/\bthe man\b/gi, userName)
+      .replace(/\bman\b/gi, userName)
       .replace(/\byour\b/gi, `${userName}'s`)
       .replace(/\byou\b/gi, userName);
   }
