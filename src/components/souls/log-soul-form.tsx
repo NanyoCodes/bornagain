@@ -97,11 +97,7 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps)
   }, [form]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    if (userLoading || profileLoading) {
-      toast({ variant: 'destructive', title: 'Please wait', description: 'User data is loading.' });
-      return;
-    }
-    if (!user || !firestore || !userProfile) {
+    if (!user || !userProfile) {
       toast({ variant: 'destructive', title: 'Not Authenticated', description: 'You must be logged in to log a soul.' });
       return;
     }
@@ -118,13 +114,14 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps)
         country_lowercase: (userProfile.location.country || "").toLowerCase(),
     } : undefined;
 
-    const soulData: Omit<Soul, 'id' | 'photoURL'> = {
+    const soulData: Omit<Soul, 'id'> = {
       userId: user.uid,
       firstName: values.firstName,
       lastName: values.lastName,
       email: values.email || "",
       phone: values.phone || "",
       church: values.church || "",
+      photoURL: "",
       locationWon: (values.locationWonCity || values.locationWonState || values.locationWonCountry)
         ? {
             city: values.locationWonCity,
@@ -132,7 +129,7 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps)
             country: values.locationWonCountry,
           }
         : undefined,
-      source: values.source as 'Personal' | 'Campaign',
+      source: values.source as 'Campaign' | 'Personal',
       sourceDetails: values.sourceDetails || "",
       userLocation: processedUserLocation,
       wonAt: values.wonAt as any, // Firestore will convert it
@@ -449,8 +446,8 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps)
             </AccordionItem>
         </Accordion>
 
-        <Button type="submit" className="w-full" disabled={isLoading || userLoading || profileLoading}>
-          {(isLoading || userLoading || profileLoading) && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+        <Button type="submit" className="w-full" disabled={isLoading}>
+          {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           Log Soul
         </Button>
       </form>
