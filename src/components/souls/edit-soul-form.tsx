@@ -95,20 +95,24 @@ export function EditSoulForm({ soul, onSoulUpdated }: EditSoulFormProps) {
     const soulUpdateData: { [key: string]: any } = {
       firstName: values.firstName,
       lastName: values.lastName,
-      email: values.email || undefined,
-      phone: values.phone || undefined,
-      church: values.church || undefined,
-      locationWon: (values.locationWonCity || values.locationWonState || values.locationWonCountry)
-        ? {
-            city: values.locationWonCity || null,
-            state: values.locationWonState || null,
-            country: values.locationWonCountry || null,
-          }
-        : deleteField(),
       source: values.source as 'Personal' | 'Campaign',
-      sourceDetails: values.sourceDetails || undefined,
-      wonAt: values.wonAt as any,
+      wonAt: values.wonAt,
     };
+
+    if (values.email) soulUpdateData.email = values.email; else soulUpdateData.email = deleteField();
+    if (values.phone) soulUpdateData.phone = values.phone; else soulUpdateData.phone = deleteField();
+    if (values.church) soulUpdateData.church = values.church; else soulUpdateData.church = deleteField();
+    if (values.sourceDetails) soulUpdateData.sourceDetails = values.sourceDetails; else soulUpdateData.sourceDetails = deleteField();
+
+    if (values.locationWonCity || values.locationWonState || values.locationWonCountry) {
+        const locationWonData: { [key: string]: string } = {};
+        if (values.locationWonCity) locationWonData.city = values.locationWonCity;
+        if (values.locationWonState) locationWonData.state = values.locationWonState;
+        if (values.locationWonCountry) locationWonData.country = values.locationWonCountry;
+        soulUpdateData.locationWon = locationWonData;
+    } else {
+        soulUpdateData.locationWon = deleteField();
+    }
     
     const isCampaignSource = values.source === 'Campaign';
     
@@ -395,5 +399,3 @@ export function EditSoulForm({ soul, onSoulUpdated }: EditSoulFormProps) {
     </Form>
   );
 }
-
-    

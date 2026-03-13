@@ -114,40 +114,43 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps)
         country_lowercase: (userProfile.location.country || "").toLowerCase(),
     } : undefined;
 
-    const soulData: Omit<Soul, 'id'> = {
+    const soulData: { [key: string]: any } = {
       userId: user.uid,
       firstName: values.firstName,
       lastName: values.lastName,
-      email: values.email || undefined,
-      phone: values.phone || undefined,
-      church: values.church || undefined,
-      locationWon: (values.locationWonCity || values.locationWonState || values.locationWonCountry)
-        ? {
-            city: values.locationWonCity || null,
-            state: values.locationWonState || null,
-            country: values.locationWonCountry || null,
-          }
-        : undefined,
       source: values.source as 'Campaign' | 'Personal',
-      sourceDetails: values.sourceDetails || undefined,
-      userLocation: processedUserLocation,
-      wonAt: values.wonAt as any, // Firestore will convert it
+      wonAt: values.wonAt,
       status: "New",
-      followUpLog: values.initialNote ? [{ date: serverTimestamp() as any, note: values.initialNote }] : [],
+      followUpLog: [],
       attendingChurch: false,
       inBibleStudy: false,
       attendingPrayer: false,
       inServiceDepartment: false,
     };
-    
-    const isCampaignSource = values.source === 'Campaign';
+
+    if (processedUserLocation) soulData.userLocation = processedUserLocation;
+    if (values.email) soulData.email = values.email;
+    if (values.phone) soulData.phone = values.phone;
+    if (values.church) soulData.church = values.church;
+    if (values.sourceDetails) soulData.sourceDetails = values.sourceDetails;
+    if (values.initialNote) {
+      soulData.followUpLog = [{ date: serverTimestamp(), note: values.initialNote }];
+    }
+    if (values.locationWonCity || values.locationWonState || values.locationWonCountry) {
+        const locationWonData: { [key: string]: string } = {};
+        if (values.locationWonCity) locationWonData.city = values.locationWonCity;
+        if (values.locationWonState) locationWonData.state = values.locationWonState;
+        if (values.locationWonCountry) locationWonData.country = values.locationWonCountry;
+        soulData.locationWon = locationWonData;
+    }
+
     let campaignId: string | undefined;
 
-    if (isCampaignSource) {
+    if (values.source === 'Campaign') {
       const campaign = defaultCampaign || campaigns?.find(c => c.title === values.sourceDetails);
       if (campaign) {
           campaignId = campaign.id;
-          (soulData as any).campaignId = campaign.id;
+          soulData.campaignId = campaign.id;
       }
     }
 
@@ -453,5 +456,3 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps)
     </Form>
   );
 }
-
-    

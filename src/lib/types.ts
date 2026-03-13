@@ -177,12 +177,12 @@ export type Soul = {
   userId: string;
   firstName: string;
   lastName: string;
-  email?: string | null;
-  phone?: string | null;
-  church?: string | null;
+  email?: string;
+  phone?: string;
+  church?: string;
   source: 'Campaign' | 'Personal';
-  sourceDetails?: string | null; // e.g., Campaign name or referrer name
-  campaignId?: string | null;
+  sourceDetails?: string;
+  campaignId?: string;
   userLocation?: {
     city?: string;
     country?: string;
@@ -190,9 +190,9 @@ export type Soul = {
     country_lowercase?: string;
   };
   locationWon?: {
-    city?: string | null;
-    state?: string | null;
-    country?: string | null;
+    city?: string;
+    state?: string;
+    country?: string;
   };
   wonAt: Timestamp; // ISO date string
   status: FollowUpStatus;
