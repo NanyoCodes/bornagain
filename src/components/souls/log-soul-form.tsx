@@ -118,18 +118,18 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps)
       userId: user.uid,
       firstName: values.firstName,
       lastName: values.lastName,
-      email: values.email || "",
-      phone: values.phone || "",
-      church: values.church || "",
+      email: values.email || null,
+      phone: values.phone || null,
+      church: values.church || null,
       locationWon: (values.locationWonCity || values.locationWonState || values.locationWonCountry)
         ? {
-            city: values.locationWonCity,
-            state: values.locationWonState,
-            country: values.locationWonCountry,
+            city: values.locationWonCity || null,
+            state: values.locationWonState || null,
+            country: values.locationWonCountry || null,
           }
         : undefined,
       source: values.source as 'Campaign' | 'Personal',
-      sourceDetails: values.sourceDetails || "",
+      sourceDetails: values.sourceDetails || null,
       userLocation: processedUserLocation,
       wonAt: values.wonAt as any, // Firestore will convert it
       status: "New",

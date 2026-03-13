@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -94,9 +95,9 @@ export function EditSoulForm({ soul, onSoulUpdated }: EditSoulFormProps) {
     const soulUpdateData: { [key: string]: any } = {
       firstName: values.firstName,
       lastName: values.lastName,
-      email: values.email,
-      phone: values.phone,
-      church: values.church,
+      email: values.email || null,
+      phone: values.phone || null,
+      church: values.church || null,
       locationWon: (values.locationWonCity || values.locationWonState || values.locationWonCountry)
         ? {
             city: values.locationWonCity || null,
@@ -105,7 +106,7 @@ export function EditSoulForm({ soul, onSoulUpdated }: EditSoulFormProps) {
           }
         : deleteField(),
       source: values.source as 'Personal' | 'Campaign',
-      sourceDetails: values.sourceDetails,
+      sourceDetails: values.sourceDetails || null,
       wonAt: values.wonAt as any,
     };
     
