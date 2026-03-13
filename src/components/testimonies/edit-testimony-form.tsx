@@ -22,14 +22,12 @@ import { useFirestore, useUser } from "@/firebase";
 import { doc, updateDoc, serverTimestamp } from "firebase/firestore";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
-import { ImageUpload } from "../common/image-upload";
 
 const testimonyCategories: TestimonyCategory[] = ['Healing', 'Financial Breakthrough', 'Salvation', 'Relationships', 'Deliverance', 'General'];
 
 const formSchema = z.object({
   category: z.string({ required_error: "Please select a category." }),
   content: z.string().min(50, "Testimony must be at least 50 characters.").max(5000, "Testimony is too long."),
-  imageUrl: z.string().optional(),
 });
 
 type EditTestimonyFormProps = {
@@ -49,7 +47,6 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
     defaultValues: {
       category: testimony.category,
       content: testimony.content,
-      imageUrl: testimony.imageUrl || '',
     },
   });
 
@@ -68,7 +65,6 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
     const testimonyUpdate: { [key: string]: any } = {
         category: values.category,
         content: values.content,
-        imageUrl: values.imageUrl || null,
         updatedAt: serverTimestamp(),
     };
 
@@ -129,17 +125,6 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
             </FormItem>
           )}
         />
-        <FormItem>
-            <FormLabel>Image (Optional)</FormLabel>
-            <ImageUpload
-              initialImageUrl={form.getValues('imageUrl')}
-              onUploadComplete={(url) => {
-                  form.setValue('imageUrl', url, { shouldDirty: true });
-              }}
-              storagePath="testimony-images"
-            />
-            <FormMessage>{form.formState.errors.imageUrl?.message}</FormMessage>
-        </FormItem>
         <Button type="submit" className="w-full" disabled={isSubmitting}>
           {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           {isSubmitting ? 'Saving...' : 'Save Changes'}

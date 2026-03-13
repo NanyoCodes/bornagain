@@ -22,14 +22,12 @@ import { useUser, useFirestore } from "@/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { errorEmitter } from "@/firebase/error-emitter";
-import { ImageUpload } from "../common/image-upload";
 
 const testimonyCategories: TestimonyCategory[] = ['Healing', 'Financial Breakthrough', 'Salvation', 'Relationships', 'Deliverance', 'General'];
 
 const formSchema = z.object({
   category: z.string({ required_error: "Please select a category." }),
   content: z.string().min(50, "Testimony must be at least 50 characters.").max(5000, "Testimony is too long."),
-  imageUrl: z.string().optional(),
 });
 
 type CreateTestimonyFormProps = {
@@ -48,7 +46,6 @@ export function CreateTestimonyForm({ onTestimonyCreated, campaign }: CreateTest
     resolver: zodResolver(formSchema),
     defaultValues: {
       content: "",
-      imageUrl: "",
     },
   });
 
@@ -69,7 +66,6 @@ export function CreateTestimonyForm({ onTestimonyCreated, campaign }: CreateTest
           authorLastName: nameParts.slice(1).join(' ') || '',
           authorAvatarUrl: user.photoURL || null,
           content: values.content,
-          imageUrl: values.imageUrl || null,
           createdAt: serverTimestamp(),
           category: values.category as TestimonyCategory,
       };
@@ -152,17 +148,6 @@ export function CreateTestimonyForm({ onTestimonyCreated, campaign }: CreateTest
             </FormItem>
           )}
         />
-
-        <FormItem>
-          <FormLabel>Image (Optional)</FormLabel>
-          <ImageUpload
-            onUploadComplete={(url) => {
-              form.setValue('imageUrl', url, { shouldDirty: true });
-            }}
-            storagePath="testimony-images"
-          />
-          <FormMessage>{form.formState.errors.imageUrl?.message}</FormMessage>
-        </FormItem>
         
         <Button type="submit" className="w-full" disabled={isSubmitting}>
           {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
