@@ -64,10 +64,8 @@ service cloud.firestore {
     // Global souls collection for aggregation.
     match /souls/{soulId} {
       allow list, get: if request.auth != null;
-      // Allow any authenticated user to create a soul record.
-      // The client is responsible for setting the correct userId.
-      // This is safe because the user's private soul log is also written and is secure.
-      allow create: if request.auth != null;
+      // Allow any authenticated user to create a soul record, as long as they are the owner.
+      allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
       allow update, delete: if false; // Immutable
     }
 
