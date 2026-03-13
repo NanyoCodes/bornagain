@@ -64,10 +64,8 @@ service cloud.firestore {
     // Global souls collection for aggregation.
     match /souls/{soulId} {
       allow list, get: if request.auth != null;
-      // Allow any authenticated user to create a soul record.
-      // This is safe because it's for aggregation only.
-      // The user's private collection `/users/{uid}/souls` has stricter rules.
-      allow create: if request.auth != null;
+      // Allow authenticated users to create a soul record for themselves.
+      allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
       allow update, delete: if false; // Immutable
     }
 
@@ -113,7 +111,7 @@ service cloud.firestore {
         // Case 1: A user is joining the campaign. Only the 'participants' count can be incremented.
         (
           request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participants']) &&
-          request.resource.data.participants == resource.data.participants + 1
+          request.resource.data.participants == resource.data.get('participants', 0) + 1
         ) ||
         // Case 2: The organizer is updating the campaign. They can change anything except participant and soul counts.
         (
@@ -124,7 +122,7 @@ service cloud.firestore {
         (
           request.auth.uid == resource.data.organizerId &&
           request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participants']) &&
-          request.resource.data.participants == resource.data.participants - 1
+          request.resource.data.participants == resource.data.get('participants', 0) - 1
         ) ||
         // Case 4: Any authenticated user is logging a soul for the campaign, which only increments the soulsLogged count.
         (

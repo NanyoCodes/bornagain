@@ -461,7 +461,20 @@
           "type": "string"
         },
         "followUpLog": {
-          "type": "array"
+          "type": "array",
+          "description": "A log of follow-up interactions with the soul.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "date": { "type": "object" },
+              "note": { "type": "string" },
+              "actions": {
+                "type": "array",
+                "items": { "type": "string" }
+              }
+            },
+            "required": ["date"]
+          }
         },
         "attendingChurch": {
           "type": "boolean"
