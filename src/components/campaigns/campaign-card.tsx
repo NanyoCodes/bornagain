@@ -383,41 +383,19 @@ export function CampaignCard({ campaign, userId, userProfile, isJoined }: { camp
     return `Created on ${format(createdAtDate, 'PPP')}`;
   }, [campaign.createdAt, status, endDate]);
 
-  const LogSoulDialog = (
-    <Dialog open={isLogSoulOpen} onOpenChange={setIsLogSoulOpen}>
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <DialogTrigger asChild>
-              <Button variant="outline" size="icon">
-                <UserCheck2 className="h-4 w-4" />
-              </Button>
-            </DialogTrigger>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>Log Soul</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-
-      <DialogContent className="sm:max-w-lg">
-        <DialogHeader>
-          <DialogTitle>Log a Soul Won in "{campaign.title}"</DialogTitle>
-          <DialogDescription>
-            Record the details of the person ministered to during this campaign. This will appear on your personal dashboard.
-          </DialogDescription>
-        </DialogHeader>
-        <div className="max-h-[70vh] overflow-y-auto pr-2">
-          <LogSoulForm
-            onSoulLogged={() => {
-              setIsLogSoulOpen(false);
-              toast({ title: "Soul Logged!", description: "The new soul has been added to your personal dashboard." });
-            }}
-            defaultCampaign={campaign}
-          />
-        </div>
-      </DialogContent>
-    </Dialog>
+  const LogSoulButton = (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button variant="outline" size="icon" onClick={(e) => { e.stopPropagation(); setIsLogSoulOpen(true); }}>
+            <UserCheck2 className="h-4 w-4" />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>Log Soul</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 
   const ShareTestimonyDialog = (
@@ -426,7 +404,7 @@ export function CampaignCard({ campaign, userId, userProfile, isJoined }: { camp
         <Tooltip>
           <TooltipTrigger asChild>
             <DialogTrigger asChild>
-              <Button variant="outline" size="icon">
+              <Button variant="outline" size="icon" onClick={(e) => e.stopPropagation()}>
                 <Newspaper className="h-4 w-4" />
               </Button>
             </DialogTrigger>
@@ -583,10 +561,11 @@ export function CampaignCard({ campaign, userId, userProfile, isJoined }: { camp
 
                 {isOwner ? (
                     <div onClick={stopPropagation} className="flex items-center gap-2">
+                      {status === 'Ongoing' && LogSoulButton}
                       {isJoined && (status === 'Ongoing' || status === 'Past') && ShareTestimonyDialog}
                       <Dialog open={isManageOpen} onOpenChange={setIsManageOpen}>
                         <DialogTrigger asChild>
-                          <Button variant="outline" size="icon">
+                          <Button variant="outline" size="icon" onClick={(e) => e.stopPropagation()}>
                             <Edit className="h-4 w-4" />
                             <span className="sr-only">Manage Campaign</span>
                           </Button>
@@ -610,6 +589,7 @@ export function CampaignCard({ campaign, userId, userProfile, isJoined }: { camp
                     </div>
                 ) : isJoined ? (
                      <div onClick={stopPropagation} className="flex items-center gap-2">
+                        {status === 'Ongoing' && LogSoulButton}
                         {(status === 'Ongoing' || status === 'Past') && ShareTestimonyDialog}
                          <TooltipProvider>
                           <Tooltip>
@@ -654,6 +634,25 @@ export function CampaignCard({ campaign, userId, userProfile, isJoined }: { camp
             <span className="flex-shrink-0">{footerDateText}</span>
         </CardFooter>
       </Card>
+      <Dialog open={isLogSoulOpen} onOpenChange={setIsLogSoulOpen}>
+          <DialogContent className="sm:max-w-lg">
+              <DialogHeader>
+                  <DialogTitle>Log a Soul Won in "{campaign.title}"</DialogTitle>
+                  <DialogDescription>
+                      Record the details of the person ministered to during this campaign. This will appear on your personal dashboard.
+                  </DialogDescription>
+              </DialogHeader>
+              <div className="max-h-[70vh] overflow-y-auto pr-2">
+                  <LogSoulForm
+                      onSoulLogged={() => {
+                          setIsLogSoulOpen(false);
+                          toast({ title: "Soul Logged!", description: "The new soul has been added to your personal dashboard." });
+                      }}
+                      defaultCampaign={campaign}
+                  />
+              </div>
+          </DialogContent>
+      </Dialog>
       {userProfile && (
           <JoinCampaignDialog
             campaign={campaign}

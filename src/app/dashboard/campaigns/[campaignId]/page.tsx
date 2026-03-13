@@ -22,6 +22,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { safeToDate } from '@/lib/utils';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 const libraries: ('places')[] = ['places'];
@@ -406,42 +407,48 @@ export default function CampaignPage() {
                             <CardHeader>
                                 <CardTitle className="text-lg">Actions</CardTitle>
                             </CardHeader>
-                            <CardContent className="space-y-2">
+                            <CardContent className="flex flex-wrap gap-2">
                                 {status === 'Ongoing' && campaign.streamUrl && (
-                                    <Button asChild className="w-full">
-                                        <Link href={campaign.streamUrl} target="_blank" rel="noopener noreferrer">
-                                            <PlayCircle className="mr-2 h-4 w-4" /> Watch Live
-                                        </Link>
-                                    </Button>
+                                    <TooltipProvider>
+                                        <Tooltip>
+                                            <TooltipTrigger asChild>
+                                                <Button asChild variant="outline" size="icon">
+                                                    <Link href={campaign.streamUrl} target="_blank" rel="noopener noreferrer">
+                                                        <PlayCircle className="h-4 w-4" />
+                                                        <span className="sr-only">Watch Live</span>
+                                                    </Link>
+                                                </Button>
+                                            </TooltipTrigger>
+                                            <TooltipContent><p>Watch Live</p></TooltipContent>
+                                        </Tooltip>
+                                    </TooltipProvider>
                                 )}
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                    {isOwner ? (
-                                        <>
-                                            <Button onClick={() => setIsManageOpen(true)}><Edit className="mr-2 h-4 w-4" /> Manage</Button>
-                                            <Button variant="outline" onClick={handleShare}><Share2 className="mr-2 h-4 w-4" /> Share</Button>
-                                            {status === 'Ongoing' && (
-                                                <Button variant="secondary" className="sm:col-span-2" onClick={() => setIsLogSoulOpen(true)}><UserCheck2 className="mr-2 h-4 w-4" /> Log Soul</Button>
-                                            )}
-                                            {isJoined && (status === 'Ongoing' || status === 'Past') && (
-                                                <Button variant="secondary" className="sm:col-span-2" onClick={() => setIsTestimonyDialogOpen(true)}><Newspaper className="mr-2 h-4 w-4" /> Share Testimony</Button>
-                                            )}
-                                        </>
-                                    ) : isJoined ? (
-                                        <>
-                                            {status === 'Ongoing' && <Button variant="secondary" className="sm:col-span-2" onClick={() => setIsLogSoulOpen(true)}><UserCheck2 className="mr-2 h-4 w-4" /> Log Soul</Button>}
-                                            {(status === 'Ongoing' || status === 'Past') && <Button variant="secondary" className="sm:col-span-2" onClick={() => setIsTestimonyDialogOpen(true)}><Newspaper className="mr-2 h-4 w-4" /> Share Testimony</Button>}
-                                            <Button disabled><CheckCircle2 className="mr-2 h-4 w-4"/> Joined</Button>
-                                            <Button variant="outline" onClick={handleShare}><Share2 className="mr-2 h-4 w-4" /> Share</Button>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <Button onClick={() => setIsJoinDialogOpen(true)} disabled={joinButtonDisabled}>
-                                                {isFull ? 'Full' : 'Join'}
-                                            </Button>
-                                             <Button variant="outline" onClick={handleShare}><Share2 className="mr-2 h-4 w-4" /> Share</Button>
-                                        </>
-                                    )}
-                                </div>
+                                {isOwner ? (
+                                    <>
+                                        <Button onClick={() => setIsManageOpen(true)}><Edit className="mr-2 h-4 w-4" /> Manage</Button>
+                                        <Button variant="outline" onClick={handleShare}><Share2 className="mr-2 h-4 w-4" /> Share</Button>
+                                        {status === 'Ongoing' && (
+                                            <Button variant="secondary" onClick={() => setIsLogSoulOpen(true)}><UserCheck2 className="mr-2 h-4 w-4" /> Log Soul</Button>
+                                        )}
+                                        {isJoined && (status === 'Ongoing' || status === 'Past') && (
+                                            <Button variant="secondary" onClick={() => setIsTestimonyDialogOpen(true)}><Newspaper className="mr-2 h-4 w-4" /> Share Testimony</Button>
+                                        )}
+                                    </>
+                                ) : isJoined ? (
+                                    <>
+                                        {status === 'Ongoing' && <Button variant="secondary" onClick={() => setIsLogSoulOpen(true)}><UserCheck2 className="mr-2 h-4 w-4" /> Log Soul</Button>}
+                                        {(status === 'Ongoing' || status === 'Past') && <Button variant="secondary" onClick={() => setIsTestimonyDialogOpen(true)}><Newspaper className="mr-2 h-4 w-4" /> Share Testimony</Button>}
+                                        <Button disabled><CheckCircle2 className="mr-2 h-4 w-4"/> Joined</Button>
+                                        <Button variant="outline" onClick={handleShare}><Share2 className="mr-2 h-4 w-4" /> Share</Button>
+                                    </>
+                                ) : (
+                                    <>
+                                        <Button onClick={() => setIsJoinDialogOpen(true)} disabled={joinButtonDisabled}>
+                                            {isFull ? 'Full' : 'Join'}
+                                        </Button>
+                                         <Button variant="outline" onClick={handleShare}><Share2 className="mr-2 h-4 w-4" /> Share</Button>
+                                    </>
+                                )}
                             </CardContent>
                         </Card>
 
