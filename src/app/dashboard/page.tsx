@@ -1,32 +1,93 @@
 
-"use client";
+'use client';
 
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { isSameMonth, format, differenceInHours, subDays } from "date-fns";
-import { ArrowRight, UserPlus, Globe, Loader2, RefreshCw, XCircle, Edit, UserCheck2 } from "lucide-react";
-import { useCollection, useFirestore, useUser, useDoc } from "@/firebase";
-import { collection, query, doc, updateDoc, serverTimestamp, orderBy, limit, where, getCountFromServer, getDocs } from "firebase/firestore";
-import type { Soul, UserProfile } from "@/lib/types";
-import { useMemo, useEffect, useState, useCallback } from "react";
-import { DailyDisciplineCard } from "@/components/dashboard/daily-discipline-card";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Skeleton } from "@/components/ui/skeleton";
-import { errorEmitter } from "@/firebase/error-emitter";
-import { FirestorePermissionError } from "@/firebase/errors";
-import { Bar, BarChart, CartesianGrid, ResponsiveContainer, XAxis, YAxis, Tooltip, Cell } from "recharts";
-import { ChartContainer, ChartTooltipContent } from "@/components/ui/chart";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useToast } from "@/hooks/use-toast";
-import { Progress } from "@/components/ui/progress";
-import { WelcomeBackDialog } from "@/components/dashboard/welcome-back-dialog";
-import { safeToDate } from "@/lib/utils";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import {
+  isSameMonth,
+  format,
+  differenceInHours,
+  subDays,
+} from 'date-fns';
+import {
+  ArrowRight,
+  UserPlus,
+  Globe,
+  Loader2,
+  RefreshCw,
+  XCircle,
+  Edit,
+  UserCheck2,
+} from 'lucide-react';
+import { useCollection, useFirestore, useUser, useDoc } from '@/firebase';
+import {
+  collection,
+  query,
+  doc,
+  updateDoc,
+  serverTimestamp,
+  orderBy,
+  limit,
+  where,
+  getCountFromServer,
+  getDocs,
+} from 'firebase/firestore';
+import type { Soul, UserProfile } from '@/lib/types';
+import { useMemo, useEffect, useState, useCallback } from 'react';
+import { DailyDisciplineCard } from '@/components/dashboard/daily-discipline-card';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Skeleton } from '@/components/ui/skeleton';
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError } from '@/firebase/errors';
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  XAxis,
+  YAxis,
+  Tooltip,
+  Cell,
+} from 'recharts';
+import {
+  ChartContainer,
+  ChartTooltipContent,
+} from '@/components/ui/chart';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { useToast } from '@/hooks/use-toast';
+import { Progress } from '@/components/ui/progress';
+import { WelcomeBackDialog } from '@/components/dashboard/welcome-back-dialog';
+import { safeToDate } from '@/lib/utils';
 
-function DisplayPassage({ reference, userName }: { reference: string, userName?: string }) {
-  const [passage, setPassage] = useState<{text: string; reference: string} | null>(null);
+function DisplayPassage({
+  reference,
+  userName,
+}: {
+  reference: string;
+  userName?: string;
+}) {
+  const [passage, setPassage] = useState<{
+    text: string;
+    reference: string;
+  } | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -34,15 +95,26 @@ function DisplayPassage({ reference, userName }: { reference: string, userName?:
     const fetchPassage = async () => {
       setIsLoading(true);
       setError(null);
+      let apiReference = reference;
+      // Regex to check if reference has book and chapter but no verses.
+      if (/^[a-zA-Z0-9\s]+ \d+$/.test(reference.trim())) {
+        apiReference = `${reference.trim()}:1-2`;
+      }
       try {
-        const response = await fetch(`https://bible-api.com/${encodeURIComponent(reference)}?translation=kjv`);
+        const response = await fetch(
+          `https://bible-api.com/${encodeURIComponent(
+            apiReference
+          )}?translation=kjv`
+        );
         if (!response.ok) throw new Error('Failed to fetch scripture.');
         const data = await response.json();
         if (data.error) throw new Error(data.error);
         setPassage({ text: data.text.trim(), reference: data.reference });
       } catch (err: any) {
-        console.error("Error fetching passage:", err);
-        setError(`Could not load scripture for "${reference}". Please check the reference.`);
+        console.error('Error fetching passage:', err);
+        setError(
+          `Could not load scripture for "${reference}". Please check the reference.`
+        );
       } finally {
         setIsLoading(false);
       }
@@ -55,18 +127,18 @@ function DisplayPassage({ reference, userName }: { reference: string, userName?:
   }
 
   if (error) {
-     return (
-        <div className="border-l-2 border-destructive pl-6 italic text-sm text-destructive">
-            <p className="font-semibold">Error</p>
-            <p>{error}</p>
-        </div>
+    return (
+      <div className="border-l-2 border-destructive pl-6 italic text-sm text-destructive">
+        <p className="font-semibold">Error</p>
+        <p>{error}</p>
+      </div>
     );
   }
 
   if (!passage) {
     return null;
   }
-  
+
   let personalizedText = passage.text;
   if (userName) {
     // Replace pronouns and common terms with the user's name for personalization.
@@ -81,251 +153,342 @@ function DisplayPassage({ reference, userName }: { reference: string, userName?:
   return (
     <blockquote className="border-l-2 pl-6 italic">
       <p>&ldquo;{personalizedText}&rdquo;</p>
-      <footer className="text-right text-sm not-italic mt-2">- {passage.reference}</footer>
+      <footer className="text-right text-sm not-italic mt-2">
+        - {passage.reference}
+      </footer>
     </blockquote>
   );
 }
 
-
 function RecentSoulsList() {
-    const { user } = useUser();
-    const firestore = useFirestore();
+  const { user } = useUser();
+  const firestore = useFirestore();
 
-    const soulsQuery = useMemo(() => {
-        if (!user?.uid || !firestore) return null;
-        return query(collection(firestore, `users/${user.uid}/souls`), orderBy("wonAt", "desc"), limit(3));
-    }, [user?.uid, firestore]);
-    const { data: souls, loading } = useCollection<Soul>(soulsQuery);
+  const soulsQuery = useMemo(() => {
+    if (!user?.uid || !firestore) return null;
+    return query(
+      collection(firestore, `users/${user.uid}/souls`),
+      orderBy('wonAt', 'desc'),
+      limit(3)
+    );
+  }, [user?.uid, firestore]);
+  const { data: souls, loading } = useCollection<Soul>(soulsQuery);
 
-    if (loading) {
-        return (
-            <div className="space-y-4">
-                {[...Array(3)].map((_, i) => (
-                <div key={i} className="flex items-center gap-4">
-                    <Skeleton className="h-10 w-10 rounded-full" />
-                    <div className="space-y-1 flex-1">
-                        <Skeleton className="h-4 w-2/4" />
-                        <Skeleton className="h-3 w-1/4" />
-                    </div>
-                </div>
-                ))}
-            </div>
-        )
-    }
-
-    if (!souls || souls.length === 0) {
-        return (
-            <div className="text-center py-10 border-2 border-dashed rounded-lg bg-slate-50 dark:bg-slate-900/30">
-                <div className="mx-auto h-12 w-12 text-muted-foreground">
-                    <UserPlus strokeWidth={1.5} />
-                </div>
-                <h3 className="mt-4 text-lg font-semibold">Log Your First Soul</h3>
-                <p className="mt-1 text-sm text-muted-foreground">Start tracking the lives you impact.</p>
-                <Button asChild size="sm" className="mt-4">
-                    <Link href="/dashboard/souls-won">
-                        Get Started <ArrowRight className="ml-2 h-4 w-4" />
-                    </Link>
-                </Button>
-            </div>
-        )
-    }
-
+  if (loading) {
     return (
-        <div className="space-y-1">
-            {souls.map(soul => {
-                const wonDate = safeToDate(soul.wonAt);
-                return (
-                    <Link href="/dashboard/souls-won" key={soul.id} className="flex items-center gap-4 p-2 -mx-2 rounded-lg hover:bg-muted/50 transition-colors">
-                        <Avatar className="h-10 w-10 border">
-                            <AvatarFallback>{soul.firstName?.charAt(0) || 'S'}</AvatarFallback>
-                        </Avatar>
-                        <div className="flex-1">
-                            <p className="font-semibold leading-none">{soul.firstName || 'Unknown'} {soul.lastName || ''}</p>
-                            <p className="text-sm text-muted-foreground">
-                                Won on {wonDate ? format(wonDate, "PPP") : 'N/A'}
-                            </p>
-                        </div>
-                        <ArrowRight className="h-4 w-4 text-muted-foreground" />
-                    </Link>
-                );
-            })}
+      <div className="space-y-4">
+        {[...Array(3)].map((_, i) => (
+          <div key={i} className="flex items-center gap-4">
+            <Skeleton className="h-10 w-10 rounded-full" />
+            <div className="space-y-1 flex-1">
+              <Skeleton className="h-4 w-2/4" />
+              <Skeleton className="h-3 w-1/4" />
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  if (!souls || souls.length === 0) {
+    return (
+      <div className="text-center py-10 border-2 border-dashed rounded-lg bg-slate-50 dark:bg-slate-900/30">
+        <div className="mx-auto h-12 w-12 text-muted-foreground">
+          <UserPlus strokeWidth={1.5} />
         </div>
-    )
+        <h3 className="mt-4 text-lg font-semibold">Log Your First Soul</h3>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Start tracking the lives you impact.
+        </p>
+        <Button asChild size="sm" className="mt-4">
+          <Link href="/dashboard/souls-won">
+            Get Started <ArrowRight className="ml-2 h-4 w-4" />
+          </Link>
+        </Button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-1">
+      {souls.map((soul) => {
+        const wonDate = safeToDate(soul.wonAt);
+        return (
+          <Link
+            href="/dashboard/souls-won"
+            key={soul.id}
+            className="flex items-center gap-4 p-2 -mx-2 rounded-lg hover:bg-muted/50 transition-colors"
+          >
+            <Avatar className="h-10 w-10 border">
+              <AvatarFallback>{soul.firstName?.charAt(0) || 'S'}</AvatarFallback>
+            </Avatar>
+            <div className="flex-1">
+              <p className="font-semibold leading-none">
+                {soul.firstName || 'Unknown'} {soul.lastName || ''}
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Won on {wonDate ? format(wonDate, 'PPP') : 'N/A'}
+              </p>
+            </div>
+            <ArrowRight className="h-4 w-4 text-muted-foreground" />
+          </Link>
+        );
+      })}
+    </div>
+  );
 }
 
-function GlobalSoulsCard({ location, userSouls }: { location: { city?: string, country?: string }, userSouls: Soul[] }) {
-    const firestore = useFirestore();
-    const [cityCount, setCityCount] = useState(0);
-    const [countryCount, setCountryCount] = useState(0);
-    const [globalCount, setGlobalCount] = useState(0);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+function GlobalSoulsCard({
+  location,
+  userSouls,
+}: {
+  location: { city?: string; country?: string };
+  userSouls: Soul[];
+}) {
+  const firestore = useFirestore();
+  const [cityCount, setCityCount] = useState(0);
+  const [countryCount, setCountryCount] = useState(0);
+  const [globalCount, setGlobalCount] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-    const yourCityCount = useMemo(() => 
-        userSouls.filter(s => s.userLocation?.city_lowercase === location.city?.toLowerCase()).length
-    , [userSouls, location.city]);
+  const yourCityCount = useMemo(
+    () =>
+      userSouls.filter(
+        (s) => s.userLocation?.city_lowercase === location.city?.toLowerCase()
+      ).length,
+    [userSouls, location.city]
+  );
 
-    const yourCountryCount = useMemo(() =>
-        userSouls.filter(s => s.userLocation?.country_lowercase === location.country?.toLowerCase()).length
-    , [userSouls, location.country]);
+  const yourCountryCount = useMemo(
+    () =>
+      userSouls.filter(
+        (s) =>
+          s.userLocation?.country_lowercase === location.country?.toLowerCase()
+      ).length,
+    [userSouls, location.country]
+  );
 
-    const yourGlobalCount = userSouls.length;
+  const yourGlobalCount = userSouls.length;
 
-    const fetchCounts = useCallback(async () => {
-        if (!firestore) {
-            setLoading(false);
-            return;
-        };
+  const fetchCounts = useCallback(async () => {
+    if (!firestore) {
+      setLoading(false);
+      return;
+    }
 
-        setLoading(true);
-        try {
-            setError(null);
-            const soulsCollection = collection(firestore, 'souls');
-            
-            const promises = [];
+    setLoading(true);
+    try {
+      setError(null);
+      const soulsCollection = collection(firestore, 'souls');
 
-            // Global query
-            promises.push(getCountFromServer(soulsCollection));
+      const promises = [];
 
-            // City query
-            if (location.city) {
-                const cityQuery = query(soulsCollection, where('userLocation.city_lowercase', '==', location.city.toLowerCase()));
-                promises.push(getCountFromServer(cityQuery));
-            } else {
-                promises.push(Promise.resolve(null));
-            }
+      // Global query
+      promises.push(getCountFromServer(soulsCollection));
 
-            // Country query
-            if (location.country) {
-                const countryQuery = query(soulsCollection, where('userLocation.country_lowercase', '==', location.country.toLowerCase()));
-                promises.push(getCountFromServer(countryQuery));
-            } else {
-                promises.push(Promise.resolve(null));
-            }
+      // City query
+      if (location.city) {
+        const cityQuery = query(
+          soulsCollection,
+          where('userLocation.city_lowercase', '==', location.city.toLowerCase())
+        );
+        promises.push(getCountFromServer(cityQuery));
+      } else {
+        promises.push(Promise.resolve(null));
+      }
 
-            const [globalSnapshot, citySnapshot, countrySnapshot] = await Promise.all(promises);
-            
-            setGlobalCount(globalSnapshot?.data().count ?? 0);
-            setCityCount(citySnapshot?.data().count ?? 0);
-            setCountryCount(countrySnapshot?.data().count ?? 0);
+      // Country query
+      if (location.country) {
+        const countryQuery = query(
+          soulsCollection,
+          where(
+            'userLocation.country_lowercase',
+            '==',
+            location.country.toLowerCase()
+          )
+        );
+        promises.push(getCountFromServer(countryQuery));
+      } else {
+        promises.push(Promise.resolve(null));
+      }
 
-        } catch (error) {
-            
-            const permissionError = new FirestorePermissionError({
-                path: 'souls',
-                operation: 'list',
-            });
-            errorEmitter.emit('permission-error', permissionError);
-            setError("Could not load community stats.");
-        } finally {
-            setLoading(false);
-        }
-    }, [firestore, location.city, location.country]);
+      const [globalSnapshot, citySnapshot, countrySnapshot] =
+        await Promise.all(promises);
 
-    useEffect(() => {
-        fetchCounts();
-        const intervalId = setInterval(fetchCounts, 30000); // Refresh every 30 seconds
+      setGlobalCount(globalSnapshot?.data().count ?? 0);
+      setCityCount(citySnapshot?.data().count ?? 0);
+      setCountryCount(countrySnapshot?.data().count ?? 0);
+    } catch (error) {
+      const permissionError = new FirestorePermissionError({
+        path: 'souls',
+        operation: 'list',
+      });
+      errorEmitter.emit('permission-error', permissionError);
+      setError('Could not load community stats.');
+    } finally {
+      setLoading(false);
+    }
+  }, [firestore, location.city, location.country]);
 
-        return () => clearInterval(intervalId); // Cleanup on unmount
-    }, [fetchCounts]);
+  useEffect(() => {
+    fetchCounts();
+    const intervalId = setInterval(fetchCounts, 30000); // Refresh every 30 seconds
 
-    return (
-        <Card>
-            <CardHeader className="flex flex-row items-start justify-between pb-4">
-                <div>
-                    <CardTitle className="flex items-center gap-2">
-                        Community Impact
-                        <span className="flex h-2 w-2 relative">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                            <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
-                        </span>
-                    </CardTitle>
-                    <CardDescription>Souls won by all users.</CardDescription>
+    return () => clearInterval(intervalId); // Cleanup on unmount
+  }, [fetchCounts]);
+
+  return (
+    <Card>
+      <CardHeader className="flex flex-row items-start justify-between pb-4">
+        <div>
+          <CardTitle className="flex items-center gap-2">
+            Community Impact
+            <span className="flex h-2 w-2 relative">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+            </span>
+          </CardTitle>
+          <CardDescription>Souls won by all users.</CardDescription>
+        </div>
+        <Button variant="ghost" size="icon" onClick={fetchCounts} disabled={loading}>
+          {loading ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <RefreshCw className="h-4 w-4" />
+          )}
+          <span className="sr-only">Refresh stats</span>
+        </Button>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {error ? (
+          <div className="text-destructive text-sm p-3 rounded-md border border-destructive/50 bg-destructive/10 flex items-center gap-2">
+            <XCircle className="h-4 w-4" />
+            <p>{error} Please try again.</p>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {location.city && (
+              <div className="flex items-center justify-between">
+                <span className="font-medium text-muted-foreground">
+                  In {location.city}
+                </span>
+                <div className="text-right">
+                  <div className="font-bold text-lg">
+                    {loading && cityCount === 0 ? (
+                      <Skeleton className="h-6 w-10" />
+                    ) : (
+                      cityCount
+                    )}
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    You: {yourCityCount}
+                  </p>
                 </div>
-                <Button variant="ghost" size="icon" onClick={fetchCounts} disabled={loading}>
-                    {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
-                    <span className="sr-only">Refresh stats</span>
-                </Button>
-            </CardHeader>
-            <CardContent className="space-y-4">
-                {error ? (
-                    <div className="text-destructive text-sm p-3 rounded-md border border-destructive/50 bg-destructive/10 flex items-center gap-2">
-                        <XCircle className="h-4 w-4" />
-                        <p>{error} Please try again.</p>
-                    </div>
-                ) : (
-                    <div className="space-y-4">
-                        {location.city && (
-                             <div className="flex items-center justify-between">
-                                <span className="font-medium text-muted-foreground">In {location.city}</span>
-                                <div className="text-right">
-                                    <div className="font-bold text-lg">{loading && cityCount === 0 ? <Skeleton className="h-6 w-10"/> : cityCount}</div>
-                                    <p className="text-xs text-muted-foreground">You: {yourCityCount}</p>
-                                </div>
-                            </div>
-                        )}
-                        {location.country && (
-                            <div className="flex items-center justify-between">
-                                <span className="font-medium text-muted-foreground">In {location.country}</span>
-                                <div className="text-right">
-                                    <div className="font-bold text-lg">{loading && countryCount === 0 ? <Skeleton className="h-6 w-12"/> : countryCount}</div>
-                                    <p className="text-xs text-muted-foreground">You: {yourCountryCount}</p>
-                                </div>
-                            </div>
-                        )}
-                        <div className="flex items-center justify-between">
-                            <span className="font-medium text-muted-foreground">Globally</span>
-                            <div className="text-right">
-                                <div className="font-bold text-lg">{loading && globalCount === 0 ? <Skeleton className="h-6 w-16"/> : globalCount}</div>
-                                <p className="text-xs text-muted-foreground">You: {yourGlobalCount}</p>
-                            </div>
-                        </div>
-                    </div>
-                )}
-                {!location.city && !location.country && !loading && (
-                    <p className="text-sm text-center text-muted-foreground py-4">
-                        Add your location in your profile to see community stats.
-                    </p>
-                )}
-            </CardContent>
-        </Card>
-    );
+              </div>
+            )}
+            {location.country && (
+              <div className="flex items-center justify-between">
+                <span className="font-medium text-muted-foreground">
+                  In {location.country}
+                </span>
+                <div className="text-right">
+                  <div className="font-bold text-lg">
+                    {loading && countryCount === 0 ? (
+                      <Skeleton className="h-6 w-12" />
+                    ) : (
+                      countryCount
+                    )}
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    You: {yourCountryCount}
+                  </p>
+                </div>
+              </div>
+            )}
+            <div className="flex items-center justify-between">
+              <span className="font-medium text-muted-foreground">Globally</span>
+              <div className="text-right">
+                <div className="font-bold text-lg">
+                  {loading && globalCount === 0 ? (
+                    <Skeleton className="h-6 w-16" />
+                  ) : (
+                    globalCount
+                  )}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  You: {yourGlobalCount}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+        {!location.city && !location.country && !loading && (
+          <p className="text-sm text-center text-muted-foreground py-4">
+            Add your location in your profile to see community stats.
+          </p>
+        )}
+      </CardContent>
+    </Card>
+  );
 }
 
 const chartConfig = {
   soulsWon: {
-    label: "Souls Won",
-    color: "hsl(var(--primary))",
+    label: 'Souls Won',
+    color: 'hsl(var(--primary))',
   },
-} satisfies import("@/components/ui/chart").ChartConfig;
+} satisfies import('@/components/ui/chart').ChartConfig;
 
 const chartColors = [
-  "hsl(var(--chart-1))",
-  "hsl(var(--chart-2))",
-  "hsl(var(--chart-3))",
-  "hsl(var(--chart-4))",
-  "hsl(var(--chart-5))",
+  'hsl(var(--chart-1))',
+  'hsl(var(--chart-2))',
+  'hsl(var(--chart-3))',
+  'hsl(var(--chart-4))',
+  'hsl(var(--chart-5))',
 ];
 
 const welcomeScriptures = [
-    { text: "Be strong and courageous, {name}", verse: "For the LORD your God is with you wherever you go. - Joshua 1:9" },
-    { text: "The LORD is my shepherd, {name}; I shall not want", verse: "He makes me lie down in green pastures. - Psalm 23:1-2" },
-    { text: "{name}, you can do all things through Christ who strengthens you", verse: "Philippians 4:13" },
-    { text: "For I know the plans I have for you, {name}", verse: "declares the LORD, plans to prosper you and not to harm you, plans to give you hope and a future. - Jeremiah 29:11" },
-    { text: "Trust in the LORD with all your heart, {name}", verse: "and lean not on your own understanding; in all your ways submit to him, and he will make your paths straight. - Proverbs 3:5-6" },
-    { text: "The steadfast love of the Lord never ceases for you, {name}", verse: "his mercies never come to an end; they are new every morning; great is your faithfulness. - Lamentations 3:22-23" }
+  {
+    text: 'Be strong and courageous, {name}',
+    verse: 'For the LORD your God is with you wherever you go. - Joshua 1:9',
+  },
+  {
+    text: 'The LORD is my shepherd, {name}; I shall not want',
+    verse: 'He makes me lie down in green pastures. - Psalm 23:1-2',
+  },
+  {
+    text: '{name}, you can do all things through Christ who strengthens you',
+    verse: 'Philippians 4:13',
+  },
+  {
+    text: 'For I know the plans I have for you, {name}',
+    verse:
+      'declares the LORD, plans to prosper you and not to harm you, plans to give you hope and a future. - Jeremiah 29:11',
+  },
+  {
+    text: 'Trust in the LORD with all your heart, {name}',
+    verse:
+      'and lean not on your own understanding; in all your ways submit to him, and he will make your paths straight. - Proverbs 3:5-6',
+  },
+  {
+    text: 'The steadfast love of the Lord never ceases for you, {name}',
+    verse:
+      'his mercies never come to an end; they are new every morning; great is your faithfulness. - Lamentations 3:22-23',
+  },
 ];
 
 export default function DashboardPage() {
   const { user, loading: authLoading } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
-  
+
   const userDocRef = useMemo(() => {
     if (!user?.uid || !firestore) return null;
     return doc(firestore, 'users', user.uid);
   }, [user?.uid, firestore]);
-  const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userDocRef);
+  const { data: userProfile, loading: profileLoading } =
+    useDoc<UserProfile>(userDocRef);
 
   const soulsQuery = useMemo(() => {
     if (!user?.uid || !firestore) return null;
@@ -339,31 +502,38 @@ export default function DashboardPage() {
   const [goalDialogOpen, setGoalDialogOpen] = useState(false);
   const [newGoal, setNewGoal] = useState(monthlyGoal);
   const [newGoalDate, setNewGoalDate] = useState<Date | null>(null);
-  
+
   const [showWelcomeBack, setShowWelcomeBack] = useState(false);
-  const [summaryData, setSummaryData] = useState<{
+  const [
+    summaryData,
+    setSummaryData,
+  ] = useState<{
     newTestimoniesCount: number;
     soulsWonCount: number;
     recentDisciplines: { date: string; completed: boolean }[];
   } | null>(null);
 
-  const [welcomeMessage, setWelcomeMessage] = useState<{text: string; verse: string} | null>(null);
+  const [welcomeMessage, setWelcomeMessage] = useState<{
+    text: string;
+    verse: string;
+  } | null>(null);
   const [favoritePassage, setFavoritePassage] = useState<string | null>(null);
 
-    useEffect(() => {
+  useEffect(() => {
     // This effect runs on the client after hydration.
     // It's safe to use Math.random() here.
     if (profileLoading) return; // Wait for profile to load
 
-    const passages = userProfile?.favoritePassages?.filter(p => p && p.trim() !== '');
+    const passages = userProfile?.favoritePassages?.filter((p) => p && p.trim() !== '');
     if (passages && passages.length > 0) {
-        // Randomly select one passage to display
-        const randomIndex = Math.floor(Math.random() * passages.length);
-        setFavoritePassage(passages[randomIndex]);
+      // Randomly select one passage to display
+      const randomIndex = Math.floor(Math.random() * passages.length);
+      setFavoritePassage(passages[randomIndex]);
     } else {
-        // Fallback to generic welcome scripture if no favorite is set
-        const randomScripture = welcomeScriptures[Math.floor(Math.random() * welcomeScriptures.length)];
-        setWelcomeMessage(randomScripture);
+      // Fallback to generic welcome scripture if no favorite is set
+      const randomScripture =
+        welcomeScriptures[Math.floor(Math.random() * welcomeScriptures.length)];
+      setWelcomeMessage(randomScripture);
     }
   }, [userProfile, profileLoading]);
 
@@ -404,28 +574,32 @@ export default function DashboardPage() {
             where('date', '>=', threeDaysAgo)
           );
           const disciplineSnapshot = await getDocs(disciplineHistoryQuery);
-          const historyMap = new Map(disciplineSnapshot.docs.map(d => [format(safeToDate(d.data().date)!, 'yyyy-MM-dd'), d.data().completed.length > 0]));
-          
+          const historyMap = new Map(
+            disciplineSnapshot.docs.map((d) => [
+              format(safeToDate(d.data().date)!, 'yyyy-MM-dd'),
+              d.data().completed.length > 0,
+            ])
+          );
+
           for (let i = 1; i <= 3; i++) {
-              const date = subDays(now, i);
-              const dateString = format(date, 'yyyy-MM-dd');
-              const prettyDate = format(date, 'MMM d');
-              recentDisciplines.push({
-                  date: prettyDate,
-                  completed: historyMap.get(dateString) || false
-              });
+            const date = subDays(now, i);
+            const dateString = format(date, 'yyyy-MM-dd');
+            const prettyDate = format(date, 'MMM d');
+            recentDisciplines.push({
+              date: prettyDate,
+              completed: historyMap.get(dateString) || false,
+            });
           }
           recentDisciplines.reverse(); // Show oldest first
 
           setSummaryData({
             newTestimoniesCount,
             soulsWonCount,
-            recentDisciplines
+            recentDisciplines,
           });
           setShowWelcomeBack(true);
-
         } catch (error) {
-          console.error("Failed to fetch welcome back summary:", error);
+          console.error('Failed to fetch welcome back summary:', error);
           // Don't show the dialog if data fetching fails.
         }
       };
@@ -433,7 +607,6 @@ export default function DashboardPage() {
       fetchSummaryData();
     }
   }, [loading, userProfile, firestore, user, soulsWon]);
-
 
   const handleGoalDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
@@ -443,11 +616,11 @@ export default function DashboardPage() {
     }
   };
 
-  const newGoalDateValue = newGoalDate ? format(newGoalDate, "yyyy-MM") : "";
-  
+  const newGoalDateValue = newGoalDate ? format(newGoalDate, 'yyyy-MM') : '';
+
   const soulsThisMonth = useMemo(() => {
     if (!soulsWon || !goalDate) return 0;
-    return soulsWon.filter(soul => {
+    return soulsWon.filter((soul) => {
       const wonDate = safeToDate(soul.wonAt);
       if (!wonDate) return false;
       return isSameMonth(wonDate, goalDate);
@@ -462,18 +635,22 @@ export default function DashboardPage() {
     threeMonthsAgo.setDate(1);
 
     for (let i = 0; i < 3; i++) {
-        const date = new Date(threeMonthsAgo.getFullYear(), threeMonthsAgo.getMonth() + i, 1);
-        const monthKey = format(date, "MMM");
-        monthlyData[monthKey] = { date: monthKey, soulsWon: 0 };
+      const date = new Date(
+        threeMonthsAgo.getFullYear(),
+        threeMonthsAgo.getMonth() + i,
+        1
+      );
+      const monthKey = format(date, 'MMM');
+      monthlyData[monthKey] = { date: monthKey, soulsWon: 0 };
     }
 
-    soulsWon.forEach(soul => {
+    soulsWon.forEach((soul) => {
       const wonDate = safeToDate(soul.wonAt);
       if (wonDate && wonDate >= threeMonthsAgo) {
-          const monthKey = format(wonDate, "MMM");
-          if (monthlyData[monthKey]) {
-              monthlyData[monthKey].soulsWon++;
-          }
+        const monthKey = format(wonDate, 'MMM');
+        if (monthlyData[monthKey]) {
+          monthlyData[monthKey].soulsWon++;
+        }
       }
     });
     return Object.values(monthlyData);
@@ -485,208 +662,245 @@ export default function DashboardPage() {
       setGoalDate(newGoalDate);
       setGoalDialogOpen(false);
       toast({
-        title: "Monthly Goal Updated",
-        description: `Your new goal for ${format(newGoalDate, "MMMM yyyy")} is ${newGoal} souls.`,
+        title: 'Monthly Goal Updated',
+        description: `Your new goal for ${format(
+          newGoalDate,
+          'MMMM yyyy'
+        )} is ${newGoal} souls.`,
       });
     } else {
       toast({
-        variant: "destructive",
-        title: "Invalid Goal",
-        description: "Please enter a number greater than 0.",
+        variant: 'destructive',
+        title: 'Invalid Goal',
+        description: 'Please enter a number greater than 0.',
       });
     }
   };
 
   const soulsWonCount = soulsWon?.length ?? 0;
-  
+
   const displayName = userProfile?.firstName || user?.displayName || 'User';
 
   return (
     <div className="space-y-8">
-        {favoritePassage ? (
-            <div className="space-y-4">
-                <h1 className="text-3xl sm:text-4xl font-bold tracking-tight font-headline">
-                    A favorite for you, {displayName}
-                </h1>
-                <DisplayPassage reference={favoritePassage} userName={displayName} />
-            </div>
-        ) : (
-            <div className="space-y-2">
-                <h1 className="text-3xl sm:text-4xl font-bold tracking-tight font-headline">
-                    {welcomeMessage?.text.replace('{name}', displayName) || `Welcome back, ${displayName}!`}
-                </h1>
-                <p className="text-muted-foreground">
-                    {welcomeMessage ? `"${welcomeMessage.verse}"` : 'Set your favorite passages in your profile to personalize this section.'}
-                </p>
-            </div>
-        )}
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2 space-y-8">
-                <DailyDisciplineCard />
-
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Monthly Statistics</CardTitle>
-                        <CardDescription>Souls won in the last 3 months.</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                    <ChartContainer config={chartConfig} className="h-[300px] w-full">
-                        <ResponsiveContainer width="100%" height="100%">
-                        <BarChart data={progressData} accessibilityLayer>
-                            <CartesianGrid vertical={false} />
-                            <XAxis
-                            dataKey="date"
-                            tickLine={false}
-                            tickMargin={10}
-                            axisLine={false}
-                            tickFormatter={(value) => value.slice(0, 3)}
-                            />
-                            <YAxis domain={[0, (dataMax: number) => Math.max(dataMax || 0, monthlyGoal)]} />
-                            <Tooltip cursor={false} content={<ChartTooltipContent />} />
-                            <Bar dataKey="soulsWon" radius={8}>
-                                {progressData.map((_entry, index) => (
-                                    <Cell key={`cell-${index}`} fill={chartColors[index % chartColors.length]} />
-                                ))}
-                            </Bar>
-                        </BarChart>
-                        </ResponsiveContainer>
-                    </ChartContainer>
-                    </CardContent>
-                </Card>
-
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between">
-                        <div className="space-y-1.5">
-                            <CardTitle>Recent Souls Won</CardTitle>
-                            <CardDescription>The latest additions to your follow-up list.</CardDescription>
-                        </div>
-                        <Button asChild variant="outline" size="sm">
-                           <Link href="/dashboard/souls-won">
-                                View All
-                           </Link>
-                        </Button>
-                    </CardHeader>
-                    <CardContent>
-                        <RecentSoulsList />
-                    </CardContent>
-                </Card>
-            </div>
-
-            <div className="space-y-8">
-                <Card>
-                    <CardHeader>
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <CardTitle className="text-lg">Monthly Goal</CardTitle>
-                                <CardDescription>{goalDate ? format(goalDate, 'MMMM yyyy') : '...'}</CardDescription>
-                            </div>
-                            <Dialog 
-                                open={goalDialogOpen} 
-                                onOpenChange={(isOpen) => {
-                                if(isOpen) {
-                                    setNewGoal(monthlyGoal);
-                                    setNewGoalDate(goalDate);
-                                }
-                                setGoalDialogOpen(isOpen);
-                                }}
-                            >
-                                <DialogTrigger asChild>
-                                <Button variant="ghost" size="icon">
-                                    <Edit className="h-4 w-4 text-muted-foreground" />
-                                </Button>
-                                </DialogTrigger>
-                                <DialogContent className="sm:max-w-[425px]">
-                                <DialogHeader>
-                                    <DialogTitle>Set Monthly Goal</DialogTitle>
-                                    <DialogDescription>
-                                    Set your personal goal for souls won for a specific month.
-                                    </DialogDescription>
-                                </DialogHeader>
-                                <div className="grid gap-4 py-4">
-                                    <div className="grid grid-cols-4 items-center gap-4">
-                                    <Label htmlFor="goal" className="text-right">
-                                        Souls
-                                    </Label>
-                                    <Input
-                                        id="goal"
-                                        type="number"
-                                        value={newGoal}
-                                        onChange={(e) => setNewGoal(Number(e.target.value))}
-                                        className="col-span-3"
-                                    />
-                                    </div>
-                                    <div className="grid grid-cols-4 items-center gap-4">
-                                    <Label htmlFor="goal-month" className="text-right">
-                                        For Month
-                                    </Label>
-                                    <Input
-                                        id="goal-month"
-                                        type="month"
-                                        value={newGoalDateValue}
-                                        onChange={handleGoalDateChange}
-                                        className="col-span-3"
-                                    />
-                                    </div>
-                                </div>
-                                <DialogFooter>
-                                    <Button onClick={handleSaveGoal}>Save Goal</Button>
-                                </DialogFooter>
-                                </DialogContent>
-                            </Dialog>
-                        </div>
-                    </CardHeader>
-                    <CardContent>
-                    {goalDate ? (
-                        <div className="space-y-2">
-                            <div className="flex justify-between items-baseline">
-                                <div className="text-2xl font-bold">{soulsThisMonth}</div>
-                                <div className="text-sm text-muted-foreground">/ {monthlyGoal} souls</div>
-                            </div>
-                            <Progress value={monthlyGoal > 0 ? (soulsThisMonth / monthlyGoal) * 100 : 0} className="h-2" />
-                            <p className="text-xs text-muted-foreground text-right">{`${monthlyGoal > 0 ? Math.round((soulsThisMonth / monthlyGoal) * 100) : 0}% complete`}</p>
-                        </div>
-                    ) : (
-                        <div className="space-y-2">
-                            <Skeleton className="h-6 w-1/2" />
-                            <Skeleton className="h-2 w-full" />
-                            <Skeleton className="h-3 w-1/4 ml-auto" />
-                        </div>
-                    )}
-                    </CardContent>
-                    <CardFooter className="pt-4 flex items-center gap-2 text-sm text-muted-foreground">
-                        <UserCheck2 className="h-4 w-4" />
-                        <span>Total souls won: <span className="font-bold text-foreground">{soulsWonCount}</span></span>
-                    </CardFooter>
-                </Card>
-                
-                {userProfile?.location && <GlobalSoulsCard location={userProfile.location} userSouls={soulsWon || []} />}
-
-                 <Card className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground">
-                    <CardHeader>
-                        <CardTitle>Share Your Story</CardTitle>
-                        <CardDescription className="text-primary-foreground/80">Encourage the body of Christ with what God has done.</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <Button asChild variant="secondary" className="w-full">
-                           <Link href="/dashboard/testimonies">
-                                Share Testimony <ArrowRight className="ml-2 h-4 w-4" />
-                           </Link>
-                        </Button>
-                    </CardContent>
-                </Card>
-            </div>
+      {favoritePassage ? (
+        <div className="space-y-4">
+          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight font-headline">
+            A favorite for you, {displayName}
+          </h1>
+          <DisplayPassage reference={favoritePassage} userName={displayName} />
         </div>
-        {summaryData && userProfile && (
-            <WelcomeBackDialog 
-                isOpen={showWelcomeBack}
-                onClose={() => setShowWelcomeBack(false)}
-                userProfile={userProfile}
-                summaryData={summaryData}
+      ) : (
+        <div className="space-y-2">
+          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight font-headline">
+            {welcomeMessage?.text.replace('{name}', displayName) ||
+              `Welcome back, ${displayName}!`}
+          </h1>
+          <p className="text-muted-foreground">
+            {welcomeMessage
+              ? `"${welcomeMessage.verse}"`
+              : 'Set your favorite passages in your profile to personalize this section.'}
+          </p>
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-2 space-y-8">
+          <DailyDisciplineCard />
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Monthly Statistics</CardTitle>
+              <CardDescription>Souls won in the last 3 months.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ChartContainer config={chartConfig} className="h-[300px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={progressData} accessibilityLayer>
+                    <CartesianGrid vertical={false} />
+                    <XAxis
+                      dataKey="date"
+                      tickLine={false}
+                      tickMargin={10}
+                      axisLine={false}
+                      tickFormatter={(value) => value.slice(0, 3)}
+                    />
+                    <YAxis
+                      domain={[
+                        0,
+                        (dataMax: number) => Math.max(dataMax || 0, monthlyGoal),
+                      ]}
+                    />
+                    <Tooltip cursor={false} content={<ChartTooltipContent />} />
+                    <Bar dataKey="soulsWon" radius={8}>
+                      {progressData.map((_entry, index) => (
+                        <Cell
+                          key={`cell-${index}`}
+                          fill={chartColors[index % chartColors.length]}
+                        />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </ChartContainer>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <div className="space-y-1.5">
+                <CardTitle>Recent Souls Won</CardTitle>
+                <CardDescription>
+                  The latest additions to your follow-up list.
+                </CardDescription>
+              </div>
+              <Button asChild variant="outline" size="sm">
+                <Link href="/dashboard/souls-won">View All</Link>
+              </Button>
+            </CardHeader>
+            <CardContent>
+              <RecentSoulsList />
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="space-y-8">
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="text-lg">Monthly Goal</CardTitle>
+                  <CardDescription>
+                    {goalDate ? format(goalDate, 'MMMM yyyy') : '...'}
+                  </CardDescription>
+                </div>
+                <Dialog
+                  open={goalDialogOpen}
+                  onOpenChange={(isOpen) => {
+                    if (isOpen) {
+                      setNewGoal(monthlyGoal);
+                      setNewGoalDate(goalDate);
+                    }
+                    setGoalDialogOpen(isOpen);
+                  }}
+                >
+                  <DialogTrigger asChild>
+                    <Button variant="ghost" size="icon">
+                      <Edit className="h-4 w-4 text-muted-foreground" />
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[425px]">
+                    <DialogHeader>
+                      <DialogTitle>Set Monthly Goal</DialogTitle>
+                      <DialogDescription>
+                        Set your personal goal for souls won for a specific month.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="goal" className="text-right">
+                          Souls
+                        </Label>
+                        <Input
+                          id="goal"
+                          type="number"
+                          value={newGoal}
+                          onChange={(e) => setNewGoal(Number(e.target.value))}
+                          className="col-span-3"
+                        />
+                      </div>
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="goal-month" className="text-right">
+                          For Month
+                        </Label>
+                        <Input
+                          id="goal-month"
+                          type="month"
+                          value={newGoalDateValue}
+                          onChange={handleGoalDateChange}
+                          className="col-span-3"
+                        />
+                      </div>
+                    </div>
+                    <DialogFooter>
+                      <Button onClick={handleSaveGoal}>Save Goal</Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {goalDate ? (
+                <div className="space-y-2">
+                  <div className="flex justify-between items-baseline">
+                    <div className="text-2xl font-bold">{soulsThisMonth}</div>
+                    <div className="text-sm text-muted-foreground">
+                      / {monthlyGoal} souls
+                    </div>
+                  </div>
+                  <Progress
+                    value={
+                      monthlyGoal > 0 ? (soulsThisMonth / monthlyGoal) * 100 : 0
+                    }
+                    className="h-2"
+                  />
+                  <p className="text-xs text-muted-foreground text-right">{`${
+                    monthlyGoal > 0
+                      ? Math.round((soulsThisMonth / monthlyGoal) * 100)
+                      : 0
+                  }% complete`}</p>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  <Skeleton className="h-6 w-1/2" />
+                  <Skeleton className="h-2 w-full" />
+                  <Skeleton className="h-3 w-1/4 ml-auto" />
+                </div>
+              )}
+            </CardContent>
+            <CardFooter className="pt-4 flex items-center gap-2 text-sm text-muted-foreground">
+              <UserCheck2 className="h-4 w-4" />
+              <span>
+                Total souls won:{' '}
+                <span className="font-bold text-foreground">
+                  {soulsWonCount}
+                </span>
+              </span>
+            </CardFooter>
+          </Card>
+
+          {userProfile?.location && (
+            <GlobalSoulsCard
+              location={userProfile.location}
+              userSouls={soulsWon || []}
             />
-        )}
+          )}
+
+          <Card className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground">
+            <CardHeader>
+              <CardTitle>Share Your Story</CardTitle>
+              <CardDescription className="text-primary-foreground/80">
+                Encourage the body of Christ with what God has done.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button asChild variant="secondary" className="w-full">
+                <Link href="/dashboard/testimonies">
+                  Share Testimony <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+      {summaryData && userProfile && (
+        <WelcomeBackDialog
+          isOpen={showWelcomeBack}
+          onClose={() => setShowWelcomeBack(false)}
+          userProfile={userProfile}
+          summaryData={summaryData}
+        />
+      )}
     </div>
   );
 }
-
-    
