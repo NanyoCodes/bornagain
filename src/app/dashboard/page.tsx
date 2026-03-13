@@ -684,6 +684,42 @@ export default function DashboardPage() {
       });
     }
   };
+  
+  const followUpStatusData = useMemo(() => {
+    if (!soulsWon) {
+      return [
+        { status: 'New', count: 0 },
+        { status: 'Contacted', count: 0 },
+        { status: 'Established', count: 0 },
+      ];
+    }
+    
+    const statusCounts: { [key in Soul['status']]: number } = {
+      New: 0,
+      Contacted: 0,
+      Established: 0,
+    };
+
+    soulsWon.forEach(soul => {
+      if (soul.status && soul.status in statusCounts) {
+        statusCounts[soul.status]++;
+      } else {
+        statusCounts['New']++; // Default to New if status is missing
+      }
+    });
+
+    return [
+      { status: 'New', count: statusCounts.New },
+      { status: 'Contacted', count: statusCounts.Contacted },
+      { status: 'Established', count: statusCounts.Established },
+    ];
+  }, [soulsWon]);
+
+  const followUpStatusColors: Record<Soul['status'], string> = {
+    New: 'hsl(var(--status-new))',
+    Contacted: 'hsl(var(--status-contacted))',
+    Established: 'hsl(var(--status-established))',
+  };
 
   const soulsWonCount = soulsWon?.length ?? 0;
 
@@ -866,6 +902,48 @@ export default function DashboardPage() {
                 </span>
               </span>
             </CardFooter>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Follow-up Funnel</CardTitle>
+              <CardDescription>
+                Current status of all souls won.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ChartContainer config={{}} className="h-[200px] w-full">
+                <ResponsiveContainer>
+                    <BarChart
+                        data={followUpStatusData}
+                        layout="vertical"
+                        margin={{ left: 10, right: 10, top: 10, bottom: 10 }}
+                    >
+                        <XAxis type="number" hide />
+                        <YAxis
+                            dataKey="status"
+                            type="category"
+                            tickLine={false}
+                            axisLine={false}
+                            tickMargin={10}
+                            width={80}
+                        />
+                        <ChartTooltip
+                            cursor={false}
+                            content={<ChartTooltipContent hideLabel />}
+                        />
+                        <Bar dataKey="count" radius={5}>
+                            {followUpStatusData.map((entry) => (
+                                <Cell
+                                    key={entry.status}
+                                    fill={followUpStatusColors[entry.status as Soul['status']]}
+                                />
+                            ))}
+                        </Bar>
+                    </BarChart>
+                </ResponsiveContainer>
+              </ChartContainer>
+            </CardContent>
           </Card>
 
           {userProfile?.location && (
