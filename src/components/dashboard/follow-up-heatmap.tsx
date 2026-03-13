@@ -146,7 +146,7 @@ export function FollowUpHeatmap({ souls }: { souls: Soul[] }) {
                     head_row: 'flex',
                     head_cell: 'text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]',
                     row: 'flex w-full mt-2',
-                    cell: 'p-0 relative text-center text-sm focus-within:relative focus-within:z-20',
+                    cell: 'h-9 w-9 p-0 relative text-center text-sm focus-within:relative focus-within:z-20',
                     day: '',
                     day_selected: '',
                     day_today: 'bg-accent text-accent-foreground rounded-md',
