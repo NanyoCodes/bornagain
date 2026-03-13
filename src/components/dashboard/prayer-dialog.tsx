@@ -269,7 +269,7 @@ export function PrayerDialog({
           <div className="p-6 border-t flex-shrink-0">
             <Button
               onClick={handleComplete}
-              disabled={isCompleting}
+              disabled={isCompleting || checkedPrayers.length < prayerPoints.length}
               className="w-full"
             >
               {isCompleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
@@ -291,7 +291,7 @@ export function PrayerDialog({
         <div className="flex-shrink-0 pt-4 border-t -mx-6 px-6 pb-4">
           <Button
             onClick={handleComplete}
-            disabled={isCompleting}
+            disabled={isCompleting || checkedPrayers.length < prayerPoints.length}
             className="w-full"
           >
             {isCompleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
