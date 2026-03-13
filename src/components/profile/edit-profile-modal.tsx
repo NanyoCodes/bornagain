@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -36,8 +37,6 @@ const formSchema = z.object({
   city: z.string().max(50, "City is too long.").optional(),
   country: z.string().max(50, "Country is too long.").optional(),
   phone: z.string().max(50, "Phone number is too long.").optional(),
-  favoritePassage1: z.string().optional(),
-  favoritePassage2: z.string().optional(),
 });
 
 type EditProfileModalProps = {
@@ -64,8 +63,6 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
       city: userProfile.location?.city || "",
       country: userProfile.location?.country || "",
       phone: userProfile.phone || "",
-      favoritePassage1: userProfile.favoritePassages?.[0] || '',
-      favoritePassage2: userProfile.favoritePassages?.[1] || '',
     },
   });
 
@@ -102,7 +99,6 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
         },
         phone: values.phone || "",
         photoURL: finalPhotoUrl,
-        favoritePassages: [values.favoritePassage1, values.favoritePassage2].filter(Boolean) as string[],
       };
       
       const firestoreUpdatePromise = updateDoc(doc(firestore, 'users', user.uid), firestoreUpdatePayload).catch((serverError) => {
@@ -231,42 +227,6 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
               </FormItem>
             )}
           />
-
-          <Accordion type="single" collapsible className="w-full">
-            <AccordionItem value="favorite-passages">
-                <AccordionTrigger>Favorite Passages</AccordionTrigger>
-                <AccordionContent>
-                     <div className="space-y-4 pt-4">
-                        <FormField
-                            control={form.control}
-                            name="favoritePassage1"
-                            render={({ field }) => (
-                                <FormItem>
-                                <FormLabel>Favorite Passage 1</FormLabel>
-                                <FormControl>
-                                    <Input placeholder="e.g., John 3:16" {...field} value={field.value ?? ""} />
-                                </FormControl>
-                                <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="favoritePassage2"
-                            render={({ field }) => (
-                                <FormItem>
-                                <FormLabel>Favorite Passage 2</FormLabel>
-                                <FormControl>
-                                    <Input placeholder="e.g., Romans 8:28" {...field} value={field.value ?? ""} />
-                                </FormControl>
-                                <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                    </div>
-                </AccordionContent>
-            </AccordionItem>
-          </Accordion>
 
           <Button type="submit" className="w-full" disabled={isSubmitting}>
             {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 'Save Changes'}

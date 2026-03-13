@@ -1,3 +1,4 @@
+
 'use client';
 
 import {
@@ -75,96 +76,6 @@ import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
 import { WelcomeBackDialog } from '@/components/dashboard/welcome-back-dialog';
 import { safeToDate } from '@/lib/utils';
-
-function DisplayPassage({
-  reference,
-  userName,
-}: {
-  reference: string;
-  userName?: string;
-}) {
-  const [passage, setPassage] = useState<{
-    text: string;
-    reference: string;
-  } | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchPassage = async () => {
-      setIsLoading(true);
-      setError(null);
-      let apiReference = reference;
-      // Regex to check if reference has book and chapter but no verses.
-      if (/^[a-zA-Z0-9\s]+ \d+$/.test(reference.trim())) {
-        apiReference = `${reference.trim()}:1-2`;
-      }
-      try {
-        const response = await fetch(
-          `https://bible-api.com/${encodeURIComponent(
-            apiReference
-          )}?translation=kjv`
-        );
-        if (!response.ok) throw new Error('Failed to fetch scripture.');
-        const data = await response.json();
-        if (data.error) throw new Error(data.error);
-        setPassage({ text: data.text.trim(), reference: data.reference });
-      } catch (err: any) {
-        console.error('Error fetching passage:', err);
-        setError(
-          `Could not load scripture for "${reference}". Please check the reference.`
-        );
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchPassage();
-  }, [reference]);
-
-  if (isLoading) {
-    return <Skeleton className="h-28 w-full" />;
-  }
-
-  if (error) {
-    return (
-      <div className="border-l-2 border-destructive pl-6 italic text-sm text-destructive">
-        <p className="font-semibold">Error</p>
-        <p>{error}</p>
-      </div>
-    );
-  }
-
-  if (!passage) {
-    return null;
-  }
-
-  let personalizedText = passage.text;
-  if (userName) {
-    // Replace pronouns and common terms with the user's name for personalization.
-    const textWithReplacement = personalizedText
-      .replace(/\bthat man\b/gi, userName)
-      .replace(/\bthe man\b/gi, userName)
-      .replace(/\bman\b/gi, userName)
-      .replace(/\byour\b/gi, `${userName}'s`)
-      .replace(/\byou\b/gi, userName);
-
-    // If no replacement was made, append the name.
-    if (textWithReplacement === passage.text) {
-      personalizedText = `${passage.text}, ${userName}`;
-    } else {
-      personalizedText = textWithReplacement;
-    }
-  }
-
-  return (
-    <blockquote className="border-l-2 pl-6 italic">
-      <p>&ldquo;{personalizedText}&rdquo;</p>
-      <footer className="text-right text-sm not-italic mt-2">
-        - {passage.reference}
-      </footer>
-    </blockquote>
-  );
-}
 
 function RecentSoulsList() {
   const { user } = useUser();
@@ -523,23 +434,14 @@ export default function DashboardPage() {
     text: string;
     verse: string;
   } | null>(null);
-  const [favoritePassages, setFavoritePassages] = useState<string[] | null>(null);
 
   useEffect(() => {
     // This effect runs on the client after hydration.
     // It's safe to use Math.random() here.
-    if (profileLoading) return; // Wait for profile to load
-
-    const passages = userProfile?.favoritePassages?.filter((p) => p && p.trim() !== '');
-    if (passages && passages.length > 0) {
-      setFavoritePassages(passages);
-    } else {
-      // Fallback to generic welcome scripture if no favorite is set
-      const randomScripture =
-        welcomeScriptures[Math.floor(Math.random() * welcomeScriptures.length)];
-      setWelcomeMessage(randomScripture);
-    }
-  }, [userProfile, profileLoading]);
+    const randomScripture =
+      welcomeScriptures[Math.floor(Math.random() * welcomeScriptures.length)];
+    setWelcomeMessage(randomScripture);
+  }, []);
 
   useEffect(() => {
     const today = new Date();
@@ -687,30 +589,17 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-8">
-      {favoritePassages && favoritePassages.length > 0 ? (
-        <div className="space-y-4">
-          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight font-headline">
-            Your favorite passages, {displayName}
-          </h1>
-          <div className="space-y-6">
-            {favoritePassages.map((passage, index) => (
-              <DisplayPassage key={index} reference={passage} userName={displayName} />
-            ))}
-          </div>
-        </div>
-      ) : (
-        <div className="space-y-2">
-          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight font-headline">
-            {welcomeMessage?.text.replace('{name}', displayName) ||
-              `Welcome back, ${displayName}!`}
-          </h1>
-          <p className="text-muted-foreground">
-            {welcomeMessage
-              ? `"${welcomeMessage.verse}"`
-              : 'Set your favorite passages in your profile to personalize this section.'}
-          </p>
-        </div>
-      )}
+      <div className="space-y-2">
+        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight font-headline">
+          {welcomeMessage?.text.replace('{name}', displayName) ||
+            `Welcome back, ${displayName}!`}
+        </h1>
+        <p className="text-muted-foreground lowercase">
+          {welcomeMessage
+            ? `"${welcomeMessage.verse}"`
+            : ''}
+        </p>
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-8">
