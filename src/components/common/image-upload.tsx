@@ -76,7 +76,6 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath }: 
       (error) => {
         setIsUploading(false);
         setUploadProgress(null);
-        setPreviewUrl(initialImageUrl || null); // Reset preview on error
         console.error("Upload error:", error);
         
         let description = 'An unknown error occurred during upload. Please try again.';
