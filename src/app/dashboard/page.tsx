@@ -77,6 +77,7 @@ import { Progress } from '@/components/ui/progress';
 import { WelcomeBackDialog } from '@/components/dashboard/welcome-back-dialog';
 import { safeToDate } from '@/lib/utils';
 import { actionItems, statusOptions } from '@/lib/follow-up-data';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 function RecentSoulsList() {
   const { user } = useUser();
@@ -500,6 +501,12 @@ const welcomeScriptures = [
 ];
 
 function ActionAnalyticsCard({ souls }: { souls: Soul[] }) {
+  const isMobile = useIsMobile();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const chartConfig = {
     count: {
       label: 'Times',
@@ -538,6 +545,12 @@ function ActionAnalyticsCard({ souls }: { souls: Soul[] }) {
   if (!souls || souls.length === 0) {
     return null;
   }
+  
+  const yAxisWidth = !mounted ? 150 : isMobile ? 100 : 150;
+  const margin = !mounted ? { left: 130, right: 30 } : isMobile ? { left: 80, right: 20 } : { left: 130, right: 30 };
+  const barSize = !mounted ? 18 : isMobile ? 12 : 18;
+  const tickClassName = !mounted ? 'text-xs' : isMobile ? 'text-[10px]' : 'text-xs';
+
 
   return (
     <Card>
@@ -553,7 +566,7 @@ function ActionAnalyticsCard({ souls }: { souls: Soul[] }) {
             <BarChart
               layout="vertical"
               data={actionData}
-              margin={{ left: 130, right: 30 }}
+              margin={margin}
             >
               <CartesianGrid horizontal={false} />
               <YAxis
@@ -561,9 +574,9 @@ function ActionAnalyticsCard({ souls }: { souls: Soul[] }) {
                 type="category"
                 tickLine={false}
                 axisLine={false}
-                tickMargin={10}
-                width={150}
-                className="text-xs"
+                tickMargin={5}
+                width={yAxisWidth}
+                className={tickClassName}
                 interval={0}
               />
               <XAxis dataKey="count" type="number" hide />
@@ -571,7 +584,7 @@ function ActionAnalyticsCard({ souls }: { souls: Soul[] }) {
                 cursor={false}
                 content={<ChartTooltipContent indicator="line" />}
               />
-              <Bar dataKey="count" layout="vertical" radius={4} barSize={18}>
+              <Bar dataKey="count" layout="vertical" radius={4} barSize={barSize}>
                 {actionData.map((_entry, index) => (
                   <Cell
                     key={`cell-${index}`}
