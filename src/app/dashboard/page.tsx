@@ -76,7 +76,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
 import { WelcomeBackDialog } from '@/components/dashboard/welcome-back-dialog';
 import { safeToDate } from '@/lib/utils';
-import { actionItems } from '@/lib/follow-up-data';
+import { actionItems, statusOptions } from '@/lib/follow-up-data';
 
 function RecentSoulsList() {
   const { user } = useUser();
@@ -549,7 +549,7 @@ function ActionAnalyticsCard({ souls }: { souls: Soul[] }) {
             <BarChart
               layout="vertical"
               data={actionData}
-              margin={{ left: 20, right: 20 }}
+              margin={{ left: 30, right: 20 }}
             >
               <CartesianGrid horizontal={false} />
               <YAxis
@@ -558,7 +558,7 @@ function ActionAnalyticsCard({ souls }: { souls: Soul[] }) {
                 tickLine={false}
                 axisLine={false}
                 tickMargin={10}
-                width={120}
+                width={140}
                 className="text-xs"
                 interval={0}
               />
