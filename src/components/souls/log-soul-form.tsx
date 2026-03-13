@@ -118,9 +118,9 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps)
       userId: user.uid,
       firstName: values.firstName,
       lastName: values.lastName,
-      email: values.email || null,
-      phone: values.phone || null,
-      church: values.church || null,
+      email: values.email || undefined,
+      phone: values.phone || undefined,
+      church: values.church || undefined,
       locationWon: (values.locationWonCity || values.locationWonState || values.locationWonCountry)
         ? {
             city: values.locationWonCity || null,
@@ -129,7 +129,7 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps)
           }
         : undefined,
       source: values.source as 'Campaign' | 'Personal',
-      sourceDetails: values.sourceDetails || null,
+      sourceDetails: values.sourceDetails || undefined,
       userLocation: processedUserLocation,
       wonAt: values.wonAt as any, // Firestore will convert it
       status: "New",
@@ -453,3 +453,5 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps)
     </Form>
   );
 }
+
+    

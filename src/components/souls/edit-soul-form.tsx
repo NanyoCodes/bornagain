@@ -95,9 +95,9 @@ export function EditSoulForm({ soul, onSoulUpdated }: EditSoulFormProps) {
     const soulUpdateData: { [key: string]: any } = {
       firstName: values.firstName,
       lastName: values.lastName,
-      email: values.email || null,
-      phone: values.phone || null,
-      church: values.church || null,
+      email: values.email || undefined,
+      phone: values.phone || undefined,
+      church: values.church || undefined,
       locationWon: (values.locationWonCity || values.locationWonState || values.locationWonCountry)
         ? {
             city: values.locationWonCity || null,
@@ -106,7 +106,7 @@ export function EditSoulForm({ soul, onSoulUpdated }: EditSoulFormProps) {
           }
         : deleteField(),
       source: values.source as 'Personal' | 'Campaign',
-      sourceDetails: values.sourceDetails || null,
+      sourceDetails: values.sourceDetails || undefined,
       wonAt: values.wonAt as any,
     };
     
@@ -395,3 +395,5 @@ export function EditSoulForm({ soul, onSoulUpdated }: EditSoulFormProps) {
     </Form>
   );
 }
+
+    
