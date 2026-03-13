@@ -29,7 +29,7 @@ const testimonyCategories: TestimonyCategory[] = ['Healing', 'Financial Breakthr
 const formSchema = z.object({
   category: z.string({ required_error: "Please select a category." }),
   content: z.string().min(50, "Testimony must be at least 50 characters.").max(5000, "Testimony is too long."),
-  imageUrl: z.string().url({ message: "Please enter a valid URL." }).optional().or(z.literal('')),
+  imageUrl: z.string().optional(),
 });
 
 type CreateTestimonyFormProps = {

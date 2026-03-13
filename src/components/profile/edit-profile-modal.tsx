@@ -1,4 +1,3 @@
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -32,7 +31,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "..
 const formSchema = z.object({
   firstName: z.string().min(2, "First name must be at least 2 characters.").max(50, "Name is too long."),
   lastName: z.string().min(2, "Last name must be at least 2 characters.").max(50, "Name is too long."),
-  photoURL: z.string().url({ message: "Please enter a valid URL." }).optional().or(z.literal('')),
+  photoURL: z.string().optional(),
   bio: z.string().max(280, "Bio is too long.").optional(),
   city: z.string().max(50, "City is too long.").optional(),
   country: z.string().max(50, "Country is too long.").optional(),
