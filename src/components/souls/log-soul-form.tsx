@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -121,9 +122,9 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps)
       userId: user.uid,
       firstName: values.firstName,
       lastName: values.lastName,
-      email: values.email,
-      phone: values.phone,
-      church: values.church,
+      email: values.email || "",
+      phone: values.phone || "",
+      church: values.church || "",
       locationWon: (values.locationWonCity || values.locationWonState || values.locationWonCountry)
         ? {
             city: values.locationWonCity,
@@ -132,7 +133,7 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps)
           }
         : undefined,
       source: values.source as 'Personal' | 'Campaign',
-      sourceDetails: values.sourceDetails,
+      sourceDetails: values.sourceDetails || "",
       userLocation: processedUserLocation,
       wonAt: values.wonAt as any, // Firestore will convert it
       status: "New",
@@ -223,6 +224,22 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps)
     } finally {
         setIsLoading(false);
     }
+  }
+
+  if (userLoading || profileLoading) {
+    return (
+      <div className="flex items-center justify-center p-8">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
+
+  if (!user || !userProfile) {
+    return (
+      <div className="text-center text-destructive p-8">
+        <p>You must be logged in to perform this action.</p>
+      </div>
+    );
   }
 
   return (
