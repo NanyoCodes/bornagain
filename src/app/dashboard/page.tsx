@@ -476,7 +476,7 @@ const welcomeScriptures = [
     { text: "A good man obtains favor from the LORD, {name}.", verse: "Proverbs 12:2" },
     { text: "For the Lord God is a sun and shield; the Lord bestows favor and honor; no good thing does he withhold from those whose walk is blameless, {name}.", verse: "Psalm 84:11" },
     { text: "But seek first his kingdom and his righteousness, and all these things will be given to you as well, {name}.", verse: "Matthew 6:33" },
-    { text: "Bring the whole tithe into the storehouse, that there may be food in my house. Test me in this,” says the Lord Almighty, “and see if I will not throw open the floodgates of heaven and pour out so much blessing that there will not be room enough to store it for you, {name}.", verse: "Malachi 3:10" },
+    { text: "Bring the whole tithe into the storehouse, that there may be food in my house. Test me in this,” says the Lord Almighty, “and see if I will not throw open the floodgates of heaven and pour out so much blessing that there will not be room enough to store it for you, {name}.”, verse: "Malachi 3:10" },
     { text: "Taste and see that the Lord is good; blessed is the one who takes refuge in him, {name}.", verse: "Psalm 34:8" },
     { text: "The blessing of the Lord brings wealth, without painful toil for it, {name}.", verse: "Proverbs 10:22" },
     { text: "Ask and it will be given to you, {name}; seek and you will find; knock and the door will be opened to you.", verse: "Matthew 7:7" },
@@ -548,12 +548,12 @@ function ActionAnalyticsCard({ souls }: { souls: Soul[] }) {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig} className="h-[350px] w-full">
+        <ChartContainer config={chartConfig} className="h-[450px] w-full">
           <ResponsiveContainer>
             <BarChart
               layout="vertical"
               data={actionData}
-              margin={{ left: 100, right: 20 }}
+              margin={{ left: 130, right: 30 }}
             >
               <CartesianGrid horizontal={false} />
               <YAxis
@@ -562,7 +562,7 @@ function ActionAnalyticsCard({ souls }: { souls: Soul[] }) {
                 tickLine={false}
                 axisLine={false}
                 tickMargin={10}
-                width={140}
+                width={150}
                 className="text-xs"
                 interval={0}
               />
@@ -571,7 +571,7 @@ function ActionAnalyticsCard({ souls }: { souls: Soul[] }) {
                 cursor={false}
                 content={<ChartTooltipContent indicator="line" />}
               />
-              <Bar dataKey="count" layout="vertical" radius={5} barSize={20}>
+              <Bar dataKey="count" layout="vertical" radius={4} barSize={18}>
                 {actionData.map((_entry, index) => (
                   <Cell
                     key={`cell-${index}`}
