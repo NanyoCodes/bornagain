@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useMemo, useState, useEffect } from 'react';
@@ -142,16 +143,20 @@ export function FollowUpHeatmap({ souls }: { souls: Soul[] }) {
                     )
                 }}
                 classNames={{
-                    table: 'w-full border-collapse space-y-1',
-                    head_row: 'flex',
-                    head_cell: 'text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]',
-                    row: 'flex w-full mt-2',
-                    cell: 'h-9 w-9 p-0 relative text-center text-sm focus-within:relative focus-within:z-20',
-                    day: '',
-                    day_selected: '',
+                    table: 'w-full border-collapse',
+                    head_row: 'flex justify-center',
+                    head_cell:
+                      'text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]',
+                    row: 'flex w-full mt-2 justify-center',
+                    cell: 'h-9 w-9 text-center text-sm p-0 relative focus-within:relative focus-within:z-20',
+                    day: cn(
+                      'h-9 w-9 p-0 font-normal aria-selected:opacity-100'
+                    ),
                     day_today: 'bg-accent text-accent-foreground rounded-md',
                     day_disabled: 'text-muted-foreground opacity-50',
-                }}
+                    day_outside:
+                      'text-muted-foreground opacity-50 aria-selected:bg-accent/50 aria-selected:text-muted-foreground',
+                  }}
             />
         </TooltipProvider>
         )}
