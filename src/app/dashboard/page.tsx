@@ -1,4 +1,3 @@
-
 'use client';
 
 import {
@@ -619,10 +618,10 @@ export default function DashboardPage() {
   const { data: soulsWon, loading: soulsLoading } = useCollection<Soul>(soulsQuery);
 
   // State and logic from progress page
-  const [monthlyGoal, setMonthlyGoal] = useState(50);
+  const [monthlyGoal, setMonthlyGoal] = useState(10);
   const [goalDate, setGoalDate] = useState<Date | null>(null);
   const [goalDialogOpen, setGoalDialogOpen] = useState(false);
-  const [newGoal, setNewGoal] = useState(monthlyGoal);
+  const [newGoal, setNewGoal] = useState(10);
   const [newGoalDate, setNewGoalDate] = useState<Date | null>(null);
 
   const [showWelcomeBack, setShowWelcomeBack] = useState(false);
