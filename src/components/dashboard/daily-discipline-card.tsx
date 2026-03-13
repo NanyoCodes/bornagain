@@ -140,19 +140,17 @@ export function DailyDisciplineCard() {
   }
 
   const handleDisciplineClick = async (disciplineId: string) => {
-    const isCompleted = completedToday.includes(disciplineId);
-    
     setTogglingId(disciplineId);
     try {
-        if (disciplineId === 'read_bible' && !isCompleted) {
+        if (disciplineId === 'read_bible') {
             setIsBibleDialogOpen(true);
             return; 
         }
-        if (disciplineId === 'pray' && !isCompleted) {
+        if (disciplineId === 'pray') {
             setIsPrayerDialogOpen(true);
             return;
         }
-        if (disciplineId === 'attend_church' && !isCompleted) {
+        if (disciplineId === 'attend_church') {
             const today = new Date();
             const dayOfWeek = format(today, 'EEEE');
             const isScheduledDay = userProfile?.churchInfo?.schedule?.some(s => s.day === dayOfWeek) ?? false;
@@ -167,19 +165,12 @@ export function DailyDisciplineCard() {
             setIsAttendChurchDialogOpen(true);
             return;
         }
-
-        // For un-checking a button
-        if (isCompleted) {
-            await updateDisciplineState(disciplineId);
-        }
-        
     } catch (e) {
         toast({
             variant: "destructive",
-            title: "Update Failed",
-            description: "Your discipline could not be updated. Please check your connection and try again.",
+            title: "Error",
+            description: "Could not open discipline activity.",
         });
-    } finally {
         setTogglingId(null);
     }
   };
