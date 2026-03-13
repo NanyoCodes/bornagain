@@ -166,7 +166,8 @@
                 "type": "object",
                 "properties": {
                     "churchName": { "type": "string" },
-                    "attendedAt": { "type": "object" }
+                    "attendedAt": { "type": "object" },
+                    "reason": { "type": "string", "description": "The reason or notes for attending the service." }
                 },
                 "required": ["churchName", "attendedAt"]
             }

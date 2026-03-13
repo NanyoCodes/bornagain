@@ -1,4 +1,5 @@
 
+
 import type { Timestamp } from "firebase/firestore";
 
 export type ReadingHistoryItem = {
@@ -69,6 +70,7 @@ export type UserProfile = {
   attendanceHistory?: {
     churchName: string;
     attendedAt: Timestamp;
+    reason?: string;
   }[];
   favoritePassages?: string[];
   lastActive?: Timestamp;

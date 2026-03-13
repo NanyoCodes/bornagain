@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -14,6 +15,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
+import { Textarea } from '../ui/textarea';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form';
 import { Loader2, PlayCircle } from 'lucide-react';
 import type { UserProfile } from '@/lib/types';
@@ -25,9 +27,11 @@ import { Separator } from '../ui/separator';
 import { format, parse } from 'date-fns';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
+import { Label } from '../ui/label';
 
 const formSchema = z.object({
   churchName: z.string().min(2, { message: 'Church name must be at least 2 characters.' }).max(100, { message: 'Church name is too long.' }),
+  reason: z.string().max(500, { message: 'Reason is too long.' }).optional(),
 });
 
 interface AttendChurchDialogProps {
@@ -41,6 +45,7 @@ interface AttendChurchDialogProps {
 export function AttendChurchDialog({ isOpen, onOpenChange, onDisciplineCompleted, userProfile, initialView }: AttendChurchDialogProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [view, setView] = useState<'confirm' | 'form'>(initialView);
+  const [reason, setReason] = useState('');
   const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
@@ -49,6 +54,7 @@ export function AttendChurchDialog({ isOpen, onOpenChange, onDisciplineCompleted
     resolver: zodResolver(formSchema),
     defaultValues: {
       churchName: '',
+      reason: '',
     },
   });
 
@@ -65,11 +71,13 @@ export function AttendChurchDialog({ isOpen, onOpenChange, onDisciplineCompleted
       setView(initialView);
       form.reset({
         churchName: userProfile?.churchInfo?.name || userProfile?.lastChurchAttended || '',
+        reason: '',
       });
+      setReason('');
     }
   }, [isOpen, userProfile, form, initialView]);
 
-  const logAttendance = (churchName: string) => {
+  const logAttendance = (churchName: string, reason?: string) => {
     if (!user || !firestore) return Promise.reject(new Error("User or firestore not available"));
     setIsSubmitting(true);
     
@@ -79,6 +87,7 @@ export function AttendChurchDialog({ isOpen, onOpenChange, onDisciplineCompleted
       attendanceHistory: arrayUnion({
           churchName: churchName,
           attendedAt: new Date(),
+          reason: reason || "",
       })
     };
 
@@ -105,16 +114,16 @@ export function AttendChurchDialog({ isOpen, onOpenChange, onDisciplineCompleted
 
   const handleConfirmDefaultChurch = () => {
     if (!userProfile?.churchInfo?.name) return;
-    logAttendance(userProfile.churchInfo.name).catch(() => {});
+    logAttendance(userProfile.churchInfo.name, reason).catch(() => {});
   };
   
   const handleFormSubmit = (values: z.infer<typeof formSchema>) => {
-    logAttendance(values.churchName).catch(() => {});
+    logAttendance(values.churchName, values.reason).catch(() => {});
   };
   
   const handleJoinStream = (schedule: { day: string; time: string; url?: string; }) => {
     if (!userProfile?.churchInfo?.name || !schedule.url) return;
-    logAttendance(userProfile.churchInfo.name)
+    logAttendance(userProfile.churchInfo.name, reason)
         .then(() => {
             window.open(schedule.url, '_blank', 'noopener, noreferrer');
         })
@@ -154,6 +163,16 @@ export function AttendChurchDialog({ isOpen, onOpenChange, onDisciplineCompleted
               <p className="text-2xl font-semibold font-headline">{userProfile.churchInfo.name}?</p>
             </div>
             
+            <div className="space-y-2">
+                <Label htmlFor="confirm-reason">Reason/Notes (Optional)</Label>
+                <Textarea
+                    id="confirm-reason"
+                    placeholder="e.g., Guest speaker was present, special service..."
+                    value={reason}
+                    onChange={(e) => setReason(e.target.value)}
+                />
+            </div>
+
             {hasScheduleForToday && todaysSchedules.map((schedule, index) => (
                 schedule.url && (
                     <Button key={index} onClick={() => handleJoinStream(schedule)} disabled={isSubmitting} variant="secondary" className="w-full">
@@ -190,6 +209,19 @@ export function AttendChurchDialog({ isOpen, onOpenChange, onDisciplineCompleted
                   </FormItem>
                 )}
               />
+              <FormField
+                control={form.control}
+                name="reason"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Reason/Notes (Optional)</FormLabel>
+                    <FormControl>
+                      <Textarea placeholder="e.g., Visited a different church today..." {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
               <DialogFooter>
                 <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isSubmitting}>Cancel</Button>
                 <Button type="submit" disabled={isSubmitting}>
@@ -214,6 +246,9 @@ export function AttendChurchDialog({ isOpen, onOpenChange, onDisciplineCompleted
                                     <p className="text-xs text-muted-foreground">
                                         {item.attendedAt ? format(item.attendedAt.toDate(), "PPP") : 'Date unavailable'}
                                     </p>
+                                    {item.reason && (
+                                        <p className="text-xs text-muted-foreground italic pt-1">&ldquo;{item.reason}&rdquo;</p>
+                                    )}
                                 </div>
                             ))}
                         </div>
