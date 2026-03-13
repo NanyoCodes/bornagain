@@ -62,9 +62,8 @@ service cloud.firestore {
     // Global souls collection for aggregation.
     match /souls/{soulId} {
       allow list, get: if request.auth != null;
-      // Allow any authenticated user to create a soul record for stats.
-      // The private user record is still protected by stricter rules.
-      allow create: if request.auth != null;
+      // User can only create a global soul record if they are the owner specified in the document.
+      allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
       allow update, delete: if false; // Immutable
     }
 
