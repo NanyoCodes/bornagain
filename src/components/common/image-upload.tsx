@@ -6,9 +6,11 @@ import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { Camera, X } from 'lucide-react';
+import { Camera, X, AlertTriangle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Input } from '@/components/ui/input';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import Link from 'next/link';
 
 interface ImageUploadProps {
   initialImageUrl?: string | null;
@@ -24,6 +26,7 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath }: 
   const [previewUrl, setPreviewUrl] = useState<string | null>(initialImageUrl || null);
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -60,6 +63,7 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath }: 
         toast({ variant: 'destructive', title: 'Error', description: 'You must be logged in to upload images.' });
         return;
     }
+    setUploadError(null);
     setIsUploading(true);
     setUploadProgress(0);
 
@@ -101,6 +105,7 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath }: 
             break;
         }
         
+        setUploadError(description);
         toast({
           variant: 'destructive',
           title: 'Upload Failed',
@@ -114,6 +119,7 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath }: 
           setPreviewUrl(downloadURL);
           setIsUploading(false);
           setUploadProgress(null);
+          setUploadError(null);
           toast({ title: 'Success', description: 'Image uploaded successfully.' });
         });
       }
@@ -123,10 +129,11 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath }: 
   const handleRemoveImage = () => {
     setPreviewUrl(null);
     onUploadComplete('');
+    setUploadError(null);
   };
 
   return (
-    <div className="flex flex-col items-center gap-4">
+    <div className="flex flex-col items-center gap-4 w-full">
       <div className="relative">
         <Avatar className="h-24 w-24 border">
           <AvatarImage src={previewUrl ?? undefined} />
@@ -150,10 +157,26 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath }: 
             <p className="text-sm mt-2 text-muted-foreground">Uploading... {Math.round(uploadProgress)}%</p>
         </div>
       ) : (
-        <Button type="button" variant="outline" onClick={handleFileSelect}>
-            <Camera className="mr-2 h-4 w-4"/>
-            {previewUrl ? 'Change Photo' : 'Upload Photo'}
-        </Button>
+        <>
+            {uploadError && (
+                <Alert variant="destructive">
+                    <AlertTriangle className="h-4 w-4" />
+                    <AlertTitle>Upload Error</AlertTitle>
+                    <AlertDescription>
+                        {uploadError}{' '}
+                        Please{' '}
+                        <Link href="/docs/storage-cors-guide.md" target="_blank" className="font-semibold underline">
+                            review the setup guide
+                        </Link>
+                        {' '}to resolve this issue.
+                    </AlertDescription>
+                </Alert>
+            )}
+            <Button type="button" variant="outline" onClick={handleFileSelect}>
+                <Camera className="mr-2 h-4 w-4"/>
+                {previewUrl ? 'Change Photo' : 'Upload Photo'}
+            </Button>
+        </>
       )}
 
       <Input 
