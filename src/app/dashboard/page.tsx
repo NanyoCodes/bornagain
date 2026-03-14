@@ -1,3 +1,4 @@
+
 'use client';
 
 import {
@@ -1118,7 +1119,7 @@ export default function DashboardPage() {
                     prayerReminders.map(soul => (
                         <div key={soul.id} className="flex items-center justify-between p-2 -mx-2 rounded-lg hover:bg-muted/50">
                             <div>
-                                <p className="font-semibold text-sm">{soul.firstName} {soul.lastName}</p>
+                                <p className="font-semibold text-sm">{[soul.firstName, soul.lastName].filter(Boolean).join(' ') || 'Unnamed Soul'}</p>
                                 <p className="text-xs text-muted-foreground">Last contacted {soul.daysSinceContact} days ago</p>
                             </div>
                             <Button asChild variant="ghost" size="sm">
