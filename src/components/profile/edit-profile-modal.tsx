@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -180,7 +181,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
               <FormItem>
                 <FormLabel>Bio</FormLabel>
                 <FormControl>
-                  <Textarea placeholder="Share your personal testimony to encourage others..." className="resize-none text-base" {...field} value={field.value ?? ''} />
+                  <Textarea placeholder="Share your personal testimony to encourage others..." className="resize-none text-base" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

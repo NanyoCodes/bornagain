@@ -53,6 +53,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { actionItems, statusOptions } from "@/lib/follow-up-data";
+import { errorEmitter } from "@/firebase/error-emitter";
+import { FirestorePermissionError } from "@/firebase/errors";
 
 
 const getStatusClasses = (status: FollowUpStatus | undefined): string => {
@@ -141,35 +143,40 @@ function LogFollowUpDialog({ soul, children }: { soul: Soul; children: React.Rea
     
     setIsLoading(true);
 
-    try {
-      const soulRef = doc(firestore, `users/${user.uid}/souls`, soul.id);
-      
-      const newLogEntry: FollowUpLogItem = {
+    const soulRef = doc(firestore, `users/${user.uid}/souls`, soul.id);
+    const newLogEntry: FollowUpLogItem = {
         date: serverTimestamp() as any,
         note: values.note || '',
         actions: values.actions || [],
-      };
-
-      await updateDoc(soulRef, {
+    };
+    const updatePayload = {
         followUpLog: arrayUnion(newLogEntry),
         status: values.status,
         attendingChurch: values.attendingChurch,
         inBibleStudy: values.inBibleStudy,
         attendingPrayer: values.attendingPrayer,
         inServiceDepartment: values.inServiceDepartment,
-      });
-
-      toast({
-        title: 'Follow-up Logged',
-        description: `A new entry has been added for ${soul.firstName} ${soul.lastName}.`,
-      });
-      setIsOpen(false);
-    } catch (error: any) {
-      console.error('Error logging follow-up: ', error);
-      toast({ variant: 'destructive', title: 'Error', description: 'Could not log follow-up.' });
-    } finally {
-      setIsLoading(false);
-    }
+    };
+    
+    updateDoc(soulRef, updatePayload)
+        .then(() => {
+            toast({
+                title: 'Follow-up Logged',
+                description: `A new entry has been added for ${soul.firstName} ${soul.lastName}.`,
+            });
+            setIsOpen(false);
+        })
+        .catch(() => {
+            const permissionError = new FirestorePermissionError({
+                path: soulRef.path,
+                operation: 'update',
+                requestResourceData: { status: values.status, note: values.note },
+            });
+            errorEmitter.emit('permission-error', permissionError);
+        })
+        .finally(() => {
+            setIsLoading(false);
+        });
   }
 
   return (
@@ -192,7 +199,7 @@ function LogFollowUpDialog({ soul, children }: { soul: Soul; children: React.Rea
                             <FormItem>
                                 <Label>Notes (Required)</Label>
                                 <FormControl>
-                                    <Textarea placeholder="e.g., They are struggling with..." {...field} value={field.value ?? ''} />
+                                    <Textarea placeholder="e.g., They are struggling with..." {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
