@@ -149,13 +149,22 @@ function LogFollowUpDialog({ soul, children }: { soul: Soul; children: React.Rea
             });
             setIsOpen(false);
         })
-        .catch(() => {
-            const permissionError = new FirestorePermissionError({
-                path: soulRef.path,
-                operation: 'update',
-                requestResourceData: { status: values.status, note: values.note },
-            });
-            errorEmitter.emit('permission-error', permissionError);
+        .catch((err) => {
+            console.error("Failed to log follow-up:", err);
+            if (err.code === 'permission-denied') {
+                const permissionError = new FirestorePermissionError({
+                    path: soulRef.path,
+                    operation: 'update',
+                    requestResourceData: { status: values.status, note: values.note },
+                });
+                errorEmitter.emit('permission-error', permissionError);
+            } else {
+                toast({
+                    variant: "destructive",
+                    title: "Update Failed",
+                    description: err.message || "Could not log follow-up. Please check your connection and try again.",
+                });
+            }
         })
         .finally(() => {
             setIsLoading(false);
@@ -744,3 +753,5 @@ export function SoulsWonTable({ souls, loading }: SoulsWonTableProps) {
     </>
   );
 }
+
+    
