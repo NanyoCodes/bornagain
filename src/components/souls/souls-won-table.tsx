@@ -74,30 +74,13 @@ const getStatusClasses = (status: FollowUpStatus | undefined): string => {
 
 // --- LogFollowUpDialog Component Definition ---
 const logFollowUpFormSchema = z.object({
-    note: z.string().min(1, { message: "A note is required." }),
-    status: z.enum(statusOptions),
-    attendingChurch: z.boolean(),
-    inBibleStudy: z.boolean(),
-    attendingPrayer: z.boolean(),
-    inServiceDepartment: z.boolean(),
-    actions: z.array(z.string()).optional(),
-}).superRefine((data, ctx) => {
-    if (data.status === 'Established') {
-        if (!data.attendingChurch) {
-            ctx.addIssue({
-                code: z.ZodIssueCode.custom,
-                message: "Required for 'Established' status.",
-                path: ['attendingChurch']
-            });
-        }
-        if (!data.inServiceDepartment) {
-            ctx.addIssue({
-                code: z.ZodIssueCode.custom,
-                message: "Required for 'Established' status.",
-                path: ['inServiceDepartment']
-            });
-        }
-    }
+  note: z.string().optional(),
+  status: z.enum(statusOptions),
+  attendingChurch: z.boolean(),
+  inBibleStudy: z.boolean(),
+  attendingPrayer: z.boolean(),
+  inServiceDepartment: z.boolean(),
+  actions: z.array(z.string()).optional(),
 });
 
 
@@ -197,7 +180,7 @@ function LogFollowUpDialog({ soul, children }: { soul: Soul; children: React.Rea
                         name="note"
                         render={({ field }) => (
                             <FormItem>
-                                <Label>Notes (Required)</Label>
+                                <Label>Notes</Label>
                                 <FormControl>
                                     <Textarea placeholder="e.g., They are struggling with..." {...field} />
                                 </FormControl>
