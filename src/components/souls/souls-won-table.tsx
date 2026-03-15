@@ -141,34 +141,32 @@ function LogFollowUpDialog({ soul, children }: { soul: Soul; children: React.Rea
         inServiceDepartment: values.inServiceDepartment,
     };
     
-    updateDoc(soulRef, updatePayload)
-        .then(() => {
-            toast({
-                title: 'Follow-up Logged',
-                description: `A new entry has been added for ${soul.firstName} ${soul.lastName}.`,
-            });
-            setIsOpen(false);
-        })
-        .catch((err) => {
-            console.error("Failed to log follow-up:", err);
-            if (err.code === 'permission-denied') {
-                const permissionError = new FirestorePermissionError({
-                    path: soulRef.path,
-                    operation: 'update',
-                    requestResourceData: { status: values.status, note: values.note },
-                });
-                errorEmitter.emit('permission-error', permissionError);
-            } else {
-                toast({
-                    variant: "destructive",
-                    title: "Update Failed",
-                    description: err.message || "Could not log follow-up. Please check your connection and try again.",
-                });
-            }
-        })
-        .finally(() => {
-            setIsLoading(false);
+    try {
+        await updateDoc(soulRef, updatePayload);
+        toast({
+            title: 'Follow-up Logged',
+            description: `A new entry has been added for ${soul.firstName} ${soul.lastName}.`,
         });
+        setIsOpen(false);
+    } catch (err: any) {
+        console.error("Failed to log follow-up:", err);
+        if (err.code === 'permission-denied') {
+            const permissionError = new FirestorePermissionError({
+                path: soulRef.path,
+                operation: 'update',
+                requestResourceData: { status: values.status, note: values.note },
+            });
+            errorEmitter.emit('permission-error', permissionError);
+        } else {
+            toast({
+                variant: "destructive",
+                title: "Update Failed",
+                description: err.message || "Could not log follow-up. Please check your connection and try again.",
+            });
+        }
+    } finally {
+        setIsLoading(false);
+    }
   }
 
   return (
@@ -753,5 +751,7 @@ export function SoulsWonTable({ souls, loading }: SoulsWonTableProps) {
     </>
   );
 }
+
+    
 
     
