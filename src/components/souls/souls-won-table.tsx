@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import * as React from "react";
@@ -128,7 +129,7 @@ function LogFollowUpDialog({ soul, children }: { soul: Soul; children: React.Rea
 
     const soulRef = doc(firestore, `users/${user.uid}/souls`, soul.id);
     const newLogEntry: FollowUpLogItem = {
-        date: serverTimestamp() as any,
+        date: new Date() as any,
         note: values.note || '',
         actions: values.actions || [],
     };
