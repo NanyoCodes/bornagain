@@ -1,4 +1,3 @@
-
 'use client';
 
 import {
@@ -852,7 +851,7 @@ export default function DashboardPage() {
         
         return { ...soul, daysSinceContact };
       })
-      .filter(soul => soul.daysSinceContact > 7) // Only if not contacted in over a week
+      .filter(soul => soul.daysSinceContact > 1)
       .sort((a, b) => b.daysSinceContact - a.daysSinceContact) // Show longest ago first
       .slice(0, 3);
   }, [soulsWon]);
