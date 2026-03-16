@@ -10,7 +10,7 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
-export const FollowUpInsightsInputSchema = z.object({
+const FollowUpInsightsInputSchema = z.object({
   firstName: z.string().describe("The soul's first name."),
   status: z.string().describe("The soul's current follow-up status (e.g., New, Contacted, Established)."),
   followUpHistory: z.string().describe('A summary of the recent follow-up interactions.'),
@@ -20,7 +20,7 @@ export const FollowUpInsightsInputSchema = z.object({
 });
 export type FollowUpInsightsInput = z.infer<typeof FollowUpInsightsInputSchema>;
 
-export const FollowUpInsightsOutputSchema = z.object({
+const FollowUpInsightsOutputSchema = z.object({
   keyInsight: z.string().describe("A concise, one-sentence summary of the soul's current spiritual state based on the provided data."),
   suggestedNextSteps: z.array(z.string()).describe('A list of 2-3 practical, actionable next steps for follow-up.'),
   suggestedMessage: z.string().describe("A short, encouraging sample message (SMS or WhatsApp) to send to the person. The message should be personal and reference their journey if possible."),
