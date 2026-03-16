@@ -56,6 +56,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { actionItems, statusOptions } from "@/lib/follow-up-data";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
+import { SoulInsightsDialog } from "./soul-insights-dialog";
 
 
 const getStatusClasses = (status: FollowUpStatus | undefined): string => {
@@ -439,7 +440,9 @@ function SoulCard({ soul }: { soul: Soul }) {
                                 <AvatarFallback>{soul.firstName?.charAt(0)}{soul.lastName?.charAt(0)}</AvatarFallback>
                             </Avatar>
                             <div className="min-w-0">
-                                <p className="font-semibold truncate">{soul.firstName || 'Unknown'} {soul.lastName || ''}</p>
+                                <SoulInsightsDialog soul={soul}>
+                                    <p className="font-semibold truncate cursor-pointer hover:underline">{soul.firstName || 'Unknown'} {soul.lastName || ''}</p>
+                                </SoulInsightsDialog>
                                 <Badge className={cn("mt-1", getStatusClasses(soul.status))} variant="outline">{soul.status}</Badge>
                             </div>
                         </div>
@@ -551,7 +554,9 @@ function SoulTableRow({ soul, onEditClick }: { soul: Soul, onEditClick: (soul: S
                         <AvatarFallback>{soul.firstName?.charAt(0)}{soul.lastName?.charAt(0)}</AvatarFallback>
                     </Avatar>
                     <div>
-                        <div>{soul.firstName || 'Unknown'} {soul.lastName || ''}</div>
+                        <SoulInsightsDialog soul={soul}>
+                           <div className="cursor-pointer hover:underline">{soul.firstName || 'Unknown'} {soul.lastName || ''}</div>
+                        </SoulInsightsDialog>
                         {soul.church && <div className="text-xs text-muted-foreground flex items-center gap-1"><Church className="h-3 w-3" />{soul.church}</div>}
                     </div>
                 </div>
