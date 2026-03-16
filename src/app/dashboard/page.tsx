@@ -1159,7 +1159,7 @@ export default function DashboardPage() {
             />
           )}
 
-          <Card className="bg-gradient-to-br from-purple-600 to-blue-500 text-primary-foreground">
+          <Card className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground">
             <CardHeader>
               <CardTitle>Share Your Story</CardTitle>
               <CardDescription className="text-primary-foreground/80">

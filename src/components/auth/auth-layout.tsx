@@ -15,7 +15,7 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
             {children}
         </div>
       </div>
-      <div className="hidden lg:flex flex-col items-start justify-center p-12 md:p-24 text-white relative overflow-hidden bg-gradient-to-br from-red-900 to-black">
+      <div className="hidden lg:flex flex-col items-start justify-center p-12 md:p-24 text-white relative overflow-hidden bg-gradient-to-br from-primary/80 via-destructive/70 to-black">
         <Link href="/" className="flex items-center gap-4 mb-8 z-10">
             {logo && (
                 <Image
@@ -43,8 +43,8 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
         </div>
         
         {/* Decorative elements */}
-        <div className="absolute top-0 right-0 h-[20rem] w-[20rem] bg-gradient-to-l from-primary/10 to-transparent rounded-full -translate-y-1/2 translate-x-1/2" />
-         <div className="absolute bottom-0 left-0 h-[20rem] w-[20rem] bg-gradient-to-r from-primary/10 to-transparent rounded-full translate-y-1/2 -translate-x-1/2" />
+        <div className="absolute top-0 right-0 h-[20rem] w-[20rem] bg-gradient-to-l from-primary/20 to-transparent rounded-full -translate-y-1/2 translate-x-1/2" />
+         <div className="absolute bottom-0 left-0 h-[20rem] w-[20rem] bg-gradient-to-r from-primary/20 to-transparent rounded-full translate-y-1/2 -translate-x-1/2" />
       </div>
     </div>
   );

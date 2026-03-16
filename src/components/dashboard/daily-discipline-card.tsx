@@ -225,7 +225,7 @@ export function DailyDisciplineCard() {
                 <Button
                     key={discipline.id}
                     variant="outline"
-                    className="relative flex flex-col items-center justify-center gap-2 p-4 h-28 text-center transition-all duration-200 ease-in-out transform hover:-translate-y-1 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 data-[state=checked]:bg-primary/10 data-[state=checked]:border-primary/50 dark:data-[state=checked]:bg-primary/20 data-[state=checked]:shadow-md disabled:opacity-75"
+                    className="relative flex flex-col items-center justify-center gap-2 p-4 h-28 text-center transition-all duration-200 ease-in-out transform hover:-translate-y-1 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 data-[state=checked]:bg-gradient-to-br data-[state=checked]:from-primary/20 data-[state=checked]:to-primary/10 data-[state=checked]:border-primary/40 dark:data-[state=checked]:from-primary/30 dark:data-[state=checked]:to-primary/15 data-[state=checked]:shadow-lg disabled:opacity-75"
                     data-state={isCompleted ? 'checked' : 'unchecked'}
                     onClick={() => handleDisciplineClick(discipline.id)}
                     disabled={togglingId === discipline.id}
