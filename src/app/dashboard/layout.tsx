@@ -19,7 +19,6 @@ import {
   Loader2,
   HeartHandshake,
   TrendingUp,
-  Database,
 } from "lucide-react";
 
 import {
@@ -53,7 +52,6 @@ const navItems = [
   { href: "/dashboard/testimonies", label: "Testimonies", icon: Newspaper, color: "text-chart-3" },
   { href: "/dashboard/campaigns", label: "Campaigns", icon: Target, color: "text-chart-4" },
   { href: "/dashboard/chats", label: "Chats", icon: MessagesSquare, color: "text-chart-5" },
-  { href: "/dashboard/data", label: "Data", icon: Database, color: "text-chart-6" },
 ];
 
 function AppHeader({ unreadChatCount }: { unreadChatCount: number }) {
@@ -316,7 +314,7 @@ function BottomNavBar({ unreadChatCount }: { unreadChatCount: number }) {
   
     return (
       <nav className="fixed bottom-0 left-0 right-0 z-40 border-t bg-background md:hidden">
-        <div className="grid h-16 grid-cols-6 items-center">
+        <div className="grid h-16 grid-cols-5 items-center">
           {navItems.map((item) => {
             const isActive = item.href === '/dashboard' ? pathname === item.href : pathname.startsWith(item.href);
             const isChats = item.label === 'Chats';
@@ -415,7 +413,6 @@ export default function DashboardLayout({
     if (path.startsWith('/dashboard/profile')) return 'Loading your profile...';
     if (path.startsWith('/dashboard/settings')) return 'Loading settings...';
     if (path.startsWith('/dashboard/notifications')) return 'Loading notifications...';
-    if (path.startsWith('/dashboard/data')) return 'Loading data explorer...';
     return 'Loading your dashboard...';
   };
 
