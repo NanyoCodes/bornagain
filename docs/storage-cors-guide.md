@@ -1,7 +1,7 @@
 
 # How to Fix Firebase Storage Uploads (Troubleshooting Guide)
 
-If you are seeing errors like `net::ERR_FAILED` or `CORS policy` in your browser console when trying to upload photos, it means there is a configuration problem with your Firebase/Google Cloud project. This guide provides a definitive checklist to solve it.
+If you are seeing errors like `net::ERR_FAILED` or `CORS policy` in your browser console when trying to upload photos, it means there is a configuration problem with your Google Cloud project. This guide provides a definitive checklist to solve it.
 
 **The problem is NOT in the application's code. You must complete these steps in the Google Cloud Console.**
 
@@ -79,3 +79,16 @@ This is the most common point of failure. Follow these steps exactly.
 ### Final Check
 
 After completing all of the above steps, wait about 1-2 minutes for the settings to apply globally. Then, refresh your application and try uploading a photo again. If you have followed all steps, the upload will now succeed.
+
+---
+
+### Important Final Check
+
+It's very common for a small typo to cause this issue. Please **double-check** that the "Origins" you entered into the Google Cloud Console match these values *exactly*:
+
+*   `http://localhost:3000`
+*   `https://studio-6220967431-56fe2.web.app`
+*   `https://studio-6220967431-56fe2.firebaseapp.com`
+*   `https://studio--studio-6220967431-56fe2.us-central1.hosted.app`
+
+Even a small difference, like a missing `http://` or a trailing slash `/`, can cause the upload to fail.
