@@ -73,6 +73,13 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
@@ -624,6 +631,8 @@ export default function DashboardPage() {
   const { data: userTestimonies, loading: testimoniesLoading } = useCollection<Testimony>(testimoniesQuery);
 
   const [isLogSoulOpen, setIsLogSoulOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const isMobile = useIsMobile();
 
   const [showWelcomeBack, setShowWelcomeBack] = useState(false);
   const [
@@ -641,6 +650,7 @@ export default function DashboardPage() {
   } | null>(null);
 
   useEffect(() => {
+    setMounted(true);
     // This effect runs on the client after hydration.
     // It's safe to use Math.random() here.
     const randomScripture =
@@ -877,9 +887,15 @@ export default function DashboardPage() {
                   The latest additions to your follow-up list.
                 </CardDescription>
               </div>
-              <Button asChild variant="outline" size="sm">
-                <Link href="/dashboard/souls-won">View All</Link>
-              </Button>
+              <div className="flex items-center gap-2">
+                <Button asChild variant="outline" size="sm">
+                  <Link href="/dashboard/souls-won">View All</Link>
+                </Button>
+                <Button size="sm" onClick={() => setIsLogSoulOpen(true)}>
+                    <UserPlus className="mr-2 h-4 w-4" />
+                    Log Soul
+                </Button>
+              </div>
             </CardHeader>
             <CardContent>
               <RecentSoulsList />
@@ -994,7 +1010,35 @@ export default function DashboardPage() {
           summaryData={summaryData}
         />
       )}
+      {mounted && isMobile ? (
+        <Sheet open={isLogSoulOpen} onOpenChange={setIsLogSoulOpen}>
+          <SheetContent side="bottom">
+            <SheetHeader>
+              <SheetTitle>Log a New Soul</SheetTitle>
+              <SheetDescription>
+                Record the details of the person you've ministered to.
+              </SheetDescription>
+            </SheetHeader>
+            <div className="max-h-[80vh] overflow-y-auto p-1 mt-4">
+              <LogSoulForm onSoulLogged={() => setIsLogSoulOpen(false)} />
+            </div>
+          </SheetContent>
+        </Sheet>
+      ) : (
+        <Dialog open={isLogSoulOpen} onOpenChange={setIsLogSoulOpen}>
+          <DialogContent className="sm:max-w-lg">
+            <DialogHeader>
+              <DialogTitle>Log a New Soul</DialogTitle>
+              <DialogDescription>
+                  Record the details of the person you've ministered to.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="max-h-[70vh] overflow-y-auto pr-2">
+              <LogSoulForm onSoulLogged={() => setIsLogSoulOpen(false)} />
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 }
-
