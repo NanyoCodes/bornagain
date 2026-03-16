@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -63,6 +63,18 @@ export function SoulInsightsDialog({ soul, children }: { soul: Soul, children: R
       setIsLoading(false);
     }
   };
+  
+  useEffect(() => {
+    if (isOpen) {
+      handleGenerateInsights();
+    } else {
+      // Reset state when dialog closes to ensure a fresh load next time
+      setInsights(null);
+      setIsLoading(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen]);
+
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
@@ -80,12 +92,12 @@ export function SoulInsightsDialog({ soul, children }: { soul: Soul, children: R
           </DialogDescription>
         </DialogHeader>
 
-        {isLoading ? (
+        {!insights || isLoading ? (
           <div className="py-12 flex flex-col items-center justify-center text-center">
             <Loader2 className="h-10 w-10 animate-spin text-primary" />
             <p className="mt-4 text-sm text-muted-foreground">AI is generating insights...</p>
           </div>
-        ) : insights ? (
+        ) : (
           <div className="space-y-4 py-4 max-h-[60vh] overflow-y-auto">
             <div className="space-y-2">
                 <h3 className="font-semibold flex items-center gap-2 text-sm"><Lightbulb className="h-4 w-4 text-primary" /> Key Insight</h3>
@@ -115,13 +127,6 @@ export function SoulInsightsDialog({ soul, children }: { soul: Soul, children: R
                     </p>
                 </div>
             </div>
-          </div>
-        ) : (
-          <div className="py-12 text-center">
-            <Button onClick={handleGenerateInsights}>
-              <Sparkles className="mr-2 h-4 w-4" />
-              Generate Insights
-            </Button>
           </div>
         )}
 
