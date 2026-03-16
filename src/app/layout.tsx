@@ -14,9 +14,9 @@ export const metadata: Metadata = {
     'A platform for believers to share testimonies, organize soul-winning campaigns, and track evangelism progress.',
   manifest: '/manifest.webmanifest',
   icons: {
-    icon: testifyLogoUrl,
-    shortcut: testifyLogoUrl,
-    apple: testifyLogoUrl,
+    icon: { url: testifyLogoUrl, type: 'image/png' },
+    shortcut: { url: testifyLogoUrl, type: 'image/png' },
+    apple: { url: testifyLogoUrl, type: 'image/png' },
   },
 };
 
