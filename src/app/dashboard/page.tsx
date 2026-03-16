@@ -176,6 +176,7 @@ function GlobalSoulsCard({
   location: { city?: string; country?: string };
   userSouls: Soul[];
 }) {
+  const { user } = useUser();
   const firestore = useFirestore();
   const [cityCount, setCityCount] = useState(0);
   const [countryCount, setCountryCount] = useState(0);
@@ -203,7 +204,7 @@ function GlobalSoulsCard({
   const yourGlobalCount = userSouls.length;
 
   const fetchCounts = useCallback(async () => {
-    if (!firestore) {
+    if (!firestore || !user) {
       setLoading(false);
       return;
     }
@@ -260,7 +261,7 @@ function GlobalSoulsCard({
     } finally {
       setLoading(false);
     }
-  }, [firestore, location.city, location.country]);
+  }, [firestore, user, location.city, location.country]);
 
   useEffect(() => {
     fetchCounts();
