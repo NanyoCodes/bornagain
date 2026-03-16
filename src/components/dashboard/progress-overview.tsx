@@ -2,20 +2,21 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
-import { useUser, useFirestore, useCollection } from '@/firebase';
-import type { Soul, UserProfile, DailyDisciplineLog } from '@/lib/types';
+import { useUser, useFirestore } from '@/firebase';
+import type { Soul, UserProfile } from '@/lib/types';
 import { collection, query, orderBy, limit } from 'firebase/firestore';
-import { format, isSameDay, subDays, differenceInDays } from 'date-fns';
+import { format, isSameMonth } from 'date-fns';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
-import { Flame, Edit, TrendingUp, Zap } from 'lucide-react';
+import { Flame, Edit, Zap } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
 import { safeToDate } from '@/lib/utils';
+import { useCollection } from '@/firebase/firestore/use-collection';
 
 export function ProgressOverview({ souls, userProfile }: { souls: Soul[], userProfile: UserProfile }) {
     const firestore = useFirestore();
@@ -24,20 +25,24 @@ export function ProgressOverview({ souls, userProfile }: { souls: Soul[], userPr
 
     // Goal State
     const [monthlyGoal, setMonthlyGoal] = useState(10);
-    const [goalDate, setGoalDate] = useState<Date | null>(new Date());
     const [goalDialogOpen, setGoalDialogOpen] = useState(false);
     const [newGoal, setNewGoal] = useState(10);
-    const [newGoalDate, setNewGoalDate] = useState<Date | null>(new Date());
+    const [currentDate, setCurrentDate] = useState(new Date());
+
+    useEffect(() => {
+      // Set date on client to avoid hydration mismatch.
+      setCurrentDate(new Date());
+    }, []);
     
     // Souls Won this month for the goal
     const soulsThisMonth = useMemo(() => {
-      if (!souls || !goalDate) return 0;
+      if (!souls) return 0;
       return souls.filter((soul) => {
         const wonDate = safeToDate(soul.wonAt);
         if (!wonDate) return false;
-        return isSameDay(wonDate, goalDate) || (wonDate > goalDate && wonDate < new Date(goalDate.getFullYear(), goalDate.getMonth() + 1, 1));
+        return isSameMonth(wonDate, currentDate);
       }).length;
-    }, [souls, goalDate]);
+    }, [souls, currentDate]);
     
     // Evangelism Streak
     const evangelismStreak = useMemo(() => {
@@ -47,14 +52,14 @@ export function ProgressOverview({ souls, userProfile }: { souls: Soul[], userPr
         );
 
         let streak = 0;
-        let currentDate = new Date();
-        if (!wonDates.has(format(currentDate, 'yyyy-MM-dd'))) {
-            currentDate.setDate(currentDate.getDate() - 1);
+        let checkDate = new Date();
+        if (!wonDates.has(format(checkDate, 'yyyy-MM-dd'))) {
+            checkDate.setDate(checkDate.getDate() - 1);
         }
 
-        while (wonDates.has(format(currentDate, 'yyyy-MM-dd'))) {
+        while (wonDates.has(format(checkDate, 'yyyy-MM-dd'))) {
             streak++;
-            currentDate.setDate(currentDate.getDate() - 1);
+            checkDate.setDate(checkDate.getDate() - 1);
         }
 
         return streak;
@@ -75,25 +80,24 @@ export function ProgressOverview({ souls, userProfile }: { souls: Soul[], userPr
         if (!disciplineHistory || disciplineHistory.length === 0) return 0;
         
         let streak = 0;
-        let currentDate = new Date();
+        let checkDate = new Date();
         const historyMap = new Map(disciplineHistory.map(log => [format(safeToDate(log.date)!, 'yyyy-MM-dd'), log.completed]));
 
-        const todayString = format(currentDate, 'yyyy-MM-dd');
+        const todayString = format(checkDate, 'yyyy-MM-dd');
         const todaysLog = historyMap.get(todayString);
         
-        // If today's disciplines are not complete, start checking from yesterday
         if (!todaysLog || todaysLog.length < 3) {
-            currentDate.setDate(currentDate.getDate() - 1);
+            checkDate.setDate(checkDate.getDate() - 1);
         }
         
         while (true) {
-            const dateString = format(currentDate, 'yyyy-MM-dd');
+            const dateString = format(checkDate, 'yyyy-MM-dd');
             const log = historyMap.get(dateString);
             if (log && log.length >= 3) { // Assuming 3 disciplines
                 streak++;
-                currentDate.setDate(currentDate.getDate() - 1);
+                checkDate.setDate(checkDate.getDate() - 1);
             } else {
-                break; // Streak broken
+                break;
             }
         }
         return streak;
@@ -101,24 +105,14 @@ export function ProgressOverview({ souls, userProfile }: { souls: Soul[], userPr
 
 
     // Goal Dialog Logic
-    const handleGoalDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const value = event.target.value;
-        if (value) {
-            const [year, month] = value.split('-').map(Number);
-            setNewGoalDate(new Date(year, month - 1, 1));
-        }
-    };
-    const newGoalDateValue = newGoalDate ? format(newGoalDate, 'yyyy-MM') : '';
-
     const handleSaveGoal = () => {
-        if (newGoal > 0 && newGoalDate) {
+        if (newGoal > 0) {
             setMonthlyGoal(newGoal);
-            setGoalDate(newGoalDate);
             setGoalDialogOpen(false);
             toast({
                 title: 'Monthly Goal Updated',
                 description: `Your new goal for ${format(
-                newGoalDate,
+                currentDate,
                 'MMMM yyyy'
                 )} is ${newGoal} souls.`,
             });
@@ -141,8 +135,7 @@ export function ProgressOverview({ souls, userProfile }: { souls: Soul[], userPr
                     open={goalDialogOpen}
                     onOpenChange={(isOpen) => {
                         if (isOpen) {
-                        setNewGoal(monthlyGoal);
-                        setNewGoalDate(goalDate);
+                          setNewGoal(monthlyGoal);
                         }
                         setGoalDialogOpen(isOpen);
                     }}
@@ -154,36 +147,24 @@ export function ProgressOverview({ souls, userProfile }: { souls: Soul[], userPr
                     </DialogTrigger>
                     <DialogContent className="sm:max-w-[425px]">
                         <DialogHeader>
-                            <DialogTitle>Set Monthly Goal</DialogTitle>
+                            <DialogTitle>Set Goal for {format(currentDate, 'MMMM')}</DialogTitle>
                             <DialogDescription>
-                                Set your personal goal for souls won for a specific month.
+                                Set your personal goal for souls won for the current month.
                             </DialogDescription>
                         </DialogHeader>
                         <div className="grid gap-4 py-4">
-                        <div className="grid grid-cols-4 items-center gap-4">
+                          <div className="grid grid-cols-4 items-center gap-4">
                             <Label htmlFor="goal" className="text-right">
-                            Souls
+                              Souls
                             </Label>
                             <Input
-                            id="goal"
-                            type="number"
-                            value={newGoal}
-                            onChange={(e) => setNewGoal(Number(e.target.value))}
-                            className="col-span-3"
+                              id="goal"
+                              type="number"
+                              value={newGoal}
+                              onChange={(e) => setNewGoal(Number(e.target.value))}
+                              className="col-span-3"
                             />
-                        </div>
-                        <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="goal-month" className="text-right">
-                            For Month
-                            </Label>
-                            <Input
-                            id="goal-month"
-                            type="month"
-                            value={newGoalDateValue}
-                            onChange={handleGoalDateChange}
-                            className="col-span-3"
-                            />
-                        </div>
+                          </div>
                         </div>
                         <DialogFooter>
                             <Button onClick={handleSaveGoal}>Save Goal</Button>
@@ -192,7 +173,7 @@ export function ProgressOverview({ souls, userProfile }: { souls: Soul[], userPr
                     </Dialog>
                 </div>
                 <CardDescription className="text-primary-foreground/80">
-                    {goalDate ? format(goalDate, 'MMMM yyyy') : '...'}
+                  Your goal for {format(currentDate, 'MMMM yyyy')}
                 </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -222,7 +203,7 @@ export function ProgressOverview({ souls, userProfile }: { souls: Soul[], userPr
                     <div className="h-16 w-px bg-primary-foreground/30"></div>
                      <div>
                         <div className="text-4xl font-bold flex items-center justify-center gap-2">
-                           {loadingDiscipline ? <Skeleton className="h-8 w-10 bg-white/20"/> : disciplineStreak} <Zap className="h-8 w-8" />
+                           {loadingDiscipline ? <Skeleton className="h-10 w-12 bg-white/20"/> : disciplineStreak} <Zap className="h-8 w-8" />
                         </div>
                         <p className="text-sm opacity-80">Discipline Streak</p>
                     </div>
