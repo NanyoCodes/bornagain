@@ -214,16 +214,16 @@ export function ProgressOverview({ souls, userProfile }: { souls: Soul[], userPr
                 
                 <div className="flex items-center justify-around text-center">
                      <div>
-                        <p className="text-4xl font-bold flex items-center justify-center gap-2">
+                        <div className="text-4xl font-bold flex items-center justify-center gap-2">
                            {evangelismStreak} <Flame className="h-8 w-8" />
-                        </p>
+                        </div>
                         <p className="text-sm opacity-80">Evangelism Streak</p>
                     </div>
                     <div className="h-16 w-px bg-primary-foreground/30"></div>
                      <div>
-                        <p className="text-4xl font-bold flex items-center justify-center gap-2">
+                        <div className="text-4xl font-bold flex items-center justify-center gap-2">
                            {loadingDiscipline ? <Skeleton className="h-8 w-10 bg-white/20"/> : disciplineStreak} <Zap className="h-8 w-8" />
-                        </p>
+                        </div>
                         <p className="text-sm opacity-80">Discipline Streak</p>
                     </div>
                 </div>
