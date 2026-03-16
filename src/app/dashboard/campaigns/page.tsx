@@ -76,6 +76,29 @@ const getStatus = (campaign: { _startDate: Date | null, _endDate: Date | null, s
     return 1; // Ongoing
   };
 
+const getFullStartDate = (campaign: { _startDate: Date | null, startTime?: string}) => {
+    if (!campaign._startDate) return null;
+    const d = new Date(campaign._startDate);
+    if (campaign.startTime && /^\d{2}:\d{2}$/.test(campaign.startTime)) {
+        const [hours, minutes] = campaign.startTime.split(':').map(Number);
+        d.setHours(hours, minutes, 0, 0);
+    } else {
+        d.setHours(0, 0, 0, 0);
+    }
+    return d;
+};
+const getFullEndDate = (campaign: { _endDate: Date | null, endTime?: string}) => {
+    if (!campaign._endDate) return null;
+    const d = new Date(campaign._endDate);
+    if (campaign.endTime && /^\d{2}:\d{2}$/.test(campaign.endTime)) {
+        const [hours, minutes] = campaign.endTime.split(':').map(Number);
+        d.setHours(hours, minutes, 59, 999);
+    } else {
+        d.setHours(23, 59, 59, 999);
+    }
+    return d;
+};
+
 
 export default function CampaignsPage() {
   const { user, loading: userLoading } = useUser();
@@ -145,6 +168,8 @@ export default function CampaignsPage() {
       return {
         ...tempCampaign,
         _status: getStatus(tempCampaign, now),
+        _fullStartDate: getFullStartDate(tempCampaign),
+        _fullEndDate: getFullEndDate(tempCampaign),
       }
     });
   }, [campaigns, now]);
@@ -197,34 +222,11 @@ export default function CampaignsPage() {
         if (a._status !== b._status) {
             return a._status - b._status;
         }
-
-        const getFullStartDate = (campaign: typeof a) => {
-            if (!campaign._startDate) return null;
-            const d = new Date(campaign._startDate);
-            if (campaign.startTime && /^\d{2}:\d{2}$/.test(campaign.startTime)) {
-                const [hours, minutes] = campaign.startTime.split(':').map(Number);
-                d.setHours(hours, minutes, 0, 0);
-            } else {
-                d.setHours(0, 0, 0, 0);
-            }
-            return d;
-        };
-        const getFullEndDate = (campaign: typeof b) => {
-            if (!campaign._endDate) return null;
-            const d = new Date(campaign._endDate);
-            if (campaign.endTime && /^\d{2}:\d{2}$/.test(campaign.endTime)) {
-                const [hours, minutes] = campaign.endTime.split(':').map(Number);
-                d.setHours(hours, minutes, 59, 999);
-            } else {
-                d.setHours(23, 59, 59, 999);
-            }
-            return d;
-        };
         
         // For Ongoing and Upcoming, sort by start date ascending (soonest first)
         if (a._status === 1 || a._status === 2) {
-            const fullStartDateA = getFullStartDate(a);
-            const fullStartDateB = getFullStartDate(b);
+            const fullStartDateA = a._fullStartDate;
+            const fullStartDateB = b._fullStartDate;
 
             if (fullStartDateA && fullStartDateB) {
                 const timeDiff = fullStartDateA.getTime() - fullStartDateB.getTime();
@@ -236,8 +238,8 @@ export default function CampaignsPage() {
 
         // For Past, sort by end date descending (most recently ended first)
         if (a._status === 3) {
-            const fullEndDateA = getFullEndDate(a);
-            const fullEndDateB = getFullEndDate(b);
+            const fullEndDateA = a._fullEndDate;
+            const fullEndDateB = b._fullEndDate;
 
             if (fullEndDateA && fullEndDateB) {
                 const timeDiff = fullEndDateB.getTime() - fullEndDateA.getTime();
