@@ -1,3 +1,4 @@
+
 'use client';
 
 import {
@@ -81,6 +82,7 @@ import { safeToDate } from '@/lib/utils';
 import { actionItems, statusOptions } from '@/lib/follow-up-data';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { LogSoulForm } from '@/components/souls/log-soul-form';
+import { ProgressOverview } from '@/components/dashboard/progress-overview';
 
 function RecentSoulsList() {
   const { user } = useUser();
@@ -615,12 +617,6 @@ export default function DashboardPage() {
   }, [user?.uid, firestore]);
   const { data: soulsWon, loading: soulsLoading } = useCollection<Soul>(soulsQuery);
 
-  // State and logic from progress page
-  const [monthlyGoal, setMonthlyGoal] = useState(10);
-  const [goalDate, setGoalDate] = useState<Date | null>(null);
-  const [goalDialogOpen, setGoalDialogOpen] = useState(false);
-  const [newGoal, setNewGoal] = useState(10);
-  const [newGoalDate, setNewGoalDate] = useState<Date | null>(null);
   const [isLogSoulOpen, setIsLogSoulOpen] = useState(false);
 
   const [showWelcomeBack, setShowWelcomeBack] = useState(false);
@@ -644,12 +640,6 @@ export default function DashboardPage() {
     const randomScripture =
       welcomeScriptures[Math.floor(Math.random() * welcomeScriptures.length)];
     setWelcomeMessage(randomScripture);
-  }, []);
-
-  useEffect(() => {
-    const today = new Date();
-    setGoalDate(today);
-    setNewGoalDate(today);
   }, []);
 
   const loading = authLoading || profileLoading || soulsLoading;
@@ -717,25 +707,6 @@ export default function DashboardPage() {
     }
   }, [loading, userProfile, firestore, user, soulsWon]);
 
-  const handleGoalDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value;
-    if (value) {
-      const [year, month] = value.split('-').map(Number);
-      setNewGoalDate(new Date(year, month - 1, 1));
-    }
-  };
-
-  const newGoalDateValue = newGoalDate ? format(newGoalDate, 'yyyy-MM') : '';
-
-  const soulsThisMonth = useMemo(() => {
-    if (!soulsWon || !goalDate) return 0;
-    return soulsWon.filter((soul) => {
-      const wonDate = safeToDate(soul.wonAt);
-      if (!wonDate) return false;
-      return isSameMonth(wonDate, goalDate);
-    }).length;
-  }, [soulsWon, goalDate]);
-
   const progressData = useMemo(() => {
     if (!soulsWon) return [];
     const monthlyData: { [key: string]: { date: string; soulsWon: number } } = {};
@@ -764,27 +735,6 @@ export default function DashboardPage() {
     });
     return Object.values(monthlyData);
   }, [soulsWon]);
-
-  const handleSaveGoal = () => {
-    if (newGoal > 0 && newGoalDate) {
-      setMonthlyGoal(newGoal);
-      setGoalDate(newGoalDate);
-      setGoalDialogOpen(false);
-      toast({
-        title: 'Monthly Goal Updated',
-        description: `Your new goal for ${format(
-          newGoalDate,
-          'MMMM yyyy'
-        )} is ${newGoal} souls.`,
-      });
-    } else {
-      toast({
-        variant: 'destructive',
-        title: 'Invalid Goal',
-        description: 'Please enter a number greater than 0.',
-      });
-    }
-  };
   
   const followUpStatusData = useMemo(() => {
     if (!soulsWon) {
@@ -816,27 +766,6 @@ export default function DashboardPage() {
     ];
   }, [soulsWon]);
 
-  const evangelismStreak = useMemo(() => {
-    if (!soulsWon || soulsWon.length === 0) return 0;
-    const wonDates = new Set(
-        soulsWon.map(s => format(safeToDate(s.wonAt)!, 'yyyy-MM-dd'))
-    );
-
-    let streak = 0;
-    let currentDate = new Date();
-    // If there was no activity today, start checking from yesterday
-    if (!wonDates.has(format(currentDate, 'yyyy-MM-dd'))) {
-        currentDate.setDate(currentDate.getDate() - 1);
-    }
-
-    while (wonDates.has(format(currentDate, 'yyyy-MM-dd'))) {
-        streak++;
-        currentDate.setDate(currentDate.getDate() - 1);
-    }
-
-    return streak;
-  }, [soulsWon]);
-
   const prayerReminders = useMemo(() => {
     if (!soulsWon) return [];
     const now = new Date();
@@ -865,9 +794,16 @@ export default function DashboardPage() {
     Established: 'hsl(var(--status-established))',
   };
 
-  const soulsWonCount = soulsWon?.length ?? 0;
-
   const displayName = userProfile?.firstName || user?.displayName || 'User';
+
+  if (loading || !userProfile) {
+      return (
+        <div className="space-y-8">
+            <Skeleton className="h-10 w-3/4" />
+            <Skeleton className="h-6 w-1/2" />
+        </div>
+      )
+  }
 
   return (
     <div className="space-y-8">
@@ -907,7 +843,7 @@ export default function DashboardPage() {
                     <YAxis
                       domain={[
                         0,
-                        (dataMax: number) => Math.max(dataMax || 0, monthlyGoal),
+                        (dataMax: number) => Math.max(dataMax || 0, 10), // Assuming a base goal of 10 if not set
                       ]}
                     />
                     <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
@@ -946,141 +882,9 @@ export default function DashboardPage() {
         </div>
 
         <div className="space-y-8">
-          <Card className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground">
-            <CardHeader>
-                <CardTitle>Your Impact</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-                <div className="flex items-center justify-around text-center">
-                    <div>
-                        <p className="text-4xl font-bold">{soulsWonCount}</p>
-                        <p className="text-sm opacity-80">Soul{soulsWonCount === 1 ? '' : 's'} Won</p>
-                    </div>
-                    <div className="h-16 w-px bg-primary-foreground/30"></div>
-                     <div>
-                        <p className="text-4xl font-bold flex items-center justify-center gap-2">
-                           {evangelismStreak} <Flame className="h-8 w-8" />
-                        </p>
-                        <p className="text-sm opacity-80">Day Streak</p>
-                    </div>
-                </div>
-                <Dialog open={isLogSoulOpen} onOpenChange={setIsLogSoulOpen}>
-                  <DialogTrigger asChild>
-                    <Button variant="secondary" className="w-full">
-                      <UserPlus className="mr-2 h-4 w-4" />
-                      Log a Soul
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="sm:max-w-lg">
-                    <DialogHeader>
-                      <DialogTitle>Log a New Soul</DialogTitle>
-                      <DialogDescription>
-                        Record the details of the person you've ministered to.
-                      </DialogDescription>
-                    </DialogHeader>
-                     <div className="max-h-[70vh] overflow-y-auto pr-2">
-                        <LogSoulForm onSoulLogged={() => setIsLogSoulOpen(false)} />
-                     </div>
-                  </DialogContent>
-                </Dialog>
-            </CardContent>
-          </Card>
           
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle className="text-lg">Monthly Goal</CardTitle>
-                  <CardDescription>
-                    {goalDate ? format(goalDate, 'MMMM yyyy') : '...'}
-                  </CardDescription>
-                </div>
-                <Dialog
-                  open={goalDialogOpen}
-                  onOpenChange={(isOpen) => {
-                    if (isOpen) {
-                      setNewGoal(monthlyGoal);
-                      setNewGoalDate(goalDate);
-                    }
-                    setGoalDialogOpen(isOpen);
-                  }}
-                >
-                  <DialogTrigger asChild>
-                    <Button variant="ghost" size="icon">
-                      <Edit className="h-4 w-4 text-muted-foreground" />
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="sm:max-w-[425px]">
-                    <DialogHeader>
-                      <DialogTitle>Set Monthly Goal</DialogTitle>
-                      <DialogDescription>
-                        Set your personal goal for souls won for a specific month.
-                      </DialogDescription>
-                    </DialogHeader>
-                    <div className="grid gap-4 py-4">
-                      <div className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor="goal" className="text-right">
-                          Souls
-                        </Label>
-                        <Input
-                          id="goal"
-                          type="number"
-                          value={newGoal}
-                          onChange={(e) => setNewGoal(Number(e.target.value))}
-                          className="col-span-3"
-                        />
-                      </div>
-                      <div className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor="goal-month" className="text-right">
-                          For Month
-                        </Label>
-                        <Input
-                          id="goal-month"
-                          type="month"
-                          value={newGoalDateValue}
-                          onChange={handleGoalDateChange}
-                          className="col-span-3"
-                        />
-                      </div>
-                    </div>
-                    <DialogFooter>
-                      <Button onClick={handleSaveGoal}>Save Goal</Button>
-                    </DialogFooter>
-                  </DialogContent>
-                </Dialog>
-              </div>
-            </CardHeader>
-            <CardContent>
-              {goalDate ? (
-                <div className="space-y-2">
-                  <div className="flex justify-between items-baseline">
-                    <div className="text-2xl font-bold">{soulsThisMonth}</div>
-                    <div className="text-sm text-muted-foreground">
-                      / {monthlyGoal} souls
-                    </div>
-                  </div>
-                  <Progress
-                    value={
-                      monthlyGoal > 0 ? (soulsThisMonth / monthlyGoal) * 100 : 0
-                    }
-                    className="h-2"
-                  />
-                  <p className="text-xs text-muted-foreground text-right">{`${
-                    monthlyGoal > 0
-                      ? Math.round((soulsThisMonth / monthlyGoal) * 100)
-                      : 0
-                  }% complete`}</p>
-                </div>
-              ) : (
-                <div className="space-y-2">
-                  <Skeleton className="h-6 w-1/2" />
-                  <Skeleton className="h-2 w-full" />
-                  <Skeleton className="h-3 w-1/4 ml-auto" />
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
+          <ProgressOverview souls={soulsWon || []} userProfile={userProfile} />
+          
           <Card>
             <CardHeader>
               <CardTitle>Follow-up Funnel</CardTitle>
