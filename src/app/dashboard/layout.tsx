@@ -43,8 +43,10 @@ import { format, isToday } from "date-fns";
 import { WelcomePopup } from "@/components/auth/welcome-popup";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { PageTransition } from "@/components/page-transition";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { EditProfileModal } from "@/components/profile/edit-profile-modal";
+
 
 const navItems = [
   { href: "/dashboard", label: "Progress", icon: TrendingUp, color: "text-chart-1" },
@@ -417,7 +419,6 @@ export default function DashboardLayout({
   };
 
   const isProfileIncomplete = userProfile && (!userProfile.firstName || !userProfile.lastName);
-  const showProfileAlert = isProfileIncomplete && !pathname.startsWith('/dashboard/profile') && !pathname.startsWith('/dashboard/settings');
 
   if (loading || profileLoading || !user?.uid) {
     return (
@@ -445,18 +446,6 @@ export default function DashboardLayout({
         <div className="flex-1 relative min-h-0">
           <main className={cn("absolute inset-0", !isChatPage && "overflow-y-auto")}>
             <div className={cn("max-w-7xl mx-auto", !isChatPage && "p-4 md:p-6 pb-20 md:pb-6", isChatPage && "h-full")}>
-              {showProfileAlert && (
-                <Alert className="mb-6">
-                    <User className="h-4 w-4" />
-                    <AlertTitle>Complete Your Profile</AlertTitle>
-                    <AlertDescription>
-                        Please set your name to personalize your experience.{" "}
-                        <Link href="/dashboard/profile" className="font-semibold underline">
-                            Update profile now.
-                        </Link>
-                    </AlertDescription>
-                </Alert>
-              )}
               <PageTransition>{children}</PageTransition>
             </div>
           </main>
@@ -467,6 +456,27 @@ export default function DashboardLayout({
           onClose={() => setShowWelcomePopup(false)}
           userName={user?.displayName}
         />
+         <Dialog open={isProfileIncomplete}>
+          <DialogContent hideCloseButton className="sm:max-w-lg">
+            <DialogHeader>
+              <DialogTitle>Complete Your Profile</DialogTitle>
+              <DialogDescription>
+                Welcome! Please provide your name to continue using the app.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="max-h-[70vh] overflow-y-auto pr-2">
+              {userProfile && (
+                <EditProfileModal
+                  userProfile={userProfile}
+                  onClose={() => {
+                    // The dialog will close automatically when isProfileIncomplete becomes false
+                    // after the profile is updated and the userProfile data re-fetches.
+                  }}
+                />
+              )}
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </SearchProvider>
   );
