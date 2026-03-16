@@ -76,9 +76,29 @@ This is the most common point of failure. Follow these steps exactly.
 
 ---
 
-### Final Check
+### Alternative Method: Using the Command Line (gsutil)
 
-After completing all of the above steps, wait about 1-2 minutes for the settings to apply globally. Then, refresh your application and try uploading a photo again. If you have followed all steps, the upload will now succeed.
+If you have tried the visual editor and are still having issues, this command-line method is faster and less prone to typos.
+
+1.  **Open Google Cloud Shell:**
+    *   Go to the [Google Cloud Console](https://console.cloud.google.com/).
+    *   Make sure your project **`studio-6220967431-56fe2`** is selected.
+    *   Click the **"Activate Cloud Shell"** button in the top-right corner of the header. It looks like a `>_` icon. This will open a terminal at the bottom of your browser window.
+
+    ![Activate Cloud Shell](https://cloud.google.com/shell/docs/images/cloud-shell-icon.png)
+
+2.  **Run the CORS Command:**
+    *   Wait for the Cloud Shell to finish provisioning.
+    *   Your project already contains the correct configuration in a file named `cors.json`.
+    *   Copy and paste the following single command into the Cloud Shell terminal and press Enter. This command tells Google Cloud to apply the settings from your `cors.json` file to your storage bucket.
+
+    ```bash
+    gsutil cors set cors.json gs://studio-6220967431-56fe2.appspot.com
+    ```
+
+3.  **Wait and Refresh:**
+    *   After the command finishes, wait about 1-2 minutes for the settings to apply.
+    *   Refresh your application and try uploading a photo again. The upload should now succeed.
 
 ---
 
