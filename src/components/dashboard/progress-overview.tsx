@@ -199,12 +199,12 @@ export function ProgressOverview({ souls, userProfile, testimonies }: { souls: S
                            {testimonyStreak} <Flame className="h-8 w-8" />
                         </div>
                         <p className="text-sm opacity-80 font-medium">Testimony Streak</p>
-                        <p className="text-xs opacity-70 mt-1 max-w-[150px] leading-snug">Thanksgiving opens our hearts to joy and more of God's blessings.</p>
+                        <p className="text-xs opacity-70 mt-1 max-w-[150px] leading-snug">Sharing your gratitude unlocks joy and invites God's blessings.</p>
                     </div>
                     <div className="h-16 w-px bg-primary-foreground/30"></div>
                      <div>
                         <div className="text-4xl font-bold flex items-center justify-center gap-2">
-                           {loadingDiscipline ? <Skeleton className="h-10 w-12 bg-white/20"/> : disciplineStreak} <Zap className="h-8 w-8" />
+                           {loadingDiscipline ? <Skeleton className="h-8 w-10 bg-white/20" /> : disciplineStreak} <Zap className="h-8 w-8" />
                         </div>
                         <p className="text-sm opacity-80">Discipline Streak</p>
                     </div>
