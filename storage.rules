@@ -1,23 +1,11 @@
+
 rules_version = '2';
 service firebase.storage {
-  match /b/{bucket}/o {
-    
-    // Profile pictures are publicly readable.
-    // Users can only write/update/delete their own profile picture.
-    match /profile-pictures/{userId}/{fileName} {
-      allow read;
-      allow write: if request.auth != null && request.auth.uid == userId;
-    }
-
-    // Testimony images are publicly readable.
-    // Authenticated users can upload images for their testimonies.
-    // The path contains the user's ID to enforce ownership.
-    match /testimony-images/{userId}/{fileName} {
-        allow read;
-        allow write: if request.auth != null
-                     && request.auth.uid == userId
-                     && request.resource.size < 5 * 1024 * 1024
-                     && request.resource.contentType.matches('image/.*');
+  match /b/studio-6220967431-56fe2.appspot.com/o {
+    // WARNING: This is insecure and for debugging only.
+    // It allows anyone to read or write to your entire storage bucket.
+    match /{allPaths=**} {
+      allow read, write: if true;
     }
   }
 }
