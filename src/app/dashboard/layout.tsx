@@ -439,7 +439,7 @@ export default function DashboardLayout({
 
   return (
     <SearchProvider>
-      <div className="flex h-dvh w-full flex-col bg-muted/30 overflow-x-hidden">
+      <div className="flex h-dvh w-full flex-col overflow-x-hidden">
         <AppHeader unreadChatCount={unreadChatCount} />
         <div className="flex-1 relative min-h-0">
           <main className={cn("absolute inset-0", !isChatPage && "overflow-y-auto")}>

@@ -11,9 +11,9 @@
     --card-foreground: 224 71.4% 4.1%;
     --popover: 0 0% 100%;
     --popover-foreground: 224 71.4% 4.1%;
-    --primary: 0 84.2% 60.2%;
+    --primary: 14 85% 57%;
     --primary-foreground: 210 40% 98%;
-    --primary-hsl: 0, 84.2%, 60.2%;
+    --primary-hsl: 14, 85%, 57%;
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
     --muted: 210 40% 96.1%;
@@ -24,16 +24,16 @@
     --destructive-foreground: 210 40% 98%;
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 0 84.2% 60.2%;
+    --ring: 14 85% 57%;
     --radius: 0.5rem;
-    --chart-1: 0 84.2% 60.2%;
+    --chart-1: 14 85% 57%;
     --chart-2: 221.2 83.2% 53.3%;
     --chart-3: 16.4 91.6% 57.3%;
     --chart-4: 343.3 88.6% 63.1%;
     --chart-5: 43 74% 66%;
     --status-new: 48 96% 51%; /* amber-500 */
     --status-contacted: 221 83% 53%; /* blue-600 */
-    --status-established: 0 84.2% 60.2%;
+    --status-established: 14 85% 57%;
   }
 
   .dark {
@@ -43,9 +43,9 @@
     --card-foreground: 210 20% 98%;
     --popover: 224 71.4% 4.1%;
     --popover-foreground: 210 20% 98%;
-    --primary: 0 72.2% 50.6%;
+    --primary: 14 80% 50%;
     --primary-foreground: 210 20% 98%;
-    --primary-hsl: 0, 72.2%, 50.6%;
+    --primary-hsl: 14, 80%, 50%;
     --secondary: 215 27.9% 16.9%;
     --secondary-foreground: 210 20% 98%;
     --muted: 215 27.9% 16.9%;
@@ -56,15 +56,15 @@
     --destructive-foreground: 210 40% 98%;
     --border: 215 27.9% 16.9%;
     --input: 215 27.9% 16.9%;
-    --ring: 0 72.2% 50.6%;
-    --chart-1: 0 72.2% 50.6%;
+    --ring: 14 80% 50%;
+    --chart-1: 14 80% 50%;
     --chart-2: 217.2 91.2% 59.8%;
     --chart-3: 22.4 92.6% 59.3%;
     --chart-4: 343.3 80.6% 60.1%;
     --chart-5: 43 65% 60%;
     --status-new: 45 93% 57%; /* amber-500 */
     --status-contacted: 217 91% 60%; /* blue-500 */
-    --status-established: 0 72.2% 50.6%;
+    --status-established: 14 80% 50%;
   }
 }
 
@@ -74,6 +74,13 @@
   }
   body {
     @apply bg-background text-foreground;
+    background-image: radial-gradient(ellipse at 50% -20%, hsl(20 100% 92%), transparent 70%);
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+  }
+
+  .dark body {
+    background-image: radial-gradient(ellipse at 50% -20%, hsl(15 40% 12%), transparent 70%);
   }
 }
 
