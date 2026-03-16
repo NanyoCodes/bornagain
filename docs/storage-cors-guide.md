@@ -55,8 +55,6 @@ This is the most common point of failure. Follow these steps exactly.
 
     *   **Origins:**
         *   `http://localhost:3000`
-        *   `https://studio-6220967431-56fe2.web.app`
-        *   `https://studio-6220967431-56fe2.firebaseapp.com`
         *   `https://studio--studio-6220967431-56fe2.us-central1.hosted.app`
     *   **Methods:**
         *   `GET`
@@ -109,8 +107,6 @@ If you have tried the visual editor and are still having issues, this command-li
 It's very common for a small typo to cause this issue. Please **double-check** that the "Origins" you entered into the Google Cloud Console match these values *exactly*:
 
 *   `http://localhost:3000`
-*   `https://studio-6220967431-56fe2.web.app`
-*   `https://studio-6220967431-56fe2.firebaseapp.com`
 *   `https://studio--studio-6220967431-56fe2.us-central1.hosted.app`
 
 Even a small difference, like a missing `http://` or a trailing slash `/`, can cause the upload to fail.
