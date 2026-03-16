@@ -1,4 +1,3 @@
-
 "use client";
 
 import Image from "next/image";
@@ -47,11 +46,11 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { PageTransition } from "@/components/page-transition";
 
 const navItems = [
-  { href: "/dashboard", label: "Progress", icon: TrendingUp },
-  { href: "/dashboard/souls-won", label: "Souls Won", icon: UserPlus },
-  { href: "/dashboard/testimonies", label: "Testimonies", icon: Newspaper },
-  { href: "/dashboard/campaigns", label: "Campaigns", icon: Target },
-  { href: "/dashboard/chats", label: "Chats", icon: MessagesSquare },
+  { href: "/dashboard", label: "Progress", icon: TrendingUp, color: "text-chart-1" },
+  { href: "/dashboard/souls-won", label: "Souls Won", icon: UserPlus, color: "text-chart-2" },
+  { href: "/dashboard/testimonies", label: "Testimonies", icon: Newspaper, color: "text-chart-3" },
+  { href: "/dashboard/campaigns", label: "Campaigns", icon: Target, color: "text-chart-4" },
+  { href: "/dashboard/chats", label: "Chats", icon: MessagesSquare, color: "text-chart-5" },
 ];
 
 function AppHeader({ unreadChatCount }: { unreadChatCount: number }) {
@@ -172,10 +171,11 @@ function AppHeader({ unreadChatCount }: { unreadChatCount: number }) {
                     href={item.href}
                     prefetch={true}
                     className={cn(
-                    "transition-colors hover:text-foreground whitespace-nowrap relative flex items-center gap-2",
-                    isActive ? "text-foreground font-semibold" : "text-muted-foreground"
+                    "transition-colors hover:text-primary whitespace-nowrap relative flex items-center gap-2",
+                    isActive ? "text-primary font-semibold" : "text-muted-foreground"
                     )}
                 >
+                    <item.icon className={cn("h-4 w-4", !isActive && item.color)} />
                     {item.label}
                     {isChats && unreadChatCount > 0 && (
                       <span className="flex h-5 w-5 items-center justify-center rounded-full bg-destructive text-xs font-bold text-destructive-foreground">
@@ -332,7 +332,7 @@ function BottomNavBar({ unreadChatCount }: { unreadChatCount: number }) {
                         {unreadChatCount}
                     </div>
                 )}
-                <item.icon className="h-5 w-5" />
+                <item.icon className={cn("h-5 w-5", !isActive && item.color)} />
                 <span className="text-center">{item.label}</span>
               </Link>
             )
