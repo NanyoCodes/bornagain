@@ -44,7 +44,7 @@ const prayerPoints = [
     label: 'The Kingdom',
     verse: 'Matthew 6:10',
     text: 'Your kingdom come, your will be done, on earth as it is in heaven.',
-    prayer: "Let's pray for God's will to be established in our lives, our communities, and our nations, just as it is in heaven.",
+    prayer: 'prayer for the kingdom of God to be established on earth',
   },
   {
     label: 'Prophets & Pastors',
