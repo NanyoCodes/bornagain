@@ -1,4 +1,3 @@
-
 'use client';
 
 import Image from 'next/image';
@@ -12,6 +11,18 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
     <div className="w-full lg:grid lg:grid-cols-2 min-h-screen">
       <div className="flex items-center justify-center p-8 sm:p-12">
         <div className="w-full max-w-xs">
+            <div className="grid gap-2 text-left mb-6">
+                {logo && (
+                    <Image
+                        src={logo.imageUrl}
+                        alt={logo.description}
+                        width={80}
+                        height={80}
+                        className="mb-2 rounded-lg"
+                        data-ai-hint={logo.imageHint}
+                    />
+                )}
+            </div>
             {children}
         </div>
       </div>

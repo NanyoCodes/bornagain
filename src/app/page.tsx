@@ -3,7 +3,6 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { AuthLayout } from '@/components/auth/auth-layout';
 import { SignUpForm } from '@/components/auth/signup-form';
 import { Button } from '@/components/ui/button';
@@ -18,12 +17,10 @@ import { useToast } from '@/hooks/use-toast';
 import { doc, setDoc } from 'firebase/firestore';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
-import Image from 'next/image';
 import { useState } from 'react';
 import { Loader2 } from 'lucide-react';
 
 export default function SignUpPage() {
-  const logo = PlaceHolderImages.find((img) => img.id === 'logo');
   const auth = useAuth();
   const firestore = useFirestore();
   const router = useRouter();
@@ -95,16 +92,6 @@ export default function SignUpPage() {
     <AuthLayout>
       <div className="space-y-6">
         <div className="grid gap-2 text-left">
-          {logo && (
-              <Image
-                  src={logo.imageUrl}
-                  alt={logo.description}
-                  width={80}
-                  height={80}
-                  className="mb-2 rounded-lg"
-                  data-ai-hint={logo.imageHint}
-              />
-          )}
           <h1 className="text-2xl md:text-3xl font-bold">Create an account</h1>
           <p className="text-balance text-muted-foreground">
             Enter your details below to create your account.
@@ -145,5 +132,3 @@ export default function SignUpPage() {
     </AuthLayout>
   );
 }
-
-    
