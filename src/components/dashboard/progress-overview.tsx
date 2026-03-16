@@ -202,11 +202,12 @@ export function ProgressOverview({ souls, userProfile, testimonies }: { souls: S
                         <p className="text-xs opacity-70 mt-1 max-w-[150px] leading-snug">Sharing your gratitude unlocks joy and invites God's blessings.</p>
                     </div>
                     <div className="h-16 w-px bg-primary-foreground/30"></div>
-                     <div>
+                     <div className="flex flex-col items-center gap-1">
                         <div className="text-4xl font-bold flex items-center justify-center gap-2">
-                           {loadingDiscipline ? <Skeleton className="h-8 w-10 bg-white/20" /> : disciplineStreak} <Zap className="h-8 w-8" />
+                           {loadingDiscipline ? <div className="animate-pulse rounded-md h-8 w-10 bg-white/20" /> : disciplineStreak} <Zap className="h-8 w-8" />
                         </div>
                         <p className="text-sm opacity-80">Discipline Streak</p>
+                        <p className="text-xs opacity-70 mt-1 max-w-[150px] leading-snug">Consistency in faith builds lasting strength.</p>
                     </div>
                 </div>
             </CardContent>
