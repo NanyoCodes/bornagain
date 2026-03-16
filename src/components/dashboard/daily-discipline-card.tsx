@@ -8,7 +8,7 @@ import { doc, updateDoc, serverTimestamp, writeBatch } from 'firebase/firestore'
 import type { UserProfile } from '@/lib/types';
 import { isToday, format } from 'date-fns';
 import { Skeleton } from '../ui/skeleton';
-import { Heart, BookOpen, Loader2, Church, CheckCircle2 } from 'lucide-react';
+import { Zap, BookOpen, Loader2, Church, CheckCircle2 } from 'lucide-react';
 import { BibleDialog } from './bible-dialog';
 import { PrayerDialog } from './prayer-dialog';
 import { AttendChurchDialog } from './attend-church-dialog';
@@ -20,7 +20,7 @@ import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 
 const disciplines = [
-  { id: 'pray', label: 'Pray', Icon: Heart },
+  { id: 'pray', label: 'Pray', Icon: Zap },
   { id: 'read_bible', label: 'Read Bible', Icon: BookOpen },
   { id: 'attend_church', label: 'Attend Church', Icon: Church },
 ];
