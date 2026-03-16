@@ -30,6 +30,7 @@ import { safeToDate } from '@/lib/utils';
 import { ChatParticipantsDialog } from '@/components/chat/participants-dialog';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
+import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 
 export default function ChatPage() {
@@ -248,6 +249,8 @@ export default function ChatPage() {
 
                     // Email notification
                     if (recipientInfo?.email) {
+                        const logo = PlaceHolderImages.find(img => img.id === 'logo');
+                        const logoUrl = logo ? logo.imageUrl : '';
                         const mailCollectionRef = collection(firestore, 'mail');
                         const mailRef = doc(mailCollectionRef);
                         const subject = chat.campaignTitle
@@ -258,7 +261,7 @@ export default function ChatPage() {
                             <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
                               <div style="max-width: 600px; margin: 20px auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
                                 <div style="text-align: center; margin-bottom: 20px;">
-                                  <img src="https://i.postimg.cc/5HnLbRH6/testify-logoo-(2).jpg" alt="Testify Logo" style="width: 80px; height: 80px; border-radius: 8px;">
+                                  <img src="${logoUrl}" alt="Testify Logo" style="width: 80px; height: 80px; border-radius: 8px;">
                                 </div>
                                 <p>Hi ${recipientInfo?.firstName || 'there'},</p>
                                 <p>You have a new ${replyingTo ? 'reply' : 'message'} from <strong>${user.displayName || 'a user'}</strong> ${chat.campaignTitle ? `in the chat for the campaign "<strong>${chat.campaignTitle}</strong>"` : ''}.</p>

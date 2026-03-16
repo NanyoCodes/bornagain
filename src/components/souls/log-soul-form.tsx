@@ -26,6 +26,7 @@ import { collection, query, orderBy, serverTimestamp, doc, runTransaction, addDo
 import { FirestorePermissionError } from "@/firebase/errors";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { PlaceHolderImages } from "@/lib/placeholder-images";
 
 const formSchema = z.object({
   firstName: z.string().min(2, "First name must be at least 2 characters."),
@@ -171,6 +172,8 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps)
         });
 
         if (values.email) {
+            const logo = PlaceHolderImages.find(img => img.id === 'logo');
+            const logoUrl = logo ? logo.imageUrl : '';
             const mailCollectionRef = collection(firestore, 'mail');
             const appUrl = window.location.origin;
             const inviterName = user.displayName || 'A friend';
@@ -182,7 +185,7 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps)
                         <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
                           <div style="max-width: 600px; margin: 20px auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
                             <div style="text-align: center; margin-bottom: 20px;">
-                              <img src="https://i.postimg.cc/5HnLbRH6/testify-logoo-(2).jpg" alt="Testify Logo" style="width: 80px; height: 80px; border-radius: 8px;">
+                              <img src="${logoUrl}" alt="Testify Logo" style="width: 80px; height: 80px; border-radius: 8px;">
                               <h1 style="font-size: 24px; margin-top: 10px;">You're Invited to Testify</h1>
                             </div>
                             <p>Hi ${values.firstName},</p>
