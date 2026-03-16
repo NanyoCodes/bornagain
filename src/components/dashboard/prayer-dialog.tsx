@@ -44,41 +44,49 @@ const prayerPoints = [
     label: 'The Kingdom',
     verse: 'Matthew 6:10',
     text: 'Your kingdom come, your will be done, on earth as it is in heaven.',
+    prayer: "Let's pray for God's will to be established in our lives, our communities, and our nations, just as it is in heaven.",
   },
   {
     label: 'Prophets & Pastors',
     verse: 'Colossians 4:3',
     text: 'And pray for us, too, that God may open a door for our message, so that we may proclaim the mystery of Christ, for which I am in chains.',
+    prayer: "Let's lift up our spiritual leaders, asking God to grant them wisdom, strength, and a bold voice to proclaim the gospel.",
   },
   {
     label: 'Governments',
     verse: '1 Timothy 2:1-2',
     text: 'I urge, then, first of all, that petitions, prayers, intercession and thanksgiving be made for all people— for kings and all those in authority, that we may live peaceful and quiet lives in all godliness and holiness.',
+    prayer: "Let's pray for our leaders and all those in authority, that they may govern with justice and righteousness, allowing us to live peaceful and godly lives.",
   },
   {
     label: 'Other Believers',
     verse: 'Ephesians 6:18',
     text: 'And pray in the Spirit on all occasions with all kinds of prayers and requests. With this in mind, be alert and always keep on praying for all the Lord’s people.',
+    prayer: "Let's intercede for our brothers and sisters in Christ around the world, praying for their protection, strength, and unity in the Spirit.",
   },
   {
     label: 'The Earth',
     verse: 'Psalm 24:1',
     text: 'The earth is the LORD’s, and everything in it, the world, and all who live in it.',
+    prayer: "Let's pray for the stewardship of the earth, acknowledging it as the Lord's creation and asking for wisdom in its care.",
   },
   {
     label: 'Souls',
     verse: '2 Peter 3:9',
     text: 'The Lord is not slow in keeping his promise, as some understand slowness. Instead he is patient with you, not wanting anyone to perish, but everyone to come to repentance.',
+    prayer: "Let's pray for the salvation of the lost, that God's patient love would draw them to repentance and faith in Jesus Christ.",
   },
   {
     label: 'You',
     verse: 'Mark 11:24',
     text: 'Therefore I tell you, whatever you ask for in prayer, believe that you have received it, and it will be yours.',
+    prayer: "Let's present our personal requests to God, believing with faith that He hears us and will provide according to His will.",
   },
   {
     label: 'Loved Ones',
     verse: 'Philippians 1:3-4',
     text: 'I thank my God in all my remembrance of you, always in every prayer of mine for you all making my prayer with joy.',
+    prayer: "Let's pray for our family and friends, thanking God for them and lifting up their specific needs with joy.",
   },
 ];
 
@@ -187,12 +195,15 @@ export function PrayerDialog({
                   </AccordionPrimitive.Trigger>
                 </AccordionPrimitive.Header>
                 <AccordionContent>
-                  <blockquote className="border-l-2 pl-4 italic text-sm text-muted-foreground pt-4">
-                    {point.text}
-                    <footer className="text-right not-italic mt-2">
-                      - {point.verse}
-                    </footer>
-                  </blockquote>
+                  <div className="pt-4 space-y-2">
+                    <p className="text-sm text-foreground">{point.prayer}</p>
+                    <blockquote className="border-l-2 pl-4 italic text-sm text-muted-foreground">
+                        {point.text}
+                        <footer className="text-right not-italic mt-2">
+                        - {point.verse}
+                        </footer>
+                    </blockquote>
+                  </div>
                 </AccordionContent>
               </AccordionItem>
             ))}
