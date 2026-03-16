@@ -95,6 +95,8 @@ If you have tried the visual editor and are still having issues, this command-li
     ```bash
     gsutil cors set cors.json gs://studio-6220967431-56fe2.appspot.com
     ```
+    **Important Note:** It's a common point of confusion, but the command above is correct. Even if you see other URLs for your bucket, `gsutil` and Firebase Storage Rules use the `[PROJECT-ID].appspot.com` format as the official identifier for your default storage bucket. Please use the command exactly as written.
+
 
 3.  **Wait and Refresh:**
     *   After the command finishes, wait about 1-2 minutes for the settings to apply.
