@@ -3,7 +3,7 @@
 
 import { useState, useMemo, useEffect } from 'react';
 import { useUser, useFirestore } from '@/firebase';
-import type { Soul, UserProfile } from '@/lib/types';
+import type { Soul, UserProfile, Testimony } from '@/lib/types';
 import { collection, query, orderBy, limit } from 'firebase/firestore';
 import { format, isSameMonth } from 'date-fns';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -18,7 +18,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { safeToDate } from '@/lib/utils';
 import { useCollection } from '@/firebase/firestore/use-collection';
 
-export function ProgressOverview({ souls, userProfile }: { souls: Soul[], userProfile: UserProfile }) {
+export function ProgressOverview({ souls, userProfile, testimonies }: { souls: Soul[], userProfile: UserProfile, testimonies: Testimony[] }) {
     const firestore = useFirestore();
     const { user } = useUser();
     const { toast } = useToast();
@@ -44,26 +44,26 @@ export function ProgressOverview({ souls, userProfile }: { souls: Soul[], userPr
       }).length;
     }, [souls, currentDate]);
     
-    // Evangelism Streak
-    const evangelismStreak = useMemo(() => {
-        if (!souls || souls.length === 0) return 0;
-        const wonDates = new Set(
-            souls.map(s => format(safeToDate(s.wonAt)!, 'yyyy-MM-dd'))
+    // Testimony Streak
+    const testimonyStreak = useMemo(() => {
+        if (!testimonies || testimonies.length === 0) return 0;
+        const sharedDates = new Set(
+            testimonies.map(t => format(safeToDate(t.createdAt)!, 'yyyy-MM-dd'))
         );
 
         let streak = 0;
         let checkDate = new Date();
-        if (!wonDates.has(format(checkDate, 'yyyy-MM-dd'))) {
+        if (!sharedDates.has(format(checkDate, 'yyyy-MM-dd'))) {
             checkDate.setDate(checkDate.getDate() - 1);
         }
 
-        while (wonDates.has(format(checkDate, 'yyyy-MM-dd'))) {
+        while (sharedDates.has(format(checkDate, 'yyyy-MM-dd'))) {
             streak++;
             checkDate.setDate(checkDate.getDate() - 1);
         }
 
         return streak;
-  }, [souls]);
+  }, [testimonies]);
 
     // Discipline Streak
     const disciplineHistoryQuery = useMemo(() => {
@@ -74,7 +74,7 @@ export function ProgressOverview({ souls, userProfile }: { souls: Soul[], userPr
             limit(60) // Look back up to 60 days
         );
     }, [user, firestore]);
-    const { data: disciplineHistory, loading: loadingDiscipline } = useCollection<DailyDisciplineLog>(disciplineHistoryQuery);
+    const { data: disciplineHistory, loading: loadingDiscipline } = useCollection<{ date: any, completed: string[] }>(disciplineHistoryQuery);
 
     const disciplineStreak = useMemo(() => {
         if (!disciplineHistory || disciplineHistory.length === 0) return 0;
@@ -194,11 +194,12 @@ export function ProgressOverview({ souls, userProfile }: { souls: Soul[], userPr
                 </div>
                 
                 <div className="flex items-center justify-around text-center">
-                     <div>
+                     <div className="flex flex-col items-center gap-1">
                         <div className="text-4xl font-bold flex items-center justify-center gap-2">
-                           {evangelismStreak} <Flame className="h-8 w-8" />
+                           {testimonyStreak} <Flame className="h-8 w-8" />
                         </div>
-                        <p className="text-sm opacity-80">Evangelism Streak</p>
+                        <p className="text-sm opacity-80 font-medium">Testimony Streak</p>
+                        <p className="text-xs opacity-70 mt-1 max-w-[150px] leading-snug">Thanksgiving opens our hearts to joy and more of God's blessings.</p>
                     </div>
                     <div className="h-16 w-px bg-primary-foreground/30"></div>
                      <div>

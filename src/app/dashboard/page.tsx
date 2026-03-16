@@ -41,7 +41,7 @@ import {
   getCountFromServer,
   getDocs,
 } from 'firebase/firestore';
-import type { Soul, UserProfile } from '@/lib/types';
+import type { Soul, UserProfile, Testimony } from '@/lib/types';
 import { useMemo, useEffect, useState, useCallback } from 'react';
 import { DailyDisciplineCard } from '@/components/dashboard/daily-discipline-card';
 import { Button } from '@/components/ui/button';
@@ -617,6 +617,12 @@ export default function DashboardPage() {
   }, [user?.uid, firestore]);
   const { data: soulsWon, loading: soulsLoading } = useCollection<Soul>(soulsQuery);
 
+  const testimoniesQuery = useMemo(() => {
+    if (!user?.uid || !firestore) return null;
+    return query(collection(firestore, 'testimonies'), where('authorId', '==', user.uid));
+  }, [user?.uid, firestore]);
+  const { data: userTestimonies, loading: testimoniesLoading } = useCollection<Testimony>(testimoniesQuery);
+
   const [isLogSoulOpen, setIsLogSoulOpen] = useState(false);
 
   const [showWelcomeBack, setShowWelcomeBack] = useState(false);
@@ -642,7 +648,7 @@ export default function DashboardPage() {
     setWelcomeMessage(randomScripture);
   }, []);
 
-  const loading = authLoading || profileLoading || soulsLoading;
+  const loading = authLoading || profileLoading || soulsLoading || testimoniesLoading;
 
   useEffect(() => {
     if (loading || !userProfile || !firestore || !user) return;
@@ -883,7 +889,7 @@ export default function DashboardPage() {
 
         <div className="space-y-8">
           
-          <ProgressOverview souls={soulsWon || []} userProfile={userProfile} />
+          <ProgressOverview souls={soulsWon || []} userProfile={userProfile} testimonies={userTestimonies || []} />
           
           <Card>
             <CardHeader>
@@ -991,3 +997,4 @@ export default function DashboardPage() {
     </div>
   );
 }
+
