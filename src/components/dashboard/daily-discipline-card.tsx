@@ -20,9 +20,9 @@ import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 
 const disciplines = [
-  { id: 'pray', label: 'Pray', Icon: Zap },
-  { id: 'read_bible', label: 'Read Bible', Icon: BookOpen },
-  { id: 'attend_church', label: 'Attend Church', Icon: Church },
+  { id: 'pray', label: 'Pray', Icon: Zap, color: 'text-chart-5' },
+  { id: 'read_bible', label: 'Read Bible', Icon: BookOpen, color: 'text-chart-2' },
+  { id: 'attend_church', label: 'Attend Church', Icon: Church, color: 'text-chart-4' },
 ];
 
 export function DailyDisciplineCard() {
@@ -220,7 +220,7 @@ export function DailyDisciplineCard() {
         <CardContent className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {disciplines.map(discipline => {
               const isCompleted = completedToday.includes(discipline.id);
-              const { Icon } = discipline;
+              const { Icon, color } = discipline;
               return (
                 <Button
                     key={discipline.id}
@@ -239,7 +239,7 @@ export function DailyDisciplineCard() {
                         <Loader2 className="h-8 w-8 animate-spin" />
                     ) : (
                         <>
-                            <Icon className={cn("h-8 w-8 text-muted-foreground transition-colors", isCompleted && "text-primary")} />
+                            <Icon className={cn("h-8 w-8 transition-colors", isCompleted ? "text-primary" : color)} />
                             <span className="text-base font-medium">{discipline.label}</span>
                         </>
                     )}
