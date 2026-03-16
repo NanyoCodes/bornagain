@@ -44,7 +44,9 @@
             "city": { "type": "string", "description": "The user's city." },
             "country": { "type": "string", "description": "The user's country." },
             "city_lowercase": { "type": "string", "description": "Lowercase city for searching and aggregation." },
-            "country_lowercase": { "type": "string", "description": "Lowercase country for searching and aggregation." }
+            "country_lowercase": { "type": "string", "description": "Lowercase country for searching and aggregation." },
+            "latitude": { "type": "number", "description": "The user's latitude." },
+            "longitude": { "type": "number", "description": "The user's longitude." }
           }
         },
         "phone": {
@@ -238,6 +240,16 @@
         "campaignTitle": {
           "type": "string",
           "description": "The title of the campaign this testimony is related to, if any."
+        },
+        "authorLocation": {
+          "type": "object",
+          "description": "The location of the testimony author.",
+          "properties": {
+            "city": { "type": "string" },
+            "country": { "type": "string" },
+            "latitude": { "type": "number" },
+            "longitude": { "type": "number" }
+          }
         }
       },
       "required": [

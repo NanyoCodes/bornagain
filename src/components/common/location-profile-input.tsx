@@ -48,6 +48,11 @@ export function LocationProfileInput({ form }: LocationProfileInputProps) {
             form.setValue('city', city, { shouldDirty: true });
             form.setValue('country', country, { shouldDirty: true });
 
+            if (place.geometry?.location) {
+                form.setValue('latitude', place.geometry.location.lat(), { shouldDirty: true });
+                form.setValue('longitude', place.geometry.location.lng(), { shouldDirty: true });
+            }
+
             const displayValue = [city, country].filter(Boolean).join(', ');
             setInputValue(displayValue);
         }
@@ -78,7 +83,7 @@ export function LocationProfileInput({ form }: LocationProfileInputProps) {
     }
 
     return (
-        <Autocomplete onLoad={onLoad} onPlaceChanged={onPlaceChanged} fields={['address_components']} types={['(regions)']}>
+        <Autocomplete onLoad={onLoad} onPlaceChanged={onPlaceChanged} fields={['address_components', 'geometry.location']} types={['(regions)']}>
             <Input
                 placeholder="Search location to autofill city/country"
                 type="text"

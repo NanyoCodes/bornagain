@@ -40,6 +40,8 @@ export type UserProfile = {
     country?: string;
     city_lowercase?: string;
     country_lowercase?: string;
+    latitude?: number;
+    longitude?: number;
   };
   phone?: string;
   dailyDiscipline?: {
@@ -102,6 +104,12 @@ export type Testimony = {
   category: TestimonyCategory;
   campaignId?: string;
   campaignTitle?: string;
+  authorLocation?: {
+    city?: string;
+    country?: string;
+    latitude?: number;
+    longitude?: number;
+  };
 };
 
 export type PrayerRequest = {

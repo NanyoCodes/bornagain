@@ -36,6 +36,8 @@ const formSchema = z.object({
   bio: z.string().max(280, "Bio is too long.").optional(),
   city: z.string().max(50, "City is too long.").optional(),
   country: z.string().max(50, "Country is too long.").optional(),
+  latitude: z.number().optional(),
+  longitude: z.number().optional(),
   phone: z.string().max(50, "Phone number is too long.").optional(),
 });
 
@@ -62,6 +64,8 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
       bio: userProfile.bio || "",
       city: userProfile.location?.city || "",
       country: userProfile.location?.country || "",
+      latitude: userProfile.location?.latitude,
+      longitude: userProfile.location?.longitude,
       phone: userProfile.phone || "",
     },
   });
@@ -96,6 +100,8 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
           country: values.country || "",
           city_lowercase: (values.city || "").toLowerCase(),
           country_lowercase: (values.country || "").toLowerCase(),
+          latitude: values.latitude || null,
+          longitude: values.longitude || null,
         },
         phone: values.phone || "",
         photoURL: finalPhotoUrl,

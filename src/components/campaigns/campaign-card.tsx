@@ -121,7 +121,7 @@ function ParticipantsDialog({ campaign, children }: { campaign: Campaign; childr
   );
 }
 
-export function CampaignCard({ campaign, userId, userProfile, isJoined }: { campaign: Campaign; userId?: string, userProfile?: UserProfile | null, isJoined: boolean }) {
+export function CampaignCard({ campaign, userId, userProfile, isJoined, distance }: { campaign: Campaign; userId?: string, userProfile?: UserProfile | null, isJoined: boolean, distance: number | null }) {
   const { toast } = useToast();
   const firestore = useFirestore();
   const { user } = useUser();
@@ -422,13 +422,14 @@ export function CampaignCard({ campaign, userId, userProfile, isJoined }: { camp
           </DialogDescription>
         </DialogHeader>
         <div className="max-h-[70vh] overflow-y-auto pr-2">
-          <CreateTestimonyForm
+          {userProfile && <CreateTestimonyForm
             onTestimonyCreated={() => {
               setIsTestimonyDialogOpen(false);
               toast({ title: "Testimony Shared!", description: "Thank you for sharing." });
             }}
             campaign={campaign}
-          />
+            userProfile={userProfile}
+          />}
         </div>
       </DialogContent>
     </Dialog>
@@ -484,6 +485,12 @@ export function CampaignCard({ campaign, userId, userProfile, isJoined }: { camp
                   {campaign.title}
                 </CardTitle>
                 <CardDescription className="text-sm mt-1 truncate">{campaign.goal}</CardDescription>
+                {distance !== null && (
+                    <CardDescription className="text-xs text-primary font-semibold mt-1 flex items-center gap-1">
+                        <MapPin className="h-3 w-3" />
+                        {distance.toFixed(1)} km away
+                    </CardDescription>
+                )}
             </div>
             <Badge variant={status === 'Ongoing' ? 'default' : status === 'Upcoming' ? 'secondary' : 'outline'}>
                 {status}
