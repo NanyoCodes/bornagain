@@ -26,7 +26,7 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
             {children}
         </div>
       </div>
-      <div className="hidden lg:flex flex-col items-start justify-center p-12 md:p-24 text-white relative overflow-hidden bg-gradient-to-br from-yellow-400 via-primary to-destructive">
+      <div className="hidden lg:flex flex-col items-start justify-center p-12 md:p-24 text-white relative overflow-hidden bg-gradient-to-br from-primary via-destructive to-black">
         <Link href="/" className="flex items-center gap-4 mb-8 z-10">
             {logo && (
                 <Image
