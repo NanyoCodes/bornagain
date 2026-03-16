@@ -23,9 +23,9 @@ import {
   RefreshCw,
   XCircle,
   Edit,
-  UserCheck2,
   Flame,
   Heart,
+  TrendingUp,
 } from 'lucide-react';
 import { useCollection, useFirestore, useUser, useDoc } from '@/firebase';
 import {
@@ -80,6 +80,7 @@ import { WelcomeBackDialog } from '@/components/dashboard/welcome-back-dialog';
 import { safeToDate } from '@/lib/utils';
 import { actionItems, statusOptions } from '@/lib/follow-up-data';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { LogSoulForm } from '@/components/souls/log-soul-form';
 
 function RecentSoulsList() {
   const { user } = useUser();
@@ -620,6 +621,7 @@ export default function DashboardPage() {
   const [goalDialogOpen, setGoalDialogOpen] = useState(false);
   const [newGoal, setNewGoal] = useState(10);
   const [newGoalDate, setNewGoalDate] = useState<Date | null>(null);
+  const [isLogSoulOpen, setIsLogSoulOpen] = useState(false);
 
   const [showWelcomeBack, setShowWelcomeBack] = useState(false);
   const [
@@ -944,6 +946,46 @@ export default function DashboardPage() {
         </div>
 
         <div className="space-y-8">
+          <Card className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground">
+            <CardHeader>
+                <CardTitle>Your Impact</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+                <div className="flex items-center justify-around text-center">
+                    <div>
+                        <p className="text-4xl font-bold">{soulsWonCount}</p>
+                        <p className="text-sm opacity-80">Soul{soulsWonCount === 1 ? '' : 's'} Won</p>
+                    </div>
+                    <div className="h-16 w-px bg-primary-foreground/30"></div>
+                     <div>
+                        <p className="text-4xl font-bold flex items-center justify-center gap-2">
+                           {evangelismStreak} <Flame className="h-8 w-8" />
+                        </p>
+                        <p className="text-sm opacity-80">Day Streak</p>
+                    </div>
+                </div>
+                <Dialog open={isLogSoulOpen} onOpenChange={setIsLogSoulOpen}>
+                  <DialogTrigger asChild>
+                    <Button variant="secondary" className="w-full">
+                      <UserPlus className="mr-2 h-4 w-4" />
+                      Log a Soul
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-lg">
+                    <DialogHeader>
+                      <DialogTitle>Log a New Soul</DialogTitle>
+                      <DialogDescription>
+                        Record the details of the person you've ministered to.
+                      </DialogDescription>
+                    </DialogHeader>
+                     <div className="max-h-[70vh] overflow-y-auto pr-2">
+                        <LogSoulForm onSoulLogged={() => setIsLogSoulOpen(false)} />
+                     </div>
+                  </DialogContent>
+                </Dialog>
+            </CardContent>
+          </Card>
+          
           <Card>
             <CardHeader>
               <div className="flex items-center justify-between">
@@ -1037,15 +1079,6 @@ export default function DashboardPage() {
                 </div>
               )}
             </CardContent>
-            <CardFooter className="pt-4 flex items-center gap-2 text-sm text-muted-foreground">
-              <UserCheck2 className="h-4 w-4" />
-              <span>
-                Total souls won:{' '}
-                <span className="font-bold text-foreground">
-                  {soulsWonCount}
-                </span>
-              </span>
-            </CardFooter>
           </Card>
 
           <Card>
@@ -1091,19 +1124,6 @@ export default function DashboardPage() {
           </Card>
           
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium">Evangelism Streak</CardTitle>
-                <Flame className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-                <div className="text-2xl font-bold">{evangelismStreak} {evangelismStreak === 1 ? 'day' : 'days'}</div>
-                <p className="text-xs text-muted-foreground">
-                    Consecutive days with souls won.
-                </p>
-            </CardContent>
-          </Card>
-          
-          <Card>
             <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                     <Heart className="h-4 w-4" />
@@ -1139,7 +1159,7 @@ export default function DashboardPage() {
             />
           )}
 
-          <Card className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground">
+          <Card className="bg-gradient-to-br from-purple-600 to-blue-500 text-primary-foreground">
             <CardHeader>
               <CardTitle>Share Your Story</CardTitle>
               <CardDescription className="text-primary-foreground/80">
