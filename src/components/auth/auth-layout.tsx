@@ -6,6 +6,7 @@ import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 export function AuthLayout({ children }: { children: React.ReactNode }) {
   const logo = PlaceHolderImages.find((img) => img.id === 'logo');
+  const authBackground = PlaceHolderImages.find((img) => img.id === 'auth-background');
 
   return (
     <div className="w-full lg:grid lg:grid-cols-2 min-h-screen">
@@ -26,7 +27,20 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
             {children}
         </div>
       </div>
-      <div className="hidden lg:flex flex-col items-start justify-center p-12 md:p-24 text-white relative overflow-hidden bg-gradient-to-br from-primary via-destructive to-black">
+      <div className="hidden lg:flex flex-col items-start justify-center p-12 md:p-24 text-white relative overflow-hidden">
+        {authBackground && (
+            <Image
+            src={authBackground.imageUrl}
+            alt={authBackground.description}
+            fill
+            objectFit="cover"
+            className="-z-10"
+            data-ai-hint={authBackground.imageHint}
+            priority
+            />
+        )}
+        <div className="absolute inset-0 bg-black/60 -z-10" />
+
         <Link href="/" className="flex items-center gap-4 mb-8 z-10">
             {logo && (
                 <Image
@@ -52,10 +66,6 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
             <p className="text-xl font-semibold leading-relaxed">"And they overcame him by the blood of the Lamb, and by the word of their testimony; and they loved not their lives unto the death."</p>
             <p className="text-right text-zinc-400">- Revelation 12:11</p>
         </div>
-        
-        {/* Decorative elements */}
-        <div className="absolute top-0 right-0 h-[20rem] w-[20rem] bg-gradient-to-l from-primary/20 to-transparent rounded-full -translate-y-1/2 translate-x-1/2" />
-         <div className="absolute bottom-0 left-0 h-[20rem] w-[20rem] bg-gradient-to-r from-primary/20 to-transparent rounded-full translate-y-1/2 -translate-x-1/2" />
       </div>
     </div>
   );
