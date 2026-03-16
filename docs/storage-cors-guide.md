@@ -85,18 +85,21 @@ If you have tried the visual editor and are still having issues, this command-li
 
     ![Activate Cloud Shell](https://cloud.google.com/shell/docs/images/cloud-shell-icon.png)
 
-2.  **Run the CORS Command:**
-    *   Wait for the Cloud Shell to finish provisioning.
-    *   Your project already contains the correct configuration in a file named `cors.json`.
-    *   Copy and paste the following single command into the Cloud Shell terminal and press Enter. This command tells Google Cloud to apply the settings from your `cors.json` file to your storage bucket.
+2.  **Navigate to Your Project Directory (Crucial Step):**
+    *   The "No such file or directory" error means the `gsutil` command cannot find `cors.json`. This is because the terminal starts in a different folder from your project code.
+    *   Your project files are located in the editor. To run the command, you need to use the terminal panel within your development environment, not a separate Cloud Shell window.
+
+3.  **Run the CORS Command in the Correct Terminal:**
+    *   Inside your development environment, open a terminal panel (you may see a "+" icon or a "Terminal" menu).
+    *   This terminal should already be in your project's root directory (where `cors.json` is).
+    *   Copy and paste the following single command into this terminal and press Enter.
 
     ```bash
     gsutil cors set cors.json gs://studio-6220967431-56fe2.appspot.com
     ```
     **Important Note:** It's a common point of confusion, but the command above is correct. Even if you see other URLs for your bucket, `gsutil` and Firebase Storage Rules use the `[PROJECT-ID].appspot.com` format as the official identifier for your default storage bucket. Please use the command exactly as written.
 
-
-3.  **Wait and Refresh:**
+4.  **Wait and Refresh:**
     *   After the command finishes, wait about 1-2 minutes for the settings to apply.
     *   Refresh your application and try uploading a photo again. The upload should now succeed.
 
