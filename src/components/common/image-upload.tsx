@@ -86,13 +86,13 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath }: 
         
         switch (error.code) {
           case 'storage/unauthorized':
-            description = `Permission Denied: Your security rules or CORS policy are blocking the upload. Please review the setup guide.`;
+            description = `Permission Denied. This is very likely a CORS configuration issue on your Google Cloud project.`;
             break;
           case 'storage/canceled':
             description = "The upload was canceled.";
             break;
           case 'storage/unknown':
-             description = "An unknown error occurred. This is often related to a misconfigured CORS policy or a network issue. Please check the browser's developer console for more details.";
+             description = "An unknown network error occurred. This is most often caused by an incorrect CORS policy on your Google Cloud project.";
             break;
            case 'storage/object-not-found':
             description = "The file could not be found. This should not happen during an upload. Please try again.";
@@ -109,7 +109,7 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath }: 
         toast({
           variant: 'destructive',
           title: 'Upload Failed',
-          description: description,
+          description: "See the error message in the upload component for details and a solution.",
           duration: 9000, // Show the error for longer
         });
       },
@@ -161,18 +161,19 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath }: 
             {uploadError && (
                 <Alert variant="destructive">
                     <AlertTriangle className="h-4 w-4" />
-                    <AlertTitle>Upload Error</AlertTitle>
-                    <AlertDescription>
-                        {uploadError}{' '}
-                        Please{' '}
-                        <Link href="/docs/storage-cors-guide.md" target="_blank" className="font-semibold underline">
-                            review the setup guide
-                        </Link>
-                        {' '}to resolve this issue.
+                    <AlertTitle>Upload Failed: Project Configuration Needed</AlertTitle>
+                    <AlertDescription className="space-y-2">
+                        <strong>This is a configuration issue, not a code problem.</strong>
+                        <p>{uploadError}</p>
+                        <Button asChild variant="link" className="p-0 h-auto font-semibold text-destructive">
+                            <Link href="/docs/storage-cors-guide.md" target="_blank">
+                                Click here for the step-by-step guide to fix this.
+                            </Link>
+                        </Button>
                     </AlertDescription>
                 </Alert>
             )}
-            <Button type="button" variant="outline" onClick={handleFileSelect}>
+            <Button type="button" variant="outline" onClick={handleFileSelect} disabled={!!uploadError}>
                 <Camera className="mr-2 h-4 w-4"/>
                 {previewUrl ? 'Change Photo' : 'Upload Photo'}
             </Button>
