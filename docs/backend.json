@@ -176,6 +176,10 @@
                 "required": ["churchName", "attendedAt"]
             }
         },
+        "monthlySoulsGoal": {
+          "type": "number",
+          "description": "The user's personal goal for souls won for the current month."
+        },
         "lastActive": {
           "type": "object",
           "description": "Timestamp of the user's last activity."

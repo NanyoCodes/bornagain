@@ -77,6 +77,7 @@ export type UserProfile = {
     reason?: string;
   }[];
   favoritePassages?: string[];
+  monthlySoulsGoal?: number;
   lastActive?: Timestamp;
 };
 

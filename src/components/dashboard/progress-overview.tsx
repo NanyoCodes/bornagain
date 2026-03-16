@@ -4,7 +4,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useUser, useFirestore } from '@/firebase';
 import type { Soul, UserProfile, Testimony } from '@/lib/types';
-import { collection, query, orderBy, limit } from 'firebase/firestore';
+import { collection, query, orderBy, limit, doc, updateDoc } from 'firebase/firestore';
 import { format, isSameMonth } from 'date-fns';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -12,11 +12,13 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
-import { Flame, Edit, Zap } from 'lucide-react';
+import { Flame, Edit, Zap, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
 import { safeToDate } from '@/lib/utils';
 import { useCollection } from '@/firebase/firestore/use-collection';
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError } from '@/firebase/errors';
 
 export function ProgressOverview({ souls, userProfile, testimonies }: { souls: Soul[], userProfile: UserProfile, testimonies: Testimony[] }) {
     const firestore = useFirestore();
@@ -24,15 +26,22 @@ export function ProgressOverview({ souls, userProfile, testimonies }: { souls: S
     const { toast } = useToast();
 
     // Goal State
-    const [monthlyGoal, setMonthlyGoal] = useState(10);
+    const [monthlyGoal, setMonthlyGoal] = useState(userProfile.monthlySoulsGoal ?? 10);
     const [goalDialogOpen, setGoalDialogOpen] = useState(false);
-    const [newGoal, setNewGoal] = useState(10);
+    const [newGoal, setNewGoal] = useState(userProfile.monthlySoulsGoal ?? 10);
+    const [isSavingGoal, setIsSavingGoal] = useState(false);
     const [currentDate, setCurrentDate] = useState(new Date());
 
     useEffect(() => {
       // Set date on client to avoid hydration mismatch.
       setCurrentDate(new Date());
     }, []);
+
+    // Sync state when prop changes
+    useEffect(() => {
+        setMonthlyGoal(userProfile.monthlySoulsGoal ?? 10);
+        setNewGoal(userProfile.monthlySoulsGoal ?? 10);
+    }, [userProfile.monthlySoulsGoal]);
     
     // Souls Won this month for the goal
     const soulsThisMonth = useMemo(() => {
@@ -105,9 +114,23 @@ export function ProgressOverview({ souls, userProfile, testimonies }: { souls: S
 
 
     // Goal Dialog Logic
-    const handleSaveGoal = () => {
-        if (newGoal > 0) {
-            setMonthlyGoal(newGoal);
+    const handleSaveGoal = async () => {
+        if (newGoal <= 0) {
+            toast({
+                variant: 'destructive',
+                title: 'Invalid Goal',
+                description: 'Please enter a number greater than 0.',
+            });
+            return;
+        }
+        if (!user || !firestore) return;
+
+        setIsSavingGoal(true);
+        const userRef = doc(firestore, 'users', user.uid);
+        const payload = { monthlySoulsGoal: newGoal };
+    
+        updateDoc(userRef, payload)
+          .then(() => {
             setGoalDialogOpen(false);
             toast({
                 title: 'Monthly Goal Updated',
@@ -116,21 +139,32 @@ export function ProgressOverview({ souls, userProfile, testimonies }: { souls: S
                 'MMMM yyyy'
                 )} is ${newGoal} souls.`,
             });
-        } else {
-            toast({
-                variant: 'destructive',
-                title: 'Invalid Goal',
-                description: 'Please enter a number greater than 0.',
+          })
+          .catch(() => {
+            const permissionError = new FirestorePermissionError({
+                path: userRef.path,
+                operation: 'update',
+                requestResourceData: payload,
             });
-        }
-    };
+            errorEmitter.emit('permission-error', permissionError);
+          })
+          .finally(() => {
+            setIsSavingGoal(false);
+          });
+      };
 
 
     return (
         <Card className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground">
             <CardHeader>
                 <div className="flex items-center justify-between">
-                    <CardTitle>Your Progress</CardTitle>
+                    <div className="flex items-center gap-2">
+                        <CardTitle>Your Progress</CardTitle>
+                        <div className="relative flex h-3 w-3">
+                            <div className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></div>
+                            <div className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></div>
+                        </div>
+                    </div>
                     <Dialog
                     open={goalDialogOpen}
                     onOpenChange={(isOpen) => {
@@ -163,11 +197,15 @@ export function ProgressOverview({ souls, userProfile, testimonies }: { souls: S
                               value={newGoal}
                               onChange={(e) => setNewGoal(Number(e.target.value))}
                               className="col-span-3"
+                              disabled={isSavingGoal}
                             />
                           </div>
                         </div>
                         <DialogFooter>
-                            <Button onClick={handleSaveGoal}>Save Goal</Button>
+                            <Button onClick={handleSaveGoal} disabled={isSavingGoal}>
+                                {isSavingGoal && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                Save Goal
+                            </Button>
                         </DialogFooter>
                     </DialogContent>
                     </Dialog>
