@@ -3,8 +3,10 @@ import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { ThemeProvider } from '@/components/theme-provider';
 import { FirebaseClientProvider } from '@/firebase/client-provider';
+import { PlaceHolderImages } from '@/lib/placeholder-images';
 
-const testifyLogoUrl = 'https://i.postimg.cc/5HnLbRH6/testify-logoo-(2).jpg';
+const logo = PlaceHolderImages.find((img) => img.id === 'logo');
+const testifyLogoUrl = logo?.imageUrl || '';
 
 export const metadata: Metadata = {
   title: 'Testify',
