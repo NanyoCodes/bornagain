@@ -48,7 +48,7 @@ export function JoinCampaignDialog({
         toast({
             variant: "destructive",
             title: "Cannot Join Campaign",
-            description: "User information is not available. Please wait and try again.",
+            description: "Authentication not ready. Please wait a moment and try again.",
         });
         return;
     }
@@ -119,15 +119,18 @@ export function JoinCampaignDialog({
           description: `Could not join campaign as it was updated during the process. It might be full. Please try again.`,
         });
       } else {
-        const permissionError = new FirestorePermissionError({
-            path: `TRANSACTION:JOIN_CAMPAIGN:${campaign.id}`,
-            operation: 'write',
-            requestResourceData: {
-                action: 'User joining campaign',
-                userId: user.uid,
-                campaignId: campaign.id
-            }
-        });
+        const permissionError = new FirestorePermissionError(
+            {
+                path: `TRANSACTION:JOIN_CAMPAIGN:${campaign.id}`,
+                operation: 'write',
+                requestResourceData: {
+                    action: 'User joining campaign',
+                    userId: user.uid,
+                    campaignId: campaign.id
+                }
+            },
+            user
+        );
         errorEmitter.emit('permission-error', permissionError);
       }
     } finally {
