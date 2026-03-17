@@ -106,31 +106,34 @@ service cloud.firestore {
       allow get, list: if true;
       allow create: if request.auth != null;
 
-      // Rule for a user joining a campaign
-      allow update: if request.auth != null
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participants'])
-        && request.resource.data.participants == (resource.data.participants || 0) + 1
-        && existsAfter(/databases/$(database)/documents/campaigns/$(campaignId)/participants/$(request.auth.uid))
-        && !exists(/databases/$(database)/documents/campaigns/$(campaignId)/participants/$(request.auth.uid))
-        && existsAfter(/databases/$(database)/documents/users/$(request.auth.uid)/joinedCampaigns/$(campaignId))
-        && !exists(/databases/$(database)/documents/users/$(request.auth.uid)/joinedCampaigns/$(campaignId));
-
-      // Rule for organizer updating details or removing participants
-      allow update: if request.auth != null && request.auth.uid == resource.data.organizerId && (
-        ( // Editing details
+      allow update: if request.auth != null && (
+        // Case 1: A user is joining a campaign.
+        (
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participants']) &&
+          request.resource.data.participants == (resource.data.participants || 0) + 1 &&
+          existsAfter(/databases/$(database)/documents/campaigns/$(campaignId)/participants/$(request.auth.uid)) &&
+          !exists(/databases/$(database)/documents/campaigns/$(campaignId)/participants/$(request.auth.uid)) &&
+          existsAfter(/databases/$(database)/documents/users/$(request.auth.uid)/joinedCampaigns/$(campaignId)) &&
+          !exists(/databases/$(database)/documents/users/$(request.auth.uid)/joinedCampaigns/$(campaignId))
+        ) ||
+        // Case 2: The organizer is updating campaign details (anything except participant/soul counts).
+        (
+          request.auth.uid == resource.data.organizerId &&
           !request.resource.data.diff(resource.data).affectedKeys().hasAny(['participants', 'soulsLogged'])
         ) ||
-        ( // Removing a participant
+        // Case 3: The organizer is removing a participant.
+        (
+          request.auth.uid == resource.data.organizerId &&
           request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participants']) &&
           request.resource.data.participants == (resource.data.participants || 0) - 1
+        ) ||
+        // Case 4: Any authenticated user is logging a soul for the campaign.
+        (
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['soulsLogged']) &&
+          request.resource.data.soulsLogged == (resource.data.soulsLogged || 0) + 1
         )
       );
 
-      // Rule for logging a soul
-      allow update: if request.auth != null
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['soulsLogged'])
-        && request.resource.data.soulsLogged == (resource.data.soulsLogged || 0) + 1;
-        
       allow delete: if false; // Hard deletes are disallowed.
 
       // Rules for the participants subcollection.
