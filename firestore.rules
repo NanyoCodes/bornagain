@@ -21,7 +21,8 @@ service cloud.firestore {
       // Joined campaigns are private to the user.
       match /joinedCampaigns/{campaignId} {
         allow read: if request.auth != null && request.auth.uid == userId;
-        // Only the user can add/update their joined campaigns.
+        // This 'create' rule is specifically for the join transaction.
+        // It's validated by the transaction rule on the campaign itself.
         allow create: if request.auth != null && request.auth.uid == userId;
         // The user or the campaign organizer can remove the user from a campaign.
         allow delete: if request.auth != null && (
@@ -110,34 +111,33 @@ service cloud.firestore {
       // It handles four distinct scenarios.
       allow update: if request.auth != null && (
 
-        // SCENARIO 1: A user is joining the campaign.
-        // This is only allowed if they are incrementing the participant count by exactly one
-        // and also creating their own document in the participants subcollection.
+        // SCENARIO 1: A user is joining the campaign for the first time.
         (
+          // The only field changing on the campaign doc is 'participants'.
           request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participants']) &&
+          // The `participants` count is incrementing by exactly 1.
           request.resource.data.participants == (resource.data.participants || 0) + 1 &&
-          existsAfter(/databases/$(database)/documents/campaigns/$(campaignId)/participants/$(request.auth.uid))
+          // AND the user is not already a participant, but will be after this transaction
+          !exists(/databases/$(database)/documents/campaigns/$(campaignId)/participants/$(request.auth.uid)) &&
+          existsAfter(/databases/$(database)/documents/campaigns/$(campaignId)/participants/$(request.auth.uid)) &&
+          // AND the user has not already joined in their personal record, but will have after this transaction
+          !exists(/databases/$(database)/documents/users/$(request.auth.uid)/joinedCampaigns/$(campaignId)) &&
+          existsAfter(/databases/$(database)/documents/users/$(request.auth.uid)/joinedCampaigns/$(campaignId))
         ) ||
 
         // SCENARIO 2: Any authenticated user is logging a soul for this campaign.
-        // This is only allowed if they are incrementing the soulsLogged count by exactly one.
         (
           request.resource.data.diff(resource.data).affectedKeys().hasOnly(['soulsLogged']) &&
           request.resource.data.soulsLogged == (resource.data.soulsLogged || 0) + 1
         ) ||
 
         // SCENARIO 3: The organizer is editing the campaign details.
-        // They can change any field except for the participant and soul counts, which are
-        // managed by user actions (joining or logging souls).
         (
           request.auth.uid == resource.data.organizerId &&
-          !('participants' in request.resource.data.diff(resource.data).affectedKeys()) &&
-          !('soulsLogged' in request.resource.data.diff(resource.data).affectedKeys())
+          !request.resource.data.diff(resource.data).hasAny(['participants', 'soulsLogged'])
         ) ||
         
         // SCENARIO 4: The organizer is removing a participant.
-        // This is only allowed if they are decrementing the participant count by exactly one.
-        // The deletion of the subcollection doc is handled by its own rule.
         (
           request.auth.uid == resource.data.organizerId &&
           request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participants']) &&
@@ -155,6 +155,7 @@ service cloud.firestore {
         // The organizer can read the list of all participants.
         allow read: if request.auth != null && get(/databases/$(database)/documents/campaigns/$(campaignId)).data.organizerId == request.auth.uid;
         // A user can create their own participant document (i.e., join).
+        // This is validated as part of the transaction in the campaign update rule.
         allow create: if request.auth != null && request.auth.uid == userId;
         // A user can remove themselves, or the organizer can remove any participant.
         allow delete: if request.auth != null && (

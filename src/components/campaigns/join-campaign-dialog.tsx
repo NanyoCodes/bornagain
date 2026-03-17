@@ -65,6 +65,11 @@ export function JoinCampaignDialog({
           throw new Error('Campaign does not exist!');
         }
 
+        const joinedDoc = await transaction.get(joinedRef);
+        if (joinedDoc.exists()) {
+          throw new Error('You have already joined this campaign.');
+        }
+
         const currentCampaign = campaignDoc.data() as Campaign;
         if (currentCampaign.maxParticipants && currentCampaign.participants >= currentCampaign.maxParticipants) {
           throw new Error('This campaign is already full.');
@@ -118,7 +123,14 @@ export function JoinCampaignDialog({
           title: 'Join Failed',
           description: `Could not join campaign as it was updated during the process. It might be full. Please try again.`,
         });
-      } else {
+      } else if (error.message === 'You have already joined this campaign.' || error.message === 'This campaign is already full.') {
+        toast({
+          variant: 'destructive',
+          title: 'Could Not Join',
+          description: error.message,
+        });
+      }
+      else {
         const permissionError = new FirestorePermissionError(
             {
                 path: `TRANSACTION:JOIN_CAMPAIGN:${campaign.id}`,
