@@ -84,6 +84,11 @@
   .dark body {
     background-image: radial-gradient(ellipse at 50% -20%, hsl(25 40% 10%), transparent 70%);
   }
+  
+  /* Fix for Google Maps Autocomplete suggestions in modals */
+  .pac-container {
+    @apply z-[9999];
+  }
 }
 
 @layer utilities {
