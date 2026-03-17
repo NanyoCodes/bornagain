@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -15,7 +16,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { useState } from "react";
+import React, { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { useUser, useFirestore, useAuth } from "@/firebase";
 import { doc, updateDoc } from "firebase/firestore";
@@ -27,6 +28,13 @@ import { LocationProfileInput } from "../common/location-profile-input";
 import { Label } from "../ui/label";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../ui/accordion";
 import { ImageUpload } from "../common/image-upload";
+import { useJsApiLoader, GoogleMap, MarkerF } from '@react-google-maps/api';
+import { Skeleton } from "../ui/skeleton";
+
+const libraries: ('places')[] = ['places'];
+const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+
+const fallbackCenter = { lat: 34.0522, lng: -118.2437 };
 
 const formSchema = z.object({
   firstName: z.string().min(2, "First name must be at least 2 characters.").max(50, "Name is too long."),
@@ -55,6 +63,11 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
   
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const { isLoaded, loadError } = useJsApiLoader({
+    googleMapsApiKey: GOOGLE_MAPS_API_KEY || '',
+    libraries,
+  });
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -70,6 +83,34 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
       phone: userProfile.phone || "",
     },
   });
+
+  const watchedLat = form.watch('latitude');
+  const watchedLng = form.watch('longitude');
+
+  const markerPosition = React.useMemo(() => {
+    if (watchedLat && watchedLng) {
+      return { lat: watchedLat, lng: watchedLng };
+    }
+    return null;
+  }, [watchedLat, watchedLng]);
+
+  const handleMapClick = (e: google.maps.MapMouseEvent) => {
+    if (e.latLng) {
+      const lat = e.latLng.lat();
+      const lng = e.latLng.lng();
+      form.setValue('latitude', lat, { shouldDirty: true });
+      form.setValue('longitude', lng, { shouldDirty: true });
+    }
+  };
+
+  const handleMarkerDragEnd = (e: google.maps.MapMouseEvent) => {
+    if (e.latLng) {
+      const lat = e.latLng.lat();
+      const lng = e.latLng.lng();
+      form.setValue('latitude', lat, { shouldDirty: true });
+      form.setValue('longitude', lng, { shouldDirty: true });
+    }
+  };
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (!user || !firestore || !auth.currentUser) {
@@ -196,54 +237,84 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
               </FormItem>
             )}
           />
-          <div className="space-y-2">
-              <Label>Location Search</Label>
-              <LocationProfileInput form={form} />
-              <p className="text-sm text-muted-foreground">
-                Search for a location to set your address. Your city and state will be public, but your precise location will remain private and is only used to notify you of campaigns nearby.
-              </p>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <FormField
-              control={form.control}
-              name="city"
-              render={({ field }) => (
-                  <FormItem>
-                  <FormLabel>City</FormLabel>
-                  <FormControl>
-                      <Input placeholder="e.g., Nairobi" {...field} value={field.value ?? ""} className="text-base" />
-                  </FormControl>
-                  <FormMessage />
-                  </FormItem>
-              )}
-              />
-              <FormField
-                control={form.control}
-                name="state"
-                render={({ field }) => (
+         
+          <Accordion type="single" collapsible defaultValue="item-1" className="w-full border rounded-md">
+            <AccordionItem value="item-1" className="border-none">
+              <AccordionTrigger className="p-3 hover:no-underline [&[data-state=open]>svg]:rotate-180">
+                <div className="flex flex-col items-start text-left">
+                  <Label>Location Settings</Label>
+                  <p className="text-sm text-muted-foreground font-normal">
+                    Set your public city/state and private location pin.
+                  </p>
+                </div>
+              </AccordionTrigger>
+              <AccordionContent className="p-4 pt-0 space-y-4">
+                <div>
+                  <Label>Location Search</Label>
+                  <LocationProfileInput form={form} />
+                   <p className="text-xs text-muted-foreground mt-2">Search to autofill your public location (city, state, country) and set an initial private pin.</p>
+                </div>
+
+                <div>
+                    <Label>Private Location Pin</Label>
+                    {loadError ? (
+                        <p className="text-sm text-destructive">Map failed to load. Please check your API key.</p>
+                    ) : !isLoaded ? (
+                        <Skeleton className="h-60 w-full mt-2" />
+                    ) : (
+                        <div className="h-60 w-full rounded-md overflow-hidden mt-2">
+                            <GoogleMap
+                                mapContainerClassName="h-full w-full"
+                                center={markerPosition || fallbackCenter}
+                                zoom={markerPosition ? 12 : 4}
+                                onClick={handleMapClick}
+                                options={{ streetViewControl: false, mapTypeControl: false }}
+                            >
+                                {markerPosition && (
+                                <MarkerF
+                                    position={markerPosition}
+                                    draggable={true}
+                                    onDragEnd={handleMarkerDragEnd}
+                                />
+                                )}
+                            </GoogleMap>
+                        </div>
+                    )}
+                    <p className="text-xs text-muted-foreground mt-2">
+                        Click or drag the pin on the map to set your precise private location. This is used for nearby features and is not public.
+                    </p>
+                </div>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <FormField control={form.control} name="city" render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>City (Public)</FormLabel>
+                        <FormControl><Input placeholder="e.g., Nairobi" {...field} value={field.value ?? ""} /></FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField control={form.control} name="state" render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>State/Province (Public)</FormLabel>
+                        <FormControl><Input placeholder="e.g., California" {...field} value={field.value ?? ""} /></FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <FormField control={form.control} name="country" render={({ field }) => (
                     <FormItem>
-                    <FormLabel>State / Province</FormLabel>
-                    <FormControl>
-                        <Input placeholder="e.g., California" {...field} value={field.value ?? ""} />
-                    </FormControl>
-                    <FormMessage />
+                      <FormLabel>Country (Public)</FormLabel>
+                      <FormControl><Input placeholder="e.g., Kenya" {...field} value={field.value ?? ""} /></FormControl>
+                      <FormMessage />
                     </FormItem>
-                )}
+                  )}
                 />
-          </div>
-          <FormField
-              control={form.control}
-              name="country"
-              render={({ field }) => (
-                  <FormItem>
-                  <FormLabel>Country</FormLabel>
-                  <FormControl>
-                      <Input placeholder="e.g., Kenya" {...field} value={field.value ?? ""} className="text-base" />
-                  </FormControl>
-                  <FormMessage />
-                  </FormItem>
-              )}
-          />
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+
           <FormField
             control={form.control}
             name="phone"
