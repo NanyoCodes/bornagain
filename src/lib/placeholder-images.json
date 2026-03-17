@@ -8,9 +8,9 @@
     },
     {
       "id": "auth-background",
-      "description": "A group of people in a church service",
-      "imageUrl": "https://images.unsplash.com/photo-1529070538774-1843cb3265df?q=80&w=2070&auto=format&fit=crop",
-      "imageHint": "church community"
+      "description": "A group of people worshiping in a church",
+      "imageUrl": "https://images.unsplash.com/photo-1516834122197-8541c44026c4?q=80&w=2070&auto=format&fit=crop",
+      "imageHint": "people worship"
     },
     {
       "id": "user-1",
