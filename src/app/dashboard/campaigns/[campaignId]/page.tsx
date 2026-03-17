@@ -17,12 +17,15 @@ import { ManageCampaignForm } from '@/components/campaigns/manage-campaign-form'
 import { LogSoulForm } from "@/components/souls/log-soul-form";
 import { CreateTestimonyForm } from "@/components/testimonies/create-testimony-form";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { useJsApiLoader, GoogleMap, MarkerF, CircleF } from '@react-google-maps/api';
 import { Skeleton } from '@/components/ui/skeleton';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { safeToDate } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { useIsMobile } from '@/hooks/use-mobile';
+
 
 const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 const libraries: ('places')[] = ['places'];
@@ -206,6 +209,12 @@ export default function CampaignPage() {
     const firestore = useFirestore();
     const { user } = useUser();
     const { toast } = useToast();
+
+    const isMobile = useIsMobile();
+    const [mounted, setMounted] = useState(false);
+    useEffect(() => {
+      setMounted(true);
+    }, []);
 
     const [isManageOpen, setIsManageOpen] = useState(false);
     const [isLogSoulOpen, setIsLogSoulOpen] = useState(false);
@@ -482,16 +491,32 @@ export default function CampaignPage() {
                     <CreateTestimonyForm onTestimonyCreated={() => setIsTestimonyDialogOpen(false)} campaign={campaign} />
                 </DialogContent>
             </Dialog>
-            <Dialog open={isManageOpen} onOpenChange={setIsManageOpen}>
+            
+            {mounted && isMobile ? (
+              <Sheet open={isManageOpen} onOpenChange={setIsManageOpen}>
+                <SheetContent side="bottom">
+                  <SheetHeader>
+                    <SheetTitle>Manage Campaign</SheetTitle>
+                    <SheetDescription>Update the details of your campaign.</SheetDescription>
+                  </SheetHeader>
+                  <div className="max-h-[80vh] overflow-y-auto p-1 mt-4">
+                    <ManageCampaignForm campaign={campaign} onCampaignUpdated={() => setIsManageOpen(false)} />
+                  </div>
+                </SheetContent>
+              </Sheet>
+            ) : (
+              <Dialog open={isManageOpen} onOpenChange={setIsManageOpen}>
                 <DialogContent className="sm:max-w-2xl">
                     <DialogHeader>
                         <DialogTitle>Manage Campaign</DialogTitle>
+                        <DialogDescription>Update the details of your campaign.</DialogDescription>
                     </DialogHeader>
                     <div className="max-h-[70vh] overflow-y-auto pr-2">
                         <ManageCampaignForm campaign={campaign} onCampaignUpdated={() => setIsManageOpen(false)} />
                     </div>
                 </DialogContent>
-            </Dialog>
+              </Dialog>
+            )}
         </>
     );
 }
