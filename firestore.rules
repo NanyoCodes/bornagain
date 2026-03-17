@@ -117,16 +117,13 @@ service cloud.firestore {
           request.resource.data.participants == (resource.data.participants || 0) + 1 &&
           // Verify a `participants` subcollection doc is being created for the user in the same transaction.
           !exists(/databases/$(database)/documents/campaigns/$(campaignId)/participants/$(request.auth.uid)) &&
-          existsAfter(/databases/$(database)/documents/campaigns/$(campaignId)/participants/$(request.auth.uid)) &&
-          // Verify a `joinedCampaigns` doc is being created for the user in the same transaction.
-          !exists(/databases/$(database)/documents/users/$(request.auth.uid)/joinedCampaigns/$(campaignId)) &&
-          existsAfter(/databases/$(database)/documents/users/$(request.auth.uid)/joinedCampaigns/$(campaignId))
+          existsAfter(/databases/$(database)/documents/campaigns/$(campaignId)/participants/$(request.auth.uid))
         ) ||
         // SCENARIO 2: The organizer is updating campaign details.
         (
           request.auth.uid == resource.data.organizerId &&
           // Organizer cannot update participant or soul counts directly with this rule.
-          !request.resource.data.diff(resource.data).affectedKeys().hasAny(['participants', 'soulsLogged'])
+          !request.resource.data.diff(resource.data).hasAny(['participants', 'soulsLogged'])
         ) ||
         // SCENARIO 3: The organizer is removing a participant.
         (
@@ -217,3 +214,5 @@ service cloud.firestore {
     }
   }
 }
+
+    
