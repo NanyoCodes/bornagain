@@ -481,7 +481,7 @@ export function CampaignCard({ campaign, userId, userProfile, isJoined, distance
       >
         <CardHeader className="p-6 flex flex-row items-start justify-between gap-4">
             <div className="flex-1 min-w-0">
-                <CardTitle className="font-bold text-xl truncate">
+                <CardTitle className="font-bold text-lg truncate">
                   {campaign.title}
                 </CardTitle>
                 <CardDescription className="text-sm mt-1 truncate">{campaign.goal}</CardDescription>
