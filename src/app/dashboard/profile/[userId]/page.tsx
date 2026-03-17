@@ -267,7 +267,7 @@ export default function UserProfilePage() {
   
   const { firstName, lastName, email, photoURL, bio, location, phone } = userProfile;
   const displayName = [firstName, lastName].filter(Boolean).join(' ');
-  const { city, country } = location || {};
+  const { city, state } = location || {};
   
   const triggerButton = (
     <Button>
@@ -338,7 +338,7 @@ export default function UserProfilePage() {
                     )}
                 </div>
                 <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground">
-                    {(city || country) && <div className="flex items-center gap-2"><MapPin className="h-4 w-4" /> {[city, country].filter(Boolean).join(', ')}</div>}
+                    {(city || state) && <div className="flex items-center gap-2"><MapPin className="h-4 w-4" /> {[city, state].filter(Boolean).join(', ')}</div>}
                     {phone && <div className="flex items-center gap-2"><Phone className="h-4 w-4" /> {phone}</div>}
                 </div>
             </div>

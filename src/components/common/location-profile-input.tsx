@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -31,14 +32,15 @@ export function LocationProfileInput({ form }: LocationProfileInputProps) {
         if (autocomplete) {
             const place = autocomplete.getPlace();
             let city = '';
+            let state = '';
             let country = '';
             
             place.address_components?.forEach(component => {
                 if (component.types.includes('locality')) {
                     city = component.long_name;
-                } else if (component.types.includes('administrative_area_level_1')) {
-                    // Fallback to state/province if city is not found
-                    if (!city) city = component.long_name;
+                }
+                if (component.types.includes('administrative_area_level_1')) {
+                    state = component.long_name;
                 }
                 if (component.types.includes('country')) {
                     country = component.long_name;
@@ -46,6 +48,7 @@ export function LocationProfileInput({ form }: LocationProfileInputProps) {
             });
 
             form.setValue('city', city, { shouldDirty: true });
+            form.setValue('state', state, { shouldDirty: true });
             form.setValue('country', country, { shouldDirty: true });
 
             if (place.geometry?.location) {
@@ -53,7 +56,7 @@ export function LocationProfileInput({ form }: LocationProfileInputProps) {
                 form.setValue('longitude', place.geometry.location.lng(), { shouldDirty: true });
             }
 
-            const displayValue = [city, country].filter(Boolean).join(', ');
+            const displayValue = [city, state, country].filter(Boolean).join(', ');
             setInputValue(displayValue);
         }
     };
@@ -85,7 +88,7 @@ export function LocationProfileInput({ form }: LocationProfileInputProps) {
     return (
         <Autocomplete onLoad={onLoad} onPlaceChanged={onPlaceChanged} fields={['address_components', 'geometry.location']} types={['(regions)']}>
             <Input
-                placeholder="Search location to autofill city/country"
+                placeholder="Search location to autofill city/state/country"
                 type="text"
                 className="text-base"
                 value={inputValue}

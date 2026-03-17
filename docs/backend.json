@@ -39,14 +39,16 @@
         },
         "location": {
           "type": "object",
-          "description": "The user's location.",
+          "description": "The user's location. The city, state, and country are public, while latitude and longitude are private and used for geosensitive features.",
           "properties": {
             "city": { "type": "string", "description": "The user's city." },
+            "state": { "type": "string", "description": "The user's state or province." },
             "country": { "type": "string", "description": "The user's country." },
             "city_lowercase": { "type": "string", "description": "Lowercase city for searching and aggregation." },
+            "state_lowercase": { "type": "string", "description": "Lowercase state for searching and aggregation." },
             "country_lowercase": { "type": "string", "description": "Lowercase country for searching and aggregation." },
-            "latitude": { "type": "number", "description": "The user's latitude." },
-            "longitude": { "type": "number", "description": "The user's longitude." }
+            "latitude": { "type": "number", "description": "The user's private latitude for proximity calculations." },
+            "longitude": { "type": "number", "description": "The user's private longitude for proximity calculations." }
           }
         },
         "phone": {

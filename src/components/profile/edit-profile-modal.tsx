@@ -35,6 +35,7 @@ const formSchema = z.object({
   photoURL: z.string().optional(),
   bio: z.string().max(280, "Bio is too long.").optional(),
   city: z.string().max(50, "City is too long.").optional(),
+  state: z.string().max(50, "State is too long.").optional(),
   country: z.string().max(50, "Country is too long.").optional(),
   latitude: z.number().optional(),
   longitude: z.number().optional(),
@@ -63,6 +64,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
       photoURL: userProfile.photoURL || "",
       bio: userProfile.bio || "",
       city: userProfile.location?.city || "",
+      state: userProfile.location?.state || "",
       country: userProfile.location?.country || "",
       latitude: userProfile.location?.latitude,
       longitude: userProfile.location?.longitude,
@@ -97,8 +99,10 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
         bio: values.bio || "",
         location: {
           city: values.city || "",
+          state: values.state || "",
           country: values.country || "",
           city_lowercase: (values.city || "").toLowerCase(),
+          state_lowercase: (values.state || "").toLowerCase(),
           country_lowercase: (values.country || "").toLowerCase(),
           latitude: values.latitude || null,
           longitude: values.longitude || null,
@@ -197,10 +201,10 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
               <Label>Location Search</Label>
               <LocationProfileInput form={form} />
               <p className="text-sm text-muted-foreground">
-                  Search for a location to autofill your city and country below.
+                  Search for a location to autofill your city, state and country below.
               </p>
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <FormField
               control={form.control}
               name="city"
@@ -215,6 +219,20 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
               )}
               />
               <FormField
+                control={form.control}
+                name="state"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>State / Province</FormLabel>
+                    <FormControl>
+                        <Input placeholder="e.g., California" {...field} value={field.value ?? ""} />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
+          </div>
+          <FormField
               control={form.control}
               name="country"
               render={({ field }) => (
@@ -226,8 +244,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                   <FormMessage />
                   </FormItem>
               )}
-              />
-          </div>
+          />
           <FormField
             control={form.control}
             name="phone"

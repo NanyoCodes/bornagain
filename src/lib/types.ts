@@ -37,8 +37,10 @@ export type UserProfile = {
   bio?: string;
   location?: {
     city?: string;
+    state?: string;
     country?: string;
     city_lowercase?: string;
+    state_lowercase?: string;
     country_lowercase?: string;
     latitude?: number;
     longitude?: number;
