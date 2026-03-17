@@ -21,7 +21,7 @@ service cloud.firestore {
       // Joined campaigns are private to the user.
       match /joinedCampaigns/{campaignId} {
         allow read: if request.auth != null && request.auth.uid == userId;
-        // Only the user can add/update their joined campaigns.
+        // Only the user can add themselves to a campaign.
         allow create: if request.auth != null && request.auth.uid == userId;
         // The user or the campaign organizer can remove the user from a campaign.
         allow delete: if request.auth != null && (
@@ -107,30 +107,32 @@ service cloud.firestore {
       allow create: if request.auth != null;
       allow delete: if false; // Hard deletes are disallowed. Status is updated instead.
 
-      // SCENARIO 1: The organizer is updating campaign details.
-      // This is allowed at any time, even for past campaigns.
-      allow update: if request.auth.uid == resource.data.organizerId &&
-                      !request.resource.data.diff(resource.data).hasAny(['participants', 'soulsLogged']);
+      allow update: if request.auth != null && (
+        // SCENARIO 1: The organizer is updating campaign details.
+        (request.auth.uid == resource.data.organizerId &&
+          !request.resource.data.diff(resource.data).hasAny(['participants', 'soulsLogged'])) ||
 
-      // SCENARIO 2: A user is joining a campaign.
-      allow update: if request.auth != null &&
-                      // This must be a first-time join.
-                      !exists(/databases/$(database)/documents/campaigns/$(campaignId)/participants/$(request.auth.uid)) &&
-                      existsAfter(/databases/$(database)/documents/campaigns/$(campaignId)/participants/$(request.auth.uid)) &&
-                      // The only change is incrementing participants.
-                      request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participants']) &&
-                      request.resource.data.participants == (resource.data.participants || 0) + 1;
+        // SCENARIO 2: A user is joining a campaign.
+        (
+          !exists(/databases/$(database)/documents/campaigns/$(campaignId)/participants/$(request.auth.uid)) &&
+          existsAfter(/databases/$(database)/documents/campaigns/$(campaignId)/participants/$(request.auth.uid)) &&
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participants']) &&
+          request.resource.data.participants == (resource.data.participants || 0) + 1
+        ) ||
 
-      // SCENARIO 3: Any authenticated user is logging a soul for a campaign.
-      allow update: if request.auth != null &&
-                      request.resource.data.diff(resource.data).affectedKeys().hasOnly(['soulsLogged']) &&
-                      request.resource.data.soulsLogged == (resource.data.soulsLogged || 0) + 1;
-      
-      // SCENARIO 4: The organizer is removing a participant.
-      allow update: if request.auth.uid == resource.data.organizerId &&
-                      request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participants']) &&
-                      request.resource.data.participants == (resource.data.participants || 0) - 1;
-
+        // SCENARIO 3: Any authenticated user is logging a soul for a campaign.
+        (
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['soulsLogged']) &&
+          request.resource.data.soulsLogged == (resource.data.soulsLogged || 0) + 1
+        ) ||
+        
+        // SCENARIO 4: The organizer is removing a participant.
+        (
+          request.auth.uid == resource.data.organizerId &&
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participants']) &&
+          request.resource.data.participants == (resource.data.participants || 0) - 1
+        )
+      );
 
       // Rules for the participants subcollection.
       match /participants/{userId} {
