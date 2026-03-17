@@ -145,10 +145,10 @@ export function JoinCampaignDialog({
           />
         </div>
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isJoining || userLoading}>
+          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isJoining}>
             Cancel
           </Button>
-          <Button onClick={handleJoin} disabled={isJoining || userLoading}>
+          <Button onClick={handleJoin} disabled={isJoining || userLoading || !user}>
             {(isJoining || userLoading) && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Confirm Join
           </Button>
