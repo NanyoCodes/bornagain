@@ -112,10 +112,8 @@ service cloud.firestore {
       allow update: if request.auth.uid == resource.data.organizerId &&
                       !request.resource.data.diff(resource.data).hasAny(['participants', 'soulsLogged']);
 
-      // SCENARIO 2: A user is joining an ongoing campaign.
+      // SCENARIO 2: A user is joining a campaign.
       allow update: if request.auth != null &&
-                      // The campaign must not be in the past.
-                      request.time < resource.data.endDate &&
                       // This must be a first-time join.
                       !exists(/databases/$(database)/documents/campaigns/$(campaignId)/participants/$(request.auth.uid)) &&
                       existsAfter(/databases/$(database)/documents/campaigns/$(campaignId)/participants/$(request.auth.uid)) &&
@@ -123,9 +121,8 @@ service cloud.firestore {
                       request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participants']) &&
                       request.resource.data.participants == (resource.data.participants || 0) + 1;
 
-      // SCENARIO 3: Any authenticated user is logging a soul for an ongoing campaign.
+      // SCENARIO 3: Any authenticated user is logging a soul for a campaign.
       allow update: if request.auth != null &&
-                      request.time < resource.data.endDate &&
                       request.resource.data.diff(resource.data).affectedKeys().hasOnly(['soulsLogged']) &&
                       request.resource.data.soulsLogged == (resource.data.soulsLogged || 0) + 1;
       
