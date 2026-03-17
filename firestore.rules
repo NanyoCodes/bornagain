@@ -109,7 +109,7 @@ service cloud.firestore {
       allow update: if request.auth != null && (
         // SCENARIO 1: A user is joining an ongoing campaign
         (
-          // Only the 'participants' field is being changed on the campaign doc.
+          // The only field changing on the campaign doc is 'participants'.
           request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participants']) &&
           // The `participants` count is incrementing by exactly 1.
           request.resource.data.participants == (resource.data.participants || 0) + 1 &&
