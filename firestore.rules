@@ -106,33 +106,40 @@ service cloud.firestore {
       allow get, list: if true;
       allow create: if request.auth != null;
 
-      // This is the explicit rule for joining a campaign.
-      allow update: if request.auth != null &&
-        // Only the `participants` field is changing
-        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participants']) &&
-        // The `participants` count is incrementing by exactly 1
-        request.resource.data.participants == (resource.data.participants || 0) + 1 &&
-        // A `participants` subcollection doc is being created for the user in the same transaction
-        existsAfter(/databases/$(database)/documents/campaigns/$(campaignId)/participants/$(request.auth.uid)) &&
-        // A `joinedCampaigns` doc is being created for the user in the same transaction
-        existsAfter(/databases/$(database)/documents/users/$(request.auth.uid)/joinedCampaigns/$(campaignId));
-
-      // Rule for the organizer updating campaign details
-      allow update: if request.auth != null &&
-        request.auth.uid == resource.data.organizerId &&
-        // Organizer cannot update participant or soul counts directly with this rule
-        !request.resource.data.diff(resource.data).hasAny(['participants', 'soulsLogged']);
-
-      // Rule for the organizer removing a participant
-      allow update: if request.auth != null &&
-        request.auth.uid == resource.data.organizerId &&
-        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participants']) &&
-        request.resource.data.participants == (resource.data.participants || 0) - 1;
-
-      // Rule for any authenticated user logging a soul for the campaign
-      allow update: if request.auth != null &&
-        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['soulsLogged']) &&
-        request.resource.data.soulsLogged == (resource.data.soulsLogged || 0) + 1;
+      allow update: if request.auth != null && (
+        // SCENARIO 1: A user is joining an ongoing campaign
+        (
+          // Ensure it's not a past campaign by checking the endDate.
+          // Note: Firestore timestamps can be compared directly.
+          request.time < resource.data.endDate &&
+          // Only the 'participants' field is being changed on the campaign doc.
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participants']) &&
+          // The `participants` count is incrementing by exactly 1.
+          request.resource.data.participants == (resource.data.participants || 0) + 1 &&
+          // Verify a `participants` subcollection doc is being created for the user in the same transaction.
+          existsAfter(/databases/$(database)/documents/campaigns/$(campaignId)/participants/$(request.auth.uid)) &&
+          // Verify a `joinedCampaigns` doc is being created for the user in the same transaction.
+          existsAfter(/databases/$(database)/documents/users/$(request.auth.uid)/joinedCampaigns/$(campaignId))
+        ) ||
+        // SCENARIO 2: The organizer is updating campaign details.
+        (
+          request.auth.uid == resource.data.organizerId &&
+          // Organizer cannot update participant or soul counts directly with this rule.
+          !request.resource.data.diff(resource.data).affectedKeys().hasAny(['participants', 'soulsLogged'])
+        ) ||
+        // SCENARIO 3: The organizer is removing a participant.
+        (
+          request.auth.uid == resource.data.organizerId &&
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participants']) &&
+          request.resource.data.participants == (resource.data.participants || 0) - 1
+        ) ||
+        // SCENARIO 4: Any authenticated user is logging a soul for an ongoing campaign.
+        (
+          request.time < resource.data.endDate &&
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['soulsLogged']) &&
+          request.resource.data.soulsLogged == (resource.data.soulsLogged || 0) + 1
+        )
+      );
 
       allow delete: if false; // Hard deletes are disallowed.
 
