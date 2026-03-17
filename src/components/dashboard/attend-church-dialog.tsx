@@ -84,10 +84,9 @@ export function AttendChurchDialog({ isOpen, onOpenChange, onDisciplineCompleted
     }
   }, [isOpen, userProfile, form, initialView]);
 
-  const logAttendance = (churchName: string, reason?: string, branch?: string, location?: string) => {
-    if (!user || !firestore) return Promise.reject(new Error("User or firestore not available"));
-    setIsSubmitting(true);
-    
+  const performLogAttendance = async (churchName: string, reason?: string, branch?: string, location?: string) => {
+    if (!user || !firestore) throw new Error("User or firestore not available");
+
     const userRef = doc(firestore, 'users', user.uid);
     const historyEntry: any = {
         churchName: churchName,
@@ -102,55 +101,70 @@ export function AttendChurchDialog({ isOpen, onOpenChange, onDisciplineCompleted
       attendanceHistory: arrayUnion(historyEntry)
     };
 
-    return updateDoc(userRef, updatePayload)
-      .then(() => {
-        onDisciplineCompleted();
-        toast({
-          title: 'Attendance Logged!',
-          description: `Great job attending ${churchName} today.`,
-        });
-        onOpenChange(false);
-      })
-      .catch((serverError) => {
-        const permissionError = new FirestorePermissionError({
-            path: userRef.path,
-            operation: 'update',
-            requestResourceData: updatePayload
-        });
-        errorEmitter.emit('permission-error', permissionError);
-        setIsSubmitting(false); // only set to false on error, success closes dialog
-        throw serverError; // re-throw to be caught by the caller
+    try {
+      await updateDoc(userRef, updatePayload);
+      onDisciplineCompleted();
+    } catch (serverError) {
+      const permissionError = new FirestorePermissionError({
+        path: userRef.path,
+        operation: 'update',
+        requestResourceData: updatePayload
       });
+      errorEmitter.emit('permission-error', permissionError);
+      throw serverError; // Re-throw to be caught by the caller
+    }
   };
 
-  const handleConfirmDefaultChurch = () => {
+  const handleConfirmDefaultChurch = async () => {
     if (!userProfile?.churchInfo?.name) return;
-    logAttendance(
+    setIsSubmitting(true);
+    try {
+      await performLogAttendance(
         userProfile.churchInfo.name, 
         reason,
         userProfile.churchInfo.branch,
         userProfile.churchInfo.location
-    ).catch(() => {});
+      );
+      toast({ title: 'Attendance Logged!' });
+      onOpenChange(false);
+    } catch (e) {
+        // Error is already emitted
+    } finally {
+        setIsSubmitting(false);
+    }
   };
   
-  const handleFormSubmit = (values: z.infer<typeof formSchema>) => {
-    logAttendance(values.churchName, values.reason, values.branch, values.location).catch(() => {});
+  const handleFormSubmit = async (values: z.infer<typeof formSchema>) => {
+    setIsSubmitting(true);
+    try {
+        await performLogAttendance(values.churchName, values.reason, values.branch, values.location);
+        toast({ title: 'Attendance Logged!' });
+        onOpenChange(false);
+    } catch (e) {
+        // Error is already emitted
+    } finally {
+        setIsSubmitting(false);
+    }
   };
   
-  const handleJoinStream = (schedule: { day: string; time: string; url?: string; }) => {
+  const handleJoinStream = async (schedule: { day: string; time: string; url?: string; }) => {
     if (!userProfile?.churchInfo?.name || !schedule.url) return;
-    logAttendance(
-        userProfile.churchInfo.name,
-        reason,
-        userProfile.churchInfo.branch,
-        userProfile.churchInfo.location
-    )
-        .then(() => {
-            window.open(schedule.url, '_blank', 'noopener, noreferrer');
-        })
-        .catch(() => {
-            // Error is handled/toasted inside logAttendance
-        });
+    setIsSubmitting(true);
+    try {
+        await performLogAttendance(
+            userProfile.churchInfo.name,
+            reason,
+            userProfile.churchInfo.branch,
+            userProfile.churchInfo.location
+        );
+        toast({ title: 'Attendance Logged!' });
+        window.open(schedule.url, '_blank', 'noopener, noreferrer');
+        onOpenChange(false);
+    } catch (e) {
+        // Error is already emitted
+    } finally {
+        setIsSubmitting(false);
+    }
   };
 
   const attendanceHistory = userProfile?.attendanceHistory ? [...userProfile.attendanceHistory].reverse() : [];
