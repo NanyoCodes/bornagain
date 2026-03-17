@@ -105,28 +105,28 @@ service cloud.firestore {
     match /campaigns/{campaignId} {
       allow get, list: if true;
       allow create: if request.auth != null;
-      
-      allow update: if request.auth != null && (
-        ( // Case 1: Non-organizer joining.
-          request.auth.uid != resource.data.organizerId &&
-          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participants']) &&
-          request.resource.data.participants == (resource.data.participants || 0) + 1
-        ) ||
-        ( // Case 2: Organizer making general edits.
-          request.auth.uid == resource.data.organizerId &&
-          // Prevent them from directly changing participant/soul counts.
-          !request.resource.data.diff(resource.data).affectedKeys().hasAny(['participants', 'soulsLogged'])
-        ) ||
-        ( // Case 3: Organizer removing a participant.
-          request.auth.uid == resource.data.organizerId &&
-          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participants']) &&
-          request.resource.data.participants == (resource.data.participants || 0) - 1
-        ) ||
-        ( // Case 4: Anyone logging a soul for the campaign.
-          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['soulsLogged']) &&
-          request.resource.data.soulsLogged == (resource.data.soulsLogged || 0) + 1
-        )
-      );
+
+      // User joining campaign
+      allow update: if request.auth != null
+                    && request.auth.uid != resource.data.organizerId
+                    && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participants'])
+                    && request.resource.data.participants == (resource.data.participants || 0) + 1;
+
+      // Organizer updating campaign details
+      allow update: if request.auth != null
+                    && request.auth.uid == resource.data.organizerId
+                    && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['participants', 'soulsLogged']);
+
+      // Organizer removing a participant from a campaign
+      allow update: if request.auth != null
+                    && request.auth.uid == resource.data.organizerId
+                    && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participants'])
+                    && request.resource.data.participants == (resource.data.participants || 0) - 1;
+
+      // Anyone can log a soul for the campaign
+      allow update: if request.auth != null
+                    && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['soulsLogged'])
+                    && request.resource.data.soulsLogged == (resource.data.soulsLogged || 0) + 1;
 
       allow delete: if false; // Hard deletes are disallowed.
 
