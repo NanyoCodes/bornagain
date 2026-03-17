@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -605,7 +606,7 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
                   )}
                 />
 
-                <Button type="submit" className="w-full" disabled={isSubmitting || !form.formState.isDirty}>
+                <Button type="submit" className="w-full" disabled={isSubmitting}>
                 {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {isSubmitting ? 'Saving...' : 'Save Changes'}
                 </Button>
