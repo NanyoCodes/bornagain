@@ -109,14 +109,11 @@ service cloud.firestore {
       allow update: if request.auth != null && (
         // SCENARIO 1: A user is joining an ongoing campaign
         (
-          // Ensure it's not a past campaign by checking the endDate.
-          request.time < resource.data.endDate &&
           // Only the 'participants' field is being changed on the campaign doc.
           request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participants']) &&
           // The `participants` count is incrementing by exactly 1.
           request.resource.data.participants == (resource.data.participants || 0) + 1 &&
           // Verify a `participants` subcollection doc is being created for the user in the same transaction.
-          !exists(/databases/$(database)/documents/campaigns/$(campaignId)/participants/$(request.auth.uid)) &&
           existsAfter(/databases/$(database)/documents/campaigns/$(campaignId)/participants/$(request.auth.uid))
         ) ||
         // SCENARIO 2: The organizer is updating campaign details.
@@ -133,7 +130,6 @@ service cloud.firestore {
         ) ||
         // SCENARIO 4: Any authenticated user is logging a soul for an ongoing campaign.
         (
-          request.time < resource.data.endDate &&
           request.resource.data.diff(resource.data).affectedKeys().hasOnly(['soulsLogged']) &&
           request.resource.data.soulsLogged == (resource.data.soulsLogged || 0) + 1
         )
@@ -214,5 +210,3 @@ service cloud.firestore {
     }
   }
 }
-
-    
