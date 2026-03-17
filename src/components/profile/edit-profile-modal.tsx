@@ -1,4 +1,3 @@
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -201,7 +200,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
               <Label>Location Search</Label>
               <LocationProfileInput form={form} />
               <p className="text-sm text-muted-foreground">
-                  Search for a location to autofill your city, state and country below.
+                Search for a location to set your address. Your city and state will be public, but your precise location will remain private and is only used to notify you of campaigns nearby.
               </p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
