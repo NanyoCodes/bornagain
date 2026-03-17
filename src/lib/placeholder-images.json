@@ -8,9 +8,9 @@
     },
     {
       "id": "auth-background",
-      "description": "Abstract fiery background for auth screen",
-      "imageUrl": "https://images.unsplash.com/photo-1533134486753-c833f0ed4866?q=80&w=2070&auto=format&fit=crop",
-      "imageHint": "abstract fire"
+      "description": "Crowd at a worship concert with hands raised",
+      "imageUrl": "https://images.unsplash.com/photo-1524368535928-5b5e00ddc76b?q=80&w=2070&auto=format&fit=crop",
+      "imageHint": "worship concert"
     },
     {
       "id": "user-1",
