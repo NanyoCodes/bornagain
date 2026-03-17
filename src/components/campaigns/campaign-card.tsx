@@ -485,7 +485,7 @@ export function CampaignCard({ campaign, userId, userProfile, isJoined, distance
                   {campaign.title}
                 </CardTitle>
                 <CardDescription className="text-sm mt-1 truncate">{campaign.goal}</CardDescription>
-                {distance !== null && (
+                {distance != null && (
                     <CardDescription className="text-xs text-primary font-semibold mt-1 flex items-center gap-1">
                         <MapPin className="h-3 w-3" />
                         {distance.toFixed(1)} km away

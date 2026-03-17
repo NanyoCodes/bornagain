@@ -31,7 +31,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useSearch } from "@/context/search-context";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { safeToDate } from "@/lib/utils";
+import { safeToDate, haversineDistance } from "@/lib/utils";
 
 
 function CampaignSkeletons() {
@@ -337,15 +337,27 @@ export default function CampaignsPage() {
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {loading && <CampaignSkeletons />}
-        {sortedAndFilteredCampaigns?.map((campaign) => (
+        {sortedAndFilteredCampaigns?.map((campaign) => {
+          const distance =
+            userProfile?.location?.latitude &&
+            userProfile.location?.longitude &&
+            campaign.latitude &&
+            campaign.longitude
+              ? haversineDistance(
+                  { lat: userProfile.location.latitude, lng: userProfile.location.longitude },
+                  { lat: campaign.latitude, lng: campaign.longitude }
+                )
+              : null;
+          return (
           <CampaignCard 
             key={campaign.id} 
             campaign={campaign} 
             userId={user?.uid}
             userProfile={userProfile}
             isJoined={joinedCampaignIds.has(campaign.id)}
+            distance={distance}
           />
-        ))}
+        )})}
          {!loading && sortedAndFilteredCampaigns?.length === 0 && (
           <div className="col-span-full text-center py-12 flex flex-col items-center">
             <Target className="h-16 w-16 text-muted-foreground" />
