@@ -41,8 +41,17 @@ export function JoinCampaignDialog({
   const [isJoining, setIsJoining] = useState(false);
   const [joinReason, setJoinReason] = useState('');
 
+  const isButtonDisabled = isJoining || userLoading || !user || !userProfile;
+
   const handleJoin = async () => {
-    if (!user || !firestore) return;
+    if (!user || !firestore || !userProfile) {
+        toast({
+            variant: "destructive",
+            title: "Cannot Join Campaign",
+            description: "User information is not available. Please wait and try again.",
+        });
+        return;
+    }
     setIsJoining(true);
 
     const campaignRef = doc(firestore, 'campaigns', campaign.id);
@@ -148,7 +157,7 @@ export function JoinCampaignDialog({
           <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isJoining}>
             Cancel
           </Button>
-          <Button onClick={handleJoin} disabled={isJoining || userLoading || !user}>
+          <Button onClick={handleJoin} disabled={isButtonDisabled}>
             {(isJoining || userLoading) && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Confirm Join
           </Button>
