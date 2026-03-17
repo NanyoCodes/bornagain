@@ -24,15 +24,15 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import type { Testimony, PrayerRequest } from "@/lib/types";
+import type { Testimony, PrayerRequest, UserProfile } from "@/lib/types";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useCollection, useFirestore, useUser } from "@/firebase";
-import { collection, query, orderBy } from "firebase/firestore";
+import { useCollection, useFirestore, useUser, useDoc } from "@/firebase";
+import { collection, query, orderBy, doc } from "firebase/firestore";
 import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card";
 import { useSearch } from "@/context/search-context";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { format, isToday } from 'date-fns';
+import { haversineDistance } from "@/lib/utils";
 
 export default function TestimoniesPage() {
   const [isTestimonyDialogOpen, setIsTestimonyDialogOpen] = useState(false);
@@ -44,6 +44,9 @@ export default function TestimoniesPage() {
 
   const firestore = useFirestore();
   const { user, loading: userLoading } = useUser();
+  
+  const userDocRef = useMemo(() => user ? doc(firestore, 'users', user.uid) : null, [user, firestore]);
+  const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userDocRef);
 
   const testimoniesQuery = useMemo(() => {
     if (!firestore || !user) return null;
@@ -59,7 +62,7 @@ export default function TestimoniesPage() {
 
   const { data: prayerRequests, loading: loadingPrayers } = useCollection<PrayerRequest>(prayerRequestsQuery);
 
-  const loading = userLoading || loadingTestimonies || loadingPrayers;
+  const loading = userLoading || profileLoading || loadingTestimonies || loadingPrayers;
 
   useEffect(() => {
     setMounted(true);
@@ -82,15 +85,42 @@ export default function TestimoniesPage() {
 
   const filteredTestimonies = useMemo(() => {
     if (!testimonies) return [];
-    if (activeTab !== 'testimonies' || !searchTerm) return testimonies;
+    
+    const withDistance = testimonies.map(testimony => {
+        const distance = userProfile?.location?.latitude &&
+                        userProfile.location?.longitude &&
+                        testimony.authorLocation?.latitude &&
+                        testimony.authorLocation?.longitude
+                        ? haversineDistance(
+                            { lat: userProfile.location.latitude, lng: userProfile.location.longitude },
+                            { lat: testimony.authorLocation.latitude, lng: testimony.authorLocation.longitude }
+                          )
+                        : null;
+        return { ...testimony, _distance: distance };
+    });
+
+    const sorted = withDistance.sort((a, b) => {
+        if (a._distance != null && b._distance != null) {
+            if (a._distance !== b._distance) return a._distance - b._distance;
+        }
+        if (a._distance != null) return -1;
+        if (b._distance != null) return 1;
+        
+        // Fallback to createdAt
+        const timeA = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : 0;
+        const timeB = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : 0;
+        return timeB - timeA;
+    });
+
+    if (activeTab !== 'testimonies' || !searchTerm) return sorted;
     
     const term = searchTerm.toLowerCase();
-    return testimonies.filter(testimony => 
+    return sorted.filter(testimony => 
       testimony.content.toLowerCase().includes(term) ||
       `${testimony.authorFirstName} ${testimony.authorLastName}`.toLowerCase().includes(term) ||
       testimony.category.toLowerCase().includes(term)
     );
-  }, [testimonies, searchTerm, activeTab]);
+  }, [testimonies, searchTerm, activeTab, userProfile]);
 
   const filteredPrayerRequests = useMemo(() => {
     if (!prayerRequests) return [];
@@ -175,7 +205,7 @@ export default function TestimoniesPage() {
                   ))
                 )}
                 {!loading && filteredTestimonies?.map((testimony) => (
-                  <TestimonyCard key={testimony.id} testimony={testimony} />
+                  <TestimonyCard key={testimony.id} testimony={testimony} distance={(testimony as any)._distance} />
                 ))}
                  {!loading && filteredTestimonies?.length === 0 && (
                   <div className="col-span-full text-center py-12 flex flex-col items-center">

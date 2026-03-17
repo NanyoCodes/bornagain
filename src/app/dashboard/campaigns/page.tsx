@@ -165,14 +165,25 @@ export default function CampaignsPage() {
       const _startDate = safeToDate(c.startDate);
       const _endDate = safeToDate(c.endDate);
       const tempCampaign = { ...c, _startDate, _endDate };
+      const distance =
+            userProfile?.location?.latitude &&
+            userProfile.location?.longitude &&
+            c.latitude &&
+            c.longitude
+              ? haversineDistance(
+                  { lat: userProfile.location.latitude, lng: userProfile.location.longitude },
+                  { lat: c.latitude, lng: c.longitude }
+                )
+              : null;
       return {
         ...tempCampaign,
         _status: getStatus(tempCampaign, now),
         _fullStartDate: getFullStartDate(tempCampaign),
         _fullEndDate: getFullEndDate(tempCampaign),
+        _distance: distance,
       }
     });
-  }, [campaigns, now]);
+  }, [campaigns, now, userProfile]);
 
   const sortedAndFilteredCampaigns = useMemo(() => {
     const activeCampaigns = processedCampaigns.filter(c => c.status !== 'deleted');
@@ -223,8 +234,17 @@ export default function CampaignsPage() {
             return a._status - b._status;
         }
         
-        // For Ongoing and Upcoming, sort by start date ascending (soonest first)
+        // For Ongoing and Upcoming, sort by distance, then by start date
         if (a._status === 1 || a._status === 2) {
+            if (a._distance != null && b._distance != null) {
+                if (a._distance !== b._distance) return a._distance - b._distance;
+            } else if (a._distance != null) {
+                return -1; // a has distance, b doesn't
+            } else if (b._distance != null) {
+                return 1;  // b has distance, a doesn't
+            }
+
+            // Fallback for items with same or no distance: sort by start date
             const fullStartDateA = a._fullStartDate;
             const fullStartDateB = b._fullStartDate;
 
@@ -337,27 +357,16 @@ export default function CampaignsPage() {
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {loading && <CampaignSkeletons />}
-        {sortedAndFilteredCampaigns?.map((campaign) => {
-          const distance =
-            userProfile?.location?.latitude &&
-            userProfile.location?.longitude &&
-            campaign.latitude &&
-            campaign.longitude
-              ? haversineDistance(
-                  { lat: userProfile.location.latitude, lng: userProfile.location.longitude },
-                  { lat: campaign.latitude, lng: campaign.longitude }
-                )
-              : null;
-          return (
+        {sortedAndFilteredCampaigns?.map((campaign) => (
           <CampaignCard 
             key={campaign.id} 
             campaign={campaign} 
             userId={user?.uid}
             userProfile={userProfile}
             isJoined={joinedCampaignIds.has(campaign.id)}
-            distance={distance}
+            distance={campaign._distance}
           />
-        )})}
+        ))}
          {!loading && sortedAndFilteredCampaigns?.length === 0 && (
           <div className="col-span-full text-center py-12 flex flex-col items-center">
             <Target className="h-16 w-16 text-muted-foreground" />

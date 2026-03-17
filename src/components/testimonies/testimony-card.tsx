@@ -1,3 +1,4 @@
+
 "use client";
 
 import * as React from "react";
@@ -17,7 +18,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Testimony } from "@/lib/types";
 import { format } from "date-fns";
-import { Share2, MoreVertical, Edit, Trash2, Loader2 } from "lucide-react";
+import { Share2, MoreVertical, Edit, Trash2, Loader2, MapPin } from "lucide-react";
 import { useUser, useFirestore } from "@/firebase";
 import { useState, useMemo } from "react";
 import {
@@ -35,7 +36,7 @@ import { EditTestimonyForm } from "./edit-testimony-form";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 
-export const TestimonyCard = React.memo(function TestimonyCard({ testimony }: { testimony: Testimony }) {
+export const TestimonyCard = React.memo(function TestimonyCard({ testimony, distance }: { testimony: Testimony, distance: number | null }) {
   const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
@@ -133,6 +134,12 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony }: { 
               <CardDescription className="text-xs mt-1">
                   {displayDate}
               </CardDescription>
+              {distance != null && (
+                  <CardDescription className="text-xs text-primary font-semibold mt-1 flex items-center gap-1">
+                      <MapPin className="h-3 w-3" />
+                      {distance.toFixed(1)} km away
+                  </CardDescription>
+              )}
             </div>
           </div>
           <Badge variant="secondary" className="shrink-0">{testimony.category}</Badge>
