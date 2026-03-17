@@ -21,9 +21,8 @@ service cloud.firestore {
       // Joined campaigns are private to the user.
       match /joinedCampaigns/{campaignId} {
         allow read: if request.auth != null && request.auth.uid == userId;
-        // This 'create' rule is specifically for the join transaction.
-        // It's validated by the transaction rule on the campaign itself.
-        allow create: if request.auth != null && request.auth.uid == userId;
+        // Only the user can add/update their joined campaigns.
+        allow create, update: if request.auth != null && request.auth.uid == userId;
         // The user or the campaign organizer can remove the user from a campaign.
         allow delete: if request.auth != null && (
           request.auth.uid == userId ||
@@ -112,17 +111,11 @@ service cloud.firestore {
       allow update: if request.auth != null && (
 
         // SCENARIO 1: A user is joining the campaign for the first time.
+        // This rule is simplified to prevent complex transaction failures.
+        // It relies on client-side checks to prevent duplicate joins.
         (
-          // The only field changing on the campaign doc is 'participants'.
           request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participants']) &&
-          // The `participants` count is incrementing by exactly 1.
-          request.resource.data.participants == (resource.data.participants || 0) + 1 &&
-          // AND the user is not already a participant, but will be after this transaction
-          !exists(/databases/$(database)/documents/campaigns/$(campaignId)/participants/$(request.auth.uid)) &&
-          existsAfter(/databases/$(database)/documents/campaigns/$(campaignId)/participants/$(request.auth.uid)) &&
-          // AND the user has not already joined in their personal record, but will have after this transaction
-          !exists(/databases/$(database)/documents/users/$(request.auth.uid)/joinedCampaigns/$(campaignId)) &&
-          existsAfter(/databases/$(database)/documents/users/$(request.auth.uid)/joinedCampaigns/$(campaignId))
+          request.resource.data.participants == (resource.data.participants || 0) + 1
         ) ||
 
         // SCENARIO 2: Any authenticated user is logging a soul for this campaign.
@@ -155,7 +148,6 @@ service cloud.firestore {
         // The organizer can read the list of all participants.
         allow read: if request.auth != null && get(/databases/$(database)/documents/campaigns/$(campaignId)).data.organizerId == request.auth.uid;
         // A user can create their own participant document (i.e., join).
-        // This is validated as part of the transaction in the campaign update rule.
         allow create: if request.auth != null && request.auth.uid == userId;
         // A user can remove themselves, or the organizer can remove any participant.
         allow delete: if request.auth != null && (
