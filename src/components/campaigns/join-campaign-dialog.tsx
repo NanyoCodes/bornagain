@@ -37,7 +37,7 @@ export function JoinCampaignDialog({
 }: JoinCampaignDialogProps) {
   const { toast } = useToast();
   const firestore = useFirestore();
-  const { user } = useUser();
+  const { user, loading: userLoading } = useUser();
   const [isJoining, setIsJoining] = useState(false);
   const [joinReason, setJoinReason] = useState('');
 
@@ -145,11 +145,11 @@ export function JoinCampaignDialog({
           />
         </div>
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isJoining}>
+          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isJoining || userLoading}>
             Cancel
           </Button>
-          <Button onClick={handleJoin} disabled={isJoining}>
-            {isJoining && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          <Button onClick={handleJoin} disabled={isJoining || userLoading}>
+            {(isJoining || userLoading) && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Confirm Join
           </Button>
         </DialogFooter>
