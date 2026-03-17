@@ -8,6 +8,8 @@ import { Loader2 } from 'lucide-react';
 import { type UseFormReturn } from 'react-hook-form';
 import { useToast } from '@/hooks/use-toast';
 import { Input } from '@/components/ui/input';
+import { useIsMobile } from '@/hooks/use-mobile';
+
 
 const libraries: ('places')[] = ['places'];
 const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
@@ -42,6 +44,11 @@ export function LocationMapPicker({ form }: LocationMapPickerProps) {
     const [radius, setRadius] = useState(radiusValue || 1000);
     const [inputValue, setInputValue] = useState(form.getValues('location') || '');
 
+    const isMobile = useIsMobile();
+    const [mounted, setMounted] = useState(false);
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     const geocoderRef = useRef<google.maps.Geocoder>();
     const hasFetchedLocation = useRef(false);
@@ -155,12 +162,12 @@ export function LocationMapPicker({ form }: LocationMapPickerProps) {
 
     const onMapLoad = useCallback((mapInstance: google.maps.Map) => {
         setMap(mapInstance);
-        if (searchBoxRef.current) {
+        if (!isMobile && searchBoxRef.current) {
             mapInstance.controls[window.google.maps.ControlPosition.TOP_CENTER].push(
                 searchBoxRef.current
             );
         }
-    }, []);
+    }, [isMobile]);
 
     const onAutocompleteLoad = (autocompleteInstance: google.maps.places.Autocomplete) => {
         setAutocomplete(autocompleteInstance);
@@ -219,7 +226,7 @@ export function LocationMapPicker({ form }: LocationMapPickerProps) {
         return <div className="text-destructive text-sm p-2 rounded-md border border-destructive/50 bg-destructive/10">{errorMessage}</div>;
     }
 
-    if (!isLoaded) {
+    if (!isLoaded || !mounted) {
         return (
             <div className="flex items-center justify-center h-80 w-full rounded-md border bg-background">
                 <Loader2 className="mr-2 h-6 w-6 animate-spin" />
@@ -227,25 +234,35 @@ export function LocationMapPicker({ form }: LocationMapPickerProps) {
             </div>
         );
     }
+    
+    const searchInputEl = (
+        <Autocomplete
+            onLoad={onAutocompleteLoad}
+            onPlaceChanged={onPlaceChanged}
+            fields={['formatted_address', 'name', 'geometry.location']}
+            types={['geocode']}
+        >
+            <Input
+                type="text"
+                placeholder="Search for a location..."
+                className="text-base shadow-lg"
+                value={inputValue}
+                onChange={handleInputChange}
+            />
+        </Autocomplete>
+    );
 
     return (
         <div className="space-y-4">
-             {/* This div is positioned by the Google Map onLoad callback. It also holds the Autocomplete component. */}
-             <div ref={searchBoxRef} className="w-full max-w-sm sm:max-w-md px-4 pt-4">
-                <Autocomplete
-                    onLoad={onAutocompleteLoad}
-                    onPlaceChanged={onPlaceChanged}
-                    fields={['formatted_address', 'name', 'geometry.location']}
-                    types={['geocode']}
-                >
-                    <Input
-                        type="text"
-                        placeholder="Search for a location..."
-                        className="text-base shadow-lg"
-                        value={inputValue}
-                        onChange={handleInputChange}
-                    />
-                </Autocomplete>
+             {isMobile && (
+                <div className="w-full">{searchInputEl}</div>
+             )}
+             
+             {/* This div is positioned by the Google Map onLoad callback and holds the search input for desktop. */}
+             <div ref={searchBoxRef}>
+                {!isMobile && (
+                    <div className="w-full max-w-sm sm:max-w-md px-4 pt-4">{searchInputEl}</div>
+                )}
             </div>
             
             <GoogleMap

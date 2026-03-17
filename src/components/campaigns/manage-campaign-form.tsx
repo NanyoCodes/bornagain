@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -18,7 +17,7 @@ import { Textarea } from '../ui/textarea';
 import { Separator } from '../ui/separator';
 import { Skeleton } from '../ui/skeleton';
 import { Input } from '../ui/input';
-import { format } from 'date-fns';
+import { format, isSameDay } from 'date-fns';
 import {
   Card,
   CardContent,
@@ -40,6 +39,7 @@ import {
 import { useRouter } from 'next/navigation';
 import { LocationMapPicker } from '../common/location-map-picker';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion';
+import { safeToDate } from '@/lib/utils';
 
 const formSchema = z.object({
   title: z.string().min(3, "Title is too short.").max(100, "Title is too long."),
@@ -57,10 +57,20 @@ const formSchema = z.object({
   scriptureTestimony: z.string().max(500, "Caption is too long.").optional(),
   maxParticipants: z.number().min(1, "Maximum participants must be at least 1.").optional(),
   streamUrl: z.string().url({ message: "Please enter a valid URL." }).optional().or(z.literal('')),
-  lastUpdateReason: z.string().min(10, { message: "Please provide a reason of at least 10 characters." }),
+  lastUpdateReason: z.string().max(500, "Reason is too long.").optional(),
 }).refine((data) => data.endDate >= data.startDate, {
     message: "End date cannot be before start date.",
     path: ["endDate"],
+}).refine((data) => {
+    if (isSameDay(data.startDate, data.endDate)) {
+        if(data.startTime && data.endTime) {
+            return data.endTime > data.startTime;
+        }
+    }
+    return true;
+}, {
+    message: "End time must be after start time for a single-day campaign.",
+    path: ["endTime"],
 });
 
 
@@ -197,16 +207,6 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
   };
 
   const defaultValues = useMemo(() => {
-    const safeToDate = (value: any): Date => {
-        if (value?.toDate) return value.toDate();
-        if (value instanceof Date) return value;
-        // Check for object with seconds and nanoseconds
-        if (value && typeof value.seconds === 'number') {
-            return new Date(value.seconds * 1000);
-        }
-        return new Date(); 
-    }
-
     return {
       title: campaign.title || "",
       description: campaign.description || "",
@@ -215,8 +215,8 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
       latitude: campaign.latitude,
       longitude: campaign.longitude,
       coverageRadius: campaign.coverageRadius,
-      startDate: safeToDate(campaign.startDate),
-      endDate: safeToDate(campaign.endDate),
+      startDate: safeToDate(campaign.startDate) ?? new Date(),
+      endDate: safeToDate(campaign.endDate) ?? new Date(),
       startTime: campaign.startTime || "",
       endTime: campaign.endTime || "",
       scripture: campaign.scripture || "",
@@ -347,7 +347,7 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
         scriptureTestimony: values.scriptureTestimony,
         maxParticipants: values.maxParticipants ?? null,
         streamUrl: values.streamUrl || null,
-        lastUpdateReason: values.lastUpdateReason,
+        lastUpdateReason: values.lastUpdateReason || null,
     };
 
     updateDoc(campaignRef, updateData).then(() => {
@@ -596,7 +596,7 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
                   name="lastUpdateReason"
                   render={({ field }) => (
                       <FormItem>
-                      <FormLabel>Reason for Update</FormLabel>
+                      <FormLabel>Reason for Update (Optional)</FormLabel>
                       <FormControl>
                           <Textarea placeholder="e.g., Updated progress after event" {...field} className="text-base" />
                       </FormControl>
