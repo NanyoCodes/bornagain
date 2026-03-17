@@ -90,7 +90,14 @@ export function ProgressOverview({ souls, userProfile, testimonies }: { souls: S
         
         let streak = 0;
         let checkDate = new Date();
-        const historyMap = new Map(disciplineHistory.map(log => [format(safeToDate(log.date)!, 'yyyy-MM-dd'), log.completed]));
+        
+        const historyMap = new Map<string, string[]>();
+        disciplineHistory.forEach(log => {
+            const date = safeToDate(log.date);
+            if (date) {
+                historyMap.set(format(date, 'yyyy-MM-dd'), log.completed);
+            }
+        });
 
         const todayString = format(checkDate, 'yyyy-MM-dd');
         const todaysLog = historyMap.get(todayString);
