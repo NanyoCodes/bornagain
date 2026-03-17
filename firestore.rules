@@ -113,15 +113,15 @@ service cloud.firestore {
             request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participants']) &&
             // The count must increment by exactly 1
             request.resource.data.participants == (resource.data.participants || 0) + 1 &&
-            // A 'participants' subcollection doc must be created for the user
-            getAfter(/databases/$(database)/documents/campaigns/$(campaignId)/participants/$(request.auth.uid)).data.userId == request.auth.uid &&
-            // A 'joinedCampaigns' doc must be created for the user
-            getAfter(/databases/$(database)/documents/users/$(request.auth.uid)/joinedCampaigns/$(campaignId)).data.campaignId == campaignId
+            // A 'participants' subcollection doc must be created for the user in the same transaction
+            existsAfter(/databases/$(database)/documents/campaigns/$(campaignId)/participants/$(request.auth.uid)) &&
+            // A 'joinedCampaigns' doc must be created for the user in the same transaction
+            existsAfter(/databases/$(database)/documents/users/$(request.auth.uid)/joinedCampaigns/$(campaignId))
         ) ||
         // Case 2: The organizer is updating campaign details (anything except participant/soul counts).
         (
           request.auth.uid == resource.data.organizerId &&
-          !request.resource.data.diff(resource.data).affectedKeys().hasAny(['participants', 'soulsLogged'])
+          !request.resource.data.diff(resource.data).hasAny(['participants', 'soulsLogged'])
         ) ||
         // Case 3: The organizer is removing a participant.
         (
