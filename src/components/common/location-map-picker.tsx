@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
@@ -163,6 +164,11 @@ export function LocationMapPicker({ form }: LocationMapPickerProps) {
         }
     }, [watchedLat, watchedLng, center.lat, center.lng, map]);
 
+    const handleMapClick = useCallback((e: google.maps.MapMouseEvent) => {
+        if (e.latLng) {
+            updateFormLocation(e.latLng);
+        }
+    }, [updateFormLocation]);
     
     const handleMarkerDragEnd = useCallback((e: google.maps.MapMouseEvent) => {
         if (e.latLng) {
