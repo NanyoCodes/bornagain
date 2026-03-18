@@ -108,26 +108,32 @@ service cloud.firestore {
       allow delete: if false; // Hard deletes are disallowed. Status is updated instead.
 
       allow update: if request.auth != null && (
-        // SCENARIO 1: Organizer updates details.
+        // SCENARIO 1: Organizer updates details (including soft delete).
         (
           request.auth.uid == resource.data.organizerId &&
-          !request.resource.data.diff(resource.data).hasAny(['participants', 'soulsLogged'])
+          !request.resource.data.diff(resource.data).affectedKeys().hasAny(['participants', 'soulsLogged'])
         ) ||
         // SCENARIO 2: A user is joining a campaign.
+        // This is a transactional write. The user must be creating their own participant document.
         (
           request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participants']) &&
-          request.resource.data.participants == (resource.data.participants || 0) + 1
+          request.resource.data.participants == (resource.data.participants || 0) + 1 &&
+          // Check that the user is creating their own participant document in the same transaction
+          existsAfter(/databases/$(database)/documents/campaigns/$(campaignId)/participants/$(request.auth.uid)) &&
+          getAfter(/databases/$(database)/documents/campaigns/$(campaignId)/participants/$(request.auth.uid)).data.userId == request.auth.uid &&
+          // Ensure they weren't already a participant before this transaction
+          !exists(/databases/$(database)/documents/campaigns/$(campaignId)/participants/$(request.auth.uid))
         ) ||
-        // SCENARIO 3: Organizer removes a participant.
+        // SCENARIO 3: A user logs a soul.
+        (
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['soulsLogged']) &&
+          request.resource.data.soulsLogged == (resource.data.soulsLogged || 0) + 1
+        ) ||
+        // SCENARIO 4: Organizer removes a participant.
         (
           request.auth.uid == resource.data.organizerId &&
           request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participants']) &&
           request.resource.data.participants == (resource.data.participants || 0) - 1
-        ) ||
-        // SCENARIO 4: A user logs a soul.
-        (
-          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['soulsLogged']) &&
-          request.resource.data.soulsLogged == (resource.data.soulsLogged || 0) + 1
         )
       );
 
@@ -204,3 +210,5 @@ service cloud.firestore {
     }
   }
 }
+
+    
