@@ -2,9 +2,13 @@
 rules_version = '2';
 service firebase.storage {
   match /b/studio-6220967431-56fe2.appspot.com/o {
+    // Profile pictures can be written by their owner, and read by anyone.
     match /profile-pictures/{userId}/{fileName} {
-      allow write: if request.auth != null && request.auth.uid == userId;
-      allow read;
+      allow read: if true;
+      allow write: if request.auth != null 
+                    && request.auth.uid == userId
+                    && request.resource.size < 5 * 1024 * 1024
+                    && request.resource.contentType.matches('image/.*');
     }
   }
 }

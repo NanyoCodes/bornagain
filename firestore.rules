@@ -108,26 +108,23 @@ service cloud.firestore {
       allow delete: if false; // Hard deletes are disallowed. Status is updated instead.
 
       allow update: if request.auth != null && (
-        // SCENARIO 1: The organizer is updating campaign details (even for past campaigns).
+        // SCENARIO 1: Organizer updates details.
         (
           request.auth.uid == resource.data.organizerId &&
           !request.resource.data.diff(resource.data).hasAny(['participants', 'soulsLogged'])
         ) ||
-
         // SCENARIO 2: A user is joining a campaign.
         (
           request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participants']) &&
           request.resource.data.participants == (resource.data.participants || 0) + 1
         ) ||
-        
-        // SCENARIO 3: The organizer is REMOVING a participant.
+        // SCENARIO 3: Organizer removes a participant.
         (
           request.auth.uid == resource.data.organizerId &&
           request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participants']) &&
           request.resource.data.participants == (resource.data.participants || 0) - 1
         ) ||
-        
-        // SCENARIO 4: A user is LOGGING A SOUL for the campaign.
+        // SCENARIO 4: A user logs a soul.
         (
           request.resource.data.diff(resource.data).affectedKeys().hasOnly(['soulsLogged']) &&
           request.resource.data.soulsLogged == (resource.data.soulsLogged || 0) + 1
