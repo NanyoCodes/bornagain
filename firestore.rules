@@ -115,25 +115,28 @@ service cloud.firestore {
         ) ||
 
         // SCENARIO 2: A user is joining a campaign.
-        // This transaction-aware rule ensures the participant count is incremented
-        // only when the user's participant document is also being created.
         (
+          // The only field that can change on the campaign doc is 'participants'.
           request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participants']) &&
-          request.resource.data.participants == resource.data.participants + 1 &&
-          existsAfter(/databases/$(database)/documents/campaigns/$(campaignId)/participants/$(request.auth.uid))
-        ) ||
-
-        // SCENARIO 3: Any authenticated user is logging a soul for a campaign.
-        (
-          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['soulsLogged']) &&
-          request.resource.data.soulsLogged == (resource.data.soulsLogged || 0) + 1
+          // The participant count must increment by exactly 1.
+          request.resource.data.participants == (resource.data.participants || 0) + 1 &&
+          // The user must not already be a participant in the campaign's subcollection.
+          !exists(/databases/$(database)/documents/campaigns/$(campaignId)/participants/$(request.auth.uid)) &&
+          // The user must not already have a record of joining this campaign in their own user doc.
+          !exists(/databases/$(database)/documents/users/$(request.auth.uid)/joinedCampaigns/$(campaignId))
         ) ||
         
-        // SCENARIO 4: The organizer is removing a participant.
+        // SCENARIO 3: The organizer is REMOVING a participant.
         (
           request.auth.uid == resource.data.organizerId &&
           request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participants']) &&
           request.resource.data.participants == (resource.data.participants || 0) - 1
+        ) ||
+        
+        // SCENARIO 4: A user is LOGGING A SOUL for the campaign.
+        (
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['soulsLogged']) &&
+          request.resource.data.soulsLogged == (resource.data.soulsLogged || 0) + 1
         )
       );
 
