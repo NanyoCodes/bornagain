@@ -108,19 +108,19 @@ service cloud.firestore {
       allow delete: if false; // Hard deletes are disallowed. Status is updated instead.
 
       allow update: if request.auth != null && (
-        // SCENARIO 1: The organizer is updating campaign details.
+        // SCENARIO 1: The organizer is updating campaign details (even for past campaigns).
         (
           request.auth.uid == resource.data.organizerId &&
           !request.resource.data.diff(resource.data).hasAny(['participants', 'soulsLogged'])
         ) ||
 
         // SCENARIO 2: A user is joining a campaign.
-        // This rule is simplified because the client-side transaction ensures the corresponding
-        // documents are created in the participants and user's joinedCampaigns subcollections.
-        // The rules on those subcollections ensure only the authenticated user can create docs for themselves.
+        // This transaction-aware rule ensures the participant count is incremented
+        // only when the user's participant document is also being created.
         (
           request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participants']) &&
-          request.resource.data.participants == (resource.data.participants || 0) + 1
+          request.resource.data.participants == resource.data.participants + 1 &&
+          existsAfter(/databases/$(database)/documents/campaigns/$(campaignId)/participants/$(request.auth.uid))
         ) ||
 
         // SCENARIO 3: Any authenticated user is logging a soul for a campaign.
