@@ -105,7 +105,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, dist
               path: testimonyRef.path,
               operation: 'update',
               requestResourceData: { supporters: `(arrayUnion: ${user.uid})` },
-            });
+            }, user);
             errorEmitter.emit('permission-error', permissionError);
         })
         .finally(() => {

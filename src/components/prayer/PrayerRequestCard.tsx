@@ -1,3 +1,4 @@
+
 "use client";
 
 import {
@@ -61,7 +62,7 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({ prayerRequest
               path: requestRef.path,
               operation: 'update',
               requestResourceData: { usersWhoPrayed: `(arrayUnion: ${user.uid})` },
-            });
+            }, user);
             errorEmitter.emit('permission-error', permissionError);
         })
         .finally(() => {

@@ -1,3 +1,4 @@
+
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -16,17 +17,10 @@ service cloud.firestore {
       match /souls/{soulId} {
         allow read, write: if request.auth != null && request.auth.uid == userId;
       }
-
+      
       // Joined campaigns are private to the user.
       match /joinedCampaigns/{campaignId} {
-        allow read: if request.auth != null && request.auth.uid == userId;
-        // Only the user can add themselves to a campaign.
-        allow create: if request.auth != null && request.auth.uid == userId;
-        // The user or the campaign organizer can remove the user from a campaign.
-        allow delete: if request.auth != null && (
-          request.auth.uid == userId ||
-          get(/databases/$(database)/documents/campaigns/$(campaignId)).data.organizerId == request.auth.uid
-        );
+        allow read, create, delete: if request.auth != null && request.auth.uid == userId;
       }
       
       // Discipline history is only readable by the user and their accountability partner.
@@ -71,12 +65,23 @@ service cloud.firestore {
     match /testimonies/{testimonyId} {
       allow get, list: if true;
       
-      // Author can create, update, or delete their own testimony.
-      allow write: if request.auth != null && (
-          // Create
-          (request.resource.data.authorId == request.auth.uid) ||
-          // Update / Delete
-          (resource.data.authorId == request.auth.uid)
+      // Author can create, update (non-supporter fields), or delete their own testimony.
+      allow create: if request.auth != null && request.resource.data.authorId == request.auth.uid;
+      allow delete: if request.auth != null && resource.data.authorId == request.auth.uid;
+      
+      allow update: if request.auth != null && (
+        // SCENARIO 1: Author can update their own testimony content, but not supporters.
+        (
+          resource.data.authorId == request.auth.uid &&
+          !request.resource.data.diff(resource.data).affectedKeys().hasAny(['supporters'])
+        ) ||
+        // SCENARIO 2: Any authenticated user can support a testimony if they are not already a supporter.
+        (
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters']) &&
+          (resource.data.supporters == null || !(request.auth.uid in resource.data.supporters)) &&
+          request.resource.data.supporters.size() == (resource.data.supporters == null ? 0 : resource.data.supporters.size()) + 1 &&
+          request.auth.uid in request.resource.data.supporters
+        )
       );
     }
     
@@ -88,12 +93,11 @@ service cloud.firestore {
       allow create: if request.auth != null && request.auth.uid == request.resource.data.authorId;
 
       // Any authenticated user can pray for a request by adding their UID to the usersWhoPrayed list.
-      allow update: if request.auth != null
-                    // The only field changing is usersWhoPrayed
-                    && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['usersWhoPrayed'])
-                    // The user is adding themselves, and not removing anyone
-                    && request.resource.data.usersWhoPrayed.size() == resource.data.usersWhoPrayed.size() + 1
-                    && request.auth.uid in request.resource.data.usersWhoPrayed;
+      allow update: if request.auth != null &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['usersWhoPrayed']) &&
+        (resource.data.usersWhoPrayed == null || !(request.auth.uid in resource.data.usersWhoPrayed)) &&
+        request.resource.data.usersWhoPrayed.size() == (resource.data.usersWhoPrayed == null ? 0 : resource.data.usersWhoPrayed.size()) + 1 &&
+        request.auth.uid in request.resource.data.usersWhoPrayed;
 
       // Author can delete their own prayer request.
       allow delete: if request.auth != null && resource.data.authorId == request.auth.uid;
@@ -107,26 +111,26 @@ service cloud.firestore {
       allow delete: if false; // Hard deletes are disallowed. Status is updated instead.
 
       allow update: if request.auth != null && (
-        // SCENARIO 1: Organizer updates details (including soft delete)
+        // SCENARIO 1: Organizer updates details (including soft delete).
         (
-            request.auth.uid == resource.data.organizerId &&
-            !request.resource.data.diff(resource.data).affectedKeys().hasAny(['participants', 'soulsLogged'])
+          request.auth.uid == resource.data.organizerId &&
+          !request.resource.data.diff(resource.data).affectedKeys().hasAny(['participants', 'soulsLogged'])
         ) ||
-        // SCENARIO 2: Any user joining a campaign can increment participants
+        // SCENARIO 2: A user joins a campaign.
         (
             request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participants']) &&
             request.resource.data.participants == (resource.data.participants || 0) + 1
         ) ||
-        // SCENARIO 3: Any user logging a soul can increment soulsLogged
+        // SCENARIO 3: A user logs a soul.
         (
-            request.resource.data.diff(resource.data).affectedKeys().hasOnly(['soulsLogged']) &&
-            request.resource.data.soulsLogged == (resource.data.soulsLogged || 0) + 1
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['soulsLogged']) &&
+          request.resource.data.soulsLogged == (resource.data.soulsLogged || 0) + 1
         ) ||
-        // SCENARIO 4: Organizer removes a participant
+        // SCENARIO 4: Organizer removes a participant.
         (
-            request.auth.uid == resource.data.organizerId &&
-            request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participants']) &&
-            request.resource.data.participants == (resource.data.participants || 0) - 1
+          request.auth.uid == resource.data.organizerId &&
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participants']) &&
+          request.resource.data.participants == (resource.data.participants || 0) - 1
         )
       );
 
