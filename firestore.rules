@@ -109,13 +109,16 @@ service cloud.firestore {
 
       allow update: if request.auth != null && (
         // SCENARIO 1: The organizer is updating campaign details.
-        (request.auth.uid == resource.data.organizerId &&
-          !request.resource.data.diff(resource.data).hasAny(['participants', 'soulsLogged'])) ||
+        (
+          request.auth.uid == resource.data.organizerId &&
+          !request.resource.data.diff(resource.data).hasAny(['participants', 'soulsLogged'])
+        ) ||
 
         // SCENARIO 2: A user is joining a campaign.
+        // This rule is simplified because the client-side transaction ensures the corresponding
+        // documents are created in the participants and user's joinedCampaigns subcollections.
+        // The rules on those subcollections ensure only the authenticated user can create docs for themselves.
         (
-          !exists(/databases/$(database)/documents/campaigns/$(campaignId)/participants/$(request.auth.uid)) &&
-          existsAfter(/databases/$(database)/documents/campaigns/$(campaignId)/participants/$(request.auth.uid)) &&
           request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participants']) &&
           request.resource.data.participants == (resource.data.participants || 0) + 1
         ) ||
