@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -65,8 +66,12 @@ export function JoinCampaignDialog({
           throw new Error('Campaign does not exist!');
         }
 
-        const joinedDoc = await transaction.get(joinedRef);
-        if (joinedDoc.exists()) {
+        const [joinedDoc, participantDoc] = await Promise.all([
+          transaction.get(joinedRef),
+          transaction.get(participantRef)
+        ]);
+
+        if (joinedDoc.exists() || participantDoc.exists()) {
           throw new Error('You have already joined this campaign.');
         }
 
@@ -103,7 +108,7 @@ export function JoinCampaignDialog({
             type: 'campaign_join',
             title: 'New Participant!',
             message: `${userProfile.firstName} ${userProfile.lastName} has joined your campaign: "${campaign.title}"`,
-            link: `/dashboard/campaigns`,
+            link: `/dashboard/campaigns/${campaign.id}`,
             isRead: false,
             createdAt: serverTimestamp(),
           });
