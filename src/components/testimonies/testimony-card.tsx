@@ -18,7 +18,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Testimony } from "@/lib/types";
 import { format } from "date-fns";
-import { Share2, MoreVertical, Edit, Trash2, Loader2, MapPin } from "lucide-react";
+import { Share2, MoreVertical, Edit, Trash2, Loader2, MapPin, HandHeart } from "lucide-react";
 import { useUser, useFirestore } from "@/firebase";
 import { useState, useMemo } from "react";
 import {
@@ -31,10 +31,11 @@ import {
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
-import { doc, deleteDoc } from "firebase/firestore";
+import { doc, deleteDoc, updateDoc, arrayUnion } from "firebase/firestore";
 import { EditTestimonyForm } from "./edit-testimony-form";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
+import { cn } from "@/lib/utils";
 
 export const TestimonyCard = React.memo(function TestimonyCard({ testimony, distance }: { testimony: Testimony, distance: number | null }) {
   const { user } = useUser();
@@ -45,9 +46,13 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, dist
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isSupporting, setIsSupporting] = useState(false);
 
   const isAuthor = user?.uid === testimony.authorId;
   const authorFullName = `${testimony.authorFirstName} ${testimony.authorLastName}`;
+
+  const supporters = testimony.supporters || [];
+  const hasSupported = useMemo(() => user ? supporters.includes(user.uid) : false, [user, supporters]);
   
   const displayDate = useMemo(() => {
     const createdAtDate = testimony.createdAt
@@ -83,6 +88,30 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, dist
         setIsDeleting(false);
       });
   };
+
+  const handleSupport = () => {
+    if (!user || !firestore || hasSupported || isAuthor) return;
+    setIsSupporting(true);
+    
+    const testimonyRef = doc(firestore, 'testimonies', testimony.id);
+    const updatePayload = { supporters: arrayUnion(user.uid) };
+
+    updateDoc(testimonyRef, updatePayload)
+        .then(() => {
+            toast({ title: "Thank You!", description: "Thank you for your support." });
+        })
+        .catch(() => {
+            const permissionError = new FirestorePermissionError({
+              path: testimonyRef.path,
+              operation: 'update',
+              requestResourceData: { supporters: `(arrayUnion: ${user.uid})` },
+            });
+            errorEmitter.emit('permission-error', permissionError);
+        })
+        .finally(() => {
+            setIsSupporting(false);
+        });
+  }
 
   const navigateToProfile = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
@@ -155,7 +184,11 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, dist
                   From: <Link href={`/dashboard/campaigns/${testimony.campaignId}`} className="font-semibold text-primary hover:underline">{testimony.campaignTitle}</Link>
               </div>
           )}
-          <div className="ml-auto">
+          <div className="ml-auto flex items-center gap-2">
+            <Button onClick={handleSupport} disabled={hasSupported || isSupporting || !user || isAuthor} variant="ghost" size="sm" className="flex items-center gap-1.5 text-muted-foreground">
+              {isSupporting ? <Loader2 className="h-4 w-4 animate-spin" /> : <HandHeart className={cn("h-4 w-4", hasSupported && "fill-rose-500 text-rose-500")} />}
+              {supporters.length > 0 && <span>{supporters.length}</span>}
+            </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon">

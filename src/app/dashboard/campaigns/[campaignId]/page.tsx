@@ -1,18 +1,18 @@
+
 'use client';
 
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useDoc, useFirestore, useUser } from '@/firebase';
-import type { Campaign, UserProfile, JoinedCampaign } from '@/lib/types';
-import { doc, collection } from 'firebase/firestore';
+import type { Campaign, UserProfile } from '@/lib/types';
+import { doc } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Loader2, ArrowLeft, MapPin, CalendarDays, Users, Share2, Edit, MessagesSquare, UserCheck2, PlayCircle, Newspaper, Target, CheckCircle2 } from 'lucide-react';
+import { Loader2, ArrowLeft, MapPin, CalendarDays, Users, Share2, Edit, MessagesSquare, UserCheck2, PlayCircle, Newspaper, Target } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { format, isSameDay, differenceInDays, formatDistanceToNow, parse } from 'date-fns';
-import { JoinCampaignDialog } from '@/components/campaigns/join-campaign-dialog';
 import { ManageCampaignForm } from '@/components/campaigns/manage-campaign-form';
 import { LogSoulForm } from "@/components/souls/log-soul-form";
 import { CreateTestimonyForm } from "@/components/testimonies/create-testimony-form";
@@ -219,7 +219,6 @@ export default function CampaignPage() {
     const [isManageOpen, setIsManageOpen] = useState(false);
     const [isLogSoulOpen, setIsLogSoulOpen] = useState(false);
     const [isTestimonyDialogOpen, setIsTestimonyDialogOpen] = useState(false);
-    const [isJoinDialogOpen, setIsJoinDialogOpen] = useState(false);
 
     const campaignDocRef = useMemo(() => doc(firestore, 'campaigns', campaignId as string), [firestore, campaignId]);
     const { data: campaign, loading: campaignLoading, error: campaignError } = useDoc<Campaign>(campaignDocRef);
@@ -227,13 +226,9 @@ export default function CampaignPage() {
     const userDocRef = useMemo(() => user ? doc(firestore, 'users', user.uid) : null, [user, firestore]);
     const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userDocRef);
     
-    const joinedCampaignDocRef = useMemo(() => (user && campaignId) ? doc(firestore, `users/${user.uid}/joinedCampaigns`, campaignId as string) : null, [user, firestore, campaignId]);
-    const { data: joinedCampaign, loading: joinedLoading } = useDoc<JoinedCampaign>(joinedCampaignDocRef);
-    
-    const loading = campaignLoading || profileLoading || joinedLoading;
+    const loading = campaignLoading || profileLoading;
     
     const isOwner = useMemo(() => user?.uid === campaign?.organizerId, [user, campaign]);
-    const isJoined = useMemo(() => !!joinedCampaign, [joinedCampaign]);
 
     const handleShare = async () => {
         if (!campaign) return;
@@ -332,9 +327,6 @@ export default function CampaignPage() {
     } else {
         dateString = "Date not set";
     }
-
-    const isFull = campaign.maxParticipants && campaign.participants >= campaign.maxParticipants;
-    const joinButtonDisabled = !user || status === 'Past' || isFull;
 
     return (
         <>
@@ -439,22 +431,14 @@ export default function CampaignPage() {
                                         {status === 'Ongoing' && (
                                             <Button variant="secondary" onClick={() => setIsLogSoulOpen(true)}><UserCheck2 className="mr-2 h-4 w-4" /> Log Soul</Button>
                                         )}
-                                        {isJoined && (status === 'Ongoing' || status === 'Past') && (
+                                        {(status === 'Ongoing' || status === 'Past') && (
                                             <Button variant="secondary" onClick={() => setIsTestimonyDialogOpen(true)}><Newspaper className="mr-2 h-4 w-4" /> Share Testimony</Button>
                                         )}
                                     </>
-                                ) : isJoined ? (
+                                ) : (
                                     <>
                                         {status === 'Ongoing' && <Button variant="secondary" onClick={() => setIsLogSoulOpen(true)}><UserCheck2 className="mr-2 h-4 w-4" /> Log Soul</Button>}
                                         {(status === 'Ongoing' || status === 'Past') && <Button variant="secondary" onClick={() => setIsTestimonyDialogOpen(true)}><Newspaper className="mr-2 h-4 w-4" /> Share Testimony</Button>}
-                                        <Button disabled><CheckCircle2 className="mr-2 h-4 w-4"/> Joined</Button>
-                                        <Button variant="outline" onClick={handleShare}><Share2 className="mr-2 h-4 w-4" /> Share</Button>
-                                    </>
-                                ) : (
-                                    <>
-                                        <Button onClick={() => setIsJoinDialogOpen(true)} disabled={joinButtonDisabled}>
-                                            {isFull ? 'Full' : 'Join'}
-                                        </Button>
                                          <Button variant="outline" onClick={handleShare}><Share2 className="mr-2 h-4 w-4" /> Share</Button>
                                     </>
                                 )}
@@ -466,15 +450,6 @@ export default function CampaignPage() {
 
             </div>
 
-            {userProfile && (
-                <JoinCampaignDialog
-                campaign={campaign}
-                userProfile={userProfile}
-                isOpen={isJoinDialogOpen}
-                onOpenChange={setIsJoinDialogOpen}
-                onCampaignJoined={() => {}}
-                />
-            )}
              <Dialog open={isLogSoulOpen} onOpenChange={setIsLogSoulOpen}>
                 <DialogContent className="sm:max-w-lg">
                     <DialogHeader>

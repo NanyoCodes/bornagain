@@ -112,6 +112,7 @@ export type Testimony = {
     latitude?: number;
     longitude?: number;
   };
+  supporters?: string[];
 };
 
 export type PrayerRequest = {
@@ -152,12 +153,6 @@ export type Campaign = {
   streamUrl?: string;
   hasGroupChat?: boolean;
 };
-
-export type JoinedCampaign = {
-  id: string;
-  campaignId: string;
-  joinedAt: Timestamp;
-}
 
 export type CampaignParticipant = {
   id: string;

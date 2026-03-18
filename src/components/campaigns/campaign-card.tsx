@@ -35,7 +35,6 @@ import { useRouter } from "next/navigation";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { JoinCampaignDialog } from "./join-campaign-dialog";
 import { safeToDate } from "@/lib/utils";
 
 
@@ -89,7 +88,7 @@ function ParticipantsDialog({ campaign, children }: { campaign: Campaign; childr
                 )}
                 {otherParticipants && otherParticipants.length > 0 && (
                   <div className="space-y-3">
-                    <h3 className="text-sm font-semibold text-muted-foreground">PARTICIPANTS ({otherParticipants.length})</h3>
+                    <h3 className="text-sm font-semibold text-muted-foreground">MEMBERS ({otherParticipants.length})</h3>
                     <div className="space-y-2">
                       {otherParticipants.map(p => (
                         <div key={p.id} className="p-3 border rounded-lg space-y-2">
@@ -121,7 +120,7 @@ function ParticipantsDialog({ campaign, children }: { campaign: Campaign; childr
   );
 }
 
-export function CampaignCard({ campaign, userId, userProfile, isJoined, distance }: { campaign: Campaign; userId?: string, userProfile?: UserProfile | null, isJoined: boolean, distance: number | null }) {
+export function CampaignCard({ campaign, userId, userProfile, distance }: { campaign: Campaign; userId?: string, userProfile?: UserProfile | null, distance: number | null }) {
   const { toast } = useToast();
   const firestore = useFirestore();
   const { user } = useUser();
@@ -131,7 +130,6 @@ export function CampaignCard({ campaign, userId, userProfile, isJoined, distance
   const [isLogSoulOpen, setIsLogSoulOpen] = useState(false);
   const [isTestimonyDialogOpen, setIsTestimonyDialogOpen] = useState(false);
   const [isChatLoading, setIsChatLoading] = useState(false);
-  const [isJoinDialogOpen, setIsJoinDialogOpen] = useState(false);
 
   const descriptionRef = useRef<HTMLParagraphElement>(null);
   const [isDescriptionTruncated, setIsDescriptionTruncated] = useState(false);
@@ -466,9 +464,6 @@ export function CampaignCard({ campaign, userId, userProfile, isJoined, distance
     </DropdownMenu>
   );
 
-  const isFull = campaign.maxParticipants && campaign.participants >= campaign.maxParticipants;
-  const joinButtonDisabled = !userId || status === 'Past' || isFull;
-
   return (
     <>
       <Card
@@ -569,7 +564,7 @@ export function CampaignCard({ campaign, userId, userProfile, isJoined, distance
                 {isOwner ? (
                     <div onClick={stopPropagation} className="flex items-center gap-2">
                       {status === 'Ongoing' && LogSoulButton}
-                      {isJoined && (status === 'Ongoing' || status === 'Past') && ShareTestimonyDialog}
+                      {(status === 'Ongoing' || status === 'Past') && ShareTestimonyDialog}
                       <Dialog open={isManageOpen} onOpenChange={setIsManageOpen}>
                         <DialogTrigger asChild>
                           <Button variant="outline" size="icon" onClick={(e) => e.stopPropagation()}>
@@ -594,25 +589,10 @@ export function CampaignCard({ campaign, userId, userProfile, isJoined, distance
                       </Dialog>
                       {shareButton}
                     </div>
-                ) : isJoined ? (
-                     <div onClick={stopPropagation} className="flex items-center gap-2">
-                        {status === 'Ongoing' && LogSoulButton}
-                        {(status === 'Ongoing' || status === 'Past') && ShareTestimonyDialog}
-                         <TooltipProvider>
-                          <Tooltip>
-                              <TooltipTrigger asChild>
-                                  <Button onClick={handleViewGroupChat} variant="outline" size="icon" disabled={status === 'Past'}>
-                                      <Users className="h-4 w-4" />
-                                  </Button>
-                              </TooltipTrigger>
-                              <TooltipContent><p>Group Chat</p></TooltipContent>
-                          </Tooltip>
-                         </TooltipProvider>
-                        {shareButton}
-                        <Button disabled><CheckCircle2 className="h-4 w-4"/> Joined</Button>
-                    </div>
                 ) : (
                     <div onClick={stopPropagation} className="flex items-center gap-2">
+                        {status === 'Ongoing' && LogSoulButton}
+                        {(status === 'Ongoing' || status === 'Past') && ShareTestimonyDialog}
                         <TooltipProvider>
                             <Tooltip>
                                 <TooltipTrigger asChild>
@@ -624,9 +604,6 @@ export function CampaignCard({ campaign, userId, userProfile, isJoined, distance
                             </Tooltip>
                         </TooltipProvider>
                         {shareButton}
-                        <Button onClick={() => setIsJoinDialogOpen(true)} disabled={joinButtonDisabled}>
-                           {isFull ? 'Full' : 'Join'}
-                        </Button>
                     </div>
                 )}
             </div>
@@ -660,17 +637,6 @@ export function CampaignCard({ campaign, userId, userProfile, isJoined, distance
               </div>
           </DialogContent>
       </Dialog>
-      {userProfile && (
-          <JoinCampaignDialog
-            campaign={campaign}
-            userProfile={userProfile}
-            isOpen={isJoinDialogOpen}
-            onOpenChange={setIsJoinDialogOpen}
-            onCampaignJoined={() => {
-              // Re-fetch is handled by useCollection
-            }}
-          />
-      )}
     </>
   );
 }

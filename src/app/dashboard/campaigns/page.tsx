@@ -22,7 +22,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { CampaignCard } from "@/components/campaigns/campaign-card";
-import type { Campaign, JoinedCampaign, UserProfile } from "@/lib/types";
+import type { Campaign, UserProfile } from "@/lib/types";
 import { useCollection, useFirestore, useUser } from "@/firebase";
 import { useDoc } from "@/firebase/firestore/use-doc";
 import { collection, query, orderBy, doc } from "firebase/firestore";
@@ -141,19 +141,8 @@ export default function CampaignsPage() {
     return query(collection(firestore, 'campaigns'), orderBy('createdAt', 'desc'));
   }, [firestore, user]);
   const { data: campaigns, loading: campaignsLoading } = useCollection<Campaign>(campaignsQuery);
-
-  const joinedCampaignsQuery = useMemo(() => {
-    if (!user?.uid || !firestore) return null;
-    return query(collection(firestore, `users/${user.uid}/joinedCampaigns`));
-  }, [user?.uid, firestore]);
-  const { data: joinedCampaigns, loading: joinedCampaignsLoading } = useCollection<JoinedCampaign>(joinedCampaignsQuery);
   
-  const loading = userLoading || profileLoading || campaignsLoading || joinedCampaignsLoading;
-
-  const joinedCampaignIds = useMemo(() => {
-    if (!joinedCampaigns) return new Set();
-    return new Set(joinedCampaigns.map(jc => jc.id));
-  }, [joinedCampaigns]);
+  const loading = userLoading || profileLoading || campaignsLoading;
 
   const handleCampaignCreated = () => {
     setIsDialogOpen(false);
@@ -191,7 +180,6 @@ export default function CampaignsPage() {
     const tabFilteredCampaigns = activeCampaigns.filter(c => {
         if (!user?.uid) return true;
         if (filter === 'created') return c.organizerId === user.uid;
-        if (filter === 'joined') return joinedCampaignIds.has(c.id) && c.organizerId !== user.uid;
         return true; // 'all'
     });
 
@@ -275,7 +263,7 @@ export default function CampaignsPage() {
         return createdAtB - createdAtA;
     });
 
-  }, [processedCampaigns, searchTerm, mounted, filter, user?.uid, joinedCampaignIds, statusFilter]);
+  }, [processedCampaigns, searchTerm, mounted, filter, user?.uid, statusFilter]);
 
   const triggerButton = (
     <Button disabled={!user || profileLoading}>
@@ -289,8 +277,6 @@ export default function CampaignsPage() {
   let noResultsMessage = "No campaigns found.";
     if (filter === 'created') {
         noResultsMessage = "You haven't created any campaigns.";
-    } else if (filter === 'joined') {
-        noResultsMessage = "You haven't joined any campaigns.";
     }
 
   return (
@@ -337,8 +323,7 @@ export default function CampaignsPage() {
         <Tabs value={filter} onValueChange={setFilter}>
             <TabsList>
                 <TabsTrigger value="all">All Campaigns</TabsTrigger>
-                <TabsTrigger value="created">My Created</TabsTrigger>
-                <TabsTrigger value="joined">Joined</TabsTrigger>
+                <TabsTrigger value="created">My Campaigns</TabsTrigger>
             </TabsList>
         </Tabs>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
@@ -363,7 +348,6 @@ export default function CampaignsPage() {
             campaign={campaign} 
             userId={user?.uid}
             userProfile={userProfile}
-            isJoined={joinedCampaignIds.has(campaign.id)}
             distance={campaign._distance}
           />
         ))}
@@ -374,8 +358,6 @@ export default function CampaignsPage() {
             <p className="mt-2 text-sm text-muted-foreground">
               {filter === 'created'
                 ? 'Why not start a new one to reach your community?'
-                : filter === 'joined'
-                ? 'Explore all campaigns to find one to join.'
                 : 'Try a different search term or create a new campaign.'}
             </p>
           </div>

@@ -252,6 +252,11 @@
             "latitude": { "type": "number" },
             "longitude": { "type": "number" }
           }
+        },
+        "supporters": {
+          "type": "array",
+          "description": "A list of UIDs of users who have supported this testimony.",
+          "items": { "type": "string" }
         }
       },
       "required": [
@@ -506,23 +511,6 @@
         "status"
       ]
     },
-    "JoinedCampaign": {
-      "title": "Joined Campaign",
-      "description": "A record of a user joining a campaign.",
-      "type": "object",
-      "properties": {
-        "campaignId": {
-          "type": "string"
-        },
-        "joinedAt": {
-          "type": "object"
-        }
-      },
-      "required": [
-        "campaignId",
-        "joinedAt"
-      ]
-    },
     "CampaignParticipant": {
       "title": "Campaign Participant",
       "description": "Represents a user who has joined a campaign.",
@@ -759,12 +747,6 @@
         "$ref": "#/entities/Soul"
       },
       "description": "Stores souls won by a specific user."
-    },
-    "/users/{userId}/joinedCampaigns/{campaignId}": {
-      "schema": {
-        "$ref": "#/entities/JoinedCampaign"
-      },
-      "description": "Stores a record of campaigns a user has joined."
     },
     "/users/{userId}/notifications/{notificationId}": {
       "schema": {
