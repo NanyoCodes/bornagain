@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -17,9 +18,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
-import type { TestimonyCategory, Campaign } from "@/lib/types";
-import { useUser, useFirestore } from "@/firebase";
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import type { TestimonyCategory, Campaign, UserProfile } from "@/lib/types";
+import { useUser, useFirestore, useDoc } from "@/firebase";
+import { collection, addDoc, serverTimestamp, doc } from "firebase/firestore";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { errorEmitter } from "@/firebase/error-emitter";
 
@@ -41,6 +42,9 @@ export function CreateTestimonyForm({ onTestimonyCreated, campaign }: CreateTest
   
   const { user } = useUser();
   const firestore = useFirestore();
+  
+  const userDocRef = useMemo(() => user ? doc(firestore, 'users', user.uid) : null, [user, firestore]);
+  const { data: userProfile } = useDoc<UserProfile>(userDocRef);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -50,7 +54,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, campaign }: CreateTest
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    if (!user || !firestore) {
+    if (!user || !firestore || !userProfile) {
       toast({ variant: 'destructive', title: 'Not Authenticated', description: 'You must be logged in to share a testimony.'});
       return;
     }
@@ -58,17 +62,21 @@ export function CreateTestimonyForm({ onTestimonyCreated, campaign }: CreateTest
     setIsSubmitting(true);
     
     try {
-      const nameParts = user.displayName?.split(' ') || [];
       const testimonyCollectionRef = collection(firestore, "testimonies");
       const testimonyData: any = {
           authorId: user.uid,
-          authorFirstName: nameParts[0] || 'Anonymous',
-          authorLastName: nameParts.slice(1).join(' ') || '',
-          authorAvatarUrl: user.photoURL || null,
+          authorFirstName: userProfile.firstName || 'Anonymous',
+          authorLastName: userProfile.lastName || '',
+          authorAvatarUrl: userProfile.photoURL || null,
           content: values.content,
           createdAt: serverTimestamp(),
           category: values.category as TestimonyCategory,
+          supporters: [],
       };
+
+      if (userProfile.location) {
+        testimonyData.authorLocation = userProfile.location;
+      }
 
       if (campaign) {
         testimonyData.campaignId = campaign.id;

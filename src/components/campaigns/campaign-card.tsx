@@ -4,7 +4,7 @@
 import Link from "next/link";
 import { format, parse, isSameDay, differenceInDays } from "date-fns";
 import { CalendarDays, MapPin, Users, Share2, Edit, MoreVertical, Loader2, MessagesSquare, UserCheck2, PlayCircle, UserPlus, Newspaper, CheckCircle2 } from "lucide-react";
-import type { Campaign, CampaignParticipant, UserProfile } from "@/lib/types";
+import type { Campaign, CampaignParticipant, UserProfile, JoinedCampaign } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -36,6 +36,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { safeToDate } from "@/lib/utils";
+import { JoinCampaignDialog } from "./join-campaign-dialog";
 
 
 function ParticipantsDialog({ campaign, children }: { campaign: Campaign; children: React.ReactNode; }) {
@@ -129,6 +130,7 @@ export function CampaignCard({ campaign, userId, userProfile, distance }: { camp
   const [isManageOpen, setIsManageOpen] = useState(false);
   const [isLogSoulOpen, setIsLogSoulOpen] = useState(false);
   const [isTestimonyDialogOpen, setIsTestimonyDialogOpen] = useState(false);
+  const [isJoinDialogOpen, setIsJoinDialogOpen] = useState(false);
   const [isChatLoading, setIsChatLoading] = useState(false);
 
   const descriptionRef = useRef<HTMLParagraphElement>(null);
@@ -140,6 +142,17 @@ export function CampaignCard({ campaign, userId, userProfile, distance }: { camp
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  const joinedCampaignsQuery = useMemo(() => {
+    if (!userId) return null;
+    return query(collection(firestore, 'users', userId, 'joinedCampaigns'));
+  }, [userId, firestore]);
+  const { data: joinedCampaigns, loading: joinedCampaignsLoading } = useCollection<JoinedCampaign>(joinedCampaignsQuery);
+  const isJoined = useMemo(() => {
+    if (joinedCampaignsLoading) return false; // Assume not joined while loading
+    return joinedCampaigns?.some(c => c.id === campaign.id);
+  }, [joinedCampaigns, campaign.id, joinedCampaignsLoading]);
+
 
   const handleCardClick = (e: React.MouseEvent<HTMLDivElement>) => {
     // Prevent navigation if a button, link or interactive element was clicked
@@ -217,19 +230,6 @@ export function CampaignCard({ campaign, userId, userProfile, distance }: { camp
       return () => window.removeEventListener('resize', checkTruncation);
     }
   }, [campaign.description]);
-
-  const handleViewGroupChat = () => {
-    if (!campaign.id) return;
-    
-    if (campaign.hasGroupChat) {
-        router.push(`/dashboard/chats/${campaign.id}`);
-    } else {
-        toast({
-            title: "Group Chat Not Started",
-            description: "The organizer has not started the group chat for this campaign yet.",
-        });
-    }
-  };
   
   const handleInitiateChat = async () => {
     if (!user || !firestore) {
@@ -426,7 +426,6 @@ export function CampaignCard({ campaign, userId, userProfile, distance }: { camp
               toast({ title: "Testimony Shared!", description: "Thank you for sharing." });
             }}
             campaign={campaign}
-            userProfile={userProfile}
           />}
         </div>
       </DialogContent>
@@ -463,6 +462,23 @@ export function CampaignCard({ campaign, userId, userProfile, distance }: { camp
         </DropdownMenuContent>
     </DropdownMenu>
   );
+  
+  const JoinButton = (
+    <Button
+      size="sm"
+      className="w-full sm:w-auto"
+      onClick={(e) => { e.stopPropagation(); setIsJoinDialogOpen(true); }}
+      disabled={status === 'Past' || joinedCampaignsLoading}
+    >
+      {joinedCampaignsLoading ? (
+        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+      ) : (
+        <UserPlus className="mr-2 h-4 w-4" />
+      )}
+      Join
+    </Button>
+  );
+
 
   return (
     <>
@@ -560,6 +576,8 @@ export function CampaignCard({ campaign, userId, userProfile, distance }: { camp
                         </Link>
                     </Button>
                 )}
+                 {!isOwner && !isJoined && status !== 'Past' && JoinButton}
+                 {isJoined && <Badge variant="secondary" className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4"/> Joined</Badge>}
 
                 {isOwner ? (
                     <div onClick={stopPropagation} className="flex items-center gap-2">
@@ -618,6 +636,13 @@ export function CampaignCard({ campaign, userId, userProfile, distance }: { camp
             <span className="flex-shrink-0">{footerDateText}</span>
         </CardFooter>
       </Card>
+      {userProfile && <JoinCampaignDialog
+        campaign={campaign}
+        userProfile={userProfile}
+        isOpen={isJoinDialogOpen}
+        onOpenChange={setIsJoinDialogOpen}
+        onCampaignJoined={() => setIsJoinDialogOpen(false)}
+      />}
       <Dialog open={isLogSoulOpen} onOpenChange={setIsLogSoulOpen}>
           <DialogContent className="sm:max-w-lg">
               <DialogHeader>

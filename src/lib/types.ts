@@ -165,6 +165,12 @@ export type CampaignParticipant = {
   joinReason?: string;
 };
 
+export type JoinedCampaign = {
+  id: string;
+  campaignId: string;
+  joinedAt: Timestamp;
+};
+
 export type ProgressLog = {
   date: string;
   soulsWon: number;

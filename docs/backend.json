@@ -548,6 +548,20 @@
         "joinedAt"
       ]
     },
+    "JoinedCampaign": {
+      "title": "Joined Campaign",
+      "description": "A record indicating that a user has joined a specific campaign.",
+      "type": "object",
+      "properties": {
+        "campaignId": {
+          "type": "string"
+        },
+        "joinedAt": {
+          "type": "object"
+        }
+      },
+      "required": ["campaignId", "joinedAt"]
+    },
     "Chat": {
       "title": "Chat",
       "description": "A chat session, which can be a group chat for a campaign, a private one-on-one chat related to a campaign, or a private chat between accountability partners.",
@@ -723,6 +737,12 @@
         "$ref": "#/entities/UserProfile"
       },
       "description": "Stores public user profile data, keyed by user ID."
+    },
+     "/users/{userId}/joinedCampaigns/{campaignId}": {
+      "schema": {
+        "$ref": "#/entities/JoinedCampaign"
+      },
+      "description": "Stores a reference to campaigns a user has joined."
     },
     "/users/{userId}/disciplineHistory/{logId}": {
       "schema": {

@@ -18,6 +18,11 @@ service cloud.firestore {
         allow read, write: if request.auth != null && request.auth.uid == userId;
       }
       
+      // Joined campaigns are private to the user.
+      match /joinedCampaigns/{campaignId} {
+        allow read, create, delete: if request.auth != null && request.auth.uid == userId;
+      }
+      
       // Discipline history is only readable by the user and their accountability partner.
       match /disciplineHistory/{logId} {
         allow read: if request.auth != null && (
@@ -66,7 +71,7 @@ service cloud.firestore {
       
       allow update: if request.auth != null && (
         // Author can update their own testimony content
-        (resource.data.authorId == request.auth.uid) ||
+        (resource.data.authorId == request.auth.uid && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['supporters'])) ||
         // Any authenticated user can support a testimony.
         (
           request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters']) &&
@@ -107,6 +112,11 @@ service cloud.firestore {
         (
           request.auth.uid == resource.data.organizerId &&
           !request.resource.data.diff(resource.data).affectedKeys().hasAny(['participants', 'soulsLogged'])
+        ) ||
+        // SCENARIO 2: A user joins a campaign.
+        (
+            request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participants']) &&
+            request.resource.data.participants == (resource.data.participants || 0) + 1
         ) ||
         // SCENARIO 3: A user logs a soul.
         (
