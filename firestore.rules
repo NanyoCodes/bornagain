@@ -116,14 +116,8 @@ service cloud.firestore {
 
         // SCENARIO 2: A user is joining a campaign.
         (
-          // The only field that can change on the campaign doc is 'participants'.
           request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participants']) &&
-          // The participant count must increment by exactly 1.
-          request.resource.data.participants == (resource.data.participants || 0) + 1 &&
-          // The user must not already be a participant in the campaign's subcollection.
-          !exists(/databases/$(database)/documents/campaigns/$(campaignId)/participants/$(request.auth.uid)) &&
-          // The user must not already have a record of joining this campaign in their own user doc.
-          !exists(/databases/$(database)/documents/users/$(request.auth.uid)/joinedCampaigns/$(campaignId))
+          request.resource.data.participants == (resource.data.participants || 0) + 1
         ) ||
         
         // SCENARIO 3: The organizer is REMOVING a participant.
