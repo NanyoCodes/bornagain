@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -202,7 +203,7 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
         const permissionError = new FirestorePermissionError({
             path: `TRANSACTION:REMOVE_PARTICIPANT:${participantId}`,
             operation: 'write'
-        });
+        }, user);
         errorEmitter.emit('permission-error', permissionError);
     });
   };
@@ -284,7 +285,7 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
             const permissionError = new FirestorePermissionError({
                 path: `BATCH_WRITE:START_GROUP_CHAT:${campaign.id}`,
                 operation: 'write',
-            });
+            }, user);
             errorEmitter.emit('permission-error', permissionError);
         })
         .finally(() => {
@@ -312,7 +313,7 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
             path: campaignRef.path,
             operation: 'update',
             requestResourceData: deleteData,
-        });
+        }, user);
         errorEmitter.emit('permission-error', permissionError);
     }).finally(() => {
         setIsDeleting(false);
@@ -363,7 +364,7 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
         path: campaignRef.path,
         operation: 'update',
         requestResourceData: updateData,
-        });
+        }, user);
         errorEmitter.emit('permission-error', permissionError);
     }).finally(() => {
         setIsSubmitting(false);
