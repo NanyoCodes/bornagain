@@ -4,11 +4,12 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useJsApiLoader, GoogleMap, MarkerF, CircleF, Autocomplete } from '@react-google-maps/api';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
-import { Loader2 } from 'lucide-react';
+import { Loader2, LocateFixed } from 'lucide-react';
 import { type UseFormReturn } from 'react-hook-form';
 import { useToast } from '@/hooks/use-toast';
 import { Input } from '@/components/ui/input';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { Button } from '../ui/button';
 
 
 const libraries: ('places')[] = ['places'];
@@ -104,17 +105,8 @@ export function LocationMapPicker({ form }: LocationMapPickerProps) {
         });
     }, [form]);
     
-    const handleMapClick = useCallback((e: google.maps.MapMouseEvent) => {
-        if (e.latLng) {
-            updateFormLocation(e.latLng);
-        }
-    }, [updateFormLocation]);
-    
-    // This effect runs once to set an initial location if none is provided.
-    useEffect(() => {
-        const initialLocation = form.getValues('location');
-        if (isLoaded && !initialLocation && navigator.geolocation && !hasFetchedLocation.current) {
-            hasFetchedLocation.current = true;
+    const handleGeolocate = () => {
+        if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
                 (position) => {
                     const userLocation = {
@@ -122,15 +114,36 @@ export function LocationMapPicker({ form }: LocationMapPickerProps) {
                         lng: position.coords.longitude,
                     };
                     const userLatLng = new window.google.maps.LatLng(userLocation.lat, userLocation.lng);
-                    setCenter(userLocation);
                     updateFormLocation(userLatLng);
                     if (map) {
                         map.panTo(userLocation);
                         map.setZoom(14);
                     }
+                    toast({ title: 'Location Updated', description: 'Map centered on your current location.' });
                 },
-                () => { /* Fail silently */ }
+                () => {
+                    toast({
+                        variant: 'destructive',
+                        title: 'Geolocation Failed',
+                        description: 'Could not get your location. Please check your browser permissions.',
+                    });
+                }
             );
+        } else {
+            toast({
+                variant: 'destructive',
+                title: 'Geolocation Not Supported',
+                description: 'Your browser does not support geolocation.',
+            });
+        }
+    };
+    
+    // This effect runs once to set an initial location if none is provided.
+    useEffect(() => {
+        const initialLocation = form.getValues('location');
+        if (isLoaded && !initialLocation && navigator.geolocation && !hasFetchedLocation.current) {
+            hasFetchedLocation.current = true;
+            handleGeolocate();
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isLoaded, map]);
@@ -283,20 +296,33 @@ export function LocationMapPicker({ form }: LocationMapPickerProps) {
     }
     
     const searchInputEl = (
-        <Autocomplete
-            onLoad={onAutocompleteLoad}
-            onPlaceChanged={onPlaceChanged}
-            fields={['formatted_address', 'name', 'geometry.location']}
-            types={['geocode']}
-        >
-            <Input
-                type="text"
-                placeholder="Search for a location..."
-                className="text-base shadow-lg"
-                value={inputValue}
-                onChange={handleInputChange}
-            />
-        </Autocomplete>
+        <div className="relative">
+            <Autocomplete
+                onLoad={onAutocompleteLoad}
+                onPlaceChanged={onPlaceChanged}
+                fields={['formatted_address', 'name', 'geometry.location']}
+                types={['geocode']}
+            >
+                <Input
+                    type="text"
+                    placeholder="Search for a location..."
+                    className="text-base shadow-lg pr-10"
+                    value={inputValue}
+                    onChange={handleInputChange}
+                />
+            </Autocomplete>
+            <Button
+                type="button"
+                size="icon"
+                variant="ghost"
+                className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8"
+                onClick={handleGeolocate}
+                title="Use my current location"
+            >
+                <LocateFixed className="h-4 w-4" />
+                <span className="sr-only">Use my current location</span>
+            </Button>
+        </div>
     );
 
     return (
