@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useStorage, useUser } from '@/firebase';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -29,6 +29,15 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath }: 
   const [uploadError, setUploadError] = useState<string | null>(null);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    // This effect ensures that if the initialImageUrl prop changes from the parent
+    // (e.g., after a successful form submission and re-opening the modal),
+    // the preview is updated, but only if an upload isn't in progress.
+    if (!isUploading) {
+      setPreviewUrl(initialImageUrl || null);
+    }
+  }, [initialImageUrl, isUploading]);
 
   const handleFileSelect = () => {
     fileInputRef.current?.click();
