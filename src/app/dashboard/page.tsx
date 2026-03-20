@@ -255,7 +255,7 @@ function GlobalSoulsCard({
       const permissionError = new FirestorePermissionError({
         path: 'souls',
         operation: 'list',
-      });
+      }, user);
       errorEmitter.emit('permission-error', permissionError);
       setError('Could not load community stats.');
     } finally {
