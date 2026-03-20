@@ -289,7 +289,7 @@ function AppHeader({ unreadChatCount }: { unreadChatCount: number }) {
             <DropdownMenuItem asChild>
               <Link href="/dashboard/accountability">
                 <HeartHandshake className="mr-2 h-4 w-4" />
-                <span>Partner</span>
+                <span>Accountability Partner</span>
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
