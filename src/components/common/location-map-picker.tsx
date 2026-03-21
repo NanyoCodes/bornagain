@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
@@ -55,17 +54,12 @@ export function LocationMapPicker({ form }: LocationMapPickerProps) {
     }, []);
 
     const geocoderRef = useRef<google.maps.Geocoder>();
-    const autocompleteServiceRef = useRef<google.maps.places.AutocompleteService>();
-    const debounceTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
     const hasFetchedLocation = useRef(false);
 
     useEffect(() => {
         if (isLoaded) {
             if (!geocoderRef.current) {
                 geocoderRef.current = new window.google.maps.Geocoder();
-            }
-            if (!autocompleteServiceRef.current) {
-                autocompleteServiceRef.current = new window.google.maps.places.AutocompleteService();
             }
         }
     }, [isLoaded]);
@@ -205,46 +199,7 @@ export function LocationMapPicker({ form }: LocationMapPickerProps) {
         const value = e.target.value;
         setInputValue(value);
         form.setValue('location', value, { shouldDirty: true });
-
-        if (debounceTimeoutRef.current) {
-            clearTimeout(debounceTimeoutRef.current);
-        }
-
-        if (!value.trim()) {
-            return;
-        }
-
-        debounceTimeoutRef.current = setTimeout(() => {
-            if (!autocompleteServiceRef.current || !geocoderRef.current) {
-                return;
-            }
-
-            autocompleteServiceRef.current.getPlacePredictions({ input: value }, (predictions, status) => {
-                if (status === 'OK' && predictions && predictions.length > 0) {
-                    const firstPrediction = predictions[0];
-                    geocoderRef.current?.geocode({ placeId: firstPrediction.place_id }, (results, geocodeStatus) => {
-                        if (geocodeStatus === 'OK' && results?.[0]?.geometry?.location) {
-                            const location = results[0].geometry.location;
-                            const newPos = { lat: location.lat(), lng: location.lng() };
-                            if (map) {
-                                map.panTo(newPos);
-                                map.setZoom(12);
-                            }
-                        }
-                    });
-                }
-            });
-        }, 3000); // 3-second delay
     };
-
-    useEffect(() => {
-        return () => {
-            if (debounceTimeoutRef.current) {
-                clearTimeout(debounceTimeoutRef.current);
-            }
-        };
-    }, []);
-
 
     const onPlaceChanged = () => {
         if (autocomplete !== null) {
