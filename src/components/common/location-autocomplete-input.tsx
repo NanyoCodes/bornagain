@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -5,6 +6,8 @@ import { useJsApiLoader, Autocomplete } from '@react-google-maps/api';
 import { Input } from '@/components/ui/input';
 import { Loader2 } from 'lucide-react';
 import { type UseFormReturn } from 'react-hook-form';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import Link from 'next/link';
 
 const libraries: ('places')[] = ['places'];
 const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
@@ -55,19 +58,39 @@ export function LocationAutocompleteInput({ form }: LocationAutocompleteInputPro
         form.setValue('location', e.target.value, { shouldDirty: true });
     }
 
-    if (!GOOGLE_MAPS_API_KEY) {
-        return <div className="text-destructive text-sm p-2 rounded-md border border-destructive/50 bg-destructive/10">Google Maps API key is missing. Please set NEXT_PUBLIC_GOOGLE_MAPS_API_KEY in your .env file.</div>;
+    if (!GOOGLE_MAPS_API_KEY || GOOGLE_MAPS_API_KEY === 'YOUR_API_KEY_HERE') {
+        return (
+            <Alert variant="destructive">
+                <AlertTitle>Google Maps Not Configured</AlertTitle>
+                <AlertDescription>
+                    The Google Maps API key is missing. Please{' '}
+                    <Link href="/docs/google-maps-setup-guide.md" className="font-semibold underline hover:text-destructive-foreground" target="_blank" rel="noopener noreferrer">
+                        follow the setup guide
+                    </Link>
+                    {' '}to enable map features.
+                </AlertDescription>
+            </Alert>
+        );
     }
 
     if (loadError) {
         let errorMessage = 'Error loading Google Maps. Please check your API key and network connection.';
-        if (loadError.message.includes('ApiNotActivatedMapError')) {
-            errorMessage = 'Google Maps Error: ApiNotActivatedMapError. Please ensure: 1) "Maps JavaScript API" and "Places API" are enabled. 2) Billing is enabled on your Google Cloud project. 3) Your API key restrictions are configured correctly for this domain.';
-        } else if (loadError.message.includes('InvalidKeyMapError')) {
-            errorMessage = 'Google Maps Error: Invalid API Key. Please check the key in your .env file.';
+        if (loadError.message.includes('ApiNotActivatedMapError') || loadError.message.includes('InvalidKeyMapError')) {
+            errorMessage = 'The Google Maps API key seems to be invalid or missing required permissions.';
         }
         
-        return <div className="text-destructive text-sm p-2 rounded-md border border-destructive/50 bg-destructive/10">{errorMessage}</div>;
+        return (
+            <Alert variant="destructive">
+                <AlertTitle>Google Maps Error</AlertTitle>
+                <AlertDescription>
+                    {errorMessage} Please{' '}
+                    <Link href="/docs/google-maps-setup-guide.md" className="font-semibold underline hover:text-destructive-foreground" target="_blank" rel="noopener noreferrer">
+                        review the setup guide
+                    </Link>
+                    {' '}to resolve this.
+                </AlertDescription>
+            </Alert>
+        );
     }
 
     if (!isLoaded) {

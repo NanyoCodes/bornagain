@@ -25,6 +25,7 @@ import { cn } from '@/lib/utils';
 import { safeToDate } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 
 const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
@@ -36,6 +37,26 @@ function CampaignMap({ campaign }: { campaign: Campaign }) {
         googleMapsApiKey: GOOGLE_MAPS_API_KEY || '',
         libraries,
     });
+
+    if (!GOOGLE_MAPS_API_KEY || GOOGLE_MAPS_API_KEY === 'YOUR_API_KEY_HERE') {
+        return (
+            <Card>
+                <CardHeader><CardTitle className="text-lg flex items-center gap-2"><MapPin className="h-5 w-5"/> Map</CardTitle></CardHeader>
+                <CardContent>
+                    <Alert variant="destructive">
+                        <AlertTitle>Google Maps Not Configured</AlertTitle>
+                        <AlertDescription>
+                            The Google Maps API key is missing. Please{' '}
+                            <Link href="/docs/google-maps-setup-guide.md" className="font-semibold underline hover:text-destructive-foreground" target="_blank" rel="noopener noreferrer">
+                                follow the setup guide
+                            </Link>
+                            {' '}to enable map features.
+                        </AlertDescription>
+                    </Alert>
+                </CardContent>
+            </Card>
+        );
+    }
     
     if (!campaign.latitude || !campaign.longitude) {
         return (
@@ -55,7 +76,27 @@ function CampaignMap({ campaign }: { campaign: Campaign }) {
     const center = { lat: campaign.latitude, lng: campaign.longitude };
     const radius = campaign.coverageRadius || 1000;
 
-    if (!isLoaded || loadError) {
+    if (loadError) {
+        return (
+            <Card>
+                <CardHeader><CardTitle className="text-lg flex items-center gap-2"><MapPin className="h-5 w-5"/> Map</CardTitle></CardHeader>
+                <CardContent>
+                    <Alert variant="destructive">
+                        <AlertTitle>Google Maps Error</AlertTitle>
+                        <AlertDescription>
+                            The map could not be loaded. This is likely an API key issue. Please{' '}
+                            <Link href="/docs/google-maps-setup-guide.md" className="font-semibold underline hover:text-destructive-foreground" target="_blank" rel="noopener noreferrer">
+                                review the setup guide
+                            </Link>
+                            {' '}to resolve this.
+                        </AlertDescription>
+                    </Alert>
+                </CardContent>
+            </Card>
+        );
+    }
+
+    if (!isLoaded) {
         return (
             <Card>
                  <CardHeader>
@@ -63,7 +104,7 @@ function CampaignMap({ campaign }: { campaign: Campaign }) {
                 </CardHeader>
                 <CardContent>
                     <div className="h-80 w-full rounded-md bg-muted flex items-center justify-center">
-                        <p className="text-muted-foreground">{loadError ? 'Error loading map' : 'Loading map...'}</p>
+                        <p className="text-muted-foreground">Loading map...</p>
                     </div>
                 </CardContent>
             </Card>
