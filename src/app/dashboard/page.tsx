@@ -557,10 +557,10 @@ function ActionAnalyticsCard({ souls }: { souls: Soul[] }) {
   const barSize = !mounted ? 20 : isMobile ? 14 : 20;
 
   return (
-    <Card>
+    <Card className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground">
       <CardHeader>
         <CardTitle>Follow-up Actions Tracker</CardTitle>
-        <CardDescription>
+        <CardDescription className="text-primary-foreground/80">
           Frequency of actions taken this month.
         </CardDescription>
       </CardHeader>
@@ -575,7 +575,7 @@ function ActionAnalyticsCard({ souls }: { souls: Soul[] }) {
                 left: !mounted ? 20 : isMobile ? 10 : 20,
               }}
             >
-              <CartesianGrid horizontal={false} />
+              <CartesianGrid horizontal={false} stroke="hsl(var(--primary-foreground) / 0.2)" />
               <YAxis
                 dataKey="action"
                 type="category"
@@ -583,7 +583,7 @@ function ActionAnalyticsCard({ souls }: { souls: Soul[] }) {
                 axisLine={false}
                 tickMargin={5}
                 width={yAxisWidth}
-                tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }}
+                tick={{ fontSize: 12, fill: 'hsl(var(--primary-foreground) / 0.8)' }}
                 interval={0}
               />
               <XAxis dataKey="count" type="number" hide />
