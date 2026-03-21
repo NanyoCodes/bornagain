@@ -825,7 +825,7 @@ export default function DashboardPage() {
   return (
     <div className="space-y-8">
       <div className="space-y-2">
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight font-headline">
+        <h1 className="text-xl sm:text-2xl font-bold tracking-tight font-headline">
           {welcomeMessage?.text.replace('{name}', displayName) ||
             `Welcome back, ${displayName}!`}
         </h1>
@@ -839,6 +839,8 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-8">
           <DailyDisciplineCard />
+
+          <ProgressOverview souls={soulsWon || []} userProfile={userProfile} testimonies={userTestimonies || []} />
 
           <Card>
             <CardHeader>
@@ -905,9 +907,6 @@ export default function DashboardPage() {
         </div>
 
         <div className="space-y-8">
-          
-          <ProgressOverview souls={soulsWon || []} userProfile={userProfile} testimonies={userTestimonies || []} />
-          
           <Card>
             <CardHeader>
               <CardTitle>Follow-up Funnel</CardTitle>
