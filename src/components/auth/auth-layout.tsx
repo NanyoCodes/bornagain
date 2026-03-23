@@ -40,19 +40,6 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
             />
         )}
         <div className="absolute inset-0 bg-black/60 -z-10" />
-
-        <Link href="/" className="flex items-center gap-4 mb-8 z-10">
-            {logo && (
-                <Image
-                src={logo.imageUrl}
-                alt={logo.description}
-                width={80}
-                height={80}
-                className="rounded-lg"
-                data-ai-hint={logo.imageHint}
-                />
-            )}
-        </Link>
         
         <div className="space-y-4 mb-12 z-10">
             <h1 className="text-4xl font-bold">Welcome to Testify</h1>
