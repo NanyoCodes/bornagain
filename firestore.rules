@@ -117,9 +117,7 @@ service cloud.firestore {
         (
             request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participants']) &&
             request.resource.data.participants == (resource.data.participants || 0) + 1 &&
-            // Check that the user is adding themselves to the participants subcollection in the same request
-            existsAfter(/databases/$(database)/documents/campaigns/$(campaignId)/participants/$(request.auth.uid)) &&
-            !exists(/databases/$(database)/documents/campaigns/$(campaignId)/participants/$(request.auth.uid))
+            existsAfter(/databases/$(database)/documents/campaigns/$(campaignId)/participants/$(request.auth.uid))
         ) ||
         // SCENARIO 3: A user logs a soul.
         (
