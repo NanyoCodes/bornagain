@@ -566,7 +566,10 @@ function ActionAnalyticsCard({ souls }: { souls: Soul[] }) {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig} className="h-[500px] w-full">
+        <ChartContainer
+          config={chartConfig}
+          className="h-[500px] w-full [&_.recharts-cartesian-axis-tick_text]:fill-primary-foreground"
+        >
           <ResponsiveContainer>
             <BarChart
               layout="vertical"
@@ -584,7 +587,7 @@ function ActionAnalyticsCard({ souls }: { souls: Soul[] }) {
                 axisLine={false}
                 tickMargin={5}
                 width={yAxisWidth}
-                tick={{ fontSize: 12, fill: '#FFFFFF' }} // Changed to white
+                tick={{ fontSize: 12 }}
                 interval={0}
               />
               <XAxis dataKey="count" type="number" hide />
@@ -1048,4 +1051,3 @@ export default function DashboardPage() {
     </div>
   );
 }
-
