@@ -1,4 +1,3 @@
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -17,7 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import React, { useState } from "react";
-import { Loader2 } from "lucide-react";
+import { Loader2, LocateFixed } from "lucide-react";
 import { useUser, useFirestore, useAuth } from "@/firebase";
 import { doc, updateDoc } from "firebase/firestore";
 import { updateProfile } from "firebase/auth";
@@ -109,6 +108,33 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
       const lng = e.latLng.lng();
       form.setValue('latitude', lat, { shouldDirty: true });
       form.setValue('longitude', lng, { shouldDirty: true });
+    }
+  };
+  
+  const handleGeolocate = () => {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+                form.setValue('latitude', lat, { shouldDirty: true });
+                form.setValue('longitude', lng, { shouldDirty: true });
+                toast({ title: 'Location Updated', description: 'Your private location pin has been set to your current location.' });
+            },
+            () => {
+                toast({
+                    variant: 'destructive',
+                    title: 'Geolocation Failed',
+                    description: 'Could not get your location. Please check your browser permissions.',
+                });
+            }
+        );
+    } else {
+        toast({
+            variant: 'destructive',
+            title: 'Geolocation Not Supported',
+            description: 'Your browser does not support geolocation.',
+        });
     }
   };
 
@@ -256,7 +282,13 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                 </div>
 
                 <div>
-                    <Label>Private Location Pin</Label>
+                    <div className="flex justify-between items-center">
+                      <Label>Private Location Pin</Label>
+                      <Button type="button" variant="ghost" size="sm" onClick={handleGeolocate}>
+                          <LocateFixed className="mr-2 h-4 w-4" />
+                          Use Live Location
+                      </Button>
+                    </div>
                     {loadError ? (
                         <p className="text-sm text-destructive">Map failed to load. Please check your API key.</p>
                     ) : !isLoaded ? (
