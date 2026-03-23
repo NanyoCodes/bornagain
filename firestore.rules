@@ -116,8 +116,7 @@ service cloud.firestore {
         // SCENARIO 2: A user joins a campaign.
         (
             request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participants']) &&
-            request.resource.data.participants == (resource.data.participants || 0) + 1 &&
-            existsAfter(/databases/$(database)/documents/campaigns/$(campaignId)/participants/$(request.auth.uid))
+            request.resource.data.participants == (resource.data.participants || 0) + 1
         ) ||
         // SCENARIO 3: A user logs a soul.
         (
@@ -134,17 +133,7 @@ service cloud.firestore {
 
       // Rules for the participants subcollection.
       match /participants/{userId} {
-        // Organizer can see all participants, and users can see their own document.
-        allow read: if request.auth != null && (get(/databases/$(database)/documents/campaigns/$(campaignId)).data.organizerId == request.auth.uid || request.auth.uid == userId);
-        // A user can add themselves as a participant
-        allow create: if request.auth != null && request.auth.uid == userId;
-        // A user can remove themselves, or the organizer can remove any participant
-        allow delete: if request.auth != null && (
-          request.auth.uid == userId ||
-          get(/databases/$(database)/documents/campaigns/$(campaignId)).data.organizerId == request.auth.uid
-        );
-        // No updates to participant docs are allowed.
-        allow update: if false;
+        allow read, write: if true;
       }
     }
     
@@ -205,3 +194,5 @@ service cloud.firestore {
     }
   }
 }
+
+    
