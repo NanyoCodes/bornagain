@@ -239,9 +239,6 @@ export function CreateCampaignForm({ onCampaignCreated, userProfile }: CreateCam
             photoURL: userProfile.photoURL || null,
             joinedAt: serverTimestamp()
         };
-        if (user.email) {
-            participantPayload.email = user.email;
-        }
         batch.set(participantRef, participantPayload);
 
         await batch.commit().catch((serverError) => {

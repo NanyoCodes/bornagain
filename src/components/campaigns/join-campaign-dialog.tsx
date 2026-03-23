@@ -96,9 +96,6 @@ export function JoinCampaignDialog({
           joinedAt: serverTimestamp(),
           joinReason: joinReason || null,
         };
-        if (user.email) {
-          participantData.email = user.email;
-        }
         transaction.set(participantRef, participantData);
 
         if (user.uid !== campaign.organizerId) {

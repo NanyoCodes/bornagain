@@ -525,10 +525,6 @@
         "lastName": {
           "type": "string"
         },
-        "email": {
-          "type": "string",
-          "format": "email"
-        },
         "photoURL": {
           "type": "string",
           "format": "uri"

@@ -125,7 +125,7 @@ function ParticipantList({ campaign, participants, loading, onRemove }: { campai
                     <div key={p.id} className="flex items-center justify-between p-2 hover:bg-muted/50 rounded-md">
                         <div>
                           <p className='font-medium'>{p.firstName} {p.lastName}</p>
-                          {p.email && <p className="text-xs text-muted-foreground">{p.email}</p>}
+                          
                         </div>
                         <AlertDialog>
                           <AlertDialogTrigger asChild>
