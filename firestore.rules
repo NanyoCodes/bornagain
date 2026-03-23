@@ -133,8 +133,8 @@ service cloud.firestore {
 
       // Rules for the participants subcollection.
       match /participants/{userId} {
-        // Organizer can see all participants
-        allow read: if request.auth != null && get(/databases/$(database)/documents/campaigns/$(campaignId)).data.organizerId == request.auth.uid;
+        // Organizer can see all participants, and users can see their own document.
+        allow read: if request.auth != null && (get(/databases/$(database)/documents/campaigns/$(campaignId)).data.organizerId == request.auth.uid || request.auth.uid == userId);
         // A user can add themselves as a participant
         allow create: if request.auth != null && request.auth.uid == userId;
         // A user can remove themselves, or the organizer can remove any participant
