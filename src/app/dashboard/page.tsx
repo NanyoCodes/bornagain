@@ -58,6 +58,7 @@ import {
   XAxis,
   YAxis,
   Cell,
+  LabelList,
 } from 'recharts';
 import {
   ChartContainer,
@@ -571,7 +572,7 @@ function ActionAnalyticsCard({ souls }: { souls: Soul[] }) {
               layout="vertical"
               data={actionData}
               margin={{
-                right: 20,
+                right: 30, // Increased right margin for labels
                 left: !mounted ? 20 : isMobile ? 10 : 20,
               }}
             >
@@ -583,15 +584,20 @@ function ActionAnalyticsCard({ souls }: { souls: Soul[] }) {
                 axisLine={false}
                 tickMargin={5}
                 width={yAxisWidth}
-                tick={{ fontSize: 12, fill: 'hsl(var(--primary-foreground) / 0.8)' }}
+                tick={{ fontSize: 12, fill: '#FFFFFF' }} // Changed to white
                 interval={0}
               />
               <XAxis dataKey="count" type="number" hide />
               <ChartTooltip
                 cursor={false}
-                content={<ChartTooltipContent indicator="line" />}
+                content={<ChartTooltipContent 
+                    indicator="line" 
+                    labelClassName="text-sm"
+                    className="bg-background/90 text-foreground"
+                 />}
               />
               <Bar dataKey="count" layout="vertical" radius={5} barSize={barSize}>
+                <LabelList dataKey="count" position="right" offset={8} className="fill-primary-foreground font-semibold" fontSize={12} />
                 {actionData.map((_entry, index) => (
                   <Cell
                     key={`cell-${index}`}
@@ -1042,3 +1048,4 @@ export default function DashboardPage() {
     </div>
   );
 }
+
