@@ -163,7 +163,7 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath }: 
       {isUploading && uploadProgress !== null ? (
         <div className="w-full max-w-xs text-center">
             <Progress value={uploadProgress} className="h-2" />
-            <p className="text-sm mt-2 text-muted-foreground">Uploading... {Math.round(uploadProgress)}%</p>
+            <p className="text-sm mt-2 text-muted-foreground">Uploading...</p>
         </div>
       ) : (
         <>
