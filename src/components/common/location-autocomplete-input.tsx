@@ -75,8 +75,10 @@ export function LocationAutocompleteInput({ form }: LocationAutocompleteInputPro
 
     if (loadError) {
         let errorMessage = 'Error loading Google Maps. Please check your API key and network connection.';
-        if (loadError.message.includes('ApiNotActivatedMapError') || loadError.message.includes('InvalidKeyMapError')) {
-            errorMessage = 'The Google Maps API key seems to be invalid or missing required permissions.';
+        if (loadError.message.includes("InvalidKeyMapError")) {
+            errorMessage = "The Google Maps API key provided is invalid. Please get a new key from the Google Cloud Console.";
+        } else if (loadError.message.includes('ApiNotActivatedMapError')) {
+            errorMessage = "The Places API is not enabled for your key. Please enable it in the Google Cloud Console.";
         }
         
         return (

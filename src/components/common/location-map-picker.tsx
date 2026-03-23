@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
@@ -251,9 +252,11 @@ export function LocationMapPicker({ form }: LocationMapPickerProps) {
     }
 
     if (loadError) {
-        let errorMessage = 'Error loading Google Maps. Please check your API key and network connection.';
-        if (loadError.message.includes('ApiNotActivatedMapError') || loadError.message.includes('InvalidKeyMapError')) {
-            errorMessage = 'The Google Maps API key seems to be invalid or missing required permissions.';
+        let errorMessage = "Error loading Google Maps. This is likely an API key or network issue.";
+        if (loadError.message.includes("InvalidKeyMapError")) {
+            errorMessage = "The Google Maps API key provided is invalid. Please get a new key from the Google Cloud Console.";
+        } else if (loadError.message.includes("ApiNotActivatedMapError")) {
+            errorMessage = "One or more required Google Maps APIs (JavaScript, Places, Geocoding) are not enabled for your key.";
         }
         return (
              <Alert variant="destructive">
@@ -263,7 +266,7 @@ export function LocationMapPicker({ form }: LocationMapPickerProps) {
                     <Link href="/docs/google-maps-setup-guide.md" className="font-semibold underline hover:text-destructive-foreground" target="_blank" rel="noopener noreferrer">
                         review the setup guide
                     </Link>
-                    {' '}to resolve this.
+                    {' '}for detailed instructions.
                 </AlertDescription>
             </Alert>
         );

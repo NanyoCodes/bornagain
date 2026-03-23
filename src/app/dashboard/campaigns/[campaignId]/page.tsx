@@ -77,6 +77,12 @@ function CampaignMap({ campaign }: { campaign: Campaign }) {
     const radius = campaign.coverageRadius || 1000;
 
     if (loadError) {
+        let errorMessage = "The map could not be loaded. This is likely an API key or network issue.";
+        if (loadError.message.includes("InvalidKeyMapError")) {
+            errorMessage = "The Google Maps API key provided is invalid. Please get a new key from the Google Cloud Console.";
+        } else if (loadError.message.includes("ApiNotActivatedMapError")) {
+            errorMessage = "The Maps JavaScript API is not enabled for your key. Please enable it in the Google Cloud Console.";
+        }
         return (
             <Card>
                 <CardHeader><CardTitle className="text-lg flex items-center gap-2"><MapPin className="h-5 w-5"/> Map</CardTitle></CardHeader>
@@ -84,11 +90,11 @@ function CampaignMap({ campaign }: { campaign: Campaign }) {
                     <Alert variant="destructive">
                         <AlertTitle>Google Maps Error</AlertTitle>
                         <AlertDescription>
-                            The map could not be loaded. This is likely an API key issue. Please{' '}
+                            {errorMessage} Please{' '}
                             <Link href="/docs/google-maps-setup-guide.md" className="font-semibold underline hover:text-destructive-foreground" target="_blank" rel="noopener noreferrer">
                                 review the setup guide
                             </Link>
-                            {' '}to resolve this.
+                            {' '}for detailed instructions.
                         </AlertDescription>
                     </Alert>
                 </CardContent>
