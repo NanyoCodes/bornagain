@@ -56,6 +56,7 @@ This is the most common point of failure. Follow these steps exactly.
     *   **Origins:**
         *   `http://localhost:3000`
         *   `https://studio--studio-6220967431-56fe2.us-central1.hosted.app`
+        *   `https://6000-firebase-studio-1771339890236.cluster-64pjnskmlbaxowh5lzq6i7v4ra.cloudworkstations.dev`
     *   **Methods:**
         *   `GET`
         *   `PUT`
@@ -111,5 +112,6 @@ It's very common for a small typo to cause this issue. Please **double-check** t
 
 *   `http://localhost:3000`
 *   `https://studio--studio-6220967431-56fe2.us-central1.hosted.app`
+*   `https://6000-firebase-studio-1771339890236.cluster-64pjnskmlbaxowh5lzq6i7v4ra.cloudworkstations.dev`
 
 Even a small difference, like a missing `http://` or a trailing slash `/`, can cause the upload to fail.

@@ -23,7 +23,10 @@ First, you need an API key to authenticate your app's requests to Google Maps.
 1.  Go to the [Google Cloud Credentials page](https://console.cloud.google.com/apis/credentials?project=studio-6220967431-56fe2).
 2.  Click **"+ CREATE CREDENTIALS"** at the top of the page and select **"API key"**.
 3.  A new key will be created. **Copy this key immediately.** You will need it in a later step.
-4.  It is highly recommended to restrict your key for security. Click **"EDIT API KEY"** and under **"Application restrictions"**, select **"Websites"**. Add your app's domains (e.g., `localhost:3000` and your deployed app URL `studio--studio-6220967431-56fe2.us-central1.hosted.app`).
+4.  It is highly recommended to restrict your key for security. Click **"EDIT API KEY"** and under **"Application restrictions"**, select **"Websites"**. Add your app's domains:
+    *   `localhost:3000` (for local development)
+    *   `https://6000-firebase-studio-1771339890236.cluster-64pjnskmlbaxowh5lzq6i7v4ra.cloudworkstations.dev` (your current development URL)
+    *   `https://studio--studio-6220967431-56fe2.us-central1.hosted.app` (your future deployed URL)
 
 ---
 
