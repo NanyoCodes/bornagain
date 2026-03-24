@@ -264,19 +264,19 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
         deletedAt: serverTimestamp(),
     };
     
-    updateDoc(campaignRef, deleteData).then(() => {
+    try {
+        await updateDoc(campaignRef, deleteData);
         toast({ title: 'Campaign Deleted', description: 'The campaign has been successfully deleted.' });
-        onCampaignUpdated();
-    }).catch(() => {
+        router.push('/dashboard/campaigns');
+    } catch (error) {
         const permissionError = new FirestorePermissionError({
             path: campaignRef.path,
             operation: 'update',
             requestResourceData: deleteData,
         }, user);
         errorEmitter.emit('permission-error', permissionError);
-    }).finally(() => {
         setIsDeleting(false);
-    });
+    }
   };
 
 
