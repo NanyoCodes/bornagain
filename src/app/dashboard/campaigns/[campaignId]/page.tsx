@@ -278,6 +278,11 @@ export default function CampaignPage() {
     
     const isOwner = useMemo(() => user?.uid === campaign?.organizerId, [user, campaign]);
 
+    const handleFormClose = () => {
+      setIsManageOpen(false);
+      router.refresh();
+    };
+
     const handleShare = async () => {
         if (!campaign) return;
         const shareData = {
@@ -526,7 +531,7 @@ export default function CampaignPage() {
                     <ManageCampaignForm
                       key={(campaign.lastUpdatedAt?.seconds ?? campaign.createdAt.seconds).toString()}
                       campaign={campaign}
-                      onCampaignUpdated={() => setIsManageOpen(false)}
+                      onCampaignUpdated={handleFormClose}
                     />
                   </div>
                 </SheetContent>
@@ -542,7 +547,7 @@ export default function CampaignPage() {
                         <ManageCampaignForm
                           key={(campaign.lastUpdatedAt?.seconds ?? campaign.createdAt.seconds).toString()}
                           campaign={campaign}
-                          onCampaignUpdated={() => setIsManageOpen(false)}
+                          onCampaignUpdated={handleFormClose}
                         />
                     </div>
                 </DialogContent>
