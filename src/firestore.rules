@@ -113,32 +113,18 @@ service cloud.firestore {
           request.auth.uid == resource.data.organizerId &&
           !request.resource.data.diff(resource.data).affectedKeys().hasAny(['participants', 'soulsLogged'])
         ) ||
-        // SCENARIO 2: A user joins a campaign.
-        (
-            request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participants']) &&
-            request.resource.data.participants == (resource.data.participants || 0) + 1 &&
-            // Ensure the corresponding participant doc is being created in the same transaction for the user making the request.
-            getAfter(/databases/$(database)/documents/campaigns/$(campaignId)/participants/$(request.auth.uid)).data.userId == request.auth.uid
-        ) ||
-        // SCENARIO 3: A user logs a soul.
+        // SCENARIO 2: A user logs a soul.
         (
           request.resource.data.diff(resource.data).affectedKeys().hasOnly(['soulsLogged']) &&
           request.resource.data.soulsLogged == (resource.data.soulsLogged || 0) + 1
-        ) ||
-        // SCENARIO 4: Organizer removes a participant.
-        (
-          request.auth.uid == resource.data.organizerId &&
-          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participants']) &&
-          request.resource.data.participants == (resource.data.participants || 0) - 1
         )
       );
 
       // Rules for the participants subcollection.
       match /participants/{userId} {
-        // Allow any authenticated user to read participant lists to allow join checks.
-        // WARNING: This is not ideal for production as it exposes participant lists.
-        allow read: if request.auth != null;
-        allow write: if request.auth != null && request.auth.uid == userId;
+        // A user can read/write their own participant document.
+        // The UI for joining has been removed, so only the organizer will do this during campaign creation.
+        allow read, write: if request.auth != null && request.auth.uid == userId;
       }
     }
     

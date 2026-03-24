@@ -9,7 +9,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, MessagesSquare, Trash2, X } from 'lucide-react';
+import { Loader2, MessagesSquare, Trash2 } from 'lucide-react';
 import { useCollection, useFirestore, useUser } from '@/firebase';
 import { collection, doc, updateDoc, serverTimestamp, getDoc, where, limit, addDoc, setDoc, runTransaction, query, orderBy, writeBatch } from 'firebase/firestore';
 import type { Campaign, CampaignParticipant } from '@/lib/types';
@@ -81,18 +81,11 @@ type ManageCampaignFormProps = {
   onCampaignUpdated: () => void;
 };
 
-function ParticipantList({ campaign, participants, loading, onRemove }: { campaign: Campaign, participants: CampaignParticipant[], loading: boolean, onRemove: (participantId: string) => Promise<void> }) {
+function ParticipantList({ campaign, participants, loading }: { campaign: Campaign, participants: CampaignParticipant[], loading: boolean }) {
     const { user } = useUser();
-    const [isRemoving, setIsRemoving] = useState<string | null>(null);
 
     const organizer = useMemo(() => participants?.find(p => p.id === campaign.organizerId), [participants, campaign.organizerId]);
     const otherParticipants = useMemo(() => participants?.filter(p => p.id !== campaign.organizerId), [participants, campaign.organizerId]);
-
-    const handleRemoveClick = async (participantId: string) => {
-        setIsRemoving(participantId);
-        await onRemove(participantId);
-        setIsRemoving(null);
-    }
 
   if (loading) {
     return (
@@ -127,27 +120,6 @@ function ParticipantList({ campaign, participants, loading, onRemove }: { campai
                           <p className='font-medium'>{p.firstName} {p.lastName}</p>
                           
                         </div>
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <Button variant="ghost" size="icon" disabled={isRemoving === p.id}>
-                                {isRemoving === p.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <X className="h-4 w-4 text-destructive" />}
-                            </Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>Remove {p.firstName} {p.lastName}?</AlertDialogTitle>
-                              <AlertDialogDescription>
-                                Are you sure you want to remove this participant? They will be notified and this action cannot be undone.
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Cancel</AlertDialogCancel>
-                              <AlertDialogAction onClick={() => handleRemoveClick(p.id)} className="bg-destructive hover:bg-destructive/90">
-                                Remove Participant
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
                     </div>
                 ))}
             </div>
@@ -179,34 +151,6 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
   
   const { data: participants, loading: participantsLoading } = useCollection<CampaignParticipant>(participantsQuery);
   
-  const handleRemoveParticipant = async (participantId: string) => {
-    if (!user || !firestore || user.uid !== campaign.organizerId) return;
-    
-    const campaignRef = doc(firestore, 'campaigns', campaign.id);
-    const participantRef = doc(firestore, 'campaigns', campaign.id, 'participants', participantId);
-    const joinedRef = doc(firestore, 'users', participantId, 'joinedCampaigns', campaign.id);
-
-    runTransaction(firestore, async (transaction) => {
-        const campaignDoc = await transaction.get(campaignRef);
-        if (!campaignDoc.exists()) {
-            throw new Error("Campaign does not exist!");
-        }
-        
-        const newParticipantCount = Math.max(0, (campaignDoc.data().participants || 0) - 1);
-        
-        transaction.update(campaignRef, { participants: newParticipantCount });
-        transaction.delete(participantRef);
-        transaction.delete(joinedRef);
-    }).then(() => {
-        toast({ title: 'Participant Removed', description: 'The user has been removed from the campaign.' });
-    }).catch(() => {
-        const permissionError = new FirestorePermissionError({
-            path: `TRANSACTION:REMOVE_PARTICIPANT:${participantId}`,
-            operation: 'write'
-        }, user);
-        errorEmitter.emit('permission-error', permissionError);
-    });
-  };
 
   const defaultValues = useMemo(() => {
     return {
@@ -255,7 +199,6 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
             firstName: p.firstName,
             lastName: p.lastName,
             photoURL: p.photoURL || '',
-            email: p.email || '',
         };
     });
     
@@ -617,7 +560,7 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
 
         <Separator />
 
-        <ParticipantList campaign={campaign} participants={participants || []} loading={participantsLoading} onRemove={handleRemoveParticipant} />
+        <ParticipantList campaign={campaign} participants={participants || []} loading={participantsLoading} />
 
         <Separator />
 
