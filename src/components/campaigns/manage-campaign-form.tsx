@@ -2,7 +2,7 @@
 
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -152,8 +152,9 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
   const { data: participants, loading: participantsLoading } = useCollection<CampaignParticipant>(participantsQuery);
   
 
-  const defaultValues = useMemo(() => {
-    return {
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
       title: campaign.title || "",
       description: campaign.description || "",
       goal: campaign.goal || "",
@@ -170,13 +171,29 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
       maxParticipants: campaign.maxParticipants ?? undefined,
       streamUrl: campaign.streamUrl || "",
       lastUpdateReason: "",
-    };
-  }, [campaign]);
-
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues,
+    },
   });
+
+  useEffect(() => {
+    form.reset({
+      title: campaign.title || "",
+      description: campaign.description || "",
+      goal: campaign.goal || "",
+      location: campaign.location || "",
+      latitude: campaign.latitude,
+      longitude: campaign.longitude,
+      coverageRadius: campaign.coverageRadius,
+      startDate: safeToDate(campaign.startDate) ?? new Date(),
+      endDate: safeToDate(campaign.endDate) ?? new Date(),
+      startTime: campaign.startTime || "",
+      endTime: campaign.endTime || "",
+      scripture: campaign.scripture || "",
+      scriptureTestimony: campaign.scriptureTestimony || "",
+      maxParticipants: campaign.maxParticipants ?? undefined,
+      streamUrl: campaign.streamUrl || "",
+      lastUpdateReason: "",
+    });
+  }, [campaign, form]);
 
   const handleStartGroupChat = async () => {
     if (!user || !firestore) return;
