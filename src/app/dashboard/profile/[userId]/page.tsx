@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, use } from "react";
 import { useParams } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -84,7 +84,7 @@ function FilterControls({
 
 
 export default function UserProfilePage() {
-  const params = useParams();
+  const params = use(useParams());
   const userId = params.userId as string;
 
   const { user: currentUser } = useUser();

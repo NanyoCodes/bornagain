@@ -1,6 +1,7 @@
+
 'use client';
 
-import { useState, useEffect, useLayoutEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useLayoutEffect, useRef, useMemo, use } from 'react';
 import { useUser, useFirestore, useCollection, useDoc } from '@/firebase';
 import {
   collection,
@@ -36,7 +37,7 @@ import { PlaceHolderImages } from '@/lib/placeholder-images';
 export default function ChatPage() {
     const { user, loading: userLoading } = useUser();
     const firestore = useFirestore();
-    const params = useParams();
+    const params = use(useParams());
     const chatId = params.chatId as string;
     const router = useRouter();
     const { toast } = useToast();

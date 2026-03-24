@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import { useState, useEffect, useMemo, useCallback, useRef, use } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useDoc, useFirestore, useUser } from '@/firebase';
 import type { Campaign, UserProfile } from '@/lib/types';
@@ -250,7 +250,7 @@ function ScriptureDisplay({ reference, caption }: { reference: string; caption?:
 
 
 export default function CampaignPage() {
-    const params = useParams();
+    const params = use(useParams());
     const campaignId = params.campaignId as string;
     const router = useRouter();
     const firestore = useFirestore();
