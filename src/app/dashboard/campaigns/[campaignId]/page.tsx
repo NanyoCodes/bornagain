@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect, useMemo, useCallback, useRef, use } from 'react';
@@ -522,7 +523,11 @@ export default function CampaignPage() {
                     <SheetDescription>Update the details of your campaign.</SheetDescription>
                   </SheetHeader>
                   <div className="max-h-[80vh] overflow-y-auto p-1 mt-4">
-                    <ManageCampaignForm campaign={campaign} onCampaignUpdated={() => setIsManageOpen(false)} />
+                    <ManageCampaignForm
+                      key={(campaign.lastUpdatedAt?.seconds ?? campaign.createdAt.seconds).toString()}
+                      campaign={campaign}
+                      onCampaignUpdated={() => setIsManageOpen(false)}
+                    />
                   </div>
                 </SheetContent>
               </Sheet>
@@ -534,7 +539,11 @@ export default function CampaignPage() {
                         <DialogDescription>Update the details of your campaign.</DialogDescription>
                     </DialogHeader>
                     <div className="max-h-[70vh] overflow-y-auto pr-2">
-                        <ManageCampaignForm campaign={campaign} onCampaignUpdated={() => setIsManageOpen(false)} />
+                        <ManageCampaignForm
+                          key={(campaign.lastUpdatedAt?.seconds ?? campaign.createdAt.seconds).toString()}
+                          campaign={campaign}
+                          onCampaignUpdated={() => setIsManageOpen(false)}
+                        />
                     </div>
                 </DialogContent>
               </Dialog>

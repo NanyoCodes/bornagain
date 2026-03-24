@@ -145,6 +145,7 @@ export type Campaign = {
   organizerLastName: string;
   status?: 'active' | 'deleted';
   lastUpdateReason?: string;
+  lastUpdatedAt?: Timestamp;
   deletionReason?: string;
   deletedAt?: Timestamp;
   scripture?: string;

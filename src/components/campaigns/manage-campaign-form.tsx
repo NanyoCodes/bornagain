@@ -310,6 +310,7 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
         maxParticipants: values.maxParticipants ?? null,
         streamUrl: values.streamUrl || null,
         lastUpdateReason: values.lastUpdateReason || null,
+        lastUpdatedAt: serverTimestamp(),
     };
 
     updateDoc(campaignRef, updateData).then(() => {
