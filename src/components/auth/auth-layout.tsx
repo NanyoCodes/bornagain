@@ -10,8 +10,8 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="w-full lg:grid lg:grid-cols-2 min-h-screen">
-      <div className="flex items-center justify-center p-8 sm:p-12">
-        <div className="w-full max-w-xs">
+      <div className="flex flex-col items-center justify-center p-8 sm:p-12">
+        <div className="mx-auto grid w-full max-w-xs gap-6">
             <div className="grid gap-2 text-left mb-6">
                 {logo && (
                     <Image
@@ -26,6 +26,16 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
             </div>
             {children}
         </div>
+         <footer className="text-center text-sm text-muted-foreground mt-8">
+            <div className="flex justify-center gap-4">
+              <Link href="/terms-of-service" className="hover:underline">
+                Terms of Service
+              </Link>
+              <Link href="/privacy-policy" className="hover:underline">
+                Privacy Policy
+              </Link>
+            </div>
+          </footer>
       </div>
       <div className="hidden lg:flex flex-col items-start justify-center p-12 md:p-24 text-white relative overflow-hidden">
         {authBackground && (

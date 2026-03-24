@@ -4,6 +4,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { ThemeProvider } from '@/components/theme-provider';
 import { FirebaseClientProvider } from '@/firebase/client-provider';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
+import { CookieConsentBanner } from '@/components/cookie-consent-banner';
 
 const logo = PlaceHolderImages.find((img) => img.id === 'logo');
 const testifyLogoUrl = logo?.imageUrl || '';
@@ -54,6 +55,7 @@ export default function RootLayout({
           <FirebaseClientProvider>
             {children}
             <Toaster />
+            <CookieConsentBanner />
           </FirebaseClientProvider>
         </ThemeProvider>
       </body>
