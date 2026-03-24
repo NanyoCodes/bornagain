@@ -266,7 +266,7 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
     
     updateDoc(campaignRef, deleteData).then(() => {
         toast({ title: 'Campaign Deleted', description: 'The campaign has been successfully deleted.' });
-        router.push('/dashboard/campaigns');
+        onCampaignUpdated();
     }).catch(() => {
         const permissionError = new FirestorePermissionError({
             path: campaignRef.path,
