@@ -91,17 +91,20 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath }: 
         setUploadProgress(null);
         console.error("Firebase Storage Upload Error:", error);
         
+        let title = "Upload Failed";
         let description = `An unknown error occurred. (Code: ${error.code})`;
         
         switch (error.code) {
           case 'storage/unauthorized':
-            description = `Permission Denied. This is very likely a CORS configuration issue on your Google Cloud project.`;
+            title = "Permission Denied: Action Required";
+            description = `Your project's configuration is preventing uploads. This is usually caused by two things: (1) Your project must be on the Blaze (Pay-as-you-go) billing plan. (2) Your storage bucket needs the correct CORS settings.`;
             break;
           case 'storage/canceled':
             description = "The upload was canceled.";
             break;
           case 'storage/unknown':
-             description = "An unknown network error occurred. This is most often caused by an incorrect CORS policy on your Google Cloud project.";
+             title = "Network Error: Action Required";
+             description = "A network error occurred. This is most often caused by incorrect CORS settings on your Google Cloud project. Your project also needs to be on the Blaze billing plan.";
             break;
            case 'storage/object-not-found':
             description = "The file could not be found. This should not happen during an upload. Please try again.";
@@ -110,16 +113,17 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath }: 
             description = "Your Firebase project could not be found. Please check your Firebase configuration.";
             break;
           case 'storage/quota-exceeded':
-            description = "You have exceeded your storage quota. Please upgrade your plan or free up space.";
+            title = "Storage Quota Exceeded";
+            description = "You have exceeded your storage quota. Please upgrade your plan or free up space in your Firebase Storage bucket.";
             break;
         }
         
         setUploadError(description);
         toast({
           variant: 'destructive',
-          title: 'Upload Failed',
-          description: "See the error message in the upload component for details and a solution.",
-          duration: 9000, // Show the error for longer
+          title: title,
+          description: "See the error message in the upload component for a step-by-step guide to fix this.",
+          duration: 12000,
         });
       },
       () => {
@@ -170,13 +174,14 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath }: 
             {uploadError && (
                 <Alert variant="destructive">
                     <AlertTriangle className="h-4 w-4" />
-                    <AlertTitle>Upload Failed: Project Configuration Needed</AlertTitle>
+                    <AlertTitle>Upload Failed: Project Configuration Required</AlertTitle>
                     <AlertDescription className="space-y-2">
-                        <strong>This is a configuration issue, not a code problem.</strong>
+                        <p><strong>This is a configuration issue, not a code problem.</strong></p>
                         <p>{uploadError}</p>
+                        <p>Please follow the guide below to resolve this. It covers the most common solutions like setting up billing and CORS.</p>
                         <Button asChild variant="link" className="p-0 h-auto font-semibold text-destructive">
                             <Link href="/docs/storage-cors-guide.md" target="_blank">
-                                Click here for the step-by-step guide to fix this.
+                                Click here for the step-by-step troubleshooting guide.
                             </Link>
                         </Button>
                     </AlertDescription>
