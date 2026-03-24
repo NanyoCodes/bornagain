@@ -123,8 +123,9 @@ service cloud.firestore {
       // Rules for the participants subcollection.
       match /participants/{userId} {
         // A user can read/write their own participant document.
-        // The UI for joining has been removed, so only the organizer will do this during campaign creation.
         allow read, write: if request.auth != null && request.auth.uid == userId;
+        // The organizer can see the list of participants.
+        allow list: if request.auth != null && request.auth.uid == get(/databases/$(database)/documents/campaigns/$(campaignId)).data.organizerId;
       }
     }
     
