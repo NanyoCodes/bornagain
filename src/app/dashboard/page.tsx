@@ -558,17 +558,17 @@ function ActionAnalyticsCard({ souls }: { souls: Soul[] }) {
   const barSize = !mounted ? 20 : isMobile ? 14 : 20;
 
   return (
-    <Card className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground">
+    <Card>
       <CardHeader>
         <CardTitle>Follow-up Actions Tracker</CardTitle>
-        <CardDescription className="text-primary-foreground/80">
+        <CardDescription>
           Frequency of actions taken this month.
         </CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer
           config={chartConfig}
-          className="h-[500px] w-full [&_.recharts-cartesian-axis-tick_text]:fill-primary-foreground"
+          className="h-[500px] w-full [&_.recharts-cartesian-axis-tick_text]:fill-foreground"
         >
           <ResponsiveContainer>
             <BarChart
@@ -579,7 +579,7 @@ function ActionAnalyticsCard({ souls }: { souls: Soul[] }) {
                 left: !mounted ? 20 : isMobile ? 10 : 20,
               }}
             >
-              <CartesianGrid horizontal={false} stroke="hsl(var(--primary-foreground) / 0.2)" />
+              <CartesianGrid horizontal={false} stroke="hsl(var(--border))" />
               <YAxis
                 dataKey="action"
                 type="category"
@@ -600,7 +600,7 @@ function ActionAnalyticsCard({ souls }: { souls: Soul[] }) {
                  />}
               />
               <Bar dataKey="count" layout="vertical" radius={5} barSize={barSize}>
-                <LabelList dataKey="count" position="right" offset={8} className="fill-primary-foreground font-semibold" fontSize={12} />
+                <LabelList dataKey="count" position="right" offset={8} className="fill-foreground font-semibold" fontSize={12} />
                 {actionData.map((_entry, index) => (
                   <Cell
                     key={`cell-${index}`}
@@ -1051,3 +1051,14 @@ export default function DashboardPage() {
     </div>
   );
 }
+
+Relevant files:
+
+    - https://6000-firebase-studio-1771339890236.cluster-64pjnskmlbaxowh5lzq6i7v4ra.cloudworkstations.dev/_next/static/chunks/node_modules_next_dist_compiled_5150ccfd._.js
+    - https://6000-firebase-studio-1771339890236.cluster-64pjnskmlbaxowh5lzq6i7v4ra.cloudworkstations.dev/_next/static/chunks/node_modules_next_dist_compiled_5150ccfd._.js
+    - https://6000-firebase-studio-1771339890236.cluster-64pjnskmlbaxowh5lzq6i7v4ra.cloudworkstations.dev/_next/static/chunks/node_modules_b3fa833d._.js
+    - https://6000-firebase-studio-1771339890236.cluster-64pjnskmlbaxowh5lzq6i7v4ra.cloudworkstations.dev/_next/static/chunks/src_d5f1f292._.js
+
+And change it as follows:
+  
+The card that shows “Follow-up Actions Tracker” does not appear on the UI. Make this card appear on the UI.
