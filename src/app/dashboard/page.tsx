@@ -1,4 +1,3 @@
-
 'use client';
 
 import {
@@ -994,10 +993,10 @@ export default function DashboardPage() {
             />
           )}
 
-          <Card className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground">
+          <Card>
             <CardHeader>
               <CardTitle>Share Your Story</CardTitle>
-              <CardDescription className="text-primary-foreground/80">
+              <CardDescription>
                 Encourage the body of Christ with what God has done.
               </CardDescription>
             </CardHeader>
@@ -1056,9 +1055,7 @@ Relevant files:
 
     - https://6000-firebase-studio-1771339890236.cluster-64pjnskmlbaxowh5lzq6i7v4ra.cloudworkstations.dev/_next/static/chunks/node_modules_next_dist_compiled_5150ccfd._.js
     - https://6000-firebase-studio-1771339890236.cluster-64pjnskmlbaxowh5lzq6i7v4ra.cloudworkstations.dev/_next/static/chunks/node_modules_next_dist_compiled_5150ccfd._.js
-    - https://6000-firebase-studio-1771339890236.cluster-64pjnskmlbaxowh5lzq6i7v4ra.cloudworkstations.dev/_next/static/chunks/node_modules_b3fa833d._.js
-    - https://6000-firebase-studio-1771339890236.cluster-64pjnskmlbaxowh5lzq6i7v4ra.cloudworkstations.dev/_next/static/chunks/src_d5f1f292._.js
 
 And change it as follows:
   
-The card that shows “Follow-up Actions Tracker” does not appear on the UI. Make this card appear on the UI.
+the app is still unresponsive after the changes. the whole page freezes, but the scrollbar works
