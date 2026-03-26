@@ -1058,4 +1058,4 @@ Relevant files:
 
 And change it as follows:
   
-the app is still unresponsive after the changes. the whole page freezes, but the scrollbar works
+the app is still unresponsive
