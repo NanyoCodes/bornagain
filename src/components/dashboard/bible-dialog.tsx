@@ -22,7 +22,7 @@ import { doc, updateDoc, arrayUnion, collection, query, where, addDoc, serverTim
 import type { UserProfile, ReadingHistoryItem, BibleHighlight } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { format, isSameDay, isToday } from 'date-fns';
-import { Loader2, XCircle, BookOpen, Trash2, ChevronRight, Minus, Plus, Highlighter } from 'lucide-react';
+import { Loader2, XCircle, BookOpen, Trash2, ChevronRight, Minus, Plus, Highlighter, ChevronDown } from 'lucide-react';
 import { Skeleton } from '../ui/skeleton';
 import { getBibleChapter, type BibleChapterOutput } from '@/ai/flows/get-bible-chapter-flow';
 import { Input } from '../ui/input';
@@ -33,6 +33,7 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTr
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
+import { Popover, PopoverTrigger, PopoverContent } from '../ui/popover';
 
 const bibleVersions = [
     { id: 'kjv', name: 'King James Version' },
@@ -174,10 +175,13 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
   const [mounted, setMounted] = useState(false);
   const [isBookSheetOpen, setIsBookSheetOpen] = useState(false);
   const [isChapterSheetOpen, setIsChapterSheetOpen] = useState(false);
+  const [isChapterPopoverOpen, setIsChapterPopoverOpen] = useState(false);
   const [isVersionSheetOpen, setIsVersionSheetOpen] = useState(false);
   const [bookSearchTerm, setBookSearchTerm] = useState('');
   const [mobileTab, setMobileTab] = useState('reader');
   
+  const [goToVerse, setGoToVerse] = useState('');
+
   type FontSize = 'sm' | 'base' | 'lg' | 'xl';
   const fontSizes: FontSize[] = ['sm', 'base', 'lg', 'xl'];
   const [fontSize, setFontSize] = useState<FontSize>('sm');
@@ -404,6 +408,12 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
     };
 
     const handleVerseClick = (verseNumber: number) => {
+        const verseElement = document.getElementById(`verse-${verseNumber}`);
+        verseElement?.classList.add('verse-selected');
+        setTimeout(() => {
+            verseElement?.classList.remove('verse-selected');
+        }, 1500);
+
         const existingHighlight = highlightsMap.get(verseNumber);
 
         if (existingHighlight) {
@@ -490,6 +500,22 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
             });
     };
 
+    const handleGoToVerse = () => {
+      const verseNum = parseInt(goToVerse, 10);
+      if (!isNaN(verseNum) && chapterContent && verseNum > 0 && verseNum <= chapterContent.verses.length) {
+          const verseElement = document.getElementById(`verse-${verseNum}`);
+          verseElement?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          
+          verseElement?.classList.add('verse-selected');
+          setTimeout(() => {
+              verseElement?.classList.remove('verse-selected');
+          }, 1500);
+
+          setGoToVerse('');
+      } else {
+          toast({ variant: 'destructive', title: 'Invalid Verse', description: 'Please enter a valid verse number for this chapter.' });
+      }
+    };
 
 
     useEffect(() => {
@@ -611,11 +637,12 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                               return (
                                   <p
                                       key={verseNum}
+                                      id={`verse-${verseNum}`}
                                       className={cn(
                                           'rounded-sm transition-colors -mx-1 px-1 py-0.5',
                                           'sm:leading-relaxed md:leading-loose',
                                           highlightInfo && getHighlightClass(highlightInfo.color),
-                                          isSelected && 'bg-destructive/20',
+                                          isSelected && 'bg-destructive/30',
                                           isActiveHighlight && 'ring-2 ring-primary ring-offset-2 ring-offset-background',
                                           'cursor-pointer'
                                       )}
@@ -630,7 +657,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                   )}
               </ScrollArea>
           </div>
-           <div className="flex-shrink-0 pt-4 flex flex-col items-center sm:flex-row gap-2 sm:justify-between">
+           <div className="flex-shrink-0 pt-4 flex flex-col sm:flex-row gap-2 items-center justify-between">
             <div className="flex items-center justify-center min-h-[40px]">
                 {selectedVerses.length > 0 && !unfinishedHighlight && (
                     <Button onClick={handleSaveHighlight} disabled={isProcessingHighlight}>
@@ -663,17 +690,30 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                     </Card>
                 )}
             </div>
-            <Button onClick={handleMarkAsRead} disabled={isSubmitting || isLoadingChapter || !!chapterError || !isScrolledToEnd}>
-            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Mark as Read & Next Chapter
-            </Button>
+            <div className="flex gap-2 items-center">
+                <div className="flex items-center gap-2">
+                    <Input
+                        type="number"
+                        placeholder="Verse"
+                        value={goToVerse}
+                        onChange={(e) => setGoToVerse(e.target.value)}
+                        className="w-20 h-9"
+                        onKeyDown={(e) => e.key === 'Enter' && handleGoToVerse()}
+                    />
+                    <Button onClick={handleGoToVerse} size="sm" variant="secondary">Go</Button>
+                </div>
+                <Button onClick={handleMarkAsRead} disabled={isSubmitting || isLoadingChapter || !!chapterError || !isScrolledToEnd}>
+                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Mark as Read & Next Chapter
+                </Button>
+            </div>
           </div>
       </div>
     );
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md md:max-w-5xl lg:max-w-7xl h-[90vh] flex flex-col p-2 sm:p-6">
+      <DialogContent className="max-w-3xl md:max-w-5xl lg:max-w-7xl h-[90dvh] flex flex-col p-2 sm:p-6">
         <DialogHeader>
           <DialogTitle className="flex items-center justify-between">
              <div className="flex items-center">
@@ -701,14 +741,35 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                                 ))}
                             </SelectContent>
                         </Select>
-                        <Select value={String(selectedChapterNumber)} onValueChange={(val) => { setSelectedChapterNumber(Number(val)); setActiveHighlightId(null); }}>
-                            <SelectTrigger><SelectValue placeholder="Select a chapter" /></SelectTrigger>
-                            <SelectContent>
-                                {selectedBook?.chapters.map(chapter => (
-                                    <SelectItem key={chapter.chapter} value={String(chapter.chapter)}>Chapter {chapter.chapter}</SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
+                        <Popover open={isChapterPopoverOpen} onOpenChange={setIsChapterPopoverOpen}>
+                            <PopoverTrigger asChild>
+                                <Button variant="outline" className="w-full justify-between">
+                                    Chapter {selectedChapterNumber}
+                                    <ChevronDown className="h-4 w-4 opacity-50" />
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-[300px] p-0">
+                                <ScrollArea className="h-72">
+                                    <div className="grid grid-cols-8 gap-1 p-2">
+                                        {selectedBook?.chapters.map(chapter => (
+                                            <Button
+                                                key={chapter.chapter}
+                                                variant={chapter.chapter === selectedChapterNumber ? "default" : "outline"}
+                                                size="sm"
+                                                className="h-8"
+                                                onClick={() => {
+                                                    setSelectedChapterNumber(chapter.chapter);
+                                                    setActiveHighlightId(null);
+                                                    setIsChapterPopoverOpen(false);
+                                                }}
+                                            >
+                                                {chapter.chapter}
+                                            </Button>
+                                        ))}
+                                    </div>
+                                </ScrollArea>
+                            </PopoverContent>
+                        </Popover>
                         <Select value={selectedVersion} onValueChange={setSelectedVersion}>
                           <SelectTrigger><SelectValue placeholder="Select a version" /></SelectTrigger>
                           <SelectContent>
