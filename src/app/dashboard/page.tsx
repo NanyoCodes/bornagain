@@ -557,7 +557,7 @@ function ActionAnalyticsCard({ souls }: { souls: Soul[] }) {
   const barSize = !mounted ? 20 : isMobile ? 14 : 20;
 
   return (
-    <Card>
+    <Card className="bg-background text-foreground">
       <CardHeader>
         <CardTitle>Follow-up Actions Tracker</CardTitle>
         <CardDescription>
@@ -1050,12 +1050,10 @@ export default function DashboardPage() {
     </div>
   );
 }
+```
 
 Relevant files:
 
-    - https://6000-firebase-studio-1771339890236.cluster-64pjnskmlbaxowh5lzq6i7v4ra.cloudworkstations.dev/_next/static/chunks/node_modules_next_dist_compiled_5150ccfd._.js
-    - https://6000-firebase-studio-1771339890236.cluster-64pjnskmlbaxowh5lzq6i7v4ra.cloudworkstations.dev/_next/static/chunks/node_modules_next_dist_compiled_5150ccfd._.js
-
 And change it as follows:
   
-the app is still unresponsive
+the app is not responding to clicks
