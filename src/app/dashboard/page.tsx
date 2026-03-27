@@ -1051,14 +1051,3 @@ export default function DashboardPage() {
     </div>
   );
 }
-
-Relevant files:
-
-    - https://6000-firebase-studio-1771339890236.cluster-64pjnskmlbaxowh5lzq6i7v4ra.cloudworkstations.dev/_next/static/chunks/src_app_dashboard_page_tsx_fb6a0d3a.js
-    - https://6000-firebase-studio-1771339890236.cluster-64pjnskmlbaxowh5lzq6i7v4ra.cloudworkstations.dev/_next/static/chunks/node_modules_b3fa833d._.js
-    - https://6000-firebase-studio-1771339890236.cluster-64pjnskmlbaxowh5lzq6i7v4ra.cloudworkstations.dev/_next/static/chunks/node_modules_next_dist_compiled_5150ccfd._.js
-    - https://6000-firebase-studio-1771339890236.cluster-64pjnskmlbaxowh5lzq6i7v4ra.cloudworkstations.dev/_next/static/chunks/node_modules_next_dist_compiled_5150ccfd._.js
-
-And change it as follows:
-  
-the follow up actions tracker should have a white background and the text black
