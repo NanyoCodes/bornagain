@@ -20,10 +20,9 @@ Here is a general outline of the process. You will need to run these commands in
 
 #### 1. Static Export Configuration
 
-Capacitor needs a static version of your web app to package. You'll need to configure your Next.js app to produce a static export.
+Capacitor needs a static version of your web app to package. Your project has already been configured to do this automatically.
 
-- In your `package.json` file, modify the `build` script to: `"build": "next build && next export"`
-- In your `next.config.ts` file, add the line: `output: 'export'`
+When you run `npm run build`, Next.js will create a static version of your app in an `out` directory, which is exactly what Capacitor needs. No further configuration is required for this step.
 
 #### 2. Install Capacitor
 
