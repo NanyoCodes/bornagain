@@ -70,12 +70,10 @@ function ChatListItem({ chat, currentUserId, isUnread }: { chat: Chat, currentUs
         <div onClick={() => router.push(`/dashboard/chats/${chat.id}`)} className={containerClasses}>
             <div className="flex items-center gap-4 p-4">
                  <div className="relative">
-                    <Link href={`/dashboard/profile/${otherParticipantId}`} onClick={(e) => e.stopPropagation()} className="relative z-10">
-                        <Avatar className="h-12 w-12">
-                            <AvatarImage src={otherParticipantInfo.photoURL} />
-                            <AvatarFallback>{otherParticipantInfo.firstName?.charAt(0)}</AvatarFallback>
-                        </Avatar>
-                    </Link>
+                    <Avatar className="h-12 w-12">
+                        <AvatarImage src={otherParticipantInfo.photoURL} />
+                        <AvatarFallback>{otherParticipantInfo.firstName?.charAt(0)}</AvatarFallback>
+                    </Avatar>
                     {isUnread && <div className="absolute top-0 right-0 h-3 w-3 rounded-full bg-primary border-2 border-background" />}
                 </div>
                 <div className="flex-1 min-w-0">
