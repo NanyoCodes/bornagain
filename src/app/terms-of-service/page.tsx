@@ -13,36 +13,43 @@ export default function TermsOfServicePage() {
         </CardHeader>
         <CardContent className="space-y-6 text-muted-foreground">
           <p>
-            Welcome to Testify! These terms and conditions outline the rules and regulations for the use of our application.
+            Welcome to Testify! These terms and conditions outline the rules and regulations for the use of our application. By accessing this application we assume you accept these terms and conditions.
           </p>
 
           <div className="space-y-2">
-            <h2 className="text-xl font-semibold text-foreground">1. Acceptance of Terms</h2>
+            <h2 className="text-xl font-semibold text-foreground">1. User Accounts</h2>
             <p>
-              By accessing this application, we assume you accept these terms and conditions. Do not continue to use Testify if you do not agree to all of the terms and conditions stated on this page.
-            </p>
-          </div>
-
-          <div className="space-y-2">
-            <h2 className="text-xl font-semibold text-foreground">2. User Accounts</h2>
-            <p>
-              You are responsible for safeguarding your account and for any activities or actions under your password. You agree not to disclose your password to any third party.
+              When you create an account with us, you must provide information that is accurate, complete, and current at all times. You are responsible for safeguarding the password that you use to access the Service and for any activities or actions under your password.
             </p>
           </div>
           
            <div className="space-y-2">
-            <h2 className="text-xl font-semibold text-foreground">3. User Content</h2>
+            <h2 className="text-xl font-semibold text-foreground">2. User Content</h2>
             <p>
-              You are responsible for the content that you post on or through the service, including its legality, reliability, and appropriateness. By posting content, you grant us the right and license to use, modify, publicly display, and distribute such content on and through the service.
+              Our Service allows you to post, link, store, share and otherwise make available certain information, text, graphics, or other material ("Content"). You are responsible for the Content that you post on or through the service, including its legality, reliability, and appropriateness. You retain any and all of your rights to any Content you submit.
+            </p>
+             <p>
+              We reserve the right to remove any content that we determine to be unlawful, offensive, threatening, libelous, defamatory, pornographic, obscene, or otherwise objectionable or that violates any party's intellectual property or these Terms of Service.
             </p>
           </div>
 
           <div className="space-y-2">
-            <h2 className="text-xl font-semibold text-foreground">4. Termination</h2>
+            <h2 className="text-xl font-semibold text-foreground">3. Termination</h2>
             <p>
               We may terminate or suspend your account immediately, without prior notice or liability, for any reason whatsoever, including without limitation if you breach the Terms.
             </p>
           </div>
+          
+           <div className="space-y-2">
+            <h2 className="text-xl font-semibold text-foreground">4. Limitation of Liability</h2>
+            <p>
+              In no event shall Testify, nor its directors, employees, partners, agents, suppliers, or affiliates, be liable for any indirect, incidental, special, consequential or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses, resulting from your access to or use of or inability to access or use the Service.
+            </p>
+          </div>
+          
+           <p className="pt-2 text-xs text-center text-muted-foreground/80">
+                Disclaimer: This is a template Terms of Service. You should consult with a legal professional to ensure it is appropriate for your application and jurisdiction.
+            </p>
 
            <p className="pt-4 text-center">
             <Button asChild variant="outline">

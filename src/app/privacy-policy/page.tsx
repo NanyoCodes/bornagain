@@ -13,46 +13,54 @@ export default function PrivacyPolicyPage() {
         </CardHeader>
         <CardContent className="space-y-6 text-muted-foreground">
           <p>
-            Your privacy is important to us. It is Testify's policy to respect your privacy regarding any information we may collect from you across our website, and other sites we own and operate.
+            Welcome to Testify. We respect your privacy and are committed to protecting your personal data. This privacy policy will inform you about how we look after your personal data when you use our application and tell you about your privacy rights and how the law protects you.
           </p>
 
           <div className="space-y-2">
             <h2 className="text-xl font-semibold text-foreground">1. Information We Collect</h2>
-            <p>
-              We only ask for personal information when we truly need it to provide a service to you. We collect it by fair and lawful means, with your knowledge and consent. We also let you know why we’re collecting it and how it will be used.
-            </p>
-            <p>
-              Information we collect includes your name, email address, and any content you voluntarily provide, such as testimonies and profile information.
-            </p>
+            <p>We may collect, use, store, and transfer different kinds of personal data about you which we have grouped together as follows:</p>
+            <ul className="list-disc list-inside pl-4 space-y-1">
+              <li><strong>Identity Data:</strong> includes first name, last name, and username.</li>
+              <li><strong>Contact Data:</strong> includes email address and telephone numbers.</li>
+              <li><strong>Profile Data:</strong> includes your profile picture, bio, location, and any content you voluntarily provide, such as testimonies, prayer requests, and campaign details.</li>
+              <li><strong>Usage Data:</strong> includes information about how you use our application, products, and services.</li>
+            </ul>
           </div>
 
           <div className="space-y-2">
             <h2 className="text-xl font-semibold text-foreground">2. How We Use Your Information</h2>
             <p>
-              We use the information we collect to operate and maintain our app, to provide you with the features you use, to communicate with you, and to improve your experience.
+              We will only use your personal data when the law allows us to. Most commonly, we will use your personal data to:
             </p>
+             <ul className="list-disc list-inside pl-4 space-y-1">
+                <li>Register you as a new user.</li>
+                <li>Operate and maintain the functionality of the app.</li>
+                <li>Manage our relationship with you, including notifying you about changes to our terms or privacy policy.</li>
+                <li>Enable you to participate in community features.</li>
+             </ul>
           </div>
           
            <div className="space-y-2">
-            <h2 className="text-xl font-semibold text-foreground">3. Security</h2>
+            <h2 className="text-xl font-semibold text-foreground">3. Data Security</h2>
             <p>
-              We take the security of your data seriously. We protect your information through a variety of security measures, including secure servers and data encryption. However, no method of transmission over the Internet or method of electronic storage is 100% secure.
+              We have put in place appropriate security measures to prevent your personal data from being accidentally lost, used, or accessed in an unauthorized way. We use secure cloud infrastructure and limit access to your personal data to those who have a business need to know.
             </p>
           </div>
 
           <div className="space-y-2">
-            <h2 className="text-xl font-semibold text-foreground">4. Your Rights</h2>
+            <h2 className="text-xl font-semibold text-foreground">4. Your Legal Rights</h2>
             <p>
-              You have the right to access, update, or delete your personal information at any time through your account settings.
+              You have the right to access, update, or request deletion of your personal information at any time through your account settings or by contacting us.
             </p>
           </div>
-
-          <div className="space-y-2">
-            <h2 className="text-xl font-semibold text-foreground">5. Changes to This Policy</h2>
-            <p>
-              We may update our Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page.
+           <div className="space-y-2">
+                <h2 className="text-xl font-semibold text-foreground">5. Contact Us</h2>
+                <p>If you have any questions about this privacy policy, please contact us at <a href="mailto:testifyitsaboutjesus@gmail.com" className="text-primary hover:underline">testifyitsaboutjesus@gmail.com</a>.</p>
+           </div>
+           
+            <p className="pt-2 text-xs text-center text-muted-foreground/80">
+                Disclaimer: This is a template privacy policy. You should consult with a legal professional to ensure it meets all legal requirements for your specific situation.
             </p>
-          </div>
 
            <p className="pt-4 text-center">
             <Button asChild variant="outline">
