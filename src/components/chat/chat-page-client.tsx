@@ -374,10 +374,12 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                     </div>
                 ) : otherParticipantInfo && otherParticipantId ? (
                    <div className="flex items-center gap-3 flex-grow">
-                        <Avatar>
-                            <AvatarImage src={otherParticipantInfo.photoURL} />
-                            <AvatarFallback>{otherParticipantInfo.firstName?.charAt(0)}</AvatarFallback>
-                        </Avatar>
+                        <div className="relative">
+                            <Avatar className="h-12 w-12">
+                                <AvatarImage src={otherParticipantInfo.photoURL} />
+                                <AvatarFallback>{otherParticipantInfo.firstName?.charAt(0)}</AvatarFallback>
+                            </Avatar>
+                        </div>
                         <div className="flex-grow">
                             <h2 className="font-semibold">
                                 {otherParticipantInfo.firstName} {otherParticipantInfo.lastName}
