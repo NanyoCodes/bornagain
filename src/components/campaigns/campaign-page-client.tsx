@@ -434,12 +434,12 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                                 <CardTitle className="text-lg">Organizer</CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <a href={`/dashboard/profile/${campaign.organizerId}`} className="flex items-center gap-3 group">
+                                <div className="flex items-center gap-3 group">
                                      <Avatar>
                                         <AvatarFallback>{campaign.organizerFirstName?.charAt(0)}{campaign.organizerLastName?.charAt(0)}</AvatarFallback>
                                     </Avatar>
-                                    <span className="font-semibold group-hover:underline">{campaign.organizerFirstName} {campaign.organizerLastName}</span>
-                                </a>
+                                    <span className="font-semibold">{campaign.organizerFirstName} {campaign.organizerLastName}</span>
+                                </div>
                             </CardContent>
                         </Card>
 
