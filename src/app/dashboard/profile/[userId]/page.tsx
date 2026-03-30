@@ -1,6 +1,6 @@
 import UserProfileClient from '@/components/profile/user-profile-client';
 
-export async function generateStaticParams() {
+export function generateStaticParams() {
   return [];
 }
 
