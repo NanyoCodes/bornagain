@@ -28,16 +28,12 @@ export function ChatParticipantsDialog({ chat, children }: { chat: Chat; childre
           <div className="space-y-3">
             {participants.map(([id, p]) => (
               <div key={id} className="flex items-center gap-3 rounded-lg border p-3">
-                 <Link href={`/dashboard/profile/${id}`}>
-                    <Avatar>
-                    <AvatarImage src={p.photoURL} />
-                    <AvatarFallback>{p.firstName?.charAt(0)}{p.lastName?.charAt(0)}</AvatarFallback>
-                    </Avatar>
-                </Link>
+                <Avatar>
+                  <AvatarImage src={p.photoURL} />
+                  <AvatarFallback>{p.firstName?.charAt(0)}{p.lastName?.charAt(0)}</AvatarFallback>
+                </Avatar>
                 <div>
-                  <Link href={`/dashboard/profile/${id}`}>
-                    <p className="font-semibold hover:underline">{p.firstName} {p.lastName}</p>
-                  </Link>
+                  <p className="font-semibold">{p.firstName} {p.lastName}</p>
                 </div>
               </div>
             ))}

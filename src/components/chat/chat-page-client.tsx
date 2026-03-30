@@ -374,17 +374,13 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                     </div>
                 ) : otherParticipantInfo && otherParticipantId ? (
                    <div className="flex items-center gap-3 flex-grow">
-                        <Link href={`/dashboard/profile/${otherParticipantId}`}>
-                            <Avatar>
-                                <AvatarImage src={otherParticipantInfo.photoURL} />
-                                <AvatarFallback>{otherParticipantInfo.firstName?.charAt(0)}</AvatarFallback>
-                            </Avatar>
-                        </Link>
+                        <Avatar>
+                            <AvatarImage src={otherParticipantInfo.photoURL} />
+                            <AvatarFallback>{otherParticipantInfo.firstName?.charAt(0)}</AvatarFallback>
+                        </Avatar>
                         <div className="flex-grow">
                             <h2 className="font-semibold">
-                                <Link href={`/dashboard/profile/${otherParticipantId}`} className="hover:underline">
-                                    {otherParticipantInfo.firstName} {otherParticipantInfo.lastName}
-                                </Link>
+                                {otherParticipantInfo.firstName} {otherParticipantInfo.lastName}
                             </h2>
                             {chat.campaignTitle && chat.campaignId ? (
                                 <p className="text-sm text-muted-foreground">
@@ -422,12 +418,12 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                                             {!isOwnMessage && senderInfo && (
                                                 <Tooltip>
                                                     <TooltipTrigger asChild>
-                                                        <Link href={`/dashboard/profile/${msg.senderId}`}>
+                                                        <div>
                                                             <Avatar className="h-8 w-8">
                                                                 <AvatarImage src={senderInfo.photoURL} />
                                                                 <AvatarFallback>{senderInfo.firstName?.charAt(0)}</AvatarFallback>
                                                             </Avatar>
-                                                        </Link>
+                                                        </div>
                                                     </TooltipTrigger>
                                                     <TooltipContent>
                                                         <p>{senderInfo.firstName} {senderInfo.lastName}</p>
@@ -496,9 +492,9 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                                                         )}
 
                                                         {chat.isGroupChat && !isOwnMessage && senderInfo && (
-                                                            <Link href={`/dashboard/profile/${msg.senderId}`} className="text-xs font-bold mb-1 hover:underline">
-                                                            {senderInfo.firstName} {senderInfo.lastName}
-                                                            </Link>
+                                                            <div className="text-xs font-bold mb-1">
+                                                                {senderInfo.firstName} {senderInfo.lastName}
+                                                            </div>
                                                         )}
                                                         {msg.text && <p className="text-sm">{msg.text}</p>}
                                                         {createdAtDate && (

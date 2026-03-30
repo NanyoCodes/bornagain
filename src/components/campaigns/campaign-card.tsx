@@ -596,9 +596,9 @@ export function CampaignCard({ campaign, userId, userProfile, distance }: { camp
         <CardFooter className="p-4 bg-muted/20 text-xs text-muted-foreground flex justify-between">
             <span className="truncate">
                 Created by{" "}
-                <Link href={`/dashboard/profile/${campaign.organizerId}`} className="font-medium text-primary hover:underline px-1" onClick={stopPropagation}>
+                <span className="font-medium text-primary px-1">
                     {campaign.organizerFirstName} {campaign.organizerLastName}
-                </Link>
+                </span>
             </span>
             <span className="flex-shrink-0">{footerDateText}</span>
         </CardFooter>

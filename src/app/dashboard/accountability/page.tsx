@@ -213,17 +213,13 @@ export default function AccountabilityPage() {
   return (
     <div className="space-y-8 max-w-3xl mx-auto">
       <div className="flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left">
-        <Link href={`/dashboard/profile/${partnerId}`}>
-          <Avatar className="h-24 w-24 sm:h-20 sm:w-20 border cursor-pointer hover:opacity-80 transition-opacity">
+          <Avatar className="h-24 w-24 sm:h-20 sm:w-20 border">
             <AvatarImage src={partnerProfile.photoURL ?? undefined} alt={partnerFullName} />
             <AvatarFallback className="text-4xl sm:text-3xl">{partnerProfile.firstName?.charAt(0)}</AvatarFallback>
           </Avatar>
-        </Link>
         <div>
           <p className="text-sm text-muted-foreground">Your Accountability Partner</p>
-          <Link href={`/dashboard/profile/${partnerId}`}>
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight font-headline hover:underline">{partnerFullName}</h1>
-          </Link>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight font-headline">{partnerFullName}</h1>
         </div>
       </div>
       <Card>
