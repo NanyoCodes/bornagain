@@ -379,6 +379,7 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                                 <AvatarImage src={otherParticipantInfo.photoURL} />
                                 <AvatarFallback>{otherParticipantInfo.firstName?.charAt(0)}</AvatarFallback>
                             </Avatar>
+                            {isUnread && <div className="absolute top-0 right-0 h-3 w-3 rounded-full bg-primary border-2 border-background" />}
                         </div>
                         <div className="flex-grow">
                             <h2 className="font-semibold">
