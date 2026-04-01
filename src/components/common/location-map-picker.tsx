@@ -12,7 +12,6 @@ import { Input } from '@/components/ui/input';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Button } from '../ui/button';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
-import Link from 'next/link';
 
 
 const libraries: ('places')[] = ['places'];
@@ -241,11 +240,7 @@ export function LocationMapPicker({ form }: LocationMapPickerProps) {
             <Alert variant="destructive">
                 <AlertTitle>Google Maps Not Configured</AlertTitle>
                 <AlertDescription>
-                    The Google Maps API key is missing. Please{' '}
-                    <Link href="/docs/google-maps-setup-guide.md" className="font-semibold underline hover:text-destructive-foreground" target="_blank" rel="noopener noreferrer">
-                        follow the setup guide
-                    </Link>
-                    {' '}to enable map features.
+                    The Google Maps API key is missing. Please open <code className="font-code p-1 bg-destructive/20 rounded">docs/google-maps-setup-guide.md</code> for the setup guide to enable map features.
                 </AlertDescription>
             </Alert>
         );
@@ -262,11 +257,7 @@ export function LocationMapPicker({ form }: LocationMapPickerProps) {
              <Alert variant="destructive">
                 <AlertTitle>Google Maps Error</AlertTitle>
                 <AlertDescription>
-                    {errorMessage} Please{' '}
-                    <Link href="/docs/google-maps-setup-guide.md" className="font-semibold underline hover:text-destructive-foreground" target="_blank" rel="noopener noreferrer">
-                        review the setup guide
-                    </Link>
-                    {' '}for detailed instructions.
+                    {errorMessage} Please open <code className="font-code p-1 bg-destructive/20 rounded">docs/google-maps-setup-guide.md</code> for detailed instructions.
                 </AlertDescription>
             </Alert>
         );

@@ -7,7 +7,6 @@ import { Input } from '@/components/ui/input';
 import { Loader2 } from 'lucide-react';
 import { type UseFormReturn } from 'react-hook-form';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import Link from 'next/link';
 
 const libraries: ('places')[] = ['places'];
 const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
@@ -68,11 +67,7 @@ export function LocationProfileInput({ form }: LocationProfileInputProps) {
             <Alert variant="destructive">
                 <AlertTitle>Google Maps Not Configured</AlertTitle>
                 <AlertDescription>
-                    The Google Maps API key is missing. Please{' '}
-                    <Link href="/docs/google-maps-setup-guide.md" className="font-semibold underline hover:text-destructive-foreground" target="_blank" rel="noopener noreferrer">
-                        follow the setup guide
-                    </Link>
-                    {' '}to enable map features.
+                    The Google Maps API key is missing. Please open <code className="font-code p-1 bg-destructive/20 rounded">docs/google-maps-setup-guide.md</code> for the setup guide to enable map features.
                 </AlertDescription>
             </Alert>
         );
@@ -88,11 +83,7 @@ export function LocationProfileInput({ form }: LocationProfileInputProps) {
             <Alert variant="destructive">
                 <AlertTitle>Google Maps Error</AlertTitle>
                 <AlertDescription>
-                    {errorMessage} Please{' '}
-                    <Link href="/docs/google-maps-setup-guide.md" className="font-semibold underline hover:text-destructive-foreground" target="_blank" rel="noopener noreferrer">
-                        review the setup guide
-                    </Link>
-                    {' '}to resolve this.
+                    {errorMessage} Please open <code className="font-code p-1 bg-destructive/20 rounded">docs/google-maps-setup-guide.md</code> to resolve this.
                 </AlertDescription>
             </Alert>
         );

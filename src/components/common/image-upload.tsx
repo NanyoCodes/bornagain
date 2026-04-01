@@ -10,7 +10,6 @@ import { Camera, X, AlertTriangle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Input } from '@/components/ui/input';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import Link from 'next/link';
 
 interface ImageUploadProps {
   initialImageUrl?: string | null;
@@ -178,12 +177,9 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath }: 
                     <AlertDescription className="space-y-2">
                         <p><strong>This is a configuration issue, not a code problem.</strong></p>
                         <p>{uploadError}</p>
-                        <p>Please follow the guide below to resolve this. It covers the most common solutions like setting up billing and CORS.</p>
-                        <Button asChild variant="link" className="p-0 h-auto font-semibold text-destructive">
-                            <Link href="/docs/storage-cors-guide.md" target="_blank">
-                                Click here for the step-by-step troubleshooting guide.
-                            </Link>
-                        </Button>
+                        <p>
+                            Please open <code className="font-code p-1 bg-destructive/20 rounded">docs/storage-cors-guide.md</code> in the file explorer for a step-by-step guide to fix this. It covers the most common solutions like setting up billing and CORS.
+                        </p>
                     </AlertDescription>
                 </Alert>
             )}
