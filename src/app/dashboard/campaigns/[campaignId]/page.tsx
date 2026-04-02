@@ -1,8 +1,7 @@
 import CampaignPageClient from "@/components/campaigns/campaign-page-client";
 
 export function generateStaticParams() {
-  // Returning a dummy param to satisfy a persistent Next.js build error.
-  return [{ campaignId: 'do-not-render' }];
+  return [];
 }
 
 export default function CampaignPage({ params }: { params: { campaignId: string } }) {
