@@ -10,6 +10,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
   // Since public profiles are disabled, we redirect to the main profile page.
   // This component exists to satisfy the Next.js build process for dynamic routes.
   useEffect(() => {
+    // A simple redirect to the main profile page.
     router.replace('/dashboard/profile');
   }, [router]);
 
