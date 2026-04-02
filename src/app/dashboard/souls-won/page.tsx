@@ -2,6 +2,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import {
@@ -37,6 +38,7 @@ declare module 'jspdf' {
 export default function SoulsWonPage() {
   const { user, loading: userLoading } = useUser();
   const firestore = useFirestore();
+  const router = useRouter();
   const { toast } = useToast();
   const [isLogDialogOpen, setIsLogDialogOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -76,6 +78,7 @@ export default function SoulsWonPage() {
 
   const handleSoulLogged = () => {
     setIsLogDialogOpen(false);
+    router.refresh();
   };
 
   const handleExport = (formatType: 'csv' | 'pdf') => {

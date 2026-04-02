@@ -16,6 +16,7 @@ import { format } from "date-fns";
 import { HandHeart, Users, Trash2, Loader2 } from "lucide-react";
 import { useUser, useFirestore } from "@/firebase";
 import { useState, useMemo, memo } from "react";
+import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { doc, updateDoc, arrayUnion, deleteDoc } from "firebase/firestore";
 import { errorEmitter } from "@/firebase/error-emitter";
@@ -26,6 +27,7 @@ import { cn } from "@/lib/utils";
 export const PrayerRequestCard = memo(function PrayerRequestCard({ prayerRequest }: { prayerRequest: PrayerRequest }) {
   const { user } = useUser();
   const firestore = useFirestore();
+  const router = useRouter();
   const { toast } = useToast();
   
   const [isPraying, setIsPraying] = useState(false);
@@ -56,6 +58,7 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({ prayerRequest
     updateDoc(requestRef, updatePayload)
         .then(() => {
             toast({ title: "Thank You!", description: "Thank you for praying." });
+            router.refresh();
         })
         .catch(() => {
             const permissionError = new FirestorePermissionError({
@@ -82,6 +85,7 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({ prayerRequest
                 title: "Request Deleted",
                 description: "Your prayer request has been removed.",
             });
+            router.refresh();
         })
         .catch(() => {
             const permissionError = new FirestorePermissionError({

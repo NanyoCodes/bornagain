@@ -2,6 +2,7 @@
 "use client";
 
 import React, { useState, useEffect, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { PlusCircle, Newspaper, HandHeart } from "lucide-react";
 import { CreateTestimonyForm } from "@/components/testimonies/create-testimony-form";
@@ -31,7 +32,7 @@ import { useCollection, useFirestore, useUser, useDoc } from "@/firebase";
 import { collection, query, orderBy, doc } from "firebase/firestore";
 import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card";
 import { useSearch } from "@/context/search-context";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsContent } from "@/components/ui/tabs";
 import { haversineDistance } from "@/lib/utils";
 
 export default function TestimoniesPage() {
@@ -39,6 +40,7 @@ export default function TestimoniesPage() {
   const [isPrayerDialogOpen, setIsPrayerDialogOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const isMobile = useIsMobile();
+  const router = useRouter();
   const { searchTerm, setSearchPlaceholder, setIsSearchVisible, setSearchTerm } = useSearch();
   const [activeTab, setActiveTab] = useState("testimonies");
 
@@ -134,8 +136,14 @@ export default function TestimoniesPage() {
   }, [prayerRequests, searchTerm, activeTab]);
 
 
-  const handleTestimonyCreated = () => setIsTestimonyDialogOpen(false);
-  const handlePrayerRequestCreated = () => setIsPrayerDialogOpen(false);
+  const handleTestimonyCreated = () => {
+    setIsTestimonyDialogOpen(false);
+    router.refresh();
+  };
+  const handlePrayerRequestCreated = () => {
+    setIsPrayerDialogOpen(false);
+    router.refresh();
+  };
   
   const testimonyTrigger = (
     <Button>

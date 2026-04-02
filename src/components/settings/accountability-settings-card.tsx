@@ -9,6 +9,7 @@ import { UserSearch } from '@/components/accountability/user-search';
 import { AccountabilityRequests } from './accountability-requests';
 import { useCollection } from '@/firebase/firestore/use-collection';
 import { useState, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 import { query, collection, where, doc, writeBatch, deleteField, serverTimestamp } from 'firebase/firestore';
 import Link from 'next/link';
 import { Button } from '../ui/button';
@@ -23,6 +24,7 @@ import { FirestorePermissionError } from '@/firebase/errors';
 export function AccountabilitySettingsCard({ userProfile, userId }: { userProfile: UserProfile; userId: string }) {
   const { user } = useUser();
   const firestore = useFirestore();
+  const router = useRouter();
   const { toast } = useToast();
   const [removalReason, setRemovalReason] = useState('');
   const [isRemoving, setIsRemoving] = useState(false);
@@ -89,6 +91,7 @@ export function AccountabilitySettingsCard({ userProfile, userId }: { userProfil
     batch.commit()
         .then(() => {
             toast({ title: 'Partner Removed', description: 'Your accountability partnership has been ended.' });
+            router.refresh();
         })
         .catch(() => {
             const permissionError = new FirestorePermissionError({

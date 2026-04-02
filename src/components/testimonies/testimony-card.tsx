@@ -75,7 +75,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, dist
           title: "Testimony Deleted",
           description: "Your testimony has been successfully removed.",
         });
-        // The component will unmount as the parent's `useCollection` hook updates.
+        router.refresh();
       })
       .catch(() => {
         const permissionError = new FirestorePermissionError({
@@ -99,6 +99,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, dist
     updateDoc(testimonyRef, updatePayload)
         .then(() => {
             toast({ title: "Thank You!", description: "Thank you for your support." });
+            router.refresh();
         })
         .catch(() => {
             const permissionError = new FirestorePermissionError({
@@ -213,7 +214,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, dist
             </DialogDescription>
           </DialogHeader>
           <div className="max-h-[70vh] overflow-y-auto pr-2">
-            <EditTestimonyForm testimony={testimony} onTestimonyUpdated={() => setIsEditDialogOpen(false)} />
+            <EditTestimonyForm testimony={testimony} onTestimonyUpdated={() => { setIsEditDialogOpen(false); router.refresh(); }} />
           </div>
         </DialogContent>
       </Dialog>

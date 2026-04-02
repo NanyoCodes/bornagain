@@ -1,9 +1,9 @@
 
-
 "use client";
 
 import * as React from "react";
 import { format } from "date-fns";
+import { useRouter } from "next/navigation";
 import { MoreHorizontal, Church, UserPlus, Edit, MapPin, Mail, Phone, ChevronDown, BookOpen, Heart, Users } from "lucide-react";
 import type { Soul, FollowUpStatus, FollowUpLogItem } from "@/lib/types";
 import { Button } from "@/components/ui/button";
@@ -90,6 +90,7 @@ function LogFollowUpDialog({ soul, children }: { soul: Soul; children: React.Rea
   const { toast } = useToast();
   const { user } = useUser();
   const firestore = useFirestore();
+  const router = useRouter();
   const [isLoading, setIsLoading] = React.useState(false);
   const [isOpen, setIsOpen] = React.useState(false);
 
@@ -150,6 +151,7 @@ function LogFollowUpDialog({ soul, children }: { soul: Soul; children: React.Rea
             description: `A new entry has been added for ${soul.firstName} ${soul.lastName}.`,
         });
         setIsOpen(false);
+        router.refresh();
     } catch (err: any) {
         console.error("Failed to log follow-up:", err);
         if (err.code === 'permission-denied') {
@@ -412,6 +414,7 @@ function ViewHistoryDialog({ soul, children }: { soul: Soul; children: React.Rea
 
 function SoulCard({ soul }: { soul: Soul }) {
     const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
+    const router = useRouter();
     
     const latestFollowUp = React.useMemo(() => {
         if (!soul.followUpLog || soul.followUpLog.length === 0) return null;
@@ -487,7 +490,7 @@ function SoulCard({ soul }: { soul: Soul }) {
                                         <DialogDescription>Make changes to the record for {soul.firstName} {soul.lastName}.</DialogDescription>
                                     </DialogHeader>
                                     <div className="max-h-[70vh] overflow-y-auto pr-2">
-                                        <EditSoulForm soul={soul} onSoulUpdated={() => setIsEditDialogOpen(false)} />
+                                        <EditSoulForm soul={soul} onSoulUpdated={() => { setIsEditDialogOpen(false); router.refresh(); }} />
                                     </div>
                                 </DialogContent>
                             </Dialog>
@@ -536,6 +539,7 @@ function SoulCard({ soul }: { soul: Soul }) {
 
 function SoulTableRow({ soul }: { soul: Soul }) {
     const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
+    const router = useRouter();
 
     const latestFollowUp = React.useMemo(() => {
         if (!soul.followUpLog || soul.followUpLog.length === 0) return null;
@@ -628,7 +632,7 @@ function SoulTableRow({ soul }: { soul: Soul }) {
                             <DialogDescription>Make changes to the record for {soul.firstName} {soul.lastName}.</DialogDescription>
                         </DialogHeader>
                         <div className="max-h-[70vh] overflow-y-auto pr-2">
-                            <EditSoulForm soul={soul} onSoulUpdated={() => setIsEditDialogOpen(false)} />
+                            <EditSoulForm soul={soul} onSoulUpdated={() => { setIsEditDialogOpen(false); router.refresh(); }} />
                         </div>
                     </DialogContent>
                 </Dialog>
@@ -748,4 +752,5 @@ export function SoulsWonTable({ souls, loading }: SoulsWonTableProps) {
     
 
     
+
 

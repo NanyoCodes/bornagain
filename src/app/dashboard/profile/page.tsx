@@ -1,6 +1,8 @@
+
 'use client';
 
 import { useState, useEffect, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Edit, Loader2, Mail, MapPin, Phone, HeartHandshake, XCircle } from "lucide-react";
@@ -84,6 +86,7 @@ function FilterControls({
 export default function ProfilePage() {
   const { user: currentUser, loading: userLoading } = useUser();
   const firestore = useFirestore();
+  const router = useRouter();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const isMobile = useIsMobile();
@@ -270,7 +273,7 @@ export default function ProfilePage() {
     </Button>
   );
 
-  const formContent = <EditProfileModal userProfile={userProfile} onClose={() => setIsEditModalOpen(false)} />;
+  const formContent = <EditProfileModal userProfile={userProfile} onClose={() => { setIsEditModalOpen(false); router.refresh(); }} />;
 
   return (
     <div className="space-y-8">

@@ -32,6 +32,7 @@ import { useSearch } from "@/context/search-context";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { safeToDate, haversineDistance } from "@/lib/utils";
+import { useRouter } from "next/navigation";
 
 
 function CampaignSkeletons() {
@@ -103,6 +104,7 @@ const getFullEndDate = (campaign: { _endDate: Date | null, endTime?: string}) =>
 export default function CampaignsPage() {
   const { user, loading: userLoading } = useUser();
   const firestore = useFirestore();
+  const router = useRouter();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const isMobile = useIsMobile();
@@ -153,6 +155,7 @@ export default function CampaignsPage() {
 
   const handleCampaignCreated = () => {
     setIsDialogOpen(false);
+    router.refresh();
   };
 
   const processedCampaigns = useMemo(() => {
