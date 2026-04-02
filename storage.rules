@@ -1,11 +1,14 @@
 rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
-    // WARNING: This is a temporary, permissive rule for debugging.
-    // It allows any authenticated user to read or write any file.
-    // This is not secure for a production environment.
-    match /{allPaths=**} {
-      allow read, write: if request.auth != null;
+    match /profile-pictures/{userId}/{fileName} {
+      // Allow write if the user is authenticated and the userId in the path
+      // matches the authenticated user's UID.
+      allow write: if request.auth != null && request.auth.uid == userId;
+      
+      // Allow read if the user is authenticated. This allows users to see their own
+      // and potentially other users' profile pictures.
+      allow read: if request.auth != null;
     }
   }
 }
