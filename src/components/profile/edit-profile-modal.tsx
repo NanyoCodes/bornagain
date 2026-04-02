@@ -210,7 +210,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                 control={form.control}
                 name="photoURL"
                 render={({ field }) => (
-                    <FormItem className="flex flex-col items-center">
+                    <FormItem className="flex flex-col items-center py-4">
                         <FormControl>
                             <ImageUpload
                                 initialImageUrl={field.value}
