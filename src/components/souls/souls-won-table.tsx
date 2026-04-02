@@ -534,7 +534,9 @@ function SoulCard({ soul }: { soul: Soul }) {
     );
 }
 
-function SoulTableRow({ soul, onEditClick }: { soul: Soul, onEditClick: (soul: Soul) => void }) {
+function SoulTableRow({ soul }: { soul: Soul }) {
+    const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
+
     const latestFollowUp = React.useMemo(() => {
         if (!soul.followUpLog || soul.followUpLog.length === 0) return null;
         return soul.followUpLog.reduce((latest, current) => {
@@ -592,31 +594,44 @@ function SoulTableRow({ soul, onEditClick }: { soul: Soul, onEditClick: (soul: S
                 {soul.sourceDetails && <div className="text-xs text-muted-foreground">{soul.sourceDetails}</div>}
             </TableCell>
             <TableCell>
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button
-                            aria-haspopup="true"
-                            size="icon"
-                            variant="ghost"
-                        >
-                            <MoreHorizontal className="h-4 w-4" />
-                            <span className="sr-only">Toggle menu</span>
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem onSelect={() => onEditClick(soul)}>
-                            <Edit className="mr-2 h-4 w-4" />
-                            Edit
-                        </DropdownMenuItem>
-                        <LogFollowUpDialog soul={soul}>
-                            <DropdownMenuItem onSelect={(e) => e.preventDefault()}>Log Follow-up</DropdownMenuItem>
-                        </LogFollowUpDialog>
-                        <ViewHistoryDialog soul={soul}>
-                            <DropdownMenuItem onSelect={(e) => e.preventDefault()}>View History</DropdownMenuItem>
-                        </ViewHistoryDialog>
-                    </DropdownMenuContent>
-                </DropdownMenu>
+                 <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button
+                                aria-haspopup="true"
+                                size="icon"
+                                variant="ghost"
+                            >
+                                <MoreHorizontal className="h-4 w-4" />
+                                <span className="sr-only">Toggle menu</span>
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                             <DialogTrigger asChild>
+                                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                                    <Edit className="mr-2 h-4 w-4" />
+                                    Edit
+                                </DropdownMenuItem>
+                            </DialogTrigger>
+                            <LogFollowUpDialog soul={soul}>
+                                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>Log Follow-up</DropdownMenuItem>
+                            </LogFollowUpDialog>
+                            <ViewHistoryDialog soul={soul}>
+                                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>View History</DropdownMenuItem>
+                            </ViewHistoryDialog>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                    <DialogContent>
+                        <DialogHeader>
+                            <DialogTitle>Edit Soul Details</DialogTitle>
+                            <DialogDescription>Make changes to the record for {soul.firstName} {soul.lastName}.</DialogDescription>
+                        </DialogHeader>
+                        <div className="max-h-[70vh] overflow-y-auto pr-2">
+                            <EditSoulForm soul={soul} onSoulUpdated={() => setIsEditDialogOpen(false)} />
+                        </div>
+                    </DialogContent>
+                </Dialog>
             </TableCell>
         </TableRow>
     );
@@ -630,21 +645,6 @@ type SoulsWonTableProps = {
 export function SoulsWonTable({ souls, loading }: SoulsWonTableProps) {
   const isMobile = useIsMobile();
   const [mounted, setMounted] = React.useState(false);
-  const [editingSoul, setEditingSoul] = React.useState<Soul | null>(null);
-  const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
-  
-  const handleEditClick = React.useCallback((soul: Soul) => {
-    setEditingSoul(soul);
-    setIsEditDialogOpen(true);
-  }, []);
-
-  const handleCloseDialog = () => {
-    setIsEditDialogOpen(false);
-    // Add a small delay to allow the dialog to close before clearing the data, preventing a flicker
-    setTimeout(() => {
-        setEditingSoul(null);
-    }, 150);
-  }
 
   React.useEffect(() => {
     setMounted(true);
@@ -712,7 +712,6 @@ export function SoulsWonTable({ souls, loading }: SoulsWonTableProps) {
   }
 
   return (
-    <>
     <Card>
       <CardHeader>
         <CardTitle>Follow-up Dashboard</CardTitle>
@@ -737,27 +736,16 @@ export function SoulsWonTable({ souls, loading }: SoulsWonTableProps) {
           </TableHeader>
           <TableBody>
             {souls.map((soul) => (
-              <SoulTableRow key={soul.id} soul={soul} onEditClick={handleEditClick} />
+              <SoulTableRow key={soul.id} soul={soul} />
             ))}
           </TableBody>
         </Table>
       </CardContent>
     </Card>
-    <Dialog open={isEditDialogOpen} onOpenChange={(open) => !open && handleCloseDialog()}>
-        <DialogContent>
-            <DialogHeader>
-                <DialogTitle>Edit Soul Details</DialogTitle>
-                <DialogDescription>Make changes to the record for {editingSoul?.firstName} {editingSoul?.lastName}.</DialogDescription>
-            </DialogHeader>
-            <div className="max-h-[70vh] overflow-y-auto pr-2">
-              {editingSoul && <EditSoulForm soul={editingSoul} onSoulUpdated={handleCloseDialog} />}
-            </div>
-        </DialogContent>
-    </Dialog>
-    </>
   );
 }
 
     
 
     
+
