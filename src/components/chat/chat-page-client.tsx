@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useLayoutEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useUser, useFirestore, useCollection, useDoc } from '@/firebase';
 import {
   collection,
@@ -174,7 +174,7 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
         return groups;
     }, [messages]);
     
-    useLayoutEffect(() => {
+    useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [messageGroups]);
 
