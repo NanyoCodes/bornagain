@@ -1,10 +1,16 @@
 rules_version = '2';
 service firebase.storage {
-  match /b/studio-6220967431-56fe2.appspot.com/o {
-    // Allow authenticated users to upload images to their own folder.
-    match /profile-pictures/{userId}/{allPaths=**} {
-      allow read: if true;
+  match /b/{bucket}/o {
+    match /profile-pictures/{userId}/{fileName} {
+      // Allow write if the user is authenticated and the userId in the path
+      // matches the authenticated user's UID.
       allow write: if request.auth != null && request.auth.uid == userId;
+      // Allow read if the user is authenticated.
+      allow read: if request.auth != null;
     }
+    // You might also need a default rule for other files or for testing
+    // match /{allPaths=**} {
+    //   allow read, write: if request.auth != null; // For authenticated users only
+    // }
   }
 }
