@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
@@ -170,19 +171,6 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath }: 
         </div>
       ) : (
         <>
-            {uploadError && (
-                <Alert variant="destructive">
-                    <AlertTriangle className="h-4 w-4" />
-                    <AlertTitle>Upload Failed: Project Configuration Required</AlertTitle>
-                    <AlertDescription className="space-y-2">
-                        <p><strong>This is a configuration issue, not a code problem.</strong></p>
-                        <p>{uploadError}</p>
-                        <p>
-                            Please open <code className="font-code p-1 bg-destructive/20 rounded">docs/storage-cors-guide.md</code> in the file explorer for a step-by-step guide to fix this. It covers the most common solutions like setting up billing and CORS.
-                        </p>
-                    </AlertDescription>
-                </Alert>
-            )}
             <Button type="button" variant="outline" onClick={handleFileSelect} disabled={!!uploadError}>
                 <Camera className="mr-2 h-4 w-4"/>
                 {previewUrl ? 'Change Photo' : 'Upload Photo'}
