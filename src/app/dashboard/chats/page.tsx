@@ -142,7 +142,6 @@ export default function ChatsPage() {
     const chats = useMemo(() => {
         if (!allChats) return [];
         return allChats
-            .filter(chat => chat.hasMessages)
             .sort((a, b) => {
                 const isAUnread = unreadChatIds.has(a.id);
                 const isBUnread = unreadChatIds.has(b.id);
