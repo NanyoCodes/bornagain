@@ -44,6 +44,7 @@ export default function SoulsWonPage() {
   const [mounted, setMounted] = useState(false);
   const isMobile = useIsMobile();
   const { searchTerm, setSearchPlaceholder, setIsSearchVisible, setSearchTerm } = useSearch();
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
     setMounted(true);
@@ -58,10 +59,12 @@ export default function SoulsWonPage() {
   const soulsQuery = useMemo(() => {
     if (!user?.uid || !firestore) return null;
     return query(collection(firestore, `users/${user.uid}/souls`), orderBy("wonAt", "desc"));
-  }, [user?.uid, firestore]);
+  }, [user?.uid, firestore, refreshKey]);
   const { data: souls, loading: soulsLoading } = useCollection<Soul>(soulsQuery);
 
   const loading = userLoading || soulsLoading;
+  
+  const handleRefresh = () => setRefreshKey(k => k + 1);
 
   const filteredSouls = useMemo(() => {
     if (!souls) return [];
@@ -78,7 +81,7 @@ export default function SoulsWonPage() {
 
   const handleSoulLogged = () => {
     setIsLogDialogOpen(false);
-    router.refresh();
+    handleRefresh();
   };
 
   const handleExport = (formatType: 'csv' | 'pdf') => {
@@ -249,6 +252,7 @@ export default function SoulsWonPage() {
       <SoulsWonTable 
         souls={filteredSouls || []} 
         loading={loading}
+        onRefresh={handleRefresh}
       />
     </div>
   );
