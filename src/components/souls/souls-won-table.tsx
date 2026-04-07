@@ -415,14 +415,13 @@ function ViewHistoryDialog({ soul, children }: { soul: Soul; children: React.Rea
 function SoulCard({ soul }: { soul: Soul }) {
     const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
     const router = useRouter();
-    const [shouldRefresh, setShouldRefresh] = React.useState(false);
 
-    React.useEffect(() => {
-        if (shouldRefresh) {
+    const handleEditOpenChange = (open: boolean) => {
+        setIsEditDialogOpen(open);
+        if (!open) {
             router.refresh();
-            setShouldRefresh(false);
         }
-    }, [shouldRefresh, router]);
+    };
 
     const latestFollowUp = React.useMemo(() => {
         if (!soul.followUpLog || soul.followUpLog.length === 0) return null;
@@ -468,7 +467,7 @@ function SoulCard({ soul }: { soul: Soul }) {
                                 {soul.church && <div className="flex items-center gap-1 pt-2"><Church className="h-4 w-4" /> {soul.church}</div>}
                                 {locationWonString && <div className="flex items-center gap-1 pt-1"><MapPin className="h-4 w-4" /> {locationWonString}</div>}
                             </div>
-                            <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+                            <Dialog open={isEditDialogOpen} onOpenChange={handleEditOpenChange}>
                                 <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                     <Button aria-haspopup="true" size="icon" variant="ghost">
@@ -498,7 +497,7 @@ function SoulCard({ soul }: { soul: Soul }) {
                                         <DialogDescription>Make changes to the record for {soul.firstName} {soul.lastName}.</DialogDescription>
                                     </DialogHeader>
                                     <div className="max-h-[70vh] overflow-y-auto pr-2">
-                                        <EditSoulForm soul={soul} onSoulUpdated={() => { setIsEditDialogOpen(false); setShouldRefresh(true); }} />
+                                        <EditSoulForm soul={soul} onSoulUpdated={() => { setIsEditDialogOpen(false); }} />
                                     </div>
                                 </DialogContent>
                             </Dialog>
@@ -548,14 +547,13 @@ function SoulCard({ soul }: { soul: Soul }) {
 function SoulTableRow({ soul }: { soul: Soul }) {
     const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
     const router = useRouter();
-    const [shouldRefresh, setShouldRefresh] = React.useState(false);
 
-    React.useEffect(() => {
-        if (shouldRefresh) {
+    const handleEditOpenChange = (open: boolean) => {
+        setIsEditDialogOpen(open);
+        if (!open) {
             router.refresh();
-            setShouldRefresh(false);
         }
-    }, [shouldRefresh, router]);
+    };
 
     const latestFollowUp = React.useMemo(() => {
         if (!soul.followUpLog || soul.followUpLog.length === 0) return null;
@@ -614,7 +612,7 @@ function SoulTableRow({ soul }: { soul: Soul }) {
                 {soul.sourceDetails && <div className="text-xs text-muted-foreground">{soul.sourceDetails}</div>}
             </TableCell>
             <TableCell>
-                 <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+                 <Dialog open={isEditDialogOpen} onOpenChange={handleEditOpenChange}>
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button
@@ -648,7 +646,7 @@ function SoulTableRow({ soul }: { soul: Soul }) {
                             <DialogDescription>Make changes to the record for {soul.firstName} {soul.lastName}.</DialogDescription>
                         </DialogHeader>
                         <div className="max-h-[70vh] overflow-y-auto pr-2">
-                            <EditSoulForm soul={soul} onSoulUpdated={() => { setIsEditDialogOpen(false); setShouldRefresh(true); }} />
+                            <EditSoulForm soul={soul} onSoulUpdated={() => { setIsEditDialogOpen(false); }} />
                         </div>
                     </DialogContent>
                 </Dialog>
@@ -764,4 +762,3 @@ export function SoulsWonTable({ souls, loading }: SoulsWonTableProps) {
     </Card>
   );
 }
-      
