@@ -713,8 +713,8 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl md:max-w-5xl lg:max-w-7xl max-h-[90dvh] flex flex-col p-2 sm:p-6">
-        <DialogHeader>
+      <DialogContent className="max-w-3xl md:max-w-5xl lg:max-w-7xl max-h-[90dvh] grid grid-rows-[auto_1fr] gap-4 p-2 sm:p-6">
+        <DialogHeader className="row-start-1">
           <DialogTitle className="flex items-center justify-between">
              <div className="flex items-center">
                 Bible
@@ -723,7 +723,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
           </DialogTitle>
         </DialogHeader>
 
-        <Tabs defaultValue="read" className="flex-grow flex flex-col min-h-0">
+        <Tabs defaultValue="read" className="row-start-2 flex flex-col min-h-0">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="read">Read</TabsTrigger>
             <TabsTrigger value="history">History</TabsTrigger>
@@ -979,7 +979,6 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
              </ScrollArea>
           </TabsContent>
         </Tabs>
-
       </DialogContent>
     </Dialog>
   );
