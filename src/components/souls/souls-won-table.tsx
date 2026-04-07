@@ -1,3 +1,4 @@
+
 "use client";
 
 import * as React from "react";
@@ -476,7 +477,7 @@ function SoulCard({ soul }: { soul: Soul }) {
                                         </DropdownMenuItem>
                                     </DialogTrigger>
                                     <LogFollowUpDialog soul={soul}>
-                                        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>Log Follow-up</DropdownMenuItem>
+                                        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>Follow-up</DropdownMenuItem>
                                     </LogFollowUpDialog>
                                     <ViewHistoryDialog soul={soul}>
                                         <DropdownMenuItem onSelect={(e) => e.preventDefault()}>View History</DropdownMenuItem>
@@ -516,7 +517,7 @@ function SoulCard({ soul }: { soul: Soul }) {
                                 )}
                                 <div className="flex gap-2 w-full">
                                     <LogFollowUpDialog soul={soul}>
-                                        <Button size="sm" className="w-full">Log Follow-up</Button>
+                                        <Button size="sm" className="w-full">Follow-up</Button>
                                     </LogFollowUpDialog>
                                     <ViewHistoryDialog soul={soul}>
                                         <Button size="sm" variant="outline" className="w-full">View History</Button>
@@ -618,7 +619,7 @@ function SoulTableRow({ soul }: { soul: Soul }) {
                                 </DropdownMenuItem>
                             </DialogTrigger>
                             <LogFollowUpDialog soul={soul}>
-                                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>Log Follow-up</DropdownMenuItem>
+                                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>Follow-up</DropdownMenuItem>
                             </LogFollowUpDialog>
                             <ViewHistoryDialog soul={soul}>
                                 <DropdownMenuItem onSelect={(e) => e.preventDefault()}>View History</DropdownMenuItem>
@@ -748,3 +749,5 @@ export function SoulsWonTable({ souls, loading }: SoulsWonTableProps) {
   );
 }
       
+
+    
