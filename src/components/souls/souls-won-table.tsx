@@ -415,6 +415,14 @@ function ViewHistoryDialog({ soul, children }: { soul: Soul; children: React.Rea
 function SoulCard({ soul }: { soul: Soul }) {
     const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
     const router = useRouter();
+    const [shouldRefresh, setShouldRefresh] = React.useState(false);
+
+    React.useEffect(() => {
+        if (shouldRefresh) {
+            router.refresh();
+            setShouldRefresh(false);
+        }
+    }, [shouldRefresh, router]);
 
     const latestFollowUp = React.useMemo(() => {
         if (!soul.followUpLog || soul.followUpLog.length === 0) return null;
@@ -490,7 +498,7 @@ function SoulCard({ soul }: { soul: Soul }) {
                                         <DialogDescription>Make changes to the record for {soul.firstName} {soul.lastName}.</DialogDescription>
                                     </DialogHeader>
                                     <div className="max-h-[70vh] overflow-y-auto pr-2">
-                                        <EditSoulForm soul={soul} onSoulUpdated={() => { setIsEditDialogOpen(false); router.refresh(); }} />
+                                        <EditSoulForm soul={soul} onSoulUpdated={() => { setIsEditDialogOpen(false); setShouldRefresh(true); }} />
                                     </div>
                                 </DialogContent>
                             </Dialog>
@@ -540,6 +548,14 @@ function SoulCard({ soul }: { soul: Soul }) {
 function SoulTableRow({ soul }: { soul: Soul }) {
     const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
     const router = useRouter();
+    const [shouldRefresh, setShouldRefresh] = React.useState(false);
+
+    React.useEffect(() => {
+        if (shouldRefresh) {
+            router.refresh();
+            setShouldRefresh(false);
+        }
+    }, [shouldRefresh, router]);
 
     const latestFollowUp = React.useMemo(() => {
         if (!soul.followUpLog || soul.followUpLog.length === 0) return null;
@@ -632,7 +648,7 @@ function SoulTableRow({ soul }: { soul: Soul }) {
                             <DialogDescription>Make changes to the record for {soul.firstName} {soul.lastName}.</DialogDescription>
                         </DialogHeader>
                         <div className="max-h-[70vh] overflow-y-auto pr-2">
-                            <EditSoulForm soul={soul} onSoulUpdated={() => { setIsEditDialogOpen(false); router.refresh(); }} />
+                            <EditSoulForm soul={soul} onSoulUpdated={() => { setIsEditDialogOpen(false); setShouldRefresh(true); }} />
                         </div>
                     </DialogContent>
                 </Dialog>
@@ -749,5 +765,3 @@ export function SoulsWonTable({ souls, loading }: SoulsWonTableProps) {
   );
 }
       
-
-    
