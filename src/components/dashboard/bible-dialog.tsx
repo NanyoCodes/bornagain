@@ -193,6 +193,28 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
   
   const selectedBook = useMemo(() => bibleData.find(b => b.name === selectedBookName), [selectedBookName]);
 
+  useEffect(() => {
+    if (isOpen && userProfile) {
+      if (userProfile.readingHistory && userProfile.readingHistory.length > 0) {
+        // Sort history to find the most recent entry
+        const lastRead = [...userProfile.readingHistory].sort((a, b) => {
+          const timeA = a.readAt?.toDate?.().getTime() ?? 0;
+          const timeB = b.readAt?.toDate?.().getTime() ?? 0;
+          return timeB - timeA;
+        })[0];
+        
+        if (lastRead) {
+          setSelectedBookName(lastRead.book);
+          setSelectedChapterNumber(lastRead.chapter);
+        }
+      } else {
+        // If no history, default to Genesis 1 when dialog is opened
+        setSelectedBookName(bibleData[0].name);
+        setSelectedChapterNumber(1);
+      }
+    }
+  }, [isOpen, userProfile]); // Re-evaluate when dialog opens or profile data changes
+
   const highlightsQuery = useMemo(() => {
     if (!user || !chapterContent) return null;
     return query(
@@ -912,7 +934,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                 )}
             </div>
             <div className="relative flex-grow min-h-0">
-                <ScrollArea className="h-full border rounded-md">
+                <ScrollArea className="absolute inset-0">
                     {loadingProfile && (
                     <div className="space-y-6 p-4">
                         <div className="flex items-center gap-4">
