@@ -1,4 +1,3 @@
-
 "use client";
 
 import * as React from "react";
@@ -416,15 +415,6 @@ function SoulCard({ soul }: { soul: Soul }) {
     const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
     const router = useRouter();
 
-    const prevIsOpen = React.useRef(isEditDialogOpen);
-
-    React.useEffect(() => {
-        if (prevIsOpen.current && !isEditDialogOpen) {
-            router.refresh();
-        }
-        prevIsOpen.current = isEditDialogOpen;
-    }, [isEditDialogOpen, router]);
-    
     const latestFollowUp = React.useMemo(() => {
         if (!soul.followUpLog || soul.followUpLog.length === 0) return null;
         // This is a more performant way to find the latest item than sorting the whole array
@@ -499,7 +489,7 @@ function SoulCard({ soul }: { soul: Soul }) {
                                         <DialogDescription>Make changes to the record for {soul.firstName} {soul.lastName}.</DialogDescription>
                                     </DialogHeader>
                                     <div className="max-h-[70vh] overflow-y-auto pr-2">
-                                        <EditSoulForm soul={soul} onSoulUpdated={() => setIsEditDialogOpen(false)} />
+                                        <EditSoulForm soul={soul} onSoulUpdated={() => { setIsEditDialogOpen(false); router.refresh(); }} />
                                     </div>
                                 </DialogContent>
                             </Dialog>
@@ -549,15 +539,6 @@ function SoulCard({ soul }: { soul: Soul }) {
 function SoulTableRow({ soul }: { soul: Soul }) {
     const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
     const router = useRouter();
-
-    const prevIsOpen = React.useRef(isEditDialogOpen);
-
-    React.useEffect(() => {
-        if (prevIsOpen.current && !isEditDialogOpen) {
-            router.refresh();
-        }
-        prevIsOpen.current = isEditDialogOpen;
-    }, [isEditDialogOpen, router]);
 
     const latestFollowUp = React.useMemo(() => {
         if (!soul.followUpLog || soul.followUpLog.length === 0) return null;
@@ -650,7 +631,7 @@ function SoulTableRow({ soul }: { soul: Soul }) {
                             <DialogDescription>Make changes to the record for {soul.firstName} {soul.lastName}.</DialogDescription>
                         </DialogHeader>
                         <div className="max-h-[70vh] overflow-y-auto pr-2">
-                            <EditSoulForm soul={soul} onSoulUpdated={() => setIsEditDialogOpen(false)} />
+                            <EditSoulForm soul={soul} onSoulUpdated={() => { setIsEditDialogOpen(false); router.refresh(); }} />
                         </div>
                     </DialogContent>
                 </Dialog>
@@ -766,12 +747,4 @@ export function SoulsWonTable({ souls, loading }: SoulsWonTableProps) {
     </Card>
   );
 }
-
-    
-
-    
-
-
-
-
-    
+      
