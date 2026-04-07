@@ -93,15 +93,13 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath }: 
         
         switch (error.code) {
           case 'storage/unauthorized':
-            title = "Permission Denied: Action Required";
-            description = `Your project's configuration is preventing uploads. This is usually caused by two things: (1) Your project must be on the Blaze (Pay-as-you-go) billing plan. (2) Your storage bucket needs the correct CORS settings. Please see docs/storage-cors-guide.md`;
+          case 'storage/unknown':
+          case 'storage/retry-limit-exceeded': // This often happens due to CORS preflight failures
+            title = "Configuration Required to Enable Uploads";
+            description = "This is a project setup issue, not a code bug. To fix this, you MUST run a command to update your cloud storage settings. Please open the file `docs/storage-cors-guide.md` and follow the instructions carefully.";
             break;
           case 'storage/canceled':
             description = "The upload was canceled.";
-            break;
-          case 'storage/unknown':
-             title = "Network Error: Action Required";
-             description = "A network error occurred. This is most often caused by incorrect CORS settings on your Google Cloud project. Your project also needs to be on the Blaze billing plan. Please see docs/storage-cors-guide.md";
             break;
            case 'storage/object-not-found':
             description = "The file could not be found. This should not happen during an upload. Please try again.";
@@ -113,17 +111,13 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath }: 
             title = "Storage Quota Exceeded";
             description = "You have exceeded your storage quota. Please upgrade your plan or free up space in your Firebase Storage bucket.";
             break;
-          case 'storage/retry-limit-exceeded':
-            title = "Network Error";
-            description = "Network timeout. Please check your connection and try again.";
-            break;
         }
         
         toast({
           variant: 'destructive',
           title: title,
           description: description,
-          duration: 12000,
+          duration: 15000,
         });
       },
       () => {
