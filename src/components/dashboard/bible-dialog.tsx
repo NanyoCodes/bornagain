@@ -713,7 +713,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl md:max-w-5xl lg:max-w-7xl h-[90dvh] flex flex-col p-2 sm:p-6">
+      <DialogContent className="max-w-3xl md:max-w-5xl lg:max-w-7xl max-h-[90dvh] flex flex-col p-2 sm:p-6">
         <DialogHeader>
           <DialogTitle className="flex items-center justify-between">
              <div className="flex items-center">
