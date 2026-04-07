@@ -146,7 +146,7 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath }: 
   };
 
   return (
-    <div className="flex flex-col items-center gap-4 w-full">
+    <div className="flex flex-col items-center gap-4 w-full py-4">
       <div className="relative">
         <Avatar className="h-24 w-24 border">
           <AvatarImage src={previewUrl ?? undefined} />
@@ -176,6 +176,16 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath }: 
                 {previewUrl ? 'Change Photo' : 'Upload Photo'}
             </Button>
         </>
+      )}
+
+      {uploadError && (
+        <Alert variant="destructive" className="mt-4 text-left">
+            <AlertTriangle className="h-4 w-4" />
+            <AlertTitle>Upload Failed: Configuration Required</AlertTitle>
+            <AlertDescription>
+                {uploadError} This is a project setup issue. Please open the file `docs/storage-cors-guide.md` and follow the steps carefully.
+            </AlertDescription>
+        </Alert>
       )}
 
       <Input 
