@@ -7,10 +7,9 @@ import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { Camera, X, AlertTriangle } from 'lucide-react';
+import { Camera, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Input } from '@/components/ui/input';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 interface ImageUploadProps {
   initialImageUrl?: string | null;
@@ -26,7 +25,6 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath }: 
   const [previewUrl, setPreviewUrl] = useState<string | null>(initialImageUrl || null);
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
   const [isUploading, setIsUploading] = useState(false);
-  const [uploadError, setUploadError] = useState<string | null>(null);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -72,7 +70,6 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath }: 
         toast({ variant: 'destructive', title: 'Error', description: 'You must be logged in to upload images.' });
         return;
     }
-    setUploadError(null);
     setIsUploading(true);
     setUploadProgress(0);
 
@@ -97,14 +94,14 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath }: 
         switch (error.code) {
           case 'storage/unauthorized':
             title = "Permission Denied: Action Required";
-            description = `Your project's configuration is preventing uploads. This is usually caused by two things: (1) Your project must be on the Blaze (Pay-as-you-go) billing plan. (2) Your storage bucket needs the correct CORS settings.`;
+            description = `Your project's configuration is preventing uploads. This is usually caused by two things: (1) Your project must be on the Blaze (Pay-as-you-go) billing plan. (2) Your storage bucket needs the correct CORS settings. Please see docs/storage-cors-guide.md`;
             break;
           case 'storage/canceled':
             description = "The upload was canceled.";
             break;
           case 'storage/unknown':
              title = "Network Error: Action Required";
-             description = "A network error occurred. This is most often caused by incorrect CORS settings on your Google Cloud project. Your project also needs to be on the Blaze billing plan.";
+             description = "A network error occurred. This is most often caused by incorrect CORS settings on your Google Cloud project. Your project also needs to be on the Blaze billing plan. Please see docs/storage-cors-guide.md";
             break;
            case 'storage/object-not-found':
             description = "The file could not be found. This should not happen during an upload. Please try again.";
@@ -116,13 +113,16 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath }: 
             title = "Storage Quota Exceeded";
             description = "You have exceeded your storage quota. Please upgrade your plan or free up space in your Firebase Storage bucket.";
             break;
+          case 'storage/retry-limit-exceeded':
+            title = "Network Error";
+            description = "Network timeout. Please check your connection and try again.";
+            break;
         }
         
-        setUploadError(description);
         toast({
           variant: 'destructive',
           title: title,
-          description: "See the error message in the upload component for a step-by-step guide to fix this.",
+          description: description,
           duration: 12000,
         });
       },
@@ -132,7 +132,6 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath }: 
           setPreviewUrl(downloadURL);
           setIsUploading(false);
           setUploadProgress(null);
-          setUploadError(null);
           toast({ title: 'Success', description: 'Image uploaded successfully.' });
         });
       }
@@ -142,7 +141,6 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath }: 
   const handleRemoveImage = () => {
     setPreviewUrl(null);
     onUploadComplete('');
-    setUploadError(null);
   };
 
   return (
@@ -171,21 +169,11 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath }: 
         </div>
       ) : (
         <>
-            <Button type="button" variant="outline" onClick={handleFileSelect} disabled={!!uploadError}>
+            <Button type="button" variant="outline" onClick={handleFileSelect}>
                 <Camera className="mr-2 h-4 w-4"/>
                 {previewUrl ? 'Change Photo' : 'Upload Photo'}
             </Button>
         </>
-      )}
-
-      {uploadError && (
-        <Alert variant="destructive" className="mt-4 text-left">
-            <AlertTriangle className="h-4 w-4" />
-            <AlertTitle>Upload Failed: Configuration Required</AlertTitle>
-            <AlertDescription>
-                {uploadError} This is a project setup issue. Please open the file `docs/storage-cors-guide.md` and follow the steps carefully.
-            </AlertDescription>
-        </Alert>
       )}
 
       <Input 
