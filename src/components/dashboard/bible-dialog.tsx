@@ -889,8 +889,8 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
 
           </TabsContent>
           
-          <TabsContent value="history" className="flex-grow flex flex-col min-h-0 mt-4 space-y-4">
-            <div className="flex items-center gap-2">
+          <TabsContent value="history" className="flex-grow flex flex-col min-h-0 mt-4 gap-4">
+            <div className="flex items-center gap-2 shrink-0">
                 <Input
                     type="date"
                     value={filterDate ? format(filterDate, "yyyy-MM-dd") : ""}
@@ -911,72 +911,74 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                     </Button>
                 )}
             </div>
-             <ScrollArea className="flex-grow border rounded-md">
-                {loadingProfile && (
-                  <div className="space-y-6 p-4">
-                    <div className="flex items-center gap-4">
-                      <Skeleton className="h-10 w-10 rounded-full" />
-                      <div className="space-y-2">
-                        <Skeleton className="h-4 w-48" />
-                        <Skeleton className="h-4 w-24" />
-                      </div>
+            <div className="relative flex-grow min-h-0">
+                <ScrollArea className="h-full border rounded-md">
+                    {loadingProfile && (
+                    <div className="space-y-6 p-4">
+                        <div className="flex items-center gap-4">
+                        <Skeleton className="h-10 w-10 rounded-full" />
+                        <div className="space-y-2">
+                            <Skeleton className="h-4 w-48" />
+                            <Skeleton className="h-4 w-24" />
+                        </div>
+                        </div>
                     </div>
-                  </div>
-                )}
-                {!loadingProfile && filteredHistoryGroups.length === 0 && (
-                  <div className="text-muted-foreground p-8 text-center">
-                    {readingHistory.length === 0 ? 'Your reading history is empty.' : 'No entries found for the selected date.'}
-                  </div>
-                )}
-                {!loadingProfile && filteredHistoryGroups.length > 0 && (
-                  <div className="p-4">
-                    {filteredHistoryGroups.map(group => (
-                        <div key={group.date.toISOString()}>
-                            <div className="relative my-4">
-                                <div className="absolute inset-0 flex items-center" aria-hidden="true">
-                                    <div className="w-full border-t" />
+                    )}
+                    {!loadingProfile && filteredHistoryGroups.length === 0 && (
+                    <div className="text-muted-foreground p-8 text-center">
+                        {readingHistory.length === 0 ? 'Your reading history is empty.' : 'No entries found for the selected date.'}
+                    </div>
+                    )}
+                    {!loadingProfile && filteredHistoryGroups.length > 0 && (
+                    <div className="p-4">
+                        {filteredHistoryGroups.map(group => (
+                            <div key={group.date.toISOString()}>
+                                <div className="relative my-4">
+                                    <div className="absolute inset-0 flex items-center" aria-hidden="true">
+                                        <div className="w-full border-t" />
+                                    </div>
+                                    <div className="relative flex justify-center">
+                                        <span className="bg-background px-3 text-sm font-semibold text-muted-foreground">{format(group.date, 'PPP')}</span>
+                                    </div>
                                 </div>
-                                <div className="relative flex justify-center">
-                                    <span className="bg-background px-3 text-sm font-semibold text-muted-foreground">{format(group.date, 'PPP')}</span>
-                                </div>
-                            </div>
-                            <div className="mt-6 flow-root">
-                                <ul className="-mb-8">
-                                    {group.items.map((item, itemIdx) => (
-                                        <li key={itemIdx}>
-                                            <div className="relative pb-8">
-                                                {itemIdx !== group.items.length - 1 ? (
-                                                    <span className="absolute left-4 top-4 -ml-px h-full w-0.5 bg-border" aria-hidden="true" />
-                                                ) : null}
-                                                <div className="relative flex items-start space-x-3">
-                                                    <div>
-                                                        <span className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center ring-8 ring-background">
-                                                            <BookOpen className="h-5 w-5 text-primary" />
-                                                        </span>
-                                                    </div>
-                                                    <div className="flex min-w-0 flex-1 justify-between space-x-4 pt-1.5">
+                                <div className="mt-6 flow-root">
+                                    <ul className="-mb-8">
+                                        {group.items.map((item, itemIdx) => (
+                                            <li key={itemIdx}>
+                                                <div className="relative pb-8">
+                                                    {itemIdx !== group.items.length - 1 ? (
+                                                        <span className="absolute left-4 top-4 -ml-px h-full w-0.5 bg-border" aria-hidden="true" />
+                                                    ) : null}
+                                                    <div className="relative flex items-start space-x-3">
                                                         <div>
-                                                            <p className="text-sm text-muted-foreground">
-                                                                Read <span className="font-medium text-foreground">{item.book} {item.chapter}</span>
-                                                            </p>
+                                                            <span className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center ring-8 ring-background">
+                                                                <BookOpen className="h-5 w-5 text-primary" />
+                                                            </span>
                                                         </div>
-                                                        <div className="whitespace-nowrap text-right text-sm text-muted-foreground">
-                                                            <time dateTime={item.readAt.toDate().toISOString()}>
-                                                                {item.readAt ? format(item.readAt.toDate(), 'p') : ''}
-                                                            </time>
+                                                        <div className="flex min-w-0 flex-1 justify-between space-x-4 pt-1.5">
+                                                            <div>
+                                                                <p className="text-sm text-muted-foreground">
+                                                                    Read <span className="font-medium text-foreground">{item.book} {item.chapter}</span>
+                                                                </p>
+                                                            </div>
+                                                            <div className="whitespace-nowrap text-right text-sm text-muted-foreground">
+                                                                <time dateTime={item.readAt.toDate().toISOString()}>
+                                                                    {item.readAt ? format(item.readAt.toDate(), 'p') : ''}
+                                                                </time>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        </li>
-                                    ))}
-                                </ul>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
                             </div>
-                        </div>
-                    ))}
-                  </div>
-                )}
-             </ScrollArea>
+                        ))}
+                    </div>
+                    )}
+                </ScrollArea>
+            </div>
           </TabsContent>
         </Tabs>
       </DialogContent>
