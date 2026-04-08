@@ -23,14 +23,12 @@ import { useUser, useFirestore, useDoc } from "@/firebase";
 import { collection, addDoc, serverTimestamp, doc } from "firebase/firestore";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { errorEmitter } from "@/firebase/error-emitter";
-import { ImageUpload } from "../common/image-upload";
 
 const testimonyCategories: TestimonyCategory[] = ['Healing', 'Financial Breakthrough', 'Salvation', 'Relationships', 'Deliverance', 'General'];
 
 const formSchema = z.object({
   category: z.string({ required_error: "Please select a category." }),
   content: z.string().min(50, "Testimony must be at least 50 characters.").max(5000, "Testimony is too long."),
-  imageUrl: z.string().url().optional(),
 });
 
 type CreateTestimonyFormProps = {
@@ -52,7 +50,6 @@ export function CreateTestimonyForm({ onTestimonyCreated, campaign }: CreateTest
     resolver: zodResolver(formSchema),
     defaultValues: {
       content: "",
-      imageUrl: "",
     },
   });
 
@@ -72,7 +69,6 @@ export function CreateTestimonyForm({ onTestimonyCreated, campaign }: CreateTest
           authorLastName: userProfile.lastName || '',
           authorAvatarUrl: userProfile.photoURL || null,
           content: values.content,
-          imageUrl: values.imageUrl || null,
           createdAt: serverTimestamp(),
           category: values.category as TestimonyCategory,
           supporters: [],
@@ -154,25 +150,6 @@ export function CreateTestimonyForm({ onTestimonyCreated, campaign }: CreateTest
                   placeholder="Share the details of what God has done..."
                   className="min-h-[150px] text-base"
                   {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="imageUrl"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Testimony Image (Optional)</FormLabel>
-              <FormControl>
-                <ImageUpload
-                  initialImageUrl={field.value}
-                  onUploadComplete={(url) => field.onChange(url)}
-                  storagePath="testimony-images"
-                  cropAspect={16/9}
                 />
               </FormControl>
               <FormMessage />
