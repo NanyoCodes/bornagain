@@ -62,17 +62,20 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath }: 
     try {
       await handleUpload(file);
     } catch (e: any) {
-      toast({ variant: 'destructive', title: 'Upload Failed', description: e.message });
-      setPreviewUrl(initialImageUrl || null);
+      // The toast is now handled inside handleUpload
     }
   };
 
   const handleUpload = async (file: File) => {
     if (!user) {
-      throw new Error("User must be logged in to upload images.");
+      toast({ variant: 'destructive', title: 'Upload Failed', description: 'You must be logged in to upload images.' });
+      setPreviewUrl(initialImageUrl || null); // revert preview
+      return;
     }
     if (!storage) {
-        throw new Error("Firebase Storage is not available.");
+       toast({ variant: 'destructive', title: 'Upload Failed', description: 'Firebase Storage is not available.' });
+       setPreviewUrl(initialImageUrl || null); // revert preview
+       return;
     }
     setIsUploading(true);
 
@@ -85,13 +88,15 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath }: 
       toast({ title: 'Success', description: 'Image uploaded successfully.' });
     } catch (error: any) {
       console.error("Firebase Storage Upload Error:", error);
+      let title = 'Upload Failed: Configuration Required';
       let description = `An unknown error occurred. (Code: ${error.code || 'unknown'})`;
       
       if (error.code === 'storage/unauthorized' || error.code === 'storage/retry-limit-exceeded') {
-        description = "This is a project setup issue. Please open the file `docs/storage-cors-guide.md` and follow the steps carefully."
+        description = "This error usually means your Firebase project is on the 'Spark' (free) plan. Please upgrade to the 'Blaze' (Pay-as-you-go) plan in the Firebase Console to enable web uploads. Refer to `docs/storage-cors-guide.md` for detailed instructions."
       }
       
-      throw new Error(description);
+      toast({ variant: 'destructive', title, description, duration: 15000 });
+      setPreviewUrl(initialImageUrl || null); // Revert preview on failure
     } finally {
       setIsUploading(false);
     }
