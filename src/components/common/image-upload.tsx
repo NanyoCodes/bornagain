@@ -3,11 +3,10 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useStorage, useUser } from '@/firebase';
-import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
-import { Camera, X } from 'lucide-react';
+import { Camera, X, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Input } from '@/components/ui/input';
 
@@ -23,7 +22,6 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath }: 
   const { toast } = useToast();
   
   const [previewUrl, setPreviewUrl] = useState<string | null>(initialImageUrl || null);
-  const [uploadProgress, setUploadProgress] = useState<number | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -71,46 +69,29 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath }: 
         return;
     }
     setIsUploading(true);
-    setUploadProgress(0);
 
     const filePath = `${storagePath}/${user.uid}/${Date.now()}_${file.name}`;
     const storageRef = ref(storage, filePath);
-    const uploadTask = uploadBytesResumable(storageRef, file);
 
-    uploadTask.on(
-      'state_changed',
-      (snapshot) => {
-        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        setUploadProgress(progress);
-      },
-      (error) => {
+    uploadBytes(storageRef, file)
+      .then((snapshot) => {
+        getDownloadURL(snapshot.ref).then((downloadURL) => {
+          onUploadComplete(downloadURL);
+          setPreviewUrl(downloadURL);
+          setIsUploading(false);
+          toast({ title: 'Success', description: 'Image uploaded successfully.' });
+        });
+      })
+      .catch((error) => {
         setIsUploading(false);
-        setUploadProgress(null);
         console.error("Firebase Storage Upload Error:", error);
         
         let title = "Upload Failed";
         let description = `An unknown error occurred. (Code: ${error.code})`;
         
-        switch (error.code) {
-          case 'storage/unauthorized':
-          case 'storage/unknown':
-          case 'storage/retry-limit-exceeded': // This often happens due to CORS preflight failures
+        if (error.code === 'storage/unauthorized' || error.code === 'storage/unknown') {
             title = "Configuration Required to Enable Uploads";
             description = "This is a project setup issue, not a code bug. To fix this, you MUST run a command to update your cloud storage settings. Please open the file `docs/storage-cors-guide.md` and follow the instructions carefully.";
-            break;
-          case 'storage/canceled':
-            description = "The upload was canceled.";
-            break;
-           case 'storage/object-not-found':
-            description = "The file could not be found. This should not happen during an upload. Please try again.";
-            break;
-          case 'storage/project-not-found':
-            description = "Your Firebase project could not be found. Please check your Firebase configuration.";
-            break;
-          case 'storage/quota-exceeded':
-            title = "Storage Quota Exceeded";
-            description = "You have exceeded your storage quota. Please upgrade your plan or free up space in your Firebase Storage bucket.";
-            break;
         }
         
         toast({
@@ -119,17 +100,7 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath }: 
           description: description,
           duration: 15000,
         });
-      },
-      () => {
-        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-          onUploadComplete(downloadURL);
-          setPreviewUrl(downloadURL);
-          setIsUploading(false);
-          setUploadProgress(null);
-          toast({ title: 'Success', description: 'Image uploaded successfully.' });
-        });
-      }
-    );
+      });
   };
 
   const handleRemoveImage = () => {
@@ -156,18 +127,16 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath }: 
         )}
       </div>
       
-      {isUploading && uploadProgress !== null ? (
-        <div className="w-full max-w-xs text-center">
-            <Progress value={uploadProgress} className="h-2" />
-            <p className="text-sm mt-2 text-muted-foreground">Uploading...</p>
+      {isUploading ? (
+        <div className="flex items-center gap-2 text-muted-foreground">
+          <Loader2 className="h-4 w-4 animate-spin" />
+          <span>Uploading...</span>
         </div>
       ) : (
-        <>
-            <Button type="button" variant="outline" onClick={handleFileSelect}>
-                <Camera className="mr-2 h-4 w-4"/>
-                {previewUrl ? 'Change Photo' : 'Upload Photo'}
-            </Button>
-        </>
+        <Button type="button" variant="outline" onClick={handleFileSelect}>
+            <Camera className="mr-2 h-4 w-4"/>
+            {previewUrl ? 'Change Photo' : 'Upload Photo'}
+        </Button>
       )}
 
       <Input 
