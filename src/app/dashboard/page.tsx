@@ -58,7 +58,6 @@ import {
   XAxis,
   YAxis,
   Cell,
-  LabelList,
 } from 'recharts';
 import {
   ChartContainer,
@@ -508,19 +507,6 @@ const welcomeScriptures = [
 ];
 
 function ActionAnalyticsCard({ souls }: { souls: Soul[] }) {
-  const isMobile = useIsMobile();
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  const chartConfig = {
-    count: {
-      label: 'Times',
-      color: 'hsl(var(--chart-2))',
-    },
-  } satisfies import('@/components/ui/chart').ChartConfig;
-
   const actionData = useMemo(() => {
     if (!souls) return [];
     const now = new Date();
@@ -542,9 +528,11 @@ function ActionAnalyticsCard({ souls }: { souls: Soul[] }) {
     });
 
     return actionItems
-      .map((item) => ({
-        action: item.label,
+      .map((item, index) => ({
+        id: item.id,
+        label: item.label,
         count: actionCounts[item.id],
+        color: chartColors[index % chartColors.length]
       }))
       .sort((a, b) => b.count - a.count);
   }, [souls]);
@@ -553,64 +541,33 @@ function ActionAnalyticsCard({ souls }: { souls: Soul[] }) {
     return null;
   }
   
-  // Responsive settings
-  const yAxisWidth = !mounted ? 150 : isMobile ? 120 : 150;
-  const barSize = !mounted ? 20 : isMobile ? 14 : 20;
-
   return (
-    <Card className="bg-card text-card-foreground">
+    <Card>
       <CardHeader>
         <CardTitle>Follow-up Actions Tracker</CardTitle>
         <CardDescription>
           Frequency of actions taken this month.
         </CardDescription>
       </CardHeader>
-      <CardContent>
-        <ChartContainer
-          config={chartConfig}
-          className="h-[500px] w-full [&_.recharts-cartesian-axis-tick_text]:fill-foreground"
-        >
-          <ResponsiveContainer>
-            <BarChart
-              layout="vertical"
-              data={actionData}
-              margin={{
-                right: 30, // Increased right margin for labels
-                left: !mounted ? 20 : isMobile ? 10 : 20,
-              }}
-            >
-              <CartesianGrid horizontal={false} stroke="hsl(var(--border))" />
-              <YAxis
-                dataKey="action"
-                type="category"
-                tickLine={false}
-                axisLine={false}
-                tickMargin={5}
-                width={yAxisWidth}
-                tick={{ fontSize: 12 }}
-                interval={0}
-              />
-              <XAxis dataKey="count" type="number" hide />
-              <ChartTooltip
-                cursor={false}
-                content={<ChartTooltipContent 
-                    indicator="line" 
-                    labelClassName="text-sm"
-                    className="bg-background/90 text-foreground"
-                 />}
-              />
-              <Bar dataKey="count" layout="vertical" radius={5} barSize={barSize}>
-                <LabelList dataKey="count" position="right" offset={8} className="fill-foreground font-semibold" fontSize={12} />
-                {actionData.map((_entry, index) => (
-                  <Cell
-                    key={`cell-${index}`}
-                    fill={chartColors[index % chartColors.length]}
-                  />
-                ))}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-        </ChartContainer>
+      <CardContent className="pt-2 space-y-2">
+        {actionData.some(item => item.count > 0) ? (
+            actionData.map((item) => (
+              item.count > 0 && (
+                <div key={item.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/40">
+                  <div className="flex items-center gap-3">
+                    <span
+                      className="flex h-2.5 w-2.5 shrink-0 rounded-full"
+                      style={{ backgroundColor: item.color }}
+                    />
+                    <span className="text-sm font-medium">{item.label}</span>
+                  </div>
+                  <span className="text-sm font-bold">{item.count}</span>
+                </div>
+              )
+            ))
+        ) : (
+            <p className="text-sm text-center text-muted-foreground py-4">No follow-up actions logged this month.</p>
+        )}
       </CardContent>
     </Card>
   );
