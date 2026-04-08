@@ -58,6 +58,7 @@ import {
   XAxis,
   YAxis,
   Cell,
+  ReferenceLine,
 } from 'recharts';
 import {
   ChartContainer,
@@ -747,13 +748,35 @@ export default function DashboardPage() {
                       tickFormatter={(value) => value.slice(0, 3)}
                     />
                     <YAxis
+                      allowDecimals={false}
                       domain={[
                         0,
-                        (dataMax: number) => Math.max(dataMax || 0, 10), // Assuming a base goal of 10 if not set
+                        (dataMax: number) =>
+                          Math.max(
+                            dataMax || 0,
+                            userProfile?.monthlySoulsGoal || 10
+                          ) + 2,
                       ]}
                     />
-                    <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
-                    <Bar dataKey="soulsWon" radius={8}>
+                    <ChartTooltip
+                      cursor={false}
+                      content={<ChartTooltipContent hideLabel />}
+                    />
+                    {userProfile?.monthlySoulsGoal &&
+                      userProfile.monthlySoulsGoal > 0 && (
+                        <ReferenceLine
+                          y={userProfile.monthlySoulsGoal}
+                          label={{
+                            value: `Goal: ${userProfile.monthlySoulsGoal}`,
+                            position: 'insideTopLeft',
+                            fill: 'hsl(var(--muted-foreground))',
+                            fontSize: 12,
+                          }}
+                          stroke="hsl(var(--muted-foreground))"
+                          strokeDasharray="3 3"
+                        />
+                      )}
+                    <Bar dataKey="soulsWon" radius={[4, 4, 0, 0]}>
                       {progressData.map((_entry, index) => (
                         <Cell
                           key={`cell-${index}`}
