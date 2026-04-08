@@ -101,6 +101,7 @@ export type Testimony = {
   authorLastName: string;
   authorAvatarUrl?: string;
   content: string;
+  imageUrl?: string;
   createdAt: Timestamp;
   updatedAt?: Timestamp;
   category: TestimonyCategory;

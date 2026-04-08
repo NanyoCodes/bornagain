@@ -216,6 +216,11 @@
         "content": {
           "type": "string"
         },
+        "imageUrl": {
+          "type": "string",
+          "format": "uri",
+          "description": "An optional image URL associated with the testimony."
+        },
         "category": {
           "type": "string"
         },

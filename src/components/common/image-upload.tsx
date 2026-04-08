@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
@@ -10,6 +11,7 @@ import { Camera, X, Loader2, Crop as CropIcon } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import Image from 'next/image';
 
 // Function to generate a cropped image
 function getCroppedImg(
@@ -60,9 +62,11 @@ interface ImageUploadProps {
   initialImageUrl?: string | null;
   onUploadComplete: (url: string) => void;
   storagePath: string;
+  cropAspect?: number;
+  circularCrop?: boolean;
 }
 
-export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath }: ImageUploadProps) {
+export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cropAspect, circularCrop }: ImageUploadProps) {
   const { user } = useUser();
   const storage = useStorage();
   const { toast } = useToast();
@@ -109,8 +113,13 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath }: 
 
   const onImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
     const { width, height } = e.currentTarget;
+    const aspectToUse = cropAspect ?? (circularCrop ? 1 : undefined);
+
+    // Ensure makeAspectCrop receives a valid aspect ratio
+    const finalAspect = aspectToUse ?? width / height;
+
     const crop = centerCrop(
-      makeAspectCrop({ unit: '%', width: 100 }, 1, width, height),
+      makeAspectCrop({ unit: '%', width: 90 }, finalAspect, width, height),
       width,
       height
     );
@@ -175,15 +184,25 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath }: 
     <>
       <div className="flex flex-col items-center gap-4 w-full py-4">
         <div className="relative">
-          <Avatar className="h-24 w-24 border">
-            <AvatarImage src={previewUrl ?? undefined} />
-            <AvatarFallback><Camera className="h-8 w-8 text-muted-foreground" /></AvatarFallback>
-          </Avatar>
+          {circularCrop ? (
+            <Avatar className="h-24 w-24 border">
+              <AvatarImage src={previewUrl ?? undefined} />
+              <AvatarFallback><Camera className="h-8 w-8 text-muted-foreground" /></AvatarFallback>
+            </Avatar>
+          ) : (
+            <div className="relative w-full max-w-xs aspect-video rounded-lg border bg-muted flex items-center justify-center overflow-hidden">
+              {previewUrl ? (
+                <Image src={previewUrl} alt="Preview" layout="fill" objectFit="cover" />
+              ) : (
+                <Camera className="h-10 w-10 text-muted-foreground" />
+              )}
+            </div>
+          )}
           {previewUrl && !isUploading && (
               <Button
                   variant="destructive"
                   size="icon"
-                  className="absolute -top-2 -right-2 h-6 w-6 rounded-full"
+                  className="absolute -top-2 -right-2 h-6 w-6 rounded-full z-10"
                   onClick={handleRemoveImage}
               >
                   <X className="h-4 w-4" />
@@ -222,8 +241,8 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath }: 
                 crop={crop}
                 onChange={(_, percentCrop) => setCrop(percentCrop)}
                 onComplete={(c) => setCompletedCrop(c)}
-                aspect={1}
-                circularCrop
+                aspect={cropAspect}
+                circularCrop={circularCrop}
               >
                 <img
                   ref={imgRef}

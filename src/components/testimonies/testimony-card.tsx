@@ -166,8 +166,13 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, dist
           </div>
           <Badge variant="secondary" className="shrink-0">{testimony.category}</Badge>
         </CardHeader>
+        {testimony.imageUrl && (
+          <div className="relative w-full aspect-video">
+            <Image src={testimony.imageUrl} alt={`Image for ${testimony.category} testimony`} layout="fill" objectFit="cover" />
+          </div>
+        )}
         <CardContent className="flex-grow pt-6 space-y-4">
-          <p className="text-sm text-muted-foreground whitespace-pre-wrap line-clamp-4">
+          <p className={cn("text-sm text-muted-foreground whitespace-pre-wrap", testimony.imageUrl ? "line-clamp-2" : "line-clamp-4")}>
             {testimony.content}
           </p>
         </CardContent>

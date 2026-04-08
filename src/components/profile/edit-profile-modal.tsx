@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -216,6 +217,8 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                                 initialImageUrl={field.value}
                                 onUploadComplete={(url) => field.onChange(url)}
                                 storagePath="profile-pictures"
+                                cropAspect={1}
+                                circularCrop={true}
                             />
                         </FormControl>
                         <FormMessage />
