@@ -63,27 +63,27 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, dist
   }, [testimony.createdAt]);
 
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (!isAuthor || !firestore || !user) return;
-
     setIsDeleting(true);
     const testimonyRef = doc(firestore, "testimonies", testimony.id);
-
-    deleteDoc(testimonyRef)
-      .then(() => {
-        toast({
-          title: "Testimony Deleted",
-          description: "Your testimony has been successfully removed.",
-        });
-      })
-      .catch(() => {
-        const permissionError = new FirestorePermissionError({
-          path: testimonyRef.path,
-          operation: 'delete',
-        }, user);
-        errorEmitter.emit('permission-error', permissionError);
-        setIsDeleting(false);
+    try {
+      await deleteDoc(testimonyRef);
+      toast({
+        title: "Testimony Deleted",
+        description: "Your testimony has been successfully removed.",
       });
+      // The component will unmount, so no need to set state here.
+      // The dialog will close as part of the unmount.
+    } catch (error) {
+      const permissionError = new FirestorePermissionError({
+        path: testimonyRef.path,
+        operation: 'delete',
+      }, user);
+      errorEmitter.emit('permission-error', permissionError);
+      setIsDeleting(false);
+      setIsDeleteDialogOpen(false); // Close dialog on error
+    }
   };
 
   const handleSupport = () => {

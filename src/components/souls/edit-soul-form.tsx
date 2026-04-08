@@ -129,18 +129,18 @@ export function EditSoulForm({ soul, onSoulUpdated }: EditSoulFormProps) {
         soulUpdateData.campaignId = deleteField();
     }
     
-    updateDoc(soulRef, soulUpdateData).then(() => {
+    try {
+        await updateDoc(soulRef, soulUpdateData);
         toast({
             title: "Soul Updated",
             description: `${values.firstName} ${values.lastName}'s record has been updated.`,
         });
 
-        // Send invite if email was just added
         if (!soul.email && values.email) {
             const mailCollectionRef = collection(firestore, 'mail');
             const appUrl = window.location.origin;
             const inviterName = user.displayName || 'A friend';
-            const mailPayload = {
+            addDoc(mailCollectionRef, {
                 to: [values.email],
                 message: {
                     subject: `You're invited to join Testify!`,
@@ -166,35 +166,25 @@ export function EditSoulForm({ soul, onSoulUpdated }: EditSoulFormProps) {
                         </div>
                     `,
                 },
-            };
-            addDoc(mailCollectionRef, mailPayload)
-                .then(() => {
-                    toast({
-                        title: 'Invitation Sent!',
-                        description: `An invitation email has been sent to ${values.email}.`
-                    });
-                })
-                .catch(() => {
-                    const permissionError = new FirestorePermissionError({
-                        path: mailCollectionRef.path,
-                        operation: 'create',
-                        requestResourceData: mailPayload
-                    });
-                    errorEmitter.emit('permission-error', permissionError);
-                });
+            }).catch(() => {
+                const permissionError = new FirestorePermissionError({
+                    path: mailCollectionRef.path,
+                    operation: 'create',
+                    requestResourceData: { to: [values.email] }
+                }, user);
+                errorEmitter.emit('permission-error', permissionError);
+            });
         }
-
         onSoulUpdated();
-    }).catch(() => {
+    } catch (error) {
       const permissionError = new FirestorePermissionError({
         path: soulRef.path,
         operation: 'update',
         requestResourceData: soulUpdateData,
-      });
+      }, user);
       errorEmitter.emit('permission-error', permissionError);
-    }).finally(() => {
       setIsLoading(false);
-    });
+    }
   }
 
   return (
