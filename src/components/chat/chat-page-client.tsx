@@ -193,7 +193,8 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                 replyTo?: {
                     messageId: string;
                     text: string;
-                    senderName: string;
+                    senderFirstName: string;
+                    senderLastName: string;
                 }
             } = {
                 senderId: user.uid,
@@ -205,7 +206,8 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                 newDocData.replyTo = {
                     messageId: replyingTo.id,
                     text: replyingTo.text?.substring(0, 100) || '',
-                    senderName: chat.participantInfo[replyingTo.senderId]?.firstName || 'User',
+                    senderFirstName: chat.participantInfo[replyingTo.senderId]?.firstName || 'User',
+                    senderLastName: chat.participantInfo[replyingTo.senderId]?.lastName || '',
                 };
             }
 
@@ -295,7 +297,7 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                 path: `chats/${chatId}/messages`,
                 operation: 'create',
                 requestResourceData: { text: newMessage, sender: user.uid }
-            });
+            }, user);
             errorEmitter.emit('permission-error', permissionError);
         } finally {
             setIsSending(false);
@@ -488,7 +490,7 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                                                                 }}
                                                                 className="mb-1.5 rounded-md border-l-2 border-primary/50 bg-black/10 p-2 text-xs dark:bg-white/10 block hover:bg-black/20 dark:hover:bg-white/20 transition-colors"
                                                             >
-                                                                <p className="font-bold">{msg.replyTo.senderName}</p>
+                                                                <p className="font-bold">{msg.replyTo.senderFirstName} {msg.replyTo.senderLastName}</p>
                                                                 <p className="line-clamp-2">{msg.replyTo.text}</p>
                                                             </a>
                                                         )}
@@ -566,3 +568,5 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
         </div>
     )
 }
+
+    
