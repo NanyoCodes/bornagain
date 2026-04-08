@@ -5,6 +5,7 @@ import type { Query, DocumentData, SnapshotOptions, FirestoreError } from 'fireb
 import { onSnapshot } from 'firebase/firestore';
 import { errorEmitter } from '../error-emitter';
 import { FirestorePermissionError } from '../errors';
+import { useUser } from '../auth/use-user';
 
 interface UseCollectionOptions {
   snapshotOptions?: SnapshotOptions;
@@ -17,6 +18,7 @@ export function useCollection<T extends { id: string }>(
   const [data, setData] = useState<T[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<FirestoreError | null>(null);
+  const { user } = useUser();
 
   useEffect(() => {
     if (!query) {
@@ -40,7 +42,7 @@ export function useCollection<T extends { id: string }>(
           const permissionError = new FirestorePermissionError({
             path: (query as any)._query?.path?.canonicalString() ?? 'unknown collection',
             operation: 'list',
-          });
+          }, user);
           errorEmitter.emit('permission-error', permissionError);
         } else {
           console.error("Firestore error in useCollection:", err);
@@ -54,11 +56,9 @@ export function useCollection<T extends { id: string }>(
 
     // Clean up the listener when the component unmounts or dependencies change.
     return () => unsubscribe();
-  // The dependency array is intentionally simple. We don't want to re-run this effect
-  // for every change in snapshotOptions, as that would re-create the listener.
-  // The options are passed directly to `doc.data()`, which uses them on-the-fly.
+  // The `user` object is added to the dependency array to ensure the error context is always up-to-date.
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [query]);
+  }, [query, user]);
 
   return { data, loading, error };
 }

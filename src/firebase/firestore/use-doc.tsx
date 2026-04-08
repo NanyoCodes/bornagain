@@ -5,6 +5,7 @@ import type { DocumentReference, DocumentData, SnapshotOptions, FirestoreError }
 import { onSnapshot } from 'firebase/firestore';
 import { errorEmitter } from '../error-emitter';
 import { FirestorePermissionError } from '../errors';
+import { useUser } from '../auth/use-user';
 
 interface UseDocOptions {
   snapshotOptions?: SnapshotOptions;
@@ -17,6 +18,7 @@ export function useDoc<T>(
   const [data, setData] = useState<T | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<FirestoreError | null>(null);
+  const { user } = useUser();
 
   useEffect(() => {
     if (!docRef) {
@@ -45,7 +47,7 @@ export function useDoc<T>(
             const permissionError = new FirestorePermissionError({
               path: docRef.path,
               operation: 'get',
-            });
+            }, user);
             errorEmitter.emit('permission-error', permissionError);
         } else {
             // For other types of Firestore errors (e.g., network, invalid query)
@@ -60,11 +62,9 @@ export function useDoc<T>(
 
     // Clean up the listener when the component unmounts or dependencies change.
     return () => unsubscribe();
-    // The dependency array is intentionally simple. We don't want to re-run this effect
-    // for every change in snapshotOptions, as that would re-create the listener.
-    // The options are passed directly to `doc.data()`, which uses them on-the-fly.
+    // The `user` object is added to the dependency array to ensure the error context is always up-to-date.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [docRef]);
+  }, [docRef, user]);
 
   return { data, loading, error };
 }
