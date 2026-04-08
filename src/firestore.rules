@@ -91,7 +91,7 @@ service cloud.firestore {
         // Any authenticated user can support a testimony.
         (
           request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters']) &&
-          request.resource.data.supporters.size() == resource.data.supporters.size() + 1 &&
+          request.resource.data.supporters.size() == (resource.data.supporters.size() || 0) + 1 &&
           request.auth.uid in request.resource.data.supporters
         )
       );
@@ -109,7 +109,7 @@ service cloud.firestore {
                     // The only field changing is usersWhoPrayed
                     && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['usersWhoPrayed'])
                     // The user is adding themselves, and not removing anyone
-                    && request.resource.data.usersWhoPrayed.size() == resource.data.usersWhoPrayed.size() + 1
+                    && request.resource.data.usersWhoPrayed.size() == (resource.data.usersWhoPrayed.size() || 0) + 1
                     && request.auth.uid in request.resource.data.usersWhoPrayed;
 
       // Author can delete their own prayer request.
