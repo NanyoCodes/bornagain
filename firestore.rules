@@ -24,6 +24,34 @@ service cloud.firestore {
             'accountabilityPartnerFirstName',
             'accountabilityPartnerLastName'
           ])
+        ) ||
+        // A user (acceptor) can update another user's (sender's) doc when accepting a request
+        (
+          userId != request.auth.uid &&
+          // The update must only set the accountability partner fields
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+            'accountabilityPartnerId',
+            'accountabilityPartnerFirstName',
+            'accountabilityPartnerLastName'
+          ]) &&
+          // The partner ID must be the acceptor's ID
+          request.resource.data.accountabilityPartnerId == request.auth.uid &&
+          // A pending request from the sender to the acceptor must exist.
+          // The request ID is built from the two UIDs, sorted. We must check both permutations
+          // since we can't sort strings in rules.
+          (
+            (
+                exists(/databases/$(database)/documents/accountabilityRequests/$(userId + '_' + request.auth.uid)) &&
+                get(/databases/$(database)/documents/accountabilityRequests/$(userId + '_' + request.auth.uid)).data.status == 'pending' &&
+                get(/databases/$(database)/documents/accountabilityRequests/$(userId + '_' + request.auth.uid)).data.toUserId == request.auth.uid &&
+                get(/databases/$(database)/documents/accountabilityRequests/$(userId + '_' + request.auth.uid)).data.fromUserId == userId
+            ) || (
+                exists(/databases/$(database)/documents/accountabilityRequests/$(request.auth.uid + '_' + userId)) &&
+                get(/databases/$(database)/documents/accountabilityRequests/$(request.auth.uid + '_' + userId)).data.status == 'pending' &&
+                get(/databases/$(database)/documents/accountabilityRequests/$(request.auth.uid + '_' + userId)).data.toUserId == request.auth.uid &&
+                get(/databases/$(database)/documents/accountabilityRequests/$(request.auth.uid + '_' + userId)).data.fromUserId == userId
+            )
+          )
         )
       );
 
