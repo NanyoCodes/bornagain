@@ -104,7 +104,6 @@ const getFullEndDate = (campaign: { _endDate: Date | null, endTime?: string}) =>
 export default function CampaignsPage() {
   const { user, loading: userLoading } = useUser();
   const firestore = useFirestore();
-  const router = useRouter();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const isMobile = useIsMobile();
@@ -155,7 +154,6 @@ export default function CampaignsPage() {
 
   const handleCampaignCreated = () => {
     setIsDialogOpen(false);
-    router.refresh();
   };
 
   const processedCampaigns = useMemo(() => {

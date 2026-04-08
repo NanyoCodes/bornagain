@@ -409,7 +409,6 @@ export function CampaignCard({ campaign, userId, userProfile, distance }: { camp
             onTestimonyCreated={() => {
               setIsTestimonyDialogOpen(false);
               toast({ title: "Testimony Shared!", description: "Thank you for sharing." });
-              router.refresh();
             }}
             campaign={campaign}
           />}
@@ -570,7 +569,6 @@ export function CampaignCard({ campaign, userId, userProfile, distance }: { camp
                               campaign={campaign}
                               onCampaignUpdated={() => {
                                 setIsManageOpen(false);
-                                router.refresh();
                               }}
                             />
                           </div>
@@ -620,7 +618,6 @@ export function CampaignCard({ campaign, userId, userProfile, distance }: { camp
                       onSoulLogged={() => {
                           setIsLogSoulOpen(false);
                           toast({ title: "Soul Logged!", description: "The new soul has been added to your personal dashboard." });
-                          router.refresh();
                       }}
                       defaultCampaign={campaign}
                   />

@@ -86,7 +86,6 @@ function FilterControls({
 export default function ProfilePage() {
   const { user: currentUser, loading: userLoading } = useUser();
   const firestore = useFirestore();
-  const router = useRouter();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const isMobile = useIsMobile();
@@ -273,7 +272,7 @@ export default function ProfilePage() {
     </Button>
   );
 
-  const formContent = <EditProfileModal userProfile={userProfile} onClose={() => { setIsEditModalOpen(false); router.refresh(); }} />;
+  const formContent = <EditProfileModal userProfile={userProfile} onClose={() => { setIsEditModalOpen(false); }} />;
 
   return (
     <div className="space-y-8">

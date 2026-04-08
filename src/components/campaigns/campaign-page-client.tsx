@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
@@ -12,7 +13,7 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { format, isSameDay, differenceInDays, formatDistanceToNow, parse } from 'date-fns';
-import { ManageCampaignForm } from '@/components/campaigns/manage-campaign-form';
+import { ManageCampaignForm } from './manage-campaign-form';
 import { LogSoulForm } from "@/components/souls/log-soul-form";
 import { CreateTestimonyForm } from "@/components/testimonies/create-testimony-form";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -268,7 +269,6 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
 
     const handleFormClose = () => {
       setIsManageOpen(false);
-      router.refresh();
     };
 
     const handleShare = async () => {

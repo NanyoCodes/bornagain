@@ -3,7 +3,6 @@
 
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useFirestore } from '@/firebase';
@@ -73,7 +72,6 @@ function EditPrayerLinkForm({ link, index, onUpdate, onCancel, isSubmitting }: {
 export function PrayerLinksSettingsCard({ userProfile, userId }: { userProfile: UserProfile; userId: string }) {
   const { toast } = useToast();
   const firestore = useFirestore();
-  const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const prayerLinks = userProfile.prayerLinks || [];
@@ -103,7 +101,6 @@ export function PrayerLinksSettingsCard({ userProfile, userId }: { userProfile: 
         .then(() => {
             toast({ title: 'Link Added', description: 'Your new prayer link has been saved.' });
             addForm.reset();
-            router.refresh();
         })
         .catch(() => {
             const permissionError = new FirestorePermissionError({ path: userRef.path, operation: 'update', requestResourceData: payload });
@@ -124,7 +121,6 @@ export function PrayerLinksSettingsCard({ userProfile, userId }: { userProfile: 
     updateDoc(userRef, payload)
         .then(() => {
             toast({ title: 'Link Removed', description: 'The prayer link has been deleted.' });
-            router.refresh();
         })
         .catch(() => {
              const permissionError = new FirestorePermissionError({ path: userRef.path, operation: 'update', requestResourceData: payload });
@@ -148,7 +144,6 @@ export function PrayerLinksSettingsCard({ userProfile, userId }: { userProfile: 
         .then(() => {
             toast({ title: 'Link Updated' });
             setEditingIndex(null);
-            router.refresh();
         })
         .catch(() => {
             const permissionError = new FirestorePermissionError({ path: userRef.path, operation: 'update', requestResourceData: payload });

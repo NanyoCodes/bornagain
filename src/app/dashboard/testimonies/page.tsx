@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect, useMemo } from "react";
@@ -39,7 +40,6 @@ export default function TestimoniesPage() {
   const [isPrayerDialogOpen, setIsPrayerDialogOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const isMobile = useIsMobile();
-  const router = useRouter();
   const { searchTerm, setSearchPlaceholder, setIsSearchVisible, setSearchTerm } = useSearch();
   const [activeTab, setActiveTab] = useState("testimonies");
 
@@ -137,11 +137,9 @@ export default function TestimoniesPage() {
 
   const handleTestimonyCreated = () => {
     setIsTestimonyDialogOpen(false);
-    router.refresh();
   };
   const handlePrayerRequestCreated = () => {
     setIsPrayerDialogOpen(false);
-    router.refresh();
   };
   
   const testimonyTrigger = (

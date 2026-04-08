@@ -3,7 +3,6 @@
 
 import { useState, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
-import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useFirestore, useUser } from '@/firebase';
@@ -37,7 +36,6 @@ const churchSettingsSchema = z.object({
 export function ChurchSettingsCard({ userProfile, userId }: { userProfile: UserProfile; userId: string }) {
   const { toast } = useToast();
   const firestore = useFirestore();
-  const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<z.infer<typeof churchSettingsSchema>>({
@@ -80,7 +78,6 @@ export function ChurchSettingsCard({ userProfile, userId }: { userProfile: UserP
       .then(() => {
         toast({ title: 'Church Info Saved', description: 'Your church details have been updated.' });
         form.reset(values); // Re-sync form state
-        router.refresh();
       })
       .catch(() => {
         const permissionError = new FirestorePermissionError({

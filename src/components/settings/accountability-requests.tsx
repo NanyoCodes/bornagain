@@ -18,8 +18,6 @@ import { FirestorePermissionError } from '@/firebase/errors';
 export function AccountabilityRequests({ currentUserProfile }: { currentUserProfile: UserProfile }) {
     const { user } = useUser();
     const firestore = useFirestore();
-    const router = useRouter();
-    const { toast } = useToast();
     const [isProcessing, setIsProcessing] = useState<string | null>(null);
 
     // Query for INCOMING requests
@@ -106,7 +104,6 @@ export function AccountabilityRequests({ currentUserProfile }: { currentUserProf
         batch.commit()
             .then(() => {
                 toast({ title: 'Partner Added!', description: `You are now accountability partners with ${request.fromUserFirstName} ${request.fromUserLastName}.` });
-                router.refresh();
             })
             .catch(() => {
                  const permissionError = new FirestorePermissionError({
@@ -143,7 +140,6 @@ export function AccountabilityRequests({ currentUserProfile }: { currentUserProf
         batch.commit()
             .then(() => {
                 toast({ title: 'Request Declined' });
-                router.refresh();
             })
             .catch(() => {
                 const permissionError = new FirestorePermissionError({
@@ -164,7 +160,6 @@ export function AccountabilityRequests({ currentUserProfile }: { currentUserProf
         deleteDoc(requestRef)
             .then(() => {
                 toast({ title: 'Request Canceled' });
-                router.refresh();
             })
             .catch(() => {
                 const permissionError = new FirestorePermissionError({
@@ -182,9 +177,6 @@ export function AccountabilityRequests({ currentUserProfile }: { currentUserProf
         if (!firestore) return;
         const reqRef = doc(firestore, 'accountabilityRequests', requestId);
         deleteDoc(reqRef)
-            .then(() => {
-                router.refresh();
-            })
             .catch(() => {
                 const permissionError = new FirestorePermissionError({ path: reqRef.path, operation: 'delete' });
                 errorEmitter.emit('permission-error', permissionError);
