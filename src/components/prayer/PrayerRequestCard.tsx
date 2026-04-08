@@ -92,9 +92,6 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({ prayerRequest
               operation: 'delete',
             });
             errorEmitter.emit('permission-error', permissionError);
-        })
-        .finally(() => {
-            // If the component is still mounted (e.g. error occurred)
             setIsDeleting(false);
         });
   };
