@@ -923,38 +923,19 @@ export default function DashboardPage() {
                 Current status of all souls won.
               </CardDescription>
             </CardHeader>
-            <CardContent>
-              <ChartContainer config={{}} className="h-[200px] w-full">
-                <ResponsiveContainer>
-                    <BarChart
-                        data={followUpStatusData}
-                        layout="vertical"
-                        margin={{ left: 10, right: 10, top: 10, bottom: 10 }}
-                    >
-                        <XAxis type="number" hide />
-                        <YAxis
-                            dataKey="status"
-                            type="category"
-                            tickLine={false}
-                            axisLine={false}
-                            tickMargin={10}
-                            width={80}
-                        />
-                        <ChartTooltip
-                            cursor={false}
-                            content={<ChartTooltipContent hideLabel />}
-                        />
-                        <Bar dataKey="count" radius={5}>
-                            {followUpStatusData.map((entry) => (
-                                <Cell
-                                    key={entry.status}
-                                    fill={followUpStatusColors[entry.status as Soul['status']]}
-                                />
-                            ))}
-                        </Bar>
-                    </BarChart>
-                </ResponsiveContainer>
-              </ChartContainer>
+            <CardContent className="pt-2 space-y-2">
+                {followUpStatusData.map((item) => (
+                    <div key={item.status} className="flex items-center justify-between p-3 rounded-lg bg-muted/40">
+                        <div className="flex items-center gap-3">
+                            <span
+                                className="flex h-2.5 w-2.5 shrink-0 rounded-full"
+                                style={{ backgroundColor: followUpStatusColors[item.status as Soul['status']] }}
+                            />
+                            <span className="text-sm font-medium">{item.status}</span>
+                        </div>
+                        <span className="text-sm font-bold">{item.count}</span>
+                    </div>
+                ))}
             </CardContent>
           </Card>
           
