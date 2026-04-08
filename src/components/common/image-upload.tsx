@@ -89,9 +89,9 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath }: 
         let title = "Upload Failed";
         let description = `An unknown error occurred. (Code: ${error.code})`;
         
-        if (error.code === 'storage/unauthorized' || error.code === 'storage/unknown') {
-            title = "Configuration Required to Enable Uploads";
-            description = "This is a project setup issue, not a code bug. To fix this, you MUST run a command to update your cloud storage settings. Please open the file `docs/storage-cors-guide.md` and follow the instructions carefully.";
+        if (error.code === 'storage/unauthorized' || error.code === 'storage/unknown' || error.code === 'storage/retry-limit-exceeded') {
+            title = "Action Required: Final Configuration Step";
+            description = "The final step is YOURS to complete. I cannot do it for you. Please open the file `docs/storage-cors-guide.md` in the file explorer and run the `gcloud` command inside. This will fix the upload error.";
         }
         
         toast({

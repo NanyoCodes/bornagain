@@ -1,12 +1,10 @@
+
 rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
-    match /profile-pictures/{userId}/{fileName} {
-      // Allow users to write to their own profile picture folder
+    match /profile-pictures/{userId}/{allPaths=**} {
+      allow read: if true;
       allow write: if request.auth != null && request.auth.uid == userId;
-      
-      // Profile pictures should be publicly readable
-      allow read;
     }
   }
 }
