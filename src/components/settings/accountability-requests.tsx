@@ -14,6 +14,7 @@ import { useToast } from '@/hooks/use-toast';
 import { format, isToday } from 'date-fns';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
+import { safeToDate } from '@/lib/utils';
 
 export function AccountabilityRequests({ currentUserProfile }: { currentUserProfile: UserProfile }) {
     const { user } = useUser();
@@ -190,7 +191,7 @@ export function AccountabilityRequests({ currentUserProfile }: { currentUserProf
                 <div className="space-y-3">
                     <h3 className="text-sm font-semibold flex items-center gap-2 text-muted-foreground"><UserPlus className="h-4 w-4" /> INCOMING REQUESTS</h3>
                     {incomingRequests.map(req => {
-                        const createdAt = req.createdAt.toDate();
+                        const createdAt = safeToDate(req.createdAt);
                         return (
                         <div key={req.id} className="flex items-center justify-between p-3 rounded-lg border bg-muted/30">
                             <div className="flex items-center gap-3">
@@ -201,7 +202,7 @@ export function AccountabilityRequests({ currentUserProfile }: { currentUserProf
                                 <div>
                                     <p className="font-semibold text-sm">{req.fromUserFirstName} {req.fromUserLastName}</p>
                                     <p className="text-xs text-muted-foreground">
-                                        Sent {isToday(createdAt) ? format(createdAt, 'p') : format(createdAt, 'PPP')}
+                                        Sent {createdAt ? (isToday(createdAt) ? format(createdAt, 'p') : format(createdAt, 'PPP')) : 'just now'}
                                     </p>
                                 </div>
                             </div>
@@ -235,7 +236,7 @@ export function AccountabilityRequests({ currentUserProfile }: { currentUserProf
                 <div className="space-y-3">
                     <h3 className="text-sm font-semibold flex items-center gap-2 text-muted-foreground"><Hourglass className="h-4 w-4" /> SENT REQUESTS</h3>
                     {sentRequests.map(req => {
-                        const createdAt = req.createdAt.toDate();
+                        const createdAt = safeToDate(req.createdAt);
                         return (
                          <div key={req.id} className="flex items-center justify-between p-3 rounded-lg border">
                             <div className="flex items-center gap-3">
@@ -246,7 +247,7 @@ export function AccountabilityRequests({ currentUserProfile }: { currentUserProf
                                 <div>
                                     <p className="font-semibold text-sm">{req.toUserFirstName} {req.toUserLastName}</p>
                                     <p className="text-xs text-muted-foreground">
-                                        Sent {isToday(createdAt) ? format(createdAt, 'p') : format(createdAt, 'PPP')}
+                                        Sent {createdAt ? (isToday(createdAt) ? format(createdAt, 'p') : format(createdAt, 'PPP')) : 'just now'}
                                     </p>
                                 </div>
                             </div>
