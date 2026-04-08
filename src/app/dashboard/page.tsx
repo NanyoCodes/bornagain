@@ -169,7 +169,7 @@ function RecentSoulsList() {
   );
 }
 
-function GlobalSoulsCard({
+function CityImpactCard({
   location,
   userSouls,
 }: {
@@ -179,8 +179,6 @@ function GlobalSoulsCard({
   const { user } = useUser();
   const firestore = useFirestore();
   const [cityCount, setCityCount] = useState(0);
-  const [countryCount, setCountryCount] = useState(0);
-  const [globalCount, setGlobalCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -192,19 +190,8 @@ function GlobalSoulsCard({
     [userSouls, location.city]
   );
 
-  const yourCountryCount = useMemo(
-    () =>
-      userSouls.filter(
-        (s) =>
-          s.userLocation?.country_lowercase === location.country?.toLowerCase()
-      ).length,
-    [userSouls, location.country]
-  );
-
-  const yourGlobalCount = userSouls.length;
-
   const fetchCounts = useCallback(async () => {
-    if (!firestore || !user) {
+    if (!firestore || !user || !location.city) {
       setLoading(false);
       return;
     }
@@ -213,55 +200,23 @@ function GlobalSoulsCard({
     try {
       setError(null);
       const soulsCollection = collection(firestore, 'souls');
-
-      const promises = [];
-
-      // Global query
-      promises.push(getCountFromServer(soulsCollection));
-
-      // City query
-      if (location.city) {
-        const cityQuery = query(
-          soulsCollection,
-          where('userLocation.city_lowercase', '==', location.city.toLowerCase())
-        );
-        promises.push(getCountFromServer(cityQuery));
-      } else {
-        promises.push(Promise.resolve(null));
-      }
-
-      // Country query
-      if (location.country) {
-        const countryQuery = query(
-          soulsCollection,
-          where(
-            'userLocation.country_lowercase',
-            '==',
-            location.country.toLowerCase()
-          )
-        );
-        promises.push(getCountFromServer(countryQuery));
-      } else {
-        promises.push(Promise.resolve(null));
-      }
-
-      const [globalSnapshot, citySnapshot, countrySnapshot] =
-        await Promise.all(promises);
-
-      setGlobalCount(globalSnapshot?.data().count ?? 0);
-      setCityCount(citySnapshot?.data().count ?? 0);
-      setCountryCount(countrySnapshot?.data().count ?? 0);
+      const cityQuery = query(
+        soulsCollection,
+        where('userLocation.city_lowercase', '==', location.city.toLowerCase())
+      );
+      const citySnapshot = await getCountFromServer(cityQuery);
+      setCityCount(citySnapshot.data().count);
     } catch (error) {
       const permissionError = new FirestorePermissionError({
         path: 'souls',
         operation: 'list',
       }, user);
       errorEmitter.emit('permission-error', permissionError);
-      setError('Could not load community stats.');
+      setError('Could not load city stats.');
     } finally {
       setLoading(false);
     }
-  }, [firestore, user, location.city, location.country]);
+  }, [firestore, user, location.city]);
 
   useEffect(() => {
     fetchCounts();
@@ -274,8 +229,8 @@ function GlobalSoulsCard({
     <Card>
       <CardHeader className="flex flex-row items-start justify-between pb-4">
         <div>
-          <CardTitle>Community Impact</CardTitle>
-          <CardDescription>Community stats, updated periodically.</CardDescription>
+          <CardTitle>City Impact</CardTitle>
+          <CardDescription>Souls won in your city.</CardDescription>
         </div>
         <Button variant="ghost" size="icon" onClick={fetchCounts} disabled={loading}>
           {loading ? (
@@ -293,7 +248,7 @@ function GlobalSoulsCard({
             <p>{error} Please try again.</p>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div>
             {location.city && (
               <div className="flex items-center justify-between">
                 <span className="font-medium text-muted-foreground">
@@ -313,45 +268,11 @@ function GlobalSoulsCard({
                 </div>
               </div>
             )}
-            {location.country && (
-              <div className="flex items-center justify-between">
-                <span className="font-medium text-muted-foreground">
-                  In {location.country}
-                </span>
-                <div className="text-right">
-                  <div className="font-bold text-lg">
-                    {loading && countryCount === 0 ? (
-                      <Skeleton className="h-6 w-12" />
-                    ) : (
-                      countryCount
-                    )}
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    You: {yourCountryCount}
-                  </p>
-                </div>
-              </div>
-            )}
-            <div className="flex items-center justify-between">
-              <span className="font-medium text-muted-foreground">Globally</span>
-              <div className="text-right">
-                <div className="font-bold text-lg">
-                  {loading && globalCount === 0 ? (
-                    <Skeleton className="h-6 w-16" />
-                  ) : (
-                    globalCount
-                  )}
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  You: {yourGlobalCount}
-                </p>
-              </div>
-            </div>
           </div>
         )}
-        {!location.city && !location.country && !loading && (
+        {!location.city && !loading && (
           <p className="text-sm text-center text-muted-foreground py-4">
-            Add your location in your profile to see community stats.
+            Add your location in your profile to see city stats.
           </p>
         )}
       </CardContent>
@@ -926,7 +847,7 @@ export default function DashboardPage() {
           </Card>
 
           {userProfile?.location && (
-            <GlobalSoulsCard
+            <CityImpactCard
               location={userProfile.location}
               userSouls={soulsWon || []}
             />
