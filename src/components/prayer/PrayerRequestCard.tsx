@@ -85,7 +85,6 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({ prayerRequest
                 title: "Request Deleted",
                 description: "Your prayer request has been removed.",
             });
-            router.refresh();
         })
         .catch(() => {
             const permissionError = new FirestorePermissionError({

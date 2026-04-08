@@ -75,7 +75,6 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, dist
           title: "Testimony Deleted",
           description: "Your testimony has been successfully removed.",
         });
-        router.refresh();
       })
       .catch(() => {
         const permissionError = new FirestorePermissionError({
