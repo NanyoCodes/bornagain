@@ -20,43 +20,32 @@ export function AccountabilityRequests({ currentUserProfile }: { currentUserProf
     const firestore = useFirestore();
     const [isProcessing, setIsProcessing] = useState<string | null>(null);
 
-    // Query for INCOMING requests
-    const incomingRequestsQuery = useMemo(() => {
+    // Query for ALL requests involving the current user. This is more secure and efficient.
+    const requestsQuery = useMemo(() => {
         if (!user) return null;
         return query(
             collection(firestore, 'accountabilityRequests'),
-            where('toUserId', '==', user.uid),
-            where('status', '==', 'pending')
+            where('participantIds', 'array-contains', user.uid)
         );
     }, [user, firestore]);
-    const { data: incomingRequests, loading: loadingIncoming } = useCollection<AccountabilityRequest>(incomingRequestsQuery);
+    const { data: allRequests, loading } = useCollection<AccountabilityRequest>(requestsQuery);
 
-    // Query for SENT requests
-    const sentRequestsQuery = useMemo(() => {
-        if (!user) return null;
-        return query(
-            collection(firestore, 'accountabilityRequests'),
-            where('fromUserId', '==', user.uid),
-            where('status', '==', 'pending')
-        );
-    }, [user, firestore]);
-    const { data: sentRequests, loading: loadingSent } = useCollection<AccountabilityRequest>(sentRequestsQuery);
-    
-    // Query for non-pending (completed) requests that need to be displayed for dismissal
-    const nonPendingRequestsQuery = useMemo(() => {
-        if (!user) return null;
-        return query(
-            collection(firestore, 'accountabilityRequests'),
-            where('participantIds', 'array-contains', user.uid),
-            where('status', 'in', ['accepted', 'declined'])
-        );
-    }, [user, firestore]);
-    const { data: nonPendingRequests, loading: loadingNonPending } = useCollection<AccountabilityRequest>(nonPendingRequestsQuery);
-    
-    const acceptedRequest = useMemo(() => nonPendingRequests?.find(r => r.status === 'accepted'), [nonPendingRequests]);
-    const declinedRequests = useMemo(() => nonPendingRequests?.filter(r => r.status === 'declined'), [nonPendingRequests]);
+    // Filter requests on the client-side from the single data source
+    const incomingRequests = useMemo(() =>
+        allRequests?.filter(r => r.status === 'pending' && r.toUserId === user?.uid)
+    , [allRequests, user]);
 
-    const loading = loadingIncoming || loadingSent || loadingNonPending;
+    const sentRequests = useMemo(() =>
+        allRequests?.filter(r => r.status === 'pending' && r.fromUserId === user?.uid)
+    , [allRequests, user]);
+
+    const acceptedRequest = useMemo(() =>
+        allRequests?.find(r => r.status === 'accepted')
+    , [allRequests]);
+
+    const declinedRequests = useMemo(() =>
+        allRequests?.filter(r => r.status === 'declined')
+    , [allRequests]);
 
     const handleAccept = async (request: AccountabilityRequest) => {
         if (!user || !firestore || currentUserProfile.accountabilityPartnerId) {
@@ -191,7 +180,7 @@ export function AccountabilityRequests({ currentUserProfile }: { currentUserProf
         );
     }
 
-    if (!incomingRequests?.length && !sentRequests?.length && !nonPendingRequests?.length) {
+    if (!allRequests || allRequests.length === 0) {
         return null; // No requests, render nothing.
     }
     
@@ -323,3 +312,5 @@ export function AccountabilityRequests({ currentUserProfile }: { currentUserProf
         </div>
     )
 }
+
+    
