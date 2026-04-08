@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
@@ -39,7 +38,7 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath }: 
     fileInputRef.current?.click();
   };
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
@@ -60,36 +59,39 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath }: 
     };
     reader.readAsDataURL(file);
 
-    handleUpload(file);
+    try {
+      await handleUpload(file);
+    } catch (e: any) {
+      toast({ variant: 'destructive', title: 'Upload Failed', description: e.message });
+      setPreviewUrl(initialImageUrl || null);
+    }
   };
 
   const handleUpload = async (file: File) => {
-    if (!user || !storage) {
-      toast({ variant: 'destructive', title: 'Error', description: 'You must be logged in to upload images.' });
-      return;
+    if (!user) {
+      throw new Error("User must be logged in to upload images.");
+    }
+    if (!storage) {
+        throw new Error("Firebase Storage is not available.");
     }
     setIsUploading(true);
 
-    const filePath = `${storagePath}/${user.uid}/${Date.now()}_${file.name}`;
-    const storageRef = ref(storage, filePath);
-
     try {
-      // Upload file
-      const snapshot = await uploadBytes(storageRef, file);
-
-      // Get URL
-      const downloadURL = await getDownloadURL(snapshot.ref);
+      const fileRef = ref(storage, `${storagePath}/${user.uid}/${Date.now()}_${file.name}`);
+      await uploadBytes(fileRef, file);
+      const downloadURL = await getDownloadURL(fileRef);
 
       onUploadComplete(downloadURL);
-      setPreviewUrl(downloadURL);
       toast({ title: 'Success', description: 'Image uploaded successfully.' });
     } catch (error: any) {
       console.error("Firebase Storage Upload Error:", error);
-      toast({
-        variant: 'destructive',
-        title: 'Upload Failed',
-        description: error.message || 'An unknown error occurred.',
-      });
+      let description = `An unknown error occurred. (Code: ${error.code || 'unknown'})`;
+      
+      if (error.code === 'storage/unauthorized' || error.code === 'storage/retry-limit-exceeded') {
+        description = "This is a project setup issue. Please open the file `docs/storage-cors-guide.md` and follow the steps carefully."
+      }
+      
+      throw new Error(description);
     } finally {
       setIsUploading(false);
     }
