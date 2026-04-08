@@ -40,10 +40,6 @@ export function AccountabilityRequests({ currentUserProfile }: { currentUserProf
         allRequests?.filter(r => r.status === 'pending' && r.fromUserId === user?.uid)
     , [allRequests, user]);
 
-    const acceptedRequest = useMemo(() =>
-        allRequests?.find(r => r.status === 'accepted')
-    , [allRequests]);
-
     const declinedRequests = useMemo(() =>
         allRequests?.filter(r => r.status === 'declined')
     , [allRequests]);
@@ -95,7 +91,7 @@ export function AccountabilityRequests({ currentUserProfile }: { currentUserProf
             .then(() => {
                 toast({ title: 'Partner Added!', description: `You are now accountability partners with ${request.fromUserFirstName} ${request.fromUserLastName}.` });
             })
-            .catch(() => {
+            .catch((e) => {
                  const permissionError = new FirestorePermissionError({
                     path: `BATCH_WRITE:ACCEPT_REQUEST:${request.id}`,
                     operation: 'write',
@@ -289,27 +285,6 @@ export function AccountabilityRequests({ currentUserProfile }: { currentUserProf
                     </Button>
                 </div>
             ))}
-            {acceptedRequest && (
-                 <div className="flex items-start justify-between gap-2 p-3 rounded-lg border border-dashed bg-green-50 dark:bg-green-900/20">
-                    <div className="flex items-start gap-3">
-                        <CheckCircle2 className="h-5 w-5 text-green-600 shrink-0 mt-0.5" />
-                        <div>
-                             <p className="text-sm text-green-700 dark:text-green-400 font-medium">
-                                You are now accountability partners with {acceptedRequest.fromUserId === user?.uid ? `${acceptedRequest.toUserFirstName} ${acceptedRequest.toUserLastName}` : `${acceptedRequest.fromUserFirstName} ${acceptedRequest.fromUserLastName}`}.
-                            </p>
-                        </div>
-                    </div>
-                    <Button
-                        size="icon"
-                        variant="ghost"
-                        onClick={() => dismissRequest(acceptedRequest.id)}
-                        className="h-8 w-8 shrink-0"
-                    >
-                        <X className="h-4 w-4 text-muted-foreground" />
-                        <span className="sr-only">Dismiss</span>
-                    </Button>
-                </div>
-            )}
         </div>
     )
 }
