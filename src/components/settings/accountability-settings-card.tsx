@@ -97,7 +97,7 @@ export function AccountabilitySettingsCard({ userProfile, userId }: { userProfil
             const permissionError = new FirestorePermissionError({
                 path: `BATCH_WRITE:REMOVE_PARTNER:${user.uid}`,
                 operation: 'write',
-            });
+            }, user);
             errorEmitter.emit('permission-error', permissionError);
         })
         .finally(() => {

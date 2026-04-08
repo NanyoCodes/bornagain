@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -157,7 +158,7 @@ export function UserSearch({ currentUserProfile }: { currentUserProfile: UserPro
                     path: requestRef.path,
                     operation: 'create',
                     requestResourceData: newRequestData
-                });
+                }, user);
                 errorEmitter.emit('permission-error', permissionError);
             })
             .finally(() => {

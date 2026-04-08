@@ -88,7 +88,7 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
                 path: testimonyRef.path,
                 operation: 'update',
                 requestResourceData: testimonyUpdate,
-            });
+            }, user);
             errorEmitter.emit('permission-error', permissionError);
         })
         .finally(() => {

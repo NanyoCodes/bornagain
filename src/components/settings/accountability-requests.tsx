@@ -98,7 +98,7 @@ export function AccountabilityRequests({ currentUserProfile }: { currentUserProf
                  const permissionError = new FirestorePermissionError({
                     path: `BATCH_WRITE:ACCEPT_REQUEST:${request.id}`,
                     operation: 'write',
-                });
+                }, user);
                 errorEmitter.emit('permission-error', permissionError);
             })
             .finally(() => {
@@ -134,7 +134,7 @@ export function AccountabilityRequests({ currentUserProfile }: { currentUserProf
                 const permissionError = new FirestorePermissionError({
                     path: `BATCH_WRITE:DECLINE_REQUEST:${request.id}`,
                     operation: 'write',
-                });
+                }, user);
                 errorEmitter.emit('permission-error', permissionError);
             })
             .finally(() => {
@@ -154,7 +154,7 @@ export function AccountabilityRequests({ currentUserProfile }: { currentUserProf
                 const permissionError = new FirestorePermissionError({
                     path: requestRef.path,
                     operation: 'delete',
-                });
+                }, user);
                 errorEmitter.emit('permission-error', permissionError);
             })
             .finally(() => {
@@ -163,11 +163,11 @@ export function AccountabilityRequests({ currentUserProfile }: { currentUserProf
     };
 
     const dismissRequest = (requestId: string) => {
-        if (!firestore) return;
+        if (!firestore || !user) return;
         const reqRef = doc(firestore, 'accountabilityRequests', requestId);
         deleteDoc(reqRef)
             .catch(() => {
-                const permissionError = new FirestorePermissionError({ path: reqRef.path, operation: 'delete' });
+                const permissionError = new FirestorePermissionError({ path: reqRef.path, operation: 'delete' }, user);
                 errorEmitter.emit('permission-error', permissionError);
             });
     }
@@ -312,5 +312,3 @@ export function AccountabilityRequests({ currentUserProfile }: { currentUserProf
         </div>
     )
 }
-
-    

@@ -52,7 +52,7 @@ export default function NotificationsPage() {
               path: notifRef.path,
               operation: 'update',
               requestResourceData: { isRead: true },
-          });
+          }, user);
           errorEmitter.emit('permission-error', permissionError);
           // Continue to navigate even if marking as read fails
       });
@@ -81,7 +81,7 @@ export default function NotificationsPage() {
             path: `users/${user.uid}/notifications`,
             operation: 'update',
             requestResourceData: { isRead: true, updatedDocs: notificationRefs },
-        });
+        }, user);
         errorEmitter.emit('permission-error', permissionError);
     });
   };

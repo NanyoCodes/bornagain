@@ -74,7 +74,7 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({ prayerRequest
   }
 
   const handleDelete = () => {
-    if (!isAuthor || !firestore) return;
+    if (!isAuthor || !firestore || !user) return;
     setIsDeleting(true);
 
     const requestRef = doc(firestore, "prayerRequests", prayerRequest.id);
@@ -90,7 +90,7 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({ prayerRequest
             const permissionError = new FirestorePermissionError({
               path: requestRef.path,
               operation: 'delete',
-            });
+            }, user);
             errorEmitter.emit('permission-error', permissionError);
             setIsDeleting(false);
         });

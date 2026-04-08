@@ -109,7 +109,7 @@ export function AttendChurchDialog({ isOpen, onOpenChange, onDisciplineCompleted
         path: userRef.path,
         operation: 'update',
         requestResourceData: updatePayload
-      });
+      }, user);
       errorEmitter.emit('permission-error', permissionError);
       throw serverError; // Re-throw to be caught by the caller
     }

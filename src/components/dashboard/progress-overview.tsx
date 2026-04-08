@@ -152,7 +152,7 @@ export function ProgressOverview({ souls, userProfile, testimonies }: { souls: S
                 path: userRef.path,
                 operation: 'update',
                 requestResourceData: payload,
-            });
+            }, user);
             errorEmitter.emit('permission-error', permissionError);
           })
           .finally(() => {

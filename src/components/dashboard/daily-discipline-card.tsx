@@ -96,7 +96,7 @@ export function DailyDisciplineCard() {
                 path: userRef.path, // This is a simplification for the batch
                 operation: 'update',
                 requestResourceData: updateData,
-            });
+            }, user);
             errorEmitter.emit('permission-error', permissionError);
             throw serverError; // Re-throw to be caught by handleDisciplineClick
         });

@@ -64,7 +64,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, dist
 
 
   const handleDelete = () => {
-    if (!isAuthor || !firestore) return;
+    if (!isAuthor || !firestore || !user) return;
 
     setIsDeleting(true);
     const testimonyRef = doc(firestore, "testimonies", testimony.id);
@@ -80,7 +80,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, dist
         const permissionError = new FirestorePermissionError({
           path: testimonyRef.path,
           operation: 'delete',
-        });
+        }, user);
         errorEmitter.emit('permission-error', permissionError);
         setIsDeleting(false);
       });
