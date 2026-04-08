@@ -63,44 +63,36 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath }: 
     handleUpload(file);
   };
 
-  const handleUpload = (file: File) => {
+  const handleUpload = async (file: File) => {
     if (!user || !storage) {
-        toast({ variant: 'destructive', title: 'Error', description: 'You must be logged in to upload images.' });
-        return;
+      toast({ variant: 'destructive', title: 'Error', description: 'You must be logged in to upload images.' });
+      return;
     }
     setIsUploading(true);
 
     const filePath = `${storagePath}/${user.uid}/${Date.now()}_${file.name}`;
     const storageRef = ref(storage, filePath);
 
-    uploadBytes(storageRef, file)
-      .then((snapshot) => {
-        getDownloadURL(snapshot.ref).then((downloadURL) => {
-          onUploadComplete(downloadURL);
-          setPreviewUrl(downloadURL);
-          setIsUploading(false);
-          toast({ title: 'Success', description: 'Image uploaded successfully.' });
-        });
-      })
-      .catch((error) => {
-        setIsUploading(false);
-        console.error("Firebase Storage Upload Error:", error);
-        
-        let title = "Upload Failed";
-        let description = `An unknown error occurred. (Code: ${error.code})`;
-        
-        if (error.code === 'storage/unauthorized' || error.code === 'storage/unknown' || error.code === 'storage/retry-limit-exceeded') {
-            title = "Action Required: Final Configuration Step";
-            description = "The final step is YOURS to complete. I cannot do it for you. Please open the file `docs/storage-cors-guide.md` in the file explorer and run the `gcloud` command inside. This will fix the upload error.";
-        }
-        
-        toast({
-          variant: 'destructive',
-          title: title,
-          description: description,
-          duration: 15000,
-        });
+    try {
+      // Upload file
+      const snapshot = await uploadBytes(storageRef, file);
+
+      // Get URL
+      const downloadURL = await getDownloadURL(snapshot.ref);
+
+      onUploadComplete(downloadURL);
+      setPreviewUrl(downloadURL);
+      toast({ title: 'Success', description: 'Image uploaded successfully.' });
+    } catch (error: any) {
+      console.error("Firebase Storage Upload Error:", error);
+      toast({
+        variant: 'destructive',
+        title: 'Upload Failed',
+        description: error.message || 'An unknown error occurred.',
       });
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const handleRemoveImage = () => {
