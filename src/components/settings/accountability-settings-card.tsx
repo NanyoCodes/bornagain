@@ -62,6 +62,12 @@ export function AccountabilitySettingsCard({ userProfile, userId }: { userProfil
     const batch = writeBatch(firestore);
     const partnerId = userProfile.accountabilityPartnerId;
 
+    // Delete the accepted request document
+    const participantIds = [user.uid, partnerId].sort();
+    const requestId = participantIds.join('_');
+    const requestRef = doc(firestore, 'accountabilityRequests', requestId);
+    batch.delete(requestRef);
+
     const currentUserRef = doc(firestore, 'users', user.uid);
     batch.update(currentUserRef, {
         accountabilityPartnerId: deleteField(),
@@ -79,7 +85,7 @@ export function AccountabilitySettingsCard({ userProfile, userId }: { userProfil
     const notificationsCollectionRef = collection(firestore, 'users', partnerId, 'notifications');
     const notificationData = {
         userId: partnerId,
-        type: 'accountability_partner_removed',
+        type: 'accountability_partner_removed' as const,
         title: 'Accountability Partnership Ended',
         message: `${userProfile.firstName} ${userProfile.lastName} has ended your accountability partnership. Reason: ${removalReason}`,
         link: '/dashboard/accountability',
