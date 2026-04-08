@@ -1,18 +1,65 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import ReactCrop, { centerCrop, makeAspectCrop, type Crop, type PixelCrop } from 'react-image-crop';
 import { useStorage, useUser } from '@/firebase';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Camera, X, Loader2 } from 'lucide-react';
+import { Camera, X, Loader2, Crop as CropIcon } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Input } from '@/components/ui/input';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+
+// Function to generate a cropped image
+function getCroppedImg(
+  image: HTMLImageElement,
+  crop: PixelCrop,
+): Promise<Blob> {
+  const canvas = document.createElement('canvas');
+  const scaleX = image.naturalWidth / image.width;
+  const scaleY = image.naturalHeight / image.height;
+  canvas.width = crop.width;
+  canvas.height = crop.height;
+  const ctx = canvas.getContext('2d');
+
+  if (!ctx) {
+    return Promise.reject(new Error('Canvas context is not available'));
+  }
+
+  const pixelRatio = window.devicePixelRatio;
+  canvas.width = crop.width * pixelRatio;
+  canvas.height = crop.height * pixelRatio;
+  ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+  ctx.imageSmoothingQuality = 'high';
+
+  ctx.drawImage(
+    image,
+    crop.x * scaleX,
+    crop.y * scaleY,
+    crop.width * scaleX,
+    crop.height * scaleY,
+    0,
+    0,
+    crop.width,
+    crop.height
+  );
+
+  return new Promise((resolve, reject) => {
+    canvas.toBlob((blob) => {
+      if (!blob) {
+        reject(new Error('Canvas is empty'));
+        return;
+      }
+      resolve(blob);
+    }, 'image/jpeg', 0.95);
+  });
+}
 
 interface ImageUploadProps {
   initialImageUrl?: string | null;
   onUploadComplete: (url: string) => void;
-  storagePath: string; // e.g., 'profile-pictures'
+  storagePath: string;
 }
 
 export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath }: ImageUploadProps) {
@@ -22,55 +69,73 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath }: 
   
   const [previewUrl, setPreviewUrl] = useState<string | null>(initialImageUrl || null);
   const [isUploading, setIsUploading] = useState(false);
-  
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Cropping state
+  const [imgSrc, setImgSrc] = useState('');
+  const [crop, setCrop] = useState<Crop>();
+  const [completedCrop, setCompletedCrop] = useState<PixelCrop>();
+  const [isCropModalOpen, setIsCropModalOpen] = useState(false);
+  const imgRef = useRef<HTMLImageElement>(null);
+  
   useEffect(() => {
-    // This effect ensures that if the initialImageUrl prop changes from the parent
-    // (e.g., after a successful form submission and re-opening the modal),
-    // the preview is updated, but only if an upload isn't in progress.
     if (!isUploading) {
       setPreviewUrl(initialImageUrl || null);
     }
   }, [initialImageUrl, isUploading]);
-
+  
   const handleFileSelect = () => {
     fileInputRef.current?.click();
   };
 
-  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    if (!file.type.startsWith('image/')) {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const file = e.target.files[0];
+       if (!file.type.startsWith('image/')) {
         toast({ variant: 'destructive', title: 'Invalid File Type', description: 'Please select an image file.' });
         return;
-    }
-    
-    // Max 5MB
-    if (file.size > 5 * 1024 * 1024) {
+      }
+      if (file.size > 5 * 1024 * 1024) {
         toast({ variant: 'destructive', title: 'File Too Large', description: 'Please select an image smaller than 5MB.' });
         return;
-    }
-
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setPreviewUrl(reader.result as string);
-    };
-    reader.readAsDataURL(file);
-
-    try {
-      await handleUpload(file);
-    } catch (e: any) {
-      // The toast is now handled inside handleUpload
+      }
+      setCrop(undefined); // Reset crop on new image
+      const reader = new FileReader();
+      reader.addEventListener('load', () => setImgSrc(reader.result?.toString() || ''));
+      reader.readAsDataURL(e.target.files[0]);
+      setIsCropModalOpen(true);
     }
   };
 
-  const handleUpload = async (file: File) => {
+  const onImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    const { width, height } = e.currentTarget;
+    const crop = centerCrop(
+      makeAspectCrop({ unit: '%', width: 100 }, 1, width, height),
+      width,
+      height
+    );
+    setCrop(crop);
+  };
+
+  const handleCrop = async () => {
+    if (!completedCrop || !imgRef.current) {
+        return;
+    }
+    const croppedImageBlob = await getCroppedImg(imgRef.current, completedCrop);
+    
+    // Set local preview
+    const localUrl = URL.createObjectURL(croppedImageBlob);
+    setPreviewUrl(localUrl);
+
+    await handleUpload(croppedImageBlob);
+    setIsCropModalOpen(false);
+    setImgSrc('');
+  };
+
+  const handleUpload = async (file: File | Blob) => {
     if (!user) {
-      toast({ variant: 'destructive', title: 'Upload Failed', description: 'You must be logged in to upload images.' });
-      setPreviewUrl(initialImageUrl || null); // revert preview
-      return;
+        toast({ variant: 'destructive', title: 'Upload Failed', description: 'You must be logged in to upload images.' });
+        throw new Error("User must be logged in");
     }
     if (!storage) {
        toast({ variant: 'destructive', title: 'Upload Failed', description: 'Firebase Storage is not available.' });
@@ -78,9 +143,9 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath }: 
        return;
     }
     setIsUploading(true);
-
     try {
-      const fileRef = ref(storage, `${storagePath}/${user.uid}/${Date.now()}_${file.name}`);
+      const fileName = file instanceof File ? file.name : 'cropped-image.jpg';
+      const fileRef = ref(storage, `${storagePath}/${user.uid}/${Date.now()}_${fileName}`);
       await uploadBytes(fileRef, file);
       const downloadURL = await getDownloadURL(fileRef);
 
@@ -88,15 +153,14 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath }: 
       toast({ title: 'Success', description: 'Image uploaded successfully.' });
     } catch (error: any) {
       console.error("Firebase Storage Upload Error:", error);
-      let title = 'Upload Failed: Configuration Required';
+      let title = 'Upload Failed';
       let description = `An unknown error occurred. (Code: ${error.code || 'unknown'})`;
-      
       if (error.code === 'storage/unauthorized' || error.code === 'storage/retry-limit-exceeded') {
-        description = "This error usually means your Firebase project is on the 'Spark' (free) plan. Please upgrade to the 'Blaze' (Pay-as-you-go) plan in the Firebase Console to enable web uploads. Refer to `docs/storage-cors-guide.md` for detailed instructions."
+        title = 'Upload Failed: Configuration Required';
+        description = "This error often means your Firebase project is not on the 'Blaze' (Pay-as-you-go) plan. Please refer to `docs/storage-cors-guide.md` for instructions."
       }
-      
       toast({ variant: 'destructive', title, description, duration: 15000 });
-      setPreviewUrl(initialImageUrl || null); // Revert preview on failure
+      setPreviewUrl(initialImageUrl || null);
     } finally {
       setIsUploading(false);
     }
@@ -108,43 +172,78 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath }: 
   };
 
   return (
-    <div className="flex flex-col items-center gap-4 w-full py-4">
-      <div className="relative">
-        <Avatar className="h-24 w-24 border">
-          <AvatarImage src={previewUrl ?? undefined} />
-          <AvatarFallback><Camera className="h-8 w-8 text-muted-foreground" /></AvatarFallback>
-        </Avatar>
-        {previewUrl && !isUploading && (
-            <Button
-                variant="destructive"
-                size="icon"
-                className="absolute -top-2 -right-2 h-6 w-6 rounded-full"
-                onClick={handleRemoveImage}
-            >
-                <X className="h-4 w-4" />
-            </Button>
-        )}
-      </div>
-      
-      {isUploading ? (
-        <div className="flex items-center gap-2 text-muted-foreground">
-          <Loader2 className="h-4 w-4 animate-spin" />
-          <span>Uploading...</span>
+    <>
+      <div className="flex flex-col items-center gap-4 w-full py-4">
+        <div className="relative">
+          <Avatar className="h-24 w-24 border">
+            <AvatarImage src={previewUrl ?? undefined} />
+            <AvatarFallback><Camera className="h-8 w-8 text-muted-foreground" /></AvatarFallback>
+          </Avatar>
+          {previewUrl && !isUploading && (
+              <Button
+                  variant="destructive"
+                  size="icon"
+                  className="absolute -top-2 -right-2 h-6 w-6 rounded-full"
+                  onClick={handleRemoveImage}
+              >
+                  <X className="h-4 w-4" />
+              </Button>
+          )}
         </div>
-      ) : (
-        <Button type="button" variant="outline" onClick={handleFileSelect}>
-            <Camera className="mr-2 h-4 w-4"/>
-            {previewUrl ? 'Change Photo' : 'Upload Photo'}
-        </Button>
-      )}
+        
+        {isUploading ? (
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            <span>Uploading...</span>
+          </div>
+        ) : (
+          <Button type="button" variant="outline" onClick={handleFileSelect}>
+              <Camera className="mr-2 h-4 w-4"/>
+              {previewUrl ? 'Change Photo' : 'Upload Photo'}
+          </Button>
+        )}
+        <Input 
+          type="file" 
+          ref={fileInputRef}
+          onChange={handleFileChange}
+          className="hidden" 
+          accept="image/png, image/jpeg, image/gif, image/webp"
+        />
+      </div>
 
-      <Input 
-        type="file" 
-        ref={fileInputRef}
-        onChange={handleFileChange}
-        className="hidden" 
-        accept="image/png, image/jpeg, image/gif, image/webp"
-      />
-    </div>
+      <Dialog open={isCropModalOpen} onOpenChange={setIsCropModalOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Crop Your Image</DialogTitle>
+          </DialogHeader>
+          <div className="my-4">
+            {imgSrc && (
+              <ReactCrop
+                crop={crop}
+                onChange={(_, percentCrop) => setCrop(percentCrop)}
+                onComplete={(c) => setCompletedCrop(c)}
+                aspect={1}
+                circularCrop
+              >
+                <img
+                  ref={imgRef}
+                  alt="Crop me"
+                  src={imgSrc}
+                  onLoad={onImageLoad}
+                  style={{ maxHeight: '70vh' }}
+                />
+              </ReactCrop>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsCropModalOpen(false)}>Cancel</Button>
+            <Button onClick={handleCrop} disabled={!completedCrop}>
+              <CropIcon className="mr-2 h-4 w-4" />
+              Crop & Save
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
