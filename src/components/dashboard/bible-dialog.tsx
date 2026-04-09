@@ -557,6 +557,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
         setSelectedChapterNumber(chapter);
         setActiveHighlightId(null);
         setIsChapterSheetOpen(false);
+        setIsChapterPopoverOpen(false);
     }
     const handleSelectVersion = (version: string) => {
         setSelectedVersion(version);
@@ -732,20 +733,9 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
           </div>
       </div>
     );
-
-  return (
-    <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl md:max-w-5xl lg:max-w-7xl max-h-[90dvh] grid grid-rows-[auto_1fr] gap-4 p-2 sm:p-6">
-        <DialogHeader className="row-start-1">
-          <DialogTitle className="flex items-center justify-between">
-             <div className="flex items-center">
-                Bible
-                {chapterContent?.translation && <span className="text-muted-foreground text-sm font-normal ml-2">({chapterContent.translation})</span>}
-             </div>
-          </DialogTitle>
-        </DialogHeader>
-
-        <Tabs defaultValue="read" className="row-start-2 flex flex-col min-h-0">
+    
+    const DialogBody = (
+       <Tabs defaultValue="read" className="row-start-2 flex flex-col min-h-0">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="read">Read</TabsTrigger>
             <TabsTrigger value="history">History</TabsTrigger>
@@ -779,11 +769,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                                                 variant={chapter.chapter === selectedChapterNumber ? "default" : "outline"}
                                                 size="sm"
                                                 className="h-8"
-                                                onClick={() => {
-                                                    setSelectedChapterNumber(chapter.chapter);
-                                                    setActiveHighlightId(null);
-                                                    setIsChapterPopoverOpen(false);
-                                                }}
+                                                onClick={() => handleSelectChapter(chapter.chapter)}
                                             >
                                                 {chapter.chapter}
                                             </Button>
@@ -1003,6 +989,51 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
             </div>
           </TabsContent>
         </Tabs>
+    );
+
+    if (!mounted) {
+      return (
+        <Dialog open={isOpen} onOpenChange={onOpenChange}>
+          <DialogContent><Loader2 className="h-8 w-8 animate-spin mx-auto" /></DialogContent>
+        </Dialog>
+      )
+    }
+
+    if (isMobile) {
+      return (
+        <Sheet open={isOpen} onOpenChange={onOpenChange}>
+          <SheetContent side="bottom" className="p-0 flex flex-col h-[95dvh]">
+             <div className="p-4 border-b">
+                <DialogHeader>
+                  <DialogTitle className="flex items-center justify-between">
+                    <div className="flex items-center">
+                        Bible
+                        {chapterContent?.translation && <span className="text-muted-foreground text-sm font-normal ml-2">({chapterContent.translation})</span>}
+                    </div>
+                  </DialogTitle>
+                </DialogHeader>
+             </div>
+             <div className="flex-grow min-h-0 overflow-y-auto px-2 sm:px-4">
+                {DialogBody}
+             </div>
+          </SheetContent>
+        </Sheet>
+      );
+    }
+  
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-3xl md:max-w-5xl lg:max-w-7xl max-h-[90dvh] grid grid-rows-[auto_1fr] gap-4 p-2 sm:p-6">
+        <DialogHeader className="row-start-1">
+          <DialogTitle className="flex items-center justify-between">
+             <div className="flex items-center">
+                Bible
+                {chapterContent?.translation && <span className="text-muted-foreground text-sm font-normal ml-2">({chapterContent.translation})</span>}
+             </div>
+          </DialogTitle>
+        </DialogHeader>
+        {DialogBody}
       </DialogContent>
     </Dialog>
   );
