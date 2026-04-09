@@ -67,7 +67,6 @@ export function CreateTestimonyForm({ onTestimonyCreated, campaign }: CreateTest
           authorId: user.uid,
           authorFirstName: userProfile.firstName || 'Anonymous',
           authorLastName: userProfile.lastName || '',
-          authorAvatarUrl: userProfile.photoURL || null,
           content: values.content,
           createdAt: serverTimestamp(),
           category: values.category as TestimonyCategory,

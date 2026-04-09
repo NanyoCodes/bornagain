@@ -1,5 +1,4 @@
 
-
 import type { Timestamp } from "firebase/firestore";
 
 export type ReadingHistoryItem = {
@@ -99,7 +98,6 @@ export type Testimony = {
   authorId: string;
   authorFirstName: string;
   authorLastName: string;
-  authorAvatarUrl?: string;
   content: string;
   createdAt: Timestamp;
   updatedAt?: Timestamp;
