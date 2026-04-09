@@ -1,4 +1,3 @@
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -168,10 +167,10 @@ export function CreatePrayerRequestForm({ onPrayerRequestCreated }: CreatePrayer
               </FormControl>
               <div className="space-y-1 leading-none">
                 <FormLabel>
-                  Submit Anonymously
+                  Make this a Confidential Request
                 </FormLabel>
                 <FormDescription>
-                  If checked, your name will not be shown with this prayer request.
+                  If checked, your name and photo will be hidden.
                 </FormDescription>
               </div>
             </FormItem>

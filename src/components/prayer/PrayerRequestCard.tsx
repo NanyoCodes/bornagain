@@ -1,4 +1,3 @@
-
 "use client";
 
 import {
@@ -49,7 +48,7 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({ prayerRequest
     return "Shared " + format(createdAtDate, "PPP 'at' p");
   }, [prayerRequest.createdAt]);
 
-  const authorName = prayerRequest.isAnonymous ? 'Anonymous' : `${prayerRequest.authorFirstName || ''} ${prayerRequest.authorLastName || ''}`.trim();
+  const authorName = prayerRequest.isAnonymous ? 'Confidential Request' : `${prayerRequest.authorFirstName || ''} ${prayerRequest.authorLastName || ''}`.trim();
   const profileLink = !prayerRequest.isAnonymous && prayerRequest.authorId ? `/dashboard/profile/${prayerRequest.authorId}` : '#';
   const isClickable = !prayerRequest.isAnonymous && prayerRequest.authorId;
 
