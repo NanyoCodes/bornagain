@@ -141,9 +141,16 @@ export default function ProfilePage() {
   
   const createdCampaignsQuery = useMemo(() => {
     if (!userId || !firestore) return null;
-    return query(collection(firestore, 'campaigns'), where('organizerId', '==', userId), where('status', '==', 'active'));
+    // We only filter by organizerId to avoid needing a composite index.
+    // The status filter is applied client-side.
+    return query(collection(firestore, 'campaigns'), where('organizerId', '==', userId));
   }, [userId, firestore]);
-  const { data: createdCampaigns, loading: createdCampaignsLoading } = useCollection<Campaign>(createdCampaignsQuery);
+  const { data: allCreatedCampaigns, loading: createdCampaignsLoading } = useCollection<Campaign>(createdCampaignsQuery);
+
+  const createdCampaigns = useMemo(() => {
+    if (!allCreatedCampaigns) return [];
+    return allCreatedCampaigns.filter(c => c.status === 'active');
+  }, [allCreatedCampaigns]);
 
   useEffect(() => {
     if (!firestore || campaignsLoading || !joinedCampaigns) {
