@@ -132,20 +132,28 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, dist
     <>
       <Card className="flex flex-col h-full overflow-hidden shadow-md">
         <CardHeader className="flex flex-row items-start justify-between gap-4">
-          <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-3 min-w-0 flex-1">
             <Link href={profileLink} onClick={(e) => e.stopPropagation()}>
-              <CardTitle className="text-base font-semibold hover:underline">{authorFullName}</CardTitle>
+              <Avatar>
+                <AvatarImage src={testimony.authorAvatarUrl} alt={authorFullName} />
+                <AvatarFallback>{testimony.authorFirstName?.charAt(0)}{testimony.authorLastName?.charAt(0)}</AvatarFallback>
+              </Avatar>
             </Link>
-            <CardDescription className="text-xs mt-1">
-                {displayDate}
-                {locationString && ` · ${locationString}`}
-            </CardDescription>
-            {distance != null && (
-                <CardDescription className="text-xs text-primary font-semibold mt-1 flex items-center gap-1">
-                    <MapPin className="h-3 w-3" />
-                    {distance.toFixed(1)} km away
-                </CardDescription>
-            )}
+            <div className="min-w-0 flex-1">
+              <Link href={profileLink} onClick={(e) => e.stopPropagation()}>
+              <CardTitle className="text-base font-semibold hover:underline">{authorFullName}</CardTitle>
+              </Link>
+              <CardDescription className="text-xs mt-1">
+                  {displayDate}
+                  {locationString && ` · ${locationString}`}
+              </CardDescription>
+              {distance != null && (
+                  <CardDescription className="text-xs text-primary font-semibold mt-1 flex items-center gap-1">
+                      <MapPin className="h-3 w-3" />
+                      {distance.toFixed(1)} km away
+                  </CardDescription>
+              )}
+            </div>
           </div>
           <Badge variant="secondary" className="shrink-0">{testimony.category}</Badge>
         </CardHeader>

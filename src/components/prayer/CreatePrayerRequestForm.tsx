@@ -12,15 +12,17 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription,
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Loader2 } from "lucide-react";
-import type { TestimonyCategory } from "@/lib/types";
-import { useUser, useFirestore } from "@/firebase";
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import type { TestimonyCategory, UserProfile } from "@/lib/types";
+import { useUser, useFirestore, useDoc } from "@/firebase";
+import { collection, addDoc, serverTimestamp, doc } from "firebase/firestore";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 
@@ -29,6 +31,7 @@ const testimonyCategories: TestimonyCategory[] = ['Healing', 'Financial Breakthr
 const formSchema = z.object({
   category: z.string({ required_error: "Please select a category." }),
   content: z.string().min(20, "Prayer request must be at least 20 characters.").max(1000, "Prayer request is too long."),
+  isAnonymous: z.boolean().default(true),
 });
 
 type CreatePrayerRequestFormProps = {
@@ -42,15 +45,19 @@ export function CreatePrayerRequestForm({ onPrayerRequestCreated }: CreatePrayer
   const { user } = useUser();
   const firestore = useFirestore();
 
+  const userDocRef = useMemo(() => user ? doc(firestore, 'users', user.uid) : null, [user, firestore]);
+  const { data: userProfile } = useDoc<UserProfile>(userDocRef);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       content: "",
+      isAnonymous: true,
     },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    if (!user || !firestore) {
+    if (!user || !firestore || !userProfile) {
       toast({ variant: 'destructive', title: 'Not Authenticated', description: 'You must be logged in to share a prayer request.'});
       return;
     }
@@ -59,13 +66,20 @@ export function CreatePrayerRequestForm({ onPrayerRequestCreated }: CreatePrayer
     
     try {
       const prayerCollectionRef = collection(firestore, "prayerRequests");
-      const prayerRequestData = {
+      const prayerRequestData: any = {
           authorId: user.uid,
           content: values.content,
           createdAt: serverTimestamp(),
           category: values.category as TestimonyCategory,
           usersWhoPrayed: [],
+          isAnonymous: values.isAnonymous,
       };
+
+      if (!values.isAnonymous) {
+        prayerRequestData.authorFirstName = userProfile.firstName;
+        prayerRequestData.authorLastName = userProfile.lastName;
+        prayerRequestData.authorAvatarUrl = userProfile.photoURL || null;
+      }
       
       await addDoc(prayerCollectionRef, prayerRequestData).catch((serverError) => {
           const permissionError = new FirestorePermissionError({
@@ -137,6 +151,29 @@ export function CreatePrayerRequestForm({ onPrayerRequestCreated }: CreatePrayer
                 />
               </FormControl>
               <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="isAnonymous"
+          render={({ field }) => (
+            <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+              <FormControl>
+                <Checkbox
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              </FormControl>
+              <div className="space-y-1 leading-none">
+                <FormLabel>
+                  Submit Anonymously
+                </FormLabel>
+                <FormDescription>
+                  If checked, your name will not be shown with this prayer request.
+                </FormDescription>
+              </div>
             </FormItem>
           )}
         />

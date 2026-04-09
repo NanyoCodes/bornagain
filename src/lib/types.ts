@@ -98,6 +98,7 @@ export type Testimony = {
   authorId: string;
   authorFirstName: string;
   authorLastName: string;
+  authorAvatarUrl?: string;
   content: string;
   createdAt: Timestamp;
   updatedAt?: Timestamp;
@@ -120,6 +121,10 @@ export type PrayerRequest = {
   category: TestimonyCategory;
   createdAt: Timestamp;
   usersWhoPrayed?: string[];
+  isAnonymous?: boolean;
+  authorFirstName?: string;
+  authorLastName?: string;
+  authorAvatarUrl?: string;
 };
 
 export type Campaign = {

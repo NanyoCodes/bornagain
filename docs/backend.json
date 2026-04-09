@@ -275,7 +275,7 @@
     },
     "PrayerRequest": {
       "title": "Prayer Request",
-      "description": "A user's prayer request, shared anonymously with the community.",
+      "description": "A user's prayer request, shared with the community.",
       "type": "object",
       "properties": {
         "content": {
@@ -294,6 +294,20 @@
           "type": "array",
           "description": "A list of UIDs of users who have prayed for this request.",
           "items": { "type": "string" }
+        },
+        "isAnonymous": {
+          "type": "boolean",
+          "description": "If true, the author's identity is hidden."
+        },
+        "authorFirstName": {
+          "type": "string"
+        },
+        "authorLastName": {
+          "type": "string"
+        },
+        "authorAvatarUrl": {
+          "type": "string",
+          "format": "uri"
         }
       },
       "required": ["content", "category", "authorId", "createdAt"]

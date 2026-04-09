@@ -13,16 +13,18 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import type { PrayerRequest } from "@/lib/types";
 import { format } from "date-fns";
-import { HandHeart, Users, Trash2, Loader2 } from "lucide-react";
+import { HandHeart, Users, Trash2, Loader2, User } from "lucide-react";
 import { useUser, useFirestore } from "@/firebase";
 import { useState, useMemo, memo } from "react";
 import { useRouter } from "next/navigation";
+import Link from 'next/link';
 import { useToast } from "@/hooks/use-toast";
 import { doc, updateDoc, arrayUnion, deleteDoc } from "firebase/firestore";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { cn } from "@/lib/utils";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 export const PrayerRequestCard = memo(function PrayerRequestCard({ prayerRequest }: { prayerRequest: PrayerRequest }) {
   const { user } = useUser();
@@ -47,6 +49,10 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({ prayerRequest
     return "Shared " + format(createdAtDate, "PPP 'at' p");
   }, [prayerRequest.createdAt]);
 
+  const authorName = prayerRequest.isAnonymous ? 'Anonymous' : `${prayerRequest.authorFirstName || ''} ${prayerRequest.authorLastName || ''}`.trim();
+  const profileLink = !prayerRequest.isAnonymous && prayerRequest.authorId ? `/dashboard/profile/${prayerRequest.authorId}` : '#';
+  const isClickable = !prayerRequest.isAnonymous && prayerRequest.authorId;
+
 
   const handlePray = () => {
     if (!user || !firestore || hasPrayed || isAuthor) return;
@@ -58,7 +64,6 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({ prayerRequest
     updateDoc(requestRef, updatePayload)
         .then(() => {
             toast({ title: "Thank You!", description: "Thank you for praying." });
-            router.refresh();
         })
         .catch(() => {
             const permissionError = new FirestorePermissionError({
@@ -100,16 +105,25 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({ prayerRequest
     <>
       <Card className="flex flex-col h-full overflow-hidden shadow-md">
         <CardHeader className="flex flex-row items-start justify-between gap-4">
-          <div className="min-w-0">
-            <CardTitle className="text-base font-semibold">{prayerRequest.category}</CardTitle>
-            <CardDescription className="text-xs mt-1">
-              {displayDate}
-            </CardDescription>
-          </div>
-          <Badge variant="outline" className="shrink-0 flex items-center gap-1.5">
-              <Users className="h-3 w-3" />
-              {prayerCount}
-          </Badge>
+            <div className="flex items-center gap-3 min-w-0 flex-1">
+                <Link href={profileLink} onClick={(e) => { if (!isClickable) e.preventDefault(); e.stopPropagation(); }} className={!isClickable ? 'pointer-events-none' : ''}>
+                    <Avatar>
+                        {!prayerRequest.isAnonymous && <AvatarImage src={prayerRequest.authorAvatarUrl} />}
+                        <AvatarFallback>
+                            {prayerRequest.isAnonymous ? <User className="h-4 w-4" /> : `${prayerRequest.authorFirstName?.charAt(0) || ''}${prayerRequest.authorLastName?.charAt(0) || ''}`}
+                        </AvatarFallback>
+                    </Avatar>
+                </Link>
+                <div className="min-w-0 flex-1">
+                     <Link href={profileLink} onClick={(e) => { if (!isClickable) e.preventDefault(); e.stopPropagation(); }} className={!isClickable ? 'pointer-events-none' : ''}>
+                        <CardTitle className={cn("text-base font-semibold", isClickable && "hover:underline")}>{authorName}</CardTitle>
+                    </Link>
+                    <CardDescription className="text-xs mt-1">
+                        {displayDate}
+                    </CardDescription>
+                </div>
+            </div>
+            <Badge variant="outline" className="shrink-0">{prayerRequest.category}</Badge>
         </CardHeader>
         <CardContent className="flex-grow py-0">
           <p className="text-sm text-muted-foreground whitespace-pre-wrap line-clamp-4">
@@ -117,6 +131,10 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({ prayerRequest
           </p>
         </CardContent>
         <CardFooter className="pt-4 flex justify-between items-center mt-auto">
+          <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+              <Users className="h-4 w-4" />
+              <span>{prayerCount}</span>
+          </div>
           {isAuthor ? (
             <Button variant="destructive" size="sm" disabled={isDeleting} onClick={() => setIsDeleteDialogOpen(true)}>
                 {isDeleting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Trash2 className="mr-2 h-4 w-4" />}
