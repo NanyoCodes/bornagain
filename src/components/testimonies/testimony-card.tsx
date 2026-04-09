@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import Image from "next/image";
 import {
   Card,
@@ -40,7 +39,6 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, dist
   const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
-  const router = useRouter();
 
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -97,7 +95,6 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, dist
     updateDoc(testimonyRef, updatePayload)
         .then(() => {
             toast({ title: "Thank You!", description: "Thank you for your support." });
-            router.refresh();
         })
         .catch(() => {
             const permissionError = new FirestorePermissionError({
@@ -168,7 +165,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, dist
           </div>
           <Badge variant="secondary" className="shrink-0">{testimony.category}</Badge>
         </CardHeader>
-        <CardContent className="flex-grow pt-6 space-y-4">
+        <CardContent className="flex-grow pt-0">
           <p className="text-sm text-muted-foreground whitespace-pre-wrap line-clamp-4">
             {testimony.content}
           </p>
@@ -218,7 +215,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, dist
             </DialogDescription>
           </DialogHeader>
           <div className="max-h-[70vh] overflow-y-auto pr-2">
-            <EditTestimonyForm testimony={testimony} onTestimonyUpdated={() => { setIsEditDialogOpen(false); router.refresh(); }} />
+            <EditTestimonyForm testimony={testimony} onTestimonyUpdated={() => setIsEditDialogOpen(false)} />
           </div>
         </DialogContent>
       </Dialog>
