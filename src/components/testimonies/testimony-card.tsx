@@ -1,4 +1,3 @@
-
 "use client";
 
 import * as React from "react";
@@ -182,8 +181,13 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, dist
           )}
           <div className="ml-auto flex items-center gap-2">
             <Button onClick={handleSupport} disabled={hasSupported || isSupporting || !user || isAuthor} variant="ghost" size="sm" className="flex items-center gap-1.5 text-muted-foreground">
-              {isSupporting ? <Loader2 className="h-4 w-4 animate-spin" /> : <HandHeart className={cn("h-4 w-4", hasSupported && "fill-rose-500 text-rose-500")} />}
-              {supporters.length > 0 && <span>{supporters.length}</span>}
+              {isSupporting ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <HandHeart className={cn("h-4 w-4", hasSupported && "fill-rose-500 text-rose-500")} />
+              )}
+              <span>{hasSupported ? 'Amen!' : 'Thank you Jesus'}</span>
+              {supporters.length > 0 && <span className="text-xs">({supporters.length})</span>}
             </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
