@@ -6,12 +6,13 @@ import { useDoc, useFirestore, useUser, useCollection } from '@/firebase';
 import type { UserProfile, Testimony, Campaign } from '@/lib/types';
 import { doc, collection, query, where, orderBy } from 'firebase/firestore';
 import { Loader2, Mail, MapPin, ArrowLeft, Edit } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from '@/components/ui/button';
 import { TestimonyCard } from '@/components/testimonies/testimony-card';
 import { CampaignCard } from '@/components/campaigns/campaign-card';
 import Link from 'next/link';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 export default function UserProfileClient({ userId }: { userId: string }) {
   const firestore = useFirestore();
@@ -131,27 +132,49 @@ export default function UserProfileClient({ userId }: { userId: string }) {
         </CardContent>
       </Card>
       
-      {testimonies && testimonies.length > 0 && (
-        <div className="space-y-4">
-          <h2 className="text-xl font-semibold">Testimonies by {firstName}</h2>
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {testimonies.map(testimony => (
-              <TestimonyCard key={testimony.id} testimony={testimony} distance={null} />
-            ))}
-          </div>
-        </div>
-      )}
-      
-      {activeCampaigns && activeCampaigns.length > 0 && (
-        <div className="space-y-4">
-          <h2 className="text-xl font-semibold">Campaigns Organized by {firstName}</h2>
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {activeCampaigns.map(campaign => (
-              <CampaignCard key={campaign.id} campaign={campaign} userId={currentUser?.uid} userProfile={userProfile} distance={null} />
-            ))}
-          </div>
-        </div>
-      )}
+      <div className="space-y-4">
+        <h2 className="text-2xl font-bold tracking-tight">User Activity</h2>
+        <Accordion type="multiple" defaultValue={['testimonies', 'campaigns']} className="w-full space-y-4">
+          {testimonies && testimonies.length > 0 && (
+            <Card>
+              <AccordionItem value="testimonies" className="border-b-0">
+                  <AccordionTrigger className="w-full p-6 hover:no-underline">
+                      <h3 className="text-lg font-semibold">Testimonies ({testimonies.length})</h3>
+                  </AccordionTrigger>
+                  <AccordionContent className="px-6 pb-6 pt-0">
+                      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                          {testimonies.map(testimony => (
+                          <TestimonyCard key={testimony.id} testimony={testimony} distance={null} />
+                          ))}
+                      </div>
+                  </AccordionContent>
+              </AccordionItem>
+            </Card>
+          )}
+          
+          {activeCampaigns && activeCampaigns.length > 0 && (
+            <Card>
+              <AccordionItem value="campaigns" className="border-b-0">
+                  <AccordionTrigger className="w-full p-6 hover:no-underline">
+                      <h3 className="text-lg font-semibold">Campaigns Organized ({activeCampaigns.length})</h3>
+                  </AccordionTrigger>
+                  <AccordionContent className="px-6 pb-6 pt-0">
+                      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                          {activeCampaigns.map(campaign => (
+                          <CampaignCard key={campaign.id} campaign={campaign} userId={currentUser?.uid} userProfile={userProfile} distance={null} />
+                          ))}
+                      </div>
+                  </AccordionContent>
+              </AccordionItem>
+            </Card>
+          )}
+        </Accordion>
+        {(!testimonies || testimonies.length === 0) && (!activeCampaigns || activeCampaigns.length === 0) && (
+            <div className="text-center py-8 text-muted-foreground border-2 border-dashed rounded-lg">
+                This user has no public activity yet.
+            </div>
+        )}
+      </div>
     </div>
   );
 }
