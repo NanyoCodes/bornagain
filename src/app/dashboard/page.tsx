@@ -712,17 +712,19 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-8">
-      <div className="space-y-2">
-        <h1 className="text-xl sm:text-2xl font-bold tracking-tight font-headline">
-          {welcomeMessage?.text.replace('{name}', displayName) ||
-            `Welcome back, ${displayName}!`}
-        </h1>
-        <p className="text-muted-foreground uppercase">
-          {welcomeMessage
-            ? welcomeMessage.verse
-            : ''}
-        </p>
-      </div>
+      <Card>
+        <CardContent className="p-6">
+          <h1 className="text-xl sm:text-2xl font-bold tracking-tight font-headline">
+            {welcomeMessage?.text.replace('{name}', displayName) ||
+              `Welcome back, ${displayName}!`}
+          </h1>
+          <p className="text-muted-foreground uppercase mt-2">
+            {welcomeMessage
+              ? welcomeMessage.verse
+              : ''}
+          </p>
+        </CardContent>
+      </Card>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-8">
