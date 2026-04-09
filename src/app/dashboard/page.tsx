@@ -878,15 +878,15 @@ export default function DashboardPage() {
             />
           )}
 
-          <Card>
+          <Card className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground">
             <CardHeader>
               <CardTitle>Share Your Story</CardTitle>
-              <CardDescription>
+              <CardDescription className="text-primary-foreground/80">
                 Encourage the body of Christ with what God has done.
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Button asChild variant="secondary" className="w-full">
+              <Button asChild variant="secondary" className="w-full bg-white/20 text-white hover:bg-white/30">
                 <Link href="/dashboard/testimonies">
                   Share Testimony <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
