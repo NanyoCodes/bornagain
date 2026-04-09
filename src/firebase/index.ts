@@ -1,6 +1,7 @@
+
 import { initializeApp, getApps } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
+import { initializeFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 import { firebaseConfig } from './config';
 
@@ -24,9 +25,14 @@ function initializeFirebase() {
 
   try {
     const auth = getAuth(app);
-    const firestore = getFirestore(app);
+    // Using initializeFirestore with settings to enable long polling.
+    // This can help bypass network issues that block WebSockets.
+    const firestore = initializeFirestore(app, {
+      experimentalForceLongPolling: true,
+      useFetchStreams: false,
+    });
     const storage = getStorage(app);
-    console.log("Firebase services (Auth, Firestore, Storage) obtained successfully.");
+    console.log("Firebase services (Auth, Firestore, Storage) obtained successfully with long polling enabled.");
     return { app, auth, firestore, storage };
   } catch (e) {
      console.error("Failed to get Firebase services:", e);
