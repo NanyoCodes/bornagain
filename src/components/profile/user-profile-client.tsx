@@ -28,9 +28,20 @@ export default function UserProfileClient({ userId }: { userId: string }) {
 
   const testimoniesQuery = useMemo(() => {
     if (!userId || !firestore) return null;
-    return query(collection(firestore, 'testimonies'), where('authorId', '==', userId), orderBy('createdAt', 'desc'));
+    // Remove orderBy to avoid needing a composite index. We'll sort client-side.
+    return query(collection(firestore, 'testimonies'), where('authorId', '==', userId));
   }, [userId, firestore]);
-  const { data: testimonies, loading: testimoniesLoading } = useCollection<Testimony>(testimoniesQuery);
+  const { data: userTestimonies, loading: testimoniesLoading } = useCollection<Testimony>(testimoniesQuery);
+
+  const testimonies = useMemo(() => {
+    if (!userTestimonies) return [];
+    // Sort client-side
+    return [...userTestimonies].sort((a, b) => {
+        const timeA = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : 0;
+        const timeB = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : 0;
+        return timeB - timeA;
+      });
+  }, [userTestimonies]);
   
   const campaignsQuery = useMemo(() => {
     if (!userId || !firestore) return null;
