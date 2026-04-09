@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import Link from "next/link";
-import Image from "next/image";
 import {
   Card,
   CardContent,
@@ -47,6 +46,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, dist
 
   const isAuthor = user?.uid === testimony.authorId;
   const authorFullName = `${testimony.authorFirstName} ${testimony.authorLastName}`;
+  const profileLink = isAuthor ? "/dashboard/profile" : `/dashboard/profile/${testimony.authorId}`;
 
   const supporters = testimony.supporters || [];
   const hasSupported = useMemo(() => user ? supporters.includes(user.uid) : false, [user, supporters]);
@@ -61,7 +61,6 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, dist
   
   const locationString = [testimony.authorLocation?.city, testimony.authorLocation?.country].filter(Boolean).join(', ');
 
-
   const handleDelete = async () => {
     if (!isAuthor || !firestore || !user) return;
     setIsDeleting(true);
@@ -72,8 +71,6 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, dist
         title: "Testimony Deleted",
         description: "Your testimony has been successfully removed.",
       });
-      // The component will unmount, so no need to set state here.
-      // The dialog will close as part of the unmount.
     } catch (error) {
       const permissionError = new FirestorePermissionError({
         path: testimonyRef.path,
@@ -81,7 +78,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, dist
       }, user);
       errorEmitter.emit('permission-error', permissionError);
       setIsDeleting(false);
-      setIsDeleteDialogOpen(false); // Close dialog on error
+      setIsDeleteDialogOpen(false);
     }
   };
 
@@ -93,9 +90,6 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, dist
     const updatePayload = { supporters: arrayUnion(user.uid) };
 
     updateDoc(testimonyRef, updatePayload)
-        .then(() => {
-            toast({ title: "Thank You!", description: "Thank you for your support." });
-        })
         .catch(() => {
             const permissionError = new FirestorePermissionError({
               path: testimonyRef.path,
@@ -135,10 +129,10 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, dist
 
   return (
     <>
-      <Card className="flex flex-col h-full overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300">
+      <Card className="flex flex-col h-full overflow-hidden shadow-md">
         <CardHeader className="flex flex-row items-start justify-between gap-4">
           <div className="flex flex-1 items-center gap-3 min-w-0">
-            <div>
+            <Link href={profileLink} onClick={(e) => e.stopPropagation()}>
               <Avatar className="h-10 w-10 border shrink-0">
                 <AvatarImage
                   src={testimony.authorAvatarUrl ?? undefined}
@@ -146,10 +140,12 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, dist
                 />
                 <AvatarFallback>{testimony.authorFirstName?.charAt(0) ?? 'A'}{testimony.authorLastName?.charAt(0) ?? ''}</AvatarFallback>
               </Avatar>
-            </div>
+            </Link>
             <div className="min-w-0">
               <div>
-                  <CardTitle className="text-base font-semibold">{authorFullName}</CardTitle>
+                <Link href={profileLink} onClick={(e) => e.stopPropagation()}>
+                  <CardTitle className="text-base font-semibold hover:underline">{authorFullName}</CardTitle>
+                </Link>
               </div>
               <CardDescription className="text-xs mt-1">
                   {displayDate}
