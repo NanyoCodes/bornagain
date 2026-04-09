@@ -140,7 +140,7 @@ export default function CampaignsPage() {
   const campaignsQuery = useMemo(() => {
     if (!firestore || !user) return null;
     return query(collection(firestore, 'campaigns'), orderBy('createdAt', 'desc'));
-  }, [firestore, user]);
+  }, [firestore, user?.uid]);
   const { data: campaigns, loading: campaignsLoading } = useCollection<Campaign>(campaignsQuery);
 
   const joinedCampaignsQuery = useMemo(() => {
@@ -378,3 +378,5 @@ export default function CampaignsPage() {
     </div>
   );
 }
+
+    

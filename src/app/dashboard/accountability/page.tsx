@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useMemo, useState } from 'react';
@@ -50,7 +51,7 @@ export default function AccountabilityPage() {
   const userDocRef = useMemo(() => {
     if (!user?.uid) return null;
     return doc(firestore, 'users', user.uid);
-  }, [user, firestore]);
+  }, [user?.uid, firestore]);
 
   const { data: userProfile, loading: loadingProfile } = useDoc<UserProfile>(userDocRef);
 
@@ -320,3 +321,5 @@ export default function AccountabilityPage() {
     </div>
   );
 }
+
+    

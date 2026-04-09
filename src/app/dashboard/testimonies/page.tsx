@@ -46,20 +46,20 @@ export default function TestimoniesPage() {
   const firestore = useFirestore();
   const { user, loading: userLoading } = useUser();
   
-  const userDocRef = useMemo(() => user ? doc(firestore, 'users', user.uid) : null, [user, firestore]);
+  const userDocRef = useMemo(() => user ? doc(firestore, 'users', user.uid) : null, [user?.uid, firestore]);
   const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userDocRef);
 
   const testimoniesQuery = useMemo(() => {
     if (!firestore || !user) return null;
     return query(collection(firestore, "testimonies"), orderBy("createdAt", "desc"));
-  }, [firestore, user]);
+  }, [firestore, user?.uid]);
 
   const { data: testimonies, loading: loadingTestimonies } = useCollection<Testimony>(testimoniesQuery);
 
   const prayerRequestsQuery = useMemo(() => {
     if (!firestore || !user) return null;
     return query(collection(firestore, "prayerRequests"), orderBy("createdAt", "desc"));
-  }, [firestore, user]);
+  }, [firestore, user?.uid]);
 
   const { data: prayerRequests, loading: loadingPrayers } = useCollection<PrayerRequest>(prayerRequestsQuery);
 
@@ -248,3 +248,5 @@ export default function TestimoniesPage() {
     </div>
   );
 }
+
+    
