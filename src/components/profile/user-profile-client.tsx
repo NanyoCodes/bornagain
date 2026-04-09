@@ -34,9 +34,23 @@ export default function UserProfileClient({ userId }: { userId: string }) {
   
   const campaignsQuery = useMemo(() => {
     if (!userId || !firestore) return null;
-    return query(collection(firestore, 'campaigns'), where('organizerId', '==', userId), where('status', '==', 'active'), orderBy('createdAt', 'desc'));
+    // Query only by organizerId to avoid composite index.
+    // Filtering and sorting will be done client-side.
+    return query(collection(firestore, 'campaigns'), where('organizerId', '==', userId));
   }, [userId, firestore]);
-  const { data: campaigns, loading: campaignsLoading } = useCollection<Campaign>(campaignsQuery);
+  const { data: allCampaigns, loading: campaignsLoading } = useCollection<Campaign>(campaignsQuery);
+
+  const activeCampaigns = useMemo(() => {
+    if (!allCampaigns) return [];
+    return allCampaigns
+      .filter(campaign => campaign.status === 'active')
+      .sort((a, b) => {
+        const timeA = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : 0;
+        const timeB = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : 0;
+        return timeB - timeA;
+      });
+  }, [allCampaigns]);
+
 
   const loading = profileLoading || testimoniesLoading || campaignsLoading || userLoading;
 
@@ -117,11 +131,11 @@ export default function UserProfileClient({ userId }: { userId: string }) {
         </div>
       )}
       
-      {campaigns && campaigns.length > 0 && (
+      {activeCampaigns && activeCampaigns.length > 0 && (
         <div className="space-y-4">
           <h2 className="text-xl font-semibold">Campaigns Organized by {firstName}</h2>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {campaigns.map(campaign => (
+            {activeCampaigns.map(campaign => (
               <CampaignCard key={campaign.id} campaign={campaign} userId={currentUser?.uid} userProfile={userProfile} distance={null} />
             ))}
           </div>
