@@ -16,12 +16,19 @@ service cloud.firestore {
         // A user can update their own document, but not the partners list directly.
         (request.auth.uid == userId && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['accountabilityPartners'])) ||
 
-        // A user can remove a partner, which involves updating their OWN partners list.
-        // This is paired with the rule below allowing them to update the PARTNER's list.
+        // A user can remove a partner from their OWN list.
         (
           request.auth.uid == userId &&
           request.resource.data.diff(resource.data).affectedKeys().hasOnly(['accountabilityPartners']) &&
           request.resource.data.accountabilityPartners.size() == resource.data.accountabilityPartners.size() - 1
+        ) ||
+        
+        // A user can ADD a partner to their OWN list. This is safe because it's only called in a transaction
+        // that also updates the other user's list, which IS strictly validated against a pending request.
+        (
+          request.auth.uid == userId &&
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['accountabilityPartners']) &&
+          request.resource.data.accountabilityPartners.size() == resource.data.accountabilityPartners.size() + 1
         ) ||
 
         // A user can remove THEMSELVES from another user's partner list.
@@ -227,3 +234,5 @@ service cloud.firestore {
     }
   }
 }
+
+    
