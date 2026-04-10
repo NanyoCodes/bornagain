@@ -30,6 +30,7 @@ import {
 export function AccountabilityRequests({ currentUserProfile }: { currentUserProfile: UserProfile }) {
     const { user } = useUser();
     const firestore = useFirestore();
+    const { toast } = useToast();
     const [isProcessing, setIsProcessing] = useState<string | null>(null);
 
     // Query for ALL requests involving the current user. This is more secure and efficient.
@@ -57,6 +58,15 @@ export function AccountabilityRequests({ currentUserProfile }: { currentUserProf
 
     const handleAccept = async (request: AccountabilityRequest) => {
         if (!user || !firestore) return;
+
+        if (!currentUserProfile.firstName || !currentUserProfile.lastName) {
+            toast({
+                variant: 'destructive',
+                title: 'Profile Incomplete',
+                description: 'Please complete your profile (first and last name) before accepting accountability requests.',
+            });
+            return;
+        }
         
         setIsProcessing(request.id);
         const batch = writeBatch(firestore);
