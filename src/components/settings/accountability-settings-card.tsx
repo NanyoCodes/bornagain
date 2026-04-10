@@ -10,7 +10,7 @@ import { AccountabilityRequests } from './accountability-requests';
 import { useCollection } from '@/firebase/firestore/use-collection';
 import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { query, collection, where, doc, writeBatch, deleteField, serverTimestamp } from 'firebase/firestore';
+import { query, collection, where, doc, writeBatch, deleteField, serverTimestamp, arrayRemove } from 'firebase/firestore';
 import Link from 'next/link';
 import { Button } from '../ui/button';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '../ui/alert-dialog';
@@ -19,6 +19,7 @@ import { Label } from '../ui/label';
 import { Textarea } from '../ui/textarea';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 
 
 export function AccountabilitySettingsCard({ userProfile, userId }: { userProfile: UserProfile; userId: string }) {
@@ -27,7 +28,7 @@ export function AccountabilitySettingsCard({ userProfile, userId }: { userProfil
   const router = useRouter();
   const { toast } = useToast();
   const [removalReason, setRemovalReason] = useState('');
-  const [isRemoving, setIsRemoving] = useState(false);
+  const [isRemoving, setIsRemoving] = useState<string | null>(null);
   
   const pendingRequestsQuery = useMemo(() => {
     if (!user) return null;
@@ -39,14 +40,12 @@ export function AccountabilitySettingsCard({ userProfile, userId }: { userProfil
   }, [user, firestore]);
 
   const { data: pendingRequests } = useCollection<AccountabilityRequest>(pendingRequestsQuery);
-
-  const hasPartner = !!userProfile.accountabilityPartnerId;
+  const partners = userProfile.accountabilityPartners || [];
+  const hasPartner = partners.length > 0;
   const hasPendingRequests = pendingRequests && pendingRequests.length > 0;
-  
-  const partnerFullName = [userProfile.accountabilityPartnerFirstName, userProfile.accountabilityPartnerLastName].filter(Boolean).join(' ');
 
-  const handleRemovePartner = async () => {
-    if (!user || !firestore || !userProfile.accountabilityPartnerId) {
+  const handleRemovePartner = async (partnerToRemove: { userId: string; firstName: string; lastName: string; photoURL?: string; }) => {
+    if (!user || !firestore || !userProfile.accountabilityPartners) {
         return;
     }
     if (!removalReason.trim()) {
@@ -57,29 +56,35 @@ export function AccountabilitySettingsCard({ userProfile, userId }: { userProfil
         });
         return;
     }
-    setIsRemoving(true);
+    setIsRemoving(partnerToRemove.userId);
     
     const batch = writeBatch(firestore);
-    const partnerId = userProfile.accountabilityPartnerId;
+    const partnerId = partnerToRemove.userId;
 
     // Delete the accepted request document
     const participantIds = [user.uid, partnerId].sort();
     const requestId = participantIds.join('_');
     const requestRef = doc(firestore, 'accountabilityRequests', requestId);
     batch.delete(requestRef);
-
-    const currentUserRef = doc(firestore, 'users', user.uid);
-    batch.update(currentUserRef, {
-        accountabilityPartnerId: deleteField(),
-        accountabilityPartnerFirstName: deleteField(),
-        accountabilityPartnerLastName: deleteField(),
-    });
+    
+    const myPartnerObject = userProfile.accountabilityPartners.find(p => p.userId === partnerId);
+    
+    if (myPartnerObject) {
+      const currentUserRef = doc(firestore, 'users', user.uid);
+      batch.update(currentUserRef, {
+          accountabilityPartners: arrayRemove(myPartnerObject),
+      });
+    }
 
     const partnerUserRef = doc(firestore, 'users', partnerId);
+    const myEntryInPartnersList = {
+        userId: user.uid,
+        firstName: userProfile.firstName,
+        lastName: userProfile.lastName,
+        photoURL: userProfile.photoURL || '',
+    };
     batch.update(partnerUserRef, {
-        accountabilityPartnerId: deleteField(),
-        accountabilityPartnerFirstName: deleteField(),
-        accountabilityPartnerLastName: deleteField(),
+        accountabilityPartners: arrayRemove(myEntryInPartnersList),
     });
     
     const notificationsCollectionRef = collection(firestore, 'users', partnerId, 'notifications');
@@ -107,7 +112,7 @@ export function AccountabilitySettingsCard({ userProfile, userId }: { userProfil
             errorEmitter.emit('permission-error', permissionError);
         })
         .finally(() => {
-            setIsRemoving(false);
+            setIsRemoving(null);
             setRemovalReason('');
         });
   };
@@ -119,7 +124,7 @@ export function AccountabilitySettingsCard({ userProfile, userId }: { userProfil
         <CardTitle className="flex items-center gap-2"><HeartHandshake className="h-5 w-5" /> Accountability Partner</CardTitle>
         <CardDescription>
           {hasPartner 
-            ? `Manage your partnership with ${partnerFullName}.`
+            ? `Manage your partnerships.`
             : "Manage requests or find a new accountability partner to help you stay on track."
           }
         </CardDescription>
@@ -127,47 +132,61 @@ export function AccountabilitySettingsCard({ userProfile, userId }: { userProfil
       <CardContent className="space-y-6">
         {hasPartner ? (
            <div className="space-y-4">
-            <AlertDialog>
-                <AlertDialogTrigger asChild>
-                    <Button variant="destructive" className="w-full sm:w-auto">
-                        <UserX className="mr-2 h-4 w-4" />
-                        Remove Partner
-                    </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                    <AlertDialogHeader>
-                        <AlertDialogTitle>Remove {partnerFullName}?</AlertDialogTitle>
-                        <AlertDialogDescription>
-                            Are you sure you want to end this accountability partnership? This action cannot be undone. Please provide a reason below.
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <div className="grid gap-4 py-4">
-                        <div className="grid gap-2">
-                            <Label htmlFor="removal-reason">Reason for Removal</Label>
-                            <Textarea
-                                id="removal-reason"
-                                value={removalReason}
-                                onChange={(e) => setRemovalReason(e.target.value)}
-                                placeholder="e.g., We've decided to find different partners."
-                            />
+                <h3 className="text-sm font-semibold text-muted-foreground">YOUR PARTNERS</h3>
+                {partners.map(partner => (
+                    <div key={partner.userId} className="flex items-center justify-between p-3 rounded-lg border">
+                        <div className="flex items-center gap-3">
+                            <Avatar>
+                                <AvatarImage src={partner.photoURL} />
+                                <AvatarFallback>{partner.firstName?.charAt(0)}{partner.lastName?.charAt(0)}</AvatarFallback>
+                            </Avatar>
+                            <div>
+                                <p className="font-semibold text-sm">{partner.firstName} {partner.lastName}</p>
+                            </div>
                         </div>
+                        <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                                <Button variant="destructive" size="sm" disabled={!!isRemoving}>
+                                    {isRemoving === partner.userId ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <UserX className="mr-2 h-4 w-4" />}
+                                    Remove
+                                </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                                <AlertDialogHeader>
+                                    <AlertDialogTitle>Remove {partner.firstName}?</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                        Are you sure you want to end this accountability partnership? This action cannot be undone. Please provide a reason below.
+                                    </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <div className="grid gap-4 py-4">
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="removal-reason">Reason for Removal</Label>
+                                        <Textarea
+                                            id="removal-reason"
+                                            value={removalReason}
+                                            onChange={(e) => setRemovalReason(e.target.value)}
+                                            placeholder="e.g., We've decided to find different partners."
+                                        />
+                                    </div>
+                                </div>
+                                <AlertDialogFooter>
+                                    <AlertDialogCancel disabled={isRemoving === partner.userId}>Cancel</AlertDialogCancel>
+                                    <AlertDialogAction onClick={() => handleRemovePartner(partner)} disabled={isRemoving === partner.userId || !removalReason.trim()} className="bg-destructive hover:bg-destructive/90">
+                                        {isRemoving === partner.userId ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                                        Confirm Removal
+                                    </AlertDialogAction>
+                                </AlertDialogFooter>
+                            </AlertDialogContent>
+                        </AlertDialog>
                     </div>
-                    <AlertDialogFooter>
-                        <AlertDialogCancel disabled={isRemoving}>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleRemovePartner} disabled={isRemoving || !removalReason.trim()}>
-                            {isRemoving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                            Confirm Removal
-                        </AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
+                ))}
           </div>
-        ) : (
-            <div className="space-y-4">
-                <AccountabilityRequests currentUserProfile={userProfile} />
-                {!hasPendingRequests && <UserSearch currentUserProfile={userProfile} />}
-            </div>
-        )}
+        ) : null}
+
+        <div className="space-y-4">
+            <AccountabilityRequests currentUserProfile={userProfile} />
+            {!hasPendingRequests && <UserSearch currentUserProfile={userProfile} />}
+        </div>
       </CardContent>
     </Card>
   );

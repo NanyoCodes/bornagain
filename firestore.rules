@@ -13,43 +13,43 @@ service cloud.firestore {
 
       // Update permissions are more complex.
       allow update: if request.auth != null && (
-        // A user can update their own document.
-        request.auth.uid == userId ||
-        // A user can remove themselves as an accountability partner from another user's document.
+        // A user can update their own document, but not the partners list directly.
+        (request.auth.uid == userId && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['accountabilityPartners'])) ||
+
+        // A user can remove a partner, which involves updating their OWN partners list.
+        // This is paired with the rule below allowing them to update the PARTNER's list.
         (
-          resource.data.accountabilityPartnerId == request.auth.uid &&
-          !('accountabilityPartnerId' in request.resource.data) &&
-          request.resource.data.diff(resource.data).affectedKeys().hasOnly([
-            'accountabilityPartnerId',
-            'accountabilityPartnerFirstName',
-            'accountabilityPartnerLastName'
-          ])
+          request.auth.uid == userId &&
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['accountabilityPartners']) &&
+          request.resource.data.accountabilityPartners.size() == resource.data.accountabilityPartners.size() - 1
         ) ||
-        // A user (acceptor) can update another user's (sender's) doc when accepting a request
+
+        // A user can remove THEMSELVES from another user's partner list.
         (
-          userId != request.auth.uid &&
-          // The update must only set the accountability partner fields
-          request.resource.data.diff(resource.data).affectedKeys().hasOnly([
-            'accountabilityPartnerId',
-            'accountabilityPartnerFirstName',
-            'accountabilityPartnerLastName'
-          ]) &&
-          // The partner ID must be the acceptor's ID
-          request.resource.data.accountabilityPartnerId == request.auth.uid &&
-          // A pending request from the sender to the acceptor must exist.
-          // The request ID is built from the two UIDs, sorted. We must check both permutations
-          // since we can't sort strings in rules.
+          request.auth.uid != userId &&
+          request.auth.uid in resource.data.accountabilityPartners.map(p => p.userId) &&
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['accountabilityPartners']) &&
+          request.resource.data.accountabilityPartners.size() == resource.data.accountabilityPartners.size() - 1 &&
+          !(request.auth.uid in request.resource.data.accountabilityPartners.map(p => p.userId))
+        ) ||
+        
+        // A user (acceptor) can be ADDED to another user's (sender's) partner list.
+        (
+          request.auth.uid != userId &&
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['accountabilityPartners']) &&
+          request.resource.data.accountabilityPartners.size() == resource.data.accountabilityPartners.size() + 1 &&
+          // Check that acceptor is now in the list. This relies on client providing correct partner object.
+          request.auth.uid in request.resource.data.accountabilityPartners.map(p => p.userId) &&
+          // A pending request from the sender (userId) to the acceptor (request.auth.uid) must exist.
           (
             (
                 exists(/databases/$(database)/documents/accountabilityRequests/$(userId + '_' + request.auth.uid)) &&
                 get(/databases/$(database)/documents/accountabilityRequests/$(userId + '_' + request.auth.uid)).data.status == 'pending' &&
-                get(/databases/$(database)/documents/accountabilityRequests/$(userId + '_' + request.auth.uid)).data.toUserId == request.auth.uid &&
-                get(/databases/$(database)/documents/accountabilityRequests/$(userId + '_' + request.auth.uid)).data.fromUserId == userId
+                get(/databases/$(database)/documents/accountabilityRequests/$(userId + '_' + request.auth.uid)).data.toUserId == request.auth.uid
             ) || (
                 exists(/databases/$(database)/documents/accountabilityRequests/$(request.auth.uid + '_' + userId)) &&
                 get(/databases/$(database)/documents/accountabilityRequests/$(request.auth.uid + '_' + userId)).data.status == 'pending' &&
-                get(/databases/$(database)/documents/accountabilityRequests/$(request.auth.uid + '_' + userId)).data.toUserId == request.auth.uid &&
-                get(/databases/$(database)/documents/accountabilityRequests/$(request.auth.uid + '_' + userId)).data.fromUserId == userId
+                get(/databases/$(database)/documents/accountabilityRequests/$(request.auth.uid + '_' + userId)).data.toUserId == request.auth.uid
             )
           )
         )
@@ -72,12 +72,9 @@ service cloud.firestore {
         allow get, list: if request.auth != null && (
             request.auth.uid == userId ||
             (
-                exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
-                get(/databases/$(database)/documents/users/$(request.auth.uid)).data.accountabilityPartnerId == userId
-            ) ||
-            (
+                // Check if the requester is listed in the user's partners array.
                 exists(/databases/$(database)/documents/users/$(userId)) &&
-                get(/databases/$(database)/documents/users/$(userId)).data.accountabilityPartnerId == request.auth.uid
+                request.auth.uid in get(/databases/$(database)/documents/users/$(userId)).data.accountabilityPartners.map(p => p.userId)
             )
         );
         // Only the user can write to their own discipline history.

@@ -58,9 +58,12 @@ export type UserProfile = {
     newCampaignsInArea?: boolean;
     weeklyDigest?: boolean;
   };
-  accountabilityPartnerId?: string;
-  accountabilityPartnerFirstName?: string;
-  accountabilityPartnerLastName?: string;
+  accountabilityPartners?: {
+    userId: string;
+    firstName: string;
+    lastName: string;
+    photoURL?: string;
+  }[];
   lastChurchAttended?: string;
   churchInfo?: {
     name?: string;

@@ -4,7 +4,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useFirestore, useUser } from '@/firebase';
-import { collection, query, where, doc, writeBatch, deleteDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, query, where, doc, writeBatch, deleteDoc, serverTimestamp, arrayUnion } from 'firebase/firestore';
 import type { AccountabilityRequest, UserProfile } from '@/lib/types';
 import { useCollection } from '@/firebase/firestore/use-collection';
 import { Loader2, Check, X, Hourglass, Trash2, UserPlus, CheckCircle2, XCircle } from 'lucide-react';
@@ -45,27 +45,31 @@ export function AccountabilityRequests({ currentUserProfile }: { currentUserProf
     , [allRequests]);
 
     const handleAccept = async (request: AccountabilityRequest) => {
-        if (!user || !firestore || currentUserProfile.accountabilityPartnerId) {
-            toast({ variant: 'destructive', title: 'Cannot Accept', description: 'You already have a partner. Please remove your current partner first.' });
-            return;
-        }
+        if (!user || !firestore) return;
+        
         setIsProcessing(request.id);
         const batch = writeBatch(firestore);
 
         // Update my user doc (the acceptor)
         const myRef = doc(firestore, 'users', user.uid);
         batch.update(myRef, {
-            accountabilityPartnerId: request.fromUserId,
-            accountabilityPartnerFirstName: request.fromUserFirstName,
-            accountabilityPartnerLastName: request.fromUserLastName,
+            accountabilityPartners: arrayUnion({
+                userId: request.fromUserId,
+                firstName: request.fromUserFirstName,
+                lastName: request.fromUserLastName,
+                photoURL: request.fromUserPhotoURL || '',
+            })
         });
 
         // Update sender's user doc
         const senderRef = doc(firestore, 'users', request.fromUserId);
         batch.update(senderRef, {
-            accountabilityPartnerId: user.uid,
-            accountabilityPartnerFirstName: currentUserProfile.firstName,
-            accountabilityPartnerLastName: currentUserProfile.lastName,
+             accountabilityPartners: arrayUnion({
+                userId: user.uid,
+                firstName: currentUserProfile.firstName,
+                lastName: currentUserProfile.lastName,
+                photoURL: currentUserProfile.photoURL || '',
+            })
         });
 
         // Update the request status

@@ -127,17 +127,32 @@
             }
           }
         },
-        "accountabilityPartnerId": {
-          "type": "string",
-          "description": "The UID of the user's accountability partner."
-        },
-        "accountabilityPartnerFirstName": {
-          "type": "string",
-          "description": "The first name of the user's accountability partner."
-        },
-        "accountabilityPartnerLastName": {
-          "type": "string",
-          "description": "The last name of the user's accountability partner."
+        "accountabilityPartners": {
+            "type": "array",
+            "description": "A list of the user's accountability partners.",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "userId": {
+                        "type": "string",
+                        "description": "The UID of the accountability partner."
+                    },
+                    "firstName": {
+                        "type": "string",
+                        "description": "The first name of the accountability partner."
+                    },
+                    "lastName": {
+                        "type": "string",
+                        "description": "The last name of the accountability partner."
+                    },
+                    "photoURL": {
+                        "type": "string",
+                        "format": "uri",
+                        "description": "The photo URL of the accountability partner."
+                    }
+                },
+                "required": ["userId", "firstName"]
+            }
         },
         "lastChurchAttended": {
           "type": "string",

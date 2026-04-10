@@ -35,9 +35,11 @@ export function UserSearch({ currentUserProfile }: { currentUserProfile: UserPro
     }, [user, firestore]);
     const { data: existingRequests } = useCollection<AccountabilityRequest>(requestsQuery);
     
-    const existingRequestUserIds = useMemo(() => 
-        new Set(existingRequests?.flatMap(r => r.participantIds).filter(id => id !== user?.uid))
-    , [existingRequests, user]);
+    const disabledUserIds = useMemo(() => {
+        const partnerIds = new Set(currentUserProfile.accountabilityPartners?.map(p => p.userId));
+        const requestedIds = new Set(existingRequests?.flatMap(r => r.participantIds).filter(id => id !== user?.uid));
+        return new Set([...partnerIds, ...requestedIds]);
+    }, [currentUserProfile.accountabilityPartners, existingRequests, user]);
 
 
     useEffect(() => {
@@ -81,7 +83,7 @@ export function UserSearch({ currentUserProfile }: { currentUserProfile: UserPro
                 const processSnapshot = (snapshot: any) => {
                     snapshot.docs.forEach((doc: any) => {
                         const docData = doc.data();
-                        if (doc.id !== user.uid && !docData.accountabilityPartnerId) {
+                        if (doc.id !== user.uid) {
                             usersMap.set(doc.id, { id: doc.id, ...docData } as UserProfile);
                         }
                     });
@@ -105,15 +107,6 @@ export function UserSearch({ currentUserProfile }: { currentUserProfile: UserPro
     
     const handleSendRequest = (targetUser: UserProfile) => {
         if (!user || !firestore || !currentUserProfile) return;
-        
-        if (currentUserProfile.accountabilityPartnerId) {
-            toast({ variant: 'destructive', title: 'Error', description: 'You already have an accountability partner. Please remove your current partner before sending a new request.' });
-            return;
-        }
-        if (targetUser.accountabilityPartnerId) {
-            toast({ variant: 'destructive', title: 'Error', description: `${targetUser.firstName} ${targetUser.lastName} already has an accountability partner.` });
-            return;
-        }
         
         setIsProcessingRequest(targetUser.id);
 
@@ -190,10 +183,14 @@ export function UserSearch({ currentUserProfile }: { currentUserProfile: UserPro
                 )}
                 <div className="space-y-2">
                 {searchResults.map(foundUser => {
-                    const isDisabled = isProcessingRequest === foundUser.id || existingRequestUserIds.has(foundUser.id);
+                    const isDisabled = isProcessingRequest === foundUser.id || disabledUserIds.has(foundUser.id);
                     let buttonText = 'Request';
-                    if (isProcessingRequest === foundUser.id) buttonText = 'Sending...';
-                    if (existingRequestUserIds.has(foundUser.id)) buttonText = 'Request Sent';
+                    if (isProcessingRequest === foundUser.id) {
+                        buttonText = 'Sending...';
+                    } else if (disabledUserIds.has(foundUser.id)) {
+                        buttonText = currentUserProfile.accountabilityPartners?.some(p => p.userId === foundUser.id) ? 'Partner' : 'Request Sent';
+                    }
+
 
                     return (
                         <div key={foundUser.id} className="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between p-2 rounded-md hover:bg-muted/50">

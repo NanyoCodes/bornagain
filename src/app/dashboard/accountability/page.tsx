@@ -32,21 +32,11 @@ import { Textarea } from '@/components/ui/textarea';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 
-const disciplines = [
-  { id: 'pray', label: 'Pray' },
-  { id: 'read_bible', label: 'Read Bible' },
-  { id: 'attend_church', label: 'Attend Church' },
-];
-
 export default function AccountabilityPage() {
   const { user, loading: userLoading } = useUser();
   const firestore = useFirestore();
-  const { toast } = useToast();
   const router = useRouter();
-  const [isNudging, setIsNudging] = useState(false);
-  const [isChatLoading, setIsChatLoading] = useState(false);
-  const [date, setDate] = useState<Date | undefined>(new Date());
-  const [prayerMessage, setPrayerMessage] = useState('');
+  const [isChatLoading, setIsChatLoading] = useState<string | null>(null);
 
   const userDocRef = useMemo(() => {
     if (!user?.uid) return null;
@@ -55,81 +45,12 @@ export default function AccountabilityPage() {
 
   const { data: userProfile, loading: loadingProfile } = useDoc<UserProfile>(userDocRef);
 
-  const partnerId = userProfile?.accountabilityPartnerId;
-
-  const partnerDocRef = useMemo(() => {
-    if (!partnerId) return null;
-    return doc(firestore, 'users', partnerId);
-  }, [partnerId, firestore]);
-
-  const { data: partnerProfile, loading: loadingPartner } = useDoc<UserProfile>(partnerDocRef);
-
-  const partnerHistoryQuery = useMemo(() => {
-    if (!partnerId) return null;
-    return query(
-      collection(firestore, 'users', partnerId, 'disciplineHistory'),
-      orderBy('date', 'desc'),
-      limit(90) // Fetch last 90 days for history
-    );
-  }, [partnerId, firestore]);
-
-  const { data: partnerHistory, loading: loadingHistory } = useCollection<DailyDisciplineLog>(partnerHistoryQuery);
-  
-  const completedOnSelectedDate = useMemo(() => {
-    if (!date || !partnerHistory) return [];
-    const historyForDay = partnerHistory.find(h => isSameDay(h.date.toDate(), date));
-    return historyForDay?.completed || [];
-  }, [date, partnerHistory]);
-
-
-  const handleNudge = () => {
-    if (!user || !firestore || !partnerId || !userProfile || !partnerProfile) return;
-    
-    setIsNudging(true);
-    
-    const notificationsCollectionRef = collection(firestore, 'users', partnerId, 'notifications');
-    const message = prayerMessage.trim() ? prayerMessage.trim() : 'Keep up with your daily disciplines! You can do it.';
-    const title = prayerMessage.trim() 
-      ? `${userProfile.firstName} sent you a prayer!` 
-      : `${userProfile.firstName} sent you a nudge!`;
-    
-    const notificationData = {
-      userId: partnerId,
-      type: 'accountability_nudge' as const,
-      title: title,
-      message: message,
-      link: '/dashboard/accountability',
-      isRead: false,
-      createdAt: serverTimestamp()
-    };
-
-    addDoc(notificationsCollectionRef, notificationData)
-      .then(() => {
-        toast({
-          title: 'Encouragement Sent!',
-          description: `You've sent a message to ${partnerProfile.firstName} ${partnerProfile.lastName}.`
-        });
-        setPrayerMessage('');
-      })
-      .catch((serverError) => {
-        const permissionError = new FirestorePermissionError({
-          path: notificationsCollectionRef.path,
-          operation: 'create',
-          requestResourceData: notificationData
-        });
-        errorEmitter.emit('permission-error', permissionError);
-      })
-      .finally(() => {
-        setIsNudging(false);
-      });
-  };
-  
-  const handleInitiateChat = async () => {
-    if (!user || !firestore || !partnerId || !userProfile || !partnerProfile) return;
-    setIsChatLoading(true);
+  const handleInitiateChat = async (partner: { userId: string, firstName: string, lastName: string, photoURL?: string }) => {
+    if (!user || !firestore || !userProfile) return;
+    setIsChatLoading(partner.userId);
 
     try {
-        const participantIds = [user.uid, partnerId].sort();
+        const participantIds = [user.uid, partner.userId].sort();
         const chatsRef = collection(firestore, 'chats');
         
         const q = query(
@@ -155,11 +76,11 @@ export default function AccountabilityPage() {
                         photoURL: userProfile.photoURL || '',
                         email: userProfile.email || '',
                     },
-                    [partnerId]: {
-                        firstName: partnerProfile.firstName,
-                        lastName: partnerProfile.lastName,
-                        photoURL: partnerProfile.photoURL || '', 
-                        email: partnerProfile.email || '',
+                    [partner.userId]: {
+                        firstName: partner.firstName,
+                        lastName: partner.lastName,
+                        photoURL: partner.photoURL || '', 
+                        email: '', // Not available here, but that's ok
                     },
                 },
                 lastUpdatedAt: serverTimestamp(),
@@ -176,25 +97,27 @@ export default function AccountabilityPage() {
           path: `chats`,
           operation: 'create',
           requestResourceData: { action: 'initiate partner chat', userId: user.uid }
-        });
+        }, user);
         errorEmitter.emit('permission-error', permissionError);
     } finally {
-        setIsChatLoading(false);
+        setIsChatLoading(null);
     }
   };
 
-  const isLoading = userLoading || loadingProfile || (partnerId && (loadingPartner || loadingHistory));
+  const isLoading = userLoading || loadingProfile;
 
   if (isLoading) {
     return (
       <div className="flex h-full w-full flex-col items-center justify-center">
         <Loader2 className="h-12 w-12 animate-spin text-primary" />
-        <p className="mt-4 text-muted-foreground">Loading accountability partner...</p>
+        <p className="mt-4 text-muted-foreground">Loading accountability...</p>
       </div>
     );
   }
+  
+  const partners = userProfile?.accountabilityPartners || [];
 
-  if (!partnerId || !partnerProfile) {
+  if (partners.length === 0) {
     return (
       <div className="space-y-8 max-w-3xl mx-auto">
         <div className="flex h-full w-full flex-col items-center justify-center text-center rounded-lg border-2 border-dashed p-6 sm:p-12">
@@ -209,117 +132,34 @@ export default function AccountabilityPage() {
     );
   }
   
-  const partnerFullName = [partnerProfile.firstName, partnerProfile.lastName].filter(Boolean).join(' ');
-
   return (
     <div className="space-y-8 max-w-3xl mx-auto">
-      <div className="flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left">
-          <Avatar className="h-24 w-24 sm:h-20 sm:w-20 border">
-            <AvatarImage src={partnerProfile.photoURL ?? undefined} alt={partnerFullName} />
-            <AvatarFallback className="text-4xl sm:text-3xl">{partnerProfile.firstName?.charAt(0)}</AvatarFallback>
-          </Avatar>
-        <div>
-          <p className="text-sm text-muted-foreground">Your Accountability Partner</p>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight font-headline">{partnerFullName}</h1>
+        <div className="space-y-2">
+            <h1 className="text-3xl font-bold tracking-tight font-headline">Your Accountability Partners</h1>
+            <p className="text-muted-foreground">Your partners in faith. Encourage them and keep each other on track.</p>
         </div>
-      </div>
-      <Card>
-        <CardHeader>
-          <CardTitle>Partner's Discipline History</CardTitle>
-          <CardDescription>
-            Select a date to view {partnerFullName}'s progress.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="grid gap-8 md:grid-cols-2">
-            <div className="space-y-2 self-start">
-                <Label htmlFor="history-date">Select a Date</Label>
-                <Input
-                    id="history-date"
-                    type="date"
-                    value={date ? format(date, 'yyyy-MM-dd') : ''}
-                    onChange={(e) => {
-                        if (e.target.value) {
-                            const [year, month, day] = e.target.value.split('-').map(Number);
-                            setDate(new Date(year, month - 1, day));
-                        } else {
-                            setDate(undefined);
-                        }
-                    }}
-                    max={format(new Date(), 'yyyy-MM-dd')}
-                    className="w-full"
-                />
-            </div>
-
-            <div className="space-y-4">
-                <p className="font-semibold text-center">{date ? format(date, 'PPP') : 'Select a day'}</p>
-                <div className="grid grid-cols-2 gap-4">
-                    {disciplines.map(discipline => (
-                        <div
-                        key={discipline.id}
-                        className={cn(
-                            "flex items-center gap-3 rounded-lg border p-3 transition-colors",
-                            completedOnSelectedDate.includes(discipline.id)
-                            ? "bg-green-100 dark:bg-green-900/20 border-green-500/20"
-                            : "bg-muted/50"
-                        )}
-                        >
-                          <div className="h-8 w-8 shrink-0 flex items-center justify-center">
-                              {completedOnSelectedDate.includes(discipline.id) ? (
-                                  <CheckCircle2 className="h-7 w-7 text-green-600" />
-                              ) : (
-                                  <div className="h-7 w-7 rounded-full bg-muted border-2" />
-                              )}
-                          </div>
-                          <span className="font-medium text-sm">{discipline.label}</span>
+        <div className="space-y-4">
+            {partners.map(partner => (
+                <Card key={partner.userId}>
+                    <CardHeader className="flex flex-row items-center justify-between">
+                         <div className="flex items-center gap-4">
+                            <Avatar className="h-12 w-12 border">
+                                <AvatarImage src={partner.photoURL} />
+                                <AvatarFallback>{partner.firstName?.charAt(0)}</AvatarFallback>
+                            </Avatar>
+                            <div>
+                                <h2 className="text-xl font-semibold">{partner.firstName} {partner.lastName}</h2>
+                            </div>
                         </div>
-                    ))}
-                </div>
-                {date && completedOnSelectedDate.length === 0 && (
-                    <p className="text-sm text-center text-muted-foreground pt-4">No disciplines completed on this day.</p>
-                )}
-            </div>
-        </CardContent>
-        <CardFooter className="flex flex-wrap gap-2">
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-               <Button variant="outline" disabled={isNudging} className="w-full sm:w-auto">
-                {isNudging ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
-                Send Encouragement
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-                <AlertDialogHeader>
-                    <AlertDialogTitle>Send Encouragement</AlertDialogTitle>
-                    <AlertDialogDescription>
-                        Send a prayer or an encouraging message to {partnerFullName}.
-                    </AlertDialogDescription>
-                </AlertDialogHeader>
-                <div className="py-4">
-                  <Textarea 
-                    placeholder="Type your prayer or message here... (optional)"
-                    value={prayerMessage}
-                    onChange={(e) => setPrayerMessage(e.target.value)}
-                  />
-                </div>
-                <AlertDialogFooter>
-                    <AlertDialogCancel onClick={() => setPrayerMessage('')}>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleNudge} disabled={isNudging}>
-                        {isNudging && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                        Send
-                    </AlertDialogAction>
-                </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-          <Button onClick={handleInitiateChat} disabled={isChatLoading} className="w-full sm:w-auto">
-              {isChatLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <MessagesSquare className="mr-2 h-4 w-4" />}
-              Chat with Partner
-          </Button>
-        </CardFooter>
-      </Card>
-
+                        <Button onClick={() => handleInitiateChat(partner)} disabled={isChatLoading === partner.userId}>
+                            {isChatLoading === partner.userId ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <MessagesSquare className="mr-2 h-4 w-4" />}
+                            Chat
+                        </Button>
+                    </CardHeader>
+                </Card>
+            ))}
+        </div>
       {userProfile && user && <AccountabilitySettingsCard userProfile={userProfile} userId={user.uid} />}
     </div>
   );
 }
-
-    
