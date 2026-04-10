@@ -15,6 +15,17 @@ import { format, isToday } from 'date-fns';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { safeToDate } from '@/lib/utils';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 export function AccountabilityRequests({ currentUserProfile }: { currentUserProfile: UserProfile }) {
     const { user } = useUser();
@@ -217,16 +228,34 @@ export function AccountabilityRequests({ currentUserProfile }: { currentUserProf
                                     {isProcessing === req.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <X className="h-4 w-4" />}
                                     <span className="sr-only">Decline</span>
                                 </Button>
-                                <Button
-                                    size="icon"
-                                    variant="outline"
-                                    onClick={() => handleAccept(req)}
-                                    disabled={isProcessing === req.id}
-                                    className="h-8 w-8 text-primary"
-                                >
-                                    {isProcessing === req.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
-                                    <span className="sr-only">Accept</span>
-                                </Button>
+                                <AlertDialog>
+                                    <AlertDialogTrigger asChild>
+                                        <Button
+                                            size="icon"
+                                            variant="outline"
+                                            disabled={isProcessing === req.id}
+                                            className="h-8 w-8 text-primary"
+                                        >
+                                            {isProcessing === req.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
+                                            <span className="sr-only">Accept</span>
+                                        </Button>
+                                    </AlertDialogTrigger>
+                                    <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                            <AlertDialogTitle>Accept Request?</AlertDialogTitle>
+                                            <AlertDialogDescription>
+                                                Are you sure you want to become accountability partners with {req.fromUserFirstName} {req.fromUserLastName}?
+                                            </AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <AlertDialogFooter>
+                                            <AlertDialogCancel disabled={isProcessing === req.id}>Cancel</AlertDialogCancel>
+                                            <AlertDialogAction onClick={() => handleAccept(req)} disabled={isProcessing === req.id}>
+                                                {isProcessing === req.id ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                                                Confirm
+                                            </AlertDialogAction>
+                                        </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                </AlertDialog>
                             </div>
                         </div>
                     )})}
