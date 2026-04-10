@@ -8,7 +8,7 @@ import type { UserProfile } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Loader2, HeartHandshake, MessagesSquare, MoreVertical, UserX, User, CheckCircle2, XCircle } from 'lucide-react';
+import { Loader2, HeartHandshake, MessagesSquare, MoreVertical, UserX, User, CheckCircle2, XCircle, Calendar as CalendarIcon } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import {
@@ -35,20 +35,23 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { format } from 'date-fns';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
+import { cn } from '@/lib/utils';
 
-function PartnerDisciplineStatus({ partnerId }: { partnerId: string }) {
+function PartnerDisciplineStatus({ partnerId, date }: { partnerId: string; date: Date }) {
     const firestore = useFirestore();
 
-    const todayStr = useMemo(() => format(new Date(), 'yyyy-MM-dd'), []);
+    const dateStr = useMemo(() => format(date, 'yyyy-MM-dd'), [date]);
     
     const disciplineDocRef = useMemo(() => {
         if (!firestore) return null;
-        return doc(firestore, 'users', partnerId, 'disciplineHistory', todayStr);
-    }, [firestore, partnerId, todayStr]);
+        return doc(firestore, 'users', partnerId, 'disciplineHistory', dateStr);
+    }, [firestore, partnerId, dateStr]);
 
     const { data: partnerDiscipline, loading } = useDoc<{ completed: string[] }>(disciplineDocRef);
 
-    const completedToday = useMemo(() => {
+    const completedOnDate = useMemo(() => {
         return partnerDiscipline?.completed || [];
     }, [partnerDiscipline]);
 
@@ -62,16 +65,20 @@ function PartnerDisciplineStatus({ partnerId }: { partnerId: string }) {
         return <div className="flex justify-around items-center h-10"><Loader2 className="h-4 w-4 animate-spin text-muted-foreground" /></div>;
     }
     
+    if (!partnerDiscipline || partnerDiscipline.completed.length === 0) {
+        return <div className="text-center text-xs text-muted-foreground py-2 h-10 flex items-center justify-center">No disciplines logged for this day.</div>
+    }
+
     return (
-        <div className="flex justify-around items-center">
+        <div className="flex justify-around items-center h-10">
             {disciplines.map(d => (
                 <div key={d.id} className="flex flex-col items-center gap-1 text-xs text-center">
-                    {completedToday.includes(d.id) ? (
+                    {completedOnDate.includes(d.id) ? (
                         <CheckCircle2 className="h-5 w-5 text-green-500" />
                     ) : (
                         <XCircle className="h-5 w-5 text-muted-foreground/50" />
                     )}
-                    <span className={completedToday.includes(d.id) ? 'font-semibold text-foreground' : 'text-muted-foreground'}>{d.label}</span>
+                    <span className={completedOnDate.includes(d.id) ? 'font-semibold text-foreground' : 'text-muted-foreground'}>{d.label}</span>
                 </div>
             ))}
         </div>
@@ -87,6 +94,7 @@ export default function AccountabilityPage() {
   const [isChatLoading, setIsChatLoading] = useState<string | null>(null);
   const [isRemoving, setIsRemoving] = useState<string | null>(null);
   const [removalReason, setRemovalReason] = useState('');
+  const [partnerDates, setPartnerDates] = useState<Record<string, Date>>({});
 
   const userDocRef = useMemo(() => {
     if (!user?.uid) return null;
@@ -331,9 +339,41 @@ export default function AccountabilityPage() {
                         </div>
                     </CardHeader>
                     <CardContent className="px-6 pb-4">
-                        <div className="mt-2 pt-4 border-t">
-                            <h4 className="text-sm font-semibold text-muted-foreground mb-3 text-center">Today's Disciplines</h4>
-                            <PartnerDisciplineStatus partnerId={partner.userId} />
+                        <div className="mt-2 pt-4 border-t space-y-4">
+                            <div className="flex justify-between items-center flex-wrap gap-2">
+                                <h4 className="text-sm font-semibold text-muted-foreground">Discipline Status</h4>
+                                <Popover>
+                                    <PopoverTrigger asChild>
+                                        <Button
+                                            variant={"outline"}
+                                            className={cn(
+                                            "w-[240px] justify-start text-left font-normal",
+                                            !partnerDates[partner.userId] && "text-muted-foreground"
+                                            )}
+                                        >
+                                            <CalendarIcon className="mr-2 h-4 w-4" />
+                                            {partnerDates[partner.userId] ? format(partnerDates[partner.userId], "PPP") : <span>{format(new Date(), "PPP")} (Today)</span>}
+                                        </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-auto p-0">
+                                        <Calendar
+                                            mode="single"
+                                            selected={partnerDates[partner.userId]}
+                                            onSelect={(date) => {
+                                                if (date) {
+                                                    setPartnerDates(prev => ({...prev, [partner.userId]: date}))
+                                                }
+                                            }}
+                                            disabled={(date) => date > new Date() || date < new Date("2000-01-01")}
+                                            initialFocus
+                                        />
+                                    </PopoverContent>
+                                </Popover>
+                            </div>
+                            <PartnerDisciplineStatus 
+                                partnerId={partner.userId} 
+                                date={partnerDates[partner.userId] || new Date()}
+                            />
                         </div>
                     </CardContent>
                 </Card>
