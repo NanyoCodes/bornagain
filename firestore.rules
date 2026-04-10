@@ -63,6 +63,15 @@ service cloud.firestore {
                 get(/databases/$(database)/documents/accountabilityRequests/$(request.auth.uid + '_' + userId)).data.toUserId == request.auth.uid
             )
           )
+        ) ||
+        
+        // A user can remove themselves from a partner's list.
+        (
+            request.auth.uid != userId &&
+            arePartners(request.auth.uid, userId) &&
+            'accountabilityPartners' in resource.data &&
+            request.resource.data.diff(resource.data).affectedKeys().hasOnly(['accountabilityPartners']) &&
+            request.resource.data.accountabilityPartners.size() == resource.data.accountabilityPartners.size() - 1
         )
       );
 
