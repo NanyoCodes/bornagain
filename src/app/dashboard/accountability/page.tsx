@@ -2,13 +2,14 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import Link from 'next/link';
 import { useUser, useFirestore, useDoc } from '@/firebase';
 import { doc, collection, addDoc, serverTimestamp, query, getDocs, where, writeBatch, arrayRemove, deleteDoc } from 'firebase/firestore';
 import type { UserProfile } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Loader2, HeartHandshake, MessagesSquare, MoreVertical, UserX } from 'lucide-react';
+import { Loader2, HeartHandshake, MessagesSquare, MoreVertical, UserX, User } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import {
@@ -31,6 +32,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
@@ -241,6 +243,10 @@ export default function AccountabilityPage() {
                                     </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end">
+                                    <DropdownMenuItem onSelect={() => router.push(`/dashboard/profile/${partner.userId}`)}>
+                                      <User className="mr-2 h-4 w-4" /> View Profile
+                                    </DropdownMenuItem>
+                                    <DropdownMenuSeparator />
                                     <AlertDialog>
                                         <AlertDialogTrigger asChild>
                                             <DropdownMenuItem

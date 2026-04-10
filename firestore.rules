@@ -30,15 +30,6 @@ service cloud.firestore {
           request.resource.data.diff(resource.data).affectedKeys().hasOnly(['accountabilityPartners']) &&
           request.resource.data.accountabilityPartners.size() == ('accountabilityPartners' in resource.data ? resource.data.accountabilityPartners.size() : 0) + 1
         ) ||
-
-        // A user can remove THEMSELVES from another user's partner list.
-        (
-          request.auth.uid != userId &&
-          request.auth.uid in resource.data.accountabilityPartners.map(p => p.userId) &&
-          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['accountabilityPartners']) &&
-          request.resource.data.accountabilityPartners.size() == resource.data.accountabilityPartners.size() - 1 &&
-          !(request.auth.uid in request.resource.data.accountabilityPartners.map(p => p.userId))
-        ) ||
         
         // A user (acceptor) can be ADDED to another user's (sender's) partner list.
         (
