@@ -102,7 +102,6 @@ function ParticipantsDialog({ campaign, children }: { campaign: Campaign; childr
                         <div key={p.id} className="p-3 border rounded-lg space-y-2">
                           <div className="flex items-center justify-between">
                             <span className='font-medium'>{p.firstName} {p.lastName}</span>
-                            {p.email && <span className="text-sm text-muted-foreground">{p.email}</span>}
                           </div>
                           {p.joinReason && (
                             <blockquote className="border-l-2 pl-3 text-sm italic text-muted-foreground">

@@ -201,7 +201,6 @@ export function UserSearch({ currentUserProfile }: { currentUserProfile: UserPro
                                 </Avatar>
                                 <div className="min-w-0">
                                     <p className="font-semibold text-sm truncate">{foundUser.firstName} {foundUser.lastName}</p>
-                                    <p className="text-xs text-muted-foreground truncate">{foundUser.email}</p>
                                 </div>
                             </div>
                             <Button
