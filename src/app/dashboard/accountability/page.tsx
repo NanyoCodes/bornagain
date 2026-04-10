@@ -230,7 +230,7 @@ export default function AccountabilityPage() {
         await batch.commit();
 
         toast({ title: 'Partner Removed', description: 'Your accountability partnership has been ended.' });
-        router.refresh();
+        setRemovalTarget(null);
     } catch (error) {
         console.error("Error removing partner:", error);
         const permissionError = new FirestorePermissionError({
@@ -241,7 +241,6 @@ export default function AccountabilityPage() {
     } finally {
         setIsRemoving(null);
         setRemovalReason('');
-        setRemovalTarget(null);
     }
   };
 
@@ -311,10 +310,7 @@ export default function AccountabilityPage() {
                                     <AlertDialog
                                       open={removalTarget?.userId === partner.userId}
                                       onOpenChange={(isOpen) => {
-                                        if (isOpen) {
-                                          setRemovalTarget(partner);
-                                          setRemovalReason('');
-                                        } else {
+                                        if (!isOpen) {
                                           setRemovalTarget(null);
                                         }
                                       }}
@@ -322,7 +318,11 @@ export default function AccountabilityPage() {
                                         <AlertDialogTrigger asChild>
                                             <DropdownMenuItem
                                                 className="text-destructive focus:text-destructive"
-                                                onSelect={(e) => e.preventDefault()}
+                                                onSelect={(e) => {
+                                                    e.preventDefault();
+                                                    setRemovalTarget(partner);
+                                                    setRemovalReason('');
+                                                }}
                                             >
                                                 <UserX className="mr-2 h-4 w-4" /> Remove Partner
                                             </DropdownMenuItem>
