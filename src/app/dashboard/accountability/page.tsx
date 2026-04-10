@@ -91,8 +91,11 @@ export default function AccountabilityPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [isChatLoading, setIsChatLoading] = useState<string | null>(null);
+  
   const [isRemoving, setIsRemoving] = useState<string | null>(null);
+  const [removalTarget, setRemovalTarget] = useState<(typeof partners)[0] | null>(null);
   const [removalReason, setRemovalReason] = useState('');
+
   const [partnerDates, setPartnerDates] = useState<Record<string, Date>>({});
 
   const userDocRef = useMemo(() => {
@@ -131,13 +134,11 @@ export default function AccountabilityPage() {
                         firstName: userProfile.firstName || '',
                         lastName: userProfile.lastName || '',
                         photoURL: userProfile.photoURL || '',
-                        email: userProfile.email || '',
                     },
                     [partner.userId]: {
                         firstName: partner.firstName,
                         lastName: partner.lastName,
                         photoURL: partner.photoURL || '', 
-                        email: '', // Not available here, but that's ok
                     },
                 },
                 lastUpdatedAt: serverTimestamp(),
@@ -161,8 +162,8 @@ export default function AccountabilityPage() {
     }
   };
 
-  const handleRemovePartner = async (partnerToRemove: { userId: string; firstName: string; lastName: string; photoURL?: string; }) => {
-    if (!user || !firestore || !userProfile?.accountabilityPartners) {
+  const handleRemovePartner = async () => {
+    if (!user || !firestore || !userProfile?.accountabilityPartners || !removalTarget) {
         return;
     }
     if (!removalReason.trim()) {
@@ -173,38 +174,45 @@ export default function AccountabilityPage() {
         });
         return;
     }
-    setIsRemoving(partnerToRemove.userId);
+    setIsRemoving(removalTarget.userId);
     
-    const partnerId = partnerToRemove.userId;
+    const partnerId = removalTarget.userId;
 
     try {
         const batch = writeBatch(firestore);
 
-        // Delete the accepted request document
-        const participantIds = [user.uid, partnerId].sort();
-        const requestId = participantIds.join('_');
+        const requestId = [user.uid, partnerId].sort().join('_');
         const requestRef = doc(firestore, 'accountabilityRequests', requestId);
-        batch.delete(requestRef);
         
-        const myPartnerObject = userProfile.accountabilityPartners.find(p => p.userId === partnerId);
-        
-        if (myPartnerObject) {
-          const currentUserRef = doc(firestore, 'users', user.uid);
-          batch.update(currentUserRef, {
-              accountabilityPartners: arrayRemove(myPartnerObject),
-          });
-        }
-
         const partnerUserRef = doc(firestore, 'users', partnerId);
         const partnerDoc = await getDoc(partnerUserRef);
+
         if (partnerDoc.exists()) {
-            const partnerProfile = partnerDoc.data() as UserProfile;
+             const partnerProfile = partnerDoc.data() as UserProfile;
             const myEntryInPartnersList = partnerProfile.accountabilityPartners?.find(p => p.userId === user.uid);
             if (myEntryInPartnersList) {
                 batch.update(partnerUserRef, {
                     accountabilityPartners: arrayRemove(myEntryInPartnersList),
                 });
             }
+        }
+
+        const myPartnerObject = userProfile.accountabilityPartners.find(p => p.userId === partnerId);
+        if (myPartnerObject) {
+          const currentUserRef = doc(firestore, 'users', user.uid);
+          batch.update(currentUserRef, {
+              accountabilityPartners: arrayRemove(myPartnerObject),
+          });
+        }
+        
+        // This might fail if the request was already cleaned up, which is fine.
+        try {
+            const requestDoc = await getDoc(requestRef);
+            if (requestDoc.exists()) {
+                batch.delete(requestRef);
+            }
+        } catch (e) {
+            console.warn("Could not find accountability request to delete, continuing.", e);
         }
         
         const notificationsCollectionRef = collection(firestore, 'users', partnerId, 'notifications');
@@ -233,6 +241,7 @@ export default function AccountabilityPage() {
     } finally {
         setIsRemoving(null);
         setRemovalReason('');
+        setRemovalTarget(null);
     }
   };
 
@@ -299,7 +308,17 @@ export default function AccountabilityPage() {
                                       <User className="mr-2 h-4 w-4" /> View Profile
                                     </DropdownMenuItem>
                                     <DropdownMenuSeparator />
-                                    <AlertDialog>
+                                    <AlertDialog
+                                      open={removalTarget?.userId === partner.userId}
+                                      onOpenChange={(isOpen) => {
+                                        if (isOpen) {
+                                          setRemovalTarget(partner);
+                                          setRemovalReason('');
+                                        } else {
+                                          setRemovalTarget(null);
+                                        }
+                                      }}
+                                    >
                                         <AlertDialogTrigger asChild>
                                             <DropdownMenuItem
                                                 className="text-destructive focus:text-destructive"
@@ -328,7 +347,7 @@ export default function AccountabilityPage() {
                                             </div>
                                             <AlertDialogFooter>
                                                 <AlertDialogCancel disabled={isRemoving === partner.userId}>Cancel</AlertDialogCancel>
-                                                <AlertDialogAction onClick={() => handleRemovePartner(partner)} disabled={isRemoving === partner.userId || !removalReason.trim()} className="bg-destructive hover:bg-destructive/90">
+                                                <AlertDialogAction onClick={handleRemovePartner} disabled={isRemoving === partner.userId || !removalReason.trim()} className="bg-destructive hover:bg-destructive/90">
                                                     {isRemoving === partner.userId ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                                                     Confirm Removal
                                                 </AlertDialogAction>
