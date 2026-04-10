@@ -8,7 +8,7 @@ import type { UserProfile } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Loader2, HeartHandshake, MessagesSquare, MoreVertical, UserX, User, CheckCircle2, XCircle, Calendar as CalendarIcon } from 'lucide-react';
+import { Loader2, HeartHandshake, MessagesSquare, MoreVertical, UserX, User, CheckCircle2, XCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import {
@@ -35,9 +35,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { format } from 'date-fns';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Calendar } from '@/components/ui/calendar';
-import { cn } from '@/lib/utils';
+import { Input } from '@/components/ui/input';
 
 function PartnerDisciplineStatus({ partnerId, date }: { partnerId: string; date: Date }) {
     const firestore = useFirestore();
@@ -342,33 +340,23 @@ export default function AccountabilityPage() {
                         <div className="mt-2 pt-4 border-t space-y-4">
                             <div className="flex justify-between items-center flex-wrap gap-2">
                                 <h4 className="text-sm font-semibold text-muted-foreground">Discipline Status</h4>
-                                <Popover>
-                                    <PopoverTrigger asChild>
-                                        <Button
-                                            variant={"outline"}
-                                            className={cn(
-                                            "w-[240px] justify-start text-left font-normal",
-                                            !partnerDates[partner.userId] && "text-muted-foreground"
-                                            )}
-                                        >
-                                            <CalendarIcon className="mr-2 h-4 w-4" />
-                                            {partnerDates[partner.userId] ? format(partnerDates[partner.userId], "PPP") : <span>{format(new Date(), "PPP")} (Today)</span>}
-                                        </Button>
-                                    </PopoverTrigger>
-                                    <PopoverContent className="w-auto p-0">
-                                        <Calendar
-                                            mode="single"
-                                            selected={partnerDates[partner.userId]}
-                                            onSelect={(date) => {
-                                                if (date) {
-                                                    setPartnerDates(prev => ({...prev, [partner.userId]: date}))
-                                                }
-                                            }}
-                                            disabled={(date) => date > new Date() || date < new Date("2000-01-01")}
-                                            initialFocus
-                                        />
-                                    </PopoverContent>
-                                </Popover>
+                                <Input
+                                    type="date"
+                                    className="w-full sm:w-[240px]"
+                                    value={format(partnerDates[partner.userId] || new Date(), 'yyyy-MM-dd')}
+                                    onChange={(e) => {
+                                        const value = e.target.value;
+                                        if (value) {
+                                            const [year, month, day] = value.split('-').map(Number);
+                                            setPartnerDates(prev => ({ ...prev, [partner.userId]: new Date(Date.UTC(year, month - 1, day)) }));
+                                        } else {
+                                            const newDates = {...partnerDates};
+                                            delete newDates[partner.userId];
+                                            setPartnerDates(newDates);
+                                        }
+                                    }}
+                                    max={format(new Date(), 'yyyy-MM-dd')}
+                                />
                             </div>
                             <PartnerDisciplineStatus 
                                 partnerId={partner.userId} 
