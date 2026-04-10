@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useMemo, useState } from 'react';
@@ -9,7 +8,7 @@ import type { UserProfile } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Loader2, HeartHandshake, MessagesSquare, MoreVertical, UserX, User } from 'lucide-react';
+import { Loader2, HeartHandshake, MessagesSquare, MoreVertical, UserX, User, CheckCircle2, XCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import {
@@ -35,6 +34,50 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { format } from 'date-fns';
+
+function PartnerDisciplineStatus({ partnerId }: { partnerId: string }) {
+    const firestore = useFirestore();
+
+    const todayStr = useMemo(() => format(new Date(), 'yyyy-MM-dd'), []);
+    
+    const disciplineDocRef = useMemo(() => {
+        if (!firestore) return null;
+        return doc(firestore, 'users', partnerId, 'disciplineHistory', todayStr);
+    }, [firestore, partnerId, todayStr]);
+
+    const { data: partnerDiscipline, loading } = useDoc<{ completed: string[] }>(disciplineDocRef);
+
+    const completedToday = useMemo(() => {
+        return partnerDiscipline?.completed || [];
+    }, [partnerDiscipline]);
+
+    const disciplines = [
+        { id: 'pray', label: 'Pray' },
+        { id: 'read_bible', label: 'Read Bible' },
+        { id: 'attend_church', label: 'Attend Church' },
+    ];
+    
+    if (loading) {
+        return <div className="flex justify-around items-center h-10"><Loader2 className="h-4 w-4 animate-spin text-muted-foreground" /></div>;
+    }
+    
+    return (
+        <div className="flex justify-around items-center">
+            {disciplines.map(d => (
+                <div key={d.id} className="flex flex-col items-center gap-1 text-xs text-center">
+                    {completedToday.includes(d.id) ? (
+                        <CheckCircle2 className="h-5 w-5 text-green-500" />
+                    ) : (
+                        <XCircle className="h-5 w-5 text-muted-foreground/50" />
+                    )}
+                    <span className={completedToday.includes(d.id) ? 'font-semibold text-foreground' : 'text-muted-foreground'}>{d.label}</span>
+                </div>
+            ))}
+        </div>
+    );
+}
+
 
 export default function AccountabilityPage() {
   const { user, loading: userLoading } = useUser();
@@ -287,6 +330,12 @@ export default function AccountabilityPage() {
                             </DropdownMenu>
                         </div>
                     </CardHeader>
+                    <CardContent className="px-6 pb-4">
+                        <div className="mt-2 pt-4 border-t">
+                            <h4 className="text-sm font-semibold text-muted-foreground mb-3 text-center">Today's Disciplines</h4>
+                            <PartnerDisciplineStatus partnerId={partner.userId} />
+                        </div>
+                    </CardContent>
                 </Card>
             ))}
         </div>
