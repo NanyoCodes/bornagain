@@ -21,7 +21,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { AccountabilitySettingsCard } from '@/components/settings/accountability-settings-card';
 import { Label } from '@/components/ui/label';
@@ -93,7 +92,7 @@ export default function AccountabilityPage() {
   const [isChatLoading, setIsChatLoading] = useState<string | null>(null);
   
   const [isRemoving, setIsRemoving] = useState<string | null>(null);
-  const [removalTarget, setRemovalTarget] = useState<(typeof partners)[0] | null>(null);
+  const [removalTarget, setRemovalTarget] = useState<UserProfile['accountabilityPartners'][0] | null>(null);
   const [removalReason, setRemovalReason] = useState('');
 
   const [partnerDates, setPartnerDates] = useState<Record<string, Date>>({});
@@ -205,7 +204,6 @@ export default function AccountabilityPage() {
           });
         }
         
-        // This might fail if the request was already cleaned up, which is fine.
         try {
             const requestDoc = await getDoc(requestRef);
             if (requestDoc.exists()) {
@@ -307,53 +305,14 @@ export default function AccountabilityPage() {
                                       <User className="mr-2 h-4 w-4" /> View Profile
                                     </DropdownMenuItem>
                                     <DropdownMenuSeparator />
-                                    <AlertDialog
-                                      open={removalTarget?.userId === partner.userId}
-                                      onOpenChange={(isOpen) => {
-                                        if (!isOpen) {
-                                          setRemovalTarget(null);
-                                        }
-                                      }}
+                                    <DropdownMenuItem
+                                        className="text-destructive focus:text-destructive"
+                                        onSelect={() => {
+                                            setRemovalTarget(partner);
+                                        }}
                                     >
-                                        <AlertDialogTrigger asChild>
-                                            <DropdownMenuItem
-                                                className="text-destructive focus:text-destructive"
-                                                onSelect={(e) => {
-                                                    e.preventDefault();
-                                                    setRemovalTarget(partner);
-                                                    setRemovalReason('');
-                                                }}
-                                            >
-                                                <UserX className="mr-2 h-4 w-4" /> Remove Partner
-                                            </DropdownMenuItem>
-                                        </AlertDialogTrigger>
-                                        <AlertDialogContent>
-                                            <AlertDialogHeader>
-                                                <AlertDialogTitle>Remove {partner.firstName}?</AlertDialogTitle>
-                                                <AlertDialogDescription>
-                                                    Are you sure you want to end this accountability partnership? This action cannot be undone. Please provide a reason below.
-                                                </AlertDialogDescription>
-                                            </AlertDialogHeader>
-                                            <div className="grid gap-4 py-4">
-                                                <div className="grid gap-2">
-                                                    <Label htmlFor="removal-reason">Reason for Removal</Label>
-                                                    <Textarea
-                                                        id="removal-reason"
-                                                        value={removalReason}
-                                                        onChange={(e) => setRemovalReason(e.target.value)}
-                                                        placeholder="e.g., We've decided to find different partners."
-                                                    />
-                                                </div>
-                                            </div>
-                                            <AlertDialogFooter>
-                                                <AlertDialogCancel disabled={isRemoving === partner.userId}>Cancel</AlertDialogCancel>
-                                                <AlertDialogAction onClick={handleRemovePartner} disabled={isRemoving === partner.userId || !removalReason.trim()} className="bg-destructive hover:bg-destructive/90">
-                                                    {isRemoving === partner.userId ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                                                    Confirm Removal
-                                                </AlertDialogAction>
-                                            </AlertDialogFooter>
-                                        </AlertDialogContent>
-                                    </AlertDialog>
+                                        <UserX className="mr-2 h-4 w-4" /> Remove Partner
+                                    </DropdownMenuItem>
                                 </DropdownMenuContent>
                             </DropdownMenu>
                         </div>
@@ -390,6 +349,45 @@ export default function AccountabilityPage() {
             ))}
         </div>
       {userProfile && user && <AccountabilitySettingsCard userProfile={userProfile} userId={user.uid} />}
+      
+      {removalTarget && (
+        <AlertDialog
+            open={!!removalTarget}
+            onOpenChange={(isOpen) => {
+                if (!isOpen) {
+                    setRemovalTarget(null);
+                    setRemovalReason('');
+                }
+            }}
+        >
+            <AlertDialogContent>
+                <AlertDialogHeader>
+                    <AlertDialogTitle>Remove {removalTarget.firstName}?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                        Are you sure you want to end this accountability partnership? This action cannot be undone. Please provide a reason below.
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+                <div className="grid gap-4 py-4">
+                    <div className="grid gap-2">
+                        <Label htmlFor="removal-reason">Reason for Removal</Label>
+                        <Textarea
+                            id="removal-reason"
+                            value={removalReason}
+                            onChange={(e) => setRemovalReason(e.target.value)}
+                            placeholder="e.g., We've decided to find different partners."
+                        />
+                    </div>
+                </div>
+                <AlertDialogFooter>
+                    <AlertDialogCancel disabled={isRemoving === removalTarget.userId}>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleRemovePartner} disabled={isRemoving === removalTarget.userId || !removalReason.trim()} className="bg-destructive hover:bg-destructive/90">
+                        {isRemoving === removalTarget.userId ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                        Confirm Removal
+                    </AlertDialogAction>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
+      )}
     </div>
   );
 }
