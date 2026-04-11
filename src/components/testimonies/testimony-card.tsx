@@ -72,14 +72,16 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, dist
         title: "Testimony Deleted",
         description: "Your testimony has been successfully removed.",
       });
+      setIsDeleteDialogOpen(false);
     } catch (error) {
       const permissionError = new FirestorePermissionError({
         path: testimonyRef.path,
         operation: 'delete',
       }, user);
       errorEmitter.emit('permission-error', permissionError);
-      setIsDeleting(false);
       setIsDeleteDialogOpen(false);
+    } finally {
+      setIsDeleting(false);
     }
   };
 

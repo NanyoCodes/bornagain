@@ -1,3 +1,4 @@
+
 "use client";
 
 import {
@@ -89,14 +90,16 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({ prayerRequest
             title: "Request Deleted",
             description: "Your prayer request has been removed.",
         });
+        setIsDeleteDialogOpen(false);
     } catch (error) {
         const permissionError = new FirestorePermissionError({
           path: requestRef.path,
           operation: 'delete',
         }, user);
         errorEmitter.emit('permission-error', permissionError);
-        setIsDeleting(false);
         setIsDeleteDialogOpen(false);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
