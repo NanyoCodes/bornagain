@@ -4,7 +4,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { PlusCircle, Newspaper, HandHeart } from "lucide-react";
+import { PlusCircle, Newspaper, HandHeart, Loader2 } from "lucide-react";
 import { CreateTestimonyForm } from "@/components/testimonies/create-testimony-form";
 import { TestimonyCard } from "@/components/testimonies/testimony-card";
 import { PrayerRequestCard } from "@/components/prayer/PrayerRequestCard";
@@ -18,6 +18,16 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
   Sheet,
   SheetContent,
   SheetDescription,
@@ -29,11 +39,15 @@ import type { Testimony, PrayerRequest, UserProfile } from "@/lib/types";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCollection, useFirestore, useUser, useDoc } from "@/firebase";
-import { collection, query, orderBy, doc } from "firebase/firestore";
+import { collection, query, orderBy, doc, deleteDoc } from "firebase/firestore";
 import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card";
 import { useSearch } from "@/context/search-context";
 import { Tabs, TabsList, TabsContent, TabsTrigger } from "@/components/ui/tabs";
 import { haversineDistance } from "@/lib/utils";
+import { useToast } from "@/hooks/use-toast";
+import { errorEmitter } from "@/firebase/error-emitter";
+import { FirestorePermissionError } from "@/firebase/errors";
+
 
 export default function TestimoniesPage() {
   const [isTestimonyDialogOpen, setIsTestimonyDialogOpen] = useState(false);
@@ -45,6 +59,7 @@ export default function TestimoniesPage() {
 
   const firestore = useFirestore();
   const { user, loading: userLoading } = useUser();
+  const { toast } = useToast();
   
   const userDocRef = useMemo(() => user ? doc(firestore, 'users', user.uid) : null, [user?.uid, firestore]);
   const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userDocRef);
@@ -64,6 +79,10 @@ export default function TestimoniesPage() {
   const { data: prayerRequests, loading: loadingPrayers } = useCollection<PrayerRequest>(prayerRequestsQuery);
 
   const loading = userLoading || profileLoading || loadingTestimonies || loadingPrayers;
+
+  // State for delete dialog
+  const [itemToDelete, setItemToDelete] = useState<{ type: 'testimony' | 'prayer', id: string, name: string } | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -142,6 +161,31 @@ export default function TestimoniesPage() {
     setIsPrayerDialogOpen(false);
   };
   
+  const handleConfirmDelete = async () => {
+    if (!itemToDelete || !firestore || !user) return;
+    setIsDeleting(true);
+    
+    const collectionName = itemToDelete.type === 'testimony' ? 'testimonies' : 'prayerRequests';
+    const docRef = doc(firestore, collectionName, itemToDelete.id);
+    
+    try {
+        await deleteDoc(docRef);
+        toast({
+            title: `${itemToDelete.type === 'testimony' ? 'Testimony' : 'Prayer Request'} Deleted`,
+            description: `Your ${itemToDelete.name} has been successfully removed.`,
+        });
+        setItemToDelete(null);
+    } catch (error) {
+        const permissionError = new FirestorePermissionError({
+          path: docRef.path,
+          operation: 'delete',
+        }, user);
+        errorEmitter.emit('permission-error', permissionError);
+    } finally {
+        setIsDeleting(false);
+    }
+  };
+
   const testimonyTrigger = (
     <Button>
       <PlusCircle className="h-4 w-4" />
@@ -210,7 +254,12 @@ export default function TestimoniesPage() {
                   ))
                 )}
                 {!loading && filteredTestimonies?.map((testimony) => (
-                  <TestimonyCard key={testimony.id} testimony={testimony} distance={(testimony as any)._distance} />
+                  <TestimonyCard 
+                    key={testimony.id} 
+                    testimony={testimony} 
+                    distance={(testimony as any)._distance}
+                    onDelete={() => setItemToDelete({ type: 'testimony', id: testimony.id, name: 'testimony' })}
+                  />
                 ))}
                  {!loading && filteredTestimonies?.length === 0 && (
                   <div className="col-span-full text-center py-12 flex flex-col items-center">
@@ -231,7 +280,11 @@ export default function TestimoniesPage() {
                   ))
                 )}
                 {!loading && filteredPrayerRequests?.map((req) => (
-                  <PrayerRequestCard key={req.id} prayerRequest={req} />
+                  <PrayerRequestCard 
+                    key={req.id} 
+                    prayerRequest={req}
+                    onDelete={() => setItemToDelete({ type: 'prayer', id: req.id, name: 'prayer request' })}
+                  />
                 ))}
                 {!loading && filteredPrayerRequests?.length === 0 && (
                   <div className="col-span-full text-center py-12 flex flex-col items-center">
@@ -245,8 +298,27 @@ export default function TestimoniesPage() {
               </div>
           </TabsContent>
       </Tabs>
+      
+      {itemToDelete && (
+        <AlertDialog open={!!itemToDelete} onOpenChange={() => setItemToDelete(null)}>
+            <AlertDialogContent>
+            <AlertDialogHeader>
+                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                This will permanently delete this {itemToDelete.name}. This action cannot be undone.
+                </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+                <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={handleConfirmDelete} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90">
+                {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Confirm Deletion
+                </AlertDialogAction>
+            </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
+      )}
+
     </div>
   );
 }
-
-    

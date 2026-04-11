@@ -19,22 +19,19 @@ import { useState, useMemo, memo } from "react";
 import { useRouter } from "next/navigation";
 import Link from 'next/link';
 import { useToast } from "@/hooks/use-toast";
-import { doc, updateDoc, arrayUnion, deleteDoc } from "firebase/firestore";
+import { doc, updateDoc, arrayUnion } from "firebase/firestore";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
-export const PrayerRequestCard = memo(function PrayerRequestCard({ prayerRequest }: { prayerRequest: PrayerRequest }) {
+export const PrayerRequestCard = memo(function PrayerRequestCard({ prayerRequest, onDelete }: { prayerRequest: PrayerRequest, onDelete: () => void }) {
   const { user } = useUser();
   const firestore = useFirestore();
   const router = useRouter();
   const { toast } = useToast();
   
   const [isPraying, setIsPraying] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   const isAuthor = user?.uid === prayerRequest.authorId;
   const usersWhoPrayed = prayerRequest.usersWhoPrayed || [];
@@ -78,31 +75,6 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({ prayerRequest
         });
   }
 
-  const handleDelete = async () => {
-    if (!isAuthor || !firestore || !user) return;
-    setIsDeleting(true);
-
-    const requestRef = doc(firestore, "prayerRequests", prayerRequest.id);
-    
-    try {
-        await deleteDoc(requestRef)
-        toast({
-            title: "Request Deleted",
-            description: "Your prayer request has been removed.",
-        });
-        setIsDeleteDialogOpen(false);
-    } catch (error) {
-        const permissionError = new FirestorePermissionError({
-          path: requestRef.path,
-          operation: 'delete',
-        }, user);
-        errorEmitter.emit('permission-error', permissionError);
-        setIsDeleteDialogOpen(false);
-    } finally {
-      setIsDeleting(false);
-    }
-  };
-
   return (
     <>
       <Card className="flex flex-col h-full overflow-hidden shadow-md">
@@ -138,8 +110,8 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({ prayerRequest
               <span>{prayerCount}</span>
           </div>
           {isAuthor ? (
-            <Button variant="destructive" size="sm" disabled={isDeleting} onClick={() => setIsDeleteDialogOpen(true)}>
-                {isDeleting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Trash2 className="mr-2 h-4 w-4" />}
+            <Button variant="destructive" size="sm" onClick={onDelete}>
+                <Trash2 className="mr-2 h-4 w-4" />
                 Delete
             </Button>
           ) : (
@@ -150,23 +122,6 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({ prayerRequest
           )}
         </CardFooter>
       </Card>
-      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This will permanently delete your prayer request.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90">
-              {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Confirm
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </>
   );
 });

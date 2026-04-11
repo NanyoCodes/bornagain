@@ -27,22 +27,19 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
-import { doc, deleteDoc, updateDoc, arrayUnion } from "firebase/firestore";
+import { doc, updateDoc, arrayUnion } from "firebase/firestore";
 import { EditTestimonyForm } from "./edit-testimony-form";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { cn } from "@/lib/utils";
 
-export const TestimonyCard = React.memo(function TestimonyCard({ testimony, distance }: { testimony: Testimony, distance: number | null }) {
+export const TestimonyCard = React.memo(function TestimonyCard({ testimony, distance, onDelete }: { testimony: Testimony, distance: number | null, onDelete: () => void }) {
   const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
 
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
   const [isSupporting, setIsSupporting] = useState(false);
 
   const isAuthor = user?.uid === testimony.authorId;
@@ -61,29 +58,6 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, dist
   }, [testimony.createdAt]);
   
   const locationString = [testimony.authorLocation?.city, testimony.authorLocation?.country].filter(Boolean).join(', ');
-
-  const handleDelete = async () => {
-    if (!isAuthor || !firestore || !user) return;
-    setIsDeleting(true);
-    const testimonyRef = doc(firestore, "testimonies", testimony.id);
-    try {
-      await deleteDoc(testimonyRef);
-      toast({
-        title: "Testimony Deleted",
-        description: "Your testimony has been successfully removed.",
-      });
-      setIsDeleteDialogOpen(false);
-    } catch (error) {
-      const permissionError = new FirestorePermissionError({
-        path: testimonyRef.path,
-        operation: 'delete',
-      }, user);
-      errorEmitter.emit('permission-error', permissionError);
-      setIsDeleteDialogOpen(false);
-    } finally {
-      setIsDeleting(false);
-    }
-  };
 
   const handleSupport = () => {
     if (!user || !firestore || hasSupported || isAuthor) return;
@@ -193,7 +167,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, dist
                 <DropdownMenuItem onSelect={() => handleShare('twitter')}>Share on Twitter (X)</DropdownMenuItem>
                 {isAuthor && <DropdownMenuSeparator />}
                 {isAuthor && <DropdownMenuItem onSelect={() => setIsEditDialogOpen(true)}><Edit className="mr-2 h-4 w-4" /><span>Edit</span></DropdownMenuItem>}
-                {isAuthor && <DropdownMenuItem onSelect={() => setIsDeleteDialogOpen(true)} className="text-destructive focus:text-destructive"><Trash2 className="mr-2 h-4 w-4" /><span>Delete</span></DropdownMenuItem>}
+                {isAuthor && <DropdownMenuItem onSelect={onDelete} className="text-destructive focus:text-destructive"><Trash2 className="mr-2 h-4 w-4" /><span>Delete</span></DropdownMenuItem>}
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
@@ -213,25 +187,6 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, dist
           </div>
         </DialogContent>
       </Dialog>
-
-      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete
-              your testimony.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90">
-              {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Continue
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </>
   );
 });
