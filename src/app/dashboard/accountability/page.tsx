@@ -1,7 +1,6 @@
-
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useUser, useFirestore, useDoc } from '@/firebase';
 import { doc, collection, addDoc, serverTimestamp, query, getDocs, where, writeBatch, arrayRemove, deleteDoc, getDoc } from 'firebase/firestore';
@@ -36,6 +35,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { format } from 'date-fns';
 import { Input } from '@/components/ui/input';
+import { useSearch } from '@/context/search-context';
 
 function PartnerDisciplineStatus({ partnerId, date }: { partnerId: string; date: Date }) {
     const firestore = useFirestore();
@@ -96,6 +96,16 @@ export default function AccountabilityPage() {
   const [removalReason, setRemovalReason] = useState('');
 
   const [partnerDates, setPartnerDates] = useState<Record<string, Date>>({});
+  const { searchTerm, setSearchPlaceholder, setIsSearchVisible, setSearchTerm } = useSearch();
+
+  useEffect(() => {
+    setIsSearchVisible(true);
+    setSearchPlaceholder("Search partners by name...");
+    return () => {
+      setIsSearchVisible(false);
+      setSearchTerm("");
+    };
+  }, [setIsSearchVisible, setSearchPlaceholder, setSearchTerm]);
 
   const userDocRef = useMemo(() => {
     if (!user?.uid) return null;
@@ -244,6 +254,18 @@ export default function AccountabilityPage() {
 
   const isLoading = userLoading || loadingProfile;
 
+  const partners = userProfile?.accountabilityPartners || [];
+
+  const filteredPartners = useMemo(() => {
+    if (!searchTerm) {
+      return partners;
+    }
+    const lowercasedTerm = searchTerm.toLowerCase();
+    return partners.filter(partner => 
+      `${partner.firstName} ${partner.lastName}`.toLowerCase().includes(lowercasedTerm)
+    );
+  }, [partners, searchTerm]);
+
   if (isLoading) {
     return (
       <div className="flex h-full w-full flex-col items-center justify-center">
@@ -253,8 +275,6 @@ export default function AccountabilityPage() {
     );
   }
   
-  const partners = userProfile?.accountabilityPartners || [];
-
   if (partners.length === 0) {
     return (
       <div className="space-y-8 max-w-3xl mx-auto">
@@ -277,7 +297,7 @@ export default function AccountabilityPage() {
             <p className="text-muted-foreground">Your partners in faith. Encourage them and keep each other on track.</p>
         </div>
         <div className="space-y-4">
-            {partners.map(partner => (
+            {filteredPartners.map(partner => (
                 <Card key={partner.userId}>
                     <CardHeader className="flex flex-row items-center justify-between">
                          <div className="flex items-center gap-4">
@@ -347,6 +367,11 @@ export default function AccountabilityPage() {
                     </CardContent>
                 </Card>
             ))}
+            {partners.length > 0 && filteredPartners.length === 0 && (
+                <div className="text-center py-10 text-muted-foreground border-2 border-dashed rounded-lg">
+                    No partners found matching "{searchTerm}".
+                </div>
+            )}
         </div>
       {userProfile && user && <AccountabilitySettingsCard userProfile={userProfile} userId={user.uid} />}
       
