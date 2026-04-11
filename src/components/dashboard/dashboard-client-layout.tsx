@@ -1,3 +1,4 @@
+
 'use client';
 
 import Image from "next/image";
@@ -36,9 +37,8 @@ import { useUser, useAuth, useFirestore, useCollection, useDoc } from "@/firebas
 import { signOut } from "firebase/auth";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { SearchProvider, useSearch } from "@/context/search-context";
-import { collection, doc, limit, orderBy, query, where, writeBatch, updateDoc, serverTimestamp } from "firebase/firestore";
+import { collection, doc, query, where, updateDoc, serverTimestamp } from "firebase/firestore";
 import type { Notification, UserProfile } from "@/lib/types";
-import { format, isToday } from "date-fns";
 import { WelcomePopup } from "@/components/auth/welcome-popup";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
@@ -64,62 +64,24 @@ function AppHeader({ unreadChatCount }: { unreadChatCount: number }) {
   const { searchTerm, setSearchTerm, searchPlaceholder, isSearchVisible } = useSearch();
   const [showMobileSearch, setShowMobileSearch] = useState(false);
 
-  // Query for other notifications (for the bell dropdown)
+  // Query for other notifications (for the bell icon badge)
   const otherNotificationTypes = ['campaign_join', 'accountability_nudge', 'accountability_request', 'request_accepted', 'request_declined', 'accountability_partner_removed'];
   const otherNotificationsQuery = useMemo(() => {
     if (!user?.uid || !firestore) return null;
     return query(
       collection(firestore, `users/${user.uid}/notifications`),
-      where('type', 'in', otherNotificationTypes)
-      // orderBy('createdAt', 'desc'), // This causes a composite index requirement.
-      // limit(5) // Limit must be done on client side after sorting.
+      where('type', 'in', otherNotificationTypes),
+      where('isRead', '==', false)
     );
   }, [user?.uid, firestore]);
 
-  const { data: otherNotificationsData, loading: notificationsLoading } = useCollection<Notification>(otherNotificationsQuery);
-
-  const otherNotifications = useMemo(() => {
-    if (!otherNotificationsData) return null;
-    return [...otherNotificationsData]
-      .sort((a, b) => {
-        const timeA = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : 0;
-        const timeB = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : 0;
-        return timeB - timeA;
-      })
-      .slice(0, 5); // Apply limit after sorting
-  }, [otherNotificationsData]);
-  
-  const unreadCount = useMemo(() => otherNotifications?.filter(n => !n.isRead).length ?? 0, [otherNotifications]);
-
+  const { data: unreadOtherNotifications } = useCollection<Notification>(otherNotificationsQuery);
+  const unreadCount = unreadOtherNotifications?.length ?? 0;
 
   const handleLogout = async () => {
     if (!auth) return;
     await signOut(auth);
     router.push("/login");
-  };
-  
-  const handleMarkAllAsRead = () => {
-    if (!user || !firestore || !otherNotifications) return;
-    
-    const unreadNotifications = otherNotifications.filter(n => !n.isRead);
-    if (unreadNotifications.length === 0) return;
-
-    const batch = writeBatch(firestore);
-    const notificationRefs: string[] = [];
-    unreadNotifications.forEach(notification => {
-        const notifRef = doc(firestore, `users/${user.uid}/notifications`, notification.id);
-        notificationRefs.push(notifRef.path);
-        batch.update(notifRef, { isRead: true });
-    });
-    
-    batch.commit().catch(() => {
-        const permissionError = new FirestorePermissionError({
-            path: `users/${user.uid}/notifications`,
-            operation: 'update',
-            requestResourceData: { isRead: true, updatedDocs: notificationRefs },
-        });
-        errorEmitter.emit('permission-error', permissionError);
-    });
   };
   
   if (!user) {
@@ -212,12 +174,7 @@ function AppHeader({ unreadChatCount }: { unreadChatCount: number }) {
             <span className="sr-only">Search</span>
           </Button>
         )}
-        <DropdownMenu onOpenChange={(open) => {
-          if (!open && unreadCount > 0) {
-            handleMarkAllAsRead();
-          }
-        }}>
-          <DropdownMenuTrigger asChild>
+        <Link href="/dashboard/notifications">
             <Button variant="ghost" size="icon" className="relative">
               <Bell className="h-5 w-5" />
               {unreadCount > 0 && (
@@ -225,44 +182,9 @@ function AppHeader({ unreadChatCount }: { unreadChatCount: number }) {
                   {unreadCount}
                 </div>
               )}
-              <span className="sr-only">Toggle notifications</span>
+              <span className="sr-only">View notifications</span>
             </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-80">
-            <DropdownMenuLabel>Notifications</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            {notificationsLoading ? (
-              <div className="p-4 text-sm text-center text-muted-foreground">
-                <Loader2 className="h-4 w-4 animate-spin mx-auto" />
-              </div>
-            ) : otherNotifications && otherNotifications.length > 0 ? (
-                otherNotifications.map((notification) => {
-                  const createdAt = notification.createdAt.toDate();
-                  return (
-                    <DropdownMenuItem key={notification.id} asChild className="cursor-pointer data-[disabled]:opacity-100 data-[disabled]:pointer-events-auto">
-                      <Link href={notification.link || '#'} className={cn("flex flex-col items-start gap-1 p-2 w-full", !notification.isRead && "bg-accent/50", notification.isRead && "opacity-60 hover:opacity-100")}>
-                          <p className="font-semibold text-sm">{notification.title}</p>
-                          <p className="text-xs text-muted-foreground whitespace-normal">{notification.message}</p>
-                           <p className="text-xs text-muted-foreground self-end">
-                              {isToday(createdAt) ? format(createdAt, 'p') : format(createdAt, 'P')}
-                          </p>
-                      </Link>
-                    </DropdownMenuItem>
-                  );
-                })
-            ) : (
-                <div className="p-4 text-sm text-center text-muted-foreground">
-                  No new notifications.
-                </div>
-            )}
-            <DropdownMenuSeparator />
-            <DropdownMenuItem asChild className="cursor-pointer justify-center">
-              <Link href="/dashboard/notifications">
-                View all notifications
-              </Link>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        </Link>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon" className="rounded-full">
