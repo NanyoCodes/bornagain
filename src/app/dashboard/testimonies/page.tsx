@@ -47,6 +47,7 @@ import { haversineDistance } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
+import { EditTestimonyForm } from "@/components/testimonies/edit-testimony-form";
 
 
 export default function TestimoniesPage() {
@@ -83,6 +84,7 @@ export default function TestimoniesPage() {
   // State for delete dialog
   const [itemToDelete, setItemToDelete] = useState<{ type: 'testimony' | 'prayer', id: string, name: string } | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [itemToEdit, setItemToEdit] = useState<Testimony | null>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -259,6 +261,7 @@ export default function TestimoniesPage() {
                     testimony={testimony} 
                     distance={(testimony as any)._distance}
                     onDelete={() => setItemToDelete({ type: 'testimony', id: testimony.id, name: 'testimony' })}
+                    onEdit={() => setItemToEdit(testimony)}
                   />
                 ))}
                  {!loading && filteredTestimonies?.length === 0 && (
@@ -318,6 +321,20 @@ export default function TestimoniesPage() {
             </AlertDialogContent>
         </AlertDialog>
       )}
+
+      <Dialog open={!!itemToEdit} onOpenChange={(open) => !open && setItemToEdit(null)}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Edit Testimony</DialogTitle>
+            <DialogDescription>
+              Make changes to your testimony here. Click save when you're done.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="max-h-[70vh] overflow-y-auto pr-2">
+            {itemToEdit && <EditTestimonyForm testimony={itemToEdit} onTestimonyUpdated={() => setItemToEdit(null)} />}
+          </div>
+        </DialogContent>
+      </Dialog>
 
     </div>
   );

@@ -127,13 +127,12 @@ function ParticipantsDialog({ campaign, children }: { campaign: Campaign; childr
   );
 }
 
-export function CampaignCard({ campaign, userId, userProfile, distance }: { campaign: Campaign; userId?: string, userProfile?: UserProfile | null, distance: number | null }) {
+export function CampaignCard({ campaign, userId, userProfile, distance, onManage }: { campaign: Campaign; userId?: string, userProfile?: UserProfile | null, distance: number | null, onManage: () => void }) {
   const { toast } = useToast();
   const firestore = useFirestore();
   const { user } = useUser();
   const router = useRouter();
   const isOwner = campaign.organizerId === userId;
-  const [isManageOpen, setIsManageOpen] = useState(false);
   const [isLogSoulOpen, setIsLogSoulOpen] = useState(false);
   const [isTestimonyDialogOpen, setIsTestimonyDialogOpen] = useState(false);
   const [isChatLoading, setIsChatLoading] = useState(false);
@@ -557,35 +556,9 @@ export function CampaignCard({ campaign, userId, userProfile, distance }: { camp
                     <div onClick={stopPropagation} className="flex items-center gap-2">
                       {status === 'Ongoing' && LogSoulButton}
                       {(status === 'Ongoing' || status === 'Past') && ShareTestimonyDialog}
-                      {mounted && isMobile ? (
-                        <Sheet open={isManageOpen} onOpenChange={setIsManageOpen}>
-                          <SheetTrigger asChild>
-                            <Button variant="outline" size="icon" onClick={(e) => e.stopPropagation()}>
-                              <Edit className="h-4 w-4" /><span className="sr-only">Manage Campaign</span>
-                            </Button>
-                          </SheetTrigger>
-                          <SheetContent side="bottom">
-                            <SheetHeader><SheetTitle>Manage Campaign</SheetTitle><SheetDescription>Update the progress and details of your campaign.</SheetDescription></SheetHeader>
-                            <div className="max-h-[80vh] overflow-y-auto p-1 mt-4">
-                              <ManageCampaignForm campaign={campaign} onCampaignUpdated={() => setIsManageOpen(false)} />
-                            </div>
-                          </SheetContent>
-                        </Sheet>
-                      ) : (
-                        <Dialog open={isManageOpen} onOpenChange={setIsManageOpen}>
-                          <DialogTrigger asChild>
-                            <Button variant="outline" size="icon" onClick={(e) => e.stopPropagation()}>
-                              <Edit className="h-4 w-4" /><span className="sr-only">Manage Campaign</span>
-                            </Button>
-                          </DialogTrigger>
-                          <DialogContent className="sm:max-w-2xl">
-                            <DialogHeader><DialogTitle>Manage Campaign</DialogTitle><DialogDescription>Update the progress and details of your campaign.</DialogDescription></DialogHeader>
-                            <div className="max-h-[70vh] overflow-y-auto pr-2">
-                              <ManageCampaignForm campaign={campaign} onCampaignUpdated={() => setIsManageOpen(false)} />
-                            </div>
-                          </DialogContent>
-                        </Dialog>
-                      )}
+                      <Button variant="outline" size="icon" onClick={(e) => { e.stopPropagation(); onManage(); }}>
+                        <Edit className="h-4 w-4" /><span className="sr-only">Manage Campaign</span>
+                      </Button>
                       {shareButton}
                     </div>
                 ) : (

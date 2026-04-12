@@ -26,20 +26,17 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { doc, updateDoc, arrayUnion } from "firebase/firestore";
-import { EditTestimonyForm } from "./edit-testimony-form";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { cn } from "@/lib/utils";
 
-export const TestimonyCard = React.memo(function TestimonyCard({ testimony, distance, onDelete }: { testimony: Testimony, distance: number | null, onDelete: () => void }) {
+export const TestimonyCard = React.memo(function TestimonyCard({ testimony, distance, onDelete, onEdit }: { testimony: Testimony, distance: number | null, onDelete: () => void, onEdit: () => void }) {
   const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
 
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isSupporting, setIsSupporting] = useState(false);
 
   const isAuthor = user?.uid === testimony.authorId;
@@ -166,27 +163,13 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, dist
                 <DropdownMenuItem onSelect={() => handleShare('facebook')}>Share on Facebook</DropdownMenuItem>
                 <DropdownMenuItem onSelect={() => handleShare('twitter')}>Share on Twitter (X)</DropdownMenuItem>
                 {isAuthor && <DropdownMenuSeparator />}
-                {isAuthor && <DropdownMenuItem onSelect={() => setIsEditDialogOpen(true)}><Edit className="mr-2 h-4 w-4" /><span>Edit</span></DropdownMenuItem>}
+                {isAuthor && <DropdownMenuItem onSelect={onEdit}><Edit className="mr-2 h-4 w-4" /><span>Edit</span></DropdownMenuItem>}
                 {isAuthor && <DropdownMenuItem onSelect={onDelete} className="text-destructive focus:text-destructive"><Trash2 className="mr-2 h-4 w-4" /><span>Delete</span></DropdownMenuItem>}
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
         </CardFooter>
       </Card>
-      
-      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="sm:max-w-lg">
-          <DialogHeader>
-            <DialogTitle>Edit Testimony</DialogTitle>
-            <DialogDescription>
-              Make changes to your testimony here. Click save when you're done.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="max-h-[70vh] overflow-y-auto pr-2">
-            <EditTestimonyForm testimony={testimony} onTestimonyUpdated={() => setIsEditDialogOpen(false)} />
-          </div>
-        </DialogContent>
-      </Dialog>
     </>
   );
 });

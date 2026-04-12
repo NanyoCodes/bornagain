@@ -33,6 +33,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { safeToDate, haversineDistance } from "@/lib/utils";
 import { useRouter } from "next/navigation";
+import { ManageCampaignForm } from "@/components/campaigns/manage-campaign-form";
 
 
 function CampaignSkeletons() {
@@ -111,6 +112,7 @@ export default function CampaignsPage() {
   const [now, setNow] = useState<Date | null>(null);
   const [filter, setFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [campaignToManage, setCampaignToManage] = useState<Campaign | null>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -361,6 +363,7 @@ export default function CampaignsPage() {
             userId={user?.uid}
             userProfile={userProfile}
             distance={campaign._distance}
+            onManage={() => setCampaignToManage(campaign)}
           />
         ))}
          {!loading && sortedAndFilteredCampaigns?.length === 0 && (
@@ -375,8 +378,27 @@ export default function CampaignsPage() {
           </div>
         )}
       </div>
+      {campaignToManage && (
+        mounted && isMobile ? (
+          <Sheet open={!!campaignToManage} onOpenChange={() => setCampaignToManage(null)}>
+            <SheetContent side="bottom">
+              <SheetHeader><SheetTitle>Manage Campaign</SheetTitle><SheetDescription>Update the progress and details of your campaign.</SheetDescription></SheetHeader>
+              <div className="max-h-[80vh] overflow-y-auto p-1 mt-4">
+                <ManageCampaignForm campaign={campaignToManage} onCampaignUpdated={() => setCampaignToManage(null)} />
+              </div>
+            </SheetContent>
+          </Sheet>
+        ) : (
+          <Dialog open={!!campaignToManage} onOpenChange={() => setCampaignToManage(null)}>
+            <DialogContent className="sm:max-w-2xl">
+              <DialogHeader><DialogTitle>Manage Campaign</DialogTitle><DialogDescription>Update the progress and details of your campaign.</DialogDescription></DialogHeader>
+              <div className="max-h-[70vh] overflow-y-auto pr-2">
+                <ManageCampaignForm campaign={campaignToManage} onCampaignUpdated={() => setCampaignToManage(null)} />
+              </div>
+            </DialogContent>
+          </Dialog>
+        )
+      )}
     </div>
   );
 }
-
-    
