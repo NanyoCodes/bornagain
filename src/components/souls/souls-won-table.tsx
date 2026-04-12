@@ -410,19 +410,15 @@ function ViewHistoryDialog({ soul, children }: { soul: Soul; children: React.Rea
   );
 }
 
-function SoulCard({ soul, onRefresh, onDelete }: { soul: Soul; onRefresh: () => void; onDelete: (soul: Soul) => void; }) {
+function SoulCard({ soul, onDelete }: { soul: Soul; onDelete: (soul: Soul) => void; }) {
     const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
 
     const handleSoulUpdated = () => {
         setIsEditDialogOpen(false);
-        onRefresh();
     };
 
     const handleEditOpenChange = (open: boolean) => {
         setIsEditDialogOpen(open);
-        if (!open) {
-            onRefresh();
-        }
     };
 
     const latestFollowUp = React.useMemo(() => {
@@ -551,19 +547,15 @@ function SoulCard({ soul, onRefresh, onDelete }: { soul: Soul; onRefresh: () => 
     );
 }
 
-function SoulTableRow({ soul, onRefresh, onDelete }: { soul: Soul; onRefresh: () => void; onDelete: (soul: Soul) => void; }) {
+function SoulTableRow({ soul, onDelete }: { soul: Soul; onDelete: (soul: Soul) => void; }) {
     const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
     
     const handleSoulUpdated = () => {
         setIsEditDialogOpen(false);
-        onRefresh();
     };
 
     const handleEditOpenChange = (open: boolean) => {
         setIsEditDialogOpen(open);
-        if (!open) {
-            onRefresh();
-        }
     };
 
     const latestFollowUp = React.useMemo(() => {
@@ -674,11 +666,10 @@ function SoulTableRow({ soul, onRefresh, onDelete }: { soul: Soul; onRefresh: ()
 type SoulsWonTableProps = {
   souls: Soul[];
   loading: boolean;
-  onRefresh: () => void;
   onDelete: (soul: Soul) => void;
 };
 
-export function SoulsWonTable({ souls, loading, onRefresh, onDelete }: SoulsWonTableProps) {
+export function SoulsWonTable({ souls, loading, onDelete }: SoulsWonTableProps) {
   const isMobile = useIsMobile();
   const [mounted, setMounted] = React.useState(false);
 
@@ -742,7 +733,7 @@ export function SoulsWonTable({ souls, loading, onRefresh, onDelete }: SoulsWonT
                     </CardDescription>
                 </CardHeader>
             </Card>
-            {souls.map((soul) => <SoulCard key={soul.id} soul={soul} onRefresh={onRefresh} onDelete={onDelete} />)}
+            {souls.map((soul) => <SoulCard key={soul.id} soul={soul} onDelete={onDelete} />)}
         </div>
       )
   }
@@ -772,7 +763,7 @@ export function SoulsWonTable({ souls, loading, onRefresh, onDelete }: SoulsWonT
           </TableHeader>
           <TableBody>
             {souls.map((soul) => (
-              <SoulTableRow key={soul.id} soul={soul} onRefresh={onRefresh} onDelete={onDelete} />
+              <SoulTableRow key={soul.id} soul={soul} onDelete={onDelete} />
             ))}
           </TableBody>
         </Table>

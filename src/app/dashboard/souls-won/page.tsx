@@ -56,7 +56,6 @@ export default function SoulsWonPage() {
   const [mounted, setMounted] = useState(false);
   const isMobile = useIsMobile();
   const { searchTerm, setSearchPlaceholder, setIsSearchVisible, setSearchTerm } = useSearch();
-  const [refreshKey, setRefreshKey] = useState(0);
 
   // State for the centralized delete dialog
   const [soulToDelete, setSoulToDelete] = useState<Soul | null>(null);
@@ -75,13 +74,11 @@ export default function SoulsWonPage() {
   const soulsQuery = useMemo(() => {
     if (!user?.uid || !firestore) return null;
     return query(collection(firestore, `users/${user.uid}/souls`), orderBy("wonAt", "desc"));
-  }, [user?.uid, firestore, refreshKey]);
+  }, [user?.uid, firestore]);
   const { data: souls, loading: soulsLoading } = useCollection<Soul>(soulsQuery);
 
   const loading = userLoading || soulsLoading;
   
-  const handleRefresh = () => setRefreshKey(k => k + 1);
-
   const filteredSouls = useMemo(() => {
     if (!souls) return [];
     if (!searchTerm) return souls;
@@ -97,7 +94,6 @@ export default function SoulsWonPage() {
 
   const handleSoulLogged = () => {
     setIsLogDialogOpen(false);
-    handleRefresh();
   };
   
   const handleDeleteSoul = async () => {
@@ -298,14 +294,13 @@ export default function SoulsWonPage() {
       <SoulsWonTable 
         souls={filteredSouls || []} 
         loading={loading}
-        onRefresh={handleRefresh}
         onDelete={setSoulToDelete}
       />
 
       <AlertDialog open={!!soulToDelete} onOpenChange={(open) => !open && setSoulToDelete(null)}>
         <AlertDialogContent>
             <AlertDialogHeader>
-                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                <DialogTitle>Are you sure?</DialogTitle>
                 <AlertDialogDescription>
                     This will permanently delete the record for {soulToDelete?.firstName} {soulToDelete?.lastName}. This action cannot be undone.
                 </AlertDialogDescription>
