@@ -6,6 +6,16 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
   Sheet,
   SheetContent,
   SheetDescription,
@@ -13,12 +23,12 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { PlusCircle, Download } from "lucide-react";
+import { PlusCircle, Download, Loader2 } from "lucide-react";
 import { SoulsWonTable } from "@/components/souls/souls-won-table";
 import { LogSoulForm } from "@/components/souls/log-soul-form";
 import type { Soul, FollowUpLogItem } from "@/lib/types";
 import { useCollection, useFirestore, useUser } from "@/firebase";
-import { collection, query, orderBy } from "firebase/firestore";
+import { collection, query, orderBy, doc, writeBatch } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useSearch } from "@/context/search-context";
@@ -27,6 +37,8 @@ import { format } from "date-fns";
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import { PlaceHolderImages } from "@/lib/placeholder-images";
+import { errorEmitter } from "@/firebase/error-emitter";
+import { FirestorePermissionError } from "@/firebase/errors";
 
 // This is a workaround for the jspdf-autotable types
 declare module 'jspdf' {
@@ -45,6 +57,10 @@ export default function SoulsWonPage() {
   const isMobile = useIsMobile();
   const { searchTerm, setSearchPlaceholder, setIsSearchVisible, setSearchTerm } = useSearch();
   const [refreshKey, setRefreshKey] = useState(0);
+
+  // State for the centralized delete dialog
+  const [soulToDelete, setSoulToDelete] = useState<Soul | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -83,6 +99,36 @@ export default function SoulsWonPage() {
     setIsLogDialogOpen(false);
     handleRefresh();
   };
+  
+  const handleDeleteSoul = async () => {
+    if (!soulToDelete || !user || !firestore) return;
+    setIsDeleting(true);
+
+    const userSoulRef = doc(firestore, `users/${user.uid}/souls`, soulToDelete.id);
+    const globalSoulRef = doc(firestore, 'souls', soulToDelete.id);
+
+    try {
+        const batch = writeBatch(firestore);
+        batch.delete(userSoulRef);
+        batch.delete(globalSoulRef);
+        await batch.commit();
+
+        toast({
+            title: "Soul Record Deleted",
+            description: `${soulToDelete.firstName}'s record has been removed.`,
+        });
+        setSoulToDelete(null); // Close the dialog on success
+    } catch (error) {
+        const permissionError = new FirestorePermissionError({
+            path: `BATCH_DELETE:SOUL:${soulToDelete.id}`,
+            operation: 'delete',
+        }, user);
+        errorEmitter.emit('permission-error', permissionError);
+    } finally {
+        setIsDeleting(false);
+    }
+  };
+
 
   const handleExport = (formatType: 'csv' | 'pdf') => {
     if (!filteredSouls || filteredSouls.length === 0) {
@@ -253,7 +299,27 @@ export default function SoulsWonPage() {
         souls={filteredSouls || []} 
         loading={loading}
         onRefresh={handleRefresh}
+        onDelete={setSoulToDelete}
       />
+
+      <AlertDialog open={!!soulToDelete} onOpenChange={(open) => !open && setSoulToDelete(null)}>
+        <AlertDialogContent>
+            <AlertDialogHeader>
+                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                    This will permanently delete the record for {soulToDelete?.firstName} {soulToDelete?.lastName}. This action cannot be undone.
+                </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+                <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={handleDeleteSoul} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90">
+                    {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    Confirm Delete
+                </AlertDialogAction>
+            </AlertDialogFooter>
+        </AlertDialogContent>
+    </AlertDialog>
+
     </div>
   );
 }

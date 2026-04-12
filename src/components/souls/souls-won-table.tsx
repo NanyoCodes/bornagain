@@ -3,7 +3,7 @@
 
 import * as React from "react";
 import { format } from "date-fns";
-import { MoreHorizontal, Church, UserPlus, Edit, MapPin, Mail, Phone, ChevronDown, BookOpen, Heart, Users } from "lucide-react";
+import { MoreHorizontal, Church, UserPlus, Edit, MapPin, Mail, Phone, ChevronDown, BookOpen, Heart, Users, Trash2 } from "lucide-react";
 import type { Soul, FollowUpStatus, FollowUpLogItem } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,6 +18,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -33,7 +34,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "../ui/skeleton";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Label } from "@/components/ui/label";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
@@ -409,7 +410,7 @@ function ViewHistoryDialog({ soul, children }: { soul: Soul; children: React.Rea
   );
 }
 
-function SoulCard({ soul, onRefresh }: { soul: Soul; onRefresh: () => void; }) {
+function SoulCard({ soul, onRefresh, onDelete }: { soul: Soul; onRefresh: () => void; onDelete: (soul: Soul) => void; }) {
     const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
 
     const handleSoulUpdated = () => {
@@ -490,6 +491,11 @@ function SoulCard({ soul, onRefresh }: { soul: Soul; onRefresh: () => void; }) {
                                     <ViewHistoryDialog soul={soul}>
                                         <DropdownMenuItem onSelect={(e) => e.preventDefault()}>View History</DropdownMenuItem>
                                     </ViewHistoryDialog>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem onSelect={() => onDelete(soul)} className="text-destructive focus:text-destructive">
+                                        <Trash2 className="mr-2 h-4 w-4" />
+                                        Delete
+                                    </DropdownMenuItem>
                                 </DropdownMenuContent>
                                 </DropdownMenu>
                                 <DialogContent>
@@ -545,7 +551,7 @@ function SoulCard({ soul, onRefresh }: { soul: Soul; onRefresh: () => void; }) {
     );
 }
 
-function SoulTableRow({ soul, onRefresh }: { soul: Soul; onRefresh: () => void; }) {
+function SoulTableRow({ soul, onRefresh, onDelete }: { soul: Soul; onRefresh: () => void; onDelete: (soul: Soul) => void; }) {
     const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
     
     const handleSoulUpdated = () => {
@@ -643,6 +649,11 @@ function SoulTableRow({ soul, onRefresh }: { soul: Soul; onRefresh: () => void; 
                             <ViewHistoryDialog soul={soul}>
                                 <DropdownMenuItem onSelect={(e) => e.preventDefault()}>View History</DropdownMenuItem>
                             </ViewHistoryDialog>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem onSelect={() => onDelete(soul)} className="text-destructive focus:text-destructive">
+                                <Trash2 className="mr-2 h-4 w-4" />
+                                Delete
+                            </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
                     <DialogContent>
@@ -664,9 +675,10 @@ type SoulsWonTableProps = {
   souls: Soul[];
   loading: boolean;
   onRefresh: () => void;
+  onDelete: (soul: Soul) => void;
 };
 
-export function SoulsWonTable({ souls, loading, onRefresh }: SoulsWonTableProps) {
+export function SoulsWonTable({ souls, loading, onRefresh, onDelete }: SoulsWonTableProps) {
   const isMobile = useIsMobile();
   const [mounted, setMounted] = React.useState(false);
 
@@ -730,7 +742,7 @@ export function SoulsWonTable({ souls, loading, onRefresh }: SoulsWonTableProps)
                     </CardDescription>
                 </CardHeader>
             </Card>
-            {souls.map((soul) => <SoulCard key={soul.id} soul={soul} onRefresh={onRefresh} />)}
+            {souls.map((soul) => <SoulCard key={soul.id} soul={soul} onRefresh={onRefresh} onDelete={onDelete} />)}
         </div>
       )
   }
@@ -760,7 +772,7 @@ export function SoulsWonTable({ souls, loading, onRefresh }: SoulsWonTableProps)
           </TableHeader>
           <TableBody>
             {souls.map((soul) => (
-              <SoulTableRow key={soul.id} soul={soul} onRefresh={onRefresh} />
+              <SoulTableRow key={soul.id} soul={soul} onRefresh={onRefresh} onDelete={onDelete} />
             ))}
           </TableBody>
         </Table>
