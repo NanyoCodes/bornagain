@@ -44,7 +44,6 @@ import * as z from "zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";
 import { useFirestore, useUser } from "@/firebase";
 import { doc, updateDoc, arrayUnion, serverTimestamp } from "firebase/firestore";
-import { EditSoulForm } from "./edit-soul-form";
 import { cn } from "@/lib/utils";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/collapsible";
 import { Badge } from "@/components/ui/badge";
@@ -410,17 +409,7 @@ function ViewHistoryDialog({ soul, children }: { soul: Soul; children: React.Rea
   );
 }
 
-function SoulCard({ soul, onDelete }: { soul: Soul; onDelete: (soul: Soul) => void; }) {
-    const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
-
-    const handleSoulUpdated = () => {
-        setIsEditDialogOpen(false);
-    };
-
-    const handleEditOpenChange = (open: boolean) => {
-        setIsEditDialogOpen(open);
-    };
-
+function SoulCard({ soul, onEdit, onDelete }: { soul: Soul; onEdit: (soul: Soul) => void; onDelete: (soul: Soul) => void; }) {
     const latestFollowUp = React.useMemo(() => {
         if (!soul.followUpLog || soul.followUpLog.length === 0) return null;
         // This is a more performant way to find the latest item than sorting the whole array
@@ -465,8 +454,7 @@ function SoulCard({ soul, onDelete }: { soul: Soul; onDelete: (soul: Soul) => vo
                                 {soul.church && <div className="flex items-center gap-1 pt-2"><Church className="h-4 w-4" /> {soul.church}</div>}
                                 {locationWonString && <div className="flex items-center gap-1 pt-1"><MapPin className="h-4 w-4" /> {locationWonString}</div>}
                             </div>
-                            <Dialog open={isEditDialogOpen} onOpenChange={handleEditOpenChange}>
-                                <DropdownMenu>
+                            <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                     <Button aria-haspopup="true" size="icon" variant="ghost">
                                     <MoreHorizontal className="h-4 w-4" />
@@ -475,12 +463,10 @@ function SoulCard({ soul, onDelete }: { soul: Soul; onDelete: (soul: Soul) => vo
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end">
                                     <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                    <DialogTrigger asChild>
-                                        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                                            <Edit className="mr-2 h-4 w-4"/>
-                                            Edit
-                                        </DropdownMenuItem>
-                                    </DialogTrigger>
+                                    <DropdownMenuItem onSelect={() => onEdit(soul)}>
+                                        <Edit className="mr-2 h-4 w-4"/>
+                                        Edit
+                                    </DropdownMenuItem>
                                     <LogFollowUpDialog soul={soul}>
                                         <DropdownMenuItem onSelect={(e) => e.preventDefault()}>Follow-up</DropdownMenuItem>
                                     </LogFollowUpDialog>
@@ -493,17 +479,7 @@ function SoulCard({ soul, onDelete }: { soul: Soul; onDelete: (soul: Soul) => vo
                                         Delete
                                     </DropdownMenuItem>
                                 </DropdownMenuContent>
-                                </DropdownMenu>
-                                <DialogContent>
-                                    <DialogHeader>
-                                        <DialogTitle>Edit Soul Details</DialogTitle>
-                                        <DialogDescription>Make changes to the record for {soul.firstName} {soul.lastName}.</DialogDescription>
-                                    </DialogHeader>
-                                    <div className="max-h-[70vh] overflow-y-auto pr-2">
-                                        <EditSoulForm soul={soul} onSoulUpdated={handleSoulUpdated} />
-                                    </div>
-                                </DialogContent>
-                            </Dialog>
+                            </DropdownMenu>
                         </div>
                         
                         <div className="space-y-3 pt-4 border-t">
@@ -547,17 +523,7 @@ function SoulCard({ soul, onDelete }: { soul: Soul; onDelete: (soul: Soul) => vo
     );
 }
 
-function SoulTableRow({ soul, onDelete }: { soul: Soul; onDelete: (soul: Soul) => void; }) {
-    const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
-    
-    const handleSoulUpdated = () => {
-        setIsEditDialogOpen(false);
-    };
-
-    const handleEditOpenChange = (open: boolean) => {
-        setIsEditDialogOpen(open);
-    };
-
+function SoulTableRow({ soul, onEdit, onDelete }: { soul: Soul; onEdit: (soul: Soul) => void; onDelete: (soul: Soul) => void; }) {
     const latestFollowUp = React.useMemo(() => {
         if (!soul.followUpLog || soul.followUpLog.length === 0) return null;
         return soul.followUpLog.reduce((latest, current) => {
@@ -615,49 +581,36 @@ function SoulTableRow({ soul, onDelete }: { soul: Soul; onDelete: (soul: Soul) =
                 {soul.sourceDetails && <div className="text-xs text-muted-foreground">{soul.sourceDetails}</div>}
             </TableCell>
             <TableCell>
-                 <Dialog open={isEditDialogOpen} onOpenChange={handleEditOpenChange}>
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button
-                                aria-haspopup="true"
-                                size="icon"
-                                variant="ghost"
-                            >
-                                <MoreHorizontal className="h-4 w-4" />
-                                <span className="sr-only">Toggle menu</span>
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                             <DialogTrigger asChild>
-                                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                                    <Edit className="mr-2 h-4 w-4" />
-                                    Edit
-                                </DropdownMenuItem>
-                            </DialogTrigger>
-                            <LogFollowUpDialog soul={soul}>
-                                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>Follow-up</DropdownMenuItem>
-                            </LogFollowUpDialog>
-                            <ViewHistoryDialog soul={soul}>
-                                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>View History</DropdownMenuItem>
-                            </ViewHistoryDialog>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem onSelect={() => onDelete(soul)} className="text-destructive focus:text-destructive">
-                                <Trash2 className="mr-2 h-4 w-4" />
-                                Delete
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-                    <DialogContent>
-                        <DialogHeader>
-                            <DialogTitle>Edit Soul Details</DialogTitle>
-                            <DialogDescription>Make changes to the record for {soul.firstName} {soul.lastName}.</DialogDescription>
-                        </DialogHeader>
-                        <div className="max-h-[70vh] overflow-y-auto pr-2">
-                            <EditSoulForm soul={soul} onSoulUpdated={handleSoulUpdated} />
-                        </div>
-                    </DialogContent>
-                </Dialog>
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button
+                            aria-haspopup="true"
+                            size="icon"
+                            variant="ghost"
+                        >
+                            <MoreHorizontal className="h-4 w-4" />
+                            <span className="sr-only">Toggle menu</span>
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                        <DropdownMenuItem onSelect={() => onEdit(soul)}>
+                            <Edit className="mr-2 h-4 w-4" />
+                            Edit
+                        </DropdownMenuItem>
+                        <LogFollowUpDialog soul={soul}>
+                            <DropdownMenuItem onSelect={(e) => e.preventDefault()}>Follow-up</DropdownMenuItem>
+                        </LogFollowUpDialog>
+                        <ViewHistoryDialog soul={soul}>
+                            <DropdownMenuItem onSelect={(e) => e.preventDefault()}>View History</DropdownMenuItem>
+                        </ViewHistoryDialog>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onSelect={() => onDelete(soul)} className="text-destructive focus:text-destructive">
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            Delete
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
             </TableCell>
         </TableRow>
     );
@@ -666,10 +619,11 @@ function SoulTableRow({ soul, onDelete }: { soul: Soul; onDelete: (soul: Soul) =
 type SoulsWonTableProps = {
   souls: Soul[];
   loading: boolean;
+  onEdit: (soul: Soul) => void;
   onDelete: (soul: Soul) => void;
 };
 
-export function SoulsWonTable({ souls, loading, onDelete }: SoulsWonTableProps) {
+export function SoulsWonTable({ souls, loading, onEdit, onDelete }: SoulsWonTableProps) {
   const isMobile = useIsMobile();
   const [mounted, setMounted] = React.useState(false);
 
@@ -733,7 +687,7 @@ export function SoulsWonTable({ souls, loading, onDelete }: SoulsWonTableProps) 
                     </CardDescription>
                 </CardHeader>
             </Card>
-            {souls.map((soul) => <SoulCard key={soul.id} soul={soul} onDelete={onDelete} />)}
+            {souls.map((soul) => <SoulCard key={soul.id} soul={soul} onEdit={onEdit} onDelete={onDelete} />)}
         </div>
       )
   }
@@ -763,7 +717,7 @@ export function SoulsWonTable({ souls, loading, onDelete }: SoulsWonTableProps) 
           </TableHeader>
           <TableBody>
             {souls.map((soul) => (
-              <SoulTableRow key={soul.id} soul={soul} onDelete={onDelete} />
+              <SoulTableRow key={soul.id} soul={soul} onEdit={onEdit} onDelete={onDelete} />
             ))}
           </TableBody>
         </Table>
