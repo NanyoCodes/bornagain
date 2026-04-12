@@ -1,9 +1,8 @@
-
 "use client";
 
 import * as React from "react";
 import { format } from "date-fns";
-import { MoreHorizontal, Church, UserPlus, Edit, MapPin, Phone, ChevronDown } from "lucide-react";
+import { MoreHorizontal, Church, UserPlus, Edit, MapPin, Phone, ChevronDown, Trash2 } from "lucide-react";
 import type { Soul, FollowUpStatus } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import {
@@ -38,6 +37,13 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { actionItems } from "@/lib/follow-up-data";
 import { SoulInsightsDialog } from "./soul-insights-dialog";
 import { Label } from "../ui/label";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
 
 const getStatusClasses = (status: FollowUpStatus | undefined): string => {
     if (!status) return 'bg-secondary text-secondary-foreground border-border';
