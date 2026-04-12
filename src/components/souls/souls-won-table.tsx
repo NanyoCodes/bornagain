@@ -3,8 +3,8 @@
 
 import * as React from "react";
 import { format } from "date-fns";
-import { MoreHorizontal, Church, UserPlus, Edit, MapPin, Mail, Phone, ChevronDown, BookOpen, Heart, Users, Trash2 } from "lucide-react";
-import type { Soul, FollowUpStatus, FollowUpLogItem } from "@/lib/types";
+import { MoreHorizontal, Church, UserPlus, Edit, MapPin, Phone, ChevronDown } from "lucide-react";
+import type { Soul, FollowUpStatus } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -29,34 +29,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "../ui/skeleton";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { Label } from "@/components/ui/label";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogFooter, DialogTrigger, DialogTitle } from "@/components/ui/dialog";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
-import { Textarea } from "@/components/ui/textarea";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import * as z from "zod";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";
-import { useFirestore, useUser } from "@/firebase";
-import { doc, updateDoc, arrayUnion, serverTimestamp } from "firebase/firestore";
 import { cn } from "@/lib/utils";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/collapsible";
 import { Badge } from "@/components/ui/badge";
-import { Loader2 } from "lucide-react";
-import { Switch } from "@/components/ui/switch";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { actionItems, statusOptions } from "@/lib/follow-up-data";
-import { errorEmitter } from "@/firebase/error-emitter";
-import { FirestorePermissionError } from "@/firebase/errors";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { actionItems } from "@/lib/follow-up-data";
 import { SoulInsightsDialog } from "./soul-insights-dialog";
-
+import { Label } from "../ui/label";
 
 const getStatusClasses = (status: FollowUpStatus | undefined): string => {
     if (!status) return 'bg-secondary text-secondary-foreground border-border';
@@ -72,347 +53,17 @@ const getStatusClasses = (status: FollowUpStatus | undefined): string => {
     }
 }
 
+type SoulCardProps = { 
+  soul: Soul; 
+  onEdit: (soul: Soul) => void; 
+  onDelete: (soul: Soul) => void; 
+  onFollowUp: (soul: Soul) => void; 
+  onViewHistory: (soul: Soul) => void; 
+};
 
-// --- LogFollowUpDialog Component Definition ---
-const logFollowUpFormSchema = z.object({
-  note: z.string().optional(),
-  status: z.enum(statusOptions),
-  attendingChurch: z.boolean(),
-  inBibleStudy: z.boolean(),
-  attendingPrayer: z.boolean(),
-  inServiceDepartment: z.boolean(),
-  actions: z.array(z.string()).optional(),
-});
-
-
-function LogFollowUpDialog({ soul, children }: { soul: Soul; children: React.ReactNode; }) {
-  const { toast } = useToast();
-  const { user } = useUser();
-  const firestore = useFirestore();
-  const [isLoading, setIsLoading] = React.useState(false);
-  const [isOpen, setIsOpen] = React.useState(false);
-
-  const form = useForm<z.infer<typeof logFollowUpFormSchema>>({
-    resolver: zodResolver(logFollowUpFormSchema),
-    defaultValues: {
-      note: '',
-      status: soul.status,
-      attendingChurch: soul.attendingChurch || false,
-      inBibleStudy: soul.inBibleStudy || false,
-      attendingPrayer: soul.attendingPrayer || false,
-      inServiceDepartment: soul.inServiceDepartment || false,
-      actions: [],
-    },
-  });
-  
-  React.useEffect(() => {
-    if (isOpen) {
-      form.reset({
-        note: '',
-        status: soul.status,
-        attendingChurch: soul.attendingChurch || false,
-        inBibleStudy: soul.inBibleStudy || false,
-        attendingPrayer: soul.attendingPrayer || false,
-        inServiceDepartment: soul.inServiceDepartment || false,
-        actions: [],
-      });
-    }
-  }, [isOpen, soul, form]);
-
-  async function onSubmit(values: z.infer<typeof logFollowUpFormSchema>) {
-    if (!user || !firestore) {
-      toast({ variant: 'destructive', title: 'Not Authenticated' });
-      return;
-    }
-    
-    setIsLoading(true);
-
-    const soulRef = doc(firestore, `users/${user.uid}/souls`, soul.id);
-    const newLogEntry: FollowUpLogItem = {
-        date: new Date() as any,
-        note: values.note || '',
-        actions: values.actions || [],
-    };
-    const updatePayload = {
-        followUpLog: arrayUnion(newLogEntry),
-        status: values.status,
-        attendingChurch: values.attendingChurch,
-        inBibleStudy: values.inBibleStudy,
-        attendingPrayer: values.attendingPrayer,
-        inServiceDepartment: values.inServiceDepartment,
-    };
-    
-    try {
-        await updateDoc(soulRef, updatePayload);
-        toast({
-            title: 'Follow-up Logged',
-            description: `A new entry has been added for ${soul.firstName} ${soul.lastName}.`,
-        });
-        setIsOpen(false);
-    } catch (err: any) {
-        console.error("Failed to log follow-up:", err);
-        if (err.code === 'permission-denied') {
-            const permissionError = new FirestorePermissionError({
-                path: soulRef.path,
-                operation: 'update',
-                requestResourceData: { status: values.status, note: values.note },
-            });
-            errorEmitter.emit('permission-error', permissionError);
-        } else {
-            toast({
-                variant: "destructive",
-                title: "Update Failed",
-                description: err.message || "Could not log follow-up. Please check your connection and try again.",
-            });
-        }
-    } finally {
-        setIsLoading(false);
-    }
-  }
-
-  return (
-    <Dialog open={isOpen} onOpenChange={(open) => { if (!isLoading) { setIsOpen(open); } }}>
-      <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="sm:max-w-md flex flex-col max-h-[90vh]">
-        <DialogHeader>
-            <DialogTitle>Log Follow-up for {soul.firstName} {soul.lastName}</DialogTitle>
-            <DialogDescription>
-                Record your interaction and update their progress.
-            </DialogDescription>
-        </DialogHeader>
-        <div className="flex-grow overflow-y-auto -mx-6 px-6">
-            <Form {...form}>
-                <form id="log-follow-up-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                    <FormField
-                        control={form.control}
-                        name="note"
-                        render={({ field }) => (
-                            <FormItem>
-                                <Label>Notes</Label>
-                                <FormControl>
-                                    <Textarea placeholder="e.g., They are struggling with..." {...field} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                    <FormField
-                        control={form.control}
-                        name="status"
-                        render={({ field }) => (
-                            <FormItem>
-                                <Label>Update Status</Label>
-                                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                    <FormControl>
-                                        <SelectTrigger className={cn("font-semibold", getStatusClasses(field.value as FollowUpStatus))}>
-                                            <SelectValue placeholder="Set status" />
-                                        </SelectTrigger>
-                                    </FormControl>
-                                    <SelectContent>
-                                        {statusOptions.map(s => (
-                                            <SelectItem key={s} value={s}>{s}</SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                    
-                    <Accordion type="single" collapsible className="w-full">
-                        <AccordionItem value="actions">
-                            <AccordionTrigger className="text-sm font-medium">Actions Taken</AccordionTrigger>
-                            <AccordionContent>
-                                <FormField
-                                    control={form.control}
-                                    name="actions"
-                                    render={() => (
-                                        <FormItem className="space-y-3 pt-4">
-                                            <FormDescription>
-                                                Select all relationship-building actions taken during this follow-up.
-                                            </FormDescription>
-                                            <div className="grid grid-cols-2 gap-4">
-                                                {actionItems.map((item) => (
-                                                <FormField
-                                                    key={item.id}
-                                                    control={form.control}
-                                                    name="actions"
-                                                    render={({ field }) => {
-                                                    return (
-                                                        <FormItem
-                                                        key={item.id}
-                                                        className="flex flex-row items-start space-x-3 space-y-0"
-                                                        >
-                                                        <FormControl>
-                                                            <Checkbox
-                                                            checked={field.value?.includes(item.id)}
-                                                            onCheckedChange={(checked) => {
-                                                                return checked
-                                                                ? field.onChange([...(field.value || []), item.id])
-                                                                : field.onChange(
-                                                                    field.value?.filter(
-                                                                        (value) => value !== item.id
-                                                                    )
-                                                                    )
-                                                            }}
-                                                            />
-                                                        </FormControl>
-                                                        <FormLabel className="font-normal text-sm">
-                                                            {item.label}
-                                                        </FormLabel>
-                                                        </FormItem>
-                                                    )
-                                                    }}
-                                                />
-                                                ))}
-                                            </div>
-                                        </FormItem>
-                                    )}
-                                />
-                            </AccordionContent>
-                        </AccordionItem>
-                        <AccordionItem value="progress">
-                             <AccordionTrigger className="text-sm font-medium">Progress Update</AccordionTrigger>
-                             <AccordionContent>
-                                <div className="space-y-1 pt-4">
-                                     <p className="text-sm text-muted-foreground pb-2">
-                                        Update their progress on key spiritual disciplines.
-                                    </p>
-                                    <FormField
-                                        control={form.control}
-                                        name="attendingChurch"
-                                        render={({ field }) => (
-                                            <FormItem className="flex flex-row items-center justify-between rounded-md p-2 -mx-2 hover:bg-muted/50">
-                                                <div>
-                                                    <FormLabel className="font-normal flex items-center gap-2 cursor-pointer"><Church className="h-4 w-4" />Attending Church</FormLabel>
-                                                    <FormMessage className="text-xs" />
-                                                </div>
-                                                <FormControl>
-                                                    <Switch checked={field.value} onCheckedChange={field.onChange} />
-                                                </FormControl>
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <FormField
-                                        control={form.control}
-                                        name="inServiceDepartment"
-                                        render={({ field }) => (
-                                            <FormItem className="flex flex-row items-center justify-between rounded-md p-2 -mx-2 hover:bg-muted/50">
-                                                <div>
-                                                    <FormLabel className="font-normal flex items-center gap-2 cursor-pointer"><Users className="h-4 w-4" />In Service Department</FormLabel>
-                                                    <FormMessage className="text-xs" />
-                                                </div>
-                                                <FormControl>
-                                                    <Switch checked={field.value} onCheckedChange={field.onChange} />
-                                                </FormControl>
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <FormField
-                                        control={form.control}
-                                        name="inBibleStudy"
-                                        render={({ field }) => (
-                                            <FormItem className="flex flex-row items-center justify-between rounded-md p-2 -mx-2 hover:bg-muted/50">
-                                                <FormLabel className="font-normal flex items-center gap-2 cursor-pointer"><BookOpen className="h-4 w-4" />In Bible Study</FormLabel>
-                                                <FormControl>
-                                                    <Switch checked={field.value} onCheckedChange={field.onChange} />
-                                                </FormControl>
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <FormField
-                                        control={form.control}
-                                        name="attendingPrayer"
-                                        render={({ field }) => (
-                                            <FormItem className="flex flex-row items-center justify-between rounded-md p-2 -mx-2 hover:bg-muted/50">
-                                                <FormLabel className="font-normal flex items-center gap-2 cursor-pointer"><Heart className="h-4 w-4" />Attending Prayer</FormLabel>
-                                                <FormControl>
-                                                    <Switch checked={field.value} onCheckedChange={field.onChange} />
-                                                </FormControl>
-                                            </FormItem>
-                                        )}
-                                    />
-                                </div>
-                             </AccordionContent>
-                        </AccordionItem>
-                    </Accordion>
-                </form>
-            </Form>
-        </div>
-        <DialogFooter className="flex-shrink-0 pt-4 border-t">
-            <Button type="submit" form="log-follow-up-form" disabled={isLoading}>
-                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Save Log
-            </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
-}
-
-// --- ViewHistoryDialog Component Definition ---
-function ViewHistoryDialog({ soul, children }: { soul: Soul; children: React.ReactNode; }) {
-  const [isOpen, setIsOpen] = React.useState(false);
-
-  const sortedHistory = React.useMemo(() => {
-    if (!isOpen || !soul.followUpLog || soul.followUpLog.length === 0) return [];
-    return [...soul.followUpLog].sort((a, b) => {
-      const dateA = a.date?.toDate ? a.date.toDate().getTime() : 0;
-      const dateB = b.date?.toDate ? b.date.toDate().getTime() : 0;
-      return dateB - dateA;
-    });
-  }, [soul.followUpLog, isOpen]);
-
-  return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>Follow-up History for {soul.firstName} {soul.lastName}</DialogTitle>
-          <DialogDescription>A complete log of all follow-up interactions.</DialogDescription>
-        </DialogHeader>
-        <ScrollArea className="max-h-[60vh] pr-4">
-            <div className="space-y-6">
-                {sortedHistory.length > 0 ? sortedHistory.map((log, index) => (
-                    <div key={index}>
-                        <p className="font-semibold text-sm mb-2">
-                           {log.date ? format(log.date.toDate(), "PPP 'at' p") : 'Date not available'}
-                        </p>
-                        <div className="pl-4 border-l-2 space-y-3">
-                           {log.actions && log.actions.length > 0 && (
-                                <div className="flex flex-wrap gap-2">
-                                    {log.actions.map(actionId => {
-                                        const action = actionItems.find(a => a.id === actionId);
-                                        return action ? (
-                                            <Badge key={actionId} variant="secondary">{action.label}</Badge>
-                                        ) : null;
-                                    })}
-                                </div>
-                            )}
-                           {log.note ? (
-                                <blockquote className="text-sm text-muted-foreground italic">
-                                    &ldquo;{log.note}&rdquo;
-                                </blockquote>
-                            ) : (
-                                 <p className="text-sm text-muted-foreground italic">No details recorded for this entry.</p>
-                             )}
-                        </div>
-                         {index < sortedHistory.length - 1 && <Separator className="mt-6" />}
-                    </div>
-                )) : (
-                    <p className="text-sm text-muted-foreground text-center py-8">No follow-up history recorded yet.</p>
-                )}
-            </div>
-        </ScrollArea>
-      </DialogContent>
-    </Dialog>
-  );
-}
-
-function SoulCard({ soul, onEdit, onDelete }: { soul: Soul; onEdit: (soul: Soul) => void; onDelete: (soul: Soul) => void; }) {
+function SoulCard({ soul, onEdit, onDelete, onFollowUp, onViewHistory }: SoulCardProps) {
     const latestFollowUp = React.useMemo(() => {
         if (!soul.followUpLog || soul.followUpLog.length === 0) return null;
-        // This is a more performant way to find the latest item than sorting the whole array
         return soul.followUpLog.reduce((latest, current) => {
             if (!latest.date?.toDate) return current;
             if (!current.date?.toDate) return latest;
@@ -467,12 +118,8 @@ function SoulCard({ soul, onEdit, onDelete }: { soul: Soul; onEdit: (soul: Soul)
                                         <Edit className="mr-2 h-4 w-4"/>
                                         Edit
                                     </DropdownMenuItem>
-                                    <LogFollowUpDialog soul={soul}>
-                                        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>Follow-up</DropdownMenuItem>
-                                    </LogFollowUpDialog>
-                                    <ViewHistoryDialog soul={soul}>
-                                        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>View History</DropdownMenuItem>
-                                    </ViewHistoryDialog>
+                                    <DropdownMenuItem onSelect={() => onFollowUp(soul)}>Follow-up</DropdownMenuItem>
+                                    <DropdownMenuItem onSelect={() => onViewHistory(soul)}>View History</DropdownMenuItem>
                                     <DropdownMenuSeparator />
                                     <DropdownMenuItem onSelect={() => onDelete(soul)} className="text-destructive focus:text-destructive">
                                         <Trash2 className="mr-2 h-4 w-4" />
@@ -502,12 +149,8 @@ function SoulCard({ soul, onEdit, onDelete }: { soul: Soul; onEdit: (soul: Soul)
                                     <p className="text-sm text-muted-foreground">No follow-up logged yet.</p>
                                 )}
                                 <div className="flex gap-2 w-full">
-                                    <LogFollowUpDialog soul={soul}>
-                                        <Button size="sm" className="w-full">Follow-up</Button>
-                                    </LogFollowUpDialog>
-                                    <ViewHistoryDialog soul={soul}>
-                                        <Button size="sm" variant="outline" className="w-full">View History</Button>
-                                    </ViewHistoryDialog>
+                                    <Button size="sm" className="w-full" onClick={() => onFollowUp(soul)}>Follow-up</Button>
+                                    <Button size="sm" variant="outline" className="w-full" onClick={() => onViewHistory(soul)}>View History</Button>
                                 </div>
                             </div>
                         </div>
@@ -523,7 +166,15 @@ function SoulCard({ soul, onEdit, onDelete }: { soul: Soul; onEdit: (soul: Soul)
     );
 }
 
-function SoulTableRow({ soul, onEdit, onDelete }: { soul: Soul; onEdit: (soul: Soul) => void; onDelete: (soul: Soul) => void; }) {
+type SoulTableRowProps = { 
+  soul: Soul; 
+  onEdit: (soul: Soul) => void; 
+  onDelete: (soul: Soul) => void; 
+  onFollowUp: (soul: Soul) => void; 
+  onViewHistory: (soul: Soul) => void; 
+};
+
+function SoulTableRow({ soul, onEdit, onDelete, onFollowUp, onViewHistory }: SoulTableRowProps) {
     const latestFollowUp = React.useMemo(() => {
         if (!soul.followUpLog || soul.followUpLog.length === 0) return null;
         return soul.followUpLog.reduce((latest, current) => {
@@ -598,12 +249,8 @@ function SoulTableRow({ soul, onEdit, onDelete }: { soul: Soul; onEdit: (soul: S
                             <Edit className="mr-2 h-4 w-4" />
                             Edit
                         </DropdownMenuItem>
-                        <LogFollowUpDialog soul={soul}>
-                            <DropdownMenuItem onSelect={(e) => e.preventDefault()}>Follow-up</DropdownMenuItem>
-                        </LogFollowUpDialog>
-                        <ViewHistoryDialog soul={soul}>
-                            <DropdownMenuItem onSelect={(e) => e.preventDefault()}>View History</DropdownMenuItem>
-                        </ViewHistoryDialog>
+                        <DropdownMenuItem onSelect={() => onFollowUp(soul)}>Follow-up</DropdownMenuItem>
+                        <DropdownMenuItem onSelect={() => onViewHistory(soul)}>View History</DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem onSelect={() => onDelete(soul)} className="text-destructive focus:text-destructive">
                             <Trash2 className="mr-2 h-4 w-4" />
@@ -621,9 +268,11 @@ type SoulsWonTableProps = {
   loading: boolean;
   onEdit: (soul: Soul) => void;
   onDelete: (soul: Soul) => void;
+  onFollowUp: (soul: Soul) => void;
+  onViewHistory: (soul: Soul) => void;
 };
 
-export function SoulsWonTable({ souls, loading, onEdit, onDelete }: SoulsWonTableProps) {
+export function SoulsWonTable({ souls, loading, onEdit, onDelete, onFollowUp, onViewHistory }: SoulsWonTableProps) {
   const isMobile = useIsMobile();
   const [mounted, setMounted] = React.useState(false);
 
@@ -687,7 +336,7 @@ export function SoulsWonTable({ souls, loading, onEdit, onDelete }: SoulsWonTabl
                     </CardDescription>
                 </CardHeader>
             </Card>
-            {souls.map((soul) => <SoulCard key={soul.id} soul={soul} onEdit={onEdit} onDelete={onDelete} />)}
+            {souls.map((soul) => <SoulCard key={soul.id} soul={soul} onEdit={onEdit} onDelete={onDelete} onFollowUp={onFollowUp} onViewHistory={onViewHistory} />)}
         </div>
       )
   }
@@ -717,7 +366,7 @@ export function SoulsWonTable({ souls, loading, onEdit, onDelete }: SoulsWonTabl
           </TableHeader>
           <TableBody>
             {souls.map((soul) => (
-              <SoulTableRow key={soul.id} soul={soul} onEdit={onEdit} onDelete={onDelete} />
+              <SoulTableRow key={soul.id} soul={soul} onEdit={onEdit} onDelete={onDelete} onFollowUp={onFollowUp} onViewHistory={onViewHistory} />
             ))}
           </TableBody>
         </Table>

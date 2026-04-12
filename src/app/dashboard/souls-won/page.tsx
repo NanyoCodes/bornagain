@@ -4,7 +4,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -26,7 +26,7 @@ import {
 import { PlusCircle, Download, Loader2 } from "lucide-react";
 import { SoulsWonTable } from "@/components/souls/souls-won-table";
 import { LogSoulForm } from "@/components/souls/log-soul-form";
-import type { Soul, FollowUpLogItem } from "@/lib/types";
+import type { Soul } from "@/lib/types";
 import { useCollection, useFirestore, useUser } from "@/firebase";
 import { collection, query, orderBy, doc, writeBatch } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
@@ -40,6 +40,8 @@ import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { EditSoulForm } from "@/components/souls/edit-soul-form";
+import { LogFollowUpDialog } from "@/components/souls/log-follow-up-dialog";
+import { ViewHistoryDialog } from "@/components/souls/view-history-dialog";
 
 // This is a workaround for the jspdf-autotable types
 declare module 'jspdf' {
@@ -51,16 +53,17 @@ declare module 'jspdf' {
 export default function SoulsWonPage() {
   const { user, loading: userLoading } = useUser();
   const firestore = useFirestore();
-  const router = useRouter();
   const { toast } = useToast();
   const [isLogDialogOpen, setIsLogDialogOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const isMobile = useIsMobile();
   const { searchTerm, setSearchPlaceholder, setIsSearchVisible, setSearchTerm } = useSearch();
 
-  // Centralize state for dialogs
+  // Centralize state for all dialogs on this page
   const [soulToEdit, setSoulToEdit] = useState<Soul | null>(null);
   const [soulToDelete, setSoulToDelete] = useState<Soul | null>(null);
+  const [soulForFollowUp, setSoulForFollowUp] = useState<Soul | null>(null);
+  const [soulForHistory, setSoulForHistory] = useState<Soul | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
@@ -94,14 +97,11 @@ export default function SoulsWonPage() {
     );
   }, [souls, searchTerm]);
 
-  const handleSoulLogged = () => {
-    setIsLogDialogOpen(false);
-  };
+  // Dialog close handlers
+  const handleSoulLogged = () => setIsLogDialogOpen(false);
+  const handleSoulUpdated = () => setSoulToEdit(null);
+  const handleFollowUpLogged = () => setSoulForFollowUp(null);
 
-  const handleSoulUpdated = () => {
-    setSoulToEdit(null);
-  };
-  
   const handleDeleteSoul = async () => {
     if (!soulToDelete || !user || !firestore) return;
     setIsDeleting(true);
@@ -181,7 +181,6 @@ export default function SoulsWonPage() {
             head: [headers],
             body: body,
             didDrawPage: (data) => {
-                // Header
                 if (logo?.imageUrl) {
                     doc.addImage(logo.imageUrl, 'JPG', data.settings.margin.left, 15, 12, 12);
                 }
@@ -190,7 +189,7 @@ export default function SoulsWonPage() {
             },
             startY: 32,
             styles: { fontSize: 8, cellPadding: 1.5 },
-            headStyles: { fillColor: [34, 139, 34] },
+            headStyles: { fillColor: [0, 128, 0] },
         });
 
         doc.save(`souls-won-${new Date().toISOString().slice(0,10)}.pdf`);
@@ -198,7 +197,6 @@ export default function SoulsWonPage() {
         return;
     }
 
-    // CSV Export Logic
     const escapeCsvCell = (cellData: any): string => {
         if (cellData === null || cellData === undefined) return '';
         const stringVal = String(cellData);
@@ -302,19 +300,40 @@ export default function SoulsWonPage() {
         loading={loading}
         onEdit={setSoulToEdit}
         onDelete={setSoulToDelete}
+        onFollowUp={setSoulForFollowUp}
+        onViewHistory={setSoulForHistory}
       />
 
-      <Dialog open={!!soulToEdit} onOpenChange={(open) => !open && setSoulToEdit(null)}>
-        <DialogContent>
-            <DialogHeader>
-                <DialogTitle>Edit Soul Details</DialogTitle>
-                <DialogDescription>Make changes to the record for {soulToEdit?.firstName} {soulToEdit?.lastName}.</DialogDescription>
-            </DialogHeader>
-            <div className="max-h-[70vh] overflow-y-auto pr-2">
-              {soulToEdit && <EditSoulForm soul={soulToEdit} onSoulUpdated={handleSoulUpdated} />}
-            </div>
-        </DialogContent>
-      </Dialog>
+      {soulToEdit && (
+        <Dialog open={!!soulToEdit} onOpenChange={(open) => !open && setSoulToEdit(null)}>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>Edit Soul Details</DialogTitle>
+                    <DialogDescription>Make changes to the record for {soulToEdit?.firstName} {soulToEdit?.lastName}.</DialogDescription>
+                </DialogHeader>
+                <div className="max-h-[70vh] overflow-y-auto pr-2">
+                    <EditSoulForm soul={soulToEdit} onSoulUpdated={handleSoulUpdated} />
+                </div>
+            </DialogContent>
+        </Dialog>
+      )}
+
+      {soulForFollowUp && (
+        <LogFollowUpDialog
+            soul={soulForFollowUp}
+            isOpen={!!soulForFollowUp}
+            onOpenChange={(open) => !open && setSoulForFollowUp(null)}
+            onFollowUpLogged={handleFollowUpLogged}
+        />
+      )}
+
+      {soulForHistory && (
+        <ViewHistoryDialog
+            soul={soulForHistory}
+            isOpen={!!soulForHistory}
+            onOpenChange={(open) => !open && setSoulForHistory(null)}
+        />
+      )}
 
       <AlertDialog open={!!soulToDelete} onOpenChange={(open) => !open && setSoulToDelete(null)}>
         <AlertDialogContent>
