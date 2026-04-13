@@ -118,22 +118,25 @@ export default function SoulsWonPage() {
 
     const userSoulRef = doc(firestore, `users/${user.uid}/souls`, soulToDelete.id);
     const globalSoulRef = doc(firestore, 'souls', soulToDelete.id);
+    const soul = soulToDelete;
 
     try {
         const batch = writeBatch(firestore);
         batch.delete(userSoulRef);
         batch.delete(globalSoulRef);
+
+        setSoulToDelete(null); // Close the dialog FIRST
         await batch.commit();
 
         toast({
             title: "Soul Record Deleted",
-            description: `${soulToDelete.firstName}'s record has been removed.`,
+            description: `${soul.firstName}'s record has been removed.`,
         });
-        setSoulToDelete(null); // Close the dialog on success
         router.refresh();
     } catch (error) {
+        setSoulToDelete(soul); // Re-open on error
         const permissionError = new FirestorePermissionError({
-            path: `BATCH_DELETE:SOUL:${soulToDelete.id}`,
+            path: `BATCH_DELETE:SOUL:${soul.id}`,
             operation: 'delete',
         }, user);
         errorEmitter.emit('permission-error', permissionError);
@@ -346,23 +349,25 @@ export default function SoulsWonPage() {
         />
       )}
 
-      <AlertDialog open={!!soulToDelete} onOpenChange={(open) => !open && setSoulToDelete(null)}>
-        <AlertDialogContent>
-            <AlertDialogHeader>
-                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                <AlertDialogDescription>
-                    This will permanently delete the record for {soulToDelete?.firstName} {soulToDelete?.lastName}. This action cannot be undone.
-                </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-                <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={handleDeleteSoul} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90">
-                    {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    Confirm Delete
-                </AlertDialogAction>
-            </AlertDialogFooter>
-        </AlertDialogContent>
-    </AlertDialog>
+      {soulToDelete && (
+        <AlertDialog open={!!soulToDelete} onOpenChange={(open) => !open && setSoulToDelete(null)}>
+            <AlertDialogContent>
+                <AlertDialogHeader>
+                    <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                        This will permanently delete the record for {soulToDelete?.firstName} {soulToDelete?.lastName}. This action cannot be undone.
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                    <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleDeleteSoul} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90">
+                        {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                        Confirm Delete
+                    </AlertDialogAction>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
+      )}
 
     </div>
   );

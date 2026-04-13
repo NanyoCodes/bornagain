@@ -172,16 +172,18 @@ export default function TestimoniesPage() {
     
     const collectionName = itemToDelete.type === 'testimony' ? 'testimonies' : 'prayerRequests';
     const docRef = doc(firestore, collectionName, itemToDelete.id);
+    const item = itemToDelete;
     
     try {
+        setItemToDelete(null); // Close dialog first
         await deleteDoc(docRef);
         toast({
-            title: `${itemToDelete.type === 'testimony' ? 'Testimony' : 'Prayer Request'} Deleted`,
-            description: `Your ${itemToDelete.name} has been successfully removed.`,
+            title: `${item.type === 'testimony' ? 'Testimony' : 'Prayer Request'} Deleted`,
+            description: `Your ${item.name} has been successfully removed.`,
         });
-        setItemToDelete(null);
         router.refresh();
     } catch (error) {
+        setItemToDelete(item); // Re-open on error
         const permissionError = new FirestorePermissionError({
           path: docRef.path,
           operation: 'delete',
@@ -307,7 +309,7 @@ export default function TestimoniesPage() {
       </Tabs>
       
       {itemToDelete && (
-        <AlertDialog open={!!itemToDelete} onOpenChange={() => setItemToDelete(null)}>
+        <AlertDialog open={!!itemToDelete} onOpenChange={(open) => !open && setItemToDelete(null)}>
             <AlertDialogContent>
             <AlertDialogHeader>
                 <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>

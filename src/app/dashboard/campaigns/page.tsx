@@ -3,7 +3,7 @@
 
 import { useMemo, useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { PlusCircle, Target, Loader2 } from "lucide-react";
+import { PlusCircle, Target, Loader2, Trash2 } from "lucide-react";
 import { CreateCampaignForm } from "@/components/campaigns/create-campaign-form";
 import {
   Dialog,
@@ -13,6 +13,16 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import {
   Sheet,
   SheetContent,
@@ -25,7 +35,7 @@ import { CampaignCard } from "@/components/campaigns/campaign-card";
 import type { Campaign, UserProfile, JoinedCampaign, Testimony } from "@/lib/types";
 import { useCollection, useFirestore, useUser } from "@/firebase";
 import { useDoc } from "@/firebase/firestore/use-doc";
-import { collection, query, orderBy, doc } from "firebase/firestore";
+import { collection, query, orderBy, doc, updateDoc, serverTimestamp } from "firebase/firestore";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useSearch } from "@/context/search-context";
@@ -37,6 +47,8 @@ import { ManageCampaignForm } from "@/components/campaigns/manage-campaign-form"
 import { LogSoulForm } from "@/components/souls/log-soul-form";
 import { CreateTestimonyForm } from "@/components/testimonies/create-testimony-form";
 import { useToast } from "@/hooks/use-toast";
+import { errorEmitter } from "@/firebase/error-emitter";
+import { FirestorePermissionError } from "@/firebase/errors";
 
 function CampaignSkeletons() {
   return (
@@ -121,7 +133,8 @@ export default function CampaignsPage() {
   const [campaignToManage, setCampaignToManage] = useState<Campaign | null>(null);
   const [campaignForSoul, setCampaignForSoul] = useState<Campaign | null>(null);
   const [campaignForTestimony, setCampaignForTestimony] = useState<Campaign | null>(null);
-
+  const [campaignToDelete, setCampaignToDelete] = useState<Campaign | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -171,11 +184,40 @@ export default function CampaignsPage() {
   const handleSoulLogged = () => {
     setCampaignForSoul(null);
     toast({ title: "Soul Logged!", description: "The new soul has been added to your personal dashboard." });
+    router.refresh();
   };
   
   const handleTestimonyCreated = () => {
     setCampaignForTestimony(null);
     toast({ title: "Testimony Shared!", description: "Thank you for sharing." });
+    router.refresh();
+  };
+  
+  const handleDeleteCampaign = async () => {
+    if (!campaignToDelete || !user || !firestore) return;
+    setIsDeleting(true);
+    const campaignRef = doc(firestore, 'campaigns', campaignToDelete.id);
+    const deleteData = {
+        status: 'deleted',
+        deletionReason: 'Campaign deleted by organizer.',
+        deletedAt: serverTimestamp(),
+    };
+    
+    try {
+        setCampaignToDelete(null);
+        await updateDoc(campaignRef, deleteData);
+        toast({ title: 'Campaign Deleted', description: 'The campaign has been successfully deleted.' });
+        router.refresh();
+    } catch (error) {
+        const permissionError = new FirestorePermissionError({
+            path: campaignRef.path,
+            operation: 'update',
+            requestResourceData: deleteData,
+        }, user);
+        errorEmitter.emit('permission-error', permissionError);
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   const processedCampaigns = useMemo(() => {
@@ -408,7 +450,14 @@ export default function CampaignsPage() {
             <SheetContent side="bottom">
               <SheetHeader><SheetTitle>Manage Campaign</SheetTitle><SheetDescription>Update the progress and details of your campaign.</SheetDescription></SheetHeader>
               <div className="max-h-[80vh] overflow-y-auto p-1 mt-4">
-                <ManageCampaignForm campaign={campaignToManage} onCampaignUpdated={() => { setCampaignToManage(null); router.refresh(); }} />
+                <ManageCampaignForm 
+                  campaign={campaignToManage} 
+                  onCampaignUpdated={() => { setCampaignToManage(null); router.refresh(); }} 
+                  onDelete={() => {
+                    setCampaignToDelete(campaignToManage);
+                    setCampaignToManage(null);
+                  }}
+                />
               </div>
             </SheetContent>
           </Sheet>
@@ -417,11 +466,38 @@ export default function CampaignsPage() {
             <DialogContent className="sm:max-w-2xl">
               <DialogHeader><DialogTitle>Manage Campaign</DialogTitle><DialogDescription>Update the progress and details of your campaign.</DialogDescription></DialogHeader>
               <div className="max-h-[70vh] overflow-y-auto pr-2">
-                <ManageCampaignForm campaign={campaignToManage} onCampaignUpdated={() => { setCampaignToManage(null); router.refresh(); }} />
+                <ManageCampaignForm 
+                  campaign={campaignToManage} 
+                  onCampaignUpdated={() => { setCampaignToManage(null); router.refresh(); }}
+                  onDelete={() => {
+                    setCampaignToDelete(campaignToManage);
+                    setCampaignToManage(null);
+                  }}
+                />
               </div>
             </DialogContent>
           </Dialog>
         )
+      )}
+
+      {campaignToDelete && (
+        <AlertDialog open={!!campaignToDelete} onOpenChange={(open) => !open && setCampaignToDelete(null)}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                    This will mark the campaign as deleted and hide it from public view. This action cannot be undone.
+                </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+                <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={handleDeleteCampaign} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90">
+                    {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    Confirm Deletion
+                </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       )}
 
       {campaignForSoul && (

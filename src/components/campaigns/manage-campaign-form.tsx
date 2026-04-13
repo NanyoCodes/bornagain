@@ -2,7 +2,7 @@
 
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -27,17 +27,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 import { useRouter } from 'next/navigation';
 import { LocationMapPicker } from '../common/location-map-picker';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion';
@@ -79,6 +68,7 @@ const formSchema = z.object({
 type ManageCampaignFormProps = {
   campaign: Campaign;
   onCampaignUpdated: () => void;
+  onDelete: () => void;
 };
 
 function ParticipantList({ campaign, participants, loading }: { campaign: Campaign, participants: CampaignParticipant[], loading: boolean }) {
@@ -134,7 +124,7 @@ function ParticipantList({ campaign, participants, loading }: { campaign: Campai
 }
 
 
-export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampaignFormProps) {
+export function ManageCampaignForm({ campaign, onCampaignUpdated, onDelete }: ManageCampaignFormProps) {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { user } = useUser();
@@ -142,8 +132,7 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
   const router = useRouter();
 
   const [isChatLoading, setIsChatLoading] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
-
+  
   const participantsQuery = useMemo(() => {
     if (!firestore || !campaign.id || !user || user.uid !== campaign.organizerId) return null;
     return query(collection(firestore, 'campaigns', campaign.id, 'participants'), orderBy('joinedAt', 'asc'));
@@ -173,27 +162,6 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
       lastUpdateReason: "",
     },
   });
-
-  useEffect(() => {
-    form.reset({
-      title: campaign.title || "",
-      description: campaign.description || "",
-      goal: campaign.goal || "",
-      location: campaign.location || "",
-      latitude: campaign.latitude,
-      longitude: campaign.longitude,
-      coverageRadius: campaign.coverageRadius,
-      startDate: safeToDate(campaign.startDate) ?? new Date(),
-      endDate: safeToDate(campaign.endDate) ?? new Date(),
-      startTime: campaign.startTime || "",
-      endTime: campaign.endTime || "",
-      scripture: campaign.scripture || "",
-      scriptureTestimony: campaign.scriptureTestimony || "",
-      maxParticipants: campaign.maxParticipants ?? undefined,
-      streamUrl: campaign.streamUrl || "",
-      lastUpdateReason: "",
-    });
-  }, [campaign, form]);
 
   const handleStartGroupChat = async () => {
     if (!user || !firestore) return;
@@ -252,33 +220,6 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
             setIsChatLoading(false);
         });
   };
-
-
-  const handleDeleteCampaign = async () => {
-    if (!user || !firestore) return;
-    setIsDeleting(true);
-    const campaignRef = doc(firestore, 'campaigns', campaign.id);
-    const deleteData: { [key: string]: any } = {
-        status: 'deleted',
-        deletionReason: 'Campaign deleted by organizer.',
-        deletedAt: serverTimestamp(),
-    };
-    
-    try {
-        await updateDoc(campaignRef, deleteData);
-        toast({ title: 'Campaign Deleted', description: 'The campaign has been successfully deleted.' });
-        onCampaignUpdated();
-    } catch (error) {
-        const permissionError = new FirestorePermissionError({
-            path: campaignRef.path,
-            operation: 'update',
-            requestResourceData: deleteData,
-        }, user);
-        errorEmitter.emit('permission-error', permissionError);
-        setIsDeleting(false);
-    }
-  };
-
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (!user || !firestore) {
@@ -615,26 +556,7 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated }: ManageCampai
                 <CardDescription>This action cannot be undone and will permanently remove the campaign from public view.</CardDescription>
             </CardHeader>
             <CardContent>
-                <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                        <Button variant="destructive">Delete Campaign</Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                        <AlertDialogHeader>
-                            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                            <AlertDialogDescription>
-                                This will mark the campaign as deleted and hide it from public view. This action cannot be undone.
-                            </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
-                            <AlertDialogAction onClick={handleDeleteCampaign} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90">
-                                {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                Confirm Deletion
-                            </AlertDialogAction>
-                        </AlertDialogFooter>
-                    </AlertDialogContent>
-                </AlertDialog>
+                <Button variant="destructive" type="button" onClick={onDelete}>Delete Campaign</Button>
             </CardContent>
         </Card>
     </div>
