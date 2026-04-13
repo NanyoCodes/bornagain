@@ -105,6 +105,7 @@ const getFullEndDate = (campaign: { _endDate: Date | null, endTime?: string}) =>
 export default function CampaignsPage() {
   const { user, loading: userLoading } = useUser();
   const firestore = useFirestore();
+  const router = useRouter();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const isMobile = useIsMobile();
@@ -156,6 +157,7 @@ export default function CampaignsPage() {
 
   const handleCampaignCreated = () => {
     setIsDialogOpen(false);
+    router.refresh();
   };
 
   const processedCampaigns = useMemo(() => {
@@ -384,7 +386,7 @@ export default function CampaignsPage() {
             <SheetContent side="bottom">
               <SheetHeader><SheetTitle>Manage Campaign</SheetTitle><SheetDescription>Update the progress and details of your campaign.</SheetDescription></SheetHeader>
               <div className="max-h-[80vh] overflow-y-auto p-1 mt-4">
-                <ManageCampaignForm campaign={campaignToManage} onCampaignUpdated={() => setCampaignToManage(null)} />
+                <ManageCampaignForm campaign={campaignToManage} onCampaignUpdated={() => { setCampaignToManage(null); router.refresh(); }} />
               </div>
             </SheetContent>
           </Sheet>
@@ -393,7 +395,7 @@ export default function CampaignsPage() {
             <DialogContent className="sm:max-w-2xl">
               <DialogHeader><DialogTitle>Manage Campaign</DialogTitle><DialogDescription>Update the progress and details of your campaign.</DialogDescription></DialogHeader>
               <div className="max-h-[70vh] overflow-y-auto pr-2">
-                <ManageCampaignForm campaign={campaignToManage} onCampaignUpdated={() => setCampaignToManage(null)} />
+                <ManageCampaignForm campaign={campaignToManage} onCampaignUpdated={() => { setCampaignToManage(null); router.refresh(); }} />
               </div>
             </DialogContent>
           </Dialog>

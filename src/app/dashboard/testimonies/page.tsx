@@ -61,6 +61,7 @@ export default function TestimoniesPage() {
   const firestore = useFirestore();
   const { user, loading: userLoading } = useUser();
   const { toast } = useToast();
+  const router = useRouter();
   
   const userDocRef = useMemo(() => user ? doc(firestore, 'users', user.uid) : null, [user?.uid, firestore]);
   const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userDocRef);
@@ -158,9 +159,11 @@ export default function TestimoniesPage() {
 
   const handleTestimonyCreated = () => {
     setIsTestimonyDialogOpen(false);
+    router.refresh();
   };
   const handlePrayerRequestCreated = () => {
     setIsPrayerDialogOpen(false);
+    router.refresh();
   };
   
   const handleConfirmDelete = async () => {
@@ -177,6 +180,7 @@ export default function TestimoniesPage() {
             description: `Your ${itemToDelete.name} has been successfully removed.`,
         });
         setItemToDelete(null);
+        router.refresh();
     } catch (error) {
         const permissionError = new FirestorePermissionError({
           path: docRef.path,
@@ -331,7 +335,7 @@ export default function TestimoniesPage() {
             </DialogDescription>
           </DialogHeader>
           <div className="max-h-[70vh] overflow-y-auto pr-2">
-            {itemToEdit && <EditTestimonyForm testimony={itemToEdit} onTestimonyUpdated={() => setItemToEdit(null)} />}
+            {itemToEdit && <EditTestimonyForm testimony={itemToEdit} onTestimonyUpdated={() => {setItemToEdit(null); router.refresh(); }} />}
           </div>
         </DialogContent>
       </Dialog>

@@ -54,6 +54,7 @@ export default function SoulsWonPage() {
   const { user, loading: userLoading } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
+  const router = useRouter();
   const [isLogDialogOpen, setIsLogDialogOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const isMobile = useIsMobile();
@@ -98,9 +99,18 @@ export default function SoulsWonPage() {
   }, [souls, searchTerm]);
 
   // Dialog close handlers
-  const handleSoulLogged = () => setIsLogDialogOpen(false);
-  const handleSoulUpdated = () => setSoulToEdit(null);
-  const handleFollowUpLogged = () => setSoulForFollowUp(null);
+  const handleSoulLogged = () => {
+    setIsLogDialogOpen(false);
+    router.refresh();
+  };
+  const handleSoulUpdated = () => {
+    setSoulToEdit(null);
+    router.refresh();
+  };
+  const handleFollowUpLogged = () => {
+    setSoulForFollowUp(null);
+    router.refresh();
+  };
 
   const handleDeleteSoul = async () => {
     if (!soulToDelete || !user || !firestore) return;
@@ -120,6 +130,7 @@ export default function SoulsWonPage() {
             description: `${soulToDelete.firstName}'s record has been removed.`,
         });
         setSoulToDelete(null); // Close the dialog on success
+        router.refresh();
     } catch (error) {
         const permissionError = new FirestorePermissionError({
             path: `BATCH_DELETE:SOUL:${soulToDelete.id}`,
@@ -282,9 +293,9 @@ export default function SoulsWonPage() {
               <DialogContent className="sm:max-w-lg">
                 <DialogHeader>
                   <DialogTitle>Log a New Soul</DialogTitle>
-                  <SheetDescription>
+                  <DialogDescription>
                     Record the details of the person you've ministered to.
-                  </SheetDescription>
+                  </DialogDescription>
                 </DialogHeader>
                 <div className="max-h-[70vh] overflow-y-auto pr-2">
                   {formContent}

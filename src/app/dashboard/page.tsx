@@ -91,6 +91,7 @@ import { actionItems, statusOptions } from '@/lib/follow-up-data';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { LogSoulForm } from '@/components/souls/log-soul-form';
 import { ProgressOverview } from '@/components/dashboard/progress-overview';
+import { useRouter } from 'next/navigation';
 
 function RecentSoulsList() {
   const { user } = useUser();
@@ -499,6 +500,7 @@ export default function DashboardPage() {
   const { user, loading: authLoading } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
+  const router = useRouter();
 
   const userDocRef = useMemo(() => {
     if (!user?.uid || !firestore) return null;
@@ -913,7 +915,7 @@ export default function DashboardPage() {
               </SheetDescription>
             </SheetHeader>
             <div className="max-h-[80vh] overflow-y-auto p-1 mt-4">
-              <LogSoulForm onSoulLogged={() => setIsLogSoulOpen(false)} />
+              <LogSoulForm onSoulLogged={() => { setIsLogSoulOpen(false); router.refresh(); }} />
             </div>
           </SheetContent>
         </Sheet>
@@ -927,7 +929,7 @@ export default function DashboardPage() {
               </DialogDescription>
             </DialogHeader>
             <div className="max-h-[70vh] overflow-y-auto pr-2">
-              <LogSoulForm onSoulLogged={() => setIsLogSoulOpen(false)} />
+              <LogSoulForm onSoulLogged={() => { setIsLogSoulOpen(false); router.refresh(); }} />
             </div>
           </DialogContent>
         </Dialog>
