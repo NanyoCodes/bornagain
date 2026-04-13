@@ -1,3 +1,4 @@
+
 'use client';
 
 import {
@@ -21,7 +22,7 @@ type WelcomePopupProps = {
 export function WelcomePopup({ isOpen, onClose, userName }: WelcomePopupProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-sm sm:max-w-lg p-0 grid grid-rows-[auto_1fr_auto] max-h-[90vh] sm:max-h-[80vh] overflow-hidden">
+      <DialogContent className="max-w-xs sm:max-w-sm p-0 grid grid-rows-[auto_1fr_auto] max-h-[90vh] sm:max-h-[80vh] overflow-hidden">
         <div className="bg-muted/40 pt-8 sm:pt-12 pb-6 sm:pb-8 px-6 sm:px-8 text-center row-start-1">
           <div className="w-16 h-16 sm:w-20 sm:h-20 bg-primary/10 text-primary rounded-full mx-auto flex items-center justify-center mb-4">
             <PartyPopper className="h-8 w-8 sm:h-10 sm:w-10" strokeWidth={1.5} />
