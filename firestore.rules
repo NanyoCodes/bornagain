@@ -175,6 +175,12 @@ service cloud.firestore {
         (
           request.resource.data.diff(resource.data).affectedKeys().hasOnly(['soulsLogged']) &&
           request.resource.data.soulsLogged == (resource.data.soulsLogged || 0) + 1
+        ) ||
+        // SCENARIO 3: A user joins a campaign.
+        (
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participants']) &&
+          request.resource.data.participants == resource.data.participants + 1 &&
+          (resource.data.maxParticipants == null || resource.data.participants < resource.data.maxParticipants)
         )
       );
 
