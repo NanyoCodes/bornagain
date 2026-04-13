@@ -28,7 +28,7 @@ export function WelcomePopup({ isOpen, onClose, userName }: WelcomePopupProps) {
             <PartyPopper className="h-8 w-8 sm:h-10 sm:w-10" strokeWidth={1.5} />
           </div>
           <DialogHeader className="items-center text-center">
-            <DialogTitle className="text-xl sm:text-2xl md:text-3xl font-bold font-headline">Welcome, {userName || 'User'}!</DialogTitle>
+            <DialogTitle className="text-xl sm:text-2xl md:text-3xl font-bold font-headline">Welcome, {userName || 'friend'}!</DialogTitle>
             <DialogDescription className="text-balance pt-2 text-sm sm:text-base">
               You've joined a global movement. Here’s how you can get started.
             </DialogDescription>

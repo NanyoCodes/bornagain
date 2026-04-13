@@ -304,7 +304,6 @@ export default function DashboardClientLayout({
       const userRef = doc(firestore, 'users', user.uid);
       const updatePayload = { lastActive: serverTimestamp() };
       updateDoc(userRef, updatePayload).catch(() => {
-        // Non-critical background task. We still want to emit a debuggable error.
         const permissionError = new FirestorePermissionError({
           path: userRef.path,
           operation: 'update',
@@ -313,22 +312,30 @@ export default function DashboardClientLayout({
         errorEmitter.emit('permission-error', permissionError);
       });
 
-      // Check if it's a new user to show the welcome popup
+      // --- Welcome Popup Logic ---
+      const isNewUserSession = sessionStorage.getItem('isNewUserSession');
+      if (isNewUserSession === null && user.metadata.creationTime && user.metadata.lastSignInTime) {
+          const creationTime = new Date(user.metadata.creationTime).getTime();
+          const lastSignInTime = new Date(user.metadata.lastSignInTime).getTime();
+          if (Math.abs(lastSignInTime - creationTime) < 5000) { // Heuristic for first login
+              sessionStorage.setItem('isNewUserSession', 'true');
+          } else {
+              sessionStorage.setItem('isNewUserSession', 'false');
+          }
+      }
+      
+      const isProfileComplete = userProfile && userProfile.firstName && userProfile.lastName;
       const welcomePopupShown = sessionStorage.getItem('welcomePopupShown');
-      if (!welcomePopupShown && user.metadata.creationTime && user.metadata.lastSignInTime) {
-        const creationTime = new Date(user.metadata.creationTime).getTime();
-        const lastSignInTime = new Date(user.metadata.lastSignInTime).getTime();
-        
-        // Show popup if last sign in is within a short time from creation (e.g., 5 seconds)
-        if (lastSignInTime - creationTime < 5000) {
+
+      if (sessionStorage.getItem('isNewUserSession') === 'true' && isProfileComplete && !welcomePopupShown) {
           setShowWelcomePopup(true);
           sessionStorage.setItem('welcomePopupShown', 'true');
-        }
       }
+
     } else if (!loading && !user) {
       router.push('/login');
     }
-  }, [user, loading, router, firestore]);
+  }, [user, loading, router, firestore, userProfile]);
 
   const getLoadingMessage = (path: string) => {
     if (path.startsWith('/dashboard/souls-won')) return 'Loading souls won...';
@@ -372,11 +379,13 @@ export default function DashboardClientLayout({
           </main>
         </div>
         <BottomNavBar unreadChatCount={unreadChatCount} />
-        <WelcomePopup 
-          isOpen={showWelcomePopup}
-          onClose={() => setShowWelcomePopup(false)}
-          userName={user?.displayName}
-        />
+        {!isProfileIncomplete && (
+          <WelcomePopup 
+            isOpen={showWelcomePopup}
+            onClose={() => setShowWelcomePopup(false)}
+            userName={userProfile?.firstName}
+          />
+        )}
          <Dialog open={isProfileIncomplete}>
           <DialogContent hideCloseButton className="sm:max-w-lg">
             <DialogHeader>
@@ -390,8 +399,8 @@ export default function DashboardClientLayout({
                 <EditProfileModal
                   userProfile={userProfile}
                   onClose={() => {
-                    // The dialog will close automatically when isProfileIncomplete becomes false
-                    // after the profile is updated and the userProfile data re-fetches.
+                    // This is intentionally empty. The dialog closes automatically 
+                    // when the `isProfileIncomplete` state becomes false.
                   }}
                 />
               )}
