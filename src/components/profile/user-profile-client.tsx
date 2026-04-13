@@ -178,7 +178,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                   <AccordionContent className="px-6 pb-6 pt-0">
                       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                           {activeCampaigns.map(campaign => (
-                          <CampaignCard key={campaign.id} campaign={campaign} userId={currentUser?.uid} userProfile={userProfile} distance={null} onManage={() => {}} onLogSoul={() => {}} onShareTestimony={() => {}} />
+                          <CampaignCard key={campaign.id} campaign={campaign} userId={currentUser?.uid} userProfile={userProfile} distance={null} onManage={() => {}} onLogSoul={() => {}} onShareTestimony={() => {}} onDelete={() => {}} />
                           ))}
                       </div>
                   </AccordionContent>

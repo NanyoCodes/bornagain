@@ -262,8 +262,14 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
 
     const userDocRef = useMemo(() => user ? doc(firestore, 'users', user.uid) : null, [user, firestore]);
     const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userDocRef);
+
+    const organizerDocRef = useMemo(() => {
+      if (!campaign?.organizerId || !firestore) return null;
+      return doc(firestore, 'users', campaign.organizerId);
+    }, [campaign, firestore]);
+    const { data: organizerProfile, loading: organizerProfileLoading } = useDoc<UserProfile>(organizerDocRef);
     
-    const loading = campaignLoading || profileLoading;
+    const loading = campaignLoading || profileLoading || organizerProfileLoading;
     
     const isOwner = useMemo(() => user?.uid === campaign?.organizerId, [user, campaign]);
 
@@ -426,12 +432,13 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                                 <CardTitle className="text-lg">Organizer</CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <div className="flex items-center gap-3 group">
-                                     <Avatar>
+                                <Link href={`/dashboard/profile/${campaign.organizerId}`} className="flex items-center gap-3 group">
+                                    <Avatar>
+                                        <AvatarImage src={organizerProfile?.photoURL ?? undefined} />
                                         <AvatarFallback>{campaign.organizerFirstName?.charAt(0)}{campaign.organizerLastName?.charAt(0)}</AvatarFallback>
                                     </Avatar>
-                                    <span className="font-semibold">{campaign.organizerFirstName} {campaign.organizerLastName}</span>
-                                </div>
+                                    <span className="font-semibold group-hover:underline">{campaign.organizerFirstName} {campaign.organizerLastName}</span>
+                                </Link>
                             </CardContent>
                         </Card>
 
@@ -520,6 +527,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                       key={(campaign.lastUpdatedAt?.seconds ?? campaign.createdAt.seconds).toString()}
                       campaign={campaign}
                       onCampaignUpdated={handleFormClose}
+                      onDelete={() => {}}
                     />
                   </div>
                 </SheetContent>
@@ -536,6 +544,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                           key={(campaign.lastUpdatedAt?.seconds ?? campaign.createdAt.seconds).toString()}
                           campaign={campaign}
                           onCampaignUpdated={handleFormClose}
+                          onDelete={() => {}}
                         />
                     </div>
                 </DialogContent>

@@ -134,10 +134,11 @@ type CampaignCardProps = {
   onManage: () => void;
   onLogSoul: () => void;
   onShareTestimony: () => void;
+  onDelete: () => void;
 };
 
 
-export function CampaignCard({ campaign, userId, userProfile, distance, onManage, onLogSoul, onShareTestimony, isJoined }: CampaignCardProps) {
+export function CampaignCard({ campaign, userId, userProfile, distance, onManage, onLogSoul, onShareTestimony, onDelete, isJoined }: CampaignCardProps) {
   const { toast } = useToast();
   const firestore = useFirestore();
   const { user } = useUser();
@@ -449,7 +450,7 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
       >
         <CardHeader className="p-6 flex flex-row items-start justify-between gap-4">
             <div className="flex-1 min-w-0">
-                <CardTitle className="font-bold text-lg truncate">
+                <CardTitle className="font-bold text-lg md:text-xl truncate">
                   {campaign.title}
                 </CardTitle>
                 <CardDescription className="text-sm mt-1 truncate">{campaign.goal}</CardDescription>
@@ -595,9 +596,7 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
           userProfile={userProfile}
           isOpen={isJoinDialogOpen}
           onOpenChange={setIsJoinDialogOpen}
-          onCampaignJoined={() => {
-            router.refresh();
-          }}
+          onCampaignJoined={() => {}}
         />
       )}
     </>
