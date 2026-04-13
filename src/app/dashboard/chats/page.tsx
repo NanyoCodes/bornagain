@@ -7,12 +7,14 @@ import type { Chat, Notification } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { format, isToday } from 'date-fns';
 import { useMemo } from 'react';
 import { MessagesSquare } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import { ChatParticipantsDialog } from '@/components/chat/participants-dialog';
 
 function ChatListItem({ chat, currentUserId, isUnread }: { chat: Chat, currentUserId: string, isUnread: boolean }) {
@@ -69,13 +71,22 @@ function ChatListItem({ chat, currentUserId, isUnread }: { chat: Chat, currentUs
     return (
         <div onClick={() => router.push(`/dashboard/chats/${chat.id}`)} className={containerClasses}>
             <div className="flex items-center gap-4 p-4">
-                 <div className="relative">
-                    <Avatar className="h-12 w-12">
-                        <AvatarImage src={otherParticipantInfo.photoURL} />
-                        <AvatarFallback>{otherParticipantInfo.firstName?.charAt(0)}</AvatarFallback>
-                    </Avatar>
-                    {isUnread && <div className="absolute top-0 right-0 h-3 w-3 rounded-full bg-primary border-2 border-background" />}
-                </div>
+                <Dialog>
+                    <DialogTrigger asChild onClick={(e) => {e.stopPropagation()}} disabled={!otherParticipantInfo.photoURL}>
+                        <div className="relative">
+                            <Avatar className={cn("h-12 w-12", otherParticipantInfo.photoURL && "cursor-pointer")}>
+                                <AvatarImage src={otherParticipantInfo.photoURL} />
+                                <AvatarFallback>{otherParticipantInfo.firstName?.charAt(0)}</AvatarFallback>
+                            </Avatar>
+                            {isUnread && <div className="absolute top-0 right-0 h-3 w-3 rounded-full bg-primary border-2 border-background" />}
+                        </div>
+                    </DialogTrigger>
+                    {otherParticipantInfo.photoURL && (
+                    <DialogContent className="p-0 bg-transparent border-0 w-auto max-w-lg" onClick={(e) => {e.stopPropagation()}}>
+                        <Image src={otherParticipantInfo.photoURL} alt={`${otherParticipantInfo.firstName} ${otherParticipantInfo.lastName}`} width={600} height={600} className="rounded-lg object-contain"/>
+                    </DialogContent>
+                    )}
+                </Dialog>
                 <div className="flex-1 min-w-0">
                     <div className="flex justify-between items-start">
                         <div className={cn("font-semibold truncate", isUnread && "text-primary")}>{otherParticipantInfo.firstName} {otherParticipantInfo.lastName}</div>

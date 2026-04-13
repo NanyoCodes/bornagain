@@ -18,12 +18,14 @@ import { useUser, useFirestore } from "@/firebase";
 import { useState, useMemo, memo } from "react";
 import { useRouter } from "next/navigation";
 import Link from 'next/link';
+import Image from 'next/image';
 import { useToast } from "@/hooks/use-toast";
 import { doc, updateDoc, arrayUnion } from "firebase/firestore";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 
 export const PrayerRequestCard = memo(function PrayerRequestCard({ prayerRequest, onDelete }: { prayerRequest: PrayerRequest, onDelete: () => void }) {
   const { user } = useUser();
@@ -80,14 +82,21 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({ prayerRequest
       <Card className="flex flex-col h-full overflow-hidden shadow-md">
         <CardHeader className="flex flex-row items-start justify-between gap-4">
             <div className="flex items-center gap-3 min-w-0 flex-1">
-                <Link href={profileLink} onClick={(e) => { if (!isClickable) e.preventDefault(); e.stopPropagation(); }} className={!isClickable ? 'pointer-events-none' : ''}>
-                    <Avatar>
-                        {!prayerRequest.isAnonymous && <AvatarImage src={prayerRequest.authorAvatarUrl} />}
-                        <AvatarFallback>
-                            {prayerRequest.isAnonymous ? <User className="h-4 w-4" /> : `${prayerRequest.authorFirstName?.charAt(0) || ''}${prayerRequest.authorLastName?.charAt(0) || ''}`}
-                        </AvatarFallback>
-                    </Avatar>
-                </Link>
+                <Dialog>
+                  <DialogTrigger asChild onClick={(e) => e.stopPropagation()} disabled={prayerRequest.isAnonymous || !prayerRequest.authorAvatarUrl}>
+                      <Avatar className={cn(!prayerRequest.isAnonymous && prayerRequest.authorAvatarUrl && "cursor-pointer")}>
+                          {!prayerRequest.isAnonymous && <AvatarImage src={prayerRequest.authorAvatarUrl} />}
+                          <AvatarFallback>
+                              {prayerRequest.isAnonymous ? <User className="h-4 w-4" /> : `${prayerRequest.authorFirstName?.charAt(0) || ''}${prayerRequest.authorLastName?.charAt(0) || ''}`}
+                          </AvatarFallback>
+                      </Avatar>
+                  </DialogTrigger>
+                  {!prayerRequest.isAnonymous && prayerRequest.authorAvatarUrl && (
+                      <DialogContent className="p-0 bg-transparent border-0 w-auto max-w-lg" onClick={(e) => e.stopPropagation()}>
+                          <Image src={prayerRequest.authorAvatarUrl} alt={authorName} width={600} height={600} className="rounded-lg object-contain"/>
+                      </DialogContent>
+                  )}
+                </Dialog>
                 <div className="min-w-0 flex-1">
                      <Link href={profileLink} onClick={(e) => { if (!isClickable) e.preventDefault(); e.stopPropagation(); }} className={!isClickable ? 'pointer-events-none' : ''}>
                         <CardTitle className={cn("text-base font-semibold", isClickable && "hover:underline")}>{authorName}</CardTitle>

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useMemo } from 'react';
@@ -12,7 +13,10 @@ import { Button } from '@/components/ui/button';
 import { TestimonyCard } from '@/components/testimonies/testimony-card';
 import { CampaignCard } from '@/components/campaigns/campaign-card';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
+import { cn } from '@/lib/utils';
 
 export default function UserProfileClient({ userId }: { userId: string }) {
   const firestore = useFirestore();
@@ -100,12 +104,21 @@ export default function UserProfileClient({ userId }: { userId: string }) {
       <Card>
         <CardContent className="p-6 sm:p-8">
           <div className="flex flex-col sm:flex-row items-start gap-6">
-            <Avatar className="h-24 w-24 sm:h-32 sm:w-32 border-4 border-background shrink-0">
-              <AvatarImage src={photoURL ?? undefined} alt={displayName || 'user'} />
-              <AvatarFallback className="text-4xl sm:text-5xl">
-                {firstName?.charAt(0) || email?.charAt(0) || 'U'}
-              </AvatarFallback>
-            </Avatar>
+            <Dialog>
+              <DialogTrigger asChild disabled={!photoURL}>
+                <Avatar className={cn("h-24 w-24 sm:h-32 sm:w-32 border-4 border-background shrink-0", photoURL && "cursor-pointer")}>
+                  <AvatarImage src={photoURL ?? undefined} alt={displayName || 'user'} />
+                  <AvatarFallback className="text-4xl sm:text-5xl">
+                    {firstName?.charAt(0) || email?.charAt(0) || 'U'}
+                  </AvatarFallback>
+                </Avatar>
+              </DialogTrigger>
+              {photoURL && (
+                <DialogContent className="p-0 bg-transparent border-0 w-auto max-w-lg">
+                    <Image src={photoURL} alt={displayName || 'user'} width={600} height={600} className="rounded-lg object-contain"/>
+                </DialogContent>
+              )}
+            </Dialog>
             <div className="flex-grow">
                 <div className="flex flex-col sm:flex-row justify-between items-start">
                     <div className="flex-grow">
@@ -144,7 +157,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                   <AccordionContent className="px-6 pb-6 pt-0">
                       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                           {testimonies.map(testimony => (
-                          <TestimonyCard key={testimony.id} testimony={testimony} distance={null} />
+                          <TestimonyCard key={testimony.id} testimony={testimony} distance={null} onDelete={() => {}} onEdit={() => {}} />
                           ))}
                       </div>
                   </AccordionContent>
@@ -161,7 +174,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                   <AccordionContent className="px-6 pb-6 pt-0">
                       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                           {activeCampaigns.map(campaign => (
-                          <CampaignCard key={campaign.id} campaign={campaign} userId={currentUser?.uid} userProfile={userProfile} distance={null} />
+                          <CampaignCard key={campaign.id} campaign={campaign} userId={currentUser?.uid} userProfile={userProfile} distance={null} onManage={() => {}} onLogSoul={() => {}} onShareTestimony={() => {}} />
                           ))}
                       </div>
                   </AccordionContent>

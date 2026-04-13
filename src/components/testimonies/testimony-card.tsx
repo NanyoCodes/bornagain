@@ -3,6 +3,7 @@
 
 import * as React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import {
   Card,
   CardContent,
@@ -26,6 +27,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { doc, updateDoc, arrayUnion } from "firebase/firestore";
 import { errorEmitter } from "@/firebase/error-emitter";
@@ -106,15 +108,22 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, dist
       <Card className="flex flex-col h-full overflow-hidden shadow-md">
         <CardHeader className="flex flex-row items-start justify-between gap-4">
           <div className="flex items-center gap-3 min-w-0 flex-1">
-            <Link href={profileLink} onClick={(e) => e.stopPropagation()}>
-              <Avatar>
-                <AvatarImage src={testimony.authorAvatarUrl} alt={authorFullName} />
-                <AvatarFallback>{testimony.authorFirstName?.charAt(0)}{testimony.authorLastName?.charAt(0)}</AvatarFallback>
-              </Avatar>
-            </Link>
+            <Dialog>
+              <DialogTrigger asChild onClick={(e) => e.stopPropagation()} disabled={!testimony.authorAvatarUrl}>
+                <Avatar className={cn(testimony.authorAvatarUrl && "cursor-pointer")}>
+                  <AvatarImage src={testimony.authorAvatarUrl} alt={authorFullName} />
+                  <AvatarFallback>{testimony.authorFirstName?.charAt(0)}{testimony.authorLastName?.charAt(0)}</AvatarFallback>
+                </Avatar>
+              </DialogTrigger>
+              {testimony.authorAvatarUrl && (
+                  <DialogContent className="p-0 bg-transparent border-0 w-auto max-w-lg" onClick={(e) => e.stopPropagation()}>
+                      <Image src={testimony.authorAvatarUrl} alt={authorFullName} width={600} height={600} className="rounded-lg object-contain"/>
+                  </DialogContent>
+              )}
+            </Dialog>
             <div className="min-w-0 flex-1">
               <Link href={profileLink} onClick={(e) => e.stopPropagation()}>
-              <CardTitle className="text-base font-semibold hover:underline">{authorFullName}</CardTitle>
+                <CardTitle className="text-base font-semibold hover:underline">{authorFullName}</CardTitle>
               </Link>
               <CardDescription className="text-xs mt-1">
                   {displayDate}

@@ -1,7 +1,9 @@
+
 'use client';
 
 import { useMemo, useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useUser, useFirestore, useDoc } from '@/firebase';
 import { doc, collection, addDoc, serverTimestamp, query, getDocs, where, writeBatch, arrayRemove, deleteDoc, getDoc } from 'firebase/firestore';
 import type { UserProfile } from '@/lib/types';
@@ -33,9 +35,15 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { format } from 'date-fns';
 import { Input } from '@/components/ui/input';
 import { useSearch } from '@/context/search-context';
+import { cn } from '@/lib/utils';
 
 function PartnerDisciplineStatus({ partnerId, date }: { partnerId: string; date: Date }) {
     const firestore = useFirestore();
@@ -301,10 +309,19 @@ export default function AccountabilityPage() {
                 <Card key={partner.userId}>
                     <CardHeader className="flex flex-row items-center justify-between">
                          <div className="flex items-center gap-4">
-                            <Avatar className="h-12 w-12 border">
-                                <AvatarImage src={partner.photoURL} />
-                                <AvatarFallback>{partner.firstName?.charAt(0)}</AvatarFallback>
-                            </Avatar>
+                            <Dialog>
+                              <DialogTrigger asChild disabled={!partner.photoURL}>
+                                <Avatar className={cn("h-12 w-12 border", partner.photoURL && "cursor-pointer")}>
+                                    <AvatarImage src={partner.photoURL} />
+                                    <AvatarFallback>{partner.firstName?.charAt(0)}</AvatarFallback>
+                                </Avatar>
+                              </DialogTrigger>
+                              {partner.photoURL && (
+                                  <DialogContent className="p-0 bg-transparent border-0 w-auto max-w-lg">
+                                      <Image src={partner.photoURL} alt={`${partner.firstName} ${partner.lastName}`} width={600} height={600} className="rounded-lg object-contain"/>
+                                  </DialogContent>
+                              )}
+                            </Dialog>
                             <div>
                                 <h2 className="text-xl font-semibold">{partner.firstName} {partner.lastName}</h2>
                             </div>
