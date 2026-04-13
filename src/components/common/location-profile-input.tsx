@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -6,7 +5,6 @@ import { useJsApiLoader, Autocomplete } from '@react-google-maps/api';
 import { Input } from '@/components/ui/input';
 import { Loader2 } from 'lucide-react';
 import { type UseFormReturn } from 'react-hook-form';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 const libraries: ('places')[] = ['places'];
 const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
@@ -64,28 +62,21 @@ export function LocationProfileInput({ form }: LocationProfileInputProps) {
     
     if (!GOOGLE_MAPS_API_KEY || GOOGLE_MAPS_API_KEY === 'YOUR_API_KEY_HERE') {
         return (
-            <Alert variant="destructive">
-                <AlertTitle>Google Maps Not Configured</AlertTitle>
-                <AlertDescription>
-                    The Google Maps API key is missing. Please open <code className="font-code p-1 bg-destructive/20 rounded">docs/google-maps-setup-guide.md</code> for the setup guide to enable map features.
-                </AlertDescription>
-            </Alert>
+            <Input
+                placeholder="Location search not configured"
+                disabled
+                className="text-base"
+            />
         );
     }
 
     if (loadError) {
-        let errorMessage = 'Error loading Google Maps. Please check your API key and network connection.';
-        if (loadError.message.includes('ApiNotActivatedMapError') || loadError.message.includes('InvalidKeyMapError')) {
-            errorMessage = 'The Google Maps API key seems to be invalid or missing required permissions.';
-        }
-        
-         return (
-            <Alert variant="destructive">
-                <AlertTitle>Google Maps Error</AlertTitle>
-                <AlertDescription>
-                    {errorMessage} Please open <code className="font-code p-1 bg-destructive/20 rounded">docs/google-maps-setup-guide.md</code> to resolve this.
-                </AlertDescription>
-            </Alert>
+        return (
+             <Input
+                placeholder="Location search unavailable"
+                disabled
+                className="text-base"
+            />
         );
     }
 

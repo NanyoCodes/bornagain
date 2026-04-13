@@ -293,7 +293,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                       </Button>
                     </div>
                     {loadError ? (
-                        <p className="text-sm text-destructive">Map failed to load. Please check your API key.</p>
+                       null
                     ) : !isLoaded ? (
                         <Skeleton className="h-60 w-full mt-2" />
                     ) : (
