@@ -33,11 +33,8 @@ import {
 import { useCollection, useFirestore, useUser } from "@/firebase";
 import { collection, serverTimestamp, query, where, limit, getDocs, addDoc, doc, runTransaction, getDoc } from "firebase/firestore";
 import { useState, useRef, useEffect, useMemo } from "react";
-import { ManageCampaignForm } from "./manage-campaign-form";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
-import { LogSoulForm } from "../souls/log-soul-form";
-import { CreateTestimonyForm } from "../testimonies/create-testimony-form";
 import { Badge } from "../ui/badge";
 import { useRouter } from "next/navigation";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip";
@@ -127,25 +124,28 @@ function ParticipantsDialog({ campaign, children }: { campaign: Campaign; childr
   );
 }
 
-export function CampaignCard({ campaign, userId, userProfile, distance, onManage }: { campaign: Campaign; userId?: string, userProfile?: UserProfile | null, distance: number | null, onManage: () => void }) {
+type CampaignCardProps = {
+  campaign: Campaign;
+  userId?: string;
+  userProfile?: UserProfile | null;
+  distance: number | null;
+  onManage: () => void;
+  onLogSoul: () => void;
+  onShareTestimony: () => void;
+};
+
+
+export function CampaignCard({ campaign, userId, userProfile, distance, onManage, onLogSoul, onShareTestimony }: CampaignCardProps) {
   const { toast } = useToast();
   const firestore = useFirestore();
   const { user } = useUser();
   const router = useRouter();
   const isOwner = campaign.organizerId === userId;
-  const [isLogSoulOpen, setIsLogSoulOpen] = useState(false);
-  const [isTestimonyDialogOpen, setIsTestimonyDialogOpen] = useState(false);
   const [isChatLoading, setIsChatLoading] = useState(false);
 
   const descriptionRef = useRef<HTMLParagraphElement>(null);
   const [isDescriptionTruncated, setIsDescriptionTruncated] = useState(false);
   const [showFullDescription, setShowFullDescription] = useState(false);
-
-  const isMobile = useIsMobile();
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const handleCardClick = (e: React.MouseEvent<HTMLDivElement>) => {
     // Prevent navigation if a button, link or interactive element was clicked
@@ -371,12 +371,12 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
     }
     return `Created on ${format(createdAtDate, 'PPP')}`;
   }, [campaign.createdAt, status, endDate]);
-
+  
   const LogSoulButton = (
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <Button variant="outline" size="icon" onClick={(e) => { e.stopPropagation(); setIsLogSoulOpen(true); }}>
+          <Button variant="outline" size="icon" onClick={(e) => { e.stopPropagation(); onLogSoul(); }}>
             <UserCheck2 className="h-4 w-4" />
           </Button>
         </TooltipTrigger>
@@ -386,41 +386,20 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
       </Tooltip>
     </TooltipProvider>
   );
-
-  const ShareTestimonyDialog = (
-    <Dialog open={isTestimonyDialogOpen} onOpenChange={setIsTestimonyDialogOpen}>
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <DialogTrigger asChild>
-              <Button variant="outline" size="icon" onClick={(e) => e.stopPropagation()}>
-                <Newspaper className="h-4 w-4" />
-              </Button>
-            </DialogTrigger>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>Share Testimony</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-      <DialogContent className="sm:max-w-lg">
-        <DialogHeader>
-          <DialogTitle>Share Testimony for "{campaign.title}"</DialogTitle>
-          <DialogDescription>
-            Encourage others by sharing what God has done during this campaign.
-          </DialogDescription>
-        </DialogHeader>
-        <div className="max-h-[70vh] overflow-y-auto pr-2">
-          {userProfile && <CreateTestimonyForm
-            onTestimonyCreated={() => {
-              setIsTestimonyDialogOpen(false);
-              toast({ title: "Testimony Shared!", description: "Thank you for sharing." });
-            }}
-            campaign={campaign}
-          />}
-        </div>
-      </DialogContent>
-    </Dialog>
+  
+  const ShareTestimonyButton = (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button variant="outline" size="icon" onClick={(e) => { e.stopPropagation(); onShareTestimony(); }}>
+            <Newspaper className="h-4 w-4" />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>Share Testimony</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 
 
@@ -555,7 +534,7 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
                 {isOwner ? (
                     <div onClick={stopPropagation} className="flex items-center gap-2">
                       {status === 'Ongoing' && LogSoulButton}
-                      {(status === 'Ongoing' || status === 'Past') && ShareTestimonyDialog}
+                      {(status === 'Ongoing' || status === 'Past') && ShareTestimonyButton}
                       <Button variant="outline" size="icon" onClick={(e) => { e.stopPropagation(); onManage(); }}>
                         <Edit className="h-4 w-4" /><span className="sr-only">Manage Campaign</span>
                       </Button>
@@ -564,7 +543,7 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
                 ) : (
                     <div onClick={stopPropagation} className="flex items-center gap-2">
                         {status === 'Ongoing' && LogSoulButton}
-                        {(status === 'Ongoing' || status === 'Past') && ShareTestimonyDialog}
+                        {(status === 'Ongoing' || status === 'Past') && ShareTestimonyButton}
                         <TooltipProvider>
                             <Tooltip>
                                 <TooltipTrigger asChild>
@@ -590,25 +569,6 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
             <span className="flex-shrink-0">{footerDateText}</span>
         </CardFooter>
       </Card>
-      <Dialog open={isLogSoulOpen} onOpenChange={setIsLogSoulOpen}>
-          <DialogContent className="sm:max-w-lg">
-              <DialogHeader>
-                  <DialogTitle>Log a Soul Won in "{campaign.title}"</DialogTitle>
-                  <DialogDescription>
-                      Record the details of the person ministered to during this campaign. This will appear on your personal dashboard.
-                  </DialogDescription>
-              </DialogHeader>
-              <div className="max-h-[70vh] overflow-y-auto pr-2">
-                  <LogSoulForm
-                      onSoulLogged={() => {
-                          setIsLogSoulOpen(false);
-                          toast({ title: "Soul Logged!", description: "The new soul has been added to your personal dashboard." });
-                      }}
-                      defaultCampaign={campaign}
-                  />
-              </div>
-          </DialogContent>
-      </Dialog>
     </>
   );
 }

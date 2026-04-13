@@ -22,7 +22,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { CampaignCard } from "@/components/campaigns/campaign-card";
-import type { Campaign, UserProfile, JoinedCampaign } from "@/lib/types";
+import type { Campaign, UserProfile, JoinedCampaign, Testimony } from "@/lib/types";
 import { useCollection, useFirestore, useUser } from "@/firebase";
 import { useDoc } from "@/firebase/firestore/use-doc";
 import { collection, query, orderBy, doc } from "firebase/firestore";
@@ -34,7 +34,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { safeToDate, haversineDistance } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { ManageCampaignForm } from "@/components/campaigns/manage-campaign-form";
-
+import { LogSoulForm } from "@/components/souls/log-soul-form";
+import { CreateTestimonyForm } from "@/components/testimonies/create-testimony-form";
+import { useToast } from "@/hooks/use-toast";
 
 function CampaignSkeletons() {
   return (
@@ -106,14 +108,20 @@ export default function CampaignsPage() {
   const { user, loading: userLoading } = useUser();
   const firestore = useFirestore();
   const router = useRouter();
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const { toast } = useToast();
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const isMobile = useIsMobile();
   const { searchTerm, setSearchPlaceholder, setIsSearchVisible, setSearchTerm } = useSearch();
   const [now, setNow] = useState<Date | null>(null);
   const [filter, setFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
+  
+  // State for managed dialogs
   const [campaignToManage, setCampaignToManage] = useState<Campaign | null>(null);
+  const [campaignForSoul, setCampaignForSoul] = useState<Campaign | null>(null);
+  const [campaignForTestimony, setCampaignForTestimony] = useState<Campaign | null>(null);
+
 
   useEffect(() => {
     setMounted(true);
@@ -156,8 +164,18 @@ export default function CampaignsPage() {
   const loading = userLoading || profileLoading || campaignsLoading || joinedCampaignsLoading;
 
   const handleCampaignCreated = () => {
-    setIsDialogOpen(false);
+    setIsCreateOpen(false);
     router.refresh();
+  };
+  
+  const handleSoulLogged = () => {
+    setCampaignForSoul(null);
+    toast({ title: "Soul Logged!", description: "The new soul has been added to your personal dashboard." });
+  };
+  
+  const handleTestimonyCreated = () => {
+    setCampaignForTestimony(null);
+    toast({ title: "Testimony Shared!", description: "Thank you for sharing." });
   };
 
   const processedCampaigns = useMemo(() => {
@@ -302,7 +320,7 @@ export default function CampaignsPage() {
           <p className="text-sm text-muted-foreground">Join or create soul-winning campaigns.</p>
         </div>
         {mounted && isMobile ? (
-          <Sheet open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <Sheet open={isCreateOpen} onOpenChange={setIsCreateOpen}>
             <SheetTrigger asChild>{triggerButton}</SheetTrigger>
             <SheetContent side="bottom">
               <SheetHeader>
@@ -317,7 +335,7 @@ export default function CampaignsPage() {
             </SheetContent>
           </Sheet>
         ) : (
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
             <DialogTrigger asChild>{triggerButton}</DialogTrigger>
             <DialogContent className="sm:max-w-2xl">
               <DialogHeader>
@@ -366,6 +384,8 @@ export default function CampaignsPage() {
             userProfile={userProfile}
             distance={campaign._distance}
             onManage={() => setCampaignToManage(campaign)}
+            onLogSoul={() => setCampaignForSoul(campaign)}
+            onShareTestimony={() => setCampaignForTestimony(campaign)}
           />
         ))}
          {!loading && sortedAndFilteredCampaigns?.length === 0 && (
@@ -380,9 +400,10 @@ export default function CampaignsPage() {
           </div>
         )}
       </div>
+      
       {campaignToManage && (
         mounted && isMobile ? (
-          <Sheet open={!!campaignToManage} onOpenChange={() => setCampaignToManage(null)}>
+          <Sheet open={!!campaignToManage} onOpenChange={(open) => !open && setCampaignToManage(null)}>
             <SheetContent side="bottom">
               <SheetHeader><SheetTitle>Manage Campaign</SheetTitle><SheetDescription>Update the progress and details of your campaign.</SheetDescription></SheetHeader>
               <div className="max-h-[80vh] overflow-y-auto p-1 mt-4">
@@ -391,7 +412,7 @@ export default function CampaignsPage() {
             </SheetContent>
           </Sheet>
         ) : (
-          <Dialog open={!!campaignToManage} onOpenChange={() => setCampaignToManage(null)}>
+          <Dialog open={!!campaignToManage} onOpenChange={(open) => !open && setCampaignToManage(null)}>
             <DialogContent className="sm:max-w-2xl">
               <DialogHeader><DialogTitle>Manage Campaign</DialogTitle><DialogDescription>Update the progress and details of your campaign.</DialogDescription></DialogHeader>
               <div className="max-h-[70vh] overflow-y-auto pr-2">
@@ -401,6 +422,45 @@ export default function CampaignsPage() {
           </Dialog>
         )
       )}
+
+      {campaignForSoul && (
+        <Dialog open={!!campaignForSoul} onOpenChange={(open) => !open && setCampaignForSoul(null)}>
+            <DialogContent className="sm:max-w-lg">
+                <DialogHeader>
+                    <DialogTitle>Log a Soul Won in "{campaignForSoul.title}"</DialogTitle>
+                    <DialogDescription>
+                        Record the details of the person ministered to during this campaign.
+                    </DialogDescription>
+                </DialogHeader>
+                <div className="max-h-[70vh] overflow-y-auto pr-2">
+                    <LogSoulForm
+                        onSoulLogged={handleSoulLogged}
+                        defaultCampaign={campaignForSoul}
+                    />
+                </div>
+            </DialogContent>
+        </Dialog>
+      )}
+      
+      {campaignForTestimony && (
+        <Dialog open={!!campaignForTestimony} onOpenChange={(open) => !open && setCampaignForTestimony(null)}>
+            <DialogContent className="sm:max-w-lg">
+                <DialogHeader>
+                    <DialogTitle>Share Testimony for "{campaignForTestimony.title}"</DialogTitle>
+                    <DialogDescription>
+                        Encourage others by sharing what God has done during this campaign.
+                    </DialogDescription>
+                </DialogHeader>
+                <div className="max-h-[70vh] overflow-y-auto pr-2">
+                   <CreateTestimonyForm
+                        onTestimonyCreated={handleTestimonyCreated}
+                        campaign={campaignForTestimony}
+                    />
+                </div>
+            </DialogContent>
+        </Dialog>
+      )}
+
     </div>
   );
 }
