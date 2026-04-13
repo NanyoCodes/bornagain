@@ -1,4 +1,3 @@
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -18,8 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useRef, useEffect } from "react";
-import { Loader2, Sparkles } from "lucide-react";
-import { generateCampaignIdeas } from "@/ai/flows/generate-campaign-ideas";
+import { Loader2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
@@ -93,7 +91,6 @@ export function CreateCampaignForm({ onCampaignCreated, userProfile }: CreateCam
   const { user } = useUser();
   const firestore = useFirestore();
 
-  const [isGenerating, setIsGenerating] = useState(false);
   const [ideas, setIdeas] = useState<CampaignIdeas | null>(null);
   const [selectedName, setSelectedName] = useState('');
   const [customName, setCustomName] = useState('');
@@ -134,34 +131,6 @@ export function CreateCampaignForm({ onCampaignCreated, userProfile }: CreateCam
           const days = diffInDays + 1;
           durationText = `Campaign duration: ${days} days.`;
       }
-  }
-
-
-  async function onAiSubmit(values: z.infer<typeof formSchema>) {
-    setIsGenerating(true);
-    setIdeas(null);
-    const goal = values.goal === 'Custom' && values.customGoal ? values.customGoal : values.goal;
-    try {
-      const result = await generateCampaignIdeas({
-        goal: goal,
-        location: values.location,
-        targetAudience: values.targetAudience,
-        scripture: values.scripture,
-      });
-      setIdeas(result);
-      if (result.campaignNames.length > 0) {
-        setSelectedName(result.campaignNames[0]);
-      }
-      setFinalDescription(result.description);
-    } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "Generation Failed",
-        description: "Could not generate campaign ideas. Please try again.",
-      });
-    } finally {
-      setIsGenerating(false);
-    }
   }
 
   const handleCreateManually = () => {
@@ -267,7 +236,7 @@ export function CreateCampaignForm({ onCampaignCreated, userProfile }: CreateCam
   return (
     <>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onAiSubmit)} className="space-y-4">
+        <form className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <FormField
               control={form.control}
@@ -487,27 +456,14 @@ export function CreateCampaignForm({ onCampaignCreated, userProfile }: CreateCam
               )}
             />
            <p className="text-sm text-muted-foreground pt-2">
-            Fill the details above, then either use AI to generate ideas or create the campaign manually.
+            Fill the details above to continue.
            </p>
 
-            <div className="flex flex-col sm:flex-row gap-2">
-                <Button type="submit" className="w-full" disabled={isGenerating}>
-                    {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
-                    Use AI Assistant
-                </Button>
-                <Button type="button" variant="secondary" className="w-full" onClick={handleCreateManually}>
-                    Create Manually
-                </Button>
-            </div>
+            <Button type="button" className="w-full" onClick={handleCreateManually}>
+                Continue
+            </Button>
         </form>
       </Form>
-
-      {isGenerating && (
-        <div className="mt-6 flex flex-col items-center justify-center text-center">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            <p className="mt-2 text-muted-foreground">AI is brainstorming...</p>
-        </div>
-      )}
 
       {ideas && (
         <Card className="mt-6" ref={ideasCardRef}>
