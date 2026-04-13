@@ -330,7 +330,9 @@ export default function AccountabilityPage() {
                               )}
                             </Dialog>
                             <div>
-                                <h2 className="text-xl font-semibold">{partner.firstName} {partner.lastName}</h2>
+                                <Link href={`/dashboard/profile/${partner.userId}`}>
+                                    <h2 className="text-lg sm:text-xl font-semibold hover:underline">{partner.firstName} {partner.lastName}</h2>
+                                </Link>
                             </div>
                         </div>
                         <div className="flex items-center gap-2">
