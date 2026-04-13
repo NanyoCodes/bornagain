@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 
 export function AuthLayout({ children }: { children: React.ReactNode }) {
   const logo = PlaceHolderImages.find((img) => img.id === 'logo');
@@ -14,14 +15,10 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
         <div className="mx-auto grid w-full max-w-xs gap-6">
             <div className="grid gap-2 text-left mb-6">
                 {logo && (
-                    <Image
-                        src={logo.imageUrl}
-                        alt={logo.description}
-                        width={80}
-                        height={80}
-                        className="mb-2 rounded-lg"
-                        data-ai-hint={logo.imageHint}
-                    />
+                    <Avatar className="h-20 w-20 mb-2">
+                        <AvatarImage src={logo.imageUrl} alt={logo.description} />
+                        <AvatarFallback>T</AvatarFallback>
+                    </Avatar>
                 )}
             </div>
             {children}

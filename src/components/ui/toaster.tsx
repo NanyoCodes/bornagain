@@ -11,6 +11,7 @@ import {
   ToastViewport,
 } from "@/components/ui/toast"
 import { PlaceHolderImages } from "@/lib/placeholder-images";
+import { Avatar, AvatarFallback, AvatarImage } from "./avatar";
 
 const logo = PlaceHolderImages.find((img) => img.id === 'logo');
 
@@ -24,14 +25,10 @@ export function Toaster() {
           <Toast key={id} {...props}>
             <div className="flex items-start gap-4">
               {logo && (
-                <Image
-                  src={logo.imageUrl}
-                  alt={logo.description}
-                  width={32}
-                  height={32}
-                  className="rounded-md mt-1"
-                  data-ai-hint={logo.imageHint}
-                />
+                <Avatar className="h-8 w-8 mt-1">
+                  <AvatarImage src={logo.imageUrl} alt={logo.description} />
+                  <AvatarFallback>T</AvatarFallback>
+                </Avatar>
               )}
               <div className="grid gap-1">
                 {title && <ToastTitle>{title}</ToastTitle>}

@@ -120,7 +120,12 @@ function AppHeader({ unreadChatCount }: { unreadChatCount: number }) {
           href="/dashboard"
           className="flex items-center gap-2 text-lg font-semibold"
         >
-          {logo && <Image src={logo.imageUrl} alt={logo.description} width={56} height={56} data-ai-hint={logo.imageHint} />}
+          {logo && (
+            <Avatar className="h-14 w-14">
+              <AvatarImage src={logo.imageUrl} alt={logo.description} />
+              <AvatarFallback>T</AvatarFallback>
+            </Avatar>
+          )}
           <span className="sr-only">Testify</span>
         </Link>
         {/* Desktop Navigation */}
@@ -344,14 +349,10 @@ export default function DashboardClientLayout({
     return (
       <div className="flex min-h-screen w-full flex-col items-center justify-center bg-background">
         {logo && (
-          <Image
-            src={logo.imageUrl}
-            alt={logo.description}
-            width={80}
-            height={80}
-            className="mb-6 rounded-lg animate-pulse"
-            data-ai-hint={logo.imageHint}
-          />
+          <Avatar className="h-20 w-20 mb-6 animate-pulse">
+            <AvatarImage src={logo.imageUrl} alt={logo.description} />
+            <AvatarFallback>T</AvatarFallback>
+          </Avatar>
         )}
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
         <p className="mt-4 text-muted-foreground">{getLoadingMessage(pathname)}</p>
