@@ -20,13 +20,13 @@ type WelcomePopupProps = {
 export function WelcomePopup({ isOpen, onClose, userName }: WelcomePopupProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-lg p-0 overflow-hidden">
+      <DialogContent className="max-w-sm sm:max-w-lg p-0 overflow-hidden">
         <div className="bg-muted/40 pt-12 pb-8 px-8 text-center">
           <div className="w-20 h-20 bg-primary/10 text-primary rounded-full mx-auto flex items-center justify-center mb-4">
             <PartyPopper className="h-10 w-10" strokeWidth={1.5} />
           </div>
           <DialogHeader className="items-center text-center">
-            <DialogTitle className="text-3xl font-bold font-headline">Welcome, {userName || 'User'}!</DialogTitle>
+            <DialogTitle className="text-2xl sm:text-3xl font-bold font-headline">Welcome, {userName || 'User'}!</DialogTitle>
             <DialogDescription className="text-balance pt-2 text-base">
               You've joined a global movement. Here’s how you can get started.
             </DialogDescription>
