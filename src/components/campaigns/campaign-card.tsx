@@ -41,6 +41,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { safeToDate } from "@/lib/utils";
+import { JoinCampaignDialog } from "./join-campaign-dialog";
 
 
 function ParticipantsDialog({ campaign, children }: { campaign: Campaign; children: React.ReactNode; }) {
@@ -129,19 +130,21 @@ type CampaignCardProps = {
   userId?: string;
   userProfile?: UserProfile | null;
   distance: number | null;
+  isJoined?: boolean;
   onManage: () => void;
   onLogSoul: () => void;
   onShareTestimony: () => void;
 };
 
 
-export function CampaignCard({ campaign, userId, userProfile, distance, onManage, onLogSoul, onShareTestimony }: CampaignCardProps) {
+export function CampaignCard({ campaign, userId, userProfile, distance, onManage, onLogSoul, onShareTestimony, isJoined }: CampaignCardProps) {
   const { toast } = useToast();
   const firestore = useFirestore();
   const { user } = useUser();
   const router = useRouter();
   const isOwner = campaign.organizerId === userId;
   const [isChatLoading, setIsChatLoading] = useState(false);
+  const [isJoinDialogOpen, setIsJoinDialogOpen] = useState(false);
 
   const descriptionRef = useRef<HTMLParagraphElement>(null);
   const [isDescriptionTruncated, setIsDescriptionTruncated] = useState(false);
@@ -542,8 +545,25 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
                     </div>
                 ) : (
                     <div onClick={stopPropagation} className="flex items-center gap-2">
+                        {!isJoined && status !== 'Past' && (
+                            <Button onClick={(e) => {
+                                e.stopPropagation();
+                                if (!userProfile) {
+                                    toast({ variant: 'destructive', title: 'Please log in to join.' });
+                                    return;
+                                }
+                                setIsJoinDialogOpen(true);
+                            }}>
+                                Join Campaign
+                            </Button>
+                        )}
+                        {isJoined && (
+                            <Badge variant="secondary" className="flex items-center gap-2 py-2 px-3"><UserCheck2 className="h-4 w-4" /> Joined</Badge>
+                        )}
+
                         {status === 'Ongoing' && LogSoulButton}
                         {(status === 'Ongoing' || status === 'Past') && ShareTestimonyButton}
+                        
                         <TooltipProvider>
                             <Tooltip>
                                 <TooltipTrigger asChild>
@@ -569,6 +589,17 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
             <span className="flex-shrink-0">{footerDateText}</span>
         </CardFooter>
       </Card>
+      {userProfile && !isOwner && (
+        <JoinCampaignDialog
+          campaign={campaign}
+          userProfile={userProfile}
+          isOpen={isJoinDialogOpen}
+          onOpenChange={setIsJoinDialogOpen}
+          onCampaignJoined={() => {
+            router.refresh();
+          }}
+        />
+      )}
     </>
   );
 }

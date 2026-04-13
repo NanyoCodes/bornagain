@@ -340,9 +340,9 @@ export default function CampaignsPage() {
             <DialogContent className="sm:max-w-2xl">
               <DialogHeader>
                 <DialogTitle>Create a New Campaign</DialogTitle>
-                <DialogDescription>
-                  Use our AI assistant to help you craft the perfect campaign to reach souls for Christ.
-                </DialogDescription>
+                <SheetDescription>
+                  Fill in the details below to create your campaign.
+                </SheetDescription>
               </DialogHeader>
               <div className="max-h-[70vh] overflow-y-auto pr-2">
                 {formContent}
@@ -382,6 +382,7 @@ export default function CampaignsPage() {
             campaign={campaign} 
             userId={user?.uid}
             userProfile={userProfile}
+            isJoined={joinedCampaignIds.has(campaign.id)}
             distance={campaign._distance}
             onManage={() => setCampaignToManage(campaign)}
             onLogSoul={() => setCampaignForSoul(campaign)}
