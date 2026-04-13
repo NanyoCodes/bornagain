@@ -62,6 +62,7 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
     }
 
     setIsSubmitting(true);
+    onTestimonyUpdated(); // Close dialog immediately
     
     const testimonyUpdate: { [key: string]: any } = {
         category: values.category,
@@ -77,7 +78,6 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
                 title: "Testimony Updated!",
                 description: "Your changes have been saved successfully.",
             });
-            onTestimonyUpdated();
         })
         .catch(() => {
             const permissionError = new FirestorePermissionError({

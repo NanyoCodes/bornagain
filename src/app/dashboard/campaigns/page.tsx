@@ -42,7 +42,6 @@ import { useSearch } from "@/context/search-context";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { safeToDate, haversineDistance } from "@/lib/utils";
-import { useRouter } from "next/navigation";
 import { ManageCampaignForm } from "@/components/campaigns/manage-campaign-form";
 import { LogSoulForm } from "@/components/souls/log-soul-form";
 import { CreateTestimonyForm } from "@/components/testimonies/create-testimony-form";
@@ -119,7 +118,6 @@ const getFullEndDate = (campaign: { _endDate: Date | null, endTime?: string}) =>
 export default function CampaignsPage() {
   const { user, loading: userLoading } = useUser();
   const firestore = useFirestore();
-  const router = useRouter();
   const { toast } = useToast();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -178,19 +176,16 @@ export default function CampaignsPage() {
 
   const handleCampaignCreated = () => {
     setIsCreateOpen(false);
-    router.refresh();
   };
   
   const handleSoulLogged = () => {
     setCampaignForSoul(null);
     toast({ title: "Soul Logged!", description: "The new soul has been added to your personal dashboard." });
-    router.refresh();
   };
   
   const handleTestimonyCreated = () => {
     setCampaignForTestimony(null);
     toast({ title: "Testimony Shared!", description: "Thank you for sharing." });
-    router.refresh();
   };
   
   const handleDeleteCampaign = async () => {
@@ -207,7 +202,6 @@ export default function CampaignsPage() {
         setCampaignToDelete(null);
         await updateDoc(campaignRef, deleteData);
         toast({ title: 'Campaign Deleted', description: 'The campaign has been successfully deleted.' });
-        router.refresh();
     } catch (error) {
         const permissionError = new FirestorePermissionError({
             path: campaignRef.path,
@@ -368,7 +362,7 @@ export default function CampaignsPage() {
               <SheetHeader>
                 <SheetTitle>Create a New Campaign</SheetTitle>
                 <SheetDescription>
-                  Use our AI assistant to help you craft the perfect campaign to reach souls for Christ.
+                  Fill in the details below to create your campaign.
                 </SheetDescription>
               </SheetHeader>
               <div className="max-h-[80vh] overflow-y-auto p-1 mt-4">
@@ -452,7 +446,7 @@ export default function CampaignsPage() {
               <div className="max-h-[80vh] overflow-y-auto p-1 mt-4">
                 <ManageCampaignForm 
                   campaign={campaignToManage} 
-                  onCampaignUpdated={() => { setCampaignToManage(null); router.refresh(); }} 
+                  onCampaignUpdated={() => { setCampaignToManage(null); }} 
                   onDelete={() => {
                     setCampaignToDelete(campaignToManage);
                     setCampaignToManage(null);
@@ -468,7 +462,7 @@ export default function CampaignsPage() {
               <div className="max-h-[70vh] overflow-y-auto pr-2">
                 <ManageCampaignForm 
                   campaign={campaignToManage} 
-                  onCampaignUpdated={() => { setCampaignToManage(null); router.refresh(); }}
+                  onCampaignUpdated={() => { setCampaignToManage(null); }}
                   onDelete={() => {
                     setCampaignToDelete(campaignToManage);
                     setCampaignToManage(null);

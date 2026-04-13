@@ -2,7 +2,6 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import {
@@ -54,7 +53,6 @@ export default function SoulsWonPage() {
   const { user, loading: userLoading } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
-  const router = useRouter();
   const [isLogDialogOpen, setIsLogDialogOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const isMobile = useIsMobile();
@@ -101,15 +99,12 @@ export default function SoulsWonPage() {
   // Dialog close handlers
   const handleSoulLogged = () => {
     setIsLogDialogOpen(false);
-    router.refresh();
   };
   const handleSoulUpdated = () => {
     setSoulToEdit(null);
-    router.refresh();
   };
   const handleFollowUpLogged = () => {
     setSoulForFollowUp(null);
-    router.refresh();
   };
 
   const handleDeleteSoul = async () => {
@@ -132,7 +127,6 @@ export default function SoulsWonPage() {
             title: "Soul Record Deleted",
             description: `${soul.firstName}'s record has been removed.`,
         });
-        router.refresh();
     } catch (error) {
         setSoulToDelete(soul); // Re-open on error
         const permissionError = new FirestorePermissionError({

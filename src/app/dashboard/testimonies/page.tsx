@@ -61,7 +61,6 @@ export default function TestimoniesPage() {
   const firestore = useFirestore();
   const { user, loading: userLoading } = useUser();
   const { toast } = useToast();
-  const router = useRouter();
   
   const userDocRef = useMemo(() => user ? doc(firestore, 'users', user.uid) : null, [user?.uid, firestore]);
   const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userDocRef);
@@ -159,11 +158,9 @@ export default function TestimoniesPage() {
 
   const handleTestimonyCreated = () => {
     setIsTestimonyDialogOpen(false);
-    router.refresh();
   };
   const handlePrayerRequestCreated = () => {
     setIsPrayerDialogOpen(false);
-    router.refresh();
   };
   
   const handleConfirmDelete = async () => {
@@ -174,16 +171,18 @@ export default function TestimoniesPage() {
     const docRef = doc(firestore, collectionName, itemToDelete.id);
     const item = itemToDelete;
     
+    // Close the dialog first to prevent race conditions on re-render
+    setItemToDelete(null);
+
     try {
-        setItemToDelete(null); // Close dialog first
         await deleteDoc(docRef);
         toast({
             title: `${item.type === 'testimony' ? 'Testimony' : 'Prayer Request'} Deleted`,
             description: `Your ${item.name} has been successfully removed.`,
         });
-        router.refresh();
     } catch (error) {
-        setItemToDelete(item); // Re-open on error
+        // If the delete fails, re-open the dialog to allow the user to try again
+        setItemToDelete(item);
         const permissionError = new FirestorePermissionError({
           path: docRef.path,
           operation: 'delete',
@@ -337,7 +336,7 @@ export default function TestimoniesPage() {
             </DialogDescription>
           </DialogHeader>
           <div className="max-h-[70vh] overflow-y-auto pr-2">
-            {itemToEdit && <EditTestimonyForm testimony={itemToEdit} onTestimonyUpdated={() => {setItemToEdit(null); router.refresh(); }} />}
+            {itemToEdit && <EditTestimonyForm testimony={itemToEdit} onTestimonyUpdated={() => {setItemToEdit(null); }} />}
           </div>
         </DialogContent>
       </Dialog>
