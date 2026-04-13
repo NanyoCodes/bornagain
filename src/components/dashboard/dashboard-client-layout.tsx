@@ -121,7 +121,7 @@ function AppHeader({ unreadChatCount }: { unreadChatCount: number }) {
           className="flex items-center gap-2 text-lg font-semibold"
         >
           {logo && (
-            <Avatar className="h-14 w-14">
+            <Avatar className="h-11 w-11">
               <AvatarImage src={logo.imageUrl} alt={logo.description} />
               <AvatarFallback>T</AvatarFallback>
             </Avatar>
@@ -349,7 +349,7 @@ export default function DashboardClientLayout({
     return (
       <div className="flex min-h-screen w-full flex-col items-center justify-center bg-background">
         {logo && (
-          <Avatar className="h-20 w-20 mb-6 animate-pulse">
+          <Avatar className="h-16 w-16 mb-6 animate-pulse">
             <AvatarImage src={logo.imageUrl} alt={logo.description} />
             <AvatarFallback>T</AvatarFallback>
           </Avatar>

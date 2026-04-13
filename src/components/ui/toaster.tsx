@@ -25,7 +25,7 @@ export function Toaster() {
           <Toast key={id} {...props}>
             <div className="flex items-start gap-4">
               {logo && (
-                <Avatar className="h-8 w-8 mt-1">
+                <Avatar className="h-6 w-6 mt-1">
                   <AvatarImage src={logo.imageUrl} alt={logo.description} />
                   <AvatarFallback>T</AvatarFallback>
                 </Avatar>

@@ -15,7 +15,7 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
         <div className="mx-auto grid w-full max-w-xs gap-6">
             <div className="grid gap-2 text-left mb-6">
                 {logo && (
-                    <Avatar className="h-20 w-20 mb-2">
+                    <Avatar className="h-16 w-16 mb-2">
                         <AvatarImage src={logo.imageUrl} alt={logo.description} />
                         <AvatarFallback>T</AvatarFallback>
                     </Avatar>
