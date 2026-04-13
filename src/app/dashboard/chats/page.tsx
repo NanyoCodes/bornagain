@@ -14,7 +14,7 @@ import { useMemo } from 'react';
 import { MessagesSquare } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import { ChatParticipantsDialog } from '@/components/chat/participants-dialog';
 
 function ChatListItem({ chat, currentUserId, isUnread }: { chat: Chat, currentUserId: string, isUnread: boolean }) {
@@ -83,6 +83,10 @@ function ChatListItem({ chat, currentUserId, isUnread }: { chat: Chat, currentUs
                     </DialogTrigger>
                     {otherParticipantInfo.photoURL && (
                     <DialogContent className="p-0 bg-transparent border-0 w-auto max-w-lg" onClick={(e) => {e.stopPropagation()}}>
+                        <DialogHeader className="sr-only">
+                            <DialogTitle>Profile photo of {otherParticipantInfo.firstName} {otherParticipantInfo.lastName}</DialogTitle>
+                            <DialogDescription>A larger view of the user's profile photo.</DialogDescription>
+                        </DialogHeader>
                         <Image src={otherParticipantInfo.photoURL} alt={`${otherParticipantInfo.firstName} ${otherParticipantInfo.lastName}`} width={600} height={600} className="rounded-lg object-contain"/>
                     </DialogContent>
                     )}

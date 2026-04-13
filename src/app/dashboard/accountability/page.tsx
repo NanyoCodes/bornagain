@@ -38,6 +38,9 @@ import {
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { format } from 'date-fns';
@@ -318,6 +321,10 @@ export default function AccountabilityPage() {
                               </DialogTrigger>
                               {partner.photoURL && (
                                   <DialogContent className="p-0 bg-transparent border-0 w-auto max-w-lg">
+                                      <DialogHeader className="sr-only">
+                                          <DialogTitle>Profile photo of {partner.firstName} {partner.lastName}</DialogTitle>
+                                          <DialogDescription>A larger view of the user's profile photo.</DialogDescription>
+                                      </DialogHeader>
                                       <Image src={partner.photoURL} alt={`${partner.firstName} ${partner.lastName}`} width={600} height={600} className="rounded-lg object-contain"/>
                                   </DialogContent>
                               )}

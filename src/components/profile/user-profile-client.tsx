@@ -15,7 +15,7 @@ import { CampaignCard } from '@/components/campaigns/campaign-card';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import { cn } from '@/lib/utils';
 
 export default function UserProfileClient({ userId }: { userId: string }) {
@@ -115,6 +115,10 @@ export default function UserProfileClient({ userId }: { userId: string }) {
               </DialogTrigger>
               {photoURL && (
                 <DialogContent className="p-0 bg-transparent border-0 w-auto max-w-lg">
+                    <DialogHeader className="sr-only">
+                        <DialogTitle>Profile photo of {displayName || 'user'}</DialogTitle>
+                        <DialogDescription>A larger view of the user's profile photo.</DialogDescription>
+                    </DialogHeader>
                     <Image src={photoURL} alt={displayName || 'user'} width={600} height={600} className="rounded-lg object-contain"/>
                 </DialogContent>
               )}

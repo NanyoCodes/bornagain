@@ -25,7 +25,7 @@ import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
 
 export const PrayerRequestCard = memo(function PrayerRequestCard({ prayerRequest, onDelete }: { prayerRequest: PrayerRequest, onDelete: () => void }) {
   const { user } = useUser();
@@ -93,6 +93,10 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({ prayerRequest
                   </DialogTrigger>
                   {!prayerRequest.isAnonymous && prayerRequest.authorAvatarUrl && (
                       <DialogContent className="p-0 bg-transparent border-0 w-auto max-w-lg" onClick={(e) => e.stopPropagation()}>
+                          <DialogHeader className="sr-only">
+                            <DialogTitle>Profile photo of {authorName}</DialogTitle>
+                            <DialogDescription>A larger view of the user's profile photo.</DialogDescription>
+                          </DialogHeader>
                           <Image src={prayerRequest.authorAvatarUrl} alt={authorName} width={600} height={600} className="rounded-lg object-contain"/>
                       </DialogContent>
                   )}

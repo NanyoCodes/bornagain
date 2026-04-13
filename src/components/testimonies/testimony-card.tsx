@@ -27,7 +27,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { doc, updateDoc, arrayUnion } from "firebase/firestore";
 import { errorEmitter } from "@/firebase/error-emitter";
@@ -117,7 +117,11 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, dist
               </DialogTrigger>
               {testimony.authorAvatarUrl && (
                   <DialogContent className="p-0 bg-transparent border-0 w-auto max-w-lg" onClick={(e) => e.stopPropagation()}>
-                      <Image src={testimony.authorAvatarUrl} alt={authorFullName} width={600} height={600} className="rounded-lg object-contain"/>
+                    <DialogHeader className="sr-only">
+                        <DialogTitle>Profile photo of {authorFullName}</DialogTitle>
+                        <DialogDescription>A larger view of the user's profile photo.</DialogDescription>
+                    </DialogHeader>
+                    <Image src={testimony.authorAvatarUrl} alt={authorFullName} width={600} height={600} className="rounded-lg object-contain"/>
                   </DialogContent>
               )}
             </Dialog>
