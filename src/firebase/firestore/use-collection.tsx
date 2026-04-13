@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -33,7 +34,15 @@ export function useCollection<T extends { id: string }>(
       query,
       (snapshot) => {
         const result: T[] = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data(options?.snapshotOptions) } as T));
-        setData(result);
+        
+        // Use functional update to compare and prevent re-renders
+        setData((prevData) => {
+            if (JSON.stringify(prevData) === JSON.stringify(result)) {
+                return prevData;
+            }
+            return result;
+        });
+
         setLoading(false);
         setError(null);
       },
@@ -56,9 +65,8 @@ export function useCollection<T extends { id: string }>(
 
     // Clean up the listener when the component unmounts or dependencies change.
     return () => unsubscribe();
-  // The `user` object is added to the dependency array to ensure the error context is always up-to-date.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [query, user]);
+    // The user object and a stable version of options are included in the dependency array.
+  }, [query, user, JSON.stringify(options?.snapshotOptions)]);
 
   return { data, loading, error };
 }

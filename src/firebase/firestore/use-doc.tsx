@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -31,14 +32,22 @@ export function useDoc<T>(
     const unsubscribe = onSnapshot(
       docRef,
       (doc) => {
-        if (doc.exists()) {
-          setData({
-            id: doc.id,
-            ...doc.data(options?.snapshotOptions),
-          } as T);
-        } else {
-          setData(null);
-        }
+        const newDocData = doc.exists()
+          ? ({
+              id: doc.id,
+              ...doc.data(options?.snapshotOptions),
+            } as T)
+          : null;
+
+        // Use functional update to compare and prevent re-renders
+        setData((prevData) => {
+          // Simple but effective deep comparison for JSON-like objects
+          if (JSON.stringify(prevData) === JSON.stringify(newDocData)) {
+            return prevData;
+          }
+          return newDocData;
+        });
+        
         setLoading(false);
         setError(null);
       },
@@ -62,9 +71,8 @@ export function useDoc<T>(
 
     // Clean up the listener when the component unmounts or dependencies change.
     return () => unsubscribe();
-    // The `user` object is added to the dependency array to ensure the error context is always up-to-date.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [docRef, user]);
+    // The user object and a stable version of options are included in the dependency array.
+  }, [docRef, user, JSON.stringify(options?.snapshotOptions)]);
 
   return { data, loading, error };
 }
