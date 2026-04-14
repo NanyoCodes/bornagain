@@ -98,9 +98,9 @@ service cloud.firestore {
         allow read, create, delete: if request.auth != null && request.auth.uid == userId;
       }
       
-      // Discipline history is only readable by the user and their accountability partners.
+      // Discipline history is readable by any authenticated user.
       match /disciplineHistory/{logId} {
-        allow get, list: if request.auth != null && (request.auth.uid == userId || arePartners(request.auth.uid, userId));
+        allow read: if request.auth != null;
         allow write: if request.auth != null && request.auth.uid == userId;
       }
 
