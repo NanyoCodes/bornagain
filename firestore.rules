@@ -4,17 +4,28 @@ service cloud.firestore {
   match /databases/{database}/documents {
     
     function arePartners(user1, user2) {
+      // Defensive check for existence of both user documents
+      let user1DocExists = exists(/databases/$(database)/documents/users/$(user1));
+      let user2DocExists = exists(/databases/$(database)/documents/users/$(user2));
+      
+      if (!user1DocExists || !user2DocExists) {
+        return false;
+      }
+      
+      // Get data for both users
       let user1Data = get(/databases/$(database)/documents/users/$(user1)).data;
       let user2Data = get(/databases/$(database)/documents/users/$(user2)).data;
       
-      // Symmetrically check for partnership.
-      return 'partnerIds' in user1Data &&
-             user1Data.partnerIds is list &&
-             user1Data.partnerIds.hasAny([user2]) &&
-
-             'partnerIds' in user2Data &&
-             user2Data.partnerIds is list &&
-             user2Data.partnerIds.hasAny([user1]);
+      // Check if both users have a 'partnerIds' list
+      let user1HasPartnersList = 'partnerIds' in user1Data && user1Data.partnerIds is list;
+      let user2HasPartnersList = 'partnerIds' in user2Data && user2Data.partnerIds is list;
+      
+      if (!user1HasPartnersList || !user2HasPartnersList) {
+        return false;
+      }
+      
+      // Symmetrically check if each user is in the other's partner list
+      return user2 in user1Data.partnerIds && user1 in user2Data.partnerIds;
     }
 
     // User profile access rules and all subcollections
@@ -89,24 +100,7 @@ service cloud.firestore {
       
       // Discipline history is only readable by the user and their accountability partners.
       match /disciplineHistory/{logId} {
-        allow get, list: if request.auth != null &&
-            (
-              request.auth.uid == userId ||
-              (
-                  // Symmetric check: A is partner of B and B is partner of A
-                  exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
-                  'partnerIds' in get(/databases/$(database)/documents/users/$(request.auth.uid)).data &&
-                  get(/databases/$(database)/documents/users/$(request.auth.uid)).data.partnerIds is list &&
-                  get(/databases/$(database)/documents/users/$(request.auth.uid)).data.partnerIds.hasAny([userId]) &&
-
-                  exists(/databases/$(database)/documents/users/$(userId)) &&
-                  'partnerIds' in get(/databases/$(database)/documents/users/$(userId)).data &&
-                  get(/databases/$(database)/documents/users/$(userId)).data.partnerIds is list &&
-                  get(/databases/$(database)/documents/users/$(userId)).data.partnerIds.hasAny([request.auth.uid])
-              )
-            );
-
-        // Only the user can write to their own discipline history.
+        allow get, list: if request.auth != null && (request.auth.uid == userId || arePartners(request.auth.uid, userId));
         allow write: if request.auth != null && request.auth.uid == userId;
       }
 
@@ -262,5 +256,3 @@ service cloud.firestore {
     }
   }
 }
-
-    
