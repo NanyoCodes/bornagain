@@ -58,7 +58,7 @@ function PartnerDisciplineStatus({ partnerId, date }: { partnerId: string; date:
         return doc(firestore, 'users', partnerId, 'disciplineHistory', dateStr);
     }, [firestore, partnerId, dateStr]);
 
-    const { data: partnerDiscipline, loading, error } = useDoc<{ completed: string[] }>(disciplineDocRef);
+    const { data: partnerDiscipline, loading, error } = useDoc<{ completed?: string[] }>(disciplineDocRef);
 
     const completedOnDate = useMemo(() => {
         return partnerDiscipline?.completed || [];
@@ -78,7 +78,7 @@ function PartnerDisciplineStatus({ partnerId, date }: { partnerId: string; date:
         return <div className="text-center text-xs text-destructive py-2 h-10 flex items-center justify-center">Permission Denied</div>;
     }
     
-    if (!partnerDiscipline || partnerDiscipline.completed.length === 0) {
+    if (!partnerDiscipline || !partnerDiscipline.completed || partnerDiscipline.completed.length === 0) {
         return <div className="text-center text-xs text-muted-foreground py-2 h-10 flex items-center justify-center">No disciplines logged for this day.</div>
     }
 
@@ -380,8 +380,10 @@ export default function AccountabilityPage() {
                                     onChange={(e) => {
                                         const value = e.target.value;
                                         if (value) {
+                                            // value is "YYYY-MM-DD". Using `new Date(year, month, day)` avoids timezone pitfalls
+                                            // associated with `new Date(string)` by creating the date in the user's local timezone.
                                             const [year, month, day] = value.split('-').map(Number);
-                                            setPartnerDates(prev => ({ ...prev, [partner.userId]: new Date(Date.UTC(year, month - 1, day)) }));
+                                            setPartnerDates(prev => ({ ...prev, [partner.userId]: new Date(year, month - 1, day) }));
                                         } else {
                                             const newDates = {...partnerDates};
                                             delete newDates[partner.userId];
