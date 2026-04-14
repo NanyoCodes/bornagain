@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useMemo, useState, useEffect } from 'react';
@@ -10,7 +9,7 @@ import type { UserProfile } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Loader2, HeartHandshake, MessagesSquare, MoreVertical, UserX, User, CheckCircle2, XCircle, CalendarIcon } from 'lucide-react';
+import { Loader2, HeartHandshake, MessagesSquare, MoreVertical, UserX, User, CheckCircle2, XCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import {
@@ -47,8 +46,6 @@ import { format } from 'date-fns';
 import { Input } from '@/components/ui/input';
 import { useSearch } from '@/context/search-context';
 import { cn } from '@/lib/utils';
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 function PartnerDisciplineStatus({ partnerId, date }: { partnerId: string; date: Date }) {
     const firestore = useFirestore();
@@ -111,6 +108,17 @@ export default function AccountabilityPage() {
     // Set date on mount to ensure client-side date is used, avoiding hydration mismatches.
     setSelectedDate(new Date());
   }, []);
+
+  const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.value) {
+        const [year, month, day] = event.target.value.split('-').map(Number);
+        setSelectedDate(new Date(year, month - 1, day));
+    } else {
+        setSelectedDate(null);
+    }
+  };
+
+  const dateValue = selectedDate ? format(selectedDate, 'yyyy-MM-dd') : '';
 
   useEffect(() => {
     setIsSearchVisible(true);
@@ -314,30 +322,12 @@ export default function AccountabilityPage() {
             <p className="text-muted-foreground">Your partners in faith. Encourage them and keep each other on track.</p>
         </div>
         <div>
-          {selectedDate && (
-            <Popover>
-                <PopoverTrigger asChild>
-                    <Button
-                        variant={"outline"}
-                        className={cn(
-                            "w-[280px] justify-start text-left font-normal",
-                            !selectedDate && "text-muted-foreground"
-                        )}
-                    >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {format(selectedDate, "PPP")}
-                    </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
-                    <Calendar
-                        mode="single"
-                        selected={selectedDate}
-                        onSelect={(date) => date && setSelectedDate(date)}
-                        initialFocus
-                    />
-                </PopoverContent>
-            </Popover>
-          )}
+          <Input
+            type="date"
+            value={dateValue}
+            onChange={handleDateChange}
+            className="w-full sm:w-fit"
+          />
         </div>
       </div>
         <div className="space-y-4">
