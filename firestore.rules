@@ -98,17 +98,26 @@ service cloud.firestore {
       
       // Discipline history is only readable by the user and their accountability partners.
       match /disciplineHistory/{logId} {
-        allow get, list: if request.auth != null && (
-            request.auth.uid == userId ||
+        allow get, list: if request.auth != null &&
             (
-                exists(/databases/$(database)/documents/users/$(userId)) &&
-                exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
-                get(/databases/$(database)/documents/users/$(userId)).data.keys().hasAll(['partnerIds']) &&
-                get(/databases/$(database)/documents/users/$(request.auth.uid)).data.keys().hasAll(['partnerIds']) &&
-                get(/databases/$(database)/documents/users/$(userId)).data.partnerIds.hasAll([request.auth.uid]) &&
-                get(/databases/$(database)/documents/users/$(request.auth.uid)).data.partnerIds.hasAll([userId])
-            )
-        );
+                // Case 1: The user is accessing their own history.
+                request.auth.uid == userId
+                ||
+                // Case 2: An accountability partner is accessing the history.
+                (
+                    // Both user documents must exist.
+                    exists(/databases/$(database)/documents/users/$(userId))
+                    && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+                    // Both must have a partnerIds list.
+                    && 'partnerIds' in get(/databases/$(database)/documents/users/$(userId)).data
+                    && get(/databases/$(database)/documents/users/$(userId)).data.partnerIds is list
+                    && 'partnerIds' in get(/databases/$(database)/documents/users/$(request.auth.uid)).data
+                    && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.partnerIds is list
+                    // And the partnership must be symmetric.
+                    && request.auth.uid in get(/databases/$(database)/documents/users/$(userId)).data.partnerIds
+                    && userId in get(/databases/$(database)/documents/users/$(request.auth.uid)).data.partnerIds
+                )
+            );
 
         // Only the user can write to their own discipline history.
         allow write: if request.auth != null && request.auth.uid == userId;
