@@ -4,23 +4,25 @@ service cloud.firestore {
   match /databases/{database}/documents {
     
     function arePartners(user1, user2) {
-      // Use exists() for robustness before trying to access data.
-      if (!exists(/databases/$(database)/documents/users/$(user1)) || !exists(/databases/$(database)/documents/users/$(user2))) {
+      // Check that both users exist.
+      let user1Exists = exists(/databases/$(database)/documents/users/$(user1));
+      let user2Exists = exists(/databases/$(database)/documents/users/$(user2));
+      if (!user1Exists || !user2Exists) {
         return false;
       }
-      
+
+      // Get data for both users.
       let user1Data = get(/databases/$(database)/documents/users/$(user1)).data;
       let user2Data = get(/databases/$(database)/documents/users/$(user2)).data;
-      
-      // Check that the partnerIds field exists and is a list.
-      let user1HasPartners = 'partnerIds' in user1Data && user1Data.partnerIds is list;
-      let user2HasPartners = 'partnerIds' in user2Data && user2Data.partnerIds is list;
-      
-      if (!user1HasPartners || !user2HasPartners) {
+
+      // Check if partnerIds field exists and is a list on both documents.
+      let user1HasPartnerList = 'partnerIds' in user1Data && user1Data.partnerIds is list;
+      let user2HasPartnerList = 'partnerIds' in user2Data && user2Data.partnerIds is list;
+      if (!user1HasPartnerList || !user2HasPartnerList) {
         return false;
       }
-      
-      // Symmetrically check that each user is in the other's partnerIds list.
+
+      // Symmetrically check for partnership.
       return user2 in user1Data.partnerIds && user1 in user2Data.partnerIds;
     }
 
@@ -98,7 +100,12 @@ service cloud.firestore {
       match /disciplineHistory/{logId} {
         allow get, list: if request.auth != null && (
             request.auth.uid == userId ||
-            arePartners(request.auth.uid, userId)
+            ( // A partner can read the discipline history if they are in the target user's partnerIds list
+              exists(/databases/$(database)/documents/users/$(userId)) &&
+              'partnerIds' in get(/databases/$(database)/documents/users/$(userId)).data &&
+              get(/databases/$(database)/documents/users/$(userId)).data.partnerIds is list &&
+              request.auth.uid in get(/databases/$(database)/documents/users/$(userId)).data.partnerIds
+            )
         );
         
         // Only the user can write to their own discipline history.
