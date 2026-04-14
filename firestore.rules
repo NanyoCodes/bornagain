@@ -100,11 +100,7 @@ service cloud.firestore {
       match /disciplineHistory/{logId} {
         allow get, list: if request.auth != null && (
             request.auth.uid == userId ||
-            (
-                // A partner can read the history. This is a more direct check.
-                exists(/databases/$(database)/documents/users/$(userId)) &&
-                request.auth.uid in get(/databases/$(database)/documents/users/$(userId)).data.partnerIds
-            )
+            arePartners(request.auth.uid, userId)
         );
         
         // Only the user can write to their own discipline history.
