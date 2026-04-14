@@ -154,6 +154,11 @@
                 "required": ["userId", "firstName"]
             }
         },
+        "partnerIds": {
+            "type": "array",
+            "description": "An array of partner UIDs for efficient security rule checks.",
+            "items": { "type": "string" }
+        },
         "lastChurchAttended": {
           "type": "string",
           "description": "The name of the last church the user attended."

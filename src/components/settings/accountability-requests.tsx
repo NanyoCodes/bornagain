@@ -79,7 +79,8 @@ export function AccountabilityRequests({ currentUserProfile }: { currentUserProf
                 firstName: request.fromUserFirstName,
                 lastName: request.fromUserLastName,
                 photoURL: request.fromUserPhotoURL || '',
-            })
+            }),
+            partnerIds: arrayUnion(request.fromUserId)
         });
 
         // Update sender's user doc
@@ -90,7 +91,8 @@ export function AccountabilityRequests({ currentUserProfile }: { currentUserProf
                 firstName: currentUserProfile.firstName,
                 lastName: currentUserProfile.lastName,
                 photoURL: currentUserProfile.photoURL || '',
-            })
+            }),
+            partnerIds: arrayUnion(user.uid)
         });
 
         // Update the request status

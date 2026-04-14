@@ -213,6 +213,7 @@ export default function AccountabilityPage() {
             if (myEntryInPartnersList) {
                 batch.update(partnerUserRef, {
                     accountabilityPartners: arrayRemove(myEntryInPartnersList),
+                    partnerIds: arrayRemove(user.uid),
                 });
             }
         }
@@ -222,6 +223,7 @@ export default function AccountabilityPage() {
           const currentUserRef = doc(firestore, 'users', user.uid);
           batch.update(currentUserRef, {
               accountabilityPartners: arrayRemove(myPartnerObject),
+              partnerIds: arrayRemove(partnerId),
           });
         }
         

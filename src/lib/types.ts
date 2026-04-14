@@ -64,6 +64,7 @@ export type UserProfile = {
     lastName: string;
     photoURL?: string;
   }[];
+  partnerIds?: string[];
   lastChurchAttended?: string;
   churchInfo?: {
     name?: string;

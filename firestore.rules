@@ -4,17 +4,13 @@ service cloud.firestore {
   match /databases/{database}/documents {
     
     function arePartners(user1, user2) {
-      // The client creates a predictable ID by sorting the UIDs.
-      // But from the rules, we don't know the order, so we must check both permutations.
-      let requestId1 = user1 + '_' + user2;
-      let requestId2 = user2 + '_' + user1;
-      return (
-        exists(/databases/$(database)/documents/accountabilityRequests/$(requestId1)) &&
-        get(/databases/$(database)/documents/accountabilityRequests/$(requestId1)).data.status == 'accepted'
-      ) || (
-        exists(/databases/$(database)/documents/accountabilityRequests/$(requestId2)) &&
-        get(/databases/$(database)/documents/accountabilityRequests/$(requestId2)).data.status == 'accepted'
-      );
+      let user1DocData = get(/databases/$(database)/documents/users/$(user1)).data;
+      let user2DocData = get(/databases/$(database)/documents/users/$(user2)).data;
+      
+      // Check if each user has the other in their partnerIds list.
+      // This is more reliable than checking the request document.
+      return ('partnerIds' in user1DocData && user2 in user1DocData.partnerIds) && 
+             ('partnerIds' in user2DocData && user1 in user2DocData.partnerIds);
     }
 
     // User profile access rules and all subcollections
@@ -28,13 +24,13 @@ service cloud.firestore {
       // Update permissions are more complex.
       allow update: if request.auth != null && (
         // A user can update their own document, but not the partners list directly.
-        (request.auth.uid == userId && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['accountabilityPartners'])) ||
+        (request.auth.uid == userId && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['accountabilityPartners', 'partnerIds'])) ||
 
         // A user can remove a partner from their OWN list.
         (
           request.auth.uid == userId &&
           'accountabilityPartners' in resource.data &&
-          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['accountabilityPartners']) &&
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['accountabilityPartners', 'partnerIds']) &&
           request.resource.data.accountabilityPartners.size() == resource.data.accountabilityPartners.size() - 1
         ) ||
         
@@ -42,14 +38,14 @@ service cloud.firestore {
         // that also updates the other user's list, which IS strictly validated against a pending request.
         (
           request.auth.uid == userId &&
-          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['accountabilityPartners']) &&
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['accountabilityPartners', 'partnerIds']) &&
           request.resource.data.accountabilityPartners.size() == ('accountabilityPartners' in resource.data ? resource.data.accountabilityPartners.size() : 0) + 1
         ) ||
         
         // A user (acceptor) can be ADDED to another user's (sender's) partner list.
         (
           request.auth.uid != userId &&
-          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['accountabilityPartners']) &&
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['accountabilityPartners', 'partnerIds']) &&
           request.resource.data.accountabilityPartners.size() == ('accountabilityPartners' in resource.data ? resource.data.accountabilityPartners.size() : 0) + 1 &&
           // A pending request from the sender (userId) to the acceptor (request.auth.uid) must exist.
           (
@@ -70,7 +66,7 @@ service cloud.firestore {
             request.auth.uid != userId &&
             arePartners(request.auth.uid, userId) &&
             'accountabilityPartners' in resource.data &&
-            request.resource.data.diff(resource.data).affectedKeys().hasOnly(['accountabilityPartners']) &&
+            request.resource.data.diff(resource.data).affectedKeys().hasOnly(['accountabilityPartners', 'partnerIds']) &&
             request.resource.data.accountabilityPartners.size() == resource.data.accountabilityPartners.size() - 1
         )
       );
