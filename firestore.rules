@@ -4,19 +4,14 @@ service cloud.firestore {
   match /databases/{database}/documents {
     
     function arePartners(user1, user2) {
-      let user1DocExists = exists(/databases/$(database)/documents/users/$(user1));
-      let user2DocExists = exists(/databases/$(database)/documents/users/$(user2));
+      let user1Data = get(/databases/$(database)/documents/users/$(user1)).data;
+      let user2Data = get(/databases/$(database)/documents/users/$(user2)).data;
       
-      // Ensure both documents exist before trying to access data.
-      return user1DocExists && user2DocExists &&
-             // Ensure 'partnerIds' exists and is a list in both user documents.
-             'partnerIds' in get(/databases/$(database)/documents/users/$(user1)).data &&
-             get(/databases/$(database)/documents/users/$(user1)).data.partnerIds is list &&
-             'partnerIds' in get(/databases/$(database)/documents/users/$(user2)).data &&
-             get(/databases/$(database)/documents/users/$(user2)).data.partnerIds is list &&
-             // Symmetrically check if each user is in the other's partner list.
-             user2 in get(/databases/$(database)/documents/users/$(user1)).data.partnerIds &&
-             user1 in get(/databases/$(database)/documents/users/$(user2)).data.partnerIds;
+      return user1Data != null && user2Data != null &&
+             'partnerIds' in user1Data && user1Data.partnerIds is list &&
+             'partnerIds' in user2Data && user2Data.partnerIds is list &&
+             user2 in user1Data.partnerIds &&
+             user1 in user2Data.partnerIds;
     }
 
     // User profile access rules and all subcollections
