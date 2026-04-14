@@ -4,28 +4,19 @@ service cloud.firestore {
   match /databases/{database}/documents {
     
     function arePartners(user1, user2) {
-      // Defensive check for existence of both user documents
       let user1DocExists = exists(/databases/$(database)/documents/users/$(user1));
       let user2DocExists = exists(/databases/$(database)/documents/users/$(user2));
       
-      if (!user1DocExists || !user2DocExists) {
-        return false;
-      }
-      
-      // Get data for both users
-      let user1Data = get(/databases/$(database)/documents/users/$(user1)).data;
-      let user2Data = get(/databases/$(database)/documents/users/$(user2)).data;
-      
-      // Check if both users have a 'partnerIds' list
-      let user1HasPartnersList = 'partnerIds' in user1Data && user1Data.partnerIds is list;
-      let user2HasPartnersList = 'partnerIds' in user2Data && user2Data.partnerIds is list;
-      
-      if (!user1HasPartnersList || !user2HasPartnersList) {
-        return false;
-      }
-      
-      // Symmetrically check if each user is in the other's partner list
-      return user2 in user1Data.partnerIds && user1 in user2Data.partnerIds;
+      // Ensure both documents exist before trying to access data.
+      return user1DocExists && user2DocExists &&
+             // Ensure 'partnerIds' exists and is a list in both user documents.
+             'partnerIds' in get(/databases/$(database)/documents/users/$(user1)).data &&
+             get(/databases/$(database)/documents/users/$(user1)).data.partnerIds is list &&
+             'partnerIds' in get(/databases/$(database)/documents/users/$(user2)).data &&
+             get(/databases/$(database)/documents/users/$(user2)).data.partnerIds is list &&
+             // Symmetrically check if each user is in the other's partner list.
+             user2 in get(/databases/$(database)/documents/users/$(user1)).data.partnerIds &&
+             user1 in get(/databases/$(database)/documents/users/$(user2)).data.partnerIds;
     }
 
     // User profile access rules and all subcollections
@@ -98,9 +89,9 @@ service cloud.firestore {
         allow read, create, delete: if request.auth != null && request.auth.uid == userId;
       }
       
-      // Discipline history is readable by any authenticated user.
+      // Discipline history is readable by the user and their verified accountability partner.
       match /disciplineHistory/{logId} {
-        allow read: if request.auth != null;
+        allow read: if request.auth != null && (request.auth.uid == userId || arePartners(request.auth.uid, userId));
         allow write: if request.auth != null && request.auth.uid == userId;
       }
 
