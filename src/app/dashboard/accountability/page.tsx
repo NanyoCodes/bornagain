@@ -60,16 +60,11 @@ function PartnerDisciplineStatus({ partnerId, date }: { partnerId: string; date:
         return doc(firestore, 'users', partnerId, 'disciplineHistory', dateStr);
     }, [firestore, partnerId, dateStr]);
 
-    const { data: partnerDiscipline, loading, error } = useDoc<{ completed?: string[] }>(disciplineDocRef);
+    const { data: partnerDiscipline, loading } = useDoc<{ completed?: string[] }>(disciplineDocRef);
 
     const completedOnDate = useMemo(() => {
-        // If there is an error (like permission denied for a non-existent doc),
-        // treat it as if no disciplines were completed for that day.
-        if (error) {
-            return [];
-        }
         return partnerDiscipline?.completed || [];
-    }, [partnerDiscipline, error]);
+    }, [partnerDiscipline]);
 
     const disciplines = [
         { id: 'pray', label: 'Pray' },
