@@ -100,7 +100,16 @@ service cloud.firestore {
       match /disciplineHistory/{logId} {
         allow get, list: if request.auth != null && (
             request.auth.uid == userId ||
-            arePartners(request.auth.uid, userId)
+            (
+              // Inlined symmetric check for partnership to ensure reliability
+              exists(/databases/$(database)/documents/users/$(userId)) &&
+              'partnerIds' in get(/databases/$(database)/documents/users/$(userId)).data &&
+              request.auth.uid in get(/databases/$(database)/documents/users/$(userId)).data.partnerIds &&
+
+              exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+              'partnerIds' in get(/databases/$(database)/documents/users/$(request.auth.uid)).data &&
+              userId in get(/databases/$(database)/documents/users/$(request.auth.uid)).data.partnerIds
+            )
         );
         
         // Only the user can write to their own discipline history.
@@ -259,5 +268,3 @@ service cloud.firestore {
     }
   }
 }
-
-    
