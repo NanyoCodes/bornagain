@@ -98,20 +98,16 @@ service cloud.firestore {
       
       // Discipline history is only readable by the user and their accountability partners.
       match /disciplineHistory/{logId} {
-        allow get, list: if request.auth != null && (
-            request.auth.uid == userId ||
-            (
-              // Inlined symmetric check for partnership to ensure reliability
-              exists(/databases/$(database)/documents/users/$(userId)) &&
-              'partnerIds' in get(/databases/$(database)/documents/users/$(userId)).data &&
-              request.auth.uid in get(/databases/$(database)/documents/users/$(userId)).data.partnerIds &&
+        // Allow user to read their own history
+        allow get, list: if request.auth != null && request.auth.uid == userId;
 
-              exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
-              'partnerIds' in get(/databases/$(database)/documents/users/$(request.auth.uid)).data &&
-              userId in get(/databases/$(database)/documents/users/$(request.auth.uid)).data.partnerIds
-            )
-        );
-        
+        // Allow a partner to read history if the partnership is symmetric
+        allow get, list: if request.auth != null &&
+                          exists(/databases/$(database)/documents/users/$(userId)) &&
+                          exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+                          request.auth.uid in get(/databases/$(database)/documents/users/$(userId)).data.partnerIds &&
+                          userId in get(/databases/$(database)/documents/users/$(request.auth.uid)).data.partnerIds;
+
         // Only the user can write to their own discipline history.
         allow write: if request.auth != null && request.auth.uid == userId;
       }
