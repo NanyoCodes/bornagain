@@ -63,8 +63,13 @@ function PartnerDisciplineStatus({ partnerId, date }: { partnerId: string; date:
     const { data: partnerDiscipline, loading, error } = useDoc<{ completed?: string[] }>(disciplineDocRef);
 
     const completedOnDate = useMemo(() => {
+        // If there is an error (like permission denied for a non-existent doc),
+        // treat it as if no disciplines were completed for that day.
+        if (error) {
+            return [];
+        }
         return partnerDiscipline?.completed || [];
-    }, [partnerDiscipline]);
+    }, [partnerDiscipline, error]);
 
     const disciplines = [
         { id: 'pray', label: 'Pray' },
@@ -74,10 +79,6 @@ function PartnerDisciplineStatus({ partnerId, date }: { partnerId: string; date:
     
     if (loading) {
         return <div className="flex justify-around items-center h-10"><Loader2 className="h-4 w-4 animate-spin text-muted-foreground" /></div>;
-    }
-
-    if (error) {
-        return <div className="text-center text-xs text-destructive py-2 h-10 flex items-center justify-center">Permission Denied</div>;
     }
 
     return (
