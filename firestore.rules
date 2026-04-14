@@ -105,6 +105,8 @@ service cloud.firestore {
         allow get, list: if request.auth != null &&
                           exists(/databases/$(database)/documents/users/$(userId)) &&
                           exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+                          ('partnerIds' in get(/databases/$(database)/documents/users/$(userId)).data) &&
+                          ('partnerIds' in get(/databases/$(database)/documents/users/$(request.auth.uid)).data) &&
                           request.auth.uid in get(/databases/$(database)/documents/users/$(userId)).data.partnerIds &&
                           userId in get(/databases/$(database)/documents/users/$(request.auth.uid)).data.partnerIds;
 
