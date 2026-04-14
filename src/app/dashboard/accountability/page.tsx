@@ -58,7 +58,7 @@ function PartnerDisciplineStatus({ partnerId, date }: { partnerId: string; date:
         return doc(firestore, 'users', partnerId, 'disciplineHistory', dateStr);
     }, [firestore, partnerId, dateStr]);
 
-    const { data: partnerDiscipline, loading } = useDoc<{ completed: string[] }>(disciplineDocRef);
+    const { data: partnerDiscipline, loading, error } = useDoc<{ completed: string[] }>(disciplineDocRef);
 
     const completedOnDate = useMemo(() => {
         return partnerDiscipline?.completed || [];
@@ -72,6 +72,10 @@ function PartnerDisciplineStatus({ partnerId, date }: { partnerId: string; date:
     
     if (loading) {
         return <div className="flex justify-around items-center h-10"><Loader2 className="h-4 w-4 animate-spin text-muted-foreground" /></div>;
+    }
+
+    if (error) {
+        return <div className="text-center text-xs text-destructive py-2 h-10 flex items-center justify-center">Permission Denied</div>;
     }
     
     if (!partnerDiscipline || partnerDiscipline.completed.length === 0) {
