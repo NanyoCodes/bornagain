@@ -4,12 +4,24 @@ service cloud.firestore {
   match /databases/{database}/documents {
     
     function arePartners(user1, user2) {
-      let user1DocData = get(/databases/$(database)/documents/users/$(user1)).data;
-      let user2DocData = get(/databases/$(database)/documents/users/$(user2)).data;
+      // Use exists() for robustness before trying to access data.
+      if (!exists(/databases/$(database)/documents/users/$(user1)) || !exists(/databases/$(database)/documents/users/$(user2))) {
+        return false;
+      }
       
-      // Using hasAll is a more robust way to check for element existence in a list
-      return ('partnerIds' in user1DocData && user1DocData.partnerIds.hasAll([user2])) && 
-             ('partnerIds' in user2DocData && user2DocData.partnerIds.hasAll([user1]));
+      let user1Data = get(/databases/$(database)/documents/users/$(user1)).data;
+      let user2Data = get(/databases/$(database)/documents/users/$(user2)).data;
+      
+      // Check that the partnerIds field exists and is a list.
+      let user1HasPartners = 'partnerIds' in user1Data && user1Data.partnerIds is list;
+      let user2HasPartners = 'partnerIds' in user2Data && user2Data.partnerIds is list;
+      
+      if (!user1HasPartners || !user2HasPartners) {
+        return false;
+      }
+      
+      // Symmetrically check that each user is in the other's partnerIds list.
+      return user2 in user1Data.partnerIds && user1 in user2Data.partnerIds;
     }
 
     // User profile access rules and all subcollections
@@ -245,5 +257,3 @@ service cloud.firestore {
     }
   }
 }
-
-    
