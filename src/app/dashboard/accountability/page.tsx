@@ -77,10 +77,6 @@ function PartnerDisciplineStatus({ partnerId, date }: { partnerId: string; date:
     if (error) {
         return <div className="text-center text-xs text-destructive py-2 h-10 flex items-center justify-center">Permission Denied</div>;
     }
-    
-    if (!partnerDiscipline || !partnerDiscipline.completed || partnerDiscipline.completed.length === 0) {
-        return <div className="text-center text-xs text-muted-foreground py-2 h-10 flex items-center justify-center">No disciplines logged for this day.</div>
-    }
 
     return (
         <div className="flex justify-around items-center h-10">
