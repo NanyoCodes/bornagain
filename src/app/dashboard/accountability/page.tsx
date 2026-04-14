@@ -10,7 +10,7 @@ import type { UserProfile } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Loader2, HeartHandshake, MessagesSquare, MoreVertical, UserX, User, CheckCircle2, XCircle } from 'lucide-react';
+import { Loader2, HeartHandshake, MessagesSquare, MoreVertical, UserX, User, CheckCircle2, XCircle, CalendarIcon } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import {
@@ -47,6 +47,8 @@ import { format } from 'date-fns';
 import { Input } from '@/components/ui/input';
 import { useSearch } from '@/context/search-context';
 import { cn } from '@/lib/utils';
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 function PartnerDisciplineStatus({ partnerId, date }: { partnerId: string; date: Date }) {
     const firestore = useFirestore();
@@ -106,12 +108,12 @@ export default function AccountabilityPage() {
   const [removalTarget, setRemovalTarget] = useState<UserProfile['accountabilityPartners'][0] | null>(null);
   const [removalReason, setRemovalReason] = useState('');
 
-  const [today, setToday] = useState<Date | null>(null);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const { searchTerm, setSearchPlaceholder, setIsSearchVisible, setSearchTerm } = useSearch();
 
   useEffect(() => {
     // Set date on mount to ensure client-side date is used, avoiding hydration mismatches.
-    setToday(new Date());
+    setSelectedDate(new Date());
   }, []);
 
   useEffect(() => {
@@ -310,10 +312,38 @@ export default function AccountabilityPage() {
   
   return (
     <div className="space-y-8 max-w-3xl mx-auto">
+      <div className="flex flex-wrap gap-4 items-center justify-between">
         <div className="space-y-2">
             <h1 className="text-3xl font-bold tracking-tight font-headline">Your Accountability Partners</h1>
             <p className="text-muted-foreground">Your partners in faith. Encourage them and keep each other on track.</p>
         </div>
+        <div>
+          {selectedDate && (
+            <Popover>
+                <PopoverTrigger asChild>
+                    <Button
+                        variant={"outline"}
+                        className={cn(
+                            "w-[280px] justify-start text-left font-normal",
+                            !selectedDate && "text-muted-foreground"
+                        )}
+                    >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {format(selectedDate, "PPP")}
+                    </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                    <Calendar
+                        mode="single"
+                        selected={selectedDate}
+                        onSelect={(date) => date && setSelectedDate(date)}
+                        initialFocus
+                    />
+                </PopoverContent>
+            </Popover>
+          )}
+        </div>
+      </div>
         <div className="space-y-4">
             {filteredPartners.map(partner => (
                 <Card key={partner.userId}>
@@ -372,14 +402,16 @@ export default function AccountabilityPage() {
                     </CardHeader>
                     <CardContent className="px-6 pb-4">
                         <div className="mt-2 pt-4 border-t space-y-4">
-                            <div className="flex justify-between items-center flex-wrap gap-2">
-                                <h4 className="text-sm font-semibold text-muted-foreground">Discipline Status for Today</h4>
-                            </div>
-                            {today ? (
-                                <PartnerDisciplineStatus 
-                                    partnerId={partner.userId} 
-                                    date={today}
-                                />
+                            {selectedDate ? (
+                                <>
+                                    <div className="flex justify-between items-center flex-wrap gap-2">
+                                        <h4 className="text-sm font-semibold text-muted-foreground">Discipline Status for {format(selectedDate, "PPP")}</h4>
+                                    </div>
+                                    <PartnerDisciplineStatus 
+                                        partnerId={partner.userId} 
+                                        date={selectedDate}
+                                    />
+                                </>
                             ) : (
                                 <div className="flex justify-around items-center h-10"><Loader2 className="h-4 w-4 animate-spin text-muted-foreground" /></div>
                             )}
