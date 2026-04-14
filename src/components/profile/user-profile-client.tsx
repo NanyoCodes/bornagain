@@ -142,7 +142,6 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                 </div>
               <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground">
                 {(city || state || country) && <div className="flex items-center gap-2"><MapPin className="h-4 w-4" /> {[city, state, country].filter(Boolean).join(', ')}</div>}
-                {email && <div className="flex items-center gap-2"><Mail className="h-4 w-4" /> {email}</div>}
               </div>
             </div>
           </div>
