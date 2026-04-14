@@ -106,8 +106,13 @@ export default function AccountabilityPage() {
   const [removalTarget, setRemovalTarget] = useState<UserProfile['accountabilityPartners'][0] | null>(null);
   const [removalReason, setRemovalReason] = useState('');
 
-  const [partnerDates, setPartnerDates] = useState<Record<string, Date>>({});
+  const [today, setToday] = useState<Date | null>(null);
   const { searchTerm, setSearchPlaceholder, setIsSearchVisible, setSearchTerm } = useSearch();
+
+  useEffect(() => {
+    // Set date on mount to ensure client-side date is used, avoiding hydration mismatches.
+    setToday(new Date());
+  }, []);
 
   useEffect(() => {
     setIsSearchVisible(true);
@@ -368,31 +373,16 @@ export default function AccountabilityPage() {
                     <CardContent className="px-6 pb-4">
                         <div className="mt-2 pt-4 border-t space-y-4">
                             <div className="flex justify-between items-center flex-wrap gap-2">
-                                <h4 className="text-sm font-semibold text-muted-foreground">Discipline Status</h4>
-                                <Input
-                                    type="date"
-                                    className="w-full sm:w-[240px]"
-                                    value={format(partnerDates[partner.userId] || new Date(), 'yyyy-MM-dd')}
-                                    onChange={(e) => {
-                                        const value = e.target.value;
-                                        if (value) {
-                                            // value is "YYYY-MM-DD". Using `new Date(year, month, day)` avoids timezone pitfalls
-                                            // associated with `new Date(string)` by creating the date in the user's local timezone.
-                                            const [year, month, day] = value.split('-').map(Number);
-                                            setPartnerDates(prev => ({ ...prev, [partner.userId]: new Date(year, month - 1, day) }));
-                                        } else {
-                                            const newDates = {...partnerDates};
-                                            delete newDates[partner.userId];
-                                            setPartnerDates(newDates);
-                                        }
-                                    }}
-                                    max={format(new Date(), 'yyyy-MM-dd')}
-                                />
+                                <h4 className="text-sm font-semibold text-muted-foreground">Discipline Status for Today</h4>
                             </div>
-                            <PartnerDisciplineStatus 
-                                partnerId={partner.userId} 
-                                date={partnerDates[partner.userId] || new Date()}
-                            />
+                            {today ? (
+                                <PartnerDisciplineStatus 
+                                    partnerId={partner.userId} 
+                                    date={today}
+                                />
+                            ) : (
+                                <div className="flex justify-around items-center h-10"><Loader2 className="h-4 w-4 animate-spin text-muted-foreground" /></div>
+                            )}
                         </div>
                     </CardContent>
                 </Card>
