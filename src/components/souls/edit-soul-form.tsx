@@ -127,62 +127,56 @@ export function EditSoulForm({ soul, onSoulUpdated }: EditSoulFormProps) {
 
     try {
         await updateDoc(soulRef, soulUpdateData);
+        
         toast({
             title: "Soul Updated",
             description: `${values.firstName} ${values.lastName}'s record has been updated.`,
         });
 
         if (!soul.email && values.email) {
-            try {
-                const mailCollectionRef = collection(firestore, 'mail');
-                const appUrl = window.location.origin;
-                const inviterName = user.displayName || 'A friend';
-                const logo = PlaceHolderImages.find(img => img.id === 'logo');
-                const logoUrl = logo ? logo.imageUrl : '';
+            const mailCollectionRef = collection(firestore, 'mail');
+            const appUrl = window.location.origin;
+            const inviterName = user.displayName || 'A friend';
+            const logo = PlaceHolderImages.find(img => img.id === 'logo');
+            const logoUrl = logo ? logo.imageUrl : '';
 
-                await addDoc(mailCollectionRef, {
-                    to: [values.email],
-                    message: {
-                        subject: `You're invited to join Testify!`,
-                        html: `
-                            <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
-                              <div style="max-width: 600px; margin: 20px auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
-                                <div style="text-align: center; margin-bottom: 20px;">
-                                  <img src="${logoUrl}" alt="Testify Logo" style="width: 80px; height: 80px; border-radius: 8px;">
-                                  <h1 style="font-size: 24px; margin-top: 10px;">You're Invited to Testify</h1>
-                                </div>
-                                <p>Hi ${values.firstName},</p>
-                                <p><strong>${inviterName}</strong> has invited you to join Testify, a platform for believers to share testimonies, organize soul-winning campaigns, and track evangelism progress.</p>
-                                <p>Join the movement and start your journey today!</p>
-                                <div style="text-align: center; margin: 30px 0;">
-                                  <a href="${appUrl}" style="background-color: #3b82f6; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-size: 16px;">Join Testify</a>
-                                </div>
-                                <p>God bless,</p>
-                                <p><strong>The Testify Team</strong></p>
-                              </div>
-                              <div style="text-align: center; font-size: 12px; color: #999; margin-top: 20px;">
-                                <p>&copy; Testify. All rights reserved.</p>
-                              </div>
+            await addDoc(mailCollectionRef, {
+                to: [values.email],
+                message: {
+                    subject: `You're invited to join Testify!`,
+                    html: `
+                        <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+                          <div style="max-width: 600px; margin: 20px auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
+                            <div style="text-align: center; margin-bottom: 20px;">
+                              <img src="${logoUrl}" alt="Testify Logo" style="width: 80px; height: 80px; border-radius: 8px;">
+                              <h1 style="font-size: 24px; margin-top: 10px;">You're Invited to Testify</h1>
                             </div>
-                        `,
-                    },
-                });
-                 toast({
-                    title: 'Invitation Sent!',
-                    description: `An invitation email has been sent to ${values.email}.`
-                });
-            } catch (emailError) {
-                console.error("Failed to send invitation email:", emailError);
-                 const permissionError = new FirestorePermissionError({
-                    path: 'mail',
-                    operation: 'create',
-                    requestResourceData: { to: [values.email] }
-                }, user);
-                errorEmitter.emit('permission-error', permissionError);
-            }
+                            <p>Hi ${values.firstName},</p>
+                            <p><strong>${inviterName}</strong> has invited you to join Testify, a platform for believers to share testimonies, organize soul-winning campaigns, and track evangelism progress.</p>
+                            <p>Join the movement and start your journey today!</p>
+                            <div style="text-align: center; margin: 30px 0;">
+                              <a href="${appUrl}" style="background-color: #3b82f6; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-size: 16px;">Join Testify</a>
+                            </div>
+                            <p>God bless,</p>
+                            <p><strong>The Testify Team</strong></p>
+                          </div>
+                          <div style="text-align: center; font-size: 12px; color: #999; margin-top: 20px;">
+                            <p>&copy; Testify. All rights reserved.</p>
+                          </div>
+                        </div>
+                    `,
+                },
+            });
+            toast({
+                title: 'Invitation Sent!',
+                description: `An invitation email has been sent to ${values.email}.`
+            });
         }
+        
         onSoulUpdated();
+
     } catch (error) {
+      console.error("Failed to update soul record:", error);
       const permissionError = new FirestorePermissionError({
         path: soulRef.path,
         operation: 'update',
