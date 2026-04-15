@@ -300,8 +300,15 @@ export default function DashboardClientLayout({
   const unreadChatCount = unreadChatNotifications?.length ?? 0;
 
   useEffect(() => {
+    // Effect for redirection
+    if (!loading && !user) {
+      router.push('/login');
+    }
+  }, [loading, user, router]);
+
+  useEffect(() => {
+    // Effect for updating lastActive timestamp. Runs once per login.
     if (!loading && user && firestore) {
-      // Update last active timestamp
       const userRef = doc(firestore, 'users', user.uid);
       const updatePayload = { lastActive: serverTimestamp() };
       updateDoc(userRef, updatePayload).catch(() => {
@@ -312,8 +319,12 @@ export default function DashboardClientLayout({
         });
         errorEmitter.emit('permission-error', permissionError);
       });
+    }
+  }, [user, loading, firestore]);
 
-      // --- Welcome Popup Logic ---
+  useEffect(() => {
+    // Effect for Welcome Popup logic. Depends on userProfile.
+    if (!loading && user && userProfile) {
       const isNewUserSession = sessionStorage.getItem('isNewUserSession');
       if (isNewUserSession === null && user.metadata.creationTime && user.metadata.lastSignInTime) {
           const creationTime = new Date(user.metadata.creationTime).getTime();
@@ -325,18 +336,15 @@ export default function DashboardClientLayout({
           }
       }
       
-      const isProfileComplete = userProfile && userProfile.firstName && userProfile.lastName;
+      const isProfileComplete = userProfile.firstName && userProfile.lastName;
       const welcomePopupShown = sessionStorage.getItem('welcomePopupShown');
 
       if (sessionStorage.getItem('isNewUserSession') === 'true' && isProfileComplete && !welcomePopupShown) {
           setShowWelcomePopup(true);
           sessionStorage.setItem('welcomePopupShown', 'true');
       }
-
-    } else if (!loading && !user) {
-      router.push('/login');
     }
-  }, [user, loading, router, firestore, userProfile]);
+  }, [user, loading, userProfile]);
 
   const getLoadingMessage = (path: string) => {
     if (path.startsWith('/dashboard/souls-won')) return 'Loading souls won...';
