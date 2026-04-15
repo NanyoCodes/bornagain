@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useUser } from '@/firebase';
@@ -12,7 +11,7 @@ export function AccountabilitySettingsCard({ userProfile, userId }: { userProfil
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2"><HeartHandshake className="h-5 w-5" /> Find a Partner & Manage Requests</CardTitle>
+        <CardTitle className="flex items-center gap-2 text-lg"><HeartHandshake className="h-5 w-5" /> Find a Partner & Manage Requests</CardTitle>
         <CardDescription>
           Find a new accountability partner and manage your pending requests.
         </CardDescription>
