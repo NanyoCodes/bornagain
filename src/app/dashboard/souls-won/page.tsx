@@ -95,9 +95,17 @@ export default function SoulsWonPage() {
     );
   }, [souls, searchTerm]);
 
-  const handleSoulLogged = () => setIsLogDialogOpen(false);
-  const handleSoulUpdated = () => setSoulToEdit(null);
-  const handleFollowUpLogged = () => setSoulForFollowUp(null);
+  const handleSoulLogged = () => {
+    setIsLogDialogOpen(false);
+  };
+
+  const handleSoulUpdated = () => {
+    setSoulToEdit(null);
+  };
+  
+  const handleFollowUpLogged = () => {
+    setSoulForFollowUp(null);
+  };
   
   const handleDeleteSoul = async () => {
     if (!soulToDelete || !user || !firestore) return;
@@ -148,7 +156,7 @@ export default function SoulsWonPage() {
     }
 
     const headers = [
-      "First Name", "Last Name", "Phone", "Church", "Location Won", "Date Won", "Source", "Source Details", "Status",
+      "Logged By", "First Name", "Last Name", "Phone", "Church", "Location Won", "Date Won", "Source", "Source Details", "Status",
       "Attending Church", "In Bible Study", "Attending Prayer", "Last Follow Up Date", "Last Follow Up Note"
     ];
 
@@ -160,6 +168,7 @@ export default function SoulsWonPage() {
         const locationWonString = soul.locationWon ? [soul.locationWon.city, soul.locationWon.state, soul.locationWon.country].filter(Boolean).join(', ') : '';
 
         return [
+            user?.displayName || '',
             soul.firstName,
             soul.lastName,
             soul.phone || '',
@@ -190,7 +199,7 @@ export default function SoulsWonPage() {
                     doc.addImage(logo.imageUrl, 'JPG', data.settings.margin.left, 15, 12, 12);
                 }
                 doc.setFontSize(20);
-                doc.text("Souls Won Report", data.settings.margin.left + 15, 24);
+                doc.text(`Souls Won Report - ${user?.displayName || ''}`, data.settings.margin.left + 15, 24);
             },
             startY: 32,
             styles: { fontSize: 8, cellPadding: 1.5 },
@@ -309,17 +318,19 @@ export default function SoulsWonPage() {
         onViewHistory={setSoulForHistory}
       />
 
-      <Dialog open={!!soulToEdit} onOpenChange={(isOpen) => !isOpen && setSoulToEdit(null)}>
-          <DialogContent>
-              <DialogHeader>
-                  <DialogTitle>Edit Soul Details</DialogTitle>
-                  <DialogDescription>Make changes to the record for {soulToEdit?.firstName} {soulToEdit?.lastName}.</DialogDescription>
-              </DialogHeader>
-              <div className="max-h-[70vh] overflow-y-auto pr-2">
-                  {soulToEdit && <EditSoulForm soul={soulToEdit} onSoulUpdated={handleSoulUpdated} />}
-              </div>
-          </DialogContent>
-      </Dialog>
+      {soulToEdit && (
+          <Dialog open={!!soulToEdit} onOpenChange={(isOpen) => !isOpen && setSoulToEdit(null)}>
+              <DialogContent>
+                  <DialogHeader>
+                      <DialogTitle>Edit Soul Details</DialogTitle>
+                      <DialogDescription>Make changes to the record for {soulToEdit?.firstName} {soulToEdit?.lastName}.</DialogDescription>
+                  </DialogHeader>
+                  <div className="max-h-[70vh] overflow-y-auto pr-2">
+                      <EditSoulForm soul={soulToEdit} onSoulUpdated={handleSoulUpdated} />
+                  </div>
+              </DialogContent>
+          </Dialog>
+      )}
 
       {soulForFollowUp && (
         <LogFollowUpDialog
