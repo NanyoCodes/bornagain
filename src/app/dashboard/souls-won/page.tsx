@@ -239,6 +239,101 @@ export default function SoulsWonPage() {
     });
   };
 
+  const handleExportSingleSoul = (soul: Soul, formatType: 'csv' | 'pdf') => {
+    if (!soul) {
+      toast({
+        variant: "destructive",
+        title: "No Data to Export",
+        description: "There is no record to export.",
+      });
+      return;
+    }
+
+    const headers = [
+      "Logged By", "First Name", "Last Name", "Phone", "Church", "Location Won", "Date Won", "Source", "Source Details", "Status",
+      "Attending Church", "In Bible Study", "Attending Prayer", "Last Follow Up Date", "Last Follow Up Note"
+    ];
+
+    const lastFollowUp = soul.followUpLog && soul.followUpLog.length > 0
+        ? [...soul.followUpLog].sort((a, b) => (b.date?.toDate ? b.date.toDate().getTime() : 0) - (a.date?.toDate ? a.date.toDate().getTime() : 0))[0]
+        : null;
+
+    const locationWonString = soul.locationWon ? [soul.locationWon.city, soul.locationWon.state, soul.locationWon.country].filter(Boolean).join(', ') : '';
+
+    const row = [
+        user?.displayName || '',
+        soul.firstName,
+        soul.lastName,
+        soul.phone || '',
+        soul.church || '',
+        locationWonString,
+        soul.wonAt?.toDate ? format(soul.wonAt.toDate(), "yyyy-MM-dd") : '',
+        soul.source,
+        soul.sourceDetails || '',
+        soul.status,
+        soul.attendingChurch ? 'Yes' : 'No',
+        soul.inBibleStudy ? 'Yes' : 'No',
+        soul.attendingPrayer ? 'Yes' : 'No',
+        lastFollowUp?.date?.toDate ? format(lastFollowUp.date.toDate(), 'yyyy-MM-dd') : '',
+        lastFollowUp ? lastFollowUp.note : ''
+    ];
+
+    const body = [row];
+    const fileName = `soul-${soul.firstName}-${soul.lastName}-${new Date().toISOString().slice(0,10)}`;
+
+
+    if (formatType === 'pdf') {
+        const doc = new jsPDF({ orientation: 'landscape' });
+        const logo = PlaceHolderImages.find((img) => img.id === 'logo');
+        
+        doc.autoTable({
+            head: [headers],
+            body: body,
+            didDrawPage: (data) => {
+                if (logo?.imageUrl) {
+                    doc.addImage(logo.imageUrl, 'JPG', data.settings.margin.left, 15, 12, 12);
+                }
+                doc.setFontSize(20);
+                doc.text(`Soul Record - ${soul.firstName} ${soul.lastName}`, data.settings.margin.left + 15, 24);
+            },
+            startY: 32,
+            styles: { fontSize: 8, cellPadding: 1.5 },
+            headStyles: { fillColor: [0, 128, 0] },
+        });
+
+        doc.save(`${fileName}.pdf`);
+        toast({ title: "Export Started", description: "Your PDF file should begin downloading." });
+        return;
+    }
+
+    const escapeCsvCell = (cellData: any): string => {
+        if (cellData === null || cellData === undefined) return '';
+        const stringVal = String(cellData);
+        if (stringVal.includes(',') || stringVal.includes('"') || stringVal.includes('\n')) {
+            return `"${stringVal.replace(/"/g, '""')}"`;
+        }
+        return stringVal;
+    };
+    
+    const csvRows = body.map(row => row.map(escapeCsvCell).join(','));
+
+    const csvString = [headers.join(','), ...csvRows].join('\n');
+    const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `${fileName}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    toast({
+        title: "Export Started",
+        description: "Your CSV file should begin downloading shortly.",
+    });
+  };
+
   const triggerButton = (
     <Button disabled={!user}>
       <PlusCircle className="h-4 w-4" />
@@ -316,6 +411,7 @@ export default function SoulsWonPage() {
         onDelete={setSoulToDelete}
         onFollowUp={setSoulForFollowUp}
         onViewHistory={setSoulForHistory}
+        onExportSingle={handleExportSingleSoul}
       />
 
       {soulToEdit && (

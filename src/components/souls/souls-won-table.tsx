@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { format } from "date-fns";
-import { MoreHorizontal, Church, UserPlus, Edit, MapPin, Phone, ChevronDown, Trash2 } from "lucide-react";
+import { MoreHorizontal, Church, UserPlus, Edit, MapPin, Phone, ChevronDown, Trash2, Download } from "lucide-react";
 import type { Soul, FollowUpStatus } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,6 +19,10 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuPortal,
+  DropdownMenuSubContent,
 } from "@/components/ui/dropdown-menu";
 import {
   Table,
@@ -65,9 +69,10 @@ type SoulCardProps = {
   onDelete: (soul: Soul) => void; 
   onFollowUp: (soul: Soul) => void; 
   onViewHistory: (soul: Soul) => void; 
+  onExportSingle: (soul: Soul, formatType: 'csv' | 'pdf') => void;
 };
 
-function SoulCard({ soul, onEdit, onDelete, onFollowUp, onViewHistory }: SoulCardProps) {
+function SoulCard({ soul, onEdit, onDelete, onFollowUp, onViewHistory, onExportSingle }: SoulCardProps) {
     const latestFollowUp = React.useMemo(() => {
         if (!soul.followUpLog || soul.followUpLog.length === 0) return null;
         return soul.followUpLog.reduce((latest, current) => {
@@ -126,6 +131,18 @@ function SoulCard({ soul, onEdit, onDelete, onFollowUp, onViewHistory }: SoulCar
                                     </DropdownMenuItem>
                                     <DropdownMenuItem onSelect={() => onFollowUp(soul)}>Follow-up</DropdownMenuItem>
                                     <DropdownMenuItem onSelect={() => onViewHistory(soul)}>View History</DropdownMenuItem>
+                                    <DropdownMenuSub>
+                                        <DropdownMenuSubTrigger>
+                                            <Download className="mr-2 h-4 w-4" />
+                                            <span>Export</span>
+                                        </DropdownMenuSubTrigger>
+                                        <DropdownMenuPortal>
+                                            <DropdownMenuSubContent>
+                                                <DropdownMenuItem onSelect={() => onExportSingle(soul, 'csv')}>Export as CSV</DropdownMenuItem>
+                                                <DropdownMenuItem onSelect={() => onExportSingle(soul, 'pdf')}>Export as PDF</DropdownMenuItem>
+                                            </DropdownMenuSubContent>
+                                        </DropdownMenuPortal>
+                                    </DropdownMenuSub>
                                     <DropdownMenuSeparator />
                                     <DropdownMenuItem onSelect={() => onDelete(soul)} className="text-destructive focus:text-destructive">
                                         <Trash2 className="mr-2 h-4 w-4" />
@@ -177,10 +194,11 @@ type SoulTableRowProps = {
   onEdit: (soul: Soul) => void; 
   onDelete: (soul: Soul) => void; 
   onFollowUp: (soul: Soul) => void; 
-  onViewHistory: (soul: Soul) => void; 
+  onViewHistory: (soul: Soul) => void;
+  onExportSingle: (soul: Soul, formatType: 'csv' | 'pdf') => void;
 };
 
-function SoulTableRow({ soul, onEdit, onDelete, onFollowUp, onViewHistory }: SoulTableRowProps) {
+function SoulTableRow({ soul, onEdit, onDelete, onFollowUp, onViewHistory, onExportSingle }: SoulTableRowProps) {
     const latestFollowUp = React.useMemo(() => {
         if (!soul.followUpLog || soul.followUpLog.length === 0) return null;
         return soul.followUpLog.reduce((latest, current) => {
@@ -257,6 +275,18 @@ function SoulTableRow({ soul, onEdit, onDelete, onFollowUp, onViewHistory }: Sou
                         </DropdownMenuItem>
                         <DropdownMenuItem onSelect={() => onFollowUp(soul)}>Follow-up</DropdownMenuItem>
                         <DropdownMenuItem onSelect={() => onViewHistory(soul)}>View History</DropdownMenuItem>
+                        <DropdownMenuSub>
+                            <DropdownMenuSubTrigger>
+                                <Download className="mr-2 h-4 w-4" />
+                                <span>Export</span>
+                            </DropdownMenuSubTrigger>
+                            <DropdownMenuPortal>
+                                <DropdownMenuSubContent>
+                                    <DropdownMenuItem onSelect={() => onExportSingle(soul, 'csv')}>Export as CSV</DropdownMenuItem>
+                                    <DropdownMenuItem onSelect={() => onExportSingle(soul, 'pdf')}>Export as PDF</DropdownMenuItem>
+                                </DropdownMenuSubContent>
+                            </DropdownMenuPortal>
+                        </DropdownMenuSub>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem onSelect={() => onDelete(soul)} className="text-destructive focus:text-destructive">
                             <Trash2 className="mr-2 h-4 w-4" />
@@ -276,9 +306,10 @@ type SoulsWonTableProps = {
   onDelete: (soul: Soul) => void;
   onFollowUp: (soul: Soul) => void;
   onViewHistory: (soul: Soul) => void;
+  onExportSingle: (soul: Soul, formatType: 'csv' | 'pdf') => void;
 };
 
-export function SoulsWonTable({ souls, loading, onEdit, onDelete, onFollowUp, onViewHistory }: SoulsWonTableProps) {
+export function SoulsWonTable({ souls, loading, onEdit, onDelete, onFollowUp, onViewHistory, onExportSingle }: SoulsWonTableProps) {
   const isMobile = useIsMobile();
   const [mounted, setMounted] = React.useState(false);
 
@@ -342,7 +373,7 @@ export function SoulsWonTable({ souls, loading, onEdit, onDelete, onFollowUp, on
                     </CardDescription>
                 </CardHeader>
             </Card>
-            {souls.map((soul) => <SoulCard key={soul.id} soul={soul} onEdit={onEdit} onDelete={onDelete} onFollowUp={onFollowUp} onViewHistory={onViewHistory} />)}
+            {souls.map((soul) => <SoulCard key={soul.id} soul={soul} onEdit={onEdit} onDelete={onDelete} onFollowUp={onFollowUp} onViewHistory={onViewHistory} onExportSingle={onExportSingle} />)}
         </div>
       )
   }
@@ -372,7 +403,7 @@ export function SoulsWonTable({ souls, loading, onEdit, onDelete, onFollowUp, on
           </TableHeader>
           <TableBody>
             {souls.map((soul) => (
-              <SoulTableRow key={soul.id} soul={soul} onEdit={onEdit} onDelete={onDelete} onFollowUp={onFollowUp} onViewHistory={onViewHistory} />
+              <SoulTableRow key={soul.id} soul={soul} onEdit={onEdit} onDelete={onDelete} onFollowUp={onFollowUp} onViewHistory={onViewHistory} onExportSingle={onExportSingle} />
             ))}
           </TableBody>
         </Table>
