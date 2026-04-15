@@ -3,7 +3,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { usePathname } from 'next/navigation';
 import React, { useState, useEffect } from 'react';
-import { Flame } from 'lucide-react';
 
 const variants = {
   initial: { opacity: 0, y: 15 },
@@ -38,10 +37,15 @@ export function PageTransition({ children }: { children: React.ReactNode }) {
     <div className="relative">
       <div className="fixed inset-0 z-0 flex items-center justify-center p-8 bg-background">
         <div className="text-center max-w-2xl">
-          <Flame className="mx-auto h-12 w-12 text-primary mb-6" />
-          <p className="text-4xl md:text-5xl font-headline font-bold tracking-wider uppercase text-muted-foreground">
+          <motion.p
+            key={word}
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{ opacity: 1, scale: 1.1 }}
+            transition={{ duration: 0.4, ease: 'easeOut' }}
+            className="text-4xl md:text-5xl font-headline font-bold tracking-wider uppercase text-muted-foreground"
+          >
             {word}
-          </p>
+          </motion.p>
         </div>
       </div>
       
