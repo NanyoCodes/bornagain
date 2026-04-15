@@ -134,11 +134,6 @@ export default function SoulsWonPage() {
             operation: 'delete',
         }, user);
         errorEmitter.emit('permission-error', permissionError);
-        toast({
-            variant: "destructive",
-            title: "Deletion Failed",
-            description: "You may not have permission to delete this soul record from all locations. Please check the security rules.",
-        });
     } finally {
         setIsDeleting(false);
     }
@@ -156,8 +151,8 @@ export default function SoulsWonPage() {
     }
 
     const headers = [
-      "Logged By", "First Name", "Last Name", "Phone", "Church", "Location Won", "Date Won", "Source", "Source Details", "Status",
-      "Attending Church", "In Bible Study", "Attending Prayer", "Follow Up History"
+      "Logged By", "First Name", "Last Name", "Email", "Phone", "Church", "Location Won", "Date Won", "Source", "Source Details", "Status",
+      "Attending Church", "In Bible Study", "Attending Prayer", "In Service Dept.", "Follow Up History"
     ];
 
     const body = filteredSouls.map(soul => {
@@ -180,6 +175,7 @@ export default function SoulsWonPage() {
             user?.displayName || '',
             soul.firstName,
             soul.lastName,
+            soul.email || '',
             soul.phone || '',
             soul.church || '',
             locationWonString,
@@ -190,6 +186,7 @@ export default function SoulsWonPage() {
             soul.attendingChurch ? 'Yes' : 'No',
             soul.inBibleStudy ? 'Yes' : 'No',
             soul.attendingPrayer ? 'Yes' : 'No',
+            soul.inServiceDepartment ? 'Yes' : 'No',
             followUpHistoryString
         ];
     });
@@ -258,8 +255,8 @@ export default function SoulsWonPage() {
     }
 
     const headers = [
-      "Logged By", "First Name", "Last Name", "Phone", "Church", "Location Won", "Date Won", "Source", "Source Details", "Status",
-      "Attending Church", "In Bible Study", "Attending Prayer", "Follow Up History"
+      "Logged By", "First Name", "Last Name", "Email", "Phone", "Church", "Location Won", "Date Won", "Source", "Source Details", "Status",
+      "Attending Church", "In Bible Study", "Attending Prayer", "In Service Dept.", "Follow Up History"
     ];
 
     const followUpHistoryString = soul.followUpLog && soul.followUpLog.length > 0
@@ -272,15 +269,63 @@ export default function SoulsWonPage() {
                 const logParts = [note, actions].filter(Boolean).join(' - ');
                 return `${date}: ${logParts || 'Interaction logged.'}`;
             })
-            .join(' | ')
+            .join('\n')
         : 'No follow-up history.';
 
     const locationWonString = soul.locationWon ? [soul.locationWon.city, soul.locationWon.state, soul.locationWon.country].filter(Boolean).join(', ') : '';
+    const fileName = `soul-${soul.firstName}-${soul.lastName}-${new Date().toISOString().slice(0,10)}`;
 
+    if (formatType === 'pdf') {
+        const doc = new jsPDF({ orientation: 'portrait' });
+        const logo = PlaceHolderImages.find((img) => img.id === 'logo');
+        
+        const pdfBody = [
+            ["Logged By", user?.displayName || ''],
+            ["First Name", soul.firstName],
+            ["Last Name", soul.lastName],
+            ["Email", soul.email || ''],
+            ["Phone", soul.phone || ''],
+            ["Church", soul.church || ''],
+            ["Location Won", locationWonString],
+            ["Date Won", soul.wonAt?.toDate ? format(soul.wonAt.toDate(), "yyyy-MM-dd") : ''],
+            ["Source", soul.source],
+            ["Source Details", soul.sourceDetails || ''],
+            ["Status", soul.status],
+            ["Attending Church", soul.attendingChurch ? 'Yes' : 'No'],
+            ["In Bible Study", soul.inBibleStudy ? 'Yes' : 'No'],
+            ["Attending Prayer", soul.attendingPrayer ? 'Yes' : 'No'],
+            ["In Service Dept.", soul.inServiceDepartment ? 'Yes' : 'No'],
+            ["Follow Up History", followUpHistoryString],
+        ];
+
+        doc.autoTable({
+            body: pdfBody,
+            didDrawPage: (data) => {
+                if (logo?.imageUrl) {
+                    doc.addImage(logo.imageUrl, 'JPG', data.settings.margin.left, 15, 12, 12);
+                }
+                doc.setFontSize(20);
+                doc.text(`Soul Record - ${soul.firstName} ${soul.lastName}`, data.settings.margin.left + 15, 24);
+            },
+            startY: 32,
+            theme: 'striped',
+            styles: { fontSize: 10, cellPadding: 2 },
+            columnStyles: {
+                0: { fontStyle: 'bold', cellWidth: 40 },
+                1: { cellWidth: 'auto' },
+            },
+        });
+
+        doc.save(`${fileName}.pdf`);
+        toast({ title: "Export Started", description: "Your PDF file should begin downloading." });
+        return;
+    }
+    
     const row = [
         user?.displayName || '',
         soul.firstName,
         soul.lastName,
+        soul.email || '',
         soul.phone || '',
         soul.church || '',
         locationWonString,
@@ -291,39 +336,9 @@ export default function SoulsWonPage() {
         soul.attendingChurch ? 'Yes' : 'No',
         soul.inBibleStudy ? 'Yes' : 'No',
         soul.attendingPrayer ? 'Yes' : 'No',
+        soul.inServiceDepartment ? 'Yes' : 'No',
         followUpHistoryString
     ];
-
-    const body = [row];
-    const fileName = `soul-${soul.firstName}-${soul.lastName}-${new Date().toISOString().slice(0,10)}`;
-
-
-    if (formatType === 'pdf') {
-        const doc = new jsPDF({ orientation: 'landscape' });
-        const logo = PlaceHolderImages.find((img) => img.id === 'logo');
-        
-        doc.autoTable({
-            head: [headers],
-            body: body,
-            didDrawPage: (data) => {
-                if (logo?.imageUrl) {
-                    doc.addImage(logo.imageUrl, 'JPG', data.settings.margin.left, 15, 12, 12);
-                }
-                doc.setFontSize(20);
-                doc.text(`Soul Record - ${soul.firstName} ${soul.lastName}`, data.settings.margin.left + 15, 24);
-            },
-            startY: 32,
-            styles: { fontSize: 8, cellPadding: 1.5, cellWidth: 'wrap' },
-            headStyles: { fillColor: [0, 128, 0] },
-            columnStyles: {
-                13: { cellWidth: 100 }
-            }
-        });
-
-        doc.save(`${fileName}.pdf`);
-        toast({ title: "Export Started", description: "Your PDF file should begin downloading." });
-        return;
-    }
 
     const escapeCsvCell = (cellData: any): string => {
         if (cellData === null || cellData === undefined) return '';
@@ -334,7 +349,7 @@ export default function SoulsWonPage() {
         return stringVal;
     };
     
-    const csvRows = body.map(row => row.map(escapeCsvCell).join(','));
+    const csvRows = [row].map(r => r.map(escapeCsvCell).join(','));
 
     const csvString = [headers.join(','), ...csvRows].join('\n');
     const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
