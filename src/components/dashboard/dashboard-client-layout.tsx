@@ -309,7 +309,7 @@ export default function DashboardClientLayout({
 
   useEffect(() => {
     // Effect for updating lastActive timestamp.
-    if (!loading && user && firestore && !lastActiveUpdated) {
+    if (user && firestore && !lastActiveUpdated) {
       const userRef = doc(firestore, 'users', user.uid);
       const updatePayload = { lastActive: serverTimestamp() };
       updateDoc(userRef, updatePayload)
@@ -325,7 +325,7 @@ export default function DashboardClientLayout({
         errorEmitter.emit('permission-error', permissionError);
       });
     }
-  }, [user, loading, firestore, lastActiveUpdated]);
+  }, [user, firestore, lastActiveUpdated]);
 
   useEffect(() => {
     // Effect for Welcome Popup logic. Depends on userProfile.
@@ -372,7 +372,7 @@ export default function DashboardClientLayout({
         {logo && (
           <Avatar className="h-16 w-16 mb-6 animate-pulse">
             <AvatarImage src={logo.imageUrl} alt={logo.description} />
-            <AvatarFallback>T</AvatarFallback>
+            <AvatarFallback></AvatarFallback>
           </Avatar>
         )}
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
