@@ -1,11 +1,9 @@
-
 'use client';
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { usePathname } from 'next/navigation';
 import React, { useState, useEffect } from 'react';
 import { Flame } from 'lucide-react';
-import { welcomeScriptures } from '@/lib/verses';
 
 const variants = {
   initial: { opacity: 0, y: 15 },
@@ -13,29 +11,37 @@ const variants = {
   exit: { opacity: 0, y: -15 },
 };
 
+const transitionWords = [
+  "PRAY",
+  "TESTIFY",
+  "STUDY THE WORD",
+  "TEACH",
+  "LOVE",
+  "FORGIVE",
+  "REPENT",
+  "SING",
+  "SMILE",
+];
+
 export function PageTransition({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const [verse, setVerse] = useState({ text: '', verse: '' });
+  const [word, setWord] = useState('');
 
   useEffect(() => {
     // This effect runs on the client after hydration to avoid hydration mismatch
-    const randomVerse = welcomeScriptures[Math.floor(Math.random() * welcomeScriptures.length)];
-    setVerse({
-      text: randomVerse.text.replace(/\{name\},?\s?/g, ''),
-      verse: randomVerse.verse,
-    });
+    const randomWord = transitionWords[Math.floor(Math.random() * transitionWords.length)];
+    setWord(randomWord);
   }, [pathname]);
 
   return (
-    // This outer div will contain the verse as a background element
+    // This outer div will contain the word as a background element
     <div className="relative">
       <div className="fixed inset-0 z-0 flex items-center justify-center p-8 bg-background">
         <div className="text-center max-w-2xl">
           <Flame className="mx-auto h-12 w-12 text-primary mb-6" />
-          <blockquote className="space-y-4">
-            <p className="text-xl md:text-2xl font-serif italic text-muted-foreground">"{verse.text}"</p>
-            <footer className="text-base text-muted-foreground/80 font-sans not-italic">- {verse.verse}</footer>
-          </blockquote>
+          <p className="text-4xl md:text-5xl font-headline font-bold tracking-wider uppercase text-muted-foreground">
+            {word}
+          </p>
         </div>
       </div>
       
@@ -51,7 +57,7 @@ export function PageTransition({ children }: { children: React.ReactNode }) {
           animate="animate"
           exit="exit"
           transition={{ type: 'easeInOut', duration: 0.4 }}
-          className="relative z-10 bg-background" // Give content a background to hide the verse screen underneath
+          className="relative z-10 bg-background" // Give content a background to hide the transition screen underneath
         >
           {children}
         </motion.div>
