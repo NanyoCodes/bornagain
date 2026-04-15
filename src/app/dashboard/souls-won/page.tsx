@@ -157,13 +157,22 @@ export default function SoulsWonPage() {
 
     const headers = [
       "Logged By", "First Name", "Last Name", "Phone", "Church", "Location Won", "Date Won", "Source", "Source Details", "Status",
-      "Attending Church", "In Bible Study", "Attending Prayer", "Last Follow Up Date", "Last Follow Up Note"
+      "Attending Church", "In Bible Study", "Attending Prayer", "Follow Up History"
     ];
 
     const body = filteredSouls.map(soul => {
-        const lastFollowUp = soul.followUpLog && soul.followUpLog.length > 0
-            ? [...soul.followUpLog].sort((a, b) => (b.date?.toDate ? b.date.toDate().getTime() : 0) - (a.date?.toDate ? a.date.toDate().getTime() : 0))[0]
-            : null;
+        const followUpHistoryString = soul.followUpLog && soul.followUpLog.length > 0
+            ? [...soul.followUpLog]
+                .sort((a, b) => (a.date?.toDate ? a.date.toDate().getTime() : 0) - (b.date?.toDate ? b.date.toDate().getTime() : 0)) // Sort oldest to newest
+                .map(log => {
+                    const date = log.date?.toDate ? format(log.date.toDate(), 'yyyy-MM-dd') : 'N/A';
+                    const note = log.note || '';
+                    const actions = log.actions && log.actions.length > 0 ? `Actions: ${log.actions.join(', ')}` : '';
+                    const logParts = [note, actions].filter(Boolean).join(' - ');
+                    return `${date}: ${logParts || 'Interaction logged.'}`;
+                })
+                .join(' | ');
+            : 'No follow-up history.';
 
         const locationWonString = soul.locationWon ? [soul.locationWon.city, soul.locationWon.state, soul.locationWon.country].filter(Boolean).join(', ') : '';
 
@@ -181,8 +190,7 @@ export default function SoulsWonPage() {
             soul.attendingChurch ? 'Yes' : 'No',
             soul.inBibleStudy ? 'Yes' : 'No',
             soul.attendingPrayer ? 'Yes' : 'No',
-            lastFollowUp?.date?.toDate ? format(lastFollowUp.date.toDate(), 'yyyy-MM-dd') : '',
-            lastFollowUp ? lastFollowUp.note : ''
+            followUpHistoryString
         ];
     });
 
@@ -251,12 +259,21 @@ export default function SoulsWonPage() {
 
     const headers = [
       "Logged By", "First Name", "Last Name", "Phone", "Church", "Location Won", "Date Won", "Source", "Source Details", "Status",
-      "Attending Church", "In Bible Study", "Attending Prayer", "Last Follow Up Date", "Last Follow Up Note"
+      "Attending Church", "In Bible Study", "Attending Prayer", "Follow Up History"
     ];
 
-    const lastFollowUp = soul.followUpLog && soul.followUpLog.length > 0
-        ? [...soul.followUpLog].sort((a, b) => (b.date?.toDate ? b.date.toDate().getTime() : 0) - (a.date?.toDate ? a.date.toDate().getTime() : 0))[0]
-        : null;
+    const followUpHistoryString = soul.followUpLog && soul.followUpLog.length > 0
+        ? [...soul.followUpLog]
+            .sort((a, b) => (a.date?.toDate ? a.date.toDate().getTime() : 0) - (b.date?.toDate ? b.date.toDate().getTime() : 0)) // Sort oldest to newest
+            .map(log => {
+                const date = log.date?.toDate ? format(log.date.toDate(), 'yyyy-MM-dd') : 'N/A';
+                const note = log.note || '';
+                const actions = log.actions && log.actions.length > 0 ? `Actions: ${log.actions.join(', ')}` : '';
+                const logParts = [note, actions].filter(Boolean).join(' - ');
+                return `${date}: ${logParts || 'Interaction logged.'}`;
+            })
+            .join(' | ');
+        : 'No follow-up history.';
 
     const locationWonString = soul.locationWon ? [soul.locationWon.city, soul.locationWon.state, soul.locationWon.country].filter(Boolean).join(', ') : '';
 
@@ -274,8 +291,7 @@ export default function SoulsWonPage() {
         soul.attendingChurch ? 'Yes' : 'No',
         soul.inBibleStudy ? 'Yes' : 'No',
         soul.attendingPrayer ? 'Yes' : 'No',
-        lastFollowUp?.date?.toDate ? format(lastFollowUp.date.toDate(), 'yyyy-MM-dd') : '',
-        lastFollowUp ? lastFollowUp.note : ''
+        followUpHistoryString
     ];
 
     const body = [row];
@@ -297,8 +313,11 @@ export default function SoulsWonPage() {
                 doc.text(`Soul Record - ${soul.firstName} ${soul.lastName}`, data.settings.margin.left + 15, 24);
             },
             startY: 32,
-            styles: { fontSize: 8, cellPadding: 1.5 },
+            styles: { fontSize: 8, cellPadding: 1.5, cellWidth: 'wrap' },
             headStyles: { fillColor: [0, 128, 0] },
+            columnStyles: {
+                13: { cellWidth: 100 }
+            }
         });
 
         doc.save(`${fileName}.pdf`);
