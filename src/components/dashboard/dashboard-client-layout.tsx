@@ -284,6 +284,7 @@ export default function DashboardClientLayout({
   const [showWelcomePopup, setShowWelcomePopup] = useState(false);
   const logo = PlaceHolderImages.find((img) => img.id === "logo");
   const isChatPage = /^\/dashboard\/chats\/.+/.test(pathname);
+  const [lastActiveUpdated, setLastActiveUpdated] = useState(false);
 
   const userDocRef = useMemo(() => user ? doc(firestore, 'users', user.uid) : null, [user, firestore]);
   const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userDocRef);
@@ -307,11 +308,15 @@ export default function DashboardClientLayout({
   }, [loading, user, router]);
 
   useEffect(() => {
-    // Effect for updating lastActive timestamp. Runs once per login.
-    if (!loading && user && firestore) {
+    // Effect for updating lastActive timestamp.
+    if (!loading && user && firestore && !lastActiveUpdated) {
       const userRef = doc(firestore, 'users', user.uid);
       const updatePayload = { lastActive: serverTimestamp() };
-      updateDoc(userRef, updatePayload).catch(() => {
+      updateDoc(userRef, updatePayload)
+        .then(() => {
+          setLastActiveUpdated(true);
+        })
+        .catch(() => {
         const permissionError = new FirestorePermissionError({
           path: userRef.path,
           operation: 'update',
@@ -320,7 +325,7 @@ export default function DashboardClientLayout({
         errorEmitter.emit('permission-error', permissionError);
       });
     }
-  }, [user, loading, firestore]);
+  }, [user, loading, firestore, lastActiveUpdated]);
 
   useEffect(() => {
     // Effect for Welcome Popup logic. Depends on userProfile.
