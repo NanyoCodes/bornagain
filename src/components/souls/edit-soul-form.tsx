@@ -1,4 +1,3 @@
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -25,6 +24,7 @@ import { collection, query, orderBy, doc, updateDoc, addDoc, deleteField } from 
 import { FirestorePermissionError } from "@/firebase/errors";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { PlaceHolderImages } from "@/lib/placeholder-images";
 
 const formSchema = z.object({
   firstName: z.string().min(2, "First name must be at least 2 characters."),
@@ -91,14 +91,13 @@ export function EditSoulForm({ soul, onSoulUpdated }: EditSoulFormProps) {
     setIsLoading(true);
 
     const soulRef = doc(firestore, `users/${user.uid}/souls`, soul.id);
-
     const soulUpdateData: { [key: string]: any } = {
       firstName: values.firstName,
       lastName: values.lastName,
       source: values.source as 'Personal' | 'Campaign',
       wonAt: values.wonAt,
     };
-
+    
     if (values.email) soulUpdateData.email = values.email; else soulUpdateData.email = deleteField();
     if (values.phone) soulUpdateData.phone = values.phone; else soulUpdateData.phone = deleteField();
     if (values.church) soulUpdateData.church = values.church; else soulUpdateData.church = deleteField();
@@ -115,20 +114,17 @@ export function EditSoulForm({ soul, onSoulUpdated }: EditSoulFormProps) {
     }
     
     const isCampaignSource = values.source === 'Campaign';
-    
     if (isCampaignSource) {
       const campaign = campaigns?.find(c => c.title === values.sourceDetails);
       if (campaign) {
           soulUpdateData.campaignId = campaign.id;
       } else {
-          // If user selected Campaign but no specific campaign, remove the old ID
           soulUpdateData.campaignId = deleteField(); 
       }
     } else {
-        // If the source is not a campaign, we want to remove the campaignId field.
         soulUpdateData.campaignId = deleteField();
     }
-    
+
     try {
         await updateDoc(soulRef, soulUpdateData);
         toast({
@@ -137,43 +133,53 @@ export function EditSoulForm({ soul, onSoulUpdated }: EditSoulFormProps) {
         });
 
         if (!soul.email && values.email) {
-            const mailCollectionRef = collection(firestore, 'mail');
-            const appUrl = window.location.origin;
-            const inviterName = user.displayName || 'A friend';
-            addDoc(mailCollectionRef, {
-                to: [values.email],
-                message: {
-                    subject: `You're invited to join Testify!`,
-                    html: `
-                        <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
-                          <div style="max-width: 600px; margin: 20px auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
-                            <div style="text-align: center; margin-bottom: 20px;">
-                              <img src="https://i.postimg.cc/5HnLbRH6/testify-logoo-(2).jpg" alt="Testify Logo" style="width: 80px; height: 80px; border-radius: 8px;">
-                              <h1 style="font-size: 24px; margin-top: 10px;">You're Invited to Testify</h1>
+            try {
+                const mailCollectionRef = collection(firestore, 'mail');
+                const appUrl = window.location.origin;
+                const inviterName = user.displayName || 'A friend';
+                const logo = PlaceHolderImages.find(img => img.id === 'logo');
+                const logoUrl = logo ? logo.imageUrl : '';
+
+                await addDoc(mailCollectionRef, {
+                    to: [values.email],
+                    message: {
+                        subject: `You're invited to join Testify!`,
+                        html: `
+                            <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+                              <div style="max-width: 600px; margin: 20px auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
+                                <div style="text-align: center; margin-bottom: 20px;">
+                                  <img src="${logoUrl}" alt="Testify Logo" style="width: 80px; height: 80px; border-radius: 8px;">
+                                  <h1 style="font-size: 24px; margin-top: 10px;">You're Invited to Testify</h1>
+                                </div>
+                                <p>Hi ${values.firstName},</p>
+                                <p><strong>${inviterName}</strong> has invited you to join Testify, a platform for believers to share testimonies, organize soul-winning campaigns, and track evangelism progress.</p>
+                                <p>Join the movement and start your journey today!</p>
+                                <div style="text-align: center; margin: 30px 0;">
+                                  <a href="${appUrl}" style="background-color: #3b82f6; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-size: 16px;">Join Testify</a>
+                                </div>
+                                <p>God bless,</p>
+                                <p><strong>The Testify Team</strong></p>
+                              </div>
+                              <div style="text-align: center; font-size: 12px; color: #999; margin-top: 20px;">
+                                <p>&copy; Testify. All rights reserved.</p>
+                              </div>
                             </div>
-                            <p>Hi ${values.firstName},</p>
-                            <p><strong>${inviterName}</strong> has invited you to join Testify, a platform for believers to share testimonies, organize soul-winning campaigns, and track evangelism progress.</p>
-                            <p>Join the movement and start your journey today!</p>
-                            <div style="text-align: center; margin: 30px 0;">
-                              <a href="${appUrl}" style="background-color: #3b82f6; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-size: 16px;">Join Testify</a>
-                            </div>
-                            <p>God bless,</p>
-                            <p><strong>The Testify Team</strong></p>
-                          </div>
-                          <div style="text-align: center; font-size: 12px; color: #999; margin-top: 20px;">
-                            <p>&copy; Testify. All rights reserved.</p>
-                          </div>
-                        </div>
-                    `,
-                },
-            }).catch(() => {
-                const permissionError = new FirestorePermissionError({
-                    path: mailCollectionRef.path,
+                        `,
+                    },
+                });
+                 toast({
+                    title: 'Invitation Sent!',
+                    description: `An invitation email has been sent to ${values.email}.`
+                });
+            } catch (emailError) {
+                console.error("Failed to send invitation email:", emailError);
+                 const permissionError = new FirestorePermissionError({
+                    path: 'mail',
                     operation: 'create',
                     requestResourceData: { to: [values.email] }
                 }, user);
                 errorEmitter.emit('permission-error', permissionError);
-            });
+            }
         }
         onSoulUpdated();
     } catch (error) {
@@ -183,7 +189,8 @@ export function EditSoulForm({ soul, onSoulUpdated }: EditSoulFormProps) {
         requestResourceData: soulUpdateData,
       }, user);
       errorEmitter.emit('permission-error', permissionError);
-      setIsLoading(false);
+    } finally {
+        setIsLoading(false);
     }
   }
 
