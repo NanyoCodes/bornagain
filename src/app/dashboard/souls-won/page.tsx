@@ -137,7 +137,7 @@ export default function SoulsWonPage() {
         toast({
             variant: "destructive",
             title: "Deletion Failed",
-            description: "You do not have permission to delete this record from all locations.",
+            description: "You may not have permission to delete this soul record from all locations. Please check the security rules.",
         });
     } finally {
         setIsDeleting(false);
@@ -171,7 +171,7 @@ export default function SoulsWonPage() {
                     const logParts = [note, actions].filter(Boolean).join(' - ');
                     return `${date}: ${logParts || 'Interaction logged.'}`;
                 })
-                .join(' | ');
+                .join(' | ')
             : 'No follow-up history.';
 
         const locationWonString = soul.locationWon ? [soul.locationWon.city, soul.locationWon.state, soul.locationWon.country].filter(Boolean).join(', ') : '';
@@ -272,7 +272,7 @@ export default function SoulsWonPage() {
                 const logParts = [note, actions].filter(Boolean).join(' - ');
                 return `${date}: ${logParts || 'Interaction logged.'}`;
             })
-            .join(' | ');
+            .join(' | ')
         : 'No follow-up history.';
 
     const locationWonString = soul.locationWon ? [soul.locationWon.city, soul.locationWon.state, soul.locationWon.country].filter(Boolean).join(', ') : '';
