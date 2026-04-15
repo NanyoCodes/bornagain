@@ -44,6 +44,7 @@ import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { EditProfileModal } from "@/components/profile/edit-profile-modal";
+import { PageTransition } from "../page-transition";
 
 
 const navItems = [
@@ -374,7 +375,7 @@ export default function DashboardClientLayout({
         <div className="flex-1 relative min-h-0">
           <main className={cn("absolute inset-0", !isChatPage && "overflow-y-auto")}>
             <div className={cn("max-w-7xl mx-auto", !isChatPage && "p-4 md:p-6 pb-20 md:pb-6", isChatPage && "h-full")}>
-              {children}
+              <PageTransition>{children}</PageTransition>
             </div>
           </main>
         </div>
