@@ -105,7 +105,9 @@ service cloud.firestore {
       // Allow any authenticated user to create a document here.
       // The user's private /users/{userId}/souls collection has the stricter rule.
       allow create: if request.auth != null;
-      allow update, delete: if false; // Immutable
+      // Only the owner can delete their soul record from the global collection
+      allow delete: if request.auth != null && resource.data.userId == request.auth.uid;
+      allow update: if false; // Immutable
     }
 
     // Testimonies are public, but only writable by the author.
@@ -239,5 +241,4 @@ service cloud.firestore {
     }
   }
 }
-
     

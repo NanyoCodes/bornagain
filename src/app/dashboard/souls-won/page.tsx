@@ -96,16 +96,20 @@ export default function SoulsWonPage() {
     );
   }, [souls, searchTerm]);
 
-  // Dialog close handlers
-  const handleSoulLogged = () => {
-    setIsLogDialogOpen(false);
-  };
-  const handleSoulUpdated = () => {
-    setSoulToEdit(null);
-  };
-  const handleFollowUpLogged = () => {
-    setSoulForFollowUp(null);
-  };
+  const handleSoulLogged = () => setIsLogDialogOpen(false);
+  const handleSoulUpdated = () => setSoulToEdit(null);
+  const handleFollowUpLogged = () => setSoulForFollowUp(null);
+  
+  useEffect(() => {
+      if (soulToEdit === null) {
+          const timer = setTimeout(() => {
+              const el = document.querySelector(`[data-state=open]`);
+              if (el) (el as HTMLElement).focus();
+          }, 100);
+          return () => clearTimeout(timer);
+      }
+  }, [soulToEdit]);
+
 
   const handleDeleteSoul = async () => {
     if (!soulToDelete || !user || !firestore) return;
@@ -134,6 +138,11 @@ export default function SoulsWonPage() {
             operation: 'delete',
         }, user);
         errorEmitter.emit('permission-error', permissionError);
+        toast({
+            variant: "destructive",
+            title: "Deletion Failed",
+            description: "You do not have permission to delete this record from all locations.",
+        });
     } finally {
         setIsDeleting(false);
     }
@@ -312,19 +321,17 @@ export default function SoulsWonPage() {
         onViewHistory={setSoulForHistory}
       />
 
-      {soulToEdit && (
-        <Dialog open={!!soulToEdit} onOpenChange={(isOpen) => { if (!isOpen) setSoulToEdit(null); }}>
-            <DialogContent>
-                <DialogHeader>
-                    <DialogTitle>Edit Soul Details</DialogTitle>
-                    <DialogDescription>Make changes to the record for {soulToEdit?.firstName} {soulToEdit?.lastName}.</DialogDescription>
-                </DialogHeader>
-                <div className="max-h-[70vh] overflow-y-auto pr-2">
-                    <EditSoulForm soul={soulToEdit} onSoulUpdated={handleSoulUpdated} />
-                </div>
-            </DialogContent>
-        </Dialog>
-      )}
+      <Dialog open={!!soulToEdit} onOpenChange={(isOpen) => !isOpen && setSoulToEdit(null)}>
+          <DialogContent>
+              <DialogHeader>
+                  <DialogTitle>Edit Soul Details</DialogTitle>
+                  <DialogDescription>Make changes to the record for {soulToEdit?.firstName} {soulToEdit?.lastName}.</DialogDescription>
+              </DialogHeader>
+              <div className="max-h-[70vh] overflow-y-auto pr-2">
+                  {soulToEdit && <EditSoulForm soul={soulToEdit} onSoulUpdated={handleSoulUpdated} />}
+              </div>
+          </DialogContent>
+      </Dialog>
 
       {soulForFollowUp && (
         <LogFollowUpDialog
