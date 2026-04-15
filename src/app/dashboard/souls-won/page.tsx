@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
@@ -100,17 +99,6 @@ export default function SoulsWonPage() {
   const handleSoulUpdated = () => setSoulToEdit(null);
   const handleFollowUpLogged = () => setSoulForFollowUp(null);
   
-  useEffect(() => {
-      if (soulToEdit === null) {
-          const timer = setTimeout(() => {
-              const el = document.querySelector(`[data-state=open]`);
-              if (el) (el as HTMLElement).focus();
-          }, 100);
-          return () => clearTimeout(timer);
-      }
-  }, [soulToEdit]);
-
-
   const handleDeleteSoul = async () => {
     if (!soulToDelete || !user || !firestore) return;
     setIsDeleting(true);
