@@ -50,7 +50,7 @@ export function PageTransition({ children }: { children: React.ReactNode }) {
           initial="initial"
           animate="animate"
           exit="exit"
-          transition={{ type: 'easeInOut', duration: 5 }}
+          transition={{ type: 'easeInOut', duration: 0.4 }}
           className="relative z-10 bg-background" // Give content a background to hide the verse screen underneath
         >
           {children}
