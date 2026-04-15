@@ -313,7 +313,7 @@ export default function SoulsWonPage() {
       />
 
       {soulToEdit && (
-        <Dialog open={!!soulToEdit} onOpenChange={(open) => !open && setSoulToEdit(null)}>
+        <Dialog open={!!soulToEdit} onOpenChange={(isOpen) => { if (!isOpen) setSoulToEdit(null); }}>
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>Edit Soul Details</DialogTitle>
@@ -330,7 +330,7 @@ export default function SoulsWonPage() {
         <LogFollowUpDialog
             soul={soulForFollowUp}
             isOpen={!!soulForFollowUp}
-            onOpenChange={(open) => !open && setSoulForFollowUp(null)}
+            onOpenChange={(isOpen) => { if (!isOpen) setSoulForFollowUp(null); }}
             onFollowUpLogged={handleFollowUpLogged}
         />
       )}
@@ -339,12 +339,12 @@ export default function SoulsWonPage() {
         <ViewHistoryDialog
             soul={soulForHistory}
             isOpen={!!soulForHistory}
-            onOpenChange={(open) => !open && setSoulForHistory(null)}
+            onOpenChange={(isOpen) => { if (!isOpen) setSoulForHistory(null); }}
         />
       )}
 
       {soulToDelete && (
-        <AlertDialog open={!!soulToDelete} onOpenChange={(open) => !open && setSoulToDelete(null)}>
+        <AlertDialog open={!!soulToDelete} onOpenChange={(isOpen) => { if (!isOpen) setSoulToDelete(null); }}>
             <AlertDialogContent>
                 <AlertDialogHeader>
                     <AlertDialogTitle>Are you sure?</AlertDialogTitle>
