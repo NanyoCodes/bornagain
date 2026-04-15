@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -174,7 +173,7 @@ export function UserSearch({ currentUserProfile }: { currentUserProfile: UserPro
                 {isSearching && <Loader2 className="absolute right-2.5 top-2.5 h-4 w-4 animate-spin"/>}
             </div>
 
-            <ScrollArea className="h-60 rounded-md border">
+            <ScrollArea className="h-80 rounded-md border">
                 <div className="p-2">
                 {searchResults.length === 0 && !isSearching && (
                     <div className="text-center text-muted-foreground p-4 text-sm">
