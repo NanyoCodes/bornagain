@@ -415,10 +415,24 @@ export default function AccountabilityPage() {
                                     </TooltipContent>
                                 </Tooltip>
                             </TooltipProvider>
-                            <Button onClick={() => handleInitiateChat(partner)} disabled={isChatLoading === partner.userId || isNudging === partner.userId}>
-                                {isChatLoading === partner.userId ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <MessagesSquare className="mr-2 h-4 w-4" />}
-                                Chat
-                            </Button>
+                            <TooltipProvider>
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <Button
+                                            variant="outline"
+                                            size="icon"
+                                            onClick={() => handleInitiateChat(partner)}
+                                            disabled={isChatLoading === partner.userId || isNudging === partner.userId}
+                                        >
+                                            {isChatLoading === partner.userId ? <Loader2 className="h-4 w-4 animate-spin" /> : <MessagesSquare className="h-4 w-4" />}
+                                            <span className="sr-only">Chat</span>
+                                        </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                        <p>Chat with {partner.firstName}</p>
+                                    </TooltipContent>
+                                </Tooltip>
+                            </TooltipProvider>
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                     <Button variant="ghost" size="icon">
