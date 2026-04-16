@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useMemo, useState, useEffect } from 'react';
@@ -10,7 +9,7 @@ import type { UserProfile } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Loader2, HeartHandshake, MessagesSquare, MoreVertical, UserX, User, CheckCircle2, XCircle, Zap } from 'lucide-react';
+import { Loader2, HeartHandshake, MessagesSquare, MoreVertical, UserX, User, CheckCircle2, XCircle, ThumbsUp } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import {
@@ -47,6 +46,7 @@ import { format } from 'date-fns';
 import { Input } from '@/components/ui/input';
 import { useSearch } from '@/context/search-context';
 import { cn } from '@/lib/utils';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 function PartnerDisciplineStatus({ partnerId, date }: { partnerId: string; date: Date }) {
     const firestore = useFirestore();
@@ -397,14 +397,24 @@ export default function AccountabilityPage() {
                             </div>
                         </div>
                         <div className="flex items-center gap-2">
-                             <Button
-                                variant="outline"
-                                onClick={() => handleNudgePartner(partner)}
-                                disabled={isNudging === partner.userId || isChatLoading === partner.userId}
-                            >
-                                {isNudging === partner.userId ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Zap className="mr-2 h-4 w-4" />}
-                                Nudge
-                            </Button>
+                            <TooltipProvider>
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <Button
+                                            variant="outline"
+                                            size="icon"
+                                            onClick={() => handleNudgePartner(partner)}
+                                            disabled={isNudging === partner.userId || isChatLoading === partner.userId}
+                                        >
+                                            {isNudging === partner.userId ? <Loader2 className="h-4 w-4 animate-spin" /> : <ThumbsUp className="h-4 w-4" />}
+                                            <span className="sr-only">Nudge Partner</span>
+                                        </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                        <p>Nudge {partner.firstName}</p>
+                                    </TooltipContent>
+                                </Tooltip>
+                            </TooltipProvider>
                             <Button onClick={() => handleInitiateChat(partner)} disabled={isChatLoading === partner.userId || isNudging === partner.userId}>
                                 {isChatLoading === partner.userId ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <MessagesSquare className="mr-2 h-4 w-4" />}
                                 Chat
@@ -500,5 +510,3 @@ export default function AccountabilityPage() {
     </div>
   );
 }
-
-    
