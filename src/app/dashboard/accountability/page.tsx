@@ -9,7 +9,7 @@ import type { UserProfile } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Loader2, HeartHandshake, MessagesSquare, MoreVertical, UserX, User, CheckCircle2, XCircle, ThumbsUp } from 'lucide-react';
+import { Loader2, HeartHandshake, MessagesSquare, MoreVertical, UserX, User, CheckCircle2, XCircle, BellRing } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import {
@@ -406,7 +406,7 @@ export default function AccountabilityPage() {
                                             onClick={() => handleNudgePartner(partner)}
                                             disabled={isNudging === partner.userId || isChatLoading === partner.userId}
                                         >
-                                            {isNudging === partner.userId ? <Loader2 className="h-4 w-4 animate-spin" /> : <ThumbsUp className="h-4 w-4" />}
+                                            {isNudging === partner.userId ? <Loader2 className="h-4 w-4 animate-spin" /> : <BellRing className="h-4 w-4" />}
                                             <span className="sr-only">Nudge Partner</span>
                                         </Button>
                                     </TooltipTrigger>
