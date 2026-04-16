@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useMemo, useState, useEffect } from 'react';
@@ -9,7 +10,7 @@ import type { UserProfile } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Loader2, HeartHandshake, MessagesSquare, MoreVertical, UserX, User, CheckCircle2, XCircle } from 'lucide-react';
+import { Loader2, HeartHandshake, MessagesSquare, MoreVertical, UserX, User, CheckCircle2, XCircle, Zap } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import {
@@ -96,6 +97,7 @@ export default function AccountabilityPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [isChatLoading, setIsChatLoading] = useState<string | null>(null);
+  const [isNudging, setIsNudging] = useState<string | null>(null);
   
   const [isRemoving, setIsRemoving] = useState<string | null>(null);
   const [removalTarget, setRemovalTarget] = useState<UserProfile['accountabilityPartners'][0] | null>(null);
@@ -135,6 +137,42 @@ export default function AccountabilityPage() {
   }, [user?.uid, firestore]);
 
   const { data: userProfile, loading: loadingProfile } = useDoc<UserProfile>(userDocRef);
+
+  const handleNudgePartner = async (partner: { userId: string, firstName: string, lastName: string }) => {
+    if (!user || !firestore || !userProfile) return;
+
+    setIsNudging(partner.userId);
+    try {
+        const notificationsCollectionRef = collection(firestore, 'users', partner.userId, 'notifications');
+        const notificationData = {
+            userId: partner.userId,
+            type: 'accountability_nudge' as const,
+            title: 'A friendly nudge!',
+            message: `${userProfile.firstName} ${userProfile.lastName} is encouraging you to complete your daily disciplines.`,
+            link: '/dashboard',
+            isRead: false,
+            createdAt: serverTimestamp(),
+        };
+
+        await addDoc(notificationsCollectionRef, notificationData);
+
+        toast({
+            title: 'Nudge Sent!',
+            description: `You've sent an encouragement to ${partner.firstName}.`,
+        });
+
+    } catch (error) {
+        console.error("Error nudging partner:", error);
+        const permissionError = new FirestorePermissionError({
+            path: `users/${partner.userId}/notifications`,
+            operation: 'create',
+            requestResourceData: { action: 'nudge partner', from: user.uid }
+        }, user);
+        errorEmitter.emit('permission-error', permissionError);
+    } finally {
+        setIsNudging(null);
+    }
+  };
 
   const handleInitiateChat = async (partner: { userId: string, firstName: string, lastName: string, photoURL?: string }) => {
     if (!user || !firestore || !userProfile) return;
@@ -359,7 +397,15 @@ export default function AccountabilityPage() {
                             </div>
                         </div>
                         <div className="flex items-center gap-2">
-                            <Button onClick={() => handleInitiateChat(partner)} disabled={isChatLoading === partner.userId}>
+                             <Button
+                                variant="outline"
+                                onClick={() => handleNudgePartner(partner)}
+                                disabled={isNudging === partner.userId || isChatLoading === partner.userId}
+                            >
+                                {isNudging === partner.userId ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Zap className="mr-2 h-4 w-4" />}
+                                Nudge
+                            </Button>
+                            <Button onClick={() => handleInitiateChat(partner)} disabled={isChatLoading === partner.userId || isNudging === partner.userId}>
                                 {isChatLoading === partner.userId ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <MessagesSquare className="mr-2 h-4 w-4" />}
                                 Chat
                             </Button>
@@ -454,3 +500,5 @@ export default function AccountabilityPage() {
     </div>
   );
 }
+
+    
