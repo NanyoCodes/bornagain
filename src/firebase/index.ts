@@ -1,7 +1,7 @@
 
 import { initializeApp, getApps } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
+import { initializeFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 import { firebaseConfig } from './config';
 
@@ -25,8 +25,10 @@ function initializeFirebase() {
 
   try {
     const auth = getAuth(app);
-    // Reverting to default Firestore settings to resolve internal SDK errors.
-    const firestore = getFirestore(app);
+    // Forcing long-polling to work around potential network issues in some environments.
+    const firestore = initializeFirestore(app, {
+      experimentalForceLongPolling: true,
+    });
     const storage = getStorage(app);
     console.log("Firebase services (Auth, Firestore, Storage) obtained successfully.");
     return { app, auth, firestore, storage };
