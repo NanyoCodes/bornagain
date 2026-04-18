@@ -27,7 +27,7 @@ const AdsenseAd = ({ adSlot, adFormat = 'auto', style, className }: AdsenseAdPro
     }
   }, [adSlot]);
 
-  if (!ADSENSE_CLIENT_ID) {
+  if (!ADSENSE_CLIENT_ID || ADSENSE_CLIENT_ID === 'ca-pub-YOUR_PUBLISHER_ID') {
     return null; 
   }
 
