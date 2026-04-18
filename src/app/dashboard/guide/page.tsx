@@ -2,19 +2,13 @@
 'use client';
 
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
 import { BookOpen, TrendingUp, UserPlus, Target, Newspaper, HeartHandshake } from 'lucide-react';
+import { Separator } from '@/components/ui/separator';
 
 const tutorials = [
   {
@@ -81,38 +75,39 @@ const tutorials = [
   },
 ];
 
-export function TutorialsCard() {
+export default function GuidePage() {
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <BookOpen className="h-5 w-5" /> App Guide & Tutorials
-        </CardTitle>
-        <CardDescription>
-          Learn how to use the key features of the Testify app.
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Accordion type="single" collapsible className="w-full">
-          {tutorials.map((tutorial) => (
-            <AccordionItem value={tutorial.id} key={tutorial.id}>
-              <AccordionTrigger>
-                <div className="flex items-center gap-3">
-                  <tutorial.icon className="h-5 w-5 text-primary" />
-                  {tutorial.title}
-                </div>
-              </AccordionTrigger>
-              <AccordionContent>
-                <ul className="list-disc list-outside space-y-2 pl-6 text-sm text-muted-foreground">
-                  {tutorial.content.map((point, index) => (
-                    <li key={index}>{point}</li>
-                  ))}
-                </ul>
-              </AccordionContent>
-            </AccordionItem>
-          ))}
-        </Accordion>
-      </CardContent>
-    </Card>
+    <div className="space-y-8 max-w-3xl mx-auto">
+      <div className="space-y-2">
+        <h1 className="text-3xl font-bold tracking-tight font-headline flex items-center gap-3">
+          <BookOpen className="h-8 w-8" />
+          App Guide & Tutorials
+        </h1>
+        <p className="text-muted-foreground">
+          Learn how to use the key features of the Testify app to maximize your impact.
+        </p>
+      </div>
+      <Separator />
+
+      <Accordion type="single" collapsible className="w-full" defaultValue="dashboard">
+        {tutorials.map((tutorial) => (
+          <AccordionItem value={tutorial.id} key={tutorial.id}>
+            <AccordionTrigger className="text-lg">
+              <div className="flex items-center gap-3">
+                <tutorial.icon className="h-5 w-5 text-primary" />
+                {tutorial.title}
+              </div>
+            </AccordionTrigger>
+            <AccordionContent>
+              <ul className="list-disc list-outside space-y-2 pl-6 text-sm text-muted-foreground">
+                {tutorial.content.map((point, index) => (
+                  <li key={index}>{point}</li>
+                ))}
+              </ul>
+            </AccordionContent>
+          </AccordionItem>
+        ))}
+      </Accordion>
+    </div>
   );
 }

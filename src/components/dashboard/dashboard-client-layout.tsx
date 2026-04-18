@@ -8,6 +8,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import {
   ArrowLeft,
   Bell,
+  BookOpen,
   LogOut,
   MessagesSquare,
   Newspaper,
@@ -224,6 +225,12 @@ function AppHeader({ unreadChatCount }: { unreadChatCount: number }) {
                 <Settings className="mr-2 h-4 w-4" />
                 <span>Settings</span>
               </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+                <Link href="/dashboard/guide">
+                <BookOpen className="mr-2 h-4 w-4" />
+                <span>App Guide</span>
+                </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleLogout}>

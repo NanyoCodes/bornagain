@@ -23,7 +23,7 @@ import {
 } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, User, Bell, Lock, Trash2, MessageSquare, Mail, Phone, Palette, BookOpen } from 'lucide-react';
+import { Loader2, User, Bell, Lock, Trash2, MessageSquare, Mail, Phone, Palette } from 'lucide-react';
 import { useDoc, useFirestore, useUser } from '@/firebase';
 import { doc, updateDoc } from 'firebase/firestore';
 import type { UserProfile } from '@/lib/types';
@@ -47,7 +47,6 @@ import { ChurchSettingsCard } from '@/components/settings/church-settings-card';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { PasswordSettingsCard } from '@/components/settings/password-settings-card';
-import { TutorialsCard } from '@/components/settings/tutorials-card';
 
 // --- Validation Schemas ---
 const notificationFormSchema = z.object({
@@ -332,7 +331,6 @@ export default function SettingsPage() {
           <ProfileSettingsCard />
           <ChurchSettingsCard userProfile={userProfile} userId={user.uid} />
           <AppearanceSettingsCard />
-          <TutorialsCard />
           <NotificationSettingsForm userProfile={userProfile} userId={user.uid} />
           <PasswordSettingsCard />
           <ContactCard />
