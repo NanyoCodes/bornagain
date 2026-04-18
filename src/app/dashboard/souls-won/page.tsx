@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
@@ -166,7 +167,7 @@ export default function SoulsWonPage() {
                     const logParts = [note, actions].filter(Boolean).join(' - ');
                     return `${date}: ${logParts || 'Interaction logged.'}`;
                 })
-                .join(' | ')
+                .join('\n')
             : 'No follow-up history.';
 
         const locationWonString = soul.locationWon ? [soul.locationWon.city, soul.locationWon.state, soul.locationWon.country].filter(Boolean).join(', ') : '';
