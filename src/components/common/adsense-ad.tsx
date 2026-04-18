@@ -22,8 +22,13 @@ const AdsenseAd = ({ adSlot, adFormat = 'auto', style, className }: AdsenseAdPro
         // @ts-ignore
         (window.adsbygoogle = window.adsbygoogle || []).push({});
       }
-    } catch (err) {
-      console.error('AdSense error:', err);
+    } catch (err: any) {
+      // This error is common in development with React's StrictMode and Fast Refresh.
+      // It happens when the component re-renders and tries to push an ad to an
+      // already filled slot. We can safely ignore this specific error message.
+      if (!err.message.includes("already have ads in them")) {
+        console.error('AdSense error:', err);
+      }
     }
   }, [adSlot]);
 
