@@ -48,6 +48,7 @@ import { useToast } from "@/hooks/use-toast";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { EditTestimonyForm } from "@/components/testimonies/edit-testimony-form";
+import AdsenseAd from "@/components/common/adsense-ad";
 
 
 export default function TestimoniesPage() {
@@ -155,6 +156,26 @@ export default function TestimoniesPage() {
     );
   }, [prayerRequests, searchTerm, activeTab]);
 
+  const itemsWithAds = useMemo(() => {
+    if (!filteredTestimonies) return [];
+
+    const adSlot = process.env.NEXT_PUBLIC_ADSENSE_TESTIMONY_AD_SLOT;
+    if (!adSlot) {
+      // @ts-ignore
+      return filteredTestimonies.map(t => ({ type: 'testimony', data: t, id: t.id }));
+    }
+    
+    const items: ({type: 'testimony', data: Testimony, id: string} | {type: 'ad', id: string})[] = [];
+    
+    filteredTestimonies.forEach((testimony, index) => {
+        items.push({ type: 'testimony', data: testimony, id: testimony.id });
+        if ((index + 1) % 4 === 0) {
+            items.push({ type: 'ad', id: `ad-${index}` });
+        }
+    });
+    return items;
+  }, [filteredTestimonies]);
+
 
   const handleTestimonyCreated = () => {
     setIsTestimonyDialogOpen(false);
@@ -260,15 +281,23 @@ export default function TestimoniesPage() {
                     <Card key={i}><CardHeader><div className="flex items-center gap-4"><Skeleton className="h-12 w-12 rounded-full" /><div className="w-full space-y-2"><Skeleton className="h-4 w-1/4" /><Skeleton className="h-4 w-1/5" /></div></div></CardHeader><CardContent className="space-y-4"><Skeleton className="h-5 w-3/4" /><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-4/5" /></CardContent><CardFooter><Skeleton className="h-8 w-24 ml-auto" /></CardFooter></Card>
                   ))
                 )}
-                {!loading && filteredTestimonies?.map((testimony) => (
-                  <TestimonyCard 
-                    key={testimony.id} 
-                    testimony={testimony} 
-                    distance={(testimony as any)._distance}
-                    onDelete={() => setItemToDelete({ type: 'testimony', id: testimony.id, name: 'testimony' })}
-                    onEdit={() => setItemToEdit(testimony)}
-                  />
-                ))}
+                {!loading && itemsWithAds.map((item) => {
+                    if (item.type === 'ad') {
+                        const adSlot = process.env.NEXT_PUBLIC_ADSENSE_TESTIMONY_AD_SLOT;
+                        return adSlot ? <AdsenseAd key={item.id} adSlot={adSlot} /> : null;
+                    }
+                    
+                    const testimony = item.data;
+                    return (
+                        <TestimonyCard 
+                            key={testimony.id} 
+                            testimony={testimony} 
+                            distance={(testimony as any)._distance}
+                            onDelete={() => setItemToDelete({ type: 'testimony', id: testimony.id, name: 'testimony' })}
+                            onEdit={() => setItemToEdit(testimony)}
+                        />
+                    );
+                })}
                  {!loading && filteredTestimonies?.length === 0 && (
                   <div className="col-span-full text-center py-12 flex flex-col items-center">
                     <Newspaper className="h-16 w-16 text-muted-foreground" />
