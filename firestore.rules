@@ -144,11 +144,10 @@ service cloud.firestore {
           request.resource.data.usersWhoPrayed.size() == ('usersWhoPrayed' in resource.data ? resource.data.usersWhoPrayed.size() : 0) + 1 &&
           request.auth.uid in request.resource.data.usersWhoPrayed
         ) ||
-        // SCENARIO 2: Author can mark request as answered by linking a testimony
+        // SCENARIO 2: Author can mark request as answered
         (
           resource.data.authorId == request.auth.uid &&
-          request.resource.data.status == 'answered' &&
-          resource.data.status == 'pending'
+          request.resource.data.status == 'answered'
         )
       );
 
