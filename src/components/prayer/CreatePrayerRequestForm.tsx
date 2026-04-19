@@ -72,6 +72,7 @@ export function CreatePrayerRequestForm({ onPrayerRequestCreated }: CreatePrayer
           category: values.category as TestimonyCategory,
           usersWhoPrayed: [],
           isAnonymous: values.isAnonymous,
+          status: 'pending',
       };
 
       if (!values.isAnonymous) {
