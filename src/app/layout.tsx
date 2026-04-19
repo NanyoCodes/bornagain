@@ -6,7 +6,6 @@ import { ThemeProvider } from '@/components/theme-provider';
 import { FirebaseClientProvider } from '@/firebase/client-provider';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { CookieConsentBanner } from '@/components/cookie-consent-banner';
-import Script from 'next/script';
 
 const logo = PlaceHolderImages.find((img) => img.id === 'logo');
 const testifyLogoUrl = logo?.imageUrl || '';
@@ -49,13 +48,6 @@ export default function RootLayout({
         />
       </head>
       <body className="font-body antialiased">
-        <Script
-          id="adsense-script"
-          async
-          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID}`}
-          crossOrigin="anonymous"
-          strategy="afterInteractive"
-        />
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"

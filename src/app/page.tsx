@@ -13,7 +13,6 @@ import { useCollection, useFirestore, useUser, useDoc } from "@/firebase";
 import { collection, query, orderBy, doc } from "firebase/firestore";
 import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card";
 import { Tabs, TabsList, TabsContent, TabsTrigger } from "@/components/ui/tabs";
-import AdsenseAd from "@/components/common/adsense-ad";
 import { Input } from "@/components/ui/input";
 import { PublicHeader } from "@/components/common/public-header";
 
@@ -62,22 +61,6 @@ export default function PublicLandingPage() {
       testimony.category.toLowerCase().includes(term)
     );
   }, [testimonies, searchTerm]);
-
-  const itemsWithAds = useMemo(() => {
-    if (!filteredTestimonies) return [];
-    const adSlot = process.env.NEXT_PUBLIC_ADSENSE_TESTIMONY_AD_SLOT;
-    if (!adSlot) {
-      return filteredTestimonies.map(t => ({ type: 'testimony', data: t, id: t.id }));
-    }
-    const items: ({type: 'testimony', data: Testimony, id: string} | {type: 'ad', id: string})[] = [];
-    filteredTestimonies.forEach((testimony, index) => {
-        items.push({ type: 'testimony', data: testimony, id: testimony.id });
-        if ((index + 1) % 4 === 0) {
-            items.push({ type: 'ad', id: `ad-${index}` });
-        }
-    });
-    return items;
-  }, [filteredTestimonies]);
 
   const filteredPrayerRequests = useMemo(() => {
     if (!prayerRequests) return [];
@@ -131,12 +114,7 @@ export default function PublicLandingPage() {
                         <Card key={i}><CardHeader><div className="flex items-center gap-4"><Skeleton className="h-12 w-12 rounded-full" /><div className="w-full space-y-2"><Skeleton className="h-4 w-1/4" /><Skeleton className="h-4 w-1/5" /></div></div></CardHeader><CardContent className="space-y-4"><Skeleton className="h-5 w-3/4" /><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-4/5" /></CardContent><CardFooter><Skeleton className="h-8 w-24 ml-auto" /></CardFooter></Card>
                       ))
                     )}
-                    {!loading && itemsWithAds.map((item) => {
-                        if (item.type === 'ad') {
-                            const adSlot = process.env.NEXT_PUBLIC_ADSENSE_TESTIMONY_AD_SLOT;
-                            return adSlot ? <AdsenseAd key={item.id} adSlot={adSlot} /> : null;
-                        }
-                        const testimony = item.data as Testimony;
+                    {!loading && filteredTestimonies.map((testimony) => {
                         return (
                             <TestimonyCard 
                                 key={testimony.id} 

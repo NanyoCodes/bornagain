@@ -48,7 +48,6 @@ import { CreateTestimonyForm } from "@/components/testimonies/create-testimony-f
 import { useToast } from "@/hooks/use-toast";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
-import AdsenseAd from "@/components/common/adsense-ad";
 
 function CampaignSkeletons() {
   return (
@@ -333,27 +332,6 @@ export default function CampaignsPage() {
 
   }, [processedCampaigns, searchTerm, mounted, filter, user?.uid, statusFilter, joinedCampaignIds]);
 
-  const itemsWithAds = useMemo(() => {
-    const campaigns = sortedAndFilteredCampaigns;
-    if (!campaigns) return [];
-    
-    const adSlot = process.env.NEXT_PUBLIC_ADSENSE_CAMPAIGN_AD_SLOT;
-    if (!adSlot) {
-      // @ts-ignore
-      return campaigns.map(c => ({ type: 'campaign', data: c, id: c.id }));
-    }
-
-    const items: ({type: 'campaign', data: (Campaign & {_status: number, _fullStartDate: Date | null, _fullEndDate: Date | null, _distance: number | null}), id: string} | {type: 'ad', id: string})[] = [];
-
-    campaigns.forEach((campaign, index) => {
-        items.push({ type: 'campaign', data: campaign, id: campaign.id });
-        if ((index + 1) % 4 === 0) {
-            items.push({ type: 'ad', id: `ad-${index}` });
-        }
-    });
-    return items;
-  }, [sortedAndFilteredCampaigns]);
-
   const triggerButton = (
     <Button disabled={!user || profileLoading}>
       {profileLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <PlusCircle className="h-4 w-4" />}
@@ -434,28 +412,20 @@ export default function CampaignsPage() {
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {loading && <CampaignSkeletons />}
-        {!loading && itemsWithAds?.map((item) => {
-          if (item.type === 'ad') {
-            const adSlot = process.env.NEXT_PUBLIC_ADSENSE_CAMPAIGN_AD_SLOT;
-            return adSlot ? <AdsenseAd key={item.id} adSlot={adSlot} /> : null;
-          }
-
-          const campaign = item.data;
-          return (
-            <CampaignCard 
-              key={campaign.id} 
-              campaign={campaign} 
-              userId={user?.uid}
-              userProfile={userProfile}
-              isJoined={joinedCampaignIds.has(campaign.id)}
-              distance={campaign._distance}
-              onManage={() => setCampaignToManage(campaign)}
-              onLogSoul={() => setCampaignForSoul(campaign)}
-              onShareTestimony={() => setCampaignForTestimony(campaign)}
-              onDelete={() => setCampaignToDelete(campaign)}
-            />
-          );
-        })}
+        {!loading && sortedAndFilteredCampaigns?.map((campaign) => (
+          <CampaignCard 
+            key={campaign.id} 
+            campaign={campaign} 
+            userId={user?.uid}
+            userProfile={userProfile}
+            isJoined={joinedCampaignIds.has(campaign.id)}
+            distance={campaign._distance}
+            onManage={() => setCampaignToManage(campaign)}
+            onLogSoul={() => setCampaignForSoul(campaign)}
+            onShareTestimony={() => setCampaignForTestimony(campaign)}
+            onDelete={() => setCampaignToDelete(campaign)}
+          />
+        ))}
          {!loading && sortedAndFilteredCampaigns?.length === 0 && (
           <div className="col-span-full text-center py-12 flex flex-col items-center">
             <Target className="h-16 w-16 text-muted-foreground" />
