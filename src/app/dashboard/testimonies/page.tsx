@@ -207,21 +207,21 @@ export default function TestimoniesPage() {
   };
 
   const testimonyTrigger = (
-    <Button onClick={() => handleOpenTestimonyDialog()}>
-      <PlusCircle className="h-4 w-4" />
+    <Button onClick={() => handleOpenTestimonyDialog()} disabled={loading}>
+      {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <PlusCircle className="h-4 w-4" />}
       <span className="hidden md:inline">Share Testimony</span>
     </Button>
   );
 
   const prayerTrigger = (
-    <Button>
-      <PlusCircle className="h-4 w-4" />
+    <Button disabled={loading}>
+      {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <PlusCircle className="h-4 w-4" />}
       <span className="hidden md:inline">Share Prayer Request</span>
     </Button>
   );
 
-  const testimonyFormContent = <CreateTestimonyForm onTestimonyCreated={handleCloseTestimonyDialog} prayerRequest={prayerToAnswer} />;
-  const prayerFormContent = <CreatePrayerRequestForm onPrayerRequestCreated={handlePrayerRequestCreated} />;
+  const testimonyFormContent = userProfile ? <CreateTestimonyForm userProfile={userProfile} onTestimonyCreated={handleCloseTestimonyDialog} prayerRequest={prayerToAnswer} /> : <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin"/></div>;
+  const prayerFormContent = userProfile ? <CreatePrayerRequestForm onPrayerRequestCreated={handlePrayerRequestCreated} /> : <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin"/></div>;
 
   return (
     <div className="space-y-8">

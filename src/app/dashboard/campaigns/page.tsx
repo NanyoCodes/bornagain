@@ -514,7 +514,7 @@ export default function CampaignsPage() {
         </Dialog>
       )}
       
-      {campaignForTestimony && (
+      {campaignForTestimony && userProfile && (
         <Dialog open={!!campaignForTestimony} onOpenChange={(open) => !open && setCampaignForTestimony(null)}>
             <DialogContent className="sm:max-w-lg">
                 <DialogHeader>
@@ -525,6 +525,7 @@ export default function CampaignsPage() {
                 </DialogHeader>
                 <div className="max-h-[70vh] overflow-y-auto pr-2">
                    <CreateTestimonyForm
+                        userProfile={userProfile}
                         onTestimonyCreated={handleTestimonyCreated}
                         campaign={campaignForTestimony}
                     />

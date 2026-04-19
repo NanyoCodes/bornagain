@@ -511,7 +511,13 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                     <DialogHeader>
                     <DialogTitle>Share Testimony for "{campaign.title}"</DialogTitle>
                     </DialogHeader>
-                    <CreateTestimonyForm onTestimonyCreated={() => setIsTestimonyDialogOpen(false)} campaign={campaign} />
+                    {userProfile && (
+                        <CreateTestimonyForm 
+                            userProfile={userProfile} 
+                            onTestimonyCreated={() => setIsTestimonyDialogOpen(false)} 
+                            campaign={campaign} 
+                        />
+                    )}
                 </DialogContent>
             </Dialog>
             

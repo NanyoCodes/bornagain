@@ -19,7 +19,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useState, useMemo, useEffect } from "react";
 import { Loader2 } from "lucide-react";
 import type { TestimonyCategory, Campaign, UserProfile, PrayerRequest } from "@/lib/types";
-import { useUser, useFirestore, useDoc } from "@/firebase";
+import { useUser, useFirestore } from "@/firebase";
 import { collection, addDoc, serverTimestamp, doc, updateDoc } from "firebase/firestore";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { errorEmitter } from "@/firebase/error-emitter";
@@ -33,19 +33,17 @@ const formSchema = z.object({
 
 type CreateTestimonyFormProps = {
   onTestimonyCreated: () => void;
+  userProfile: UserProfile;
   campaign?: Campaign;
   prayerRequest?: PrayerRequest | null;
 };
 
-export function CreateTestimonyForm({ onTestimonyCreated, campaign, prayerRequest }: CreateTestimonyFormProps) {
+export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign, prayerRequest }: CreateTestimonyFormProps) {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   const { user } = useUser();
   const firestore = useFirestore();
-  
-  const userDocRef = useMemo(() => user ? doc(firestore, 'users', user.uid) : null, [user, firestore]);
-  const { data: userProfile } = useDoc<UserProfile>(userDocRef);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
