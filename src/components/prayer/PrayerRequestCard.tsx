@@ -130,7 +130,7 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({ prayerRequest
             </div>
           ) : isAuthor ? (
             <div className="flex items-center gap-2">
-              <Button size="sm" variant="outline" onClick={() => onShareAnswer(prayerRequest)}>
+              <Button size="sm" variant="outline" onClick={(e) => { e.stopPropagation(); onShareAnswer(prayerRequest); }}>
                   Share Testimony
               </Button>
               <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={onDelete}>
