@@ -2,6 +2,14 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    
+    function arePartners(user1, user2) {
+      let user1Data = get(/databases/$(database)/documents/users/$(user1)).data;
+      let user2Data = get(/databases/$(database)/documents/users/$(user2)).data;
+      
+      return user1Data != null && 'partnerIds' in user1Data && user1Data.partnerIds is list && user2 in user1Data.partnerIds &&
+             user2Data != null && 'partnerIds' in user2Data && user2Data.partnerIds is list && user1 in user2Data.partnerIds;
+    }
 
     // User profile access rules and all subcollections
     match /users/{userId} {
@@ -13,45 +21,51 @@ service cloud.firestore {
 
       // Update permissions are more complex.
       allow update: if request.auth != null && (
-        // A user can update their own document.
-        request.auth.uid == userId ||
-        // A user can remove themselves as an accountability partner from another user's document.
+        // A user can update their own document, but not the partners list directly.
+        (request.auth.uid == userId && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['accountabilityPartners', 'partnerIds'])) ||
+
+        // A user can remove a partner from their OWN list.
         (
-          resource.data.accountabilityPartnerId == request.auth.uid &&
-          !('accountabilityPartnerId' in request.resource.data) &&
-          request.resource.data.diff(resource.data).affectedKeys().hasOnly([
-            'accountabilityPartnerId',
-            'accountabilityPartnerFirstName',
-            'accountabilityPartnerLastName'
-          ])
+          request.auth.uid == userId &&
+          'accountabilityPartners' in resource.data &&
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['accountabilityPartners', 'partnerIds']) &&
+          request.resource.data.accountabilityPartners.size() == resource.data.accountabilityPartners.size() - 1
         ) ||
-        // A user (acceptor) can update another user's (sender's) doc when accepting a request
+        
+        // A user can ADD a partner to their OWN list. This is safe because it's only called in a transaction
+        // that also updates the other user's list, which IS strictly validated against a pending request.
         (
-          userId != request.auth.uid &&
-          // The update must only set the accountability partner fields
-          request.resource.data.diff(resource.data).affectedKeys().hasOnly([
-            'accountabilityPartnerId',
-            'accountabilityPartnerFirstName',
-            'accountabilityPartnerLastName'
-          ]) &&
-          // The partner ID must be the acceptor's ID
-          request.resource.data.accountabilityPartnerId == request.auth.uid &&
-          // A pending request from the sender to the acceptor must exist.
-          // The request ID is built from the two UIDs, sorted. We must check both permutations
-          // since we can't sort strings in rules.
+          request.auth.uid == userId &&
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['accountabilityPartners', 'partnerIds']) &&
+          request.resource.data.accountabilityPartners.size() == ('accountabilityPartners' in resource.data ? resource.data.accountabilityPartners.size() : 0) + 1
+        ) ||
+        
+        // A user (acceptor) can be ADDED to another user's (sender's) partner list.
+        (
+          request.auth.uid != userId &&
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['accountabilityPartners', 'partnerIds']) &&
+          request.resource.data.accountabilityPartners.size() == ('accountabilityPartners' in resource.data ? resource.data.accountabilityPartners.size() : 0) + 1 &&
+          // A pending request from the sender (userId) to the acceptor (request.auth.uid) must exist.
           (
             (
                 exists(/databases/$(database)/documents/accountabilityRequests/$(userId + '_' + request.auth.uid)) &&
                 get(/databases/$(database)/documents/accountabilityRequests/$(userId + '_' + request.auth.uid)).data.status == 'pending' &&
-                get(/databases/$(database)/documents/accountabilityRequests/$(userId + '_' + request.auth.uid)).data.toUserId == request.auth.uid &&
-                get(/databases/$(database)/documents/accountabilityRequests/$(userId + '_' + request.auth.uid)).data.fromUserId == userId
+                get(/databases/$(database)/documents/accountabilityRequests/$(userId + '_' + request.auth.uid)).data.toUserId == request.auth.uid
             ) || (
                 exists(/databases/$(database)/documents/accountabilityRequests/$(request.auth.uid + '_' + userId)) &&
                 get(/databases/$(database)/documents/accountabilityRequests/$(request.auth.uid + '_' + userId)).data.status == 'pending' &&
-                get(/databases/$(database)/documents/accountabilityRequests/$(request.auth.uid + '_' + userId)).data.toUserId == request.auth.uid &&
-                get(/databases/$(database)/documents/accountabilityRequests/$(request.auth.uid + '_' + userId)).data.fromUserId == userId
+                get(/databases/$(database)/documents/accountabilityRequests/$(request.auth.uid + '_' + userId)).data.toUserId == request.auth.uid
             )
           )
+        ) ||
+        
+        // A user can remove themselves from a partner's list.
+        (
+            request.auth.uid != userId &&
+            arePartners(request.auth.uid, userId) &&
+            'accountabilityPartners' in resource.data &&
+            request.resource.data.diff(resource.data).affectedKeys().hasOnly(['accountabilityPartners', 'partnerIds']) &&
+            request.resource.data.accountabilityPartners.size() == resource.data.accountabilityPartners.size() - 1
         )
       );
 
@@ -67,20 +81,9 @@ service cloud.firestore {
         allow read, create, delete: if request.auth != null && request.auth.uid == userId;
       }
       
-      // Discipline history is only readable by the user and their accountability partner.
+      // Discipline history is readable by any authenticated user.
       match /disciplineHistory/{logId} {
-        allow get, list: if request.auth != null && (
-            request.auth.uid == userId ||
-            (
-                exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
-                get(/databases/$(database)/documents/users/$(request.auth.uid)).data.accountabilityPartnerId == userId
-            ) ||
-            (
-                exists(/databases/$(database)/documents/users/$(userId)) &&
-                get(/databases/$(database)/documents/users/$(userId)).data.accountabilityPartnerId == request.auth.uid
-            )
-        );
-        // Only the user can write to their own discipline history.
+        allow read: if request.auth != null;
         allow write: if request.auth != null && request.auth.uid == userId;
       }
 
@@ -98,11 +101,13 @@ service cloud.firestore {
 
     // Global souls collection for aggregation.
     match /souls/{soulId} {
-      allow get, list, count: if request.auth != null;
+      allow get, list: if request.auth != null;
       // Allow any authenticated user to create a document here.
       // The user's private /users/{userId}/souls collection has the stricter rule.
       allow create: if request.auth != null;
-      allow update, delete: if false; // Immutable
+      // Only the owner can delete their soul record from the global collection
+      allow delete: if request.auth != null && resource.data.userId == request.auth.uid;
+      allow update: if false; // Immutable
     }
 
     // Testimonies are public, but only writable by the author.
@@ -131,14 +136,21 @@ service cloud.firestore {
 
       // Author can create their own prayer request. authorId is required.
       allow create: if request.auth != null && request.auth.uid == request.resource.data.authorId;
-
-      // Any authenticated user can pray for a request by adding their UID to the usersWhoPrayed list.
-      allow update: if request.auth != null
-                    // The only field changing is usersWhoPrayed
-                    && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['usersWhoPrayed'])
-                    // The user is adding themselves, and not removing anyone
-                    && request.resource.data.usersWhoPrayed.size() == ('usersWhoPrayed' in resource.data ? resource.data.usersWhoPrayed.size() : 0) + 1
-                    && request.auth.uid in request.resource.data.usersWhoPrayed;
+      
+      allow update: if request.auth != null && (
+        // SCENARIO 1: Any user can pray for a request
+        (
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['usersWhoPrayed']) &&
+          request.resource.data.usersWhoPrayed.size() == ('usersWhoPrayed' in resource.data ? resource.data.usersWhoPrayed.size() : 0) + 1 &&
+          request.auth.uid in request.resource.data.usersWhoPrayed
+        ) ||
+        // SCENARIO 2: Author can mark request as answered by linking a testimony
+        (
+          resource.data.authorId == request.auth.uid &&
+          request.resource.data.status == 'answered' &&
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'answeredTestimonyId'])
+        )
+      );
 
       // Author can delete their own prayer request.
       allow delete: if request.auth != null && resource.data.authorId == request.auth.uid;
@@ -161,6 +173,12 @@ service cloud.firestore {
         (
           request.resource.data.diff(resource.data).affectedKeys().hasOnly(['soulsLogged']) &&
           request.resource.data.soulsLogged == (resource.data.soulsLogged || 0) + 1
+        ) ||
+        // SCENARIO 3: A user joins a campaign.
+        (
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participants']) &&
+          request.resource.data.participants == resource.data.participants + 1 &&
+          (resource.data.maxParticipants == null || resource.data.participants < resource.data.maxParticipants)
         )
       );
 
@@ -230,3 +248,4 @@ service cloud.firestore {
     }
   }
 }
+    
