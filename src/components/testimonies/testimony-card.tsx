@@ -42,8 +42,9 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, dist
   const [isSupporting, setIsSupporting] = useState(false);
 
   const isAuthor = user?.uid === testimony.authorId;
-  const authorFullName = `${testimony.authorFirstName} ${testimony.authorLastName}`;
+  const authorFullName = [testimony.authorFirstName, testimony.authorLastName].filter(Boolean).join(' ').trim() || 'Anonymous';
   const profileLink = isAuthor ? "/dashboard/profile" : `/dashboard/profile/${testimony.authorId}`;
+  const initials = (testimony.authorFirstName?.charAt(0) || '') + (testimony.authorLastName?.charAt(0) || '');
 
   const supporters = testimony.supporters || [];
   const hasSupported = useMemo(() => user ? supporters.includes(user.uid) : false, [user, supporters]);
@@ -112,7 +113,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, dist
               <DialogTrigger asChild onClick={(e) => e.stopPropagation()} disabled={!testimony.authorAvatarUrl}>
                 <Avatar className={cn(testimony.authorAvatarUrl && "cursor-pointer")}>
                   <AvatarImage src={testimony.authorAvatarUrl} alt={authorFullName} />
-                  <AvatarFallback>{testimony.authorFirstName?.charAt(0)}{testimony.authorLastName?.charAt(0)}</AvatarFallback>
+                  <AvatarFallback>{initials || 'A'}</AvatarFallback>
                 </Avatar>
               </DialogTrigger>
               {testimony.authorAvatarUrl && (
