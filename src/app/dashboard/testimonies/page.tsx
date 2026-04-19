@@ -283,7 +283,6 @@ export default function TestimoniesPage() {
                     key={req.id} 
                     prayerRequest={req}
                     onDelete={() => setItemToDelete({ type: 'prayer', id: req.id, name: 'prayer request' })}
-                    onShareAnswer={handleOpenTestimonyDialog}
                   />
                 ))}
                 {!loading && filteredPrayerRequests?.length === 0 && (

@@ -26,19 +26,8 @@ import { FirestorePermissionError } from "@/firebase/errors";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 
-export const PrayerRequestCard = memo(function PrayerRequestCard({ prayerRequest, onDelete, onShareAnswer }: { prayerRequest: PrayerRequest, onDelete: () => void, onShareAnswer: (prayer: PrayerRequest) => void }) {
+export const PrayerRequestCard = memo(function PrayerRequestCard({ prayerRequest, onDelete }: { prayerRequest: PrayerRequest, onDelete: () => void }) {
   const { user } = useUser();
   const firestore = useFirestore();
   const router = useRouter();
@@ -136,12 +125,15 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({ prayerRequest
           </div>
           {isAuthor ? (
             <div className="flex items-center gap-2">
-                <Button size="sm" variant="outline" disabled={isAnswered} onClick={(e) => { e.stopPropagation(); if (!isAnswered) onShareAnswer(prayerRequest); }}>
-                    {isAnswered && <Award className="mr-2 h-4 w-4" />}
-                    {isAnswered ? 'Answered' : 'Share Testimony'}
-                </Button>
+                {isAnswered && (
+                  <Badge variant="secondary" className="flex items-center gap-2 py-1 px-2 border-green-500 text-green-600 dark:text-green-400">
+                      <Award className="h-4 w-4" />
+                      <span>Answered</span>
+                  </Badge>
+                )}
                 <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={onDelete}>
                     <Trash2 className="h-4 w-4" />
+                    <span className="sr-only">Delete</span>
                 </Button>
             </div>
           ) : isAnswered ? (
