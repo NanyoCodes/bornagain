@@ -90,17 +90,17 @@ service cloud.firestore {
       match /bibleHighlights/{highlightId} {
         allow read, write: if request.auth != null && request.auth.uid == userId;
       }
-      
-      // Notes are private to the user
-      match /notes/{noteId} {
-        allow read, write: if request.auth != null && request.auth.uid == userId;
-      }
 
       // Notifications are private to the user, though others can create them.
       match /notifications/{notificationId} {
         allow read, update, delete: if request.auth != null && request.auth.uid == userId;
         allow create: if request.auth != null;
       }
+    }
+
+    // Notes subcollection rule defined with its full path
+    match /users/{userId}/notes/{noteId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
     }
 
     // Global souls collection for aggregation.
