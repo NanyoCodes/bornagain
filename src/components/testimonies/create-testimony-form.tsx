@@ -50,6 +50,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
     resolver: zodResolver(formSchema),
     defaultValues: {
       content: "",
+      category: undefined,
     },
   });
 
@@ -66,7 +67,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
         content: ""
       });
     }
-  }, [prayerRequest]);
+  }, [prayerRequest, form]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (!user || !firestore || !userProfile) {
@@ -84,9 +85,20 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
     
     try {
         await runTransaction(firestore, async (transaction) => {
-            const testimonyCollectionRef = collection(firestore, "testimonies");
-            const newTestimonyDocRef = doc(testimonyCollectionRef); // Create ref beforehand
+            const newTestimonyDocRef = doc(collection(firestore, "testimonies"));
 
+            // --- READS FIRST ---
+            let prayerRef;
+            if (prayerRequest) {
+              prayerRef = doc(firestore, 'prayerRequests', prayerRequest.id);
+              const prayerDoc = await transaction.get(prayerRef);
+
+              if (!prayerDoc.exists() || prayerDoc.data().status !== 'pending') {
+                throw new Error("This prayer has already been answered or does not exist.");
+              }
+            }
+            
+            // --- WRITES SECOND ---
             const testimonyData: any = {
                 authorId: user.uid,
                 authorFirstName: userProfile.firstName || 'Anonymous',
@@ -101,12 +113,10 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
             if (userProfile.location) {
                 testimonyData.authorLocation = userProfile.location;
             }
-
             if (campaign) {
                 testimonyData.campaignId = campaign.id;
                 testimonyData.campaignTitle = campaign.title;
             }
-            
             if (prayerRequest) {
                 testimonyData.answeredPrayerId = prayerRequest.id;
                 testimonyData.answeredPrayerContent = prayerRequest.content;
@@ -114,14 +124,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
             
             transaction.set(newTestimonyDocRef, testimonyData);
 
-            if (prayerRequest) {
-                const prayerRef = doc(firestore, 'prayerRequests', prayerRequest.id);
-                const prayerDoc = await transaction.get(prayerRef);
-
-                if (!prayerDoc.exists() || prayerDoc.data().status !== 'pending') {
-                    throw new Error("This prayer has already been answered or does not exist.");
-                }
-
+            if (prayerRequest && prayerRef) {
                 transaction.update(prayerRef, {
                     status: 'answered',
                     answeredTestimonyId: newTestimonyDocRef.id
@@ -137,8 +140,10 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
       onTestimonyCreated();
     } catch (error: any) {
         console.error("Submission error:", error);
-        if (error.code === 'permission-denied') {
-            const permissionError = new FirestorePermissionError({
+        const isPermissionError = error.name === 'FirestorePermissionError' || error.code === 'permission-denied';
+
+        if (isPermissionError) {
+             const permissionError = new FirestorePermissionError({
                 path: 'Transaction: Create Testimony & Update Prayer Request',
                 operation: 'write',
                 requestResourceData: { action: 'Share answered prayer', values }
