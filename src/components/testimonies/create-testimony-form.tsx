@@ -27,7 +27,7 @@ import { errorEmitter } from "@/firebase/error-emitter";
 const testimonyCategories: TestimonyCategory[] = ['Healing', 'Financial Breakthrough', 'Salvation', 'Relationships', 'Deliverance', 'General'];
 
 const formSchema = z.object({
-  category: z.string({ required_error: "Please select a category." }),
+  category: z.string().optional(),
   content: z.string().min(50, "Testimony must be at least 50 characters.").max(5000, "Testimony is too long."),
 });
 
@@ -73,6 +73,12 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
       return;
     }
 
+    const finalCategory = prayerRequest ? prayerRequest.category : values.category;
+    if (!finalCategory) {
+      form.setError('category', { type: 'manual', message: 'Please select a category.' });
+      return;
+    }
+
     setIsSubmitting(true);
     
     try {
@@ -87,7 +93,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
                 authorAvatarUrl: userProfile.photoURL || null,
                 content: values.content,
                 createdAt: serverTimestamp(),
-                category: values.category as TestimonyCategory,
+                category: finalCategory as TestimonyCategory,
                 supporters: [],
             };
 
@@ -109,8 +115,6 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
 
             if (prayerRequest) {
                 const prayerRef = doc(firestore, 'prayerRequests', prayerRequest.id);
-                // The transaction will fail if the prayer request doesn't exist or if security rules fail.
-                // We don't need a separate get() because security rules operate on the `resource` variable.
                 transaction.update(prayerRef, {
                     status: 'answered',
                     answeredTestimonyId: newTestimonyDocRef.id
@@ -126,7 +130,6 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
       onTestimonyCreated();
     } catch (error: any) {
         console.error("Submission error:", error);
-        // Firebase permission errors have a specific code
         if (error.code === 'permission-denied') {
             const permissionError = new FirestorePermissionError({
                 path: 'Transaction: Create Testimony & Update Prayer Request',
