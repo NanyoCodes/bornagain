@@ -26,6 +26,17 @@ import { FirestorePermissionError } from "@/firebase/errors";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 export const PrayerRequestCard = memo(function PrayerRequestCard({ prayerRequest, onDelete, onShareAnswer }: { prayerRequest: PrayerRequest, onDelete: () => void, onShareAnswer: (prayer: PrayerRequest) => void }) {
   const { user } = useUser();
@@ -125,10 +136,28 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({ prayerRequest
           </div>
           {isAuthor ? (
             <div className="flex items-center gap-2">
-                <Button size="sm" variant="outline" onClick={(e) => { e.stopPropagation(); onShareAnswer(prayerRequest); }} disabled={isAnswered}>
-                    {isAnswered && <Award className="mr-2 h-4 w-4" />}
-                    {isAnswered ? 'Answered' : 'Share Testimony'}
-                </Button>
+                 <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                        <Button size="sm" variant="outline" disabled={isAnswered} onClick={(e) => e.stopPropagation()}>
+                            {isAnswered && <Award className="mr-2 h-4 w-4" />}
+                            {isAnswered ? 'Answered' : 'Share Testimony'}
+                        </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent onClick={(e) => e.stopPropagation()}>
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>Share a Testimony for this Answered Prayer?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                            This will open a form to share your testimony. Your prayer request will be marked as "Answered" and linked to your new testimony.
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => onShareAnswer(prayerRequest)}>
+                            Continue
+                            </AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
                 <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={onDelete}>
                     <Trash2 className="h-4 w-4" />
                 </Button>
