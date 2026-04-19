@@ -136,28 +136,10 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({ prayerRequest
           </div>
           {isAuthor ? (
             <div className="flex items-center gap-2">
-                 <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                        <Button size="sm" variant="outline" disabled={isAnswered} onClick={(e) => e.stopPropagation()}>
-                            {isAnswered && <Award className="mr-2 h-4 w-4" />}
-                            {isAnswered ? 'Answered' : 'Share Testimony'}
-                        </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent onClick={(e) => e.stopPropagation()}>
-                        <AlertDialogHeader>
-                            <AlertDialogTitle>Share a Testimony for this Answered Prayer?</AlertDialogTitle>
-                            <AlertDialogDescription>
-                            This will open a form to share your testimony. Your prayer request will be marked as "Answered" and linked to your new testimony.
-                            </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction onClick={() => onShareAnswer(prayerRequest)}>
-                            Continue
-                            </AlertDialogAction>
-                        </AlertDialogFooter>
-                    </AlertDialogContent>
-                </AlertDialog>
+                <Button size="sm" variant="outline" disabled={isAnswered} onClick={(e) => { e.stopPropagation(); if (!isAnswered) onShareAnswer(prayerRequest); }}>
+                    {isAnswered && <Award className="mr-2 h-4 w-4" />}
+                    {isAnswered ? 'Answered' : 'Share Testimony'}
+                </Button>
                 <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={onDelete}>
                     <Trash2 className="h-4 w-4" />
                 </Button>
