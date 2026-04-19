@@ -282,6 +282,14 @@
           "type": "array",
           "description": "A list of UIDs of users who have supported this testimony.",
           "items": { "type": "string" }
+        },
+        "answeredPrayerId": {
+          "type": "string",
+          "description": "The ID of the prayer request this testimony is an answer to."
+        },
+        "answeredPrayerContent": {
+          "type": "string",
+          "description": "The original content of the prayer that was answered."
         }
       },
       "required": [
@@ -328,6 +336,15 @@
         "authorAvatarUrl": {
           "type": "string",
           "format": "uri"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["pending", "answered"],
+          "description": "The status of the prayer request."
+        },
+        "answeredTestimonyId": {
+          "type": "string",
+          "description": "The ID of the testimony that answers this prayer request."
         }
       },
       "required": ["content", "category", "authorId", "createdAt"]

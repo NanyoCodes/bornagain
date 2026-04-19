@@ -116,6 +116,8 @@ export type Testimony = {
     longitude?: number;
   };
   supporters?: string[];
+  answeredPrayerId?: string;
+  answeredPrayerContent?: string;
 };
 
 export type PrayerRequest = {
@@ -129,6 +131,8 @@ export type PrayerRequest = {
   authorFirstName?: string;
   authorLastName?: string;
   authorAvatarUrl?: string;
+  status?: 'pending' | 'answered';
+  answeredTestimonyId?: string;
 };
 
 export type Campaign = {

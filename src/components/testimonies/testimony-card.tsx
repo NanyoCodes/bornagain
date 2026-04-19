@@ -143,10 +143,22 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, dist
           </div>
           <Badge variant="secondary" className="shrink-0">{testimony.category}</Badge>
         </CardHeader>
-        <CardContent className="flex-grow pt-0">
+        <CardContent className="flex-grow pt-0 space-y-4">
           <p className="text-sm text-muted-foreground whitespace-pre-wrap line-clamp-4">
             {testimony.content}
           </p>
+          {testimony.answeredPrayerId && testimony.answeredPrayerContent && (
+            <Card className="bg-muted/50 shadow-inner">
+                <CardHeader className="p-3">
+                    <CardDescription className="text-xs">
+                        This is an answer to prayer:
+                    </CardDescription>
+                    <blockquote className="border-l-2 pl-3 italic text-xs text-muted-foreground">
+                        &ldquo;{testimony.answeredPrayerContent}&rdquo;
+                    </blockquote>
+                </CardHeader>
+            </Card>
+           )}
         </CardContent>
         <CardFooter className="pt-4 flex justify-between items-center mt-auto">
           {testimony.campaignTitle && testimony.campaignId && (

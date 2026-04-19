@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import type { PrayerRequest } from "@/lib/types";
 import { format } from "date-fns";
-import { HandHeart, Users, Trash2, Loader2, User } from "lucide-react";
+import { HandHeart, Users, Trash2, Loader2, User, Award } from "lucide-react";
 import { useUser, useFirestore } from "@/firebase";
 import { useState, useMemo, memo } from "react";
 import { useRouter } from "next/navigation";
@@ -27,7 +27,7 @@ import { cn } from "@/lib/utils";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
 
-export const PrayerRequestCard = memo(function PrayerRequestCard({ prayerRequest, onDelete }: { prayerRequest: PrayerRequest, onDelete: () => void }) {
+export const PrayerRequestCard = memo(function PrayerRequestCard({ prayerRequest, onDelete, onShareAnswer }: { prayerRequest: PrayerRequest, onDelete: () => void, onShareAnswer: (prayer: PrayerRequest) => void }) {
   const { user } = useUser();
   const firestore = useFirestore();
   const router = useRouter();
@@ -36,6 +36,7 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({ prayerRequest
   const [isPraying, setIsPraying] = useState(false);
 
   const isAuthor = user?.uid === prayerRequest.authorId;
+  const isAnswered = prayerRequest.status === 'answered';
   const usersWhoPrayed = prayerRequest.usersWhoPrayed || [];
   const prayerCount = usersWhoPrayed.length;
   const hasPrayed = useMemo(() => user ? usersWhoPrayed.includes(user.uid) : false, [user, usersWhoPrayed]);
@@ -122,11 +123,20 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({ prayerRequest
               <Users className="h-4 w-4" />
               <span>{prayerCount}</span>
           </div>
-          {isAuthor ? (
-            <Button variant="destructive" size="sm" onClick={onDelete}>
-                <Trash2 className="mr-2 h-4 w-4" />
-                Delete
-            </Button>
+          {isAnswered ? (
+            <div className="flex items-center gap-2 text-sm font-semibold text-green-600 dark:text-green-400">
+                <Award className="h-5 w-5" />
+                <span>Answered!</span>
+            </div>
+          ) : isAuthor ? (
+            <div className="flex items-center gap-2">
+              <Button size="sm" variant="outline" onClick={() => onShareAnswer(prayerRequest)}>
+                  Share Testimony
+              </Button>
+              <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={onDelete}>
+                  <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
           ) : (
               <Button onClick={handlePray} disabled={hasPrayed || isPraying || !user}>
                   {isPraying ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <HandHeart className={cn("mr-2 h-4 w-4", hasPrayed && "fill-current")} />}

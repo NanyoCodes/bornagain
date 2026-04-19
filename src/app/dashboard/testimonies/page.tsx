@@ -4,7 +4,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { PlusCircle, Newspaper, HandHeart, Loader2 } from "lucide-react";
+import { PlusCircle, Newspaper, HandHeart, Loader2, Award } from "lucide-react";
 import { CreateTestimonyForm } from "@/components/testimonies/create-testimony-form";
 import { TestimonyCard } from "@/components/testimonies/testimony-card";
 import { PrayerRequestCard } from "@/components/prayer/PrayerRequestCard";
@@ -85,6 +85,7 @@ export default function TestimoniesPage() {
   const [itemToDelete, setItemToDelete] = useState<{ type: 'testimony' | 'prayer', id: string, name: string } | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [itemToEdit, setItemToEdit] = useState<Testimony | null>(null);
+  const [prayerToAnswer, setPrayerToAnswer] = useState<PrayerRequest | null>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -157,9 +158,22 @@ export default function TestimoniesPage() {
 
   const handleTestimonyCreated = () => {
     setIsTestimonyDialogOpen(false);
+    setPrayerToAnswer(null);
   };
   const handlePrayerRequestCreated = () => {
     setIsPrayerDialogOpen(false);
+  };
+
+  const handleOpenTestimonyDialog = (prayer?: PrayerRequest) => {
+    if (prayer) {
+      setPrayerToAnswer(prayer);
+    }
+    setIsTestimonyDialogOpen(true);
+  };
+
+  const handleCloseTestimonyDialog = () => {
+    setIsTestimonyDialogOpen(false);
+    setPrayerToAnswer(null);
   };
   
   const handleConfirmDelete = async () => {
@@ -193,7 +207,7 @@ export default function TestimoniesPage() {
   };
 
   const testimonyTrigger = (
-    <Button>
+    <Button onClick={() => handleOpenTestimonyDialog()}>
       <PlusCircle className="h-4 w-4" />
       <span className="hidden md:inline">Share Testimony</span>
     </Button>
@@ -206,7 +220,7 @@ export default function TestimoniesPage() {
     </Button>
   );
 
-  const testimonyFormContent = <CreateTestimonyForm onTestimonyCreated={handleTestimonyCreated} />;
+  const testimonyFormContent = <CreateTestimonyForm onTestimonyCreated={handleCloseTestimonyDialog} prayerRequest={prayerToAnswer} />;
   const prayerFormContent = <CreatePrayerRequestForm onPrayerRequestCreated={handlePrayerRequestCreated} />;
 
   return (
@@ -222,14 +236,14 @@ export default function TestimoniesPage() {
         </div>
         {activeTab === 'testimonies' ? (
           mounted && isMobile ? (
-            <Sheet open={isTestimonyDialogOpen} onOpenChange={setIsTestimonyDialogOpen}>
+            <Sheet open={isTestimonyDialogOpen} onOpenChange={handleCloseTestimonyDialog}>
               <SheetTrigger asChild>{testimonyTrigger}</SheetTrigger>
-              <SheetContent side="bottom"><SheetHeader><SheetTitle>Share Testimony</SheetTitle><SheetDescription>Encourage others by sharing what God has done in your life.</SheetDescription></SheetHeader><div className="max-h-[80vh] overflow-y-auto p-1 mt-4">{testimonyFormContent}</div></SheetContent>
+              <SheetContent side="bottom"><SheetHeader><SheetTitle>{prayerToAnswer ? 'Share Answered Prayer' : 'Share Testimony'}</SheetTitle><SheetDescription>Encourage others by sharing what God has done.</SheetDescription></SheetHeader><div className="max-h-[80vh] overflow-y-auto p-1 mt-4">{testimonyFormContent}</div></SheetContent>
             </Sheet>
           ) : (
-            <Dialog open={isTestimonyDialogOpen} onOpenChange={setIsTestimonyDialogOpen}>
+            <Dialog open={isTestimonyDialogOpen} onOpenChange={handleCloseTestimonyDialog}>
               <DialogTrigger asChild>{testimonyTrigger}</DialogTrigger>
-              <DialogContent className="sm:max-w-lg"><DialogHeader><DialogTitle>Share Testimony</DialogTitle><DialogDescription>Encourage others by sharing what God has done in your life.</DialogDescription></DialogHeader><div className="max-h-[70vh] overflow-y-auto pr-2">{testimonyFormContent}</div></DialogContent>
+              <DialogContent className="sm:max-w-lg"><DialogHeader><DialogTitle>{prayerToAnswer ? 'Share Answered Prayer' : 'Share Testimony'}</DialogTitle><DialogDescription>Encourage others by sharing what God has done.</DialogDescription></DialogHeader><div className="max-h-[70vh] overflow-y-auto pr-2">{testimonyFormContent}</div></DialogContent>
             </Dialog>
           )
         ) : (
@@ -293,6 +307,7 @@ export default function TestimoniesPage() {
                     key={req.id} 
                     prayerRequest={req}
                     onDelete={() => setItemToDelete({ type: 'prayer', id: req.id, name: 'prayer request' })}
+                    onShareAnswer={handleOpenTestimonyDialog}
                   />
                 ))}
                 {!loading && filteredPrayerRequests?.length === 0 && (

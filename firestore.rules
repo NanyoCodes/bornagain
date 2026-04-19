@@ -136,14 +136,21 @@ service cloud.firestore {
 
       // Author can create their own prayer request. authorId is required.
       allow create: if request.auth != null && request.auth.uid == request.resource.data.authorId;
-
-      // Any authenticated user can pray for a request by adding their UID to the usersWhoPrayed list.
-      allow update: if request.auth != null
-                    // The only field changing is usersWhoPrayed
-                    && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['usersWhoPrayed'])
-                    // The user is adding themselves, and not removing anyone
-                    && request.resource.data.usersWhoPrayed.size() == ('usersWhoPrayed' in resource.data ? resource.data.usersWhoPrayed.size() : 0) + 1
-                    && request.auth.uid in request.resource.data.usersWhoPrayed;
+      
+      allow update: if request.auth != null && (
+        // SCENARIO 1: Any user can pray for a request
+        (
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['usersWhoPrayed']) &&
+          request.resource.data.usersWhoPrayed.size() == ('usersWhoPrayed' in resource.data ? resource.data.usersWhoPrayed.size() : 0) + 1 &&
+          request.auth.uid in request.resource.data.usersWhoPrayed
+        ) ||
+        // SCENARIO 2: Author can mark request as answered by linking a testimony
+        (
+          resource.data.authorId == request.auth.uid &&
+          request.resource.data.status == 'answered' &&
+          request.resource.data.diff(resource.data).affectedKeys().hasAll(['status', 'answeredTestimonyId'])
+        )
+      );
 
       // Author can delete their own prayer request.
       allow delete: if request.auth != null && resource.data.authorId == request.auth.uid;

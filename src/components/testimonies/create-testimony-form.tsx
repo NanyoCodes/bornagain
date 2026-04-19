@@ -16,11 +16,11 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Loader2 } from "lucide-react";
-import type { TestimonyCategory, Campaign, UserProfile } from "@/lib/types";
+import type { TestimonyCategory, Campaign, UserProfile, PrayerRequest } from "@/lib/types";
 import { useUser, useFirestore, useDoc } from "@/firebase";
-import { collection, addDoc, serverTimestamp, doc } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp, doc, updateDoc } from "firebase/firestore";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { errorEmitter } from "@/firebase/error-emitter";
 
@@ -34,9 +34,10 @@ const formSchema = z.object({
 type CreateTestimonyFormProps = {
   onTestimonyCreated: () => void;
   campaign?: Campaign;
+  prayerRequest?: PrayerRequest | null;
 };
 
-export function CreateTestimonyForm({ onTestimonyCreated, campaign }: CreateTestimonyFormProps) {
+export function CreateTestimonyForm({ onTestimonyCreated, campaign, prayerRequest }: CreateTestimonyFormProps) {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   
@@ -52,6 +53,21 @@ export function CreateTestimonyForm({ onTestimonyCreated, campaign }: CreateTest
       content: "",
     },
   });
+
+  useEffect(() => {
+    if (prayerRequest) {
+      form.reset({
+        category: testimonyCategories.includes(prayerRequest.category as TestimonyCategory) ? prayerRequest.category : 'General',
+        content: `I prayed for: "${prayerRequest.content}"\n\nAnd God answered! Here's what happened...`
+      });
+    } else {
+      // Reset for a blank testimony
+      form.reset({
+        category: undefined,
+        content: ""
+      });
+    }
+  }, [prayerRequest, form]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (!user || !firestore || !userProfile) {
@@ -83,15 +99,20 @@ export function CreateTestimonyForm({ onTestimonyCreated, campaign }: CreateTest
         testimonyData.campaignTitle = campaign.title;
       }
       
-      await addDoc(testimonyCollectionRef, testimonyData).catch((serverError) => {
-          const permissionError = new FirestorePermissionError({
-              path: testimonyCollectionRef.path,
-              operation: 'create',
-              requestResourceData: testimonyData,
+      if (prayerRequest) {
+        testimonyData.answeredPrayerId = prayerRequest.id;
+        testimonyData.answeredPrayerContent = prayerRequest.content;
+      }
+      
+      const newTestimonyDocRef = await addDoc(testimonyCollectionRef, testimonyData);
+
+      if (prayerRequest) {
+          const prayerRef = doc(firestore, 'prayerRequests', prayerRequest.id);
+          await updateDoc(prayerRef, {
+              status: 'answered',
+              answeredTestimonyId: newTestimonyDocRef.id
           });
-          errorEmitter.emit('permission-error', permissionError);
-          throw permissionError;
-      });
+      }
 
       toast({
           title: "Testimony Submitted!",
@@ -102,11 +123,12 @@ export function CreateTestimonyForm({ onTestimonyCreated, campaign }: CreateTest
     } catch (error: any) {
         console.error("Submission error:", error);
         if (error.name !== 'FirestorePermissionError') {
-            toast({
-                variant: "destructive",
-                title: "Submission Error",
-                description: error.message || "An unexpected error occurred. Please try again.",
-            });
+            const permissionError = new FirestorePermissionError({
+                path: 'testimonies or prayerRequests',
+                operation: 'create/update',
+                requestResourceData: { action: 'Share answered prayer' }
+            }, user);
+            errorEmitter.emit('permission-error', permissionError);
         }
     } finally {
         setIsSubmitting(false);
