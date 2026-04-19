@@ -217,7 +217,7 @@ export default function TestimoniesPage() {
             Testimonies &amp; Prayer Requests
           </h1>
           <p className="text-sm text-muted-foreground">
-            Read testimonies of what God has done and pray for others' needs.
+            Witness the power of faith through shared testimonies and lift up the community in prayer.
           </p>
         </div>
         {activeTab === 'testimonies' ? (
