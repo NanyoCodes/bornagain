@@ -147,6 +147,7 @@ service cloud.firestore {
         // SCENARIO 2: Author can mark request as answered
         (
           resource.data.authorId == request.auth.uid &&
+          resource.data.status == 'pending' &&
           request.resource.data.status == 'answered'
         )
       );
@@ -247,4 +248,6 @@ service cloud.firestore {
     }
   }
 }
+    
+
     
