@@ -140,6 +140,17 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
       onTestimonyCreated();
     } catch (error: any) {
         console.error("Submission error:", error);
+        
+        if (error.message === "This prayer has already been answered or does not exist.") {
+            toast({
+                variant: "default",
+                title: "Already Answered",
+                description: "This prayer request has already been marked as answered.",
+            });
+            onTestimonyCreated(); // Close the dialog
+            return;
+        }
+
         const isPermissionError = error.name === 'FirestorePermissionError' || error.code === 'permission-denied';
 
         if (isPermissionError) {
