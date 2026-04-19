@@ -1,169 +1,134 @@
 
 'use client';
 
-import React, { useState, useEffect, useMemo } from "react";
-import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { PlusCircle, Newspaper, HandHeart, Loader2 } from "lucide-react";
-import { TestimonyCard } from "@/components/testimonies/testimony-card";
-import { PrayerRequestCard } from "@/components/prayer/PrayerRequestCard";
-import type { Testimony, PrayerRequest, UserProfile } from "@/lib/types";
-import { Skeleton } from "@/components/ui/skeleton";
-import { useCollection, useFirestore, useUser, useDoc } from "@/firebase";
-import { collection, query, orderBy, doc } from "firebase/firestore";
-import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card";
-import { Tabs, TabsList, TabsContent, TabsTrigger } from "@/components/ui/tabs";
-import { Input } from "@/components/ui/input";
-import { PublicHeader } from "@/components/common/public-header";
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { AuthLayout } from '@/components/auth/auth-layout';
+import { SignUpForm } from '@/components/auth/signup-form';
+import { Button } from '@/components/ui/button';
+import { Icons } from '@/components/icons';
+import { useAuth, useFirestore } from '@/firebase';
+import {
+  signInWithPopup,
+  GoogleAuthProvider,
+  AuthError,
+} from 'firebase/auth';
+import { useToast } from '@/hooks/use-toast';
+import { doc, setDoc } from 'firebase/firestore';
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError } from '@/firebase/errors';
+import { useState } from 'react';
+import { Loader2 } from 'lucide-react';
 
-// This is the new landing page
-export default function PublicLandingPage() {
-  const [activeTab, setActiveTab] = useState("testimonies");
-  const { user, loading: userLoading } = useUser();
+export default function Page() {
+  const auth = useAuth();
   const firestore = useFirestore();
   const router = useRouter();
+  const { toast } = useToast();
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
-  const userDocRef = useMemo(() => (user ? doc(firestore, 'users', user.uid) : null), [user, firestore]);
-  const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userDocRef);
+  const handleSocialLogin = async (provider: 'google') => {
+    setIsGoogleLoading(true);
+    if (!auth || !firestore) {
+      toast({
+        variant: 'destructive',
+        title: 'Firebase not initialized',
+        description: 'Please wait a moment and try again.',
+      });
+      setIsGoogleLoading(false);
+      return;
+    }
+    const authProvider = new GoogleAuthProvider();
+    try {
+      const result = await signInWithPopup(auth, authProvider);
+      const user = result.user;
+      
+      const nameParts = user.displayName?.split(' ') || [];
+      const firstName = nameParts[0] || '';
+      const lastName = nameParts.slice(1).join(' ');
+      const fullName = `${firstName} ${lastName}`;
+      const nameTokens = fullName.toLowerCase().split(' ').filter(Boolean);
 
-  const [searchTerm, setSearchTerm] = useState('');
-  
-  const testimoniesQuery = useMemo(() => {
-    if (!firestore) return null;
-    return query(collection(firestore, "testimonies"), orderBy("createdAt", "desc"));
-  }, [firestore]);
+      const userDocRef = doc(firestore, 'users', user.uid);
+      const userData = {
+        firstName: firstName,
+        lastName: lastName,
+        fullName_lowercase: fullName.toLowerCase(),
+        name_tokens: nameTokens,
+        email: user.email,
+        photoURL: user.photoURL,
+      };
 
-  const { data: testimonies, loading: loadingTestimonies } = useCollection<Testimony>(testimoniesQuery);
+      // Create user profile in Firestore
+      setDoc(userDocRef, userData, { merge: true }).catch((serverError) => {
+        const permissionError = new FirestorePermissionError({
+          path: userDocRef.path,
+          operation: 'create',
+          requestResourceData: userData,
+        });
+        errorEmitter.emit('permission-error', permissionError);
+      });
 
-  const prayerRequestsQuery = useMemo(() => {
-    if (!firestore) return null;
-    return query(collection(firestore, "prayerRequests"), orderBy("createdAt", "desc"));
-  }, [firestore]);
-  const { data: prayerRequests, loading: loadingPrayers } = useCollection<PrayerRequest>(prayerRequestsQuery);
-
-  const loading = loadingTestimonies || loadingPrayers || userLoading || profileLoading;
-
-  const handleAuthAction = () => {
-    if (user) {
+      toast({
+        title: 'Success',
+        description: 'You are now logged in.',
+      });
       router.push('/dashboard/testimonies');
-    } else {
-      router.push('/login');
+    } catch (error) {
+      const authError = error as AuthError;
+      if (authError.code !== 'auth/popup-closed-by-user') {
+        toast({
+          variant: 'destructive',
+          title: 'Sign Up Failed',
+          description: authError.message || 'An unexpected error occurred.',
+        });
+      }
+    } finally {
+      setIsGoogleLoading(false);
     }
   };
-  
-  const filteredTestimonies = useMemo(() => {
-    if (!testimonies) return [];
-    if (!searchTerm) return testimonies;
-    const term = searchTerm.toLowerCase();
-    return testimonies.filter(testimony => 
-      testimony.content.toLowerCase().includes(term) ||
-      `${testimony.authorFirstName} ${testimony.authorLastName}`.toLowerCase().includes(term) ||
-      testimony.category.toLowerCase().includes(term)
-    );
-  }, [testimonies, searchTerm]);
-
-  const filteredPrayerRequests = useMemo(() => {
-    if (!prayerRequests) return [];
-    if (!searchTerm) return prayerRequests;
-    const term = searchTerm.toLowerCase();
-    return prayerRequests.filter(req => 
-      req.content.toLowerCase().includes(term) ||
-      req.category.toLowerCase().includes(term)
-    );
-  }, [prayerRequests, searchTerm]);
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <PublicHeader />
-      <main className="flex-grow container mx-auto py-8 px-4 md:px-6">
-        <div className="space-y-8">
-          <div className="flex items-center justify-between">
-            <div className="space-y-2">
-              <h1 className="text-xl sm:text-2xl font-bold tracking-tight font-headline">
-                Testimonies &amp; Prayer Requests
-              </h1>
-              <p className="text-sm text-muted-foreground">
-                Read testimonies of what God has done and pray for others' needs.
-              </p>
-            </div>
-            <Button onClick={handleAuthAction}>
-              <PlusCircle className="h-4 w-4 mr-2" />
-              <span className="hidden md:inline">{activeTab === 'testimonies' ? 'Share Testimony' : 'Share Prayer Request'}</span>
-            </Button>
+    <AuthLayout>
+      <div className="space-y-6">
+        <div className="grid gap-2 text-left">
+          <h1 className="text-2xl md:text-3xl font-bold">Create an account</h1>
+          <p className="text-balance text-muted-foreground">
+            Enter your details below to create your account.
+          </p>
+        </div>
+
+        <SignUpForm />
+
+        <div className="text-center text-sm">
+          Already have an account?{' '}
+          <Link href="/login" className="underline">
+            Sign in
+          </Link>
+        </div>
+
+        <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-background px-2 text-muted-foreground">
+                    Or Continue With
+                  </span>
+              </div>
           </div>
 
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <div className="flex flex-col sm:flex-row gap-4 items-center">
-                <TabsList className="grid w-full sm:w-auto grid-cols-2">
-                    <TabsTrigger value="testimonies">Testimonies</TabsTrigger>
-                    <TabsTrigger value="prayers">Prayer Requests</TabsTrigger>
-                </TabsList>
-                <div className="w-full sm:flex-1">
-                    <Input
-                        placeholder={activeTab === 'testimonies' ? "Search testimonies..." : "Search prayer requests..."}
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                </div>
-            </div>
-
-            <TabsContent value="testimonies" className="mt-6">
-                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                    {loading && (
-                      [...Array(3)].map((_, i) => (
-                        <Card key={i}><CardHeader><div className="flex items-center gap-4"><Skeleton className="h-12 w-12 rounded-full" /><div className="w-full space-y-2"><Skeleton className="h-4 w-1/4" /><Skeleton className="h-4 w-1/5" /></div></div></CardHeader><CardContent className="space-y-4"><Skeleton className="h-5 w-3/4" /><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-4/5" /></CardContent><CardFooter><Skeleton className="h-8 w-24 ml-auto" /></CardFooter></Card>
-                      ))
-                    )}
-                    {!loading && filteredTestimonies.map((testimony) => {
-                        return (
-                            <TestimonyCard 
-                                key={testimony.id} 
-                                testimony={testimony} 
-                                distance={null}
-                                onDelete={() => { /* no-op */ }} 
-                                onEdit={() => { /* no-op */ }}
-                            />
-                        );
-                    })}
-                     {!loading && filteredTestimonies?.length === 0 && (
-                      <div className="col-span-full text-center py-12 flex flex-col items-center">
-                        <Newspaper className="h-16 w-16 text-muted-foreground" />
-                        <h3 className="mt-4 text-xl font-semibold">No Testimonies Yet</h3>
-                        <p className="mt-2 text-sm text-muted-foreground">
-                          Log in to be the first to share your story!
-                        </p>
-                      </div>
-                    )}
-                </div>
-            </TabsContent>
-            <TabsContent value="prayers" className="mt-6">
-                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                    {loading && (
-                      [...Array(3)].map((_, i) => (
-                        <Card key={i}><CardHeader><div className="flex items-center gap-4"><Skeleton className="h-12 w-12 rounded-full" /><div className="w-full space-y-2"><Skeleton className="h-4 w-1/4" /><Skeleton className="h-4 w-1/5" /></div></div></CardHeader><CardContent className="space-y-4"><Skeleton className="h-5 w-3/4" /><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-4/5" /></CardContent><CardFooter><Skeleton className="h-8 w-24 ml-auto" /></CardFooter></Card>
-                      ))
-                    )}
-                    {!loading && filteredPrayerRequests?.map((req) => (
-                      <PrayerRequestCard 
-                        key={req.id} 
-                        prayerRequest={req}
-                        onDelete={() => { /* no-op */ }}
-                      />
-                    ))}
-                    {!loading && filteredPrayerRequests?.length === 0 && (
-                      <div className="col-span-full text-center py-12 flex flex-col items-center">
-                        <HandHeart className="h-16 w-16 text-muted-foreground" />
-                        <h3 className="mt-4 text-xl font-semibold">No Prayer Requests</h3>
-                        <p className="mt-2 text-sm text-muted-foreground">
-                           Log in to share a prayer need with the community.
-                        </p>
-                      </div>
-                    )}
-                </div>
-            </TabsContent>
-          </Tabs>
+          <div className="grid grid-cols-1 gap-2">
+              <Button variant="outline" onClick={() => handleSocialLogin('google')} disabled={isGoogleLoading}>
+                  {isGoogleLoading ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : (
+                    <Icons.google className="mr-2 h-4 w-4" />
+                  )}
+                  Google
+              </Button>
+          </div>
         </div>
-      </main>
-    </div>
+    </AuthLayout>
   );
 }
