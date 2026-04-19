@@ -1,9 +1,9 @@
-
 'use client';
 
 import { useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { Card } from '../ui/card';
+import { DollarSign } from 'lucide-react';
 
 type AdsenseAdProps = {
   adSlot: string;
@@ -36,11 +36,20 @@ const AdsenseAd = ({ adSlot, adFormat = 'auto', style, className }: AdsenseAdPro
     return null; 
   }
 
+  const isDevelopment = process.env.NODE_ENV === 'development';
+
   return (
-    <Card className={cn("w-full flex justify-center items-center bg-muted/30 rounded-lg border min-h-[300px] p-2", className)}>
+    <Card className={cn("w-full flex justify-center items-center bg-muted/30 rounded-lg border min-h-[300px] p-2 relative", className)}>
+        {isDevelopment && (
+            <div className="text-center text-muted-foreground z-0">
+                <DollarSign className="h-12 w-12 mx-auto" />
+                <p className="font-semibold mt-2">Advertisement</p>
+                <p className="text-xs">(This is a placeholder for development)</p>
+            </div>
+        )}
         <ins
             className='adsbygoogle'
-            style={{ display: 'block', width: '100%', height: '100%', ...style }}
+            style={{ display: 'block', width: '100%', height: '100%', position: 'absolute', top: 0, left: 0, ...style }}
             data-ad-client={ADSENSE_CLIENT_ID}
             data-ad-slot={adSlot}
             data-ad-format={adFormat}
