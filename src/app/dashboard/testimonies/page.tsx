@@ -15,7 +15,6 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   AlertDialog,
@@ -33,7 +32,6 @@ import {
   SheetDescription,
   SheetHeader,
   SheetTitle,
-  SheetTrigger,
 } from "@/components/ui/sheet";
 import type { Testimony, PrayerRequest, UserProfile } from "@/lib/types";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -206,15 +204,15 @@ export default function TestimoniesPage() {
     }
   };
 
-  const testimonyTrigger = (
+  const testimonyTriggerButton = (
     <Button onClick={() => handleOpenTestimonyDialog()} disabled={loading}>
       {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <PlusCircle className="h-4 w-4" />}
       <span className="hidden md:inline">Share Testimony</span>
     </Button>
   );
 
-  const prayerTrigger = (
-    <Button disabled={loading}>
+  const prayerTriggerButton = (
+    <Button onClick={() => setIsPrayerDialogOpen(true)} disabled={loading}>
       {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <PlusCircle className="h-4 w-4" />}
       <span className="hidden md:inline">Share Prayer Request</span>
     </Button>
@@ -234,31 +232,9 @@ export default function TestimoniesPage() {
             Witness the power of faith through shared testimonies and lift up the community in prayer.
           </p>
         </div>
-        {activeTab === 'testimonies' ? (
-          mounted && isMobile ? (
-            <Sheet open={isTestimonyDialogOpen} onOpenChange={handleCloseTestimonyDialog}>
-              <SheetTrigger asChild>{testimonyTrigger}</SheetTrigger>
-              <SheetContent side="bottom"><SheetHeader><SheetTitle>{prayerToAnswer ? 'Share Answered Prayer' : 'Share Testimony'}</SheetTitle><SheetDescription>Encourage others by sharing what God has done.</SheetDescription></SheetHeader><div className="max-h-[80vh] overflow-y-auto p-1 mt-4">{testimonyFormContent}</div></SheetContent>
-            </Sheet>
-          ) : (
-            <Dialog open={isTestimonyDialogOpen} onOpenChange={handleCloseTestimonyDialog}>
-              <DialogTrigger asChild>{testimonyTrigger}</DialogTrigger>
-              <DialogContent className="sm:max-w-lg"><DialogHeader><DialogTitle>{prayerToAnswer ? 'Share Answered Prayer' : 'Share Testimony'}</DialogTitle><DialogDescription>Encourage others by sharing what God has done.</DialogDescription></DialogHeader><div className="max-h-[70vh] overflow-y-auto pr-2">{testimonyFormContent}</div></DialogContent>
-            </Dialog>
-          )
-        ) : (
-           mounted && isMobile ? (
-            <Sheet open={isPrayerDialogOpen} onOpenChange={setIsPrayerDialogOpen}>
-              <SheetTrigger asChild>{prayerTrigger}</SheetTrigger>
-              <SheetContent side="bottom"><SheetHeader><SheetTitle>Share Prayer Request</SheetTitle><SheetDescription>Share your request anonymously with the community.</SheetDescription></SheetHeader><div className="max-h-[80vh] overflow-y-auto p-1 mt-4">{prayerFormContent}</div></SheetContent>
-            </Sheet>
-          ) : (
-            <Dialog open={isPrayerDialogOpen} onOpenChange={setIsPrayerDialogOpen}>
-              <DialogTrigger asChild>{prayerTrigger}</DialogTrigger>
-              <DialogContent className="sm:max-w-lg"><DialogHeader><DialogTitle>Share Prayer Request</DialogTitle><DialogDescription>Share your request anonymously with the community.</DialogDescription></DialogHeader><div className="max-h-[70vh] overflow-y-auto pr-2">{prayerFormContent}</div></DialogContent>
-            </Dialog>
-          )
-        )}
+        <div>
+          {activeTab === 'testimonies' ? testimonyTriggerButton : prayerTriggerButton}
+        </div>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -356,6 +332,50 @@ export default function TestimoniesPage() {
           </div>
         </DialogContent>
       </Dialog>
+      
+      {mounted && isMobile ? (
+        <Sheet open={isTestimonyDialogOpen} onOpenChange={handleCloseTestimonyDialog}>
+          <SheetContent side="bottom">
+            <SheetHeader>
+              <SheetTitle>{prayerToAnswer ? 'Share Answered Prayer' : 'Share Testimony'}</SheetTitle>
+              <SheetDescription>Encourage others by sharing what God has done.</SheetDescription>
+            </SheetHeader>
+            <div className="max-h-[80vh] overflow-y-auto p-1 mt-4">{testimonyFormContent}</div>
+          </SheetContent>
+        </Sheet>
+      ) : (
+        <Dialog open={isTestimonyDialogOpen} onOpenChange={handleCloseTestimonyDialog}>
+          <DialogContent className="sm:max-w-lg">
+            <DialogHeader>
+              <DialogTitle>{prayerToAnswer ? 'Share Answered Prayer' : 'Share Testimony'}</DialogTitle>
+              <DialogDescription>Encourage others by sharing what God has done.</DialogDescription>
+            </DialogHeader>
+            <div className="max-h-[70vh] overflow-y-auto pr-2">{testimonyFormContent}</div>
+          </DialogContent>
+        </Dialog>
+      )}
+      
+      {mounted && isMobile ? (
+        <Sheet open={isPrayerDialogOpen} onOpenChange={setIsPrayerDialogOpen}>
+          <SheetContent side="bottom">
+            <SheetHeader>
+              <SheetTitle>Share Prayer Request</SheetTitle>
+              <SheetDescription>Share your request anonymously with the community.</SheetDescription>
+            </SheetHeader>
+            <div className="max-h-[80vh] overflow-y-auto p-1 mt-4">{prayerFormContent}</div>
+          </SheetContent>
+        </Sheet>
+      ) : (
+        <Dialog open={isPrayerDialogOpen} onOpenChange={setIsPrayerDialogOpen}>
+          <DialogContent className="sm:max-w-lg">
+            <DialogHeader>
+              <DialogTitle>Share Prayer Request</DialogTitle>
+              <DialogDescription>Share your request anonymously with the community.</DialogDescription>
+            </DialogHeader>
+            <div className="max-h-[70vh] overflow-y-auto pr-2">{prayerFormContent}</div>
+          </DialogContent>
+        </Dialog>
+      )}
 
     </div>
   );
