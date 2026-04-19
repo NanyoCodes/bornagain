@@ -1,4 +1,3 @@
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -12,6 +11,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription,
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -144,7 +144,11 @@ export function CreateTestimonyForm({ onTestimonyCreated, campaign, prayerReques
           render={({ field }) => (
             <FormItem>
               <FormLabel>Category</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select
+                  onValueChange={field.onChange}
+                  value={field.value}
+                  disabled={!!prayerRequest}
+                >
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Select a category for your testimony" />
@@ -156,6 +160,11 @@ export function CreateTestimonyForm({ onTestimonyCreated, campaign, prayerReques
                     ))}
                   </SelectContent>
                 </Select>
+                {prayerRequest && (
+                    <FormDescription>
+                        Category inherited from the original prayer request.
+                    </FormDescription>
+                )}
               <FormMessage />
             </FormItem>
           )}
