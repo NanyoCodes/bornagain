@@ -204,7 +204,6 @@ export function LoginForm() {
       if (!user.emailVerified && user.providerData.some(p => p.providerId === 'password')) {
         setUserForVerification(user);
         setIsVerificationDialogOpen(true);
-        await signOut(auth);
         setIsLoading(false);
         return;
       }
