@@ -171,7 +171,7 @@ export function AttendChurchDialog({ isOpen, onOpenChange, onDisciplineCompleted
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => { if(!isSubmitting) onOpenChange(open); }}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle>Log Church Attendance for {format(new Date(), 'PPP')}</DialogTitle>
            <DialogDescription>
@@ -200,10 +200,10 @@ export function AttendChurchDialog({ isOpen, onOpenChange, onDisciplineCompleted
             </div>
             
             <div className="space-y-2">
-                <Label htmlFor="confirm-reason">Reason/Notes (Optional)</Label>
+                <Label htmlFor="confirm-reason">Service Notes (Optional)</Label>
                 <Textarea
                     id="confirm-reason"
-                    placeholder="e.g., Guest speaker was present, special service..."
+                    placeholder="e.g., Guest speaker was present, special service notes..."
                     value={reason}
                     onChange={(e) => setReason(e.target.value)}
                 />
@@ -276,7 +276,7 @@ export function AttendChurchDialog({ isOpen, onOpenChange, onDisciplineCompleted
                 name="reason"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Reason/Notes (Optional)</FormLabel>
+                    <FormLabel>Service Notes (Optional)</FormLabel>
                     <FormControl>
                       <Textarea placeholder="e.g., I was visiting a friend and attended their church..." {...field} />
                     </FormControl>
