@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -65,7 +66,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
         content: ""
       });
     }
-  }, [prayerRequest, form]);
+  }, [prayerRequest]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (!user || !firestore || !userProfile) {
@@ -115,6 +116,12 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
 
             if (prayerRequest) {
                 const prayerRef = doc(firestore, 'prayerRequests', prayerRequest.id);
+                const prayerDoc = await transaction.get(prayerRef);
+
+                if (!prayerDoc.exists() || prayerDoc.data().status !== 'pending') {
+                    throw new Error("This prayer has already been answered or does not exist.");
+                }
+
                 transaction.update(prayerRef, {
                     status: 'answered',
                     answeredTestimonyId: newTestimonyDocRef.id
