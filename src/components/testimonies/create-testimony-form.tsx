@@ -75,62 +75,67 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
       return;
     }
     
-    const categoryToUse = prayerRequest?.category || values.category;
+    let categoryToUse: TestimonyCategory | undefined;
+    if (prayerRequest) {
+      // If answering a prayer, the category MUST come from the prayer request.
+      // Don't trust the form values for a disabled field.
+      categoryToUse = prayerRequest.category as TestimonyCategory;
+    } else {
+      // If it's a new testimony, get it from the form values.
+      categoryToUse = values.category as TestimonyCategory;
+    }
 
-    if (!categoryToUse || !testimonyCategories.includes(categoryToUse as TestimonyCategory)) {
+    // Final validation to ensure we have a real category
+    if (!categoryToUse || !testimonyCategories.includes(categoryToUse)) {
       form.setError('category', { type: 'manual', message: 'Please select a valid category.' });
       return;
     }
 
     setIsSubmitting(true);
     
+    const testimonyData: any = {
+        authorId: user.uid,
+        authorFirstName: userProfile.firstName || 'Anonymous',
+        authorLastName: userProfile.lastName || '',
+        authorAvatarUrl: userProfile.photoURL || null,
+        content: values.content,
+        createdAt: serverTimestamp(),
+        category: categoryToUse,
+        supporters: [],
+    };
+    if (userProfile.location) {
+        testimonyData.authorLocation = userProfile.location;
+    }
+    if (campaign) {
+        testimonyData.campaignId = campaign.id;
+        testimonyData.campaignTitle = campaign.title;
+    }
+    if (prayerRequest) {
+        testimonyData.answeredPrayerId = prayerRequest.id;
+        testimonyData.answeredPrayerContent = prayerRequest.content;
+    }
+    
     try {
         await runTransaction(firestore, async (transaction) => {
             const newTestimonyDocRef = doc(collection(firestore, "testimonies"));
-
+            
             // --- READS FIRST ---
-            let prayerRef;
             if (prayerRequest) {
-              prayerRef = doc(firestore, 'prayerRequests', prayerRequest.id);
+              const prayerRef = doc(firestore, 'prayerRequests', prayerRequest.id);
               const prayerDoc = await transaction.get(prayerRef);
 
               if (!prayerDoc.exists() || prayerDoc.data().status !== 'pending') {
                 throw new Error("This prayer has already been answered or does not exist.");
               }
+               // --- WRITES SECOND (only if prayer request exists and is pending) ---
+              transaction.update(prayerRef, {
+                  status: 'answered',
+                  answeredTestimonyId: newTestimonyDocRef.id
+              });
             }
             
-            // --- WRITES SECOND ---
-            const testimonyData: any = {
-                authorId: user.uid,
-                authorFirstName: userProfile.firstName || 'Anonymous',
-                authorLastName: userProfile.lastName || '',
-                authorAvatarUrl: userProfile.photoURL || null,
-                content: values.content,
-                createdAt: serverTimestamp(),
-                category: categoryToUse as TestimonyCategory,
-                supporters: [],
-            };
-
-            if (userProfile.location) {
-                testimonyData.authorLocation = userProfile.location;
-            }
-            if (campaign) {
-                testimonyData.campaignId = campaign.id;
-                testimonyData.campaignTitle = campaign.title;
-            }
-            if (prayerRequest) {
-                testimonyData.answeredPrayerId = prayerRequest.id;
-                testimonyData.answeredPrayerContent = prayerRequest.content;
-            }
-            
+            // --- MAIN WRITE ---
             transaction.set(newTestimonyDocRef, testimonyData);
-
-            if (prayerRequest && prayerRef) {
-                transaction.update(prayerRef, {
-                    status: 'answered',
-                    answeredTestimonyId: newTestimonyDocRef.id
-                });
-            }
         });
 
       toast({
@@ -148,7 +153,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
                 title: "Already Answered",
                 description: "This prayer request has already been marked as answered.",
             });
-            onTestimonyCreated(); // Close the dialog
+            onTestimonyCreated();
             return;
         }
 
@@ -158,7 +163,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
              const permissionError = new FirestorePermissionError({
                 path: 'Transaction: Create Testimony & Update Prayer Request',
                 operation: 'write',
-                requestResourceData: { action: 'Share answered prayer', values }
+                requestResourceData: { action: 'Share answered prayer', testimonyData }
             }, user);
             errorEmitter.emit('permission-error', permissionError);
         } else {
