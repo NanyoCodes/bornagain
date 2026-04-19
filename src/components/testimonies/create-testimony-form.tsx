@@ -20,7 +20,7 @@ import { useState, useMemo, useEffect } from "react";
 import { Loader2 } from "lucide-react";
 import type { TestimonyCategory, Campaign, UserProfile, PrayerRequest } from "@/lib/types";
 import { useUser, useFirestore } from "@/firebase";
-import { collection, addDoc, serverTimestamp, doc, updateDoc } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp, doc, updateDoc, runTransaction } from "firebase/firestore";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { errorEmitter } from "@/firebase/error-emitter";
 
@@ -76,41 +76,47 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
     setIsSubmitting(true);
     
     try {
-      const testimonyCollectionRef = collection(firestore, "testimonies");
-      const testimonyData: any = {
-          authorId: user.uid,
-          authorFirstName: userProfile.firstName || 'Anonymous',
-          authorLastName: userProfile.lastName || '',
-          authorAvatarUrl: userProfile.photoURL || null,
-          content: values.content,
-          createdAt: serverTimestamp(),
-          category: values.category as TestimonyCategory,
-          supporters: [],
-      };
+        await runTransaction(firestore, async (transaction) => {
+            const testimonyCollectionRef = collection(firestore, "testimonies");
+            const newTestimonyDocRef = doc(testimonyCollectionRef); // Create ref beforehand
 
-      if (userProfile.location) {
-        testimonyData.authorLocation = userProfile.location;
-      }
+            const testimonyData: any = {
+                authorId: user.uid,
+                authorFirstName: userProfile.firstName || 'Anonymous',
+                authorLastName: userProfile.lastName || '',
+                authorAvatarUrl: userProfile.photoURL || null,
+                content: values.content,
+                createdAt: serverTimestamp(),
+                category: values.category as TestimonyCategory,
+                supporters: [],
+            };
 
-      if (campaign) {
-        testimonyData.campaignId = campaign.id;
-        testimonyData.campaignTitle = campaign.title;
-      }
-      
-      if (prayerRequest) {
-        testimonyData.answeredPrayerId = prayerRequest.id;
-        testimonyData.answeredPrayerContent = prayerRequest.content;
-      }
-      
-      const newTestimonyDocRef = await addDoc(testimonyCollectionRef, testimonyData);
+            if (userProfile.location) {
+                testimonyData.authorLocation = userProfile.location;
+            }
 
-      if (prayerRequest) {
-          const prayerRef = doc(firestore, 'prayerRequests', prayerRequest.id);
-          await updateDoc(prayerRef, {
-              status: 'answered',
-              answeredTestimonyId: newTestimonyDocRef.id
-          });
-      }
+            if (campaign) {
+                testimonyData.campaignId = campaign.id;
+                testimonyData.campaignTitle = campaign.title;
+            }
+            
+            if (prayerRequest) {
+                testimonyData.answeredPrayerId = prayerRequest.id;
+                testimonyData.answeredPrayerContent = prayerRequest.content;
+            }
+            
+            transaction.set(newTestimonyDocRef, testimonyData);
+
+            if (prayerRequest) {
+                const prayerRef = doc(firestore, 'prayerRequests', prayerRequest.id);
+                // The transaction will fail if the prayer request doesn't exist or if security rules fail.
+                // We don't need a separate get() because security rules operate on the `resource` variable.
+                transaction.update(prayerRef, {
+                    status: 'answered',
+                    answeredTestimonyId: newTestimonyDocRef.id
+                });
+            }
+        });
 
       toast({
           title: "Testimony Submitted!",
@@ -120,13 +126,20 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
       onTestimonyCreated();
     } catch (error: any) {
         console.error("Submission error:", error);
-        if (error.name !== 'FirestorePermissionError') {
+        // Firebase permission errors have a specific code
+        if (error.code === 'permission-denied') {
             const permissionError = new FirestorePermissionError({
-                path: 'testimonies or prayerRequests',
-                operation: 'create/update',
-                requestResourceData: { action: 'Share answered prayer' }
+                path: 'Transaction: Create Testimony & Update Prayer Request',
+                operation: 'write',
+                requestResourceData: { action: 'Share answered prayer', values }
             }, user);
             errorEmitter.emit('permission-error', permissionError);
+        } else {
+             toast({
+                variant: "destructive",
+                title: "Submission Error",
+                description: error.message || "An unexpected error occurred. Please try again.",
+            });
         }
     } finally {
         setIsSubmitting(false);

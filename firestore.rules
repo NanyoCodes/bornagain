@@ -147,8 +147,9 @@ service cloud.firestore {
         // SCENARIO 2: Author can mark request as answered by linking a testimony
         (
           resource.data.authorId == request.auth.uid &&
+          resource.data.status == 'pending' &&
           request.resource.data.status == 'answered' &&
-          request.resource.data.diff(resource.data).affectedKeys().hasAll(['status', 'answeredTestimonyId'])
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'answeredTestimonyId'])
         )
       );
 
