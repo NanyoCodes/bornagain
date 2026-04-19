@@ -19,6 +19,15 @@ export type BibleHighlight = {
   updatedAt?: Timestamp;
 };
 
+export type Note = {
+  id: string;
+  userId: string;
+  title: string;
+  content: string;
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+};
+
 export type DailyDisciplineLog = {
   id: string; // The date string YYYY-MM-DD
   completed: string[];

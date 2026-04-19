@@ -20,6 +20,8 @@ const transitionWords = [
   "REPENT",
   "SING",
   "SMILE",
+  "JOURNAL",
+  "WRITE",
 ];
 
 export function PageTransition({ children }: { children: React.ReactNode }) {
