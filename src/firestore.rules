@@ -148,7 +148,9 @@ service cloud.firestore {
           resource.data.authorId == request.auth.uid &&
           resource.data.status == 'pending' &&
           request.resource.data.status == 'answered' &&
-          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'answeredTestimonyId'])
+          request.resource.data.diff(resource.data).affectedKeys().size() == 2 &&
+          'status' in request.resource.data.diff(resource.data).affectedKeys() &&
+          'answeredTestimonyId' in request.resource.data.diff(resource.data).affectedKeys()
         )
       );
 
