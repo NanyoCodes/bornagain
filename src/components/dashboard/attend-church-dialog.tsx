@@ -171,7 +171,7 @@ export function AttendChurchDialog({ isOpen, onOpenChange, onDisciplineCompleted
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => { if(!isSubmitting) onOpenChange(open); }}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>Log Church Attendance for {format(new Date(), 'PPP')}</DialogTitle>
            <DialogDescription>
