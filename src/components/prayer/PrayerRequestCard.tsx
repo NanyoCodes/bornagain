@@ -123,19 +123,20 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({ prayerRequest
               <Users className="h-4 w-4" />
               <span>{prayerCount}</span>
           </div>
-          {isAnswered ? (
-            <div className="flex items-center gap-2 text-sm font-semibold text-green-600 dark:text-green-400">
+          {isAuthor ? (
+            <div className="flex items-center gap-2">
+                <Button size="sm" variant="outline" onClick={(e) => { e.stopPropagation(); onShareAnswer(prayerRequest); }} disabled={isAnswered}>
+                    {isAnswered && <Award className="mr-2 h-4 w-4" />}
+                    {isAnswered ? 'Answered' : 'Share Testimony'}
+                </Button>
+                <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={onDelete}>
+                    <Trash2 className="h-4 w-4" />
+                </Button>
+            </div>
+          ) : isAnswered ? (
+             <div className="flex items-center gap-2 text-sm font-semibold text-green-600 dark:text-green-400">
                 <Award className="h-5 w-5" />
                 <span>Answered!</span>
-            </div>
-          ) : isAuthor ? (
-            <div className="flex items-center gap-2">
-              <Button size="sm" variant="outline" onClick={(e) => { e.stopPropagation(); onShareAnswer(prayerRequest); }}>
-                  Share Testimony
-              </Button>
-              <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={onDelete}>
-                  <Trash2 className="h-4 w-4" />
-              </Button>
             </div>
           ) : (
               <Button onClick={handlePray} disabled={hasPrayed || isPraying || !user}>
