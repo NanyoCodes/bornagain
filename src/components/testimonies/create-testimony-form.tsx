@@ -74,10 +74,11 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
       toast({ variant: 'destructive', title: 'Not Authenticated', description: 'You must be logged in to share a testimony.'});
       return;
     }
+    
+    const categoryToUse = prayerRequest?.category || values.category;
 
-    const finalCategory = prayerRequest ? prayerRequest.category : values.category;
-    if (!finalCategory) {
-      form.setError('category', { type: 'manual', message: 'Please select a category.' });
+    if (!categoryToUse || !testimonyCategories.includes(categoryToUse as TestimonyCategory)) {
+      form.setError('category', { type: 'manual', message: 'Please select a valid category.' });
       return;
     }
 
@@ -106,7 +107,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
                 authorAvatarUrl: userProfile.photoURL || null,
                 content: values.content,
                 createdAt: serverTimestamp(),
-                category: finalCategory as TestimonyCategory,
+                category: categoryToUse as TestimonyCategory,
                 supporters: [],
             };
 
@@ -151,7 +152,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
             return;
         }
 
-        const isPermissionError = error.name === 'FirestorePermissionError' || error.code === 'permission-denied';
+        const isPermissionError = error.code === 'permission-denied';
 
         if (isPermissionError) {
              const permissionError = new FirestorePermissionError({
