@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -231,7 +232,7 @@ export function LoginForm() {
         title: "Success",
         description: "You are now logged in.",
       });
-      router.push("/dashboard");
+      router.push("/dashboard/testimonies");
     } catch (error) {
       const authError = error as AuthError;
       let description = "An unexpected error occurred. Please try again.";

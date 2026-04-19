@@ -73,7 +73,7 @@ export default function LoginPage() {
         title: 'Success',
         description: 'You are now logged in.',
       });
-      router.push('/dashboard');
+      router.push('/dashboard/testimonies');
     } catch (error) {
       const authError = error as AuthError;
       if (authError.code !== 'auth/popup-closed-by-user') {
@@ -102,7 +102,7 @@ export default function LoginPage() {
 
         <div className="text-center text-sm">
           Don&apos;t have an account?{' '}
-          <Link href="/" className="underline">
+          <Link href="/signup" className="underline">
             Sign up
           </Link>
         </div>
