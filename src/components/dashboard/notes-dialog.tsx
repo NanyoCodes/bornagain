@@ -33,7 +33,7 @@ import {
   deleteDoc,
   doc,
 } from 'firebase/firestore';
-import type { Note, UserProfile } from '@/lib/types';
+import type { Note, UserProfile, NoteCategory } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -50,6 +50,10 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion';
+
+const noteCategories: NoteCategory[] = ['Personal', 'Church', 'Revelation', 'Other'];
 
 interface NotesDialogProps {
   isOpen: boolean;
@@ -72,6 +76,7 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted }: Not
   
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+  const [category, setCategory] = useState<NoteCategory>('Personal');
   const contentRef = useRef<HTMLTextAreaElement>(null);
 
   const notesQuery = useMemo(() => {
@@ -79,6 +84,18 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted }: Not
     return query(collection(firestore, 'users', user.uid, 'notes'), orderBy('updatedAt', 'desc'));
   }, [user, firestore]);
   const { data: notes, loading: notesLoading } = useCollection<Note>(notesQuery);
+  
+  const groupedNotes = useMemo(() => {
+    if (!notes) return {};
+    return notes.reduce((acc, note) => {
+      const cat = note.category || 'Other';
+      if (!acc[cat]) {
+        acc[cat] = [];
+      }
+      acc[cat].push(note);
+      return acc;
+    }, {} as Record<NoteCategory, Note[]>);
+  }, [notes]);
 
   useEffect(() => {
     if (!isOpen) {
@@ -88,6 +105,7 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted }: Not
       setDisciplineCompletedInSession(false);
       setTitle('');
       setContent('');
+      setCategory('Personal');
     }
   }, [isOpen]);
 
@@ -95,6 +113,7 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted }: Not
     setSelectedNote(note);
     setTitle(note.title);
     setContent(note.content);
+    setCategory(note.category || 'Personal');
     setIsCreatingNew(false);
   };
 
@@ -103,6 +122,7 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted }: Not
     setIsCreatingNew(true);
     setTitle('');
     setContent('');
+    setCategory('Personal');
   };
   
   const handleBackToList = () => {
@@ -110,6 +130,7 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted }: Not
     setIsCreatingNew(false);
     setTitle('');
     setContent('');
+    setCategory('Personal');
   }
   
   const handleFormatting = (formatType: 'bold' | 'italic') => {
@@ -144,23 +165,30 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted }: Not
         await updateDoc(noteRef, {
           title,
           content,
+          category,
           updatedAt: serverTimestamp(),
         });
         toast({ title: 'Note Updated' });
       } else {
         // Create new note
-        const noteData = {
+        const noteData: Omit<Note, 'id' | 'createdAt' | 'updatedAt'> = {
           userId: user.uid,
           title,
           content,
+          category,
+        };
+        const docRef = await addDoc(collection(firestore, 'users', user.uid, 'notes'), {
+          ...noteData,
           createdAt: serverTimestamp(),
           updatedAt: serverTimestamp(),
-        };
-        await addDoc(collection(firestore, 'users', user.uid, 'notes'), noteData);
+        });
         toast({ title: 'Note Saved' });
-        handleNewNote(); // Clear form for next new note
+        handleSelectNote({ id: docRef.id, ...noteData, createdAt: new (serverTimestamp as any)(), updatedAt: new (serverTimestamp as any)()});
       }
-      setDisciplineCompletedInSession(true);
+      if (!disciplineCompletedInSession) {
+        onDisciplineCompleted();
+        setDisciplineCompletedInSession(true);
+      }
     } catch (e) {
       const permissionError = new FirestorePermissionError({ path: `users/${user.uid}/notes`, operation: 'write' });
       errorEmitter.emit('permission-error', permissionError);
@@ -199,20 +227,36 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted }: Not
       {notesLoading ? (
         <div className="flex justify-center py-10"><Loader2 className="h-8 w-8 animate-spin" /></div>
       ) : notes && notes.length > 0 ? (
-        notes.map(note => (
-          <button
-            key={note.id}
-            onClick={() => handleSelectNote(note)}
-            className={cn(
-              "w-full text-left p-3 rounded-lg border transition-colors",
-              selectedNote?.id === note.id ? "bg-muted ring-2 ring-primary" : "hover:bg-muted/50"
-            )}
-          >
-            <p className="font-semibold truncate">{note.title}</p>
-            <p className="text-sm text-muted-foreground truncate">{note.content || 'No content'}</p>
-            <p className="text-xs text-muted-foreground mt-1">{format(note.updatedAt.toDate(), 'PPP')}</p>
-          </button>
-        ))
+        <Accordion type="multiple" defaultValue={noteCategories} className="w-full">
+            {noteCategories.map(cat => {
+                const categoryNotes = groupedNotes[cat] || [];
+                if (categoryNotes.length === 0) return null;
+
+                return (
+                    <AccordionItem value={cat} key={cat}>
+                        <AccordionTrigger>{cat} ({categoryNotes.length})</AccordionTrigger>
+                        <AccordionContent>
+                           <div className="space-y-2">
+                                {categoryNotes.map(note => (
+                                    <button
+                                        key={note.id}
+                                        onClick={() => handleSelectNote(note)}
+                                        className={cn(
+                                        "w-full text-left p-3 rounded-lg border transition-colors",
+                                        selectedNote?.id === note.id ? "bg-muted ring-2 ring-primary" : "hover:bg-muted/50"
+                                        )}
+                                    >
+                                        <p className="font-semibold truncate">{note.title}</p>
+                                        <p className="text-sm text-muted-foreground truncate">{note.content || 'No content'}</p>
+                                        <p className="text-xs text-muted-foreground mt-1">{format(note.updatedAt.toDate(), 'PPP')}</p>
+                                    </button>
+                                ))}
+                           </div>
+                        </AccordionContent>
+                    </AccordionItem>
+                )
+            })}
+        </Accordion>
       ) : (
         <div className="text-center py-10 border-2 border-dashed rounded-lg">
           <FileText className="mx-auto h-12 w-12 text-muted-foreground" />
@@ -231,12 +275,24 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted }: Not
         </Button>
       )}
       <div className="space-y-4 flex-grow flex flex-col">
-        <Input
-          placeholder="Note Title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          className="text-lg font-semibold"
-        />
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <Input
+                placeholder="Note Title"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                className="text-lg font-semibold"
+            />
+            <Select value={category} onValueChange={(value) => setCategory(value as NoteCategory)}>
+                <SelectTrigger>
+                    <SelectValue placeholder="Select a category" />
+                </SelectTrigger>
+                <SelectContent>
+                    {noteCategories.map(cat => (
+                        <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                    ))}
+                </SelectContent>
+            </Select>
+        </div>
         <div className="border rounded-md p-2 flex items-center gap-2">
             <Button variant="ghost" size="icon" onClick={() => handleFormatting('bold')} title="Bold">
                 <Bold className="h-4 w-4" />
@@ -314,22 +370,9 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted }: Not
           <DialogTitle>My Notes</DialogTitle>
           <DialogDescription>A place for your thoughts, reflections, and revelations.</DialogDescription>
         </DialogHeader>
-        <div className="flex-grow min-h-0 px-6">
+        <div className="flex-grow min-h-0 px-6 pb-6">
             {dialogContent}
         </div>
-        <DialogFooter className="p-6 pt-4 border-t">
-          <Button
-            onClick={() => {
-              onDisciplineCompleted();
-              onOpenChange(false);
-            }}
-            disabled={!disciplineCompletedInSession}
-            size="lg"
-            className="w-full sm:w-auto"
-          >
-            Mark Discipline as Complete
-          </Button>
-        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

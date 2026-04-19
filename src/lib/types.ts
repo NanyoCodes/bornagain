@@ -19,11 +19,14 @@ export type BibleHighlight = {
   updatedAt?: Timestamp;
 };
 
+export type NoteCategory = 'Personal' | 'Church' | 'Revelation' | 'Other';
+
 export type Note = {
   id: string;
   userId: string;
   title: string;
   content: string;
+  category: NoteCategory;
   createdAt: Timestamp;
   updatedAt: Timestamp;
 };
