@@ -41,10 +41,10 @@ const AdsenseAd = ({ adSlot, adFormat = 'auto', style, className }: AdsenseAdPro
   return (
     <Card className={cn("w-full flex justify-center items-center bg-muted/30 rounded-lg border min-h-[300px] p-2 relative", className)}>
         {isDevelopment && (
-            <div className="text-center text-muted-foreground z-0">
+            <div className="text-center text-muted-foreground z-0 space-y-2">
                 <DollarSign className="h-12 w-12 mx-auto" />
                 <p className="font-semibold mt-2">Advertisement</p>
-                <p className="text-xs">(This is a placeholder for development)</p>
+                <p className="text-xs max-w-xs mx-auto">(Live ads will appear here in the deployed app. They are often blocked in development.)</p>
             </div>
         )}
         <ins
