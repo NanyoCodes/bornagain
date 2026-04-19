@@ -1,4 +1,3 @@
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -28,7 +27,7 @@ import { errorEmitter } from "@/firebase/error-emitter";
 const testimonyCategories: TestimonyCategory[] = ['Healing', 'Financial Breakthrough', 'Salvation', 'Relationships', 'Deliverance', 'General'];
 
 const formSchema = z.object({
-  category: z.string().optional(),
+  category: z.string({ required_error: "Please select a category." }),
   content: z.string().min(50, "Testimony must be at least 50 characters.").max(5000, "Testimony is too long."),
 });
 
@@ -75,22 +74,6 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
       return;
     }
     
-    let categoryToUse: TestimonyCategory | undefined;
-    if (prayerRequest) {
-      // If answering a prayer, the category MUST come from the prayer request.
-      // Don't trust the form values for a disabled field.
-      categoryToUse = prayerRequest.category as TestimonyCategory;
-    } else {
-      // If it's a new testimony, get it from the form values.
-      categoryToUse = values.category as TestimonyCategory;
-    }
-
-    // Final validation to ensure we have a real category
-    if (!categoryToUse || !testimonyCategories.includes(categoryToUse)) {
-      form.setError('category', { type: 'manual', message: 'Please select a valid category.' });
-      return;
-    }
-
     setIsSubmitting(true);
     
     const testimonyData: any = {
@@ -100,7 +83,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
         authorAvatarUrl: userProfile.photoURL || null,
         content: values.content,
         createdAt: serverTimestamp(),
-        category: categoryToUse,
+        category: values.category as TestimonyCategory,
         supporters: [],
     };
     if (userProfile.location) {
@@ -119,7 +102,6 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
         await runTransaction(firestore, async (transaction) => {
             const newTestimonyDocRef = doc(collection(firestore, "testimonies"));
             
-            // --- READS FIRST ---
             if (prayerRequest) {
               const prayerRef = doc(firestore, 'prayerRequests', prayerRequest.id);
               const prayerDoc = await transaction.get(prayerRef);
