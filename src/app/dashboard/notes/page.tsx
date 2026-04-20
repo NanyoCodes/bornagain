@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useMemo, useRef } from 'react';
@@ -110,7 +111,7 @@ export default function NotesPage() {
   // Effect to update editor content when selection changes
   useEffect(() => {
     const newContent = selectedNote?.content || '';
-    if (contentRef.current && contentRef.current.innerHTML !== newContent) {
+    if (contentRef.current) {
       contentRef.current.innerHTML = newContent;
     }
   }, [selectedNote]);
@@ -391,7 +392,7 @@ export default function NotesPage() {
                                         )}
                                     >
                                         <p className="font-semibold truncate text-base">{note.title}</p>
-                                        <div className="text-sm text-muted-foreground truncate" dangerouslySetInnerHTML={{ __html: note.content || 'No content' }} />
+                                        <p className="text-sm text-muted-foreground truncate">{(note.content || "No content").replace(/<[^>]*>?/gm, '')}</p>
                                         <p className="text-xs text-muted-foreground mt-1">
                                           {note.updatedAt?.toDate ? format(note.updatedAt.toDate(), 'PPP') : 'Just now'}
                                         </p>
