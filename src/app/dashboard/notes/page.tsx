@@ -14,7 +14,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Loader2, Plus, Trash2, FileText, Bold, Italic, CornerUpLeft, Underline, Palette } from 'lucide-react';
+import { Loader2, Plus, Trash2, FileText, Bold, Italic, CornerUpLeft, Underline, Palette, Minus } from 'lucide-react';
 import { useUser, useFirestore, useCollection } from '@/firebase';
 import {
   collection,
@@ -54,7 +54,6 @@ export default function NotesPage() {
   const [isCreatingNew, setIsCreatingNew] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [disciplineCompletedInSession, setDisciplineCompletedInSession] = useState(false);
   
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState<NoteCategory>('Personal');
@@ -63,6 +62,11 @@ export default function NotesPage() {
   const contentRef = useRef<HTMLDivElement>(null);
 
   const [mobileTab, setMobileTab] = useState('list');
+
+  type FontSize = 'sm' | 'base' | 'lg' | 'xl';
+  const fontSizes: FontSize[] = ['sm', 'base', 'lg', 'xl'];
+  const [fontSize, setFontSize] = useState<FontSize>('base');
+  const fontSizeClasses: Record<FontSize, string> = { sm: 'text-sm', base: 'text-base', lg: 'text-lg', xl: 'text-xl' };
 
   const notesQuery = useMemo(() => {
     if (!user) return null;
@@ -154,10 +158,20 @@ export default function NotesPage() {
     }
   };
 
-
-  const updateDisciplineState = async () => {
-    // This function implementation remains the same
+  const increaseFontSize = () => {
+    const currentIndex = fontSizes.indexOf(fontSize);
+    if (currentIndex < fontSizes.length - 1) {
+        setFontSize(fontSizes[currentIndex + 1]);
+    }
   };
+
+  const decreaseFontSize = () => {
+      const currentIndex = fontSizes.indexOf(fontSize);
+      if (currentIndex > 0) {
+          setFontSize(fontSizes[currentIndex - 1]);
+      }
+  };
+
 
   const handleSaveNote = async () => {
     if (!user || !firestore || !title.trim()) {
@@ -200,10 +214,6 @@ export default function NotesPage() {
         // This is a simplified representation. `serverTimestamp` won't resolve here.
         // `useCollection` will eventually pick up the new note.
         handleSelectNote({ id: docRef.id, ...noteData, createdAt: new (serverTimestamp as any)(), updatedAt: new (serverTimestamp as any)()});
-      }
-      if (!disciplineCompletedInSession) {
-        onDisciplineCompleted();
-        setDisciplineCompletedInSession(true);
       }
     } catch (e) {
       if ((e as any)?.name !== 'FirestorePermissionError') {
@@ -347,13 +357,23 @@ export default function NotesPage() {
                     </div>
                 </PopoverContent>
             </Popover>
+            <div className="h-6 w-px bg-border mx-1" />
+            <Button variant="ghost" size="icon" onClick={decreaseFontSize} disabled={fontSize === 'sm'} title="Decrease font size">
+                <Minus className="h-4 w-4" />
+            </Button>
+            <Button variant="ghost" size="icon" onClick={increaseFontSize} disabled={fontSize === 'xl'} title="Increase font size">
+                <Plus className="h-4 w-4" />
+            </Button>
         </div>
         <div
           ref={contentRef}
           onInput={() => setIsDirty(true)}
           contentEditable
           suppressContentEditableWarning
-          className="flex-grow min-h-[300px] text-base border rounded-md p-3 focus:ring-2 focus:ring-ring focus:outline-none"
+          className={cn(
+            "flex-grow min-h-[300px] border rounded-md p-3 focus:ring-2 focus:ring-ring focus:outline-none",
+            fontSizeClasses[fontSize]
+          )}
         />
       </div>
       <div className="flex justify-between items-center mt-4 flex-shrink-0">
