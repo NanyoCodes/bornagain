@@ -108,24 +108,23 @@ export default function NotesPage() {
 
   const editorVisible = selectedNote || isCreatingNew;
   
-  useLayoutEffect(() => {
-    if (editorVisible) {
-        if (selectedNote) {
-            setTitle(selectedNote.title);
-            setCategory(selectedNote.category || 'Personal');
-            if (contentRef.current) {
-                contentRef.current.innerHTML = selectedNote.content;
-            }
-        } else { // Creating new
-            setTitle('');
-            setCategory('Personal');
-            if (contentRef.current) {
-                contentRef.current.innerHTML = '';
-            }
-        }
-        setIsDirty(false); // Reset dirty state on note change
+  // This effect syncs the editor's state when the selected note changes.
+  useEffect(() => {
+    if (selectedNote) {
+      setTitle(selectedNote.title);
+      setCategory(selectedNote.category || 'Personal');
+      if (contentRef.current) {
+        contentRef.current.innerHTML = selectedNote.content;
+      }
+    } else if (isCreatingNew) {
+      setTitle('');
+      setCategory('Personal');
+      if (contentRef.current) {
+        contentRef.current.innerHTML = '';
+      }
     }
-  }, [selectedNote, isCreatingNew, editorVisible]);
+    setIsDirty(false);
+  }, [selectedNote, isCreatingNew]);
 
   const proceedWithNavigation = (target: Note | 'new' | 'list' | null) => {
     if (target === 'new') {
@@ -307,6 +306,7 @@ export default function NotesPage() {
         const newNote: Note = { id: docRef.id, ...noteData, createdAt: new (serverTimestamp as any)(), updatedAt: new (serverTimestamp as any)()};
         setSelectedNote(newNote);
         setIsCreatingNew(false);
+        setIsDirty(false);
       }
     } catch (e) {
       if ((e as any)?.name !== 'FirestorePermissionError') {
@@ -573,3 +573,5 @@ export default function NotesPage() {
     </div>
   )
 }
+
+    
