@@ -93,7 +93,8 @@ service cloud.firestore {
 
       // Notes are private to the user.
       match /notes/{noteId} {
-        allow read, write: if request.auth != null && request.auth.uid == userId;
+        allow get, list: if request.auth != null && request.auth.uid == userId;
+        allow create, update, delete: if request.auth != null && request.auth.uid == userId;
       }
 
       // Notifications are private to the user, though others can create them.
@@ -255,4 +256,5 @@ service cloud.firestore {
     }
   }
 }
+    
     
