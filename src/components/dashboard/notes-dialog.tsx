@@ -77,22 +77,33 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted }: Not
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [category, setCategory] = useState<NoteCategory>('Personal');
+  const [searchTerm, setSearchTerm] = useState('');
   const contentRef = useRef<HTMLTextAreaElement>(null);
 
   const notesQuery = useMemo(() => {
     if (!user) return null;
-    // The subcollection path already scopes notes to the user, so a `where` clause is not needed
-    // and can cause indexing issues if not configured in Firestore.
     return query(
       collection(firestore, 'users', user.uid, 'notes'),
       orderBy('updatedAt', 'desc')
     );
   }, [user, firestore]);
   const { data: notes, loading: notesLoading } = useCollection<Note>(notesQuery);
+
+  const filteredNotes = useMemo(() => {
+    if (!notes) return [];
+    if (!searchTerm) return notes;
+    const lowercasedTerm = searchTerm.toLowerCase();
+    return notes.filter(
+      (note) =>
+        note.title.toLowerCase().includes(lowercasedTerm) ||
+        note.content.toLowerCase().includes(lowercasedTerm) ||
+        note.category.toLowerCase().includes(lowercasedTerm)
+    );
+  }, [notes, searchTerm]);
   
   const groupedNotes = useMemo(() => {
-    if (!notes) return {};
-    return notes.reduce((acc, note) => {
+    if (!filteredNotes) return {};
+    return filteredNotes.reduce((acc, note) => {
       const cat = note.category || 'Other';
       if (!acc[cat]) {
         acc[cat] = [];
@@ -100,7 +111,7 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted }: Not
       acc[cat].push(note);
       return acc;
     }, {} as Record<NoteCategory, Note[]>);
-  }, [notes]);
+  }, [filteredNotes]);
 
   useEffect(() => {
     if (!isOpen) {
@@ -111,6 +122,7 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted }: Not
       setTitle('');
       setContent('');
       setCategory('Personal');
+      setSearchTerm('');
     }
   }, [isOpen]);
 
@@ -224,14 +236,20 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted }: Not
 
   const NoteList = (
     <div className="space-y-2">
-      <div className="flex justify-end mb-4">
-        <Button onClick={handleNewNote}>
-          <Plus className="mr-2 h-4 w-4" /> New Note
-        </Button>
+       <div className="flex flex-col sm:flex-row gap-2 mb-4">
+          <Input
+              placeholder="Search by title or content..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="flex-grow"
+          />
+          <Button onClick={handleNewNote} className="w-full sm:w-auto">
+              <Plus className="mr-2 h-4 w-4" /> New Note
+          </Button>
       </div>
       {notesLoading ? (
         <div className="flex justify-center py-10"><Loader2 className="h-8 w-8 animate-spin" /></div>
-      ) : notes && notes.length > 0 ? (
+      ) : filteredNotes && filteredNotes.length > 0 ? (
         <Accordion type="multiple" defaultValue={noteCategories} className="w-full">
             {noteCategories.map(cat => {
                 const categoryNotes = groupedNotes[cat] || [];
@@ -265,8 +283,10 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted }: Not
       ) : (
         <div className="text-center py-10 border-2 border-dashed rounded-lg">
           <FileText className="mx-auto h-12 w-12 text-muted-foreground" />
-          <h3 className="mt-4 text-lg font-semibold">No Notes Yet</h3>
-          <p className="mt-1 text-sm text-muted-foreground">Click "New Note" to start journaling.</p>
+          <h3 className="mt-4 text-lg font-semibold">{searchTerm ? 'No Results Found' : 'No Notes Yet'}</h3>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {searchTerm ? 'Try a different search term.' : 'Click "New Note" to start journaling.'}
+          </p>
         </div>
       )}
     </div>
