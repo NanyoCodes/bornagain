@@ -95,10 +95,9 @@ service cloud.firestore {
         allow read, write: if isOwner(userId);
       }
 
-      // Notes are readable by any authenticated user, but only writable by owner.
+      // Notes are private to the user who owns them.
       match /notes/{noteId} {
-        allow read: if request.auth != null;
-        allow write: if isOwner(userId);
+        allow read, write: if isOwner(userId);
       }
 
       // Notifications are private to the user, though others can create them.
@@ -260,6 +259,3 @@ service cloud.firestore {
     }
   }
 }
-    
-    
-    

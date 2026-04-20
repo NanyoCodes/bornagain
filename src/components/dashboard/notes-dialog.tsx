@@ -32,6 +32,7 @@ import {
   updateDoc,
   deleteDoc,
   doc,
+  where,
 } from 'firebase/firestore';
 import type { Note, UserProfile, NoteCategory } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
@@ -81,7 +82,11 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted }: Not
 
   const notesQuery = useMemo(() => {
     if (!user) return null;
-    return query(collection(firestore, 'users', user.uid, 'notes'), orderBy('updatedAt', 'desc'));
+    return query(
+      collection(firestore, 'users', user.uid, 'notes'),
+      where('userId', '==', user.uid),
+      orderBy('updatedAt', 'desc')
+    );
   }, [user, firestore]);
   const { data: notes, loading: notesLoading } = useCollection<Note>(notesQuery);
   
@@ -363,16 +368,42 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted }: Not
     </>
   );
 
+  if (isMobile) {
+    return (
+      <Sheet open={isOpen} onOpenChange={onOpenChange}>
+        <SheetContent side="bottom" className="p-0 flex flex-col h-[95vh]">
+          <DialogHeader className="p-4 border-b">
+            <DialogTitle>My Notes</DialogTitle>
+            <DialogDescription>A place for your thoughts, reflections, and revelations.</DialogDescription>
+          </DialogHeader>
+          <div className="p-4 flex-grow min-h-0">
+            {dialogContent}
+          </div>
+          <DialogFooter className="p-4 border-t">
+              <Button onClick={() => onOpenChange(false)} className="w-full">
+                Close
+              </Button>
+          </DialogFooter>
+        </SheetContent>
+      </Sheet>
+    );
+  }
+
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl h-[80vh] flex flex-col p-0">
-        <DialogHeader className="p-6 pb-0">
+      <DialogContent className="max-w-4xl h-[80vh] flex flex-col">
+        <DialogHeader>
           <DialogTitle>My Notes</DialogTitle>
           <DialogDescription>A place for your thoughts, reflections, and revelations.</DialogDescription>
         </DialogHeader>
-        <div className="flex-grow min-h-0 px-6 pb-6">
+        <div className="flex-grow min-h-0">
             {dialogContent}
         </div>
+        <DialogFooter>
+            <Button onClick={() => onOpenChange(false)}>
+              Close
+            </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
