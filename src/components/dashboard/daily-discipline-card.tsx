@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -18,7 +17,6 @@ import { FirestorePermissionError } from '@/firebase/errors';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
-import { NotesDialog } from './notes-dialog';
 
 const disciplines = [
   { id: 'pray', label: 'Pray', Icon: Zap, color: 'text-chart-5' },
@@ -34,7 +32,6 @@ export function DailyDisciplineCard() {
   const [completedToday, setCompletedToday] = useState<string[]>([]);
   const [isBibleDialogOpen, setIsBibleDialogOpen] = useState(false);
   const [isPrayerDialogOpen, setIsPrayerDialogOpen] = useState(false);
-  const [isNotesDialogOpen, setIsNotesDialogOpen] = useState(false);
   const [isAttendChurchDialogOpen, setIsAttendChurchDialogOpen] = useState(false);
   const [attendChurchDialogView, setAttendChurchDialogView] = useState<'confirm' | 'form'>('form');
   const [togglingId, setTogglingId] = useState<string | null>(null);
@@ -129,18 +126,6 @@ export function DailyDisciplineCard() {
       });
     }
   }
-
-  const handleTakeNotes = () => {
-    if (!completedToday.includes('take_notes')) {
-      updateDisciplineState('take_notes').catch(() => {
-         toast({
-            variant: "destructive",
-            title: "Update Failed",
-            description: "Your discipline could not be updated. Please check your connection and try again.",
-        });
-      });
-    }
-  }
   
   const handleAttendChurch = () => {
     if (!completedToday.includes('attend_church')) {
@@ -166,7 +151,7 @@ export function DailyDisciplineCard() {
             return;
         }
         if (disciplineId === 'take_notes') {
-            setIsNotesDialogOpen(true);
+            router.push('/dashboard/notes');
             return;
         }
         if (disciplineId === 'attend_church') {
@@ -201,13 +186,10 @@ export function DailyDisciplineCard() {
     if (!isPrayerDialogOpen && togglingId === 'pray') {
       setTogglingId(null);
     }
-    if (!isNotesDialogOpen && togglingId === 'take_notes') {
-      setTogglingId(null);
-    }
     if (!isAttendChurchDialogOpen && togglingId === 'attend_church') {
         setTogglingId(null);
     }
-  }, [isBibleDialogOpen, isPrayerDialogOpen, isAttendChurchDialogOpen, isNotesDialogOpen, togglingId]);
+  }, [isBibleDialogOpen, isPrayerDialogOpen, isAttendChurchDialogOpen, togglingId]);
 
   if (loading) {
     return (
@@ -285,15 +267,6 @@ export function DailyDisciplineCard() {
             if (!open) setTogglingId(null);
         }}
         onDisciplineCompleted={handlePray}
-        userProfile={userProfile}
-      />
-      <NotesDialog
-        isOpen={isNotesDialogOpen}
-        onOpenChange={(open) => {
-            setIsNotesDialogOpen(open);
-            if (!open) setTogglingId(null);
-        }}
-        onDisciplineCompleted={handleTakeNotes}
         userProfile={userProfile}
       />
       <AttendChurchDialog
