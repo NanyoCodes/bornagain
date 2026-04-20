@@ -97,7 +97,8 @@ service cloud.firestore {
 
       // Notes are private to the user.
       match /notes/{noteId} {
-        allow read, write: if isOwner(userId);
+        // Allow a user to read (get, list) and write (create, update, delete) their own notes.
+        allow read, write: if request.auth.uid == userId;
       }
 
       // Notifications are private to the user, though others can create them.
@@ -228,7 +229,7 @@ service cloud.firestore {
 
     // Accountability Requests
     match /accountabilityRequests/{requestId} {
-      // Allow a user to get/list requests they are are a part of.
+      // Allow a user to get/list requests they are a part of.
       allow read: if request.auth != null && request.auth.uid in resource.data.participantIds;
       
       // Allow a user to create a request if they are the sender and both participants are in the list.
@@ -259,3 +260,5 @@ service cloud.firestore {
     }
   }
 }
+
+    
