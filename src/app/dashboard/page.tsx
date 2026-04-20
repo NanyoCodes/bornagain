@@ -749,7 +749,10 @@ export default function DashboardPage() {
             />
           )}
 
-          <Card className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground">
+          <Card
+            className="cursor-pointer bg-gradient-to-br from-primary to-primary/80 text-primary-foreground"
+            onClick={() => router.push('/dashboard/testimonies')}
+          >
             <CardHeader>
               <CardTitle>Share Your Story</CardTitle>
               <CardDescription className="text-primary-foreground/80">
@@ -757,7 +760,7 @@ export default function DashboardPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Button asChild variant="secondary" className="w-full bg-white/20 text-white hover:bg-white/30">
+              <Button asChild variant="secondary" className="w-full bg-white/20 text-white hover:bg-white/30" onClick={(e) => { e.stopPropagation(); }}>
                 <Link href="/dashboard/testimonies">
                   Share Testimony <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
