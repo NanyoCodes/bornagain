@@ -16,7 +16,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Loader2, Plus, Trash2, FileText, Bold, Italic, CornerUpLeft, Underline, Palette, Minus } from 'lucide-react';
+import { Loader2, Plus, Trash2, FileText, Bold, Italic, CornerUpLeft, Underline, Palette, Minus, Download } from 'lucide-react';
 import { useUser, useFirestore, useCollection } from '@/firebase';
 import {
   collection,
@@ -39,6 +39,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import jsPDF from 'jspdf';
 
 
 const noteCategories: NoteCategory[] = ['Personal', 'Church', 'Revelation', 'Other'];
@@ -202,6 +203,48 @@ export default function NotesPage() {
     }
   };
 
+  const handleExportPdf = () => {
+    if (!selectedNote) return;
+
+    try {
+        const doc = new jsPDF();
+        
+        doc.setFontSize(22);
+        doc.setFont('helvetica', 'bold');
+        doc.text(selectedNote.title, 15, 20);
+
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(100);
+        doc.text(`Category: ${selectedNote.category}`, 15, 28);
+        const dateString = selectedNote.updatedAt?.toDate ? format(selectedNote.updatedAt.toDate(), 'PPP p') : 'Just now';
+        doc.text(`Last updated: ${dateString}`, 15, 33);
+        
+        doc.setDrawColor(200);
+        doc.line(15, 38, 195, 38);
+
+        // Convert HTML content to plain text for PDF
+        const tempDiv = document.createElement("div");
+        tempDiv.innerHTML = selectedNote.content;
+        const textContent = tempDiv.textContent || tempDiv.innerText || "";
+        
+        doc.setFontSize(12);
+        doc.setTextColor(0);
+        const splitText = doc.splitTextToSize(textContent, 180);
+        doc.text(splitText, 15, 48);
+
+        doc.save(`${selectedNote.title.replace(/ /g, '_')}.pdf`);
+
+    } catch (e) {
+        console.error("Failed to generate PDF", e);
+        toast({
+            variant: "destructive",
+            title: "PDF Export Failed",
+            description: "There was an error generating the PDF for this note."
+        });
+    }
+  };
+
 
   const handleSaveNote = async () => {
     if (!user || !firestore || !title.trim()) {
@@ -224,7 +267,7 @@ export default function NotesPage() {
         await updateDoc(noteRef, updatedData);
         toast({ title: 'Note Updated' });
         // Manually update the selectedNote state to reflect changes immediately
-        setSelectedNote(prev => prev ? { ...prev, ...updatedData } : null);
+        setSelectedNote(prev => prev ? { ...prev, ...updatedData, updatedAt: new Date() as any } : null);
         setIsDirty(false);
 
       } else {
@@ -334,7 +377,7 @@ export default function NotesPage() {
   );
   
   const NoteEditor = (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full" key={selectedNote?.id || (isCreatingNew ? 'new-note' : 'empty-editor')}>
       {isMobile && editorVisible && (
         <Button onClick={handleBackToList} variant="ghost" className="mb-4 self-start">
             <CornerUpLeft className="mr-2 h-4 w-4" /> Back to List
@@ -410,6 +453,7 @@ export default function NotesPage() {
       <div className="flex justify-between items-center mt-4 flex-shrink-0">
         <div>
         {selectedNote && (
+          <div className="flex gap-2">
             <AlertDialog>
               <AlertDialogTrigger asChild>
                 <Button variant="destructive" size="sm" disabled={isDeleting}>
@@ -429,6 +473,10 @@ export default function NotesPage() {
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
+             <Button variant="outline" size="sm" onClick={handleExportPdf}>
+                <Download className="mr-2 h-4 w-4" /> Export as PDF
+            </Button>
+          </div>
         )}
         </div>
         <Button onClick={handleSaveNote} disabled={isSaving || !title.trim() || !isDirty}>
