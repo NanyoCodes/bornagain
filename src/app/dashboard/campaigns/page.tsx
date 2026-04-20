@@ -43,7 +43,6 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { safeToDate, haversineDistance } from "@/lib/utils";
 import { ManageCampaignForm } from "@/components/campaigns/manage-campaign-form";
-import { LogSoulForm } from "@/components/souls/log-soul-form";
 import { CreateTestimonyForm } from "@/components/testimonies/create-testimony-form";
 import { useToast } from "@/hooks/use-toast";
 import { errorEmitter } from "@/firebase/error-emitter";
@@ -129,7 +128,6 @@ export default function CampaignsPage() {
   
   // State for managed dialogs
   const [campaignToManage, setCampaignToManage] = useState<Campaign | null>(null);
-  const [campaignForSoul, setCampaignForSoul] = useState<Campaign | null>(null);
   const [campaignForTestimony, setCampaignForTestimony] = useState<Campaign | null>(null);
   const [campaignToDelete, setCampaignToDelete] = useState<Campaign | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -176,11 +174,6 @@ export default function CampaignsPage() {
 
   const handleCampaignCreated = () => {
     setIsCreateOpen(false);
-  };
-  
-  const handleSoulLogged = () => {
-    setCampaignForSoul(null);
-    toast({ title: "Soul Logged!", description: "The new soul has been added to your personal dashboard." });
   };
   
   const handleTestimonyCreated = () => {
@@ -421,7 +414,6 @@ export default function CampaignsPage() {
             isJoined={joinedCampaignIds.has(campaign.id)}
             distance={campaign._distance}
             onManage={() => setCampaignToManage(campaign)}
-            onLogSoul={() => setCampaignForSoul(campaign)}
             onShareTestimony={() => setCampaignForTestimony(campaign)}
             onDelete={() => setCampaignToDelete(campaign)}
           />
@@ -495,24 +487,6 @@ export default function CampaignsPage() {
         </AlertDialog>
       )}
 
-      {campaignForSoul && (
-        <Dialog open={!!campaignForSoul} onOpenChange={(open) => !open && setCampaignForSoul(null)}>
-            <DialogContent className="sm:max-w-lg">
-                <DialogHeader>
-                    <DialogTitle>Log a Soul Won in "{campaignForSoul.title}"</DialogTitle>
-                    <DialogDescription>
-                        Record the details of the person ministered to during this campaign.
-                    </DialogDescription>
-                </DialogHeader>
-                <div className="max-h-[70vh] overflow-y-auto pr-2">
-                    <LogSoulForm
-                        onSoulLogged={handleSoulLogged}
-                        defaultCampaign={campaignForSoul}
-                    />
-                </div>
-            </DialogContent>
-        </Dialog>
-      )}
       
       {campaignForTestimony && userProfile && (
         <Dialog open={!!campaignForTestimony} onOpenChange={(open) => !open && setCampaignForTestimony(null)}>

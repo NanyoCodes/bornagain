@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { format, parse, isSameDay, differenceInDays } from "date-fns";
-import { CalendarDays, MapPin, Users, Share2, Edit, MoreVertical, Loader2, MessagesSquare, UserCheck2, PlayCircle, UserPlus, Newspaper } from "lucide-react";
+import { CalendarDays, MapPin, Users, Share2, Edit, MoreVertical, Loader2, MessagesSquare, UserCheck2, PlayCircle, Newspaper } from "lucide-react";
 import type { Campaign, CampaignParticipant, UserProfile } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -132,13 +132,12 @@ type CampaignCardProps = {
   distance: number | null;
   isJoined?: boolean;
   onManage: () => void;
-  onLogSoul: () => void;
   onShareTestimony: () => void;
   onDelete: () => void;
 };
 
 
-export function CampaignCard({ campaign, userId, userProfile, distance, onManage, onLogSoul, onShareTestimony, onDelete, isJoined }: CampaignCardProps) {
+export function CampaignCard({ campaign, userId, userProfile, distance, onManage, onShareTestimony, onDelete, isJoined }: CampaignCardProps) {
   const { toast } = useToast();
   const firestore = useFirestore();
   const { user } = useUser();
@@ -376,21 +375,6 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
     return `Created on ${format(createdAtDate, 'PPP')}`;
   }, [campaign.createdAt, status, endDate]);
   
-  const LogSoulButton = (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button variant="outline" size="icon" onClick={(e) => { e.stopPropagation(); onLogSoul(); }}>
-            <UserCheck2 className="h-4 w-4" />
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent>
-          <p>Log Soul</p>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
-  );
-  
   const ShareTestimonyButton = (
     <TooltipProvider>
       <Tooltip>
@@ -537,7 +521,6 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
 
                 {isOwner ? (
                     <div onClick={stopPropagation} className="flex items-center gap-2">
-                      {status === 'Ongoing' && LogSoulButton}
                       {(status === 'Ongoing' || status === 'Past') && ShareTestimonyButton}
                       <Button variant="outline" size="icon" onClick={(e) => { e.stopPropagation(); onManage(); }}>
                         <Edit className="h-4 w-4" /><span className="sr-only">Manage Campaign</span>
@@ -562,7 +545,6 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
                             <Badge variant="secondary" className="flex items-center gap-2 py-2 px-3"><UserCheck2 className="h-4 w-4" /> Joined</Badge>
                         )}
 
-                        {isJoined && status === 'Ongoing' && LogSoulButton}
                         {isJoined && (status === 'Ongoing' || status === 'Past') && ShareTestimonyButton}
                         
                         <TooltipProvider>
