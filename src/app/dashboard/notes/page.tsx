@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Loader2, Plus, Trash2, FileText, Bold, Italic, CornerUpLeft, Underline, Palette } from 'lucide-react';
 import { useUser, useFirestore, useCollection } from '@/firebase';
@@ -62,7 +61,7 @@ export default function NotesPage() {
   const [content, setContent] = useState('');
   const [category, setCategory] = useState<NoteCategory>('Personal');
   const [searchTerm, setSearchTerm] = useState('');
-  const contentRef = useRef<HTMLTextAreaElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
 
   const [mobileTab, setMobileTab] = useState('list');
 
@@ -138,41 +137,13 @@ export default function NotesPage() {
     }
   }
 
-  const handleFormatting = (formatType: 'bold' | 'italic' | 'underline') => {
-    const textarea = contentRef.current;
-    if (!textarea) return;
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const selectedText = textarea.value.substring(start, end);
-    let tag: string;
-    switch(formatType) {
-        case 'bold': tag = 'b'; break;
-        case 'italic': tag = 'i'; break;
-        case 'underline': tag = 'u'; break;
+  const handleFormatting = (command: string, value: string | null = null) => {
+    if (contentRef.current) {
+        contentRef.current.focus();
+        document.execCommand(command, false, value);
+        // Sync state after command
+        setContent(contentRef.current.innerHTML);
     }
-    const newText = `${textarea.value.substring(0, start)}<${tag}>${selectedText}</${tag}>${textarea.value.substring(end)}`;
-    setContent(newText);
-    
-    setTimeout(() => {
-      textarea.focus();
-      const newCursorPos = start + `<${tag}>`.length;
-      textarea.setSelectionRange(newCursorPos, newCursorPos + selectedText.length);
-    }, 0);
-  };
-  
-   const handleColor = (color: string) => {
-    const textarea = contentRef.current;
-    if (!textarea) return;
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const selectedText = textarea.value.substring(start, end);
-    const newText = `${textarea.value.substring(0, start)}<span style="color: ${color};">${selectedText}</span>${textarea.value.substring(end)}`;
-    setContent(newText);
-    setTimeout(() => {
-      textarea.focus();
-      const newCursorPos = start + `<span style="color: ${color};">`.length;
-      textarea.setSelectionRange(newCursorPos, newCursorPos + selectedText.length);
-    }, 0);
   };
 
 
@@ -310,7 +281,7 @@ export default function NotesPage() {
                                         )}
                                     >
                                         <p className="font-semibold truncate">{note.title}</p>
-                                        <p className="text-sm text-muted-foreground truncate">{note.content || 'No content'}</p>
+                                        <div className="text-sm text-muted-foreground truncate" dangerouslySetInnerHTML={{ __html: note.content || 'No content' }} />
                                         <p className="text-xs text-muted-foreground mt-1">{format(note.updatedAt.toDate(), 'PPP')}</p>
                                     </button>
                                 ))}
@@ -359,13 +330,13 @@ export default function NotesPage() {
             </Select>
         </div>
         <div className="border rounded-md p-1 flex items-center gap-1 flex-wrap">
-            <Button variant="ghost" size="icon" onClick={() => handleFormatting('bold')} title="Bold">
+            <Button variant="ghost" size="icon" onMouseDown={(e) => { e.preventDefault(); handleFormatting('bold'); }} title="Bold">
                 <Bold className="h-4 w-4" />
             </Button>
-            <Button variant="ghost" size="icon" onClick={() => handleFormatting('italic')} title="Italic">
+            <Button variant="ghost" size="icon" onMouseDown={(e) => { e.preventDefault(); handleFormatting('italic'); }} title="Italic">
                 <Italic className="h-4 w-4" />
             </Button>
-             <Button variant="ghost" size="icon" onClick={() => handleFormatting('underline')} title="Underline">
+             <Button variant="ghost" size="icon" onMouseDown={(e) => { e.preventDefault(); handleFormatting('underline'); }} title="Underline">
                 <Underline className="h-4 w-4" />
             </Button>
             <Popover>
@@ -377,18 +348,19 @@ export default function NotesPage() {
                 <PopoverContent className="w-auto p-2">
                     <div className="flex gap-1">
                         {colorSwatches.map(color => (
-                            <Button key={color} size="icon" className="h-6 w-6 rounded-full border" style={{backgroundColor: color}} onClick={() => handleColor(color)} />
+                            <Button key={color} size="icon" className="h-6 w-6 rounded-full border" style={{backgroundColor: color}} onMouseDown={(e) => { e.preventDefault(); handleFormatting('foreColor', color); }} />
                         ))}
                     </div>
                 </PopoverContent>
             </Popover>
         </div>
-        <Textarea
+        <div
           ref={contentRef}
-          placeholder="Start writing your thoughts..."
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          className="flex-grow min-h-[300px] text-base"
+          onInput={(e) => setContent(e.currentTarget.innerHTML)}
+          contentEditable
+          suppressContentEditableWarning
+          className="flex-grow min-h-[300px] text-base border rounded-md p-3 focus:ring-2 focus:ring-ring focus:outline-none"
+          dangerouslySetInnerHTML={{ __html: content }}
         />
       </div>
       <div className="flex justify-between items-center mt-4 flex-shrink-0">
