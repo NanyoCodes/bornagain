@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useMemo, useRef } from 'react';
@@ -289,7 +290,9 @@ export default function NotesPage() {
                                     >
                                         <p className="font-semibold truncate">{note.title}</p>
                                         <div className="text-sm text-muted-foreground truncate" dangerouslySetInnerHTML={{ __html: note.content || 'No content' }} />
-                                        <p className="text-xs text-muted-foreground mt-1">{format(note.updatedAt.toDate(), 'PPP')}</p>
+                                        <p className="text-xs text-muted-foreground mt-1">
+                                          {note.updatedAt?.toDate ? format(note.updatedAt.toDate(), 'PPP') : 'Just now'}
+                                        </p>
                                     </button>
                                 ))}
                            </div>
@@ -466,5 +469,3 @@ export default function NotesPage() {
     </div>
   )
 }
-
-    
