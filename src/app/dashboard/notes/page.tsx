@@ -108,7 +108,6 @@ export default function NotesPage() {
 
   const editorVisible = selectedNote || isCreatingNew;
   
-  // This effect syncs the editor's state when the selected note changes.
   useEffect(() => {
     if (selectedNote) {
       setTitle(selectedNote.title);
@@ -185,9 +184,6 @@ export default function NotesPage() {
     contentRef.current.focus();
     document.execCommand('styleWithCSS', false, 'false');
     
-    // This part is tricky as queryCommandValue('fontSize') can be unreliable.
-    // A more robust solution might involve traversing the selection's DOM nodes.
-    // For this implementation, we'll try a simplified approach.
     const parent = selection.getRangeAt(0).commonAncestorContainer;
     const targetElement = parent.nodeType === 1 ? parent : parent.parentElement;
     
@@ -202,7 +198,7 @@ export default function NotesPage() {
       } else {
           newSize = Math.max(currentSize - 2, 10); // Min size 10px
       }
-       document.execCommand('fontSize', false, "7"); // This is a hack, '7' is the largest size
+       document.execCommand('fontSize', false, "7");
        const fontElements = contentRef.current.getElementsByTagName('font');
        for (let i = 0; i < fontElements.length; i++) {
            if (fontElements[i].size === "7") {
@@ -234,10 +230,10 @@ export default function NotesPage() {
         doc.setDrawColor(200);
         doc.line(15, 38, 195, 38);
 
-        // Convert HTML content to plain text for PDF
+        // Convert HTML content to plain text while preserving paragraph structure
         const tempDiv = document.createElement("div");
         tempDiv.innerHTML = selectedNote.content;
-        const textContent = tempDiv.textContent || tempDiv.innerText || "";
+        const textContent = (tempDiv as HTMLElement).innerText || "";
         
         doc.setFontSize(12);
         doc.setTextColor(0);
@@ -277,7 +273,7 @@ export default function NotesPage() {
         };
         await updateDoc(noteRef, updatedData);
         toast({ title: 'Note Updated' });
-        // Manually update the selectedNote state to reflect changes immediately
+        
         setSelectedNote(prev => prev ? { ...prev, ...updatedData, updatedAt: new Date() as any, content: currentContent } : null);
         setIsDirty(false);
 
@@ -295,8 +291,6 @@ export default function NotesPage() {
           updatedAt: serverTimestamp(),
         });
         toast({ title: 'Note Saved' });
-        // This is a simplified representation. `serverTimestamp` won't resolve here.
-        // `useCollection` will eventually pick up the new note.
         const newNote: Note = { id: docRef.id, ...noteData, createdAt: new (serverTimestamp as any)(), updatedAt: new (serverTimestamp as any)()};
         setSelectedNote(newNote);
         setIsCreatingNew(false);
@@ -456,7 +450,7 @@ export default function NotesPage() {
         </div>
         <div
           ref={contentRef}
-          onInput={() => setIsDirty(true)}
+          onInput={() => !isDirty && setIsDirty(true)}
           contentEditable
           suppressContentEditableWarning
           dangerouslySetInnerHTML={{ __html: (selectedNote?.content || '') }}
