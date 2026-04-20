@@ -16,7 +16,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Loader2, Plus, Trash2, FileText, Bold, Italic, CornerUpLeft, Underline, Palette, Minus, Download } from 'lucide-react';
+import { Loader2, Plus, Trash2, FileText, Bold, Italic, CornerUpLeft, Underline, Palette, Minus } from 'lucide-react';
 import { useUser, useFirestore, useCollection } from '@/firebase';
 import {
   collection,
@@ -110,9 +110,8 @@ export default function NotesPage() {
   
   // Effect to update editor content when selection changes
   useEffect(() => {
-    const newContent = selectedNote?.content || '';
     if (contentRef.current) {
-      contentRef.current.innerHTML = newContent;
+        contentRef.current.innerHTML = selectedNote?.content || '';
     }
   }, [selectedNote]);
   
@@ -366,7 +365,7 @@ export default function NotesPage() {
               className="flex-grow"
           />
           <Button onClick={handleNewNote} className="w-full sm:w-auto">
-              <Plus className="mr-2 h-4 w-4" /> New Note
+              <Plus className="mr-2 h-4 w-4" /> Add Note
           </Button>
       </div>
       {notesLoading ? (
@@ -409,7 +408,7 @@ export default function NotesPage() {
           <FileText className="mx-auto h-12 w-12 text-muted-foreground" />
           <h3 className="mt-4 text-lg font-semibold">{searchTerm ? 'No Results Found' : 'No Notes Yet'}</h3>
           <p className="mt-1 text-sm text-muted-foreground">
-            {searchTerm ? 'Try a different search term.' : 'Click "New Note" to start journaling.'}
+            {searchTerm ? 'Try a different search term.' : 'Click "Add Note" to start journaling.'}
           </p>
         </div>
       )}
@@ -516,7 +515,7 @@ export default function NotesPage() {
               </AlertDialogContent>
             </AlertDialog>
              <Button variant="outline" size="sm" onClick={handleExportPdf}>
-                <Download className="mr-2 h-4 w-4" /> Export as PDF
+                Download className="mr-2 h-4 w-4" /> Export as PDF
             </Button>
           </div>
         )}
