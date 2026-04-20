@@ -357,7 +357,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
             path: userRef.path,
             operation: 'update',
             requestResourceData: updatePayload
-        });
+        }, user);
         errorEmitter.emit('permission-error', permissionError);
       })
       .finally(() => {
@@ -424,7 +424,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                 const permissionError = new FirestorePermissionError({
                     path: highlightRef.path,
                     operation: 'delete'
-                });
+                }, user);
                 errorEmitter.emit('permission-error', permissionError);
             });
     };
@@ -494,7 +494,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                     path: newHighlightRef.path,
                     operation: 'create',
                     requestResourceData: newHighlightData
-                });
+                }, user);
                 errorEmitter.emit('permission-error', permissionError);
             })
             .finally(() => {
@@ -517,7 +517,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                     path: highlightRef.path,
                     operation: 'update',
                     requestResourceData: payload
-                });
+                }, user);
                 errorEmitter.emit('permission-error', permissionError);
             });
     };

@@ -323,7 +323,7 @@ export default function NotesPage() {
       }
     } catch (e) {
       if ((e as any)?.name !== 'FirestorePermissionError') {
-        const permissionError = new FirestorePermissionError({ path: `users/${user.uid}/notes`, operation: 'write' });
+        const permissionError = new FirestorePermissionError({ path: `users/${user.uid}/notes`, operation: 'write' }, user);
         errorEmitter.emit('permission-error', permissionError);
       }
     } finally {
@@ -342,7 +342,7 @@ export default function NotesPage() {
         toast({ title: 'Note Deleted' });
         handleBackToList();
     } catch(e) {
-        const permissionError = new FirestorePermissionError({ path: noteRef.path, operation: 'delete' });
+        const permissionError = new FirestorePermissionError({ path: noteRef.path, operation: 'delete' }, user);
         errorEmitter.emit('permission-error', permissionError);
     } finally {
         setIsDeleting(false);

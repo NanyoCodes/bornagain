@@ -65,7 +65,7 @@ export default function Page() {
           path: userDocRef.path,
           operation: 'create',
           requestResourceData: userData,
-        });
+        }, user);
         errorEmitter.emit('permission-error', permissionError);
       });
 

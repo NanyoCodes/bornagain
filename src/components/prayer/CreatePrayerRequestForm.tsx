@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -86,7 +87,7 @@ export function CreatePrayerRequestForm({ onPrayerRequestCreated }: CreatePrayer
               path: prayerCollectionRef.path,
               operation: 'create',
               requestResourceData: prayerRequestData,
-          });
+          }, user);
           errorEmitter.emit('permission-error', permissionError);
           throw permissionError;
       });

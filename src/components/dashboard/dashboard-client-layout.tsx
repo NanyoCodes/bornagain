@@ -329,7 +329,7 @@ export default function DashboardClientLayout({
           path: userRef.path,
           operation: 'update',
           requestResourceData: updatePayload,
-        });
+        }, user);
         errorEmitter.emit('permission-error', permissionError);
       });
     }

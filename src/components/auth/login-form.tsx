@@ -223,7 +223,7 @@ export function LoginForm() {
           path: userDocRef.path,
           operation: 'write',
           requestResourceData: userData,
-        });
+        }, user);
         errorEmitter.emit('permission-error', permissionError);
       });
 

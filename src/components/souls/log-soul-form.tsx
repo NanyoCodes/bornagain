@@ -221,7 +221,7 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps)
             path: `TRANSACTION:LOG_SOUL`,
             operation: 'write',
             requestResourceData: { soulData, campaignId },
-        });
+        }, user);
         errorEmitter.emit('permission-error', permissionError);
     } finally {
         setIsLoading(false);

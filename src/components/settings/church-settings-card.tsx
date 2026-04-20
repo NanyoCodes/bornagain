@@ -36,6 +36,7 @@ const churchSettingsSchema = z.object({
 export function ChurchSettingsCard({ userProfile, userId }: { userProfile: UserProfile; userId: string }) {
   const { toast } = useToast();
   const firestore = useFirestore();
+  const { user } = useUser();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<z.infer<typeof churchSettingsSchema>>({
@@ -84,7 +85,7 @@ export function ChurchSettingsCard({ userProfile, userId }: { userProfile: UserP
           path: userRef.path,
           operation: 'update',
           requestResourceData: payload,
-        });
+        }, user);
         errorEmitter.emit('permission-error', permissionError);
       })
       .finally(() => {

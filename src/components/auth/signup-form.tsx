@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -96,7 +97,7 @@ export function SignUpForm() {
           path: userDocRef.path,
           operation: 'create',
           requestResourceData: userData,
-        });
+        }, user);
         errorEmitter.emit('permission-error', permissionError);
       });
 

@@ -183,7 +183,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
             path: `users/${user.uid}`,
             operation: 'update',
             requestResourceData: firestoreUpdatePayload,
-        });
+        }, user);
         errorEmitter.emit('permission-error', permissionError);
         throw permissionError;
       });

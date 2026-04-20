@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { useFirestore } from '@/firebase';
+import { useFirestore, useUser } from '@/firebase';
 import type { UserProfile } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 
@@ -72,6 +72,7 @@ function EditPrayerLinkForm({ link, index, onUpdate, onCancel, isSubmitting }: {
 export function PrayerLinksSettingsCard({ userProfile, userId }: { userProfile: UserProfile; userId: string }) {
   const { toast } = useToast();
   const firestore = useFirestore();
+  const { user } = useUser();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const prayerLinks = userProfile.prayerLinks || [];
@@ -103,7 +104,7 @@ export function PrayerLinksSettingsCard({ userProfile, userId }: { userProfile: 
             addForm.reset();
         })
         .catch(() => {
-            const permissionError = new FirestorePermissionError({ path: userRef.path, operation: 'update', requestResourceData: payload });
+            const permissionError = new FirestorePermissionError({ path: userRef.path, operation: 'update', requestResourceData: payload }, user);
             errorEmitter.emit('permission-error', permissionError);
         })
         .finally(() => {
@@ -123,7 +124,7 @@ export function PrayerLinksSettingsCard({ userProfile, userId }: { userProfile: 
             toast({ title: 'Link Removed', description: 'The prayer link has been deleted.' });
         })
         .catch(() => {
-             const permissionError = new FirestorePermissionError({ path: userRef.path, operation: 'update', requestResourceData: payload });
+             const permissionError = new FirestorePermissionError({ path: userRef.path, operation: 'update', requestResourceData: payload }, user);
             errorEmitter.emit('permission-error', permissionError);
         })
         .finally(() => {
@@ -146,7 +147,7 @@ export function PrayerLinksSettingsCard({ userProfile, userId }: { userProfile: 
             setEditingIndex(null);
         })
         .catch(() => {
-            const permissionError = new FirestorePermissionError({ path: userRef.path, operation: 'update', requestResourceData: payload });
+            const permissionError = new FirestorePermissionError({ path: userRef.path, operation: 'update', requestResourceData: payload }, user);
             errorEmitter.emit('permission-error', permissionError);
         })
         .finally(() => {

@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -215,7 +216,7 @@ export function CreateCampaignForm({ onCampaignCreated, userProfile }: CreateCam
             path: `BATCH_WRITE:CREATE_CAMPAIGN:${campaignDocRef.id}`,
             operation: 'write',
             requestResourceData: { action: 'User creating campaign', userId: user.uid }
-            });
+            }, user);
             errorEmitter.emit('permission-error', permissionError);
             throw permissionError;
         });
