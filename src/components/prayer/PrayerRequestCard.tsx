@@ -127,7 +127,7 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({ prayerRequest
                 {!isAnswered ? (
                     <Button onClick={onAnswerPrayer} size="sm">
                         <Award className="mr-2 h-4 w-4" />
-                        Answer Prayer
+                        Prayer Answered
                     </Button>
                 ) : (
                   <Badge variant="secondary" className="flex items-center gap-2 py-1 px-2 border-green-500 text-green-600 dark:text-green-400">
