@@ -43,7 +43,7 @@ import jsPDF from 'jspdf';
 
 
 const noteCategories: NoteCategory[] = ['Personal', 'Church', 'Revelation', 'Other'];
-const colorSwatches = ['#000000', '#ef4444', '#f97316', '#22c55e', '#3b82f6', '#8b5cf6', '#ec4899'];
+const colorSwatches = ['#000000', '#FFFFFF', '#ef4444', '#f97316', '#22c55e', '#3b82f6', '#8b5cf6', '#ec4899'];
 
 
 export default function NotesPage() {
@@ -587,3 +587,5 @@ export default function NotesPage() {
     </div>
   )
 }
+
+    
