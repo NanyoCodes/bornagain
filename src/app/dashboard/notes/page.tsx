@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect, useMemo, useRef, useLayoutEffect } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -113,15 +113,9 @@ export default function NotesPage() {
     if (selectedNote) {
       setTitle(selectedNote.title);
       setCategory(selectedNote.category || 'Personal');
-      if (contentRef.current) {
-        contentRef.current.innerHTML = selectedNote.content;
-      }
     } else if (isCreatingNew) {
       setTitle('');
       setCategory('Personal');
-      if (contentRef.current) {
-        contentRef.current.innerHTML = '';
-      }
     }
     setIsDirty(false);
   }, [selectedNote, isCreatingNew]);
@@ -233,8 +227,8 @@ export default function NotesPage() {
         doc.setFontSize(10);
         doc.setFont('helvetica', 'normal');
         doc.setTextColor(100);
-        doc.text(`Category: ${selectedNote.category}`, 15, 28);
         const dateString = selectedNote.updatedAt?.toDate ? format(selectedNote.updatedAt.toDate(), 'PPP p') : 'Just now';
+        doc.text(`Category: ${selectedNote.category}`, 15, 28);
         doc.text(`Last updated: ${dateString}`, 15, 33);
         
         doc.setDrawColor(200);
@@ -465,6 +459,7 @@ export default function NotesPage() {
           onInput={() => setIsDirty(true)}
           contentEditable
           suppressContentEditableWarning
+          dangerouslySetInnerHTML={{ __html: (selectedNote?.content || '') }}
           className={cn(
             "flex-grow min-h-[300px] border rounded-md p-3 focus:ring-2 focus:ring-ring focus:outline-none text-base"
           )}
@@ -573,5 +568,3 @@ export default function NotesPage() {
     </div>
   )
 }
-
-    
