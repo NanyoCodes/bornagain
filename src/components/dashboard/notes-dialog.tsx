@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useMemo, useRef } from 'react';
@@ -52,6 +51,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 
 const noteCategories: NoteCategory[] = ['Personal', 'Church', 'Revelation', 'Other'];
 
@@ -62,11 +62,12 @@ interface NotesDialogProps {
   userProfile: UserProfile | null;
 }
 
-export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted }: NotesDialogProps) {
+export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted, userProfile }: NotesDialogProps) {
   const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
   const isMobile = useIsMobile();
+  const [mounted, setMounted] = useState(false);
 
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
   const [isCreatingNew, setIsCreatingNew] = useState(false);
@@ -79,6 +80,8 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted }: Not
   const [category, setCategory] = useState<NoteCategory>('Personal');
   const [searchTerm, setSearchTerm] = useState('');
   const contentRef = useRef<HTMLTextAreaElement>(null);
+
+  const [mobileTab, setMobileTab] = useState('list');
 
   const notesQuery = useMemo(() => {
     if (!user) return null;
@@ -114,6 +117,10 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted }: Not
   }, [filteredNotes]);
 
   useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
     if (!isOpen) {
       // Reset state when dialog closes
       setSelectedNote(null);
@@ -123,8 +130,11 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted }: Not
       setContent('');
       setCategory('Personal');
       setSearchTerm('');
+      setMobileTab('list');
     }
   }, [isOpen]);
+
+  const editorVisible = selectedNote || isCreatingNew;
 
   const handleSelectNote = (note: Note) => {
     setSelectedNote(note);
@@ -132,6 +142,9 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted }: Not
     setContent(note.content);
     setCategory(note.category || 'Personal');
     setIsCreatingNew(false);
+    if (isMobile) {
+      setMobileTab('editor');
+    }
   };
 
   const handleNewNote = () => {
@@ -140,6 +153,9 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted }: Not
     setTitle('');
     setContent('');
     setCategory('Personal');
+    if (isMobile) {
+      setMobileTab('editor');
+    }
   };
   
   const handleBackToList = () => {
@@ -148,6 +164,9 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted }: Not
     setTitle('');
     setContent('');
     setCategory('Personal');
+    if (isMobile) {
+      setMobileTab('list');
+    }
   }
   
   const handleFormatting = (formatType: 'bold' | 'italic') => {
@@ -160,7 +179,6 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted }: Not
     const newText = `${textarea.value.substring(0, start)}${wrapper}${selectedText}${wrapper}${textarea.value.substring(end)}`;
     setContent(newText);
 
-    // After updating, focus and set cursor position
     setTimeout(() => {
       textarea.focus();
       const newCursorPos = start + wrapper.length;
@@ -232,8 +250,6 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted }: Not
     }
   };
   
-  const editorVisible = selectedNote || isCreatingNew;
-
   const NoteList = (
     <div className="space-y-2">
        <div className="flex flex-col sm:flex-row gap-2 mb-4">
@@ -366,26 +382,42 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted }: Not
     </div>
   );
 
-  const dialogContent = (
-    <>
-      <div className={cn("grid grid-cols-1 md:grid-cols-3 gap-6 h-full", {
-          'md:grid-cols-1': !isMobile && !editorVisible,
-          'hidden md:grid': isMobile && editorVisible,
-      })}>
-          {(!isMobile || !editorVisible) && (
-              <div className="md:col-span-1 h-full">
-                  <ScrollArea className="h-full pr-4 -mr-4">
-                      {NoteList}
-                  </ScrollArea>
-              </div>
-          )}
-          {editorVisible && (
-              <div className="md:col-span-2 h-full flex flex-col">
-                  {NoteEditor}
-              </div>
-          )}
-      </div>
-    </>
+  const dialogContent = !mounted ? null : isMobile ? (
+    <Tabs value={mobileTab} onValueChange={setMobileTab} className="flex-grow flex flex-col min-h-0">
+        <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="list">Notes ({filteredNotes?.length || 0})</TabsTrigger>
+            <TabsTrigger value="editor" disabled={!editorVisible}>Editor</TabsTrigger>
+        </TabsList>
+        <TabsContent value="list" className="flex-grow min-h-0 mt-2">
+            <ScrollArea className="h-full -mr-4 pr-4">
+                {NoteList}
+            </ScrollArea>
+        </TabsContent>
+        <TabsContent value="editor" className="flex-grow flex flex-col min-h-0 mt-2">
+            {editorVisible ? NoteEditor : (
+                <div className="text-center text-muted-foreground py-10 flex flex-col items-center justify-center h-full">
+                    <p>Select a note to edit, or create a new one.</p>
+                </div>
+            )}
+        </TabsContent>
+    </Tabs>
+) : (
+    <div className="grid grid-cols-3 gap-6 h-full">
+        <div className="col-span-1 h-full">
+            <ScrollArea className="h-full pr-4 -mr-4">
+                {NoteList}
+            </ScrollArea>
+        </div>
+        <div className="col-span-2 h-full flex flex-col">
+            {editorVisible ? NoteEditor : (
+                <div className="flex flex-col items-center justify-center h-full text-center text-muted-foreground border-2 border-dashed rounded-lg p-8">
+                    <FileText className="h-12 w-12 mb-4" />
+                    <h3 className="font-semibold">Select a note to view or edit</h3>
+                    <p className="text-sm">Or, create a new one to get started.</p>
+                </div>
+            )}
+        </div>
+    </div>
   );
 
   if (isMobile) {
