@@ -64,6 +64,9 @@ export default function NotesPage() {
   const contentRef = useRef<HTMLDivElement>(null);
 
   const [mobileTab, setMobileTab] = useState('list');
+  
+  const [isDiscardAlertOpen, setIsDiscardAlertOpen] = useState(false);
+  const [navigationTarget, setNavigationTarget] = useState<Note | 'new' | 'list' | null>(null);
 
   const notesQuery = useMemo(() => {
     if (!user) return null;
@@ -123,29 +126,47 @@ export default function NotesPage() {
     }
   }, [selectedNote, isCreatingNew, editorVisible]);
 
-  const handleSelectNote = (note: Note) => {
-    setSelectedNote(note);
-    setIsCreatingNew(false);
-    if (isMobile) {
-      setMobileTab('editor');
+  const proceedWithNavigation = (target: Note | 'new' | 'list' | null) => {
+    if (target === 'new') {
+        setSelectedNote(null);
+        setIsCreatingNew(true);
+        if (isMobile) setMobileTab('editor');
+    } else if (target === 'list') {
+        setSelectedNote(null);
+        setIsCreatingNew(false);
+        if (isMobile) setMobileTab('list');
+    } else if (target) { // Note object
+        setSelectedNote(target as Note);
+        setIsCreatingNew(false);
+         if (isMobile) setMobileTab('editor');
     }
-  };
+    // Closing the dialog and resetting target is handled separately for cancel
+    setIsDiscardAlertOpen(false);
+  }
 
-  const handleNewNote = () => {
-    setSelectedNote(null);
-    setIsCreatingNew(true);
-    if (isMobile) {
-      setMobileTab('editor');
-    }
+  const attemptNavigation = (target: Note | 'new' | 'list') => {
+      if (isDirty) {
+          setNavigationTarget(target);
+          setIsDiscardAlertOpen(true);
+      } else {
+          proceedWithNavigation(target);
+      }
+  }
+
+  const handleSelectNote = (note: Note) => attemptNavigation(note);
+  const handleNewNote = () => attemptNavigation('new');
+  const handleBackToList = () => attemptNavigation('list');
+  
+  const handleConfirmDiscard = () => {
+    proceedWithNavigation(navigationTarget);
+    setNavigationTarget(null);
   };
   
-  const handleBackToList = () => {
-    setSelectedNote(null);
-    setIsCreatingNew(false);
-    if (isMobile) {
-      setMobileTab('list');
-    }
-  }
+  const handleCancelDiscard = () => {
+      setNavigationTarget(null);
+      setIsDiscardAlertOpen(false);
+  };
+
 
   const handleFormatting = (command: string, value: string | null = null) => {
     if (contentRef.current) {
@@ -465,8 +486,22 @@ export default function NotesPage() {
        <div className="flex-grow min-h-0">
          {pageContent}
        </div>
+        <AlertDialog open={isDiscardAlertOpen} onOpenChange={setIsDiscardAlertOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>You have unsaved changes</AlertDialogTitle>
+              <AlertDialogDescription>
+                Are you sure you want to leave? Your changes will be discarded.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel onClick={handleCancelDiscard}>Cancel</AlertDialogCancel>
+              <AlertDialogAction onClick={handleConfirmDiscard} className="bg-destructive hover:bg-destructive/90">
+                Discard Changes
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
     </div>
   )
 }
-
-    
