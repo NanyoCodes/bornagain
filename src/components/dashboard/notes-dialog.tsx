@@ -32,7 +32,6 @@ import {
   updateDoc,
   deleteDoc,
   doc,
-  where,
 } from 'firebase/firestore';
 import type { Note, UserProfile, NoteCategory } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
@@ -82,9 +81,10 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted }: Not
 
   const notesQuery = useMemo(() => {
     if (!user) return null;
+    // The subcollection path already scopes notes to the user, so a `where` clause is not needed
+    // and can cause indexing issues if not configured in Firestore.
     return query(
       collection(firestore, 'users', user.uid, 'notes'),
-      where('userId', '==', user.uid),
       orderBy('updatedAt', 'desc')
     );
   }, [user, firestore]);
