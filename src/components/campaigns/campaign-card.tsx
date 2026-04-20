@@ -562,8 +562,8 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
                             <Badge variant="secondary" className="flex items-center gap-2 py-2 px-3"><UserCheck2 className="h-4 w-4" /> Joined</Badge>
                         )}
 
-                        {status === 'Ongoing' && LogSoulButton}
-                        {(status === 'Ongoing' || status === 'Past') && ShareTestimonyButton}
+                        {isJoined && status === 'Ongoing' && LogSoulButton}
+                        {isJoined && (status === 'Ongoing' || status === 'Past') && ShareTestimonyButton}
                         
                         <TooltipProvider>
                             <Tooltip>
