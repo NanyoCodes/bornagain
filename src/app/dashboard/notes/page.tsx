@@ -85,7 +85,7 @@ export default function NotesPage() {
     return notes.filter(
       (note) =>
         note.title.toLowerCase().includes(lowercasedTerm) ||
-        note.content.toLowerCase().includes(lowercasedTerm) ||
+        (note.content && note.content.toLowerCase().includes(lowercasedTerm)) ||
         note.category.toLowerCase().includes(lowercasedTerm)
     );
   }, [notes, searchTerm]);
@@ -107,6 +107,14 @@ export default function NotesPage() {
   }, []);
 
   const editorVisible = selectedNote || isCreatingNew;
+  
+  // Effect to update editor content when selection changes
+  useEffect(() => {
+    const newContent = selectedNote?.content || '';
+    if (contentRef.current && contentRef.current.innerHTML !== newContent) {
+      contentRef.current.innerHTML = newContent;
+    }
+  }, [selectedNote]);
   
   useEffect(() => {
     if (selectedNote) {
@@ -229,16 +237,33 @@ export default function NotesPage() {
         
         doc.setDrawColor(200);
         doc.line(15, 38, 195, 38);
-
-        // Convert HTML content to plain text while preserving paragraph structure
-        const tempDiv = document.createElement("div");
-        tempDiv.innerHTML = selectedNote.content;
-        const textContent = (tempDiv as HTMLElement).innerText || "";
         
         doc.setFontSize(12);
         doc.setTextColor(0);
-        const splitText = doc.splitTextToSize(textContent, 180);
-        doc.text(splitText, 15, 48);
+
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = selectedNote.content;
+        
+        let yPos = 48;
+        const lineSpacing = 7; // jspdf uses something around this for 12pt font
+        const paragraphSpacing = 4; // Extra space after a paragraph
+
+        // Iterate through child nodes of the content (which should be divs/paragraphs)
+        tempDiv.childNodes.forEach(node => {
+            const text = node.textContent || '';
+            const splitText = doc.splitTextToSize(text, 180);
+            
+            // Check if there's room on the current page, otherwise add a new one.
+            const textHeight = splitText.length * lineSpacing + paragraphSpacing;
+            if (yPos + textHeight > 280) { // 297mm A4 height, with margins
+                doc.addPage();
+                yPos = 20; // Reset yPos for new page
+            }
+
+            doc.text(splitText, 15, yPos);
+            yPos += (splitText.length * lineSpacing) + paragraphSpacing;
+        });
+
 
         doc.save(`${selectedNote.title.replace(/ /g, '_')}.pdf`);
 
