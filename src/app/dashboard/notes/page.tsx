@@ -63,11 +63,6 @@ export default function NotesPage() {
 
   const [mobileTab, setMobileTab] = useState('list');
 
-  type FontSize = 'sm' | 'base' | 'lg' | 'xl';
-  const fontSizes: FontSize[] = ['sm', 'base', 'lg', 'xl'];
-  const [fontSize, setFontSize] = useState<FontSize>('base');
-  const fontSizeClasses: Record<FontSize, string> = { sm: 'text-sm', base: 'text-base', lg: 'text-lg', xl: 'text-xl' };
-
   const notesQuery = useMemo(() => {
     if (!user) return null;
     return query(
@@ -157,19 +152,33 @@ export default function NotesPage() {
         setIsDirty(true);
     }
   };
+  
+  const changeFontSize = (direction: 'increase' | 'decrease') => {
+    if (!contentRef.current) return;
+    contentRef.current.focus();
 
-  const increaseFontSize = () => {
-    const currentIndex = fontSizes.indexOf(fontSize);
-    if (currentIndex < fontSizes.length - 1) {
-        setFontSize(fontSizes[currentIndex + 1]);
+    // This is important for execCommand('fontSize') to work with numeric values (1-7)
+    document.execCommand('styleWithCSS', false, 'false');
+    
+    let currentSizeStr = document.queryCommandValue('fontSize');
+    let currentSize = parseInt(currentSizeStr, 10);
+    
+    // If the size is not detectable (e.g., no selection or mixed sizes), default to a medium size
+    if (isNaN(currentSize)) {
+        currentSize = 3; // Default to 'normal' size (1-7 scale)
     }
-  };
 
-  const decreaseFontSize = () => {
-      const currentIndex = fontSizes.indexOf(fontSize);
-      if (currentIndex > 0) {
-          setFontSize(fontSizes[currentIndex - 1]);
-      }
+    let newSize;
+    if (direction === 'increase') {
+        newSize = Math.min(currentSize + 1, 7); // Max size is 7
+    } else {
+        newSize = Math.max(currentSize - 1, 1); // Min size is 1
+    }
+
+    if (newSize !== currentSize) {
+        document.execCommand('fontSize', false, newSize.toString());
+        setIsDirty(true);
+    }
   };
 
 
@@ -358,10 +367,10 @@ export default function NotesPage() {
                 </PopoverContent>
             </Popover>
             <div className="h-6 w-px bg-border mx-1" />
-            <Button variant="ghost" size="icon" onClick={decreaseFontSize} disabled={fontSize === 'sm'} title="Decrease font size">
+            <Button variant="ghost" size="icon" onClick={() => changeFontSize('decrease')} title="Decrease font size">
                 <Minus className="h-4 w-4" />
             </Button>
-            <Button variant="ghost" size="icon" onClick={increaseFontSize} disabled={fontSize === 'xl'} title="Increase font size">
+            <Button variant="ghost" size="icon" onClick={() => changeFontSize('increase')} title="Increase font size">
                 <Plus className="h-4 w-4" />
             </Button>
         </div>
@@ -371,8 +380,7 @@ export default function NotesPage() {
           contentEditable
           suppressContentEditableWarning
           className={cn(
-            "flex-grow min-h-[300px] border rounded-md p-3 focus:ring-2 focus:ring-ring focus:outline-none",
-            fontSizeClasses[fontSize]
+            "flex-grow min-h-[300px] border rounded-md p-3 focus:ring-2 focus:ring-ring focus:outline-none text-base"
           )}
         />
       </div>
@@ -458,3 +466,5 @@ export default function NotesPage() {
     </div>
   )
 }
+
+    
