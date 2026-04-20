@@ -288,8 +288,8 @@ export default function NotesPage() {
                                         selectedNote?.id === note.id ? "bg-muted ring-2 ring-primary" : "hover:bg-muted/50"
                                         )}
                                     >
-                                        <p className="font-semibold truncate">{note.title}</p>
-                                        <div className="text-sm text-muted-foreground truncate" dangerouslySetInnerHTML={{ __html: note.content || 'No content' }} />
+                                        <p className="font-semibold truncate text-base">{note.title}</p>
+                                        <div className="text-xs text-muted-foreground truncate" dangerouslySetInnerHTML={{ __html: note.content || 'No content' }} />
                                         <p className="text-xs text-muted-foreground mt-1">
                                           {note.updatedAt?.toDate ? format(note.updatedAt.toDate(), 'PPP') : 'Just now'}
                                         </p>
