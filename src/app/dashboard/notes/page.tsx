@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useMemo, useRef } from 'react';
@@ -349,6 +348,13 @@ export default function NotesPage() {
     }
   };
   
+  const handlePaste = (event: React.ClipboardEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    const text = event.clipboardData.getData('text/plain');
+    document.execCommand('insertText', false, text);
+    setIsDirty(true);
+  };
+  
   const NoteList = (
     <div className="space-y-2">
        <div className="flex flex-col sm:flex-row gap-2 mb-4">
@@ -476,6 +482,7 @@ export default function NotesPage() {
         <div
           ref={contentRef}
           onInput={() => !isDirty && setIsDirty(true)}
+          onPaste={handlePaste}
           contentEditable
           suppressContentEditableWarning
           dangerouslySetInnerHTML={{ __html: (selectedNote?.content || '') }}
@@ -587,5 +594,3 @@ export default function NotesPage() {
     </div>
   )
 }
-
-    
