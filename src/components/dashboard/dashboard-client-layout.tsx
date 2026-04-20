@@ -291,6 +291,7 @@ export default function DashboardClientLayout({
   const [showWelcomePopup, setShowWelcomePopup] = useState(false);
   const logo = PlaceHolderImages.find((img) => img.id === "logo");
   const isChatPage = /^\/dashboard\/chats\/.+/.test(pathname);
+  const isNotesPage = pathname === '/dashboard/notes';
   const [lastActiveUpdated, setLastActiveUpdated] = useState(false);
 
   const userDocRef = useMemo(() => user ? doc(firestore, 'users', user.uid) : null, [user, firestore]);
@@ -390,11 +391,11 @@ export default function DashboardClientLayout({
 
   return (
     <SearchProvider>
-      <div className="flex h-dvh w-full flex-col overflow-x-hidden">
+      <div className={cn("flex w-full flex-col overflow-x-hidden", isChatPage || isNotesPage ? "h-dvh" : "min-h-dvh")}>
         <AppHeader unreadChatCount={unreadChatCount} />
         <div className="flex-1 relative min-h-0">
-          <main className={cn("absolute inset-0", !isChatPage && "overflow-y-auto")}>
-            <div className={cn("max-w-7xl mx-auto", !isChatPage && "p-4 md:p-6 pb-20 md:pb-6", isChatPage && "h-full")}>
+          <main className={cn("absolute inset-0", !(isChatPage || isNotesPage) && "overflow-y-auto")}>
+            <div className={cn("max-w-7xl mx-auto", !(isChatPage || isNotesPage) && "p-4 md:p-6 pb-20 md:pb-6", (isChatPage || isNotesPage) && "h-full p-4 md:p-6")}>
               <PageTransition>{children}</PageTransition>
             </div>
           </main>
