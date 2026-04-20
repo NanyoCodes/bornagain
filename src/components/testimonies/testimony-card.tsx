@@ -1,4 +1,3 @@
-
 "use client";
 
 import * as React from "react";
@@ -152,7 +151,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, dist
             <Card className="bg-muted/50 shadow-inner">
                 <CardHeader className="p-3">
                     <CardDescription className="text-xs">
-                        This is an answer to prayer:
+                        This is the Testimony to Prayer Request:
                     </CardDescription>
                     <blockquote className="border-l-2 pl-3 italic text-xs text-muted-foreground">
                         &ldquo;{testimony.answeredPrayerContent}&rdquo;
