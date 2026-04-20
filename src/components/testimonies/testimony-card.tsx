@@ -1,3 +1,4 @@
+
 "use client";
 
 import * as React from "react";
@@ -141,7 +142,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, dist
               )}
             </div>
           </div>
-          <Badge variant="secondary" className="shrink-0">{testimony.category}</Badge>
+          <Badge variant="outline" className="shrink-0">{testimony.category}</Badge>
         </CardHeader>
         <CardContent className="flex-grow pt-0 space-y-4">
           <p className="text-sm text-muted-foreground whitespace-pre-wrap line-clamp-4">
@@ -184,6 +185,8 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, dist
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
+                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                <DropdownMenuSeparator />
                 <DropdownMenuItem onSelect={() => handleShare('link')}><Share2 className="mr-2 h-4 w-4" /><span>Copy Link</span></DropdownMenuItem>
                 <DropdownMenuItem onSelect={() => handleShare('facebook')}>Share on Facebook</DropdownMenuItem>
                 <DropdownMenuItem onSelect={() => handleShare('twitter')}>Share on Twitter (X)</DropdownMenuItem>
