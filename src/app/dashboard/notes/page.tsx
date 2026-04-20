@@ -16,7 +16,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Loader2, Plus, Trash2, FileText, Bold, Italic, CornerUpLeft, Underline, Palette, Minus } from 'lucide-react';
+import { Loader2, Plus, Trash2, FileText, Bold, Italic, CornerUpLeft, Underline, Palette, Minus, Download } from 'lucide-react';
 import { useUser, useFirestore, useCollection } from '@/firebase';
 import {
   collection,
@@ -110,10 +110,14 @@ export default function NotesPage() {
   
   // Effect to update editor content when selection changes
   useEffect(() => {
-    if (contentRef.current) {
-        contentRef.current.innerHTML = selectedNote?.content || '';
+    if (editorVisible && contentRef.current) {
+        if (selectedNote) {
+            contentRef.current.innerHTML = selectedNote.content || '';
+        } else if (isCreatingNew) {
+            contentRef.current.innerHTML = '';
+        }
     }
-  }, [selectedNote]);
+  }, [selectedNote, isCreatingNew, editorVisible]);
   
   useEffect(() => {
     if (selectedNote) {
@@ -218,7 +222,7 @@ export default function NotesPage() {
   };
 
   const handleExportPdf = () => {
-    if (!selectedNote) return;
+    if (!selectedNote || !contentRef.current) return;
 
     try {
         const doc = new jsPDF();
@@ -240,23 +244,20 @@ export default function NotesPage() {
         doc.setFontSize(12);
         doc.setTextColor(0);
 
-        const tempDiv = document.createElement('div');
-        tempDiv.innerHTML = selectedNote.content;
-        
         let yPos = 48;
-        const lineSpacing = 7; // jspdf uses something around this for 12pt font
-        const paragraphSpacing = 4; // Extra space after a paragraph
+        const lineSpacing = 7;
+        const paragraphSpacing = 4;
 
-        // Iterate through child nodes of the content (which should be divs/paragraphs)
-        tempDiv.childNodes.forEach(node => {
+        const contentNodes = Array.from(contentRef.current.childNodes);
+
+        contentNodes.forEach(node => {
             const text = node.textContent || '';
             const splitText = doc.splitTextToSize(text, 180);
             
-            // Check if there's room on the current page, otherwise add a new one.
             const textHeight = splitText.length * lineSpacing + paragraphSpacing;
-            if (yPos + textHeight > 280) { // 297mm A4 height, with margins
+            if (yPos + textHeight > 280) { 
                 doc.addPage();
-                yPos = 20; // Reset yPos for new page
+                yPos = 20; 
             }
 
             doc.text(splitText, 15, yPos);
@@ -485,7 +486,6 @@ export default function NotesPage() {
           onPaste={handlePaste}
           contentEditable
           suppressContentEditableWarning
-          dangerouslySetInnerHTML={{ __html: (selectedNote?.content || '') }}
           className={cn(
             "flex-grow min-h-[300px] border rounded-md p-3 focus:ring-2 focus:ring-ring focus:outline-none text-base"
           )}
@@ -515,7 +515,7 @@ export default function NotesPage() {
               </AlertDialogContent>
             </AlertDialog>
              <Button variant="outline" size="sm" onClick={handleExportPdf}>
-                Download className="mr-2 h-4 w-4" /> Export as PDF
+                <Download className="mr-2 h-4 w-4" /> Export as PDF
             </Button>
           </div>
         )}
