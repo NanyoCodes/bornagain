@@ -283,6 +283,7 @@ export default function TestimoniesPage() {
                     key={req.id} 
                     prayerRequest={req}
                     onDelete={() => setItemToDelete({ type: 'prayer', id: req.id, name: 'prayer request' })}
+                    onAnswerPrayer={() => handleOpenTestimonyDialog(req)}
                   />
                 ))}
                 {!loading && filteredPrayerRequests?.length === 0 && (
@@ -337,7 +338,7 @@ export default function TestimoniesPage() {
           <SheetContent side="bottom">
             <SheetHeader>
               <SheetTitle>{prayerToAnswer ? 'Share Answered Prayer' : 'Share Testimony'}</SheetTitle>
-              <SheetDescription>Encourage others by sharing what God has done.</SheetDescription>
+              <SheetDescription>{prayerToAnswer ? "Share how God answered this prayer to encourage others." : "Encourage others by sharing what God has done."}</SheetDescription>
             </SheetHeader>
             <div className="max-h-[80vh] overflow-y-auto p-1 mt-4">{testimonyFormContent}</div>
           </SheetContent>
@@ -347,7 +348,7 @@ export default function TestimoniesPage() {
           <DialogContent className="sm:max-w-lg">
             <DialogHeader>
               <DialogTitle>{prayerToAnswer ? 'Share Answered Prayer' : 'Share Testimony'}</DialogTitle>
-              <DialogDescription>Encourage others by sharing what God has done.</DialogDescription>
+              <DialogDescription>{prayerToAnswer ? "Share how God answered this prayer to encourage others." : "Encourage others by sharing what God has done."}</DialogDescription>
             </DialogHeader>
             <div className="max-h-[70vh] overflow-y-auto pr-2">{testimonyFormContent}</div>
           </DialogContent>

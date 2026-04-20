@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -62,11 +63,11 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
     } else {
       // Reset for a blank testimony
       form.reset({
-        category: undefined,
+        category: campaign ? 'Salvation' : undefined,
         content: ""
       });
     }
-  }, [prayerRequest, form]);
+  }, [prayerRequest, campaign, form]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (!user || !firestore || !userProfile) {

@@ -16,21 +16,20 @@ import { format } from "date-fns";
 import { HandHeart, Users, Trash2, Loader2, User, Award } from "lucide-react";
 import { useUser, useFirestore } from "@/firebase";
 import { useState, useMemo, memo } from "react";
-import { useRouter } from "next/navigation";
-import Link from 'next/link';
-import Image from 'next/image';
 import { useToast } from "@/hooks/use-toast";
 import { doc, updateDoc, arrayUnion } from "firebase/firestore";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import Link from "next/link";
+import Image from 'next/image';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
 
-export const PrayerRequestCard = memo(function PrayerRequestCard({ prayerRequest, onDelete }: { prayerRequest: PrayerRequest, onDelete: () => void }) {
+
+export const PrayerRequestCard = memo(function PrayerRequestCard({ prayerRequest, onDelete, onAnswerPrayer }: { prayerRequest: PrayerRequest, onDelete: () => void, onAnswerPrayer: () => void; }) {
   const { user } = useUser();
   const firestore = useFirestore();
-  const router = useRouter();
   const { toast } = useToast();
   
   const [isPraying, setIsPraying] = useState(false);
@@ -125,7 +124,12 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({ prayerRequest
           </div>
           {isAuthor ? (
             <div className="flex items-center gap-2">
-                {isAnswered && (
+                {!isAnswered ? (
+                    <Button onClick={onAnswerPrayer} size="sm">
+                        <Award className="mr-2 h-4 w-4" />
+                        Answer Prayer
+                    </Button>
+                ) : (
                   <Badge variant="secondary" className="flex items-center gap-2 py-1 px-2 border-green-500 text-green-600 dark:text-green-400">
                       <Award className="h-4 w-4" />
                       <span>Answered</span>
