@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef, useLayoutEffect } from 'react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -108,7 +108,7 @@ export default function NotesPage() {
 
   const editorVisible = selectedNote || isCreatingNew;
   
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (editorVisible) {
         if (selectedNote) {
             setTitle(selectedNote.title);
@@ -179,27 +179,45 @@ export default function NotesPage() {
   
   const changeFontSize = (direction: 'increase' | 'decrease') => {
     if (!contentRef.current) return;
+    const selection = window.getSelection();
+    if (!selection || selection.rangeCount === 0 || selection.toString().length === 0) {
+        toast({
+            variant: "default",
+            title: "No Text Selected",
+            description: "Please highlight the text you want to resize.",
+        });
+        return;
+    }
+    
     contentRef.current.focus();
-
     document.execCommand('styleWithCSS', false, 'false');
     
-    let currentSizeStr = document.queryCommandValue('fontSize');
-    let currentSize = parseInt(currentSizeStr, 10);
+    // This part is tricky as queryCommandValue('fontSize') can be unreliable.
+    // A more robust solution might involve traversing the selection's DOM nodes.
+    // For this implementation, we'll try a simplified approach.
+    const parent = selection.getRangeAt(0).commonAncestorContainer;
+    const targetElement = parent.nodeType === 1 ? parent : parent.parentElement;
     
-    if (isNaN(currentSize)) {
-        currentSize = 3; 
-    }
-
-    let newSize;
-    if (direction === 'increase') {
-        newSize = Math.min(currentSize + 1, 7);
-    } else {
-        newSize = Math.max(currentSize - 1, 1);
-    }
-
-    if (newSize !== currentSize) {
-        document.execCommand('fontSize', false, newSize.toString());
-        setIsDirty(true);
+    if (targetElement && targetElement instanceof HTMLElement) {
+      const currentSizeStr = window.getComputedStyle(targetElement).fontSize;
+      let currentSize = parseFloat(currentSizeStr);
+      if(isNaN(currentSize)) currentSize = 16; // default
+      
+      let newSize;
+      if (direction === 'increase') {
+          newSize = Math.min(currentSize + 2, 48); // Max size 48px
+      } else {
+          newSize = Math.max(currentSize - 2, 10); // Min size 10px
+      }
+       document.execCommand('fontSize', false, "7"); // This is a hack, '7' is the largest size
+       const fontElements = contentRef.current.getElementsByTagName('font');
+       for (let i = 0; i < fontElements.length; i++) {
+           if (fontElements[i].size === "7") {
+               fontElements[i].removeAttribute('size');
+               fontElements[i].style.fontSize = newSize + 'px';
+           }
+       }
+       setIsDirty(true);
     }
   };
 
@@ -267,7 +285,7 @@ export default function NotesPage() {
         await updateDoc(noteRef, updatedData);
         toast({ title: 'Note Updated' });
         // Manually update the selectedNote state to reflect changes immediately
-        setSelectedNote(prev => prev ? { ...prev, ...updatedData, updatedAt: new Date() as any } : null);
+        setSelectedNote(prev => prev ? { ...prev, ...updatedData, updatedAt: new Date() as any, content: currentContent } : null);
         setIsDirty(false);
 
       } else {
@@ -286,7 +304,9 @@ export default function NotesPage() {
         toast({ title: 'Note Saved' });
         // This is a simplified representation. `serverTimestamp` won't resolve here.
         // `useCollection` will eventually pick up the new note.
-        handleSelectNote({ id: docRef.id, ...noteData, createdAt: new (serverTimestamp as any)(), updatedAt: new (serverTimestamp as any)()});
+        const newNote: Note = { id: docRef.id, ...noteData, createdAt: new (serverTimestamp as any)(), updatedAt: new (serverTimestamp as any)()};
+        setSelectedNote(newNote);
+        setIsCreatingNew(false);
       }
     } catch (e) {
       if ((e as any)?.name !== 'FirestorePermissionError') {
