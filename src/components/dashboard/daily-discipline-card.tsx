@@ -8,11 +8,10 @@ import { doc, updateDoc, serverTimestamp, writeBatch } from 'firebase/firestore'
 import type { UserProfile } from '@/lib/types';
 import { isToday, format } from 'date-fns';
 import { Skeleton } from '../ui/skeleton';
-import { Zap, BookOpen, Loader2, Church, CheckCircle2, FileText } from 'lucide-react';
+import { Zap, BookOpen, Loader2, Church, CheckCircle2 } from 'lucide-react';
 import { BibleDialog } from './bible-dialog';
 import { PrayerDialog } from './prayer-dialog';
 import { AttendChurchDialog } from './attend-church-dialog';
-import { NotesDialog } from './notes-dialog';
 import { useRouter } from 'next/navigation';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
@@ -23,7 +22,6 @@ import { cn } from '@/lib/utils';
 const disciplines = [
   { id: 'pray', label: 'Pray', Icon: Zap, color: 'text-chart-5' },
   { id: 'read_bible', label: 'Read Bible', Icon: BookOpen, color: 'text-chart-2' },
-  { id: 'take_notes', label: 'Take Notes', Icon: FileText, color: 'text-chart-1' },
   { id: 'attend_church', label: 'Attend Church', Icon: Church, color: 'text-chart-4' },
 ];
 
@@ -34,7 +32,6 @@ export function DailyDisciplineCard() {
   const [completedToday, setCompletedToday] = useState<string[]>([]);
   const [isBibleDialogOpen, setIsBibleDialogOpen] = useState(false);
   const [isPrayerDialogOpen, setIsPrayerDialogOpen] = useState(false);
-  const [isNotesDialogOpen, setIsNotesDialogOpen] = useState(false);
   const [isAttendChurchDialogOpen, setIsAttendChurchDialogOpen] = useState(false);
   const [attendChurchDialogView, setAttendChurchDialogView] = useState<'confirm' | 'form'>('form');
   const [togglingId, setTogglingId] = useState<string | null>(null);
@@ -130,18 +127,6 @@ export function DailyDisciplineCard() {
     }
   }
   
-  const handleTakeNotes = () => {
-    if (!completedToday.includes('take_notes')) {
-        updateDisciplineState('take_notes').catch(() => {
-            toast({
-                variant: "destructive",
-                title: "Update Failed",
-                description: "Your discipline could not be updated. Please check your connection and try again.",
-            });
-        });
-    }
-  }
-
   const handleAttendChurch = () => {
     if (!completedToday.includes('attend_church')) {
       updateDisciplineState('attend_church').catch(() => {
@@ -163,10 +148,6 @@ export function DailyDisciplineCard() {
         }
         if (disciplineId === 'pray') {
             setIsPrayerDialogOpen(true);
-            return;
-        }
-         if (disciplineId === 'take_notes') {
-            setIsNotesDialogOpen(true);
             return;
         }
         if (disciplineId === 'attend_church') {
@@ -201,13 +182,10 @@ export function DailyDisciplineCard() {
     if (!isPrayerDialogOpen && togglingId === 'pray') {
       setTogglingId(null);
     }
-    if (!isNotesDialogOpen && togglingId === 'take_notes') {
-      setTogglingId(null);
-    }
     if (!isAttendChurchDialogOpen && togglingId === 'attend_church') {
         setTogglingId(null);
     }
-  }, [isBibleDialogOpen, isPrayerDialogOpen, isNotesDialogOpen, isAttendChurchDialogOpen, togglingId]);
+  }, [isBibleDialogOpen, isPrayerDialogOpen, isAttendChurchDialogOpen, togglingId]);
 
   if (loading) {
     return (
@@ -217,7 +195,7 @@ export function DailyDisciplineCard() {
           <CardDescription>Your spiritual checklist for today.</CardDescription>
         </CardHeader>
         <CardContent className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {[...Array(4)].map((_, i) => (
+          {[...Array(3)].map((_, i) => (
             <Skeleton key={i} className="h-28 w-full" />
           ))}
         </CardContent>
@@ -285,15 +263,6 @@ export function DailyDisciplineCard() {
             if (!open) setTogglingId(null);
         }}
         onDisciplineCompleted={handlePray}
-        userProfile={userProfile}
-      />
-       <NotesDialog
-        isOpen={isNotesDialogOpen}
-        onOpenChange={(open) => {
-            setIsNotesDialogOpen(open);
-            if (!open) setTogglingId(null);
-        }}
-        onDisciplineCompleted={handleTakeNotes}
         userProfile={userProfile}
       />
       <AttendChurchDialog
