@@ -11,6 +11,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
+  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -158,22 +159,20 @@ export default function NotesPage() {
     if (!contentRef.current) return;
     contentRef.current.focus();
 
-    // This is important for execCommand('fontSize') to work with numeric values (1-7)
     document.execCommand('styleWithCSS', false, 'false');
     
     let currentSizeStr = document.queryCommandValue('fontSize');
     let currentSize = parseInt(currentSizeStr, 10);
     
-    // If the size is not detectable (e.g., no selection or mixed sizes), default to a medium size
     if (isNaN(currentSize)) {
-        currentSize = 3; // Default to 'normal' size (1-7 scale)
+        currentSize = 3; 
     }
 
     let newSize;
     if (direction === 'increase') {
-        newSize = Math.min(currentSize + 1, 7); // Max size is 7
+        newSize = Math.min(currentSize + 1, 7);
     } else {
-        newSize = Math.max(currentSize - 1, 1); // Min size is 1
+        newSize = Math.max(currentSize - 1, 1);
     }
 
     if (newSize !== currentSize) {
@@ -289,7 +288,7 @@ export default function NotesPage() {
                                         )}
                                     >
                                         <p className="font-semibold truncate text-base">{note.title}</p>
-                                        <div className="text-xs text-muted-foreground truncate" dangerouslySetInnerHTML={{ __html: note.content || 'No content' }} />
+                                        <div className="text-sm text-muted-foreground truncate" dangerouslySetInnerHTML={{ __html: note.content || 'No content' }} />
                                         <p className="text-xs text-muted-foreground mt-1">
                                           {note.updatedAt?.toDate ? format(note.updatedAt.toDate(), 'PPP') : 'Just now'}
                                         </p>
@@ -469,3 +468,5 @@ export default function NotesPage() {
     </div>
   )
 }
+
+    
