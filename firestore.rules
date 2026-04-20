@@ -155,14 +155,13 @@ service cloud.firestore {
           request.resource.data.usersWhoPrayed.size() == ('usersWhoPrayed' in resource.data ? resource.data.usersWhoPrayed.size() : 0) + 1 &&
           request.auth.uid in request.resource.data.usersWhoPrayed
         ) ||
-        // SCENARIO 2: Author can mark request as answered, but only by changing status and adding testimonyId
+        // SCENARIO 2: Author can mark request as answered
         (
           resource.data.authorId == request.auth.uid &&
           resource.data.status == 'pending' &&
           request.resource.data.status == 'answered' &&
-          // Verify that ONLY status and answeredTestimonyId are changing
           request.resource.data.diff(resource.data).affectedKeys().hasAll(['status', 'answeredTestimonyId']) &&
-          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'answeredTestimonyId'])
+          request.resource.data.diff(resource.data).affectedKeys().size() == 2
         )
       );
     }
