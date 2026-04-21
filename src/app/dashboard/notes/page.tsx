@@ -570,7 +570,6 @@ export default function NotesPage() {
     <div className="space-y-4 h-full flex flex-col">
        <div className="flex-shrink-0">
             <h1 className="text-2xl font-bold tracking-tight">My Notes</h1>
-            <p className="text-muted-foreground">A place for your thoughts, reflections, and revelations.</p>
        </div>
        <div className="flex-grow min-h-0">
          {pageContent}
