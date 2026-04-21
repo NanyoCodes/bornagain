@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useMemo, useRef } from 'react';
@@ -11,12 +12,11 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Loader2, Plus, Trash2, FileText, Bold, Italic, CornerUpLeft, Underline, Palette, Minus, Download } from 'lucide-react';
+import { Loader2, Plus, Trash2, FileText, Bold, Italic, Underline, Palette, Minus, Download, CornerUpLeft } from 'lucide-react';
 import { useUser, useFirestore, useCollection } from '@/firebase';
 import {
   collection,
@@ -39,6 +39,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import jsPDF from 'jspdf';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 
 const noteCategories: NoteCategory[] = ['Personal', 'Church', 'Revelation', 'Other'];
@@ -59,6 +60,8 @@ export default function NotesPage() {
   const firestore = useFirestore();
   const { toast } = useToast();
   const router = useRouter();
+  const isMobile = useIsMobile();
+  const [mounted, setMounted] = useState(false);
 
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
   const [isCreatingNew, setIsCreatingNew] = useState(true); // Default to creating a new note
@@ -73,9 +76,11 @@ export default function NotesPage() {
 
   const [activeTab, setActiveTab] = useState('editor');
   
-  const [isDiscardAlertOpen, setIsDiscardAlertOpen] = useState(false);
-  const [navigationTarget, setNavigationTarget] = useState<Note | 'new' | 'list' | null>(null);
-  const [selectionFontSize, setSelectionFontSize] = useState<string>('16');
+  const [selectionFontSize, setSelectionFontSize] = useState<string>('16px');
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const notesQuery = useMemo(() => {
     if (!user) return null;
@@ -123,7 +128,7 @@ export default function NotesPage() {
         setTimeout(() => {
             if (contentRef.current) {
                 const size = window.getComputedStyle(contentRef.current).fontSize;
-                setSelectionFontSize(String(Math.round(parseFloat(size))));
+                setSelectionFontSize(size);
             }
         }, 0);
     }
@@ -140,43 +145,52 @@ export default function NotesPage() {
     setIsDirty(false);
   }, [selectedNote, isCreatingNew]);
 
-  const proceedWithNavigation = (target: Note | 'new' | 'list' | null) => {
-    if (target === 'new') {
-        setSelectedNote(null);
-        setIsCreatingNew(true);
-        setActiveTab('editor');
-    } else if (target === 'list') {
-        setSelectedNote(null);
-        setIsCreatingNew(false);
-        setActiveTab('list');
-    } else if (target) { // Note object
-        setSelectedNote(target as Note);
-        setIsCreatingNew(false);
-        setActiveTab('editor');
+  const handleSelectNote = (note: Note) => {
+    if (isDirty) {
+      toast({
+        variant: 'destructive',
+        title: 'Unsaved Changes',
+        description: 'Please save your current note before opening another.',
+      });
+      return;
     }
-    setIsDiscardAlertOpen(false);
-  }
+    setSelectedNote(note);
+    setIsCreatingNew(false);
+    if (isMobile) {
+      setActiveTab('editor');
+    }
+  };
 
-  const attemptNavigation = (target: Note | 'new' | 'list') => {
-      if (isDirty) {
-          setNavigationTarget(target);
-          setIsDiscardAlertOpen(true);
-      } else {
-          proceedWithNavigation(target);
-      }
-  }
-
-  const handleSelectNote = (note: Note) => attemptNavigation(note);
-  const handleNewNote = () => attemptNavigation('new');
-  
-  const handleConfirmDiscard = () => {
-    proceedWithNavigation(navigationTarget);
-    setNavigationTarget(null);
+  const handleNewNote = () => {
+     if (isDirty) {
+      toast({
+        variant: 'destructive',
+        title: 'Unsaved Changes',
+        description: 'Please save your current note before creating a new one.',
+      });
+      return;
+    }
+    setSelectedNote(null);
+    setIsCreatingNew(true);
+    if (isMobile) {
+      setActiveTab('editor');
+    }
   };
   
-  const handleCancelDiscard = () => {
-      setNavigationTarget(null);
-      setIsDiscardAlertOpen(false);
+  const handleBackToList = () => {
+    if (isDirty) {
+      toast({
+        variant: 'destructive',
+        title: 'Unsaved Changes',
+        description: 'Please save your current note before switching views.',
+      });
+      return;
+    }
+    setSelectedNote(null);
+    setIsCreatingNew(false);
+    if (isMobile) {
+        setActiveTab('list');
+    }
   };
 
 
@@ -198,7 +212,7 @@ export default function NotesPage() {
       }
       if (parent instanceof HTMLElement) {
         const size = window.getComputedStyle(parent).fontSize;
-        setSelectionFontSize(String(Math.round(parseFloat(size))));
+        setSelectionFontSize(size);
       }
     }
   };
@@ -241,7 +255,7 @@ export default function NotesPage() {
            }
        }
        setIsDirty(true);
-       setSelectionFontSize(String(newSize));
+       setSelectionFontSize(`${newSize}px`);
     }
   };
 
@@ -364,7 +378,7 @@ export default function NotesPage() {
     try {
         await deleteDoc(noteRef);
         toast({ title: 'Note Deleted' });
-        attemptNavigation('list');
+        handleBackToList();
     } catch(e) {
         const permissionError = new FirestorePermissionError({ path: noteRef.path, operation: 'delete' }, user);
         errorEmitter.emit('permission-error', permissionError);
@@ -508,7 +522,7 @@ export default function NotesPage() {
             <Button variant="ghost" size="icon" onClick={() => changeFontSize('decrease')} title="Decrease font size">
                 <Minus className="h-4 w-4" />
             </Button>
-            <span className="text-sm font-medium tabular-nums w-10 text-center">{selectionFontSize}px</span>
+            <span className="text-sm font-medium tabular-nums w-10 text-center">{selectionFontSize}</span>
             <Button variant="ghost" size="icon" onClick={() => changeFontSize('increase')} title="Increase font size">
                 <Plus className="h-4 w-4" />
             </Button>
@@ -569,18 +583,23 @@ export default function NotesPage() {
             <h1 className="text-2xl font-bold tracking-tight">My Notes</h1>
        </div>
        <div className="flex-grow min-h-0">
-            <Tabs value={activeTab} onValueChange={(newTab) => {
-              if (newTab === 'list') {
-                  attemptNavigation('list');
-              } else {
-                  setActiveTab(newTab);
+          {(!mounted || isMobile) ? (
+             <Tabs value={activeTab} onValueChange={(newTab) => {
+              if (isDirty) {
+                toast({ variant: 'destructive', title: 'Unsaved Changes', description: 'Please save your note before switching tabs.' });
+                return;
               }
-            }}>
+              setActiveTab(newTab);
+              if (newTab === 'list') {
+                  setSelectedNote(null);
+                  setIsCreatingNew(false);
+              }
+             }}>
                 <TabsList className="grid w-full grid-cols-2">
                     <TabsTrigger value="editor">{editorVisible && !isCreatingNew ? 'Edit Note' : 'New Note'}</TabsTrigger>
                     <TabsTrigger value="list">All Notes ({notes?.length || 0})</TabsTrigger>
                 </TabsList>
-                <TabsContent value="editor" className="flex-grow flex flex-col min-h-0 mt-2">
+                <TabsContent value="editor" className="flex-grow flex flex-col min-h-0 mt-2 h-full">
                     {editorVisible ? NoteEditor : (
                         <div className="text-center text-muted-foreground py-10 flex flex-col items-center justify-center h-full border-2 border-dashed rounded-lg">
                            <p className="font-semibold">No note selected</p>
@@ -602,23 +621,25 @@ export default function NotesPage() {
                     </ScrollArea>
                 </TabsContent>
             </Tabs>
+          ) : (
+             <div className="grid grid-cols-3 gap-6 h-full pt-4">
+                <div className="col-span-1 h-full">
+                    <ScrollArea className="h-full pr-4 -mr-4">
+                        {NoteList}
+                    </ScrollArea>
+                </div>
+                <div className="col-span-2 h-full flex flex-col">
+                    {editorVisible ? NoteEditor : (
+                        <div className="flex flex-col items-center justify-center h-full text-center text-muted-foreground border-2 border-dashed rounded-lg p-8">
+                            <FileText className="h-12 w-12 mb-4" />
+                            <h3 className="font-semibold">Select a note to view or edit</h3>
+                            <p className="text-sm">Or, create a new one to get started.</p>
+                        </div>
+                    )}
+                </div>
+            </div>
+          )}
        </div>
-        <AlertDialog open={isDiscardAlertOpen} onOpenChange={setIsDiscardAlertOpen}>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>You have unsaved changes</AlertDialogTitle>
-              <AlertDialogDescription>
-                Are you sure you want to leave? Your changes will be discarded.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel onClick={handleCancelDiscard}>Cancel</AlertDialogCancel>
-              <AlertDialogAction onClick={handleConfirmDiscard} className="bg-destructive hover:bg-destructive/90">
-                Discard Changes
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
     </div>
   )
 }
