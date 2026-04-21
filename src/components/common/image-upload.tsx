@@ -96,8 +96,8 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
         toast({ variant: 'destructive', title: 'Invalid File Type', description: 'Please select an image file.' });
         return;
       }
-      if (file.size > 5 * 1024 * 1024) {
-        toast({ variant: 'destructive', title: 'File Too Large', description: 'Please select an image smaller than 5MB.' });
+      if (file.size > 2 * 1024 * 1024) {
+        toast({ variant: 'destructive', title: 'File Too Large', description: 'Please select an image smaller than 2MB.' });
         return;
       }
       setCrop(undefined); // Reset crop on new image
@@ -132,6 +132,16 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
     try {
       const croppedImageBlob = await getCroppedImg(imgRef.current, completedCrop);
       
+      if (croppedImageBlob.size > 2 * 1024 * 1024) {
+        toast({
+            variant: "destructive",
+            title: "Image Too Large After Crop",
+            description: "The cropped image is still larger than 2MB. Please select a smaller area or use a smaller original image.",
+        });
+        setIsCropping(false);
+        return;
+      }
+
       const localUrl = URL.createObjectURL(croppedImageBlob);
       setPreviewUrl(localUrl);
   
