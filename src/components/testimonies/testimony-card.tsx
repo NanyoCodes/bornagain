@@ -35,7 +35,7 @@ import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { cn } from "@/lib/utils";
 
-export const TestimonyCard = React.memo(function TestimonyCard({ testimony, distance, onDelete, onEdit }: { testimony: Testimony, distance: number | null, onDelete: () => void, onEdit: () => void }) {
+export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDelete, onEdit }: { testimony: Testimony, onDelete: () => void, onEdit: () => void }) {
   const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
@@ -45,6 +45,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, dist
   const isAuthor = user?.uid === testimony.authorId;
   const authorFullName = [testimony.authorFirstName, testimony.authorLastName].filter(Boolean).join(' ').trim() || 'Anonymous';
   const profileLink = isAuthor ? "/dashboard/profile" : `/dashboard/profile/${testimony.authorId}`;
+  const isClickable = !!testimony.authorId;
   const initials = (testimony.authorFirstName?.charAt(0) || '') + (testimony.authorLastName?.charAt(0) || '');
 
   const supporters = testimony.supporters || [];
@@ -128,7 +129,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, dist
               )}
             </Dialog>
             <div className="min-w-0 flex-1">
-              <Link href={profileLink} onClick={(e) => e.stopPropagation()}>
+               <Link href={profileLink} onClick={(e) => { if (!isClickable) e.preventDefault(); e.stopPropagation(); }} className={!isClickable ? 'pointer-events-none' : ''}>
                 <CardTitle className={cn("text-base font-semibold", isClickable && "hover:underline")}>{authorFullName}</CardTitle>
               </Link>
               <CardDescription className="text-xs mt-1">
