@@ -1,8 +1,6 @@
-
 'use client';
 
 import { useState, useEffect, useMemo, useRef } from 'react';
-import { useRouter } from 'next/navigation';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -16,7 +14,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Loader2, Plus, Trash2, FileText, Bold, Italic, Underline, Palette, Minus, Download, CornerUpLeft } from 'lucide-react';
+import { Loader2, Plus, Trash2, FileText, Bold, Italic, CornerUpLeft, Underline, Palette, Minus, Download } from 'lucide-react';
 import { useUser, useFirestore, useCollection } from '@/firebase';
 import {
   collection,
@@ -48,10 +46,6 @@ const fontFamilies = [
   { name: 'Default', value: 'Inter, sans-serif' },
   { name: 'Serif', value: 'Playfair Display, serif' },
   { name: 'Monospace', value: 'Source Code Pro, monospace' },
-  { name: 'Arial', value: 'Arial, sans-serif' },
-  { name: 'Georgia', value: 'Georgia, serif' },
-  { name: 'Times New Roman', value: 'Times New Roman, serif' },
-  { name: 'Verdana', value: 'Verdana, sans-serif' },
 ];
 
 
@@ -59,12 +53,11 @@ export default function NotesPage() {
   const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
-  const router = useRouter();
   const isMobile = useIsMobile();
   const [mounted, setMounted] = useState(false);
 
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
-  const [isCreatingNew, setIsCreatingNew] = useState(true); // Default to creating a new note
+  const [isCreatingNew, setIsCreatingNew] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   
@@ -76,19 +69,20 @@ export default function NotesPage() {
 
   const [activeTab, setActiveTab] = useState('editor');
   
-  const [selectionFontSize, setSelectionFontSize] = useState<string>('16px');
+  const [isDiscardAlertOpen, setIsDiscardAlertOpen] = useState(false);
+  const [navigationTarget, setNavigationTarget] = useState<'list' | 'editor' | null>(null);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
   const notesQuery = useMemo(() => {
-    if (!user) return null;
+    if (!user || (activeTab !== 'list' && !isMobile)) return null;
     return query(
       collection(firestore, 'users', user.uid, 'notes'),
       orderBy('updatedAt', 'desc')
     );
-  }, [user, firestore]);
+  }, [user, firestore, activeTab, isMobile]);
   const { data: notes, loading: notesLoading } = useCollection<Note>(notesQuery);
 
   const filteredNotes = useMemo(() => {
@@ -124,13 +118,6 @@ export default function NotesPage() {
         } else if (isCreatingNew) {
             contentRef.current.innerHTML = '';
         }
-        // After setting content, update styles from the editor's root
-        setTimeout(() => {
-            if (contentRef.current) {
-                const size = window.getComputedStyle(contentRef.current).fontSize;
-                setSelectionFontSize(size);
-            }
-        }, 0);
     }
   }, [selectedNote, isCreatingNew, editorVisible]);
   
@@ -144,7 +131,20 @@ export default function NotesPage() {
     }
     setIsDirty(false);
   }, [selectedNote, isCreatingNew]);
-
+  
+  const handleBackToList = () => {
+    setSelectedNote(null);
+    setIsCreatingNew(false);
+    setTitle('');
+    setCategory('Personal');
+    if (contentRef.current) {
+      contentRef.current.innerHTML = '';
+    }
+    if (isMobile) {
+      setActiveTab('list');
+    }
+  }
+  
   const handleSelectNote = (note: Note) => {
     if (isDirty) {
       toast({
@@ -177,20 +177,18 @@ export default function NotesPage() {
     }
   };
   
-  const handleBackToList = () => {
-    if (isDirty) {
-      toast({
-        variant: 'destructive',
-        title: 'Unsaved Changes',
-        description: 'Please save your current note before switching views.',
-      });
-      return;
+  const handleConfirmDiscard = () => {
+    setIsDirty(false);
+    if (navigationTarget === 'list') {
+      handleBackToList();
     }
-    setSelectedNote(null);
-    setIsCreatingNew(false);
-    if (isMobile) {
-        setActiveTab('list');
-    }
+    setNavigationTarget(null);
+    setIsDiscardAlertOpen(false);
+  };
+  
+  const handleCancelDiscard = () => {
+      setNavigationTarget(null);
+      setIsDiscardAlertOpen(false);
   };
 
 
@@ -201,62 +199,25 @@ export default function NotesPage() {
         setIsDirty(true);
     }
   };
-
-  const updateSelectionFontSize = () => {
-    if (!contentRef.current) return;
-    const selection = window.getSelection();
-    if (selection && selection.rangeCount > 0) {
-      let parent = selection.getRangeAt(0).commonAncestorContainer;
-      if (parent.nodeType !== Node.ELEMENT_NODE) {
-        parent = parent.parentNode!;
-      }
-      if (parent instanceof HTMLElement) {
-        const size = window.getComputedStyle(parent).fontSize;
-        setSelectionFontSize(size);
-      }
-    }
-  };
   
   const changeFontSize = (direction: 'increase' | 'decrease') => {
     if (!contentRef.current) return;
-    const selection = window.getSelection();
-    if (!selection || selection.rangeCount === 0 || selection.toString().length === 0) {
-        toast({
-            variant: "default",
-            title: "No Text Selected",
-            description: "Please highlight the text you want to resize.",
-        });
-        return;
+    document.execCommand('fontSize', false, "1"); // A trick to apply span
+    const fontElements = contentRef.current.getElementsByTagName('font');
+    for (let i = 0; i < fontElements.length; i++) {
+        if (fontElements[i].size === "1") {
+            const currentSize = parseFloat(window.getComputedStyle(fontElements[i]).fontSize);
+            let newSize;
+            if (direction === 'increase') {
+                newSize = Math.min(currentSize + 2, 48); // Max size 48px
+            } else {
+                newSize = Math.max(currentSize - 2, 10); // Min size 10px
+            }
+            fontElements[i].removeAttribute('size');
+            fontElements[i].style.fontSize = newSize + 'px';
+        }
     }
-    
-    contentRef.current.focus();
-    document.execCommand('styleWithCSS', false, 'false');
-    
-    const parent = selection.getRangeAt(0).commonAncestorContainer;
-    const targetElement = parent.nodeType === 1 ? parent : parent.parentElement;
-    
-    if (targetElement && targetElement instanceof HTMLElement) {
-      const currentSizeStr = window.getComputedStyle(targetElement).fontSize;
-      let currentSize = parseFloat(currentSizeStr);
-      if(isNaN(currentSize)) currentSize = 16; // default
-      
-      let newSize;
-      if (direction === 'increase') {
-          newSize = Math.min(currentSize + 2, 48); // Max size 48px
-      } else {
-          newSize = Math.max(currentSize - 2, 10); // Min size 10px
-      }
-       document.execCommand('fontSize', false, "7");
-       const fontElements = contentRef.current.getElementsByTagName('font');
-       for (let i = 0; i < fontElements.length; i++) {
-           if (fontElements[i].size === "7") {
-               fontElements[i].removeAttribute('size');
-               fontElements[i].style.fontSize = newSize + 'px';
-           }
-       }
-       setIsDirty(true);
-       setSelectionFontSize(`${newSize}px`);
-    }
+    setIsDirty(true);
   };
 
   const handleExportPdf = () => {
@@ -522,7 +483,6 @@ export default function NotesPage() {
             <Button variant="ghost" size="icon" onClick={() => changeFontSize('decrease')} title="Decrease font size">
                 <Minus className="h-4 w-4" />
             </Button>
-            <span className="text-sm font-medium tabular-nums w-10 text-center">{selectionFontSize}</span>
             <Button variant="ghost" size="icon" onClick={() => changeFontSize('increase')} title="Increase font size">
                 <Plus className="h-4 w-4" />
             </Button>
@@ -531,8 +491,6 @@ export default function NotesPage() {
           ref={contentRef}
           onInput={() => !isDirty && setIsDirty(true)}
           onPaste={handlePaste}
-          onMouseUp={updateSelectionFontSize}
-          onKeyUp={updateSelectionFontSize}
           contentEditable
           suppressContentEditableWarning
           className={cn(
@@ -583,63 +541,80 @@ export default function NotesPage() {
             <h1 className="text-2xl font-bold tracking-tight">My Notes</h1>
        </div>
        <div className="flex-grow min-h-0">
-          {(!mounted || isMobile) ? (
-             <Tabs value={activeTab} onValueChange={(newTab) => {
-              if (isDirty) {
-                toast({ variant: 'destructive', title: 'Unsaved Changes', description: 'Please save your note before switching tabs.' });
-                return;
-              }
-              setActiveTab(newTab);
-              if (newTab === 'list') {
-                  setSelectedNote(null);
-                  setIsCreatingNew(false);
-              }
-             }}>
-                <TabsList className="grid w-full grid-cols-2">
-                    <TabsTrigger value="editor">{editorVisible && !isCreatingNew ? 'Edit Note' : 'New Note'}</TabsTrigger>
-                    <TabsTrigger value="list">All Notes ({notes?.length || 0})</TabsTrigger>
-                </TabsList>
-                <TabsContent value="editor" className="flex-grow flex flex-col min-h-0 mt-2 h-full">
-                    {editorVisible ? NoteEditor : (
-                        <div className="text-center text-muted-foreground py-10 flex flex-col items-center justify-center h-full border-2 border-dashed rounded-lg">
-                           <p className="font-semibold">No note selected</p>
-                           <p className="text-sm">Select a note to edit, or create a new one.</p>
-                           <div className="flex items-center gap-4 mt-4">
-                                <Button onClick={handleNewNote} variant="outline">
-                                    <Plus className="mr-2 h-4 w-4" /> New Note
-                                </Button>
-                                <Button onClick={() => router.back()} variant="secondary">
-                                    Close
-                                </Button>
+            {(!mounted || !isMobile) ? (
+                <div className="grid grid-cols-3 gap-6 h-full pt-4">
+                    <div className="col-span-1 h-full">
+                        <ScrollArea className="h-full">
+                           <div className="pr-4">
+                            {NoteList}
                            </div>
-                        </div>
-                    )}
-                </TabsContent>
-                <TabsContent value="list" className="flex-grow min-h-0 mt-2">
-                    <ScrollArea className="h-full -mr-4 pr-4">
-                        {NoteList}
-                    </ScrollArea>
-                </TabsContent>
-            </Tabs>
-          ) : (
-             <div className="grid grid-cols-3 gap-6 h-full pt-4">
-                <div className="col-span-1 h-full">
-                    <ScrollArea className="h-full pr-4 -mr-4">
-                        {NoteList}
-                    </ScrollArea>
+                        </ScrollArea>
+                    </div>
+                    <div className="col-span-2 h-full flex flex-col">
+                        {editorVisible ? NoteEditor : (
+                            <div className="flex flex-col items-center justify-center h-full text-center text-muted-foreground border-2 border-dashed rounded-lg p-8">
+                                <FileText className="h-12 w-12 mb-4" />
+                                <h3 className="font-semibold">Select a note to view or edit</h3>
+                                <p className="text-sm">Or, create a new one to get started.</p>
+                            </div>
+                        )}
+                    </div>
                 </div>
-                <div className="col-span-2 h-full flex flex-col">
-                    {editorVisible ? NoteEditor : (
-                        <div className="flex flex-col items-center justify-center h-full text-center text-muted-foreground border-2 border-dashed rounded-lg p-8">
-                            <FileText className="h-12 w-12 mb-4" />
-                            <h3 className="font-semibold">Select a note to view or edit</h3>
-                            <p className="text-sm">Or, create a new one to get started.</p>
-                        </div>
-                    )}
-                </div>
-            </div>
-          )}
+            ) : (
+                <Tabs value={activeTab} onValueChange={(newTab) => {
+                  if (isDirty) {
+                    setNavigationTarget(newTab as 'list' | 'editor');
+                    setIsDiscardAlertOpen(true);
+                  } else if (newTab === 'list') {
+                      handleBackToList();
+                  } else {
+                      setActiveTab(newTab);
+                  }
+                }}>
+                    <TabsList className="grid w-full grid-cols-2">
+                        <TabsTrigger value="editor">{editorVisible && !isCreatingNew ? 'Edit Note' : 'New Note'}</TabsTrigger>
+                        <TabsTrigger value="list">All Notes ({notes?.length || 0})</TabsTrigger>
+                    </TabsList>
+                    <TabsContent value="editor" className="flex-grow flex flex-col min-h-0 mt-2">
+                        {editorVisible ? NoteEditor : (
+                            <div className="text-center text-muted-foreground py-10 flex flex-col items-center justify-center h-full border-2 border-dashed rounded-lg">
+                               <p className="font-semibold">No note selected</p>
+                               <p className="text-sm">Select a note to edit, or create a new one.</p>
+                               <div className="flex items-center gap-4 mt-4">
+                                    <Button onClick={handleNewNote} variant="outline">
+                                        <Plus className="mr-2 h-4 w-4" /> New Note
+                                    </Button>
+                                    <Button onClick={() => { if(isDirty) { setNavigationTarget('list'); setIsDiscardAlertOpen(true); } else { handleBackToList(); } }} variant="secondary">
+                                        Close
+                                    </Button>
+                               </div>
+                            </div>
+                        )}
+                    </TabsContent>
+                    <TabsContent value="list" className="flex-grow min-h-0 mt-2">
+                        <ScrollArea className="h-full">
+                            {NoteList}
+                        </ScrollArea>
+                    </TabsContent>
+                </Tabs>
+            )}
        </div>
+        <AlertDialog open={isDiscardAlertOpen} onOpenChange={setIsDiscardAlertOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>You have unsaved changes</AlertDialogTitle>
+              <AlertDialogDescription>
+                Are you sure you want to leave? Your changes will be discarded.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel onClick={handleCancelDiscard}>Cancel</AlertDialogCancel>
+              <AlertDialogAction onClick={handleConfirmDiscard} className="bg-destructive hover:bg-destructive/90">
+                Discard Changes
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
     </div>
   )
 }
