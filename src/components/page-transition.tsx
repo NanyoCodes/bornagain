@@ -2,8 +2,7 @@
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { usePathname } from 'next/navigation';
-import React, { useState, useEffect } from 'react';
-import { cn } from '@/lib/utils';
+import React from 'react';
 
 const variants = {
   initial: { opacity: 0, y: 15 },
@@ -11,47 +10,11 @@ const variants = {
   exit: { opacity: 0, y: -15 },
 };
 
-const transitionWords = [
-  "PRAY",
-  "TESTIFY",
-  "STUDY THE WORD",
-  "TEACH",
-  "LOVE",
-  "FORGIVE",
-  "REPENT",
-  "SING",
-  "SMILE",
-  "JOURNAL",
-  "WRITE",
-];
-
 export function PageTransition({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const [word, setWord] = useState('');
-
-  useEffect(() => {
-    // This effect runs on the client after hydration to avoid hydration mismatch
-    const randomWord = transitionWords[Math.floor(Math.random() * transitionWords.length)];
-    setWord(randomWord);
-  }, [pathname]);
 
   return (
-    // This outer div will contain the word as a background element
     <div className="relative h-full">
-      <div className="fixed inset-0 z-0 flex items-center justify-center p-8 bg-background">
-        <div className="text-center max-w-2xl">
-          <motion.p
-            key={word}
-            initial={{ opacity: 0, scale: 0.5 }}
-            animate={{ opacity: 1, scale: 1.1 }}
-            transition={{ duration: 0.4, ease: 'easeOut' }}
-            className="text-4xl md:text-5xl font-headline font-bold tracking-wider uppercase text-muted-foreground"
-          >
-            {word}
-          </motion.p>
-        </div>
-      </div>
-      
       <AnimatePresence
         mode="wait"
         initial={false}
@@ -64,7 +27,7 @@ export function PageTransition({ children }: { children: React.ReactNode }) {
           animate="animate"
           exit="exit"
           transition={{ type: 'easeInOut', duration: 0.4 }}
-          className="relative z-10 bg-background h-full flex flex-col" // Give content a background and height constraints
+          className="relative z-10 bg-background h-full flex flex-col"
         >
           {children}
         </motion.div>
