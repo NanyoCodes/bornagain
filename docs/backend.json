@@ -476,6 +476,11 @@
         "lastName": {
           "type": "string"
         },
+        "photoURL": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL of the soul's profile picture."
+        },
         "email": {
             "type": "string",
             "format": "email",

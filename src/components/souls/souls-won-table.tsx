@@ -1,3 +1,4 @@
+
 "use client";
 
 import * as React from "react";
@@ -37,7 +38,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/collapsible";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { actionItems } from "@/lib/follow-up-data";
 import { SoulInsightsDialog } from "./soul-insights-dialog";
 import { Label } from "../ui/label";
@@ -48,6 +49,8 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
+import Image from "next/image";
+
 
 const getStatusClasses = (status: FollowUpStatus | undefined): string => {
     if (!status) return 'bg-secondary text-secondary-foreground border-border';
@@ -95,9 +98,22 @@ function SoulCard({ soul, onEdit, onDelete, onFollowUp, onViewHistory, onExportS
                 <CollapsibleTrigger className="group w-full p-4 text-left">
                      <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3 min-w-0">
-                            <Avatar>
-                                <AvatarFallback>{soul.firstName?.charAt(0)}{soul.lastName?.charAt(0)}</AvatarFallback>
-                            </Avatar>
+                            <Dialog>
+                                <DialogTrigger asChild disabled={!soul.photoURL}>
+                                    <Avatar className={cn(soul.photoURL && "cursor-pointer")}>
+                                        <AvatarImage src={soul.photoURL} />
+                                        <AvatarFallback>{soul.firstName?.charAt(0)}{soul.lastName?.charAt(0)}</AvatarFallback>
+                                    </Avatar>
+                                </DialogTrigger>
+                                {soul.photoURL && (
+                                    <DialogContent className="p-0 bg-transparent border-0 w-auto max-w-lg">
+                                        <DialogHeader className="sr-only">
+                                            <DialogTitle>Profile photo of {soul.firstName} {soul.lastName}</DialogTitle>
+                                        </DialogHeader>
+                                        <Image src={soul.photoURL} alt={`${soul.firstName} ${soul.lastName}`} width={600} height={600} className="rounded-lg object-contain"/>
+                                    </DialogContent>
+                                )}
+                            </Dialog>
                             <div className="min-w-0">
                                 <SoulInsightsDialog soul={soul}>
                                     <p className="font-semibold truncate cursor-pointer hover:underline">{soul.firstName || 'Unknown'} {soul.lastName || ''}</p>
@@ -215,6 +231,7 @@ function SoulTableRow({ soul, onEdit, onDelete, onFollowUp, onViewHistory, onExp
             <TableCell className="font-medium">
                 <div className="flex items-center gap-3">
                     <Avatar className="hidden sm:inline-flex h-9 w-9">
+                        <AvatarImage src={soul.photoURL} />
                         <AvatarFallback>{soul.firstName?.charAt(0)}{soul.lastName?.charAt(0)}</AvatarFallback>
                     </Avatar>
                     <div>

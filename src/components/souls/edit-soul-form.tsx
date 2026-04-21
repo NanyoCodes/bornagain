@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -25,10 +26,12 @@ import { FirestorePermissionError } from "@/firebase/errors";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
+import { ImageUpload } from "../common/image-upload";
 
 const formSchema = z.object({
   firstName: z.string().min(2, "First name must be at least 2 characters."),
   lastName: z.string().min(2, "Last name must be at least 2 characters."),
+  photoURL: z.string().optional(),
   email: z.string().email("Please enter a valid email address.").optional().or(z.literal('')),
   phone: z.string().optional(),
   church: z.string().optional(),
@@ -64,6 +67,7 @@ export function EditSoulForm({ soul, onSoulUpdated }: EditSoulFormProps) {
     defaultValues: {
       firstName: soul.firstName || "",
       lastName: soul.lastName || "",
+      photoURL: soul.photoURL || "",
       email: soul.email || "",
       phone: soul.phone || "",
       church: soul.church || "",
@@ -91,6 +95,8 @@ export function EditSoulForm({ soul, onSoulUpdated }: EditSoulFormProps) {
     setIsLoading(true);
 
     const soulRef = doc(firestore, `users/${user.uid}/souls`, soul.id);
+    const globalSoulRef = doc(firestore, 'souls', soul.id);
+
     const soulUpdateData: { [key: string]: any } = {
       firstName: values.firstName,
       lastName: values.lastName,
@@ -98,6 +104,7 @@ export function EditSoulForm({ soul, onSoulUpdated }: EditSoulFormProps) {
       wonAt: values.wonAt,
     };
     
+    if (values.photoURL) soulUpdateData.photoURL = values.photoURL; else soulUpdateData.photoURL = deleteField();
     if (values.email) soulUpdateData.email = values.email; else soulUpdateData.email = deleteField();
     if (values.phone) soulUpdateData.phone = values.phone; else soulUpdateData.phone = deleteField();
     if (values.church) soulUpdateData.church = values.church; else soulUpdateData.church = deleteField();
@@ -126,7 +133,10 @@ export function EditSoulForm({ soul, onSoulUpdated }: EditSoulFormProps) {
     }
 
     try {
-        await updateDoc(soulRef, soulUpdateData);
+        await Promise.all([
+            updateDoc(soulRef, soulUpdateData),
+            updateDoc(globalSoulRef, soulUpdateData), // Keep global collection in sync
+        ]);
         
         toast({
             title: "Soul Updated",
@@ -191,6 +201,24 @@ export function EditSoulForm({ soul, onSoulUpdated }: EditSoulFormProps) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <FormField
+            control={form.control}
+            name="photoURL"
+            render={({ field }) => (
+                <FormItem className="flex flex-col items-center">
+                    <FormControl>
+                        <ImageUpload
+                            initialImageUrl={field.value}
+                            onUploadComplete={(url) => field.onChange(url)}
+                            storagePath="souls-photos"
+                            cropAspect={1}
+                            circularCrop={true}
+                        />
+                    </FormControl>
+                    <FormMessage />
+                </FormItem>
+            )}
+        />
         <div className="grid grid-cols-2 gap-4">
             <FormField
             control={form.control}

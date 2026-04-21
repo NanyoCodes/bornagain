@@ -27,7 +27,7 @@ import { SoulsWonTable } from "@/components/souls/souls-won-table";
 import { LogSoulForm } from "@/components/souls/log-soul-form";
 import type { Soul } from "@/lib/types";
 import { useCollection, useFirestore, useUser } from "@/firebase";
-import { collection, query, orderBy, doc, writeBatch } from "firebase/firestore";
+import { collection, query, orderBy, doc, writeBatch, updateDoc } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useSearch } from "@/context/search-context";
@@ -441,7 +441,7 @@ export default function SoulsWonPage() {
 
       {soulToEdit && (
           <Dialog open={!!soulToEdit} onOpenChange={(isOpen) => !isOpen && setSoulToEdit(null)}>
-              <DialogContent>
+              <DialogContent className="sm:max-w-lg">
                   <DialogHeader>
                       <DialogTitle>Edit Soul Details</DialogTitle>
                       <DialogDescription>Make changes to the record for {soulToEdit?.firstName} {soulToEdit?.lastName}.</DialogDescription>

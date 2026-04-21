@@ -213,6 +213,7 @@ export type Soul = {
   userId: string;
   firstName: string;
   lastName: string;
+  photoURL?: string;
   email?: string;
   phone?: string;
   church?: string;
@@ -297,4 +298,12 @@ export type AccountabilityRequest = {
   createdAt: Timestamp;
   respondedAt?: Timestamp;
   participantIds: string[];
+};
+
+export type Mail = {
+  to: string[];
+  message: {
+    subject: string;
+    html: string;
+  };
 };
