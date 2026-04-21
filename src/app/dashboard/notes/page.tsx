@@ -118,29 +118,39 @@ export default function NotesPage() {
   }, [filteredNotes]);
 
   const editorVisible = selectedNote || isCreatingNew;
-  
-  useEffect(() => {
-    const selection = window.getSelection();
-    if (selection && selection.rangeCount > 0) {
-      const range = selection.getRangeAt(0);
-      let element = range.startContainer;
 
-      // Traverse up the DOM tree to find an element with a font-size style
-      while (element && element.nodeType === Node.ELEMENT_NODE && element !== contentRef.current) {
-        const fontSizeStyle = (element as HTMLElement).style.fontSize;
-        if (fontSizeStyle) {
-          const size = parseInt(fontSizeStyle, 10);
-          if (!isNaN(size)) {
-            setFontSize(size);
-            return;
+  const updateFontSizeFromSelection = () => {
+    const selection = window.getSelection();
+    if (selection && selection.rangeCount > 0 && contentRef.current) {
+      const range = selection.getRangeAt(0);
+      let element: Node | null = range.startContainer;
+      
+      while (element && element !== contentRef.current) {
+        if (element.nodeType === Node.ELEMENT_NODE) {
+          const fontSizeStyle = (element as HTMLElement).style.fontSize;
+          if (fontSizeStyle) {
+            const size = parseInt(fontSizeStyle, 10);
+            if (!isNaN(size)) {
+              setFontSize(size);
+              return;
+            }
           }
         }
         element = element.parentNode;
       }
     }
-    // If no specific font size is found in the selection, default to 16
-    setFontSize(16);
-  }, [isDirty]); // Re-check on content change or selection change
+    setFontSize(16); // Default size if nothing is found
+  };
+  
+  useEffect(() => {
+    if (editorVisible && contentRef.current) {
+      const newContent = selectedNote?.content || '';
+      if (contentRef.current.innerHTML !== newContent) {
+          contentRef.current.innerHTML = newContent;
+      }
+    }
+  }, [selectedNote, isCreatingNew, editorVisible]);
+
   
   useEffect(() => {
     if (selectedNote) {
@@ -526,11 +536,10 @@ export default function NotesPage() {
           ref={contentRef}
           onInput={() => !isDirty && setIsDirty(true)}
           onPaste={handlePaste}
-          onMouseUp={() => setIsDirty(d => !d)}
-          onKeyUp={() => setIsDirty(d => !d)}
+          onMouseUp={updateFontSizeFromSelection}
+          onKeyUp={updateFontSizeFromSelection}
           contentEditable
           suppressContentEditableWarning
-          dangerouslySetInnerHTML={{ __html: selectedNote?.content || '' }}
           className={cn(
             "flex-grow border rounded-md p-3 focus:ring-2 focus:ring-ring focus:outline-none text-base"
           )}
