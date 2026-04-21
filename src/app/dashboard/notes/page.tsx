@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useMemo, useRef } from 'react';
@@ -31,7 +30,6 @@ import {
 import type { Note, NoteCategory } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
-import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
@@ -50,11 +48,9 @@ export default function NotesPage() {
   const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
-  const isMobile = useIsMobile();
-  const [mounted, setMounted] = useState(false);
 
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
-  const [isCreatingNew, setIsCreatingNew] = useState(false);
+  const [isCreatingNew, setIsCreatingNew] = useState(true); // Default to creating a new note
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   
@@ -64,18 +60,18 @@ export default function NotesPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const contentRef = useRef<HTMLDivElement>(null);
 
-  const [mobileTab, setMobileTab] = useState('list');
+  const [activeTab, setActiveTab] = useState('editor'); // Unified view state
   
   const [isDiscardAlertOpen, setIsDiscardAlertOpen] = useState(false);
   const [navigationTarget, setNavigationTarget] = useState<Note | 'new' | 'list' | null>(null);
 
   const notesQuery = useMemo(() => {
-    if (!user) return null;
+    if (!user || activeTab !== 'list') return null; // Only fetch notes when the list tab is active
     return query(
       collection(firestore, 'users', user.uid, 'notes'),
       orderBy('updatedAt', 'desc')
     );
-  }, [user, firestore]);
+  }, [user, firestore, activeTab]);
   const { data: notes, loading: notesLoading } = useCollection<Note>(notesQuery);
 
   const filteredNotes = useMemo(() => {
@@ -101,10 +97,6 @@ export default function NotesPage() {
       return acc;
     }, {} as Record<NoteCategory, Note[]>);
   }, [filteredNotes]);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const editorVisible = selectedNote || isCreatingNew;
   
@@ -134,15 +126,15 @@ export default function NotesPage() {
     if (target === 'new') {
         setSelectedNote(null);
         setIsCreatingNew(true);
-        if (isMobile) setMobileTab('editor');
+        setActiveTab('editor');
     } else if (target === 'list') {
         setSelectedNote(null);
         setIsCreatingNew(false);
-        if (isMobile) setMobileTab('list');
+        setActiveTab('list');
     } else if (target) { // Note object
         setSelectedNote(target as Note);
         setIsCreatingNew(false);
-         if (isMobile) setMobileTab('editor');
+        setActiveTab('editor');
     }
     // Closing the dialog and resetting target is handled separately for cancel
     setIsDiscardAlertOpen(false);
@@ -159,7 +151,6 @@ export default function NotesPage() {
 
   const handleSelectNote = (note: Note) => attemptNavigation(note);
   const handleNewNote = () => attemptNavigation('new');
-  const handleBackToList = () => attemptNavigation('list');
   
   const handleConfirmDiscard = () => {
     proceedWithNavigation(navigationTarget);
@@ -340,7 +331,7 @@ export default function NotesPage() {
     try {
         await deleteDoc(noteRef);
         toast({ title: 'Note Deleted' });
-        handleBackToList();
+        attemptNavigation('list');
     } catch(e) {
         const permissionError = new FirestorePermissionError({ path: noteRef.path, operation: 'delete' }, user);
         errorEmitter.emit('permission-error', permissionError);
@@ -418,11 +409,6 @@ export default function NotesPage() {
   
   const NoteEditor = (
     <div className="flex flex-col h-full" key={selectedNote?.id || (isCreatingNew ? 'new-note' : 'empty-editor')}>
-      {isMobile && editorVisible && (
-        <Button onClick={handleBackToList} variant="ghost" className="mb-4 self-start">
-            <CornerUpLeft className="mr-2 h-4 w-4" /> Back to List
-        </Button>
-      )}
       <div className="space-y-4 flex-grow flex flex-col">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Input
@@ -527,44 +513,6 @@ export default function NotesPage() {
       </div>
     </div>
   );
-
-  const pageContent = !mounted ? <div className="flex justify-center py-20"><Loader2 className="h-8 w-8 animate-spin" /></div> : isMobile ? (
-    <Tabs value={mobileTab} onValueChange={setMobileTab} className="flex-grow flex flex-col min-h-0">
-        <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="list">Notes ({filteredNotes?.length || 0})</TabsTrigger>
-            <TabsTrigger value="editor" disabled={!editorVisible}>Editor</TabsTrigger>
-        </TabsList>
-        <TabsContent value="list" className="flex-grow min-h-0 mt-2">
-            <ScrollArea className="h-full -mr-4 pr-4">
-                {NoteList}
-            </ScrollArea>
-        </TabsContent>
-        <TabsContent value="editor" className="flex-grow flex flex-col min-h-0 mt-2">
-            {editorVisible ? NoteEditor : (
-                <div className="text-center text-muted-foreground py-10 flex flex-col items-center justify-center h-full">
-                    <p>Select a note to edit, or create a new one.</p>
-                </div>
-            )}
-        </TabsContent>
-    </Tabs>
-) : (
-    <div className="grid grid-cols-1 md:grid-cols-4 gap-6 h-full">
-        <div className="md:col-span-1 h-full">
-            <ScrollArea className="h-full pr-4 -mr-4">
-                {NoteList}
-            </ScrollArea>
-        </div>
-        <div className="md:col-span-3 h-full flex flex-col">
-            {editorVisible ? NoteEditor : (
-                <div className="flex flex-col items-center justify-center h-full text-center text-muted-foreground border-2 border-dashed rounded-lg p-8">
-                    <FileText className="h-12 w-12 mb-4" />
-                    <h3 className="font-semibold">Select a note to view or edit</h3>
-                    <p className="text-sm">Or, create a new one to get started.</p>
-                </div>
-            )}
-        </div>
-    </div>
-  );
   
   return (
     <div className="space-y-4 h-full flex flex-col">
@@ -572,7 +520,24 @@ export default function NotesPage() {
             <h1 className="text-2xl font-bold tracking-tight">My Notes</h1>
        </div>
        <div className="flex-grow min-h-0">
-         {pageContent}
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-grow flex flex-col min-h-0">
+                <TabsList className="grid w-full grid-cols-2">
+                    <TabsTrigger value="editor">{editorVisible && !isCreatingNew ? 'Edit Note' : 'New Note'}</TabsTrigger>
+                    <TabsTrigger value="list">All Notes ({notes?.length || 0})</TabsTrigger>
+                </TabsList>
+                <TabsContent value="editor" className="flex-grow flex flex-col min-h-0 mt-2">
+                    {editorVisible ? NoteEditor : (
+                        <div className="text-center text-muted-foreground py-10 flex flex-col items-center justify-center h-full">
+                            <p>Select a note to edit, or create a new one.</p>
+                        </div>
+                    )}
+                </TabsContent>
+                <TabsContent value="list" className="flex-grow min-h-0 mt-2">
+                    <ScrollArea className="h-full -mr-4 pr-4">
+                        {NoteList}
+                    </ScrollArea>
+                </TabsContent>
+            </Tabs>
        </div>
         <AlertDialog open={isDiscardAlertOpen} onOpenChange={setIsDiscardAlertOpen}>
           <AlertDialogContent>
