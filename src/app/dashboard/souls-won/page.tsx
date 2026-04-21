@@ -383,9 +383,6 @@ export default function SoulsWonPage() {
       <div className="flex items-center justify-between">
         <div className="space-y-2">
           <h1 className="text-xl sm:text-2xl font-bold tracking-tight font-headline">Souls Won</h1>
-          <p className="text-xs text-muted-foreground">
-            Track and nurture individuals you've led to Christ.
-          </p>
         </div>
         <div className="flex items-center gap-2">
            <DropdownMenu>
