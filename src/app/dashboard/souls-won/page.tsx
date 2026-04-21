@@ -107,24 +107,23 @@ export default function SoulsWonPage() {
 
     const userSoulRef = doc(firestore, `users/${user.uid}/souls`, soulToDelete.id);
     const globalSoulRef = doc(firestore, 'souls', soulToDelete.id);
-    const soul = soulToDelete;
-
+    
     try {
         const batch = writeBatch(firestore);
         batch.delete(userSoulRef);
         batch.delete(globalSoulRef);
-
-        setSoulToDelete(null); // Close the dialog FIRST
+        
         await batch.commit();
 
         toast({
             title: "Soul Record Deleted",
-            description: `${soul.firstName}'s record has been removed.`,
+            description: `${soulToDelete.firstName}'s record has been removed.`,
         });
+        setSoulToDelete(null); // Close dialog on success
     } catch (error) {
-        setSoulToDelete(soul); // Re-open on error
+        // On error, dialog remains open because `setSoulToDelete(null)` is not called.
         const permissionError = new FirestorePermissionError({
-            path: `BATCH_DELETE:SOUL:${soul.id}`,
+            path: `BATCH_DELETE:SOUL:${soulToDelete.id}`,
             operation: 'delete',
         }, user);
         errorEmitter.emit('permission-error', permissionError);
@@ -160,7 +159,7 @@ export default function SoulsWonPage() {
                     const logParts = [note, actions].filter(Boolean).join(' - ');
                     return `${date}: ${logParts || 'Interaction logged.'}`;
                 })
-                .join('\n')
+                .join('\\n')
             : 'No follow-up history.';
 
         const locationWonString = soul.locationWon ? [soul.locationWon.city, soul.locationWon.state, soul.locationWon.country].filter(Boolean).join(', ') : '';
@@ -213,7 +212,7 @@ export default function SoulsWonPage() {
     const escapeCsvCell = (cellData: any): string => {
         if (cellData === null || cellData === undefined) return '';
         const stringVal = String(cellData);
-        if (stringVal.includes(',') || stringVal.includes('"') || stringVal.includes('\n')) {
+        if (stringVal.includes(',') || stringVal.includes('"') || stringVal.includes('\\n')) {
             return `"${stringVal.replace(/"/g, '""')}"`;
         }
         return stringVal;
@@ -221,7 +220,7 @@ export default function SoulsWonPage() {
     
     const csvRows = body.map(row => row.map(escapeCsvCell).join(','));
 
-    const csvString = [headers.join(','), ...csvRows].join('\n');
+    const csvString = [headers.join(','), ...csvRows].join('\\n');
     const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
@@ -263,7 +262,7 @@ export default function SoulsWonPage() {
                 const logParts = [note, actions].filter(Boolean).join(' - ');
                 return `${date}: ${logParts || 'Interaction logged.'}`;
             })
-            .join('\n')
+            .join('\\n')
         : 'No follow-up history.';
 
     const locationWonString = soul.locationWon ? [soul.locationWon.city, soul.locationWon.state, soul.locationWon.country].filter(Boolean).join(', ') : '';
@@ -337,7 +336,7 @@ export default function SoulsWonPage() {
     const escapeCsvCell = (cellData: any): string => {
         if (cellData === null || cellData === undefined) return '';
         const stringVal = String(cellData);
-        if (stringVal.includes(',') || stringVal.includes('"') || stringVal.includes('\n')) {
+        if (stringVal.includes(',') || stringVal.includes('"') || stringVal.includes('\\n')) {
             return `"${stringVal.replace(/"/g, '""')}"`;
         }
         return stringVal;
@@ -345,7 +344,7 @@ export default function SoulsWonPage() {
     
     const csvRows = [row].map(r => r.map(escapeCsvCell).join(','));
 
-    const csvString = [headers.join(','), ...csvRows].join('\n');
+    const csvString = [headers.join(','), ...csvRows].join('\\n');
     const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
