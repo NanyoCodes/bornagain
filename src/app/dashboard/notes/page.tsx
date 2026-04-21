@@ -1,7 +1,7 @@
-
 'use client';
 
 import { useState, useEffect, useMemo, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -49,6 +49,8 @@ const fontFamilies = [
   { name: 'Monospace', value: 'Source Code Pro, monospace' },
   { name: 'Arial', value: 'Arial, sans-serif' },
   { name: 'Georgia', value: 'Georgia, serif' },
+  { name: 'Times New Roman', value: 'Times New Roman, serif' },
+  { name: 'Verdana', value: 'Verdana, sans-serif' },
 ];
 
 
@@ -56,6 +58,7 @@ export default function NotesPage() {
   const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
+  const router = useRouter();
 
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
   const [isCreatingNew, setIsCreatingNew] = useState(true); // Default to creating a new note
@@ -582,9 +585,14 @@ export default function NotesPage() {
                         <div className="text-center text-muted-foreground py-10 flex flex-col items-center justify-center h-full border-2 border-dashed rounded-lg">
                            <p className="font-semibold">No note selected</p>
                            <p className="text-sm">Select a note to edit, or create a new one.</p>
-                           <Button onClick={handleNewNote} variant="outline" className="mt-4">
-                                <Plus className="mr-2 h-4 w-4" /> New Note
-                           </Button>
+                           <div className="flex items-center gap-4 mt-4">
+                                <Button onClick={handleNewNote} variant="outline">
+                                    <Plus className="mr-2 h-4 w-4" /> New Note
+                                </Button>
+                                <Button onClick={() => router.back()} variant="secondary">
+                                    Close
+                                </Button>
+                           </div>
                         </div>
                     )}
                 </TabsContent>
