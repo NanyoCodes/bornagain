@@ -175,9 +175,6 @@ export default function ChatsPage() {
                 <h1 className="text-2xl sm:text-3xl font-bold tracking-tight font-headline">
                     Chats
                 </h1>
-                <p className="text-muted-foreground">
-                    Your conversations with campaign organizers and partners.
-                </p>
             </div>
 
             <Card>
