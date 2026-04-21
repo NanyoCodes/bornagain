@@ -76,6 +76,7 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
   const [crop, setCrop] = useState<Crop>();
   const [completedCrop, setCompletedCrop] = useState<PixelCrop>();
   const [isCropModalOpen, setIsCropModalOpen] = useState(false);
+  const [isCropping, setIsCropping] = useState(false);
   const imgRef = useRef<HTMLImageElement>(null);
   
   useEffect(() => {
@@ -124,17 +125,29 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
 
   const handleCrop = async () => {
     if (!completedCrop || !imgRef.current) {
-        return;
+      return;
     }
-    const croppedImageBlob = await getCroppedImg(imgRef.current, completedCrop);
     
-    // Set local preview
-    const localUrl = URL.createObjectURL(croppedImageBlob);
-    setPreviewUrl(localUrl);
-
-    await handleUpload(croppedImageBlob);
-    setIsCropModalOpen(false);
-    setImgSrc('');
+    setIsCropping(true);
+    try {
+      const croppedImageBlob = await getCroppedImg(imgRef.current, completedCrop);
+      
+      const localUrl = URL.createObjectURL(croppedImageBlob);
+      setPreviewUrl(localUrl);
+  
+      await handleUpload(croppedImageBlob);
+      setIsCropModalOpen(false);
+      setImgSrc('');
+    } catch (e) {
+      console.error("Cropping failed", e);
+      toast({
+        variant: "destructive",
+        title: "Crop Failed",
+        description: "There was an error while cropping the image. Please try again or use a different image.",
+      });
+    } finally {
+      setIsCropping(false);
+    }
   };
 
   const handleUpload = async (file: File | Blob) => {
@@ -252,9 +265,9 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsCropModalOpen(false)}>Cancel</Button>
-            <Button onClick={handleCrop} disabled={!completedCrop}>
-              <CropIcon className="mr-2 h-4 w-4" />
-              Crop & Save
+            <Button onClick={handleCrop} disabled={!completedCrop || isCropping}>
+              {isCropping ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <CropIcon className="mr-2 h-4 w-4" />}
+              {isCropping ? 'Processing...' : 'Crop & Save'}
             </Button>
           </DialogFooter>
         </DialogContent>
