@@ -32,7 +32,6 @@ import { ImageUpload } from "../common/image-upload";
 const formSchema = z.object({
   firstName: z.string().min(2, "First name must be at least 2 characters."),
   lastName: z.string().min(2, "Last name must be at least 2 characters."),
-  photoURL: z.string().optional(),
   email: z.string().email("Please enter a valid email address.").optional().or(z.literal('')),
   phone: z.string().optional(),
   church: z.string().optional(),
@@ -72,7 +71,6 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps)
     defaultValues: {
       firstName: "",
       lastName: "",
-      photoURL: "",
       email: "",
       phone: "",
       church: "",
@@ -132,7 +130,6 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps)
       inServiceDepartment: false,
     };
 
-    if (values.photoURL) soulData.photoURL = values.photoURL;
     if (processedUserLocation) soulData.userLocation = processedUserLocation;
     if (values.email) soulData.email = values.email;
     if (values.phone) soulData.phone = values.phone;
@@ -251,24 +248,6 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps)
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <FormField
-            control={form.control}
-            name="photoURL"
-            render={({ field }) => (
-                <FormItem className="flex flex-col items-center">
-                    <FormControl>
-                        <ImageUpload
-                            initialImageUrl={field.value}
-                            onUploadComplete={(url) => field.onChange(url)}
-                            storagePath="souls-photos"
-                            cropAspect={1}
-                            circularCrop={true}
-                        />
-                    </FormControl>
-                    <FormMessage />
-                </FormItem>
-            )}
-        />
         <div className="grid grid-cols-2 gap-4">
             <FormField
             control={form.control}

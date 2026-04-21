@@ -213,7 +213,6 @@ export type Soul = {
   userId: string;
   firstName: string;
   lastName: string;
-  photoURL?: string;
   email?: string;
   phone?: string;
   church?: string;
