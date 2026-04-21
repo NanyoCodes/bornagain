@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useMemo, useRef } from 'react';
@@ -48,10 +47,6 @@ const fontFamilies = [
   { name: 'Default', value: 'Inter, sans-serif' },
   { name: 'Serif', value: 'Playfair Display, serif' },
   { name: 'Monospace', value: 'Source Code Pro, monospace' },
-  { name: 'Arial', value: 'Arial, sans-serif' },
-  { name: 'Georgia', value: 'Georgia, serif' },
-  { name: 'Times New Roman', value: 'Times New Roman, serif' },
-  { name: 'Verdana', value: 'Verdana, sans-serif' },
 ];
 
 
@@ -77,19 +72,18 @@ export default function NotesPage() {
   
   const [isDiscardAlertOpen, setIsDiscardAlertOpen] = useState(false);
   const [navigationTarget, setNavigationTarget] = useState<'list' | 'editor' | null>(null);
-  const [selectionFontSize, setSelectionFontSize] = useState<string>('16');
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
   const notesQuery = useMemo(() => {
-    if (!user || activeTab !== 'list' && !isMobile) return null;
+    if (!user) return null;
     return query(
       collection(firestore, 'users', user.uid, 'notes'),
       orderBy('updatedAt', 'desc')
     );
-  }, [user, firestore, activeTab, isMobile]);
+  }, [user, firestore]);
   const { data: notes, loading: notesLoading } = useCollection<Note>(notesQuery);
 
   const filteredNotes = useMemo(() => {
@@ -125,13 +119,6 @@ export default function NotesPage() {
         } else if (isCreatingNew) {
             contentRef.current.innerHTML = '';
         }
-        // After setting content, update styles from the editor's root
-        setTimeout(() => {
-            if (contentRef.current) {
-                const size = window.getComputedStyle(contentRef.current).fontSize;
-                setSelectionFontSize(String(Math.round(parseFloat(size))));
-            }
-        }, 0);
     }
   }, [selectedNote, isCreatingNew, editorVisible]);
   
@@ -195,6 +182,8 @@ export default function NotesPage() {
     setIsDirty(false);
     if (navigationTarget === 'list') {
       handleBackToList();
+    } else if (navigationTarget === 'editor') {
+        setActiveTab('editor');
     }
     setNavigationTarget(null);
     setIsDiscardAlertOpen(false);
@@ -213,62 +202,25 @@ export default function NotesPage() {
         setIsDirty(true);
     }
   };
-
-  const updateSelectionFontSize = () => {
-    if (!contentRef.current) return;
-    const selection = window.getSelection();
-    if (selection && selection.rangeCount > 0) {
-      let parent = selection.getRangeAt(0).commonAncestorContainer;
-      if (parent.nodeType !== Node.ELEMENT_NODE) {
-        parent = parent.parentNode!;
-      }
-      if (parent instanceof HTMLElement) {
-        const size = window.getComputedStyle(parent).fontSize;
-        setSelectionFontSize(String(Math.round(parseFloat(size))));
-      }
-    }
-  };
   
   const changeFontSize = (direction: 'increase' | 'decrease') => {
     if (!contentRef.current) return;
-    const selection = window.getSelection();
-    if (!selection || selection.rangeCount === 0 || selection.toString().length === 0) {
-        toast({
-            variant: "default",
-            title: "No Text Selected",
-            description: "Please highlight the text you want to resize.",
-        });
-        return;
+    document.execCommand('fontSize', false, "1"); // A trick to apply span
+    const fontElements = contentRef.current.getElementsByTagName('font');
+    for (let i = 0; i < fontElements.length; i++) {
+        if (fontElements[i].size === "1") {
+            const currentSize = parseFloat(window.getComputedStyle(fontElements[i]).fontSize);
+            let newSize;
+            if (direction === 'increase') {
+                newSize = Math.min(currentSize + 2, 48); // Max size 48px
+            } else {
+                newSize = Math.max(currentSize - 2, 10); // Min size 10px
+            }
+            fontElements[i].removeAttribute('size');
+            fontElements[i].style.fontSize = newSize + 'px';
+        }
     }
-    
-    contentRef.current.focus();
-    document.execCommand('styleWithCSS', false, 'false');
-    
-    const parent = selection.getRangeAt(0).commonAncestorContainer;
-    const targetElement = parent.nodeType === 1 ? parent : parent.parentElement;
-    
-    if (targetElement && targetElement instanceof HTMLElement) {
-      const currentSizeStr = window.getComputedStyle(targetElement).fontSize;
-      let currentSize = parseFloat(currentSizeStr);
-      if(isNaN(currentSize)) currentSize = 16; // default
-      
-      let newSize;
-      if (direction === 'increase') {
-          newSize = Math.min(currentSize + 2, 48); // Max size 48px
-      } else {
-          newSize = Math.max(currentSize - 2, 10); // Min size 10px
-      }
-       document.execCommand('fontSize', false, "7");
-       const fontElements = contentRef.current.getElementsByTagName('font');
-       for (let i = 0; i < fontElements.length; i++) {
-           if (fontElements[i].size === "7") {
-               fontElements[i].removeAttribute('size');
-               fontElements[i].style.fontSize = newSize + 'px';
-           }
-       }
-       setIsDirty(true);
-       setSelectionFontSize(String(newSize));
-    }
+    setIsDirty(true);
   };
 
   const handleExportPdf = () => {
@@ -432,22 +384,29 @@ export default function NotesPage() {
                         <AccordionTrigger>{cat} ({categoryNotes.length})</AccordionTrigger>
                         <AccordionContent>
                            <div className="space-y-2">
-                                {categoryNotes.map(note => (
-                                    <button
-                                        key={note.id}
-                                        onClick={() => handleSelectNote(note)}
-                                        className={cn(
-                                        "w-full text-left p-3 rounded-lg border transition-colors",
-                                        selectedNote?.id === note.id ? "bg-muted ring-2 ring-primary" : "hover:bg-muted/50"
-                                        )}
-                                    >
-                                        <p className="font-semibold truncate text-base">{note.title}</p>
-                                        <p className="text-sm text-muted-foreground truncate">{(note.content || "No content").replace(/<[^>]*>?/gm, '')}</p>
-                                        <p className="text-xs text-muted-foreground mt-1">
-                                          {note.updatedAt?.toDate ? format(note.updatedAt.toDate(), 'PPP') : 'Just now'}
-                                        </p>
-                                    </button>
-                                ))}
+                                {categoryNotes.map(note => {
+                                    const contentPreview = (note.content || "No content").replace(/<[^>]*>?/gm, '').replace(/\s+/g, ' ').trim();
+                                    const truncatedContent = contentPreview.length > 150 
+                                        ? `${contentPreview.substring(0, 150)}...` 
+                                        : contentPreview;
+
+                                    return (
+                                        <button
+                                            key={note.id}
+                                            onClick={() => handleSelectNote(note)}
+                                            className={cn(
+                                            "w-full text-left p-3 rounded-lg border transition-colors",
+                                            selectedNote?.id === note.id ? "bg-muted ring-2 ring-primary" : "hover:bg-muted/50"
+                                            )}
+                                        >
+                                            <p className="font-semibold truncate text-base">{note.title}</p>
+                                            <p className="text-sm text-muted-foreground">{truncatedContent}</p>
+                                            <p className="text-xs text-muted-foreground mt-1">
+                                              {note.updatedAt?.toDate ? format(note.updatedAt.toDate(), 'PPP') : 'Just now'}
+                                            </p>
+                                        </button>
+                                    );
+                                })}
                            </div>
                         </AccordionContent>
                     </AccordionItem>
@@ -534,7 +493,6 @@ export default function NotesPage() {
             <Button variant="ghost" size="icon" onClick={() => changeFontSize('decrease')} title="Decrease font size">
                 <Minus className="h-4 w-4" />
             </Button>
-            <span className="text-sm font-medium tabular-nums w-10 text-center">{selectionFontSize}</span>
             <Button variant="ghost" size="icon" onClick={() => changeFontSize('increase')} title="Increase font size">
                 <Plus className="h-4 w-4" />
             </Button>
@@ -543,8 +501,6 @@ export default function NotesPage() {
           ref={contentRef}
           onInput={() => !isDirty && setIsDirty(true)}
           onPaste={handlePaste}
-          onMouseUp={updateSelectionFontSize}
-          onKeyUp={updateSelectionFontSize}
           contentEditable
           suppressContentEditableWarning
           className={cn(
@@ -590,7 +546,7 @@ export default function NotesPage() {
   );
   
   return (
-    <div className="h-full flex flex-col">
+    <div className="space-y-4 h-full flex flex-col">
        <div className="flex-shrink-0">
             <h1 className="text-2xl font-bold tracking-tight">My Notes</h1>
        </div>
@@ -598,8 +554,10 @@ export default function NotesPage() {
             {(!mounted || !isMobile) ? (
                 <div className="grid grid-cols-3 gap-6 h-full pt-4">
                     <div className="col-span-1 h-full">
-                        <ScrollArea className="h-full pr-4 -mr-4">
+                        <ScrollArea className="h-full">
+                           <div className="pr-4">
                             {NoteList}
+                           </div>
                         </ScrollArea>
                     </div>
                     <div className="col-span-2 h-full flex flex-col">
@@ -630,16 +588,18 @@ export default function NotesPage() {
                     <TabsContent value="editor" className="flex-grow flex flex-col min-h-0 mt-2">
                         {editorVisible ? NoteEditor : (
                             <div className="text-center text-muted-foreground py-10 flex flex-col items-center justify-center h-full border-2 border-dashed rounded-lg">
-                               <p className="font-semibold">Select a note to edit</p>
-                               <p className="text-sm">Or create a new one to get started.</p>
-                               <Button onClick={handleNewNote} variant="outline" className="mt-4">
-                                    <Plus className="mr-2 h-4 w-4" /> New Note
-                               </Button>
+                               <p className="font-semibold">No note selected</p>
+                               <p className="text-sm">Select a note to edit, or create a new one.</p>
+                               <div className="flex items-center gap-4 mt-4">
+                                    <Button onClick={handleNewNote} variant="outline">
+                                        <Plus className="mr-2 h-4 w-4" /> New Note
+                                    </Button>
+                               </div>
                             </div>
                         )}
                     </TabsContent>
                     <TabsContent value="list" className="flex-grow min-h-0 mt-2">
-                        <ScrollArea className="h-full -mr-4 pr-4">
+                        <ScrollArea className="h-full">
                             {NoteList}
                         </ScrollArea>
                     </TabsContent>
