@@ -95,9 +95,6 @@ export default function NotificationsPage() {
             <h1 className="text-2xl sm:text-3xl font-bold tracking-tight font-headline">
                 Notifications
             </h1>
-            <p className="text-muted-foreground">
-                Your recent updates and alerts. Chat messages appear separately.
-            </p>
         </div>
         {!loading && notifications && notifications.length > 0 && (
              <Button onClick={handleMarkAllAsRead} disabled={loading || unreadCount === 0}>
