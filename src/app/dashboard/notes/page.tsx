@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useMemo, useRef } from 'react';
@@ -118,16 +119,6 @@ export default function NotesPage() {
 
   const editorVisible = selectedNote || isCreatingNew;
   
-  useEffect(() => {
-    if (editorVisible && contentRef.current) {
-        if (selectedNote) {
-            contentRef.current.innerHTML = selectedNote.content || '';
-        } else if (isCreatingNew) {
-            contentRef.current.innerHTML = '';
-        }
-    }
-  }, [selectedNote, isCreatingNew, editorVisible]);
-
   useEffect(() => {
     const selection = window.getSelection();
     if (selection && selection.rangeCount > 0) {
@@ -535,10 +526,11 @@ export default function NotesPage() {
           ref={contentRef}
           onInput={() => !isDirty && setIsDirty(true)}
           onPaste={handlePaste}
-          onMouseUp={() => setIsDirty(d => !d)} // Force re-render to check selection
+          onMouseUp={() => setIsDirty(d => !d)}
           onKeyUp={() => setIsDirty(d => !d)}
           contentEditable
           suppressContentEditableWarning
+          dangerouslySetInnerHTML={{ __html: selectedNote?.content || '' }}
           className={cn(
             "flex-grow border rounded-md p-3 focus:ring-2 focus:ring-ring focus:outline-none text-base"
           )}
