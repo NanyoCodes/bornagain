@@ -78,12 +78,12 @@ export default function NotesPage() {
   const [selectionFontSize, setSelectionFontSize] = useState<string>('16');
 
   const notesQuery = useMemo(() => {
-    if (!user || activeTab !== 'list') return null;
+    if (!user) return null;
     return query(
       collection(firestore, 'users', user.uid, 'notes'),
       orderBy('updatedAt', 'desc')
     );
-  }, [user, firestore, activeTab]);
+  }, [user, firestore]);
   const { data: notes, loading: notesLoading } = useCollection<Note>(notesQuery);
 
   const filteredNotes = useMemo(() => {
