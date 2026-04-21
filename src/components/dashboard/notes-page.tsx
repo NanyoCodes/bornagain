@@ -10,12 +10,11 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Loader2, Plus, Trash2, FileText, Bold, Italic, CornerUpLeft, Underline, Palette, Minus, Download } from 'lucide-react';
+import { Loader2, Plus, Trash2, FileText, Bold, Italic, CornerUpLeft, Underline, Palette, Minus, Download, XCircle } from 'lucide-react';
 import { useUser, useFirestore, useCollection } from '@/firebase';
 import {
   collection,
@@ -37,8 +36,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import jsPDF from 'jspdf';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useRouter } from 'next/navigation';
 
 
 const noteCategories: NoteCategory[] = ['Personal', 'Church', 'Revelation', 'Other'];
@@ -47,6 +48,8 @@ const fontFamilies = [
   { name: 'Default', value: 'Inter, sans-serif' },
   { name: 'Serif', value: 'Playfair Display, serif' },
   { name: 'Monospace', value: 'Source Code Pro, monospace' },
+  { name: 'Comic', value: 'Comic Sans MS, cursive' },
+  { name: 'Handwriting', value: 'Brush Script MT, cursive' },
 ];
 
 
@@ -67,11 +70,13 @@ export default function NotesPage() {
   const [isDirty, setIsDirty] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const contentRef = useRef<HTMLDivElement>(null);
+  const [fontSize, setFontSize] = useState(16);
 
   const [activeTab, setActiveTab] = useState('editor');
   
   const [isDiscardAlertOpen, setIsDiscardAlertOpen] = useState(false);
   const [navigationTarget, setNavigationTarget] = useState<'list' | 'editor' | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     setMounted(true);
@@ -121,6 +126,29 @@ export default function NotesPage() {
         }
     }
   }, [selectedNote, isCreatingNew, editorVisible]);
+
+  useEffect(() => {
+    const selection = window.getSelection();
+    if (selection && selection.rangeCount > 0) {
+      const range = selection.getRangeAt(0);
+      let element = range.startContainer;
+
+      // Traverse up the DOM tree to find an element with a font-size style
+      while (element && element.nodeType === Node.ELEMENT_NODE && element !== contentRef.current) {
+        const fontSizeStyle = (element as HTMLElement).style.fontSize;
+        if (fontSizeStyle) {
+          const size = parseInt(fontSizeStyle, 10);
+          if (!isNaN(size)) {
+            setFontSize(size);
+            return;
+          }
+        }
+        element = element.parentNode;
+      }
+    }
+    // If no specific font size is found in the selection, default to 16
+    setFontSize(16);
+  }, [isDirty]); // Re-check on content change or selection change
   
   useEffect(() => {
     if (selectedNote) {
@@ -148,11 +176,8 @@ export default function NotesPage() {
   
   const handleSelectNote = (note: Note) => {
     if (isDirty) {
-      toast({
-        variant: 'destructive',
-        title: 'Unsaved Changes',
-        description: 'Please save your current note before opening another.',
-      });
+      setNavigationTarget('list');
+      setIsDiscardAlertOpen(true);
       return;
     }
     setSelectedNote(note);
@@ -164,11 +189,8 @@ export default function NotesPage() {
 
   const handleNewNote = () => {
      if (isDirty) {
-      toast({
-        variant: 'destructive',
-        title: 'Unsaved Changes',
-        description: 'Please save your current note before creating a new one.',
-      });
+      setNavigationTarget('editor');
+      setIsDiscardAlertOpen(true);
       return;
     }
     setSelectedNote(null);
@@ -183,6 +205,8 @@ export default function NotesPage() {
     if (navigationTarget === 'list') {
       handleBackToList();
     } else if (navigationTarget === 'editor') {
+        setSelectedNote(null);
+        setIsCreatingNew(true);
         setActiveTab('editor');
     }
     setNavigationTarget(null);
@@ -218,6 +242,7 @@ export default function NotesPage() {
             }
             fontElements[i].removeAttribute('size');
             fontElements[i].style.fontSize = newSize + 'px';
+            setFontSize(newSize);
         }
     }
     setIsDirty(true);
@@ -391,20 +416,27 @@ export default function NotesPage() {
                                         : contentPreview;
 
                                     return (
-                                        <button
+                                        <Card
                                             key={note.id}
                                             onClick={() => handleSelectNote(note)}
+                                            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleSelectNote(note); }}
+                                            role="button"
+                                            tabIndex={0}
                                             className={cn(
-                                            "w-full text-left p-3 rounded-lg border transition-colors",
-                                            selectedNote?.id === note.id ? "bg-muted ring-2 ring-primary" : "hover:bg-muted/50"
+                                                "cursor-pointer",
+                                                selectedNote?.id === note.id && "ring-2 ring-primary"
                                             )}
                                         >
-                                            <p className="font-semibold truncate text-base">{note.title}</p>
-                                            <p className="text-sm text-muted-foreground">{truncatedContent}</p>
-                                            <p className="text-xs text-muted-foreground mt-1">
-                                              {note.updatedAt?.toDate ? format(note.updatedAt.toDate(), 'PPP') : 'Just now'}
-                                            </p>
-                                        </button>
+                                            <CardHeader className="p-4 pb-2">
+                                                <CardTitle className="text-base truncate">{note.title}</CardTitle>
+                                                <CardDescription className="text-xs">
+                                                    {note.updatedAt?.toDate ? format(note.updatedAt.toDate(), 'PPP') : 'Just now'}
+                                                </CardDescription>
+                                            </CardHeader>
+                                            <CardContent className="p-4 pt-0">
+                                                <p className="text-sm text-muted-foreground">{truncatedContent}</p>
+                                            </CardContent>
+                                        </Card>
                                     );
                                 })}
                            </div>
@@ -493,6 +525,7 @@ export default function NotesPage() {
             <Button variant="ghost" size="icon" onClick={() => changeFontSize('decrease')} title="Decrease font size">
                 <Minus className="h-4 w-4" />
             </Button>
+             <div className="px-2 text-sm text-muted-foreground w-10 text-center">{fontSize}px</div>
             <Button variant="ghost" size="icon" onClick={() => changeFontSize('increase')} title="Increase font size">
                 <Plus className="h-4 w-4" />
             </Button>
@@ -501,6 +534,8 @@ export default function NotesPage() {
           ref={contentRef}
           onInput={() => !isDirty && setIsDirty(true)}
           onPaste={handlePaste}
+          onMouseUp={() => setIsDirty(d => !d)} // Force re-render to check selection
+          onKeyUp={() => setIsDirty(d => !d)}
           contentEditable
           suppressContentEditableWarning
           className={cn(
@@ -546,7 +581,7 @@ export default function NotesPage() {
   );
   
   return (
-    <div className="space-y-4 h-full flex flex-col">
+    <div className="space-y-4 h-full flex flex-col p-4 md:p-6 md:pb-6">
        <div className="flex-shrink-0">
             <h1 className="text-2xl font-bold tracking-tight">My Notes</h1>
        </div>
@@ -594,13 +629,18 @@ export default function NotesPage() {
                                     <Button onClick={handleNewNote} variant="outline">
                                         <Plus className="mr-2 h-4 w-4" /> New Note
                                     </Button>
+                                    <Button onClick={() => router.back()} variant="secondary">
+                                      Close
+                                    </Button>
                                </div>
                             </div>
                         )}
                     </TabsContent>
                     <TabsContent value="list" className="flex-grow min-h-0 mt-2">
                         <ScrollArea className="h-full">
-                            {NoteList}
+                            <div className="pr-1">
+                                {NoteList}
+                            </div>
                         </ScrollArea>
                     </TabsContent>
                 </Tabs>
