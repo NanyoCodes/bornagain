@@ -346,7 +346,6 @@ export default function CampaignsPage() {
       <div className="flex items-center justify-between">
         <div className="space-y-2">
           <h1 className="text-xl sm:text-2xl font-bold tracking-tight font-headline">Campaigns</h1>
-          <p className="text-sm text-muted-foreground">Join or create soul-winning campaigns.</p>
         </div>
         {mounted && isMobile ? (
           <Sheet open={isCreateOpen} onOpenChange={setIsCreateOpen}>
