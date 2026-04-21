@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useMemo, useRef } from 'react';
@@ -42,6 +43,13 @@ import jsPDF from 'jspdf';
 
 const noteCategories: NoteCategory[] = ['Personal', 'Church', 'Revelation', 'Other'];
 const colorSwatches = ['#000000', '#FFFFFF', '#ef4444', '#f97316', '#22c55e', '#3b82f6', '#8b5cf6', '#ec4899'];
+const fontFamilies = [
+  { name: 'Default', value: 'Inter, sans-serif' },
+  { name: 'Serif', value: 'Playfair Display, serif' },
+  { name: 'Monospace', value: 'Source Code Pro, monospace' },
+  { name: 'Arial', value: 'Arial, sans-serif' },
+  { name: 'Georgia', value: 'Georgia, serif' },
+];
 
 
 export default function NotesPage() {
@@ -60,13 +68,14 @@ export default function NotesPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const contentRef = useRef<HTMLDivElement>(null);
 
-  const [activeTab, setActiveTab] = useState('editor'); // Unified view state
+  const [activeTab, setActiveTab] = useState('editor');
   
   const [isDiscardAlertOpen, setIsDiscardAlertOpen] = useState(false);
   const [navigationTarget, setNavigationTarget] = useState<Note | 'new' | 'list' | null>(null);
+  const [selectionFontSize, setSelectionFontSize] = useState<string>('16');
 
   const notesQuery = useMemo(() => {
-    if (!user || activeTab !== 'list') return null; // Only fetch notes when the list tab is active
+    if (!user || activeTab !== 'list') return null;
     return query(
       collection(firestore, 'users', user.uid, 'notes'),
       orderBy('updatedAt', 'desc')
@@ -100,7 +109,6 @@ export default function NotesPage() {
 
   const editorVisible = selectedNote || isCreatingNew;
   
-  // Effect to update editor content when selection changes
   useEffect(() => {
     if (editorVisible && contentRef.current) {
         if (selectedNote) {
@@ -108,6 +116,13 @@ export default function NotesPage() {
         } else if (isCreatingNew) {
             contentRef.current.innerHTML = '';
         }
+        // After setting content, update styles from the editor's root
+        setTimeout(() => {
+            if (contentRef.current) {
+                const size = window.getComputedStyle(contentRef.current).fontSize;
+                setSelectionFontSize(String(Math.round(parseFloat(size))));
+            }
+        }, 0);
     }
   }, [selectedNote, isCreatingNew, editorVisible]);
   
@@ -136,7 +151,6 @@ export default function NotesPage() {
         setIsCreatingNew(false);
         setActiveTab('editor');
     }
-    // Closing the dialog and resetting target is handled separately for cancel
     setIsDiscardAlertOpen(false);
   }
 
@@ -168,6 +182,21 @@ export default function NotesPage() {
         contentRef.current.focus();
         document.execCommand(command, false, value);
         setIsDirty(true);
+    }
+  };
+
+  const updateSelectionFontSize = () => {
+    if (!contentRef.current) return;
+    const selection = window.getSelection();
+    if (selection && selection.rangeCount > 0) {
+      let parent = selection.getRangeAt(0).commonAncestorContainer;
+      if (parent.nodeType !== Node.ELEMENT_NODE) {
+        parent = parent.parentNode!;
+      }
+      if (parent instanceof HTMLElement) {
+        const size = window.getComputedStyle(parent).fontSize;
+        setSelectionFontSize(String(Math.round(parseFloat(size))));
+      }
     }
   };
   
@@ -209,6 +238,7 @@ export default function NotesPage() {
            }
        }
        setIsDirty(true);
+       setSelectionFontSize(String(newSize));
     }
   };
 
@@ -444,6 +474,19 @@ export default function NotesPage() {
              <Button variant="ghost" size="icon" onMouseDown={(e) => { e.preventDefault(); handleFormatting('underline'); }} title="Underline">
                 <Underline className="h-4 w-4" />
             </Button>
+             <Select onValueChange={(value) => handleFormatting('fontName', value)}>
+                <SelectTrigger className="w-[150px] h-9">
+                    <SelectValue placeholder="Font" />
+                </SelectTrigger>
+                <SelectContent>
+                    {fontFamilies.map(font => (
+                        <SelectItem key={font.name} value={font.value} style={{fontFamily: font.value}}>
+                            {font.name}
+                        </SelectItem>
+                    ))}
+                </SelectContent>
+            </Select>
+            <div className="h-6 w-px bg-border mx-1" />
             <Popover>
                 <PopoverTrigger asChild>
                     <Button variant="ghost" size="icon" title="Text Color">
@@ -462,6 +505,7 @@ export default function NotesPage() {
             <Button variant="ghost" size="icon" onClick={() => changeFontSize('decrease')} title="Decrease font size">
                 <Minus className="h-4 w-4" />
             </Button>
+            <span className="text-sm font-medium tabular-nums w-10 text-center">{selectionFontSize}px</span>
             <Button variant="ghost" size="icon" onClick={() => changeFontSize('increase')} title="Increase font size">
                 <Plus className="h-4 w-4" />
             </Button>
@@ -470,6 +514,8 @@ export default function NotesPage() {
           ref={contentRef}
           onInput={() => !isDirty && setIsDirty(true)}
           onPaste={handlePaste}
+          onMouseUp={updateSelectionFontSize}
+          onKeyUp={updateSelectionFontSize}
           contentEditable
           suppressContentEditableWarning
           className={cn(
@@ -520,15 +566,25 @@ export default function NotesPage() {
             <h1 className="text-2xl font-bold tracking-tight">My Notes</h1>
        </div>
        <div className="flex-grow min-h-0">
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-grow flex flex-col min-h-0">
+            <Tabs value={activeTab} onValueChange={(newTab) => {
+              if (newTab === 'list') {
+                  attemptNavigation('list');
+              } else {
+                  setActiveTab(newTab);
+              }
+            }}>
                 <TabsList className="grid w-full grid-cols-2">
                     <TabsTrigger value="editor">{editorVisible && !isCreatingNew ? 'Edit Note' : 'New Note'}</TabsTrigger>
                     <TabsTrigger value="list">All Notes ({notes?.length || 0})</TabsTrigger>
                 </TabsList>
                 <TabsContent value="editor" className="flex-grow flex flex-col min-h-0 mt-2">
                     {editorVisible ? NoteEditor : (
-                        <div className="text-center text-muted-foreground py-10 flex flex-col items-center justify-center h-full">
-                            <p>Select a note to edit, or create a new one.</p>
+                        <div className="text-center text-muted-foreground py-10 flex flex-col items-center justify-center h-full border-2 border-dashed rounded-lg">
+                           <p className="font-semibold">No note selected</p>
+                           <p className="text-sm">Select a note to edit, or create a new one.</p>
+                           <Button onClick={handleNewNote} variant="outline" className="mt-4">
+                                <Plus className="mr-2 h-4 w-4" /> New Note
+                           </Button>
                         </div>
                     )}
                 </TabsContent>
