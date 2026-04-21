@@ -34,20 +34,13 @@ import { useSearch } from "@/context/search-context";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { format } from "date-fns";
 import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+import autoTable from 'jspdf-autotable';
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { EditSoulForm } from "@/components/souls/edit-soul-form";
 import { LogFollowUpDialog } from "@/components/souls/log-follow-up-dialog";
 import { ViewHistoryDialog } from "@/components/souls/view-history-dialog";
-
-// This is a workaround for the jspdf-autotable types
-declare module 'jspdf' {
-  interface jsPDF {
-    autoTable: (options: any) => jsPDF;
-  }
-}
 
 export default function SoulsWonPage() {
   const { user, loading: userLoading } = useUser();
@@ -197,10 +190,10 @@ export default function SoulsWonPage() {
         const doc = new jsPDF({ orientation: 'landscape' });
         const logo = PlaceHolderImages.find((img) => img.id === 'logo');
         
-        doc.autoTable({
+        autoTable(doc, {
             head: [headers],
             body: body,
-            didDrawPage: (data) => {
+            didDrawPage: (data: any) => {
                 if (logo?.imageUrl) {
                     doc.addImage(logo.imageUrl, 'JPG', data.settings.margin.left, 15, 12, 12);
                 }
@@ -299,9 +292,9 @@ export default function SoulsWonPage() {
             ["Follow Up History", followUpHistoryString],
         ];
 
-        doc.autoTable({
+        autoTable(doc, {
             body: pdfBody,
-            didDrawPage: (data) => {
+            didDrawPage: (data: any) => {
                 if (logo?.imageUrl) {
                     doc.addImage(logo.imageUrl, 'JPG', data.settings.margin.left, 15, 12, 12);
                 }
