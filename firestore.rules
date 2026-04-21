@@ -116,7 +116,7 @@ service cloud.firestore {
       allow create: if request.auth != null;
       // Only the owner can delete their soul record from the global collection
       allow delete: if request.auth != null && resource.data.userId == request.auth.uid;
-      allow update: if false; // Immutable
+      allow update: if request.auth != null && resource.data.userId == request.auth.uid;
     }
 
     // Testimonies are public, but only writable by the author.
