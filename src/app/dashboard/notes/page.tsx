@@ -487,7 +487,7 @@ export default function NotesPage() {
           contentEditable
           suppressContentEditableWarning
           className={cn(
-            "flex-grow min-h-[300px] border rounded-md p-3 focus:ring-2 focus:ring-ring focus:outline-none text-base"
+            "flex-grow border rounded-md p-3 focus:ring-2 focus:ring-ring focus:outline-none text-base"
           )}
         />
       </div>

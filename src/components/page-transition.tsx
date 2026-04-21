@@ -3,6 +3,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { usePathname } from 'next/navigation';
 import React, { useState, useEffect } from 'react';
+import { cn } from '@/lib/utils';
 
 const variants = {
   initial: { opacity: 0, y: 15 },
@@ -36,7 +37,7 @@ export function PageTransition({ children }: { children: React.ReactNode }) {
 
   return (
     // This outer div will contain the word as a background element
-    <div className="relative">
+    <div className="relative h-full">
       <div className="fixed inset-0 z-0 flex items-center justify-center p-8 bg-background">
         <div className="text-center max-w-2xl">
           <motion.p
@@ -63,7 +64,7 @@ export function PageTransition({ children }: { children: React.ReactNode }) {
           animate="animate"
           exit="exit"
           transition={{ type: 'easeInOut', duration: 0.4 }}
-          className="relative z-10 bg-background" // Give content a background to hide the transition screen underneath
+          className="relative z-10 bg-background h-full flex flex-col" // Give content a background and height constraints
         >
           {children}
         </motion.div>
