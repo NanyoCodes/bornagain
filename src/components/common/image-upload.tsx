@@ -21,20 +21,16 @@ function getCroppedImg(
   const canvas = document.createElement('canvas');
   const scaleX = image.naturalWidth / image.width;
   const scaleY = image.naturalHeight / image.height;
-  canvas.width = crop.width;
-  canvas.height = crop.height;
+  
+  canvas.width = crop.width * scaleX;
+  canvas.height = crop.height * scaleY;
+  
   const ctx = canvas.getContext('2d');
 
   if (!ctx) {
     return Promise.reject(new Error('Canvas context is not available'));
   }
-
-  const pixelRatio = window.devicePixelRatio;
-  canvas.width = crop.width * pixelRatio;
-  canvas.height = crop.height * pixelRatio;
-  ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
-  ctx.imageSmoothingQuality = 'high';
-
+  
   ctx.drawImage(
     image,
     crop.x * scaleX,
@@ -43,8 +39,8 @@ function getCroppedImg(
     crop.height * scaleY,
     0,
     0,
-    crop.width,
-    crop.height
+    canvas.width,
+    canvas.height
   );
 
   return new Promise((resolve, reject) => {
