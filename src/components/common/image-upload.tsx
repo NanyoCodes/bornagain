@@ -68,7 +68,7 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
   const { toast } = useToast();
   
   const [previewUrl, setPreviewUrl] = useState<string | null>(initialImageUrl || null);
-  const [isUploading, setIsUploading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Cropping state
@@ -76,14 +76,13 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
   const [crop, setCrop] = useState<Crop>();
   const [completedCrop, setCompletedCrop] = useState<PixelCrop>();
   const [isCropModalOpen, setIsCropModalOpen] = useState(false);
-  const [isCropping, setIsCropping] = useState(false);
   const imgRef = useRef<HTMLImageElement>(null);
   
   useEffect(() => {
-    if (!isUploading) {
+    if (!isLoading) {
       setPreviewUrl(initialImageUrl || null);
     }
-  }, [initialImageUrl, isUploading]);
+  }, [initialImageUrl, isLoading]);
   
   const handleFileSelect = () => {
     fileInputRef.current?.click();
@@ -96,8 +95,8 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
         toast({ variant: 'destructive', title: 'Invalid File Type', description: 'Please select an image file.' });
         return;
       }
-      if (file.size > 2 * 1024 * 1024) {
-        toast({ variant: 'destructive', title: 'File Too Large', description: 'Please select an image smaller than 2MB.' });
+      if (file.size > 5 * 1024 * 1024) { // Increased initial limit slightly for better user experience before crop
+        toast({ variant: 'destructive', title: 'File Too Large', description: 'Please select an image smaller than 5MB.' });
         return;
       }
       setCrop(undefined); // Reset crop on new image
@@ -111,10 +110,7 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
   const onImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
     const { width, height } = e.currentTarget;
     const aspectToUse = cropAspect ?? (circularCrop ? 1 : undefined);
-
-    // Ensure makeAspectCrop receives a valid aspect ratio
     const finalAspect = aspectToUse ?? width / height;
-
     const crop = centerCrop(
       makeAspectCrop({ unit: '%', width: 90 }, finalAspect, width, height),
       width,
@@ -123,76 +119,52 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
     setCrop(crop);
   };
 
+  const handleUpload = async (file: File | Blob): Promise<string> => {
+    if (!user) throw new Error("You must be logged in to upload images.");
+    if (!storage) throw new Error("Firebase Storage is not available.");
+
+    const fileName = file instanceof File ? file.name : 'cropped-image.jpg';
+    const fileRef = ref(storage, `${storagePath}/${user.uid}/${Date.now()}_${fileName}`);
+    await uploadBytes(fileRef, file);
+    return getDownloadURL(fileRef);
+  };
+
   const handleCrop = async () => {
-    if (!completedCrop || !imgRef.current) {
-      return;
-    }
+    if (!completedCrop || !imgRef.current) return;
     
-    setIsCropping(true);
+    setIsLoading(true);
     try {
       const croppedImageBlob = await getCroppedImg(imgRef.current, completedCrop);
       
       if (croppedImageBlob.size > 2 * 1024 * 1024) {
-        toast({
-            variant: "destructive",
-            title: "Image Too Large After Crop",
-            description: "The cropped image is still larger than 2MB. Please select a smaller area or use a smaller original image.",
-        });
-        setIsCropping(false);
-        return;
+        throw new Error("The cropped image is larger than 2MB. Please select a smaller area or use a smaller original image.");
       }
 
       const localUrl = URL.createObjectURL(croppedImageBlob);
       setPreviewUrl(localUrl);
   
-      await handleUpload(croppedImageBlob);
-      setIsCropModalOpen(false);
-      setImgSrc('');
-    } catch (e) {
-      console.error("Cropping failed", e);
-      toast({
-        variant: "destructive",
-        title: "Crop Failed",
-        description: "There was an error while cropping the image. Please try again or use a different image.",
-      });
-    } finally {
-      setIsCropping(false);
-    }
-  };
-
-  const handleUpload = async (file: File | Blob) => {
-    if (!user) {
-        toast({ variant: 'destructive', title: 'Upload Failed', description: 'You must be logged in to upload images.' });
-        throw new Error("User must be logged in");
-    }
-    if (!storage) {
-       toast({ variant: 'destructive', title: 'Upload Failed', description: 'Firebase Storage is not available.' });
-       setPreviewUrl(initialImageUrl || null); // revert preview
-       return;
-    }
-    setIsUploading(true);
-    try {
-      const fileName = file instanceof File ? file.name : 'cropped-image.jpg';
-      const fileRef = ref(storage, `${storagePath}/${user.uid}/${Date.now()}_${fileName}`);
-      await uploadBytes(fileRef, file);
-      const downloadURL = await getDownloadURL(fileRef);
-
+      const downloadURL = await handleUpload(croppedImageBlob);
+      
       onUploadComplete(downloadURL);
       toast({ title: 'Success', description: 'Image uploaded successfully.' });
+      
+      setIsCropModalOpen(false);
+      setImgSrc('');
+
     } catch (error: any) {
-      console.error("Firebase Storage Upload Error:", error);
       let title = 'Upload Failed';
-      let description = `An unknown error occurred. (Code: ${error.code || 'unknown'})`;
+      let description = error.message || "An unknown error occurred.";
       if (error.code === 'storage/unauthorized' || error.code === 'storage/retry-limit-exceeded') {
         title = 'Upload Failed: Configuration Required';
         description = "This error often means your Firebase project is not on the 'Blaze' (Pay-as-you-go) plan. Please refer to `docs/storage-cors-guide.md` for instructions."
       }
       toast({ variant: 'destructive', title, description, duration: 15000 });
-      setPreviewUrl(initialImageUrl || null);
+      setPreviewUrl(initialImageUrl || null); // Revert on failure
     } finally {
-      setIsUploading(false);
+      setIsLoading(false);
     }
   };
+
 
   const handleRemoveImage = () => {
     setPreviewUrl(null);
@@ -217,7 +189,7 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
               )}
             </div>
           )}
-          {previewUrl && !isUploading && (
+          {previewUrl && !isLoading && (
               <Button
                   variant="destructive"
                   size="icon"
@@ -229,7 +201,7 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
           )}
         </div>
         
-        {isUploading ? (
+        {isLoading ? (
           <div className="flex items-center gap-2 text-muted-foreground">
             <Loader2 className="h-4 w-4 animate-spin" />
             <span>Uploading...</span>
@@ -274,10 +246,10 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
             )}
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsCropModalOpen(false)}>Cancel</Button>
-            <Button onClick={handleCrop} disabled={!completedCrop || isCropping}>
-              {isCropping ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <CropIcon className="mr-2 h-4 w-4" />}
-              {isCropping ? 'Processing...' : 'Crop & Save'}
+            <Button variant="outline" onClick={() => setIsCropModalOpen(false)} disabled={isLoading}>Cancel</Button>
+            <Button onClick={handleCrop} disabled={!completedCrop || isLoading}>
+              {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <CropIcon className="mr-2 h-4 w-4" />}
+              {isLoading ? 'Processing...' : 'Crop & Save'}
             </Button>
           </DialogFooter>
         </DialogContent>
