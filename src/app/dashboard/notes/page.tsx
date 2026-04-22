@@ -1,7 +1,6 @@
-
 'use client';
 
-import { useState, useEffect, useMemo, useRef, useLayoutEffect } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -16,7 +15,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Loader2, Plus, Trash2, FileText, Bold, Italic, CornerUpLeft, Underline, Palette, Minus, Download, XCircle } from 'lucide-react';
+import { Loader2, Plus, Trash2, FileText, Download, XCircle } from 'lucide-react';
 import { useUser, useFirestore, useCollection } from '@/firebase';
 import {
   collection,
@@ -37,23 +36,14 @@ import { FirestorePermissionError } from '@/firebase/errors';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import jsPDF from 'jspdf';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useRouter } from 'next/navigation';
+import { Textarea } from '@/components/ui/textarea';
 
 
 const noteCategories: NoteCategory[] = ['Personal', 'Church', 'Revelation', 'Other'];
-const colorSwatches = ['#000000', '#FFFFFF', '#ef4444', '#f97316', '#22c55e', '#3b82f6', '#8b5cf6', '#ec4899'];
-const fontFamilies = [
-  { name: 'Default', value: 'Inter, sans-serif' },
-  { name: 'Serif', value: 'Playfair Display, serif' },
-  { name: 'Monospace', value: 'Source Code Pro, monospace' },
-  { name: 'Comic', value: 'Comic Sans MS, cursive' },
-  { name: 'Handwriting', value: 'Brush Script MT, cursive' },
-];
-
 
 export default function NotesPage() {
   const { user } = useUser();
@@ -68,12 +58,11 @@ export default function NotesPage() {
   const [isDeleting, setIsDeleting] = useState(false);
   
   const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
   const [category, setCategory] = useState<NoteCategory>('Personal');
   const [isDirty, setIsDirty] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const contentRef = useRef<HTMLDivElement>(null);
-  const [fontSize, setFontSize] = useState(16);
-
+  
   const [activeTab, setActiveTab] = useState('editor');
   
   const [isDiscardAlertOpen, setIsDiscardAlertOpen] = useState(false);
@@ -119,58 +108,23 @@ export default function NotesPage() {
 
   const editorVisible = selectedNote || isCreatingNew;
 
-  const updateFontSizeFromSelection = () => {
-    const selection = window.getSelection();
-    if (selection && selection.rangeCount > 0 && contentRef.current) {
-      const range = selection.getRangeAt(0);
-      let element: Node | null = range.startContainer;
-      
-      while (element && element !== contentRef.current) {
-        if (element.nodeType === Node.ELEMENT_NODE) {
-          const fontSizeStyle = (element as HTMLElement).style.fontSize;
-          if (fontSizeStyle) {
-            const size = parseInt(fontSizeStyle, 10);
-            if (!isNaN(size)) {
-              setFontSize(size);
-              return;
-            }
-          }
-        }
-        element = element.parentNode;
-      }
-    }
-    setFontSize(16); // Default size if nothing is found
-  };
-  
   useEffect(() => {
     if (selectedNote) {
       setTitle(selectedNote.title);
       setCategory(selectedNote.category || 'Personal');
+      setContent(selectedNote.content || '');
     } else {
+      // Reset for new note
       setTitle('');
       setCategory('Personal');
+      setContent('');
     }
     setIsDirty(false);
-  }, [selectedNote]);
-  
-  useLayoutEffect(() => {
-    if (contentRef.current) {
-        if (selectedNote) {
-            contentRef.current.innerHTML = selectedNote.content || '';
-        } else {
-            contentRef.current.innerHTML = '';
-        }
-    }
-  }, [selectedNote]);
+  }, [selectedNote, isCreatingNew]);
 
   const handleBackToList = () => {
     setSelectedNote(null);
     setIsCreatingNew(false);
-    setTitle('');
-    setCategory('Personal');
-    if (contentRef.current) {
-      contentRef.current.innerHTML = '';
-    }
     if (isMobile) {
       setActiveTab('list');
     }
@@ -220,38 +174,8 @@ export default function NotesPage() {
       setIsDiscardAlertOpen(false);
   };
 
-
-  const handleFormatting = (command: string, value: string | null = null) => {
-    if (contentRef.current) {
-        contentRef.current.focus();
-        document.execCommand(command, false, value);
-        setIsDirty(true);
-    }
-  };
-  
-  const changeFontSize = (direction: 'increase' | 'decrease') => {
-    if (!contentRef.current) return;
-    document.execCommand('fontSize', false, "1"); // A trick to apply span
-    const fontElements = contentRef.current.getElementsByTagName('font');
-    for (let i = 0; i < fontElements.length; i++) {
-        if (fontElements[i].size === "1") {
-            const currentSize = parseFloat(window.getComputedStyle(fontElements[i]).fontSize);
-            let newSize;
-            if (direction === 'increase') {
-                newSize = Math.min(currentSize + 2, 48); // Max size 48px
-            } else {
-                newSize = Math.max(currentSize - 2, 10); // Min size 10px
-            }
-            fontElements[i].removeAttribute('size');
-            fontElements[i].style.fontSize = newSize + 'px';
-            setFontSize(newSize);
-        }
-    }
-    setIsDirty(true);
-  };
-
   const handleExportPdf = () => {
-    if (!selectedNote || !contentRef.current) return;
+    if (!selectedNote) return;
 
     try {
         const doc = new jsPDF();
@@ -273,26 +197,8 @@ export default function NotesPage() {
         doc.setFontSize(12);
         doc.setTextColor(0);
 
-        let yPos = 48;
-        const lineSpacing = 7;
-        const paragraphSpacing = 4;
-
-        const contentNodes = Array.from(contentRef.current.childNodes);
-
-        contentNodes.forEach(node => {
-            const text = node.textContent || '';
-            const splitText = doc.splitTextToSize(text, 180);
-            
-            const textHeight = splitText.length * lineSpacing + paragraphSpacing;
-            if (yPos + textHeight > 280) { 
-                doc.addPage();
-                yPos = 20; 
-            }
-
-            doc.text(splitText, 15, yPos);
-            yPos += (splitText.length * lineSpacing) + paragraphSpacing;
-        });
-
+        const splitText = doc.splitTextToSize(selectedNote.content, 180);
+        doc.text(splitText, 15, 48);
 
         doc.save(`${selectedNote.title.replace(/ /g, '_')}.pdf`);
 
@@ -313,7 +219,6 @@ export default function NotesPage() {
       return;
     }
 
-    const currentContent = contentRef.current?.innerHTML || '';
     setIsSaving(true);
     try {
       if (selectedNote) {
@@ -321,14 +226,14 @@ export default function NotesPage() {
         const noteRef = doc(firestore, 'users', user.uid, 'notes', selectedNote.id);
         const updatedData = {
           title,
-          content: currentContent,
+          content,
           category,
           updatedAt: serverTimestamp(),
         };
         await updateDoc(noteRef, updatedData);
         toast({ title: 'Note Updated' });
         
-        setSelectedNote(prev => prev ? { ...prev, ...updatedData, updatedAt: new Date() as any, content: currentContent } : null);
+        setSelectedNote(prev => prev ? { ...prev, ...updatedData, content, updatedAt: new Date() as any } : null);
         setIsDirty(false);
 
       } else {
@@ -336,7 +241,7 @@ export default function NotesPage() {
         const noteData = {
           userId: user.uid,
           title,
-          content: currentContent,
+          content,
           category,
         };
         const docRef = await addDoc(collection(firestore, 'users', user.uid, 'notes'), {
@@ -376,13 +281,6 @@ export default function NotesPage() {
     } finally {
         setIsDeleting(false);
     }
-  };
-  
-  const handlePaste = (event: React.ClipboardEvent<HTMLDivElement>) => {
-    event.preventDefault();
-    const text = event.clipboardData.getData('text/plain');
-    document.execCommand('insertText', false, text);
-    setIsDirty(true);
   };
   
   const NoteList = (
@@ -486,63 +384,15 @@ export default function NotesPage() {
                 </SelectContent>
             </Select>
         </div>
-        <div className="border rounded-md p-1 flex items-center gap-1 flex-wrap">
-            <Button variant="ghost" size="icon" onMouseDown={(e) => { e.preventDefault(); handleFormatting('bold'); }} title="Bold">
-                <Bold className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="icon" onMouseDown={(e) => { e.preventDefault(); handleFormatting('italic'); }} title="Italic">
-                <Italic className="h-4 w-4" />
-            </Button>
-             <Button variant="ghost" size="icon" onMouseDown={(e) => { e.preventDefault(); handleFormatting('underline'); }} title="Underline">
-                <Underline className="h-4 w-4" />
-            </Button>
-             <Select onValueChange={(value) => handleFormatting('fontName', value)}>
-                <SelectTrigger className="w-[150px] h-9">
-                    <SelectValue placeholder="Font" />
-                </SelectTrigger>
-                <SelectContent>
-                    {fontFamilies.map(font => (
-                        <SelectItem key={font.name} value={font.value} style={{fontFamily: font.value}}>
-                            {font.name}
-                        </SelectItem>
-                    ))}
-                </SelectContent>
-            </Select>
-            <div className="h-6 w-px bg-border mx-1" />
-            <Popover>
-                <PopoverTrigger asChild>
-                    <Button variant="ghost" size="icon" title="Text Color">
-                        <Palette className="h-4 w-4" />
-                    </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-2">
-                    <div className="flex gap-1">
-                        {colorSwatches.map(color => (
-                            <Button key={color} size="icon" className="h-6 w-6 rounded-full border" style={{backgroundColor: color}} onMouseDown={(e) => { e.preventDefault(); handleFormatting('foreColor', color); }} />
-                        ))}
-                    </div>
-                </PopoverContent>
-            </Popover>
-            <div className="h-6 w-px bg-border mx-1" />
-            <Button variant="ghost" size="icon" onClick={() => changeFontSize('decrease')} title="Decrease font size">
-                <Minus className="h-4 w-4" />
-            </Button>
-             <div className="px-2 text-sm text-muted-foreground w-10 text-center">{fontSize}px</div>
-            <Button variant="ghost" size="icon" onClick={() => changeFontSize('increase')} title="Increase font size">
-                <Plus className="h-4 w-4" />
-            </Button>
-        </div>
-        <div
-          ref={contentRef}
-          onInput={() => !isDirty && setIsDirty(true)}
-          onPaste={handlePaste}
-          onMouseUp={updateFontSizeFromSelection}
-          onKeyUp={updateFontSizeFromSelection}
-          contentEditable
-          suppressContentEditableWarning
-          className={cn(
-            "flex-grow border rounded-md p-3 focus:ring-2 focus:ring-ring focus:outline-none text-base"
-          )}
+        
+        <Textarea
+          placeholder="Start writing your thoughts..."
+          value={content}
+          onChange={(e) => {
+            setContent(e.target.value);
+            setIsDirty(true);
+          }}
+          className="flex-grow min-h-[300px] text-base"
         />
       </div>
       <div className="flex justify-between items-center mt-4 flex-shrink-0">
