@@ -1,6 +1,7 @@
+
 'use client';
 
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef, useLayoutEffect } from 'react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -165,20 +166,20 @@ export default function NotesPage() {
 
   const editorVisible = selectedNote || isCreatingNew;
   
-useEffect(() => {
-    const editor = editorRef.current;
-    if (!editor) return;
+  useLayoutEffect(() => {
+      const editor = editorRef.current;
+      if (!editor || !editorVisible) return;
 
-    // Set initial content
-    editor.innerHTML = selectedNote?.content || '';
-    
-    // Set category
-    setCategory(selectedNote?.category || 'Personal');
+      // Set initial content
+      editor.innerHTML = selectedNote?.content || '';
+      
+      // Set category
+      setCategory(selectedNote?.category || 'Personal');
 
-    // Initial state is not dirty
-    setIsDirty(false);
-    
-}, [selectedNote, isCreatingNew]);
+      // Initial state is not dirty
+      setIsDirty(false);
+      
+  }, [selectedNote, isCreatingNew, editorVisible]);
 
   const handleBackToList = () => {
     setSelectedNote(null);
@@ -579,3 +580,5 @@ useEffect(() => {
     </div>
   )
 }
+
+    
