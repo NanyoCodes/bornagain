@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef, useLayoutEffect } from 'react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -11,6 +11,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
+  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -115,27 +116,24 @@ export default function NotesPage() {
   }, [filteredNotes]);
 
   const editorVisible = selectedNote || isCreatingNew;
-
-  useEffect(() => {
-    if (selectedNote) {
-      setTitle(selectedNote.title);
-      setCategory(selectedNote.category || 'Personal');
-      const noteContent = selectedNote.content || '';
-      setContent(noteContent);
-      if (editorRef.current) {
-        editorRef.current.innerHTML = noteContent;
-      }
-    } else {
-      // Reset for new note
-      setTitle('');
-      setCategory('Personal');
-      setContent('');
-      if (editorRef.current) {
-        editorRef.current.innerHTML = '';
-      }
+  
+  useLayoutEffect(() => {
+    if (editorRef.current) {
+        if (selectedNote) {
+            setTitle(selectedNote.title);
+            setCategory(selectedNote.category || 'Personal');
+            const noteContent = selectedNote.content || '';
+            setContent(noteContent);
+            editorRef.current.innerHTML = noteContent;
+        } else if (isCreatingNew) {
+            setTitle('');
+            setCategory('Personal');
+            setContent('');
+            editorRef.current.innerHTML = '';
+        }
+        setIsDirty(false);
     }
-    setIsDirty(false);
-  }, [selectedNote, isCreatingNew]);
+  }, [selectedNote, isCreatingNew, editorVisible]);
 
   const handleBackToList = () => {
     setSelectedNote(null);
@@ -586,3 +584,5 @@ export default function NotesPage() {
     </div>
   )
 }
+
+    
