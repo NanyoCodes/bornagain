@@ -68,22 +68,22 @@ const EditorToolbar = ({ onCommand }: { onCommand: (command: string, value?: str
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="w-auto h-8 text-xs gap-1 px-2">
-                        Text Style
+                        Font Size
                         <ChevronDown className="h-4 w-4 opacity-50" />
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
                     <DropdownMenuItem onSelect={() => onCommand('formatBlock', 'p')}>
-                        <div className="flex items-center gap-2"><Pilcrow className="h-4 w-4"/> Paragraph</div>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onSelect={() => onCommand('formatBlock', 'h1')}>
-                        <div className="flex items-center gap-2"><Heading1 className="h-4 w-4"/> Heading 1</div>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onSelect={() => onCommand('formatBlock', 'h2')}>
-                        <div className="flex items-center gap-2"><Heading2 className="h-4 w-4"/> Heading 2</div>
+                        Normal
                     </DropdownMenuItem>
                     <DropdownMenuItem onSelect={() => onCommand('formatBlock', 'h3')}>
-                        <div className="flex items-center gap-2"><Heading3 className="h-4 w-4"/> Heading 3</div>
+                        Large
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onSelect={() => onCommand('formatBlock', 'h2')}>
+                        Larger
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onSelect={() => onCommand('formatBlock', 'h1')}>
+                        Huge
                     </DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>
@@ -167,18 +167,42 @@ export default function NotesPage() {
   const editorVisible = selectedNote || isCreatingNew;
   
   useEffect(() => {
-    if (editorRef.current) {
-        if (selectedNote) {
-            editorRef.current.innerHTML = selectedNote.content || '';
-            setCategory(selectedNote.category || 'Personal');
-        } else if (isCreatingNew) {
-            // When creating a new note, explicitly clear the editor
-            editorRef.current.innerHTML = '';
-            setCategory('Personal');
-        }
+    const editor = editorRef.current;
+    if (!editor) return;
+
+    // Disconnect any previous observers
+    const existingObserver = (editor as any).observer;
+    if (existingObserver) {
+      existingObserver.disconnect();
     }
+    
+    // Set initial content
+    editor.innerHTML = selectedNote?.content || '';
+    
+    // Set category
+    setCategory(selectedNote?.category || 'Personal');
+
+    // Create a new observer
+    const observer = new MutationObserver(() => {
+      setIsDirty(true);
+    });
+
+    observer.observe(editor, {
+      childList: true,
+      subtree: true,
+      characterData: true,
+    });
+    
+    // Store observer for cleanup
+    (editor as any).observer = observer;
+
+    // Initial state is not dirty
     setIsDirty(false);
-  }, [selectedNote, isCreatingNew]);
+    
+    return () => {
+      observer.disconnect();
+    };
+}, [selectedNote, isCreatingNew]);
 
   const handleBackToList = () => {
     setSelectedNote(null);
@@ -451,7 +475,6 @@ export default function NotesPage() {
         <div
           ref={editorRef}
           contentEditable={true}
-          onInput={() => setIsDirty(true)}
           className="flex-grow min-h-[300px] w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           placeholder="Start writing your thoughts..."
         />
