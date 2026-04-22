@@ -46,7 +46,7 @@ import { useRouter } from 'next/navigation';
 
 const noteCategories: NoteCategory[] = ['Personal', 'Church', 'Revelation', 'Other'];
 
-export default function NotesPage({ params, searchParams }: { params: { slug: string }, searchParams: { [key: string]: string | string[] | undefined } }) {
+export default function NotesPage({ params, searchParams }: { params: {}, searchParams: { [key: string]: string | string[] | undefined } }) {
   const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
