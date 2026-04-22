@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -16,7 +16,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Loader2, Plus, Trash2, FileText, Download, XCircle } from 'lucide-react';
+import { Loader2, Plus, Trash2, FileText, Download, XCircle, Bold, Italic } from 'lucide-react';
 import { useUser, useFirestore, useCollection } from '@/firebase';
 import {
   collection,
@@ -68,6 +68,8 @@ export default function NotesPage() {
   const [isDiscardAlertOpen, setIsDiscardAlertOpen] = useState(false);
   const [navigationTarget, setNavigationTarget] = useState<'list' | 'editor' | null>(null);
   const router = useRouter();
+
+  const contentRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -284,6 +286,24 @@ export default function NotesPage() {
         setIsDeleting(false);
     }
   };
+
+  const handleFormatting = (formatType: 'bold' | 'italic') => {
+    const textarea = contentRef.current;
+    if (!textarea) return;
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const selectedText = textarea.value.substring(start, end);
+    const wrapper = formatType === 'bold' ? '**' : '*';
+    const newText = `${textarea.value.substring(0, start)}${wrapper}${selectedText}${wrapper}${textarea.value.substring(end)}`;
+    setEditorContent(newText);
+    setIsDirty(true);
+
+    setTimeout(() => {
+      textarea.focus();
+      const newCursorPos = start + wrapper.length;
+      textarea.setSelectionRange(newCursorPos, newCursorPos + selectedText.length);
+    }, 0);
+  };
   
   const NoteList = (
     <div className="space-y-2">
@@ -378,9 +398,19 @@ export default function NotesPage() {
             </Select>
         </div>
         
+        <div className="border rounded-md p-1 flex items-center gap-1">
+            <Button type="button" variant="ghost" size="icon" onClick={() => handleFormatting('bold')} title="Bold">
+                <Bold className="h-4 w-4" />
+            </Button>
+            <Button type="button" variant="ghost" size="icon" onClick={() => handleFormatting('italic')} title="Italic">
+                <Italic className="h-4 w-4" />
+            </Button>
+        </div>
+
         <Textarea
+            ref={contentRef}
             value={editorContent}
-            onInput={(e) => {
+            onChange={(e) => {
                 setEditorContent(e.currentTarget.value);
                 setIsDirty(true);
             }}
@@ -510,5 +540,3 @@ export default function NotesPage() {
     </div>
   )
 }
-
-    
