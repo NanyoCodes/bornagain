@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef, useLayoutEffect } from 'react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -116,7 +116,7 @@ export default function NotesPage() {
 
   const editorVisible = selectedNote || isCreatingNew;
   
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (selectedNote) {
         setTitle(selectedNote.title);
         setCategory(selectedNote.category || 'Personal');
@@ -448,7 +448,6 @@ export default function NotesPage() {
         <div
             ref={editorRef}
             onInput={() => setIsDirty(true)}
-            suppressContentEditableWarning={true}
             contentEditable="true"
             className="flex-grow min-h-[300px] w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             placeholder="Start writing your thoughts..."
