@@ -127,4 +127,16 @@
     pointer-events: none;
     display: block; /* For Firefox */
   }
+  .note-editor h1 {
+    @apply text-2xl font-bold my-4;
+  }
+  .note-editor h2 {
+    @apply text-xl font-semibold my-3;
+  }
+  .note-editor h3 {
+    @apply text-lg font-semibold my-2;
+  }
+  .note-editor p {
+    @apply min-h-[1.5rem];
+  }
 }
