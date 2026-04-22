@@ -65,7 +65,6 @@ export default function NotesPage() {
   const [isDeleting, setIsDeleting] = useState(false);
   
   const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
   const [category, setCategory] = useState<NoteCategory>('Personal');
   const [isDirty, setIsDirty] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -122,18 +121,15 @@ export default function NotesPage() {
         if (selectedNote) {
             setTitle(selectedNote.title);
             setCategory(selectedNote.category || 'Personal');
-            const noteContent = selectedNote.content || '';
-            setContent(noteContent);
-            editorRef.current.innerHTML = noteContent;
+            editorRef.current.innerHTML = selectedNote.content || '';
         } else if (isCreatingNew) {
             setTitle('');
             setCategory('Personal');
-            setContent('');
             editorRef.current.innerHTML = '';
         }
         setIsDirty(false);
     }
-  }, [selectedNote, isCreatingNew, editorVisible]);
+  }, [selectedNote, isCreatingNew]);
 
   const handleBackToList = () => {
     setSelectedNote(null);
@@ -188,20 +184,20 @@ export default function NotesPage() {
   };
 
   const handleExportPdf = () => {
-    if (!selectedNote) return;
+    if (!selectedNote || !editorRef.current) return;
 
     try {
         const doc = new jsPDF();
         
         doc.setFontSize(22);
         doc.setFont('helvetica', 'bold');
-        doc.text(selectedNote.title, 15, 20);
+        doc.text(title, 15, 20);
 
         doc.setFontSize(10);
         doc.setFont('helvetica', 'normal');
         doc.setTextColor(100);
         const dateString = selectedNote.updatedAt?.toDate ? format(selectedNote.updatedAt.toDate(), 'PPP p') : 'Just now';
-        doc.text(`Category: ${selectedNote.category}`, 15, 28);
+        doc.text(`Category: ${category}`, 15, 28);
         doc.text(`Last updated: ${dateString}`, 15, 33);
         
         doc.setDrawColor(200);
@@ -210,15 +206,12 @@ export default function NotesPage() {
         doc.setFontSize(12);
         doc.setTextColor(0);
 
-        // Basic HTML to text conversion for PDF
-        const tempDiv = document.createElement('div');
-        tempDiv.innerHTML = selectedNote.content;
-        const textContent = tempDiv.innerText || '';
+        const textContent = editorRef.current.innerText || '';
 
         const splitText = doc.splitTextToSize(textContent, 180);
         doc.text(splitText, 15, 48);
 
-        doc.save(`${selectedNote.title.replace(/ /g, '_')}.pdf`);
+        doc.save(`${title.replace(/ /g, '_')}.pdf`);
 
     } catch (e) {
         console.error("Failed to generate PDF", e);
@@ -233,18 +226,17 @@ export default function NotesPage() {
   const handleFormat = (command: string, value: string | null = null) => {
     editorRef.current?.focus();
     document.execCommand(command, false, value);
-    if (editorRef.current) {
-        setContent(editorRef.current.innerHTML);
-        setIsDirty(true);
-    }
+    setIsDirty(true);
   };
 
 
   const handleSaveNote = async () => {
-    if (!user || !firestore || !title.trim()) {
+    if (!user || !firestore || !title.trim() || !editorRef.current) {
       toast({ variant: 'destructive', title: 'Title is required.' });
       return;
     }
+    
+    const currentContent = editorRef.current.innerHTML;
 
     setIsSaving(true);
     try {
@@ -253,14 +245,14 @@ export default function NotesPage() {
         const noteRef = doc(firestore, 'users', user.uid, 'notes', selectedNote.id);
         const updatedData = {
           title,
-          content,
+          content: currentContent,
           category,
           updatedAt: serverTimestamp(),
         };
         await updateDoc(noteRef, updatedData);
         toast({ title: 'Note Updated' });
         
-        setSelectedNote(prev => prev ? { ...prev, ...updatedData, content, updatedAt: new Date() as any } : null);
+        setSelectedNote(prev => prev ? { ...prev, ...updatedData, content: currentContent, updatedAt: new Date() as any } : null);
         setIsDirty(false);
 
       } else {
@@ -268,7 +260,7 @@ export default function NotesPage() {
         const noteData = {
           userId: user.uid,
           title,
-          content,
+          content: currentContent,
           category,
         };
         const docRef = await addDoc(collection(firestore, 'users', user.uid, 'notes'), {
@@ -453,10 +445,7 @@ export default function NotesPage() {
         
         <div
             ref={editorRef}
-            onInput={e => {
-                setContent(e.currentTarget.innerHTML);
-                setIsDirty(true);
-            }}
+            onInput={() => setIsDirty(true)}
             contentEditable="true"
             className="flex-grow min-h-[300px] w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             placeholder="Start writing your thoughts..."
@@ -584,5 +573,3 @@ export default function NotesPage() {
     </div>
   )
 }
-
-    
