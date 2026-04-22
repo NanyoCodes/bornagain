@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect, useMemo, useRef, useLayoutEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -16,7 +16,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Loader2, Plus, Trash2, FileText, Download, XCircle, Bold, Italic, Underline, Palette, Pilcrow } from 'lucide-react';
+import { Loader2, Plus, Trash2, FileText, Download, XCircle } from 'lucide-react';
 import { useUser, useFirestore, useCollection } from '@/firebase';
 import {
   collection,
@@ -41,16 +41,10 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import jsPDF from 'jspdf';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useRouter } from 'next/navigation';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Textarea } from '@/components/ui/textarea';
 
 
 const noteCategories: NoteCategory[] = ['Personal', 'Church', 'Revelation', 'Other'];
-
-const textColors = [
-  '#000000', '#ef4444', '#22c55e', '#3b82f6', '#f97316', '#a855f7', '#64748b',
-  '#ffffff', '#dc2626', '#16a34a', '#2563eb', '#ea580c', '#9333ea', '#475569',
-];
 
 export default function NotesPage() {
   const { user } = useUser();
@@ -64,6 +58,7 @@ export default function NotesPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   
+  const [editorContent, setEditorContent] = useState('');
   const [category, setCategory] = useState<NoteCategory>('Personal');
   const [isDirty, setIsDirty] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -73,8 +68,6 @@ export default function NotesPage() {
   const [isDiscardAlertOpen, setIsDiscardAlertOpen] = useState(false);
   const [navigationTarget, setNavigationTarget] = useState<'list' | 'editor' | null>(null);
   const router = useRouter();
-
-  const editorRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -115,17 +108,13 @@ export default function NotesPage() {
 
   const editorVisible = selectedNote || isCreatingNew;
   
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (selectedNote) {
         setCategory(selectedNote.category || 'Personal');
-        if (editorRef.current) {
-            editorRef.current.innerHTML = selectedNote.content || '';
-        }
+        setEditorContent(selectedNote.content || '');
     } else if (isCreatingNew) {
         setCategory('Personal');
-        if (editorRef.current) {
-            editorRef.current.innerHTML = '';
-        }
+        setEditorContent('');
     }
     setIsDirty(false);
   }, [selectedNote, isCreatingNew]);
@@ -183,7 +172,7 @@ export default function NotesPage() {
   };
 
   const handleExportPdf = () => {
-    if (!selectedNote || !editorRef.current) return;
+    if (!selectedNote) return;
 
     try {
         const doc = new jsPDF();
@@ -205,7 +194,7 @@ export default function NotesPage() {
         doc.setFontSize(12);
         doc.setTextColor(0);
 
-        const textContent = editorRef.current.innerText || '';
+        const textContent = editorContent || '';
 
         const splitText = doc.splitTextToSize(textContent, 180);
         doc.text(splitText, 15, 48);
@@ -222,22 +211,15 @@ export default function NotesPage() {
     }
   };
 
-  const handleFormat = (command: string, value: string | null = null) => {
-    editorRef.current?.focus();
-    document.execCommand(command, false, value);
-    setIsDirty(true);
-  };
-
 
   const handleSaveNote = async () => {
-    const currentContent = editorRef.current?.innerHTML || '';
-    const plainTextContent = editorRef.current?.innerText || '';
-    if (!user || !firestore || !plainTextContent.trim()) {
+    const plainTextContent = editorContent.trim();
+    if (!user || !firestore || !plainTextContent) {
       toast({ variant: 'destructive', title: 'Content is required.' });
       return;
     }
 
-    const newTitle = plainTextContent.trim().split('\n')[0].substring(0, 50) || 'Untitled Note';
+    const newTitle = plainTextContent.split('\n')[0].substring(0, 50) || 'Untitled Note';
 
     setIsSaving(true);
     try {
@@ -246,14 +228,14 @@ export default function NotesPage() {
         const noteRef = doc(firestore, 'users', user.uid, 'notes', selectedNote.id);
         const updatedData = {
           title: newTitle,
-          content: currentContent,
+          content: editorContent,
           category,
           updatedAt: serverTimestamp(),
         };
         await updateDoc(noteRef, updatedData);
         toast({ title: 'Note Updated' });
         
-        setSelectedNote(prev => prev ? { ...prev, ...updatedData, title: newTitle, content: currentContent, updatedAt: new (serverTimestamp as any)() } : null);
+        setSelectedNote(prev => prev ? { ...prev, ...updatedData, title: newTitle, content: editorContent, updatedAt: new (serverTimestamp as any)() } : null);
         setIsDirty(false);
 
       } else {
@@ -261,7 +243,7 @@ export default function NotesPage() {
         const noteData = {
           userId: user.uid,
           title: newTitle,
-          content: currentContent,
+          content: editorContent,
           category,
         };
         const docRef = await addDoc(collection(firestore, 'users', user.uid, 'notes'), {
@@ -396,49 +378,12 @@ export default function NotesPage() {
             </Select>
         </div>
         
-        <div className="border rounded-md p-1 flex items-center gap-1 flex-wrap">
-            <Button type="button" variant="ghost" size="icon" onMouseDown={(e) => e.preventDefault()} onClick={() => handleFormat('bold')} title="Bold">
-                <Bold className="h-4 w-4" />
-            </Button>
-            <Button type="button" variant="ghost" size="icon" onMouseDown={(e) => e.preventDefault()} onClick={() => handleFormat('italic')} title="Italic">
-                <Italic className="h-4 w-4" />
-            </Button>
-            <Button type="button" variant="ghost" size="icon" onMouseDown={(e) => e.preventDefault()} onClick={() => handleFormat('underline')} title="Underline">
-                <Underline className="h-4 w-4" />
-            </Button>
-            <Popover>
-                <PopoverTrigger asChild>
-                    <Button variant="ghost" size="icon" title="Text Color" onMouseDown={(e) => e.preventDefault()}>
-                        <Palette className="h-4 w-4" />
-                    </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-1">
-                    <div className="grid grid-cols-7 gap-1">
-                        {textColors.map(color => (
-                            <Button key={color} variant="outline" size="icon" className="h-6 w-6 rounded-full" style={{ backgroundColor: color }} onClick={() => handleFormat('foreColor', color)} onMouseDown={(e) => e.preventDefault()} />
-                        ))}
-                    </div>
-                </PopoverContent>
-            </Popover>
-             <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" title="Font Size" onMouseDown={(e) => e.preventDefault()}>
-                        <Pilcrow className="h-4 w-4" />
-                    </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                    <DropdownMenuItem onSelect={() => handleFormat('fontSize', '1')}>Smallest</DropdownMenuItem>
-                    <DropdownMenuItem onSelect={() => handleFormat('fontSize', '3')}>Normal</DropdownMenuItem>
-                    <DropdownMenuItem onSelect={() => handleFormat('fontSize', '5')}>Large</DropdownMenuItem>
-                    <DropdownMenuItem onSelect={() => handleFormat('fontSize', '7')}>Huge</DropdownMenuItem>
-                </DropdownMenuContent>
-            </DropdownMenu>
-        </div>
-        
-        <div
-            ref={editorRef}
-            onInput={() => setIsDirty(true)}
-            contentEditable="true"
+        <Textarea
+            value={editorContent}
+            onInput={(e) => {
+                setEditorContent(e.currentTarget.value);
+                setIsDirty(true);
+            }}
             className="flex-grow min-h-[300px] w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             placeholder="Start writing your thoughts..."
         />
@@ -565,3 +510,5 @@ export default function NotesPage() {
     </div>
   )
 }
+
+    
