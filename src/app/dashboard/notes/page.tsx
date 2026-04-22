@@ -1,7 +1,6 @@
-
 'use client';
 
-import { useState, useEffect, useMemo, useRef, useLayoutEffect } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -117,14 +116,25 @@ export default function NotesPage() {
 
   const editorVisible = selectedNote || isCreatingNew;
   
-  useLayoutEffect(() => {
+  // This effect now correctly populates the editor without fighting with React's rendering
+  useEffect(() => {
+    if (editorRef.current) {
+        const newContent = selectedNote ? selectedNote.content || '' : '';
+        if (editorRef.current.innerHTML !== newContent) {
+            editorRef.current.innerHTML = newContent;
+        }
+        setContent(newContent);
+    }
+    
     if (selectedNote) {
         setTitle(selectedNote.title);
         setCategory(selectedNote.category || 'Personal');
-        setContent(selectedNote.content || '');
     } else if (isCreatingNew) {
         setTitle('');
         setCategory('Personal');
+        if (editorRef.current) {
+            editorRef.current.innerHTML = '';
+        }
         setContent('');
     }
     setIsDirty(false);
@@ -225,7 +235,11 @@ export default function NotesPage() {
   const handleFormat = (command: string, value: string | null = null) => {
     editorRef.current?.focus();
     document.execCommand(command, false, value);
-    setIsDirty(true);
+    // Manually trigger onInput to update state after execCommand
+    if (editorRef.current) {
+        setContent(editorRef.current.innerHTML);
+        setIsDirty(true);
+    }
   };
 
 
@@ -234,8 +248,6 @@ export default function NotesPage() {
       toast({ variant: 'destructive', title: 'Title is required.' });
       return;
     }
-    
-    const currentContent = content;
 
     setIsSaving(true);
     try {
@@ -244,14 +256,14 @@ export default function NotesPage() {
         const noteRef = doc(firestore, 'users', user.uid, 'notes', selectedNote.id);
         const updatedData = {
           title,
-          content: currentContent,
+          content,
           category,
           updatedAt: serverTimestamp(),
         };
         await updateDoc(noteRef, updatedData);
         toast({ title: 'Note Updated' });
         
-        setSelectedNote(prev => prev ? { ...prev, ...updatedData, content: currentContent, updatedAt: new (serverTimestamp as any)() } : null);
+        setSelectedNote(prev => prev ? { ...prev, ...updatedData, content: content, updatedAt: new (serverTimestamp as any)() } : null);
         setIsDirty(false);
 
       } else {
@@ -259,7 +271,7 @@ export default function NotesPage() {
         const noteData = {
           userId: user.uid,
           title,
-          content: currentContent,
+          content,
           category,
         };
         const docRef = await addDoc(collection(firestore, 'users', user.uid, 'notes'), {
@@ -330,7 +342,7 @@ export default function NotesPage() {
                                 {categoryNotes.map(note => {
                                     const contentPreview = (note.content || "No content").replace(/<[^>]*>?/gm, '').replace(/\s+/g, ' ').trim();
                                     const truncatedContent = contentPreview.length > 150 
-                                        ? `${contentPreview.substring(0, 150)}...` 
+                                        ? `${''}${contentPreview.substring(0, 150)}...` 
                                         : contentPreview;
 
                                     return (
@@ -450,7 +462,6 @@ export default function NotesPage() {
             }}
             suppressContentEditableWarning={true}
             contentEditable="true"
-            dangerouslySetInnerHTML={{ __html: content }}
             className="flex-grow min-h-[300px] w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             placeholder="Start writing your thoughts..."
         />
@@ -577,5 +588,3 @@ export default function NotesPage() {
     </div>
   )
 }
-
-    
