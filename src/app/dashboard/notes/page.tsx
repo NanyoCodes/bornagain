@@ -65,6 +65,7 @@ export default function NotesPage() {
   const [isDeleting, setIsDeleting] = useState(false);
   
   const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
   const [category, setCategory] = useState<NoteCategory>('Personal');
   const [isDirty, setIsDirty] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -117,18 +118,16 @@ export default function NotesPage() {
   const editorVisible = selectedNote || isCreatingNew;
   
   useLayoutEffect(() => {
-    if (editorRef.current) {
-        if (selectedNote) {
-            setTitle(selectedNote.title);
-            setCategory(selectedNote.category || 'Personal');
-            editorRef.current.innerHTML = selectedNote.content || '';
-        } else if (isCreatingNew) {
-            setTitle('');
-            setCategory('Personal');
-            editorRef.current.innerHTML = '';
-        }
-        setIsDirty(false);
+    if (selectedNote) {
+        setTitle(selectedNote.title);
+        setCategory(selectedNote.category || 'Personal');
+        setContent(selectedNote.content || '');
+    } else if (isCreatingNew) {
+        setTitle('');
+        setCategory('Personal');
+        setContent('');
     }
+    setIsDirty(false);
   }, [selectedNote, isCreatingNew]);
 
   const handleBackToList = () => {
@@ -231,12 +230,12 @@ export default function NotesPage() {
 
 
   const handleSaveNote = async () => {
-    if (!user || !firestore || !title.trim() || !editorRef.current) {
+    if (!user || !firestore || !title.trim()) {
       toast({ variant: 'destructive', title: 'Title is required.' });
       return;
     }
     
-    const currentContent = editorRef.current.innerHTML;
+    const currentContent = content;
 
     setIsSaving(true);
     try {
@@ -252,7 +251,7 @@ export default function NotesPage() {
         await updateDoc(noteRef, updatedData);
         toast({ title: 'Note Updated' });
         
-        setSelectedNote(prev => prev ? { ...prev, ...updatedData, content: currentContent, updatedAt: new Date() as any } : null);
+        setSelectedNote(prev => prev ? { ...prev, ...updatedData, content: currentContent, updatedAt: new (serverTimestamp as any)() } : null);
         setIsDirty(false);
 
       } else {
@@ -445,8 +444,13 @@ export default function NotesPage() {
         
         <div
             ref={editorRef}
-            onInput={() => setIsDirty(true)}
+            onInput={(e) => {
+              setContent(e.currentTarget.innerHTML);
+              setIsDirty(true);
+            }}
+            suppressContentEditableWarning={true}
             contentEditable="true"
+            dangerouslySetInnerHTML={{ __html: content }}
             className="flex-grow min-h-[300px] w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             placeholder="Start writing your thoughts..."
         />
@@ -573,3 +577,5 @@ export default function NotesPage() {
     </div>
   )
 }
+
+    
