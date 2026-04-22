@@ -16,7 +16,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Loader2, Plus, Trash2, FileText, Download, XCircle, Bold, Italic, Underline, Palette, Pilcrow, Heading1, Heading2, Heading3, ChevronDown } from 'lucide-react';
+import { Loader2, Plus, Trash2, FileText, Download, XCircle, Bold, Italic, Underline, Palette, Pilcrow, Heading1, Heading2, Heading3, ChevronDown, ArrowLeft } from 'lucide-react';
 import { useUser, useFirestore, useCollection } from '@/firebase';
 import {
   collection,
@@ -104,7 +104,7 @@ const EditorToolbar = ({ onCommand }: { onCommand: (command: string, value?: str
 };
 
 
-export default function NotesPage() {
+export default function NotesPage({ params, searchParams }: { params: { slug: string }, searchParams: { [key: string]: string | string[] | undefined } }) {
   const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
@@ -507,7 +507,11 @@ export default function NotesPage() {
   
   return (
     <div className="space-y-4 h-full flex flex-col p-4 md:p-6 md:pb-6">
-       <div className="flex-shrink-0">
+       <div className="flex-shrink-0 flex items-center gap-4">
+            <Button variant="outline" size="icon" onClick={() => router.back()}>
+              <ArrowLeft className="h-4 w-4" />
+              <span className="sr-only">Back</span>
+            </Button>
             <h1 className="text-2xl font-bold tracking-tight">My Notes</h1>
        </div>
        <div className="flex-grow min-h-0">
@@ -590,5 +594,3 @@ export default function NotesPage() {
     </div>
   )
 }
-
-    
