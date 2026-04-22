@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -39,14 +38,7 @@ export function useDoc<T>(
             } as T)
           : null;
 
-        // Use functional update to compare and prevent re-renders
-        setData((prevData) => {
-          // Simple but effective deep comparison for JSON-like objects
-          if (JSON.stringify(prevData) === JSON.stringify(newDocData)) {
-            return prevData;
-          }
-          return newDocData;
-        });
+        setData(newDocData);
         
         setLoading(false);
         setError(null);

@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -35,13 +34,7 @@ export function useCollection<T extends { id: string }>(
       (snapshot) => {
         const result: T[] = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data(options?.snapshotOptions) } as T));
         
-        // Use functional update to compare and prevent re-renders
-        setData((prevData) => {
-            if (JSON.stringify(prevData) === JSON.stringify(result)) {
-                return prevData;
-            }
-            return result;
-        });
+        setData(result);
 
         setLoading(false);
         setError(null);
