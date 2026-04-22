@@ -11,12 +11,11 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Loader2, Plus, Trash2, FileText, Download, XCircle, Bold, Italic } from 'lucide-react';
+import { Loader2, Plus, Trash2, FileText, Download, XCircle, Bold, Italic, Underline, Palette, Pilcrow, Heading1, Heading2, Heading3 } from 'lucide-react';
 import { useUser, useFirestore, useCollection } from '@/firebase';
 import {
   collection,
@@ -41,10 +40,48 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import jsPDF from 'jspdf';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useRouter } from 'next/navigation';
-import { Textarea } from '@/components/ui/textarea';
 
 
 const noteCategories: NoteCategory[] = ['Personal', 'Church', 'Revelation', 'Other'];
+
+const EditorToolbar = ({ onCommand }: { onCommand: (command: string, value?: string) => void }) => {
+    return (
+        <div className="border rounded-md p-1 flex flex-wrap items-center gap-1">
+            <Button type="button" variant="ghost" size="icon" onClick={() => onCommand('bold')} title="Bold">
+                <Bold className="h-4 w-4" />
+            </Button>
+            <Button type="button" variant="ghost" size="icon" onClick={() => onCommand('italic')} title="Italic">
+                <Italic className="h-4 w-4" />
+            </Button>
+            <Button type="button" variant="ghost" size="icon" onClick={() => onCommand('underline')} title="Underline">
+                <Underline className="h-4 w-4" />
+            </Button>
+            <div className="h-6 border-l mx-1"></div>
+            <Select onValueChange={(value) => onCommand('formatBlock', value)}>
+                <SelectTrigger className="w-auto h-8 text-xs border-0 focus:ring-0 gap-1 px-2">
+                    <SelectValue placeholder="Text Style" />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectItem value="p"><div className="flex items-center gap-2"><Pilcrow className="h-4 w-4"/> Paragraph</div></SelectItem>
+                    <SelectItem value="h1"><div className="flex items-center gap-2"><Heading1 className="h-4 w-4"/> Heading 1</div></SelectItem>
+                    <SelectItem value="h2"><div className="flex items-center gap-2"><Heading2 className="h-4 w-4"/> Heading 2</div></SelectItem>
+                    <SelectItem value="h3"><div className="flex items-center gap-2"><Heading3 className="h-4 w-4"/> Heading 3</div></SelectItem>
+                </SelectContent>
+            </Select>
+             <div className="h-6 border-l mx-1"></div>
+            <div className="relative w-8 h-8 flex items-center justify-center">
+                 <Palette className="h-4 w-4 text-muted-foreground pointer-events-none absolute" />
+                 <input
+                    type="color"
+                    onChange={(e) => onCommand('foreColor', e.target.value)}
+                    title="Text Color"
+                    className="absolute w-full h-full opacity-0 cursor-pointer"
+                />
+            </div>
+        </div>
+    );
+};
+
 
 export default function NotesPage() {
   const { user } = useUser();
@@ -58,7 +95,6 @@ export default function NotesPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   
-  const [editorContent, setEditorContent] = useState('');
   const [category, setCategory] = useState<NoteCategory>('Personal');
   const [isDirty, setIsDirty] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -69,7 +105,7 @@ export default function NotesPage() {
   const [navigationTarget, setNavigationTarget] = useState<'list' | 'editor' | null>(null);
   const router = useRouter();
 
-  const contentRef = useRef<HTMLTextAreaElement>(null);
+  const editorRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -111,12 +147,14 @@ export default function NotesPage() {
   const editorVisible = selectedNote || isCreatingNew;
   
   useEffect(() => {
-    if (selectedNote) {
+    if (editorRef.current) {
+      if (selectedNote) {
+        editorRef.current.innerHTML = selectedNote.content || '';
         setCategory(selectedNote.category || 'Personal');
-        setEditorContent(selectedNote.content || '');
-    } else if (isCreatingNew) {
+      } else if (isCreatingNew) {
+        editorRef.current.innerHTML = '';
         setCategory('Personal');
-        setEditorContent('');
+      }
     }
     setIsDirty(false);
   }, [selectedNote, isCreatingNew]);
@@ -174,7 +212,7 @@ export default function NotesPage() {
   };
 
   const handleExportPdf = () => {
-    if (!selectedNote) return;
+    if (!selectedNote || !editorRef.current) return;
 
     try {
         const doc = new jsPDF();
@@ -196,7 +234,7 @@ export default function NotesPage() {
         doc.setFontSize(12);
         doc.setTextColor(0);
 
-        const textContent = editorContent || '';
+        const textContent = editorRef.current.innerText || '';
 
         const splitText = doc.splitTextToSize(textContent, 180);
         doc.text(splitText, 15, 48);
@@ -215,13 +253,16 @@ export default function NotesPage() {
 
 
   const handleSaveNote = async () => {
-    const plainTextContent = editorContent.trim();
+    if (!editorRef.current) return;
+    
+    const plainTextContent = editorRef.current.innerText.trim();
     if (!user || !firestore || !plainTextContent) {
       toast({ variant: 'destructive', title: 'Content is required.' });
       return;
     }
-
+    
     const newTitle = plainTextContent.split('\n')[0].substring(0, 50) || 'Untitled Note';
+    const contentHTML = editorRef.current.innerHTML;
 
     setIsSaving(true);
     try {
@@ -230,14 +271,14 @@ export default function NotesPage() {
         const noteRef = doc(firestore, 'users', user.uid, 'notes', selectedNote.id);
         const updatedData = {
           title: newTitle,
-          content: editorContent,
+          content: contentHTML,
           category,
           updatedAt: serverTimestamp(),
         };
         await updateDoc(noteRef, updatedData);
         toast({ title: 'Note Updated' });
         
-        setSelectedNote(prev => prev ? { ...prev, ...updatedData, title: newTitle, content: editorContent, updatedAt: new (serverTimestamp as any)() } : null);
+        setSelectedNote(prev => prev ? { ...prev, ...updatedData, title: newTitle, content: contentHTML, updatedAt: new (serverTimestamp as any)() } : null);
         setIsDirty(false);
 
       } else {
@@ -245,7 +286,7 @@ export default function NotesPage() {
         const noteData = {
           userId: user.uid,
           title: newTitle,
-          content: editorContent,
+          content: contentHTML,
           category,
         };
         const docRef = await addDoc(collection(firestore, 'users', user.uid, 'notes'), {
@@ -285,24 +326,6 @@ export default function NotesPage() {
     } finally {
         setIsDeleting(false);
     }
-  };
-
-  const handleFormatting = (formatType: 'bold' | 'italic') => {
-    const textarea = contentRef.current;
-    if (!textarea) return;
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const selectedText = textarea.value.substring(start, end);
-    const wrapper = formatType === 'bold' ? '**' : '*';
-    const newText = `${textarea.value.substring(0, start)}${wrapper}${selectedText}${wrapper}${textarea.value.substring(end)}`;
-    setEditorContent(newText);
-    setIsDirty(true);
-
-    setTimeout(() => {
-      textarea.focus();
-      const newCursorPos = start + wrapper.length;
-      textarea.setSelectionRange(newCursorPos, newCursorPos + selectedText.length);
-    }, 0);
   };
   
   const NoteList = (
@@ -382,40 +405,34 @@ export default function NotesPage() {
   const NoteEditor = (
     <div className="flex flex-col h-full" key={selectedNote?.id || (isCreatingNew ? 'new-note' : 'empty-editor')}>
       <div className="space-y-4 flex-grow flex flex-col">
-        <div className="w-full sm:w-1/2">
-            <Select value={category} onValueChange={(value) => {
-                setCategory(value as NoteCategory);
-                setIsDirty(true);
-            }}>
-                <SelectTrigger>
-                    <SelectValue placeholder="Select a category" />
-                </SelectTrigger>
-                <SelectContent>
-                    {noteCategories.map(cat => (
-                        <SelectItem key={cat} value={cat}>{cat}</SelectItem>
-                    ))}
-                </SelectContent>
-            </Select>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="w-full">
+                <Select value={category} onValueChange={(value) => {
+                    setCategory(value as NoteCategory);
+                    setIsDirty(true);
+                }}>
+                    <SelectTrigger>
+                        <SelectValue placeholder="Select a category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {noteCategories.map(cat => (
+                            <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+            </div>
+             <EditorToolbar onCommand={(command, value) => {
+                document.execCommand(command, false, value);
+                editorRef.current?.focus();
+             }} />
         </div>
         
-        <div className="border rounded-md p-1 flex items-center gap-1">
-            <Button type="button" variant="ghost" size="icon" onClick={() => handleFormatting('bold')} title="Bold">
-                <Bold className="h-4 w-4" />
-            </Button>
-            <Button type="button" variant="ghost" size="icon" onClick={() => handleFormatting('italic')} title="Italic">
-                <Italic className="h-4 w-4" />
-            </Button>
-        </div>
-
-        <Textarea
-            ref={contentRef}
-            value={editorContent}
-            onChange={(e) => {
-                setEditorContent(e.currentTarget.value);
-                setIsDirty(true);
-            }}
-            className="flex-grow min-h-[300px] w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-            placeholder="Start writing your thoughts..."
+        <div
+          ref={editorRef}
+          contentEditable={true}
+          onInput={() => setIsDirty(true)}
+          className="flex-grow min-h-[300px] w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+          placeholder="Start writing your thoughts..."
         />
       </div>
       <div className="flex justify-between items-center mt-4 flex-shrink-0">
