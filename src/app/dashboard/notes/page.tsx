@@ -64,7 +64,6 @@ export default function NotesPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   
-  const [title, setTitle] = useState('');
   const [category, setCategory] = useState<NoteCategory>('Personal');
   const [isDirty, setIsDirty] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -118,13 +117,11 @@ export default function NotesPage() {
   
   useLayoutEffect(() => {
     if (selectedNote) {
-        setTitle(selectedNote.title);
         setCategory(selectedNote.category || 'Personal');
         if (editorRef.current) {
             editorRef.current.innerHTML = selectedNote.content || '';
         }
     } else if (isCreatingNew) {
-        setTitle('');
         setCategory('Personal');
         if (editorRef.current) {
             editorRef.current.innerHTML = '';
@@ -193,13 +190,13 @@ export default function NotesPage() {
         
         doc.setFontSize(22);
         doc.setFont('helvetica', 'bold');
-        doc.text(title, 15, 20);
+        doc.text(selectedNote.title, 15, 20);
 
         doc.setFontSize(10);
         doc.setFont('helvetica', 'normal');
         doc.setTextColor(100);
         const dateString = selectedNote.updatedAt?.toDate ? format(selectedNote.updatedAt.toDate(), 'PPP p') : 'Just now';
-        doc.text(`Category: ${category}`, 15, 28);
+        doc.text(`Category: ${selectedNote.category}`, 15, 28);
         doc.text(`Last updated: ${dateString}`, 15, 33);
         
         doc.setDrawColor(200);
@@ -213,7 +210,7 @@ export default function NotesPage() {
         const splitText = doc.splitTextToSize(textContent, 180);
         doc.text(splitText, 15, 48);
 
-        doc.save(`${title.replace(/ /g, '_')}.pdf`);
+        doc.save(`${selectedNote.title.replace(/ /g, '_')}.pdf`);
 
     } catch (e) {
         console.error("Failed to generate PDF", e);
@@ -233,12 +230,14 @@ export default function NotesPage() {
 
 
   const handleSaveNote = async () => {
-    if (!user || !firestore || !title.trim()) {
-      toast({ variant: 'destructive', title: 'Title is required.' });
+    const currentContent = editorRef.current?.innerHTML || '';
+    const plainTextContent = editorRef.current?.innerText || '';
+    if (!user || !firestore || !plainTextContent.trim()) {
+      toast({ variant: 'destructive', title: 'Content is required.' });
       return;
     }
 
-    const currentContent = editorRef.current?.innerHTML || '';
+    const newTitle = plainTextContent.trim().split('\n')[0].substring(0, 50) || 'Untitled Note';
 
     setIsSaving(true);
     try {
@@ -246,7 +245,7 @@ export default function NotesPage() {
         // Update existing note
         const noteRef = doc(firestore, 'users', user.uid, 'notes', selectedNote.id);
         const updatedData = {
-          title,
+          title: newTitle,
           content: currentContent,
           category,
           updatedAt: serverTimestamp(),
@@ -254,14 +253,14 @@ export default function NotesPage() {
         await updateDoc(noteRef, updatedData);
         toast({ title: 'Note Updated' });
         
-        setSelectedNote(prev => prev ? { ...prev, ...updatedData, content: currentContent, updatedAt: new (serverTimestamp as any)() } : null);
+        setSelectedNote(prev => prev ? { ...prev, ...updatedData, title: newTitle, content: currentContent, updatedAt: new (serverTimestamp as any)() } : null);
         setIsDirty(false);
 
       } else {
         // Create new note
         const noteData = {
           userId: user.uid,
-          title,
+          title: newTitle,
           content: currentContent,
           category,
         };
@@ -381,16 +380,7 @@ export default function NotesPage() {
   const NoteEditor = (
     <div className="flex flex-col h-full" key={selectedNote?.id || (isCreatingNew ? 'new-note' : 'empty-editor')}>
       <div className="space-y-4 flex-grow flex flex-col">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <Input
-                placeholder="Note Title"
-                value={title}
-                onChange={(e) => {
-                    setTitle(e.target.value);
-                    setIsDirty(true);
-                }}
-                className="text-lg font-semibold"
-            />
+        <div className="w-full sm:w-1/2">
             <Select value={category} onValueChange={(value) => {
                 setCategory(value as NoteCategory);
                 setIsDirty(true);
@@ -482,7 +472,7 @@ export default function NotesPage() {
           </div>
         )}
         </div>
-        <Button onClick={handleSaveNote} disabled={isSaving || !title.trim() || !isDirty}>
+        <Button onClick={handleSaveNote} disabled={isSaving || !isDirty}>
           {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
           {selectedNote ? 'Save Changes' : 'Save Note'}
         </Button>
