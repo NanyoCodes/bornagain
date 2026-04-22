@@ -11,11 +11,12 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
+  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Loader2, Plus, Trash2, FileText, Download, XCircle, Bold, Italic, Underline, Palette, Pilcrow, Heading1, Heading2, Heading3 } from 'lucide-react';
+import { Loader2, Plus, Trash2, FileText, Download, XCircle, Bold, Italic, Underline, Palette, Pilcrow, Heading1, Heading2, Heading3, ChevronDown } from 'lucide-react';
 import { useUser, useFirestore, useCollection } from '@/firebase';
 import {
   collection,
@@ -40,6 +41,12 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import jsPDF from 'jspdf';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useRouter } from 'next/navigation';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 
 const noteCategories: NoteCategory[] = ['Personal', 'Church', 'Revelation', 'Other'];
@@ -57,17 +64,30 @@ const EditorToolbar = ({ onCommand }: { onCommand: (command: string, value?: str
                 <Underline className="h-4 w-4" />
             </Button>
             <div className="h-6 border-l mx-1"></div>
-            <Select onValueChange={(value) => onCommand('formatBlock', value)}>
-                <SelectTrigger className="w-auto h-8 text-xs border-0 focus:ring-0 gap-1 px-2">
-                    <SelectValue placeholder="Text Style" />
-                </SelectTrigger>
-                <SelectContent>
-                    <SelectItem value="p"><div className="flex items-center gap-2"><Pilcrow className="h-4 w-4"/> Paragraph</div></SelectItem>
-                    <SelectItem value="h1"><div className="flex items-center gap-2"><Heading1 className="h-4 w-4"/> Heading 1</div></SelectItem>
-                    <SelectItem value="h2"><div className="flex items-center gap-2"><Heading2 className="h-4 w-4"/> Heading 2</div></SelectItem>
-                    <SelectItem value="h3"><div className="flex items-center gap-2"><Heading3 className="h-4 w-4"/> Heading 3</div></SelectItem>
-                </SelectContent>
-            </Select>
+            
+            <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="w-auto h-8 text-xs gap-1 px-2">
+                        Text Style
+                        <ChevronDown className="h-4 w-4 opacity-50" />
+                    </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                    <DropdownMenuItem onSelect={() => onCommand('formatBlock', 'p')}>
+                        <div className="flex items-center gap-2"><Pilcrow className="h-4 w-4"/> Paragraph</div>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onSelect={() => onCommand('formatBlock', 'h1')}>
+                        <div className="flex items-center gap-2"><Heading1 className="h-4 w-4"/> Heading 1</div>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onSelect={() => onCommand('formatBlock', 'h2')}>
+                        <div className="flex items-center gap-2"><Heading2 className="h-4 w-4"/> Heading 2</div>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onSelect={() => onCommand('formatBlock', 'h3')}>
+                        <div className="flex items-center gap-2"><Heading3 className="h-4 w-4"/> Heading 3</div>
+                    </DropdownMenuItem>
+                </DropdownMenuContent>
+            </DropdownMenu>
+
              <div className="h-6 border-l mx-1"></div>
             <div className="relative w-8 h-8 flex items-center justify-center">
                  <Palette className="h-4 w-4 text-muted-foreground pointer-events-none absolute" />
@@ -148,13 +168,14 @@ export default function NotesPage() {
   
   useEffect(() => {
     if (editorRef.current) {
-      if (selectedNote) {
-        editorRef.current.innerHTML = selectedNote.content || '';
-        setCategory(selectedNote.category || 'Personal');
-      } else if (isCreatingNew) {
-        editorRef.current.innerHTML = '';
-        setCategory('Personal');
-      }
+        if (selectedNote) {
+            editorRef.current.innerHTML = selectedNote.content || '';
+            setCategory(selectedNote.category || 'Personal');
+        } else if (isCreatingNew) {
+            // When creating a new note, explicitly clear the editor
+            editorRef.current.innerHTML = '';
+            setCategory('Personal');
+        }
     }
     setIsDirty(false);
   }, [selectedNote, isCreatingNew]);
