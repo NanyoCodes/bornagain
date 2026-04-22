@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -10,11 +10,12 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
+  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Loader2, Plus, Trash2, FileText, Download, XCircle } from 'lucide-react';
+import { Loader2, Plus, Trash2, FileText, Download, XCircle, Bold, Italic } from 'lucide-react';
 import { useUser, useFirestore, useCollection } from '@/firebase';
 import {
   collection,
@@ -61,12 +62,14 @@ export default function NotesPage() {
   const [category, setCategory] = useState<NoteCategory>('Personal');
   const [isDirty, setIsDirty] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-
+  
   const [activeTab, setActiveTab] = useState('editor');
   
   const [isDiscardAlertOpen, setIsDiscardAlertOpen] = useState(false);
   const [navigationTarget, setNavigationTarget] = useState<'list' | 'editor' | null>(null);
   const router = useRouter();
+
+  const contentRef = useRef<HTMLTextAreaElement>(null); // For formatting
 
   useEffect(() => {
     setMounted(true);
@@ -113,13 +116,14 @@ export default function NotesPage() {
       setCategory(selectedNote.category || 'Personal');
       setContent(selectedNote.content || '');
     } else {
+      // Reset for new note
       setTitle('');
       setCategory('Personal');
       setContent('');
     }
     setIsDirty(false);
   }, [selectedNote, isCreatingNew]);
-  
+
   const handleBackToList = () => {
     setSelectedNote(null);
     setIsCreatingNew(false);
@@ -198,7 +202,6 @@ export default function NotesPage() {
         const splitText = doc.splitTextToSize(selectedNote.content, 180);
         doc.text(splitText, 15, 48);
 
-
         doc.save(`${selectedNote.title.replace(/ /g, '_')}.pdf`);
 
     } catch (e) {
@@ -209,6 +212,24 @@ export default function NotesPage() {
             description: "There was an error generating the PDF for this note."
         });
     }
+  };
+
+  const handleFormatting = (formatType: 'bold' | 'italic') => {
+    const textarea = contentRef.current;
+    if (!textarea) return;
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const selectedText = textarea.value.substring(start, end);
+    const wrapper = formatType === 'bold' ? '**' : '*';
+    const newText = `${textarea.value.substring(0, start)}${wrapper}${selectedText}${wrapper}${textarea.value.substring(end)}`;
+    setContent(newText);
+    setIsDirty(true);
+
+    setTimeout(() => {
+      textarea.focus();
+      const newCursorPos = start + wrapper.length;
+      textarea.setSelectionRange(newCursorPos, newCursorPos + selectedText.length);
+    }, 0);
   };
 
 
@@ -384,7 +405,17 @@ export default function NotesPage() {
             </Select>
         </div>
         
+        <div className="border rounded-md p-1 flex items-center gap-1">
+            <Button type="button" variant="ghost" size="icon" onClick={() => handleFormatting('bold')} title="Bold">
+                <Bold className="h-4 w-4" />
+            </Button>
+            <Button type="button" variant="ghost" size="icon" onClick={() => handleFormatting('italic')} title="Italic">
+                <Italic className="h-4 w-4" />
+            </Button>
+        </div>
+        
         <Textarea
+          ref={contentRef}
           placeholder="Start writing your thoughts..."
           value={content}
           onChange={(e) => {
@@ -516,5 +547,3 @@ export default function NotesPage() {
     </div>
   )
 }
-
-    
