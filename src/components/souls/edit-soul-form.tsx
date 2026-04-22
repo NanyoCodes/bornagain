@@ -26,7 +26,6 @@ import { FirestorePermissionError } from "@/firebase/errors";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
-import { ImageUpload } from "../common/image-upload";
 
 const formSchema = z.object({
   firstName: z.string().min(2, "First name must be at least 2 characters."),
@@ -77,6 +76,23 @@ export function EditSoulForm({ soul, onSoulUpdated }: EditSoulFormProps) {
       wonAt: soul.wonAt.toDate(),
     },
   });
+
+  // This useEffect will reset the form with new `soul` data when the prop changes.
+  useEffect(() => {
+    form.reset({
+      firstName: soul.firstName || "",
+      lastName: soul.lastName || "",
+      email: soul.email || "",
+      phone: soul.phone || "",
+      church: soul.church || "",
+      locationWonCity: soul.locationWon?.city || "",
+      locationWonState: soul.locationWon?.state || "",
+      locationWonCountry: soul.locationWon?.country || "",
+      source: soul.source || "Personal",
+      sourceDetails: soul.sourceDetails || "",
+      wonAt: soul.wonAt.toDate(),
+    });
+  }, [soul, form]);
   
   const sourceValue = form.watch("source");
   useEffect(() => {
