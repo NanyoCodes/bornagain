@@ -143,25 +143,21 @@ export default function NotesPage() {
   };
   
   useEffect(() => {
-    if (editorVisible && contentRef.current) {
-      const newContent = selectedNote?.content || '';
-      if (contentRef.current.innerHTML !== newContent) {
-          contentRef.current.innerHTML = newContent;
-      }
-    }
-  }, [selectedNote, isCreatingNew, editorVisible]);
-
-  
-  useEffect(() => {
     if (selectedNote) {
       setTitle(selectedNote.title);
       setCategory(selectedNote.category || 'Personal');
-    } else if (isCreatingNew) {
+      if (contentRef.current) {
+        contentRef.current.innerHTML = selectedNote.content || '';
+      }
+    } else {
       setTitle('');
       setCategory('Personal');
+      if (contentRef.current) {
+        contentRef.current.innerHTML = '';
+      }
     }
     setIsDirty(false);
-  }, [selectedNote, isCreatingNew]);
+  }, [selectedNote]);
   
   const handleBackToList = () => {
     setSelectedNote(null);
@@ -667,3 +663,5 @@ export default function NotesPage() {
     </div>
   )
 }
+
+    
