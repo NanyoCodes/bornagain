@@ -165,42 +165,19 @@ export default function NotesPage() {
 
   const editorVisible = selectedNote || isCreatingNew;
   
-  useEffect(() => {
+useEffect(() => {
     const editor = editorRef.current;
     if (!editor) return;
 
-    // Disconnect any previous observers
-    const existingObserver = (editor as any).observer;
-    if (existingObserver) {
-      existingObserver.disconnect();
-    }
-    
     // Set initial content
     editor.innerHTML = selectedNote?.content || '';
     
     // Set category
     setCategory(selectedNote?.category || 'Personal');
 
-    // Create a new observer
-    const observer = new MutationObserver(() => {
-      setIsDirty(true);
-    });
-
-    observer.observe(editor, {
-      childList: true,
-      subtree: true,
-      characterData: true,
-    });
-    
-    // Store observer for cleanup
-    (editor as any).observer = observer;
-
     // Initial state is not dirty
     setIsDirty(false);
     
-    return () => {
-      observer.disconnect();
-    };
 }, [selectedNote, isCreatingNew]);
 
   const handleBackToList = () => {
@@ -468,12 +445,14 @@ export default function NotesPage() {
              <EditorToolbar onCommand={(command, value) => {
                 document.execCommand(command, false, value);
                 editorRef.current?.focus();
+                setIsDirty(true);
              }} />
         </div>
         
         <div
           ref={editorRef}
           contentEditable={true}
+          onInput={() => setIsDirty(true)}
           className="note-editor flex-grow min-h-[300px] w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           placeholder="Start writing your thoughts..."
         />
