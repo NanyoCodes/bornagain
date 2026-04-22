@@ -121,4 +121,10 @@
     @apply bg-destructive/20;
     transition: background-color 0.5s ease-out;
   }
+  [contenteditable][placeholder]:empty:before {
+    content: attr(placeholder);
+    color: hsl(var(--muted-foreground));
+    pointer-events: none;
+    display: block; /* For Firefox */
+  }
 }

@@ -10,12 +10,11 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Loader2, Plus, Trash2, FileText, Download, XCircle } from 'lucide-react';
+import { Loader2, Plus, Trash2, FileText, Download, XCircle, Bold, Italic, Underline, Palette, Pilcrow } from 'lucide-react';
 import { useUser, useFirestore, useCollection } from '@/firebase';
 import {
   collection,
@@ -40,10 +39,16 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import jsPDF from 'jspdf';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useRouter } from 'next/navigation';
-import { Textarea } from '@/components/ui/textarea';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
 
 const noteCategories: NoteCategory[] = ['Personal', 'Church', 'Revelation', 'Other'];
+
+const textColors = [
+  '#000000', '#ef4444', '#22c55e', '#3b82f6', '#f97316', '#a855f7', '#64748b',
+  '#ffffff', '#dc2626', '#16a34a', '#2563eb', '#ea580c', '#9333ea', '#475569',
+];
 
 export default function NotesPage() {
   const { user } = useUser();
@@ -68,6 +73,8 @@ export default function NotesPage() {
   const [isDiscardAlertOpen, setIsDiscardAlertOpen] = useState(false);
   const [navigationTarget, setNavigationTarget] = useState<'list' | 'editor' | null>(null);
   const router = useRouter();
+
+  const editorRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -112,12 +119,19 @@ export default function NotesPage() {
     if (selectedNote) {
       setTitle(selectedNote.title);
       setCategory(selectedNote.category || 'Personal');
-      setContent(selectedNote.content || '');
+      const noteContent = selectedNote.content || '';
+      setContent(noteContent);
+      if (editorRef.current) {
+        editorRef.current.innerHTML = noteContent;
+      }
     } else {
       // Reset for new note
       setTitle('');
       setCategory('Personal');
       setContent('');
+      if (editorRef.current) {
+        editorRef.current.innerHTML = '';
+      }
     }
     setIsDirty(false);
   }, [selectedNote, isCreatingNew]);
@@ -197,7 +211,12 @@ export default function NotesPage() {
         doc.setFontSize(12);
         doc.setTextColor(0);
 
-        const splitText = doc.splitTextToSize(selectedNote.content, 180);
+        // Basic HTML to text conversion for PDF
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = selectedNote.content;
+        const textContent = tempDiv.innerText || '';
+
+        const splitText = doc.splitTextToSize(textContent, 180);
         doc.text(splitText, 15, 48);
 
         doc.save(`${selectedNote.title.replace(/ /g, '_')}.pdf`);
@@ -209,6 +228,15 @@ export default function NotesPage() {
             title: "PDF Export Failed",
             description: "There was an error generating the PDF for this note."
         });
+    }
+  };
+
+  const handleFormat = (command: string, value: string | null = null) => {
+    editorRef.current?.focus();
+    document.execCommand(command, false, value);
+    if (editorRef.current) {
+        setContent(editorRef.current.innerHTML);
+        setIsDirty(true);
     }
   };
 
@@ -385,14 +413,57 @@ export default function NotesPage() {
             </Select>
         </div>
         
-        <Textarea
-          placeholder="Start writing your thoughts..."
-          value={content}
-          onChange={(e) => {
-            setContent(e.target.value);
-            setIsDirty(true);
-          }}
-          className="flex-grow min-h-[300px] text-base"
+        <div className="border rounded-md p-1 flex items-center gap-1 flex-wrap">
+            <Button type="button" variant="ghost" size="icon" onMouseDown={(e) => e.preventDefault()} onClick={() => handleFormat('bold')} title="Bold">
+                <Bold className="h-4 w-4" />
+            </Button>
+            <Button type="button" variant="ghost" size="icon" onMouseDown={(e) => e.preventDefault()} onClick={() => handleFormat('italic')} title="Italic">
+                <Italic className="h-4 w-4" />
+            </Button>
+            <Button type="button" variant="ghost" size="icon" onMouseDown={(e) => e.preventDefault()} onClick={() => handleFormat('underline')} title="Underline">
+                <Underline className="h-4 w-4" />
+            </Button>
+            <Popover>
+                <PopoverTrigger asChild>
+                    <Button variant="ghost" size="icon" title="Text Color" onMouseDown={(e) => e.preventDefault()}>
+                        <Palette className="h-4 w-4" />
+                    </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-1">
+                    <div className="grid grid-cols-7 gap-1">
+                        {textColors.map(color => (
+                            <Button key={color} variant="outline" size="icon" className="h-6 w-6 rounded-full" style={{ backgroundColor: color }} onClick={() => handleFormat('foreColor', color)} onMouseDown={(e) => e.preventDefault()} />
+                        ))}
+                    </div>
+                </PopoverContent>
+            </Popover>
+             <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon" title="Font Size" onMouseDown={(e) => e.preventDefault()}>
+                        <Pilcrow className="h-4 w-4" />
+                    </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                    <DropdownMenuItem onSelect={() => handleFormat('fontSize', '1')}>Smallest</DropdownMenuItem>
+                    <DropdownMenuItem onSelect={() => handleFormat('fontSize', '3')}>Normal</DropdownMenuItem>
+                    <DropdownMenuItem onSelect={() => handleFormat('fontSize', '5')}>Large</DropdownMenuItem>
+                    <DropdownMenuItem onSelect={() => handleFormat('fontSize', '7')}>Huge</DropdownMenuItem>
+                </DropdownMenuContent>
+            </DropdownMenu>
+        </div>
+        
+        <div
+            ref={editorRef}
+            onInput={e => {
+                setContent(e.currentTarget.innerHTML);
+                setIsDirty(true);
+            }}
+            contentEditable="true"
+            // The key forces a re-mount when the selected note changes, resetting the innerHTML.
+            // dangerouslySetInnerHTML is used for the initial population.
+            dangerouslySetInnerHTML={{ __html: content }}
+            className="flex-grow min-h-[300px] w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            placeholder="Start writing your thoughts..."
         />
       </div>
       <div className="flex justify-between items-center mt-4 flex-shrink-0">
