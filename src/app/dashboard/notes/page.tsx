@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef, useLayoutEffect } from 'react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -146,19 +146,23 @@ export default function NotesPage() {
     if (selectedNote) {
       setTitle(selectedNote.title);
       setCategory(selectedNote.category || 'Personal');
-      if (contentRef.current) {
-        contentRef.current.innerHTML = selectedNote.content || '';
-      }
     } else {
       setTitle('');
       setCategory('Personal');
-      if (contentRef.current) {
-        contentRef.current.innerHTML = '';
-      }
     }
     setIsDirty(false);
   }, [selectedNote]);
   
+  useLayoutEffect(() => {
+    if (contentRef.current) {
+        if (selectedNote) {
+            contentRef.current.innerHTML = selectedNote.content || '';
+        } else {
+            contentRef.current.innerHTML = '';
+        }
+    }
+  }, [selectedNote]);
+
   const handleBackToList = () => {
     setSelectedNote(null);
     setIsCreatingNew(false);
@@ -663,5 +667,3 @@ export default function NotesPage() {
     </div>
   )
 }
-
-    
