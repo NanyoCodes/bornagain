@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect, useMemo, useRef, useLayoutEffect } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,8 +15,9 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Loader2, Plus, Trash2, FileText, Download, XCircle, Bold, Italic, Underline, Palette, Pilcrow, Heading1, Heading2, Heading3, ChevronDown, ArrowLeft } from 'lucide-react';
+import { Loader2, Plus, Trash2, FileText, Download, XCircle, ArrowLeft } from 'lucide-react';
 import { useUser, useFirestore, useCollection } from '@/firebase';
 import {
   collection,
@@ -42,67 +43,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import jsPDF from 'jspdf';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useRouter } from 'next/navigation';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-
 
 const noteCategories: NoteCategory[] = ['Personal', 'Church', 'Revelation', 'Other'];
-
-const EditorToolbar = ({ onCommand }: { onCommand: (command: string, value?: string) => void }) => {
-    return (
-        <div className="border rounded-md p-1 flex flex-wrap items-center gap-1">
-            <Button type="button" variant="ghost" size="icon" onClick={() => onCommand('bold')} title="Bold">
-                <Bold className="h-4 w-4" />
-            </Button>
-            <Button type="button" variant="ghost" size="icon" onClick={() => onCommand('italic')} title="Italic">
-                <Italic className="h-4 w-4" />
-            </Button>
-            <Button type="button" variant="ghost" size="icon" onClick={() => onCommand('underline')} title="Underline">
-                <Underline className="h-4 w-4" />
-            </Button>
-            <div className="h-6 border-l mx-1"></div>
-            
-            <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="w-auto h-8 text-xs gap-1 px-2">
-                        Font Size
-                        <ChevronDown className="h-4 w-4 opacity-50" />
-                    </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                    <DropdownMenuItem onSelect={() => onCommand('formatBlock', 'p')}>
-                        Normal
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onSelect={() => onCommand('formatBlock', 'h3')}>
-                        Large
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onSelect={() => onCommand('formatBlock', 'h2')}>
-                        Larger
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onSelect={() => onCommand('formatBlock', 'h1')}>
-                        Huge
-                    </DropdownMenuItem>
-                </DropdownMenuContent>
-            </DropdownMenu>
-
-             <div className="h-6 border-l mx-1"></div>
-            <div className="relative w-8 h-8 flex items-center justify-center">
-                 <Palette className="h-4 w-4 text-muted-foreground pointer-events-none absolute" />
-                 <input
-                    type="color"
-                    onChange={(e) => onCommand('foreColor', e.target.value)}
-                    title="Text Color"
-                    className="absolute w-full h-full opacity-0 cursor-pointer"
-                />
-            </div>
-        </div>
-    );
-};
-
 
 export default function NotesPage({ params, searchParams }: { params: { slug: string }, searchParams: { [key: string]: string | string[] | undefined } }) {
   const { user } = useUser();
@@ -116,6 +58,8 @@ export default function NotesPage({ params, searchParams }: { params: { slug: st
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
   const [category, setCategory] = useState<NoteCategory>('Personal');
   const [isDirty, setIsDirty] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -125,8 +69,6 @@ export default function NotesPage({ params, searchParams }: { params: { slug: st
   const [isDiscardAlertOpen, setIsDiscardAlertOpen] = useState(false);
   const [navigationTarget, setNavigationTarget] = useState<'list' | 'editor' | null>(null);
   const router = useRouter();
-
-  const editorRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -167,19 +109,19 @@ export default function NotesPage({ params, searchParams }: { params: { slug: st
 
   const editorVisible = selectedNote || isCreatingNew;
   
-  useLayoutEffect(() => {
-      const editor = editorRef.current;
-      if (!editor || !editorVisible) return;
-
-      // Set initial content
-      editor.innerHTML = selectedNote?.content || '';
-      
-      // Set category
-      setCategory(selectedNote?.category || 'Personal');
-
-      // Initial state is not dirty
+  useEffect(() => {
+    if (editorVisible) {
+      if (selectedNote) {
+        setTitle(selectedNote.title);
+        setContent(selectedNote.content || '');
+        setCategory(selectedNote.category || 'Personal');
+      } else {
+        setTitle('');
+        setContent('');
+        setCategory('Personal');
+      }
       setIsDirty(false);
-      
+    }
   }, [selectedNote, isCreatingNew, editorVisible]);
 
   const handleBackToList = () => {
@@ -235,7 +177,7 @@ export default function NotesPage({ params, searchParams }: { params: { slug: st
   };
 
   const handleExportPdf = () => {
-    if (!selectedNote || !editorRef.current) return;
+    if (!selectedNote) return;
 
     try {
         const doc = new jsPDF();
@@ -257,9 +199,7 @@ export default function NotesPage({ params, searchParams }: { params: { slug: st
         doc.setFontSize(12);
         doc.setTextColor(0);
 
-        const textContent = editorRef.current.innerText || '';
-
-        const splitText = doc.splitTextToSize(textContent, 180);
+        const splitText = doc.splitTextToSize(selectedNote.content, 180);
         doc.text(splitText, 15, 48);
 
         doc.save(`${selectedNote.title.replace(/ /g, '_')}.pdf`);
@@ -276,16 +216,17 @@ export default function NotesPage({ params, searchParams }: { params: { slug: st
 
 
   const handleSaveNote = async () => {
-    if (!editorRef.current) return;
-    
-    const plainTextContent = editorRef.current.innerText.trim();
-    if (!user || !firestore || !plainTextContent) {
-      toast({ variant: 'destructive', title: 'Content is required.' });
+    if (!user || !firestore) {
+      toast({ variant: 'destructive', title: 'Authentication Error' });
       return;
     }
+
+    if (!content.trim()) {
+        toast({ variant: 'destructive', title: 'Content is required.' });
+        return;
+    }
     
-    const newTitle = plainTextContent.split('\n')[0].substring(0, 50) || 'Untitled Note';
-    const contentHTML = editorRef.current.innerHTML;
+    const newTitle = title.trim() || content.split('\n')[0].substring(0, 50) || 'Untitled Note';
 
     setIsSaving(true);
     try {
@@ -294,13 +235,12 @@ export default function NotesPage({ params, searchParams }: { params: { slug: st
         const noteRef = doc(firestore, 'users', user.uid, 'notes', selectedNote.id);
         const updatedData = {
           title: newTitle,
-          content: contentHTML,
+          content: content,
           category,
           updatedAt: serverTimestamp(),
         };
         await updateDoc(noteRef, updatedData);
         
-        // Refetch the doc to get server-generated timestamp and ensure data consistency
         const updatedDocSnap = await getDoc(noteRef);
         if (updatedDocSnap.exists()) {
             setSelectedNote({ id: updatedDocSnap.id, ...updatedDocSnap.data() } as Note);
@@ -314,14 +254,13 @@ export default function NotesPage({ params, searchParams }: { params: { slug: st
         const noteData = {
           userId: user.uid,
           title: newTitle,
-          content: contentHTML,
+          content: content,
           category,
           createdAt: serverTimestamp(),
           updatedAt: serverTimestamp(),
         };
         const docRef = await addDoc(collection(firestore, 'users', user.uid, 'notes'), noteData);
 
-        // Fetch the newly created doc to get server-generated timestamps
         const newDocSnap = await getDoc(docRef);
         if (newDocSnap.exists()) {
              const newNote: Note = { id: newDocSnap.id, ...newDocSnap.data() } as Note;
@@ -438,34 +377,38 @@ export default function NotesPage({ params, searchParams }: { params: { slug: st
     <div className="flex flex-col h-full" key={selectedNote?.id || (isCreatingNew ? 'new-note' : 'empty-editor')}>
       <div className="space-y-4 flex-grow flex flex-col">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="w-full">
-                <Select value={category} onValueChange={(value) => {
-                    setCategory(value as NoteCategory);
+            <Input
+                placeholder="Note Title (optional)"
+                value={title}
+                onChange={(e) => {
+                    setTitle(e.target.value);
                     setIsDirty(true);
-                }}>
-                    <SelectTrigger>
-                        <SelectValue placeholder="Select a category" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        {noteCategories.map(cat => (
-                            <SelectItem key={cat} value={cat}>{cat}</SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
-            </div>
-             <EditorToolbar onCommand={(command, value) => {
-                document.execCommand(command, false, value);
-                editorRef.current?.focus();
+                }}
+                className="text-lg font-semibold"
+            />
+            <Select value={category} onValueChange={(value) => {
+                setCategory(value as NoteCategory);
                 setIsDirty(true);
-             }} />
+            }}>
+                <SelectTrigger>
+                    <SelectValue placeholder="Select a category" />
+                </SelectTrigger>
+                <SelectContent>
+                    {noteCategories.map(cat => (
+                        <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                    ))}
+                </SelectContent>
+            </Select>
         </div>
         
-        <div
-          ref={editorRef}
-          contentEditable={true}
-          onInput={() => setIsDirty(true)}
-          className="note-editor flex-grow w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+        <Textarea
           placeholder="Start writing your thoughts..."
+          value={content}
+          onChange={(e) => {
+            setContent(e.target.value);
+            setIsDirty(true);
+          }}
+          className="flex-grow min-h-[300px] text-base"
         />
       </div>
       <div className="flex justify-between items-center mt-4 flex-shrink-0">
@@ -594,5 +537,3 @@ export default function NotesPage({ params, searchParams }: { params: { slug: st
     </div>
   )
 }
-
-    
