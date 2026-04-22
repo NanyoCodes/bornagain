@@ -27,6 +27,7 @@ import {
   updateDoc,
   deleteDoc,
   doc,
+  getDoc,
 } from 'firebase/firestore';
 import type { Note, NoteCategory } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
@@ -298,9 +299,14 @@ export default function NotesPage() {
           updatedAt: serverTimestamp(),
         };
         await updateDoc(noteRef, updatedData);
-        toast({ title: 'Note Updated' });
         
-        setSelectedNote(prev => prev ? { ...prev, ...updatedData, title: newTitle, content: contentHTML, updatedAt: new (serverTimestamp as any)() } : null);
+        // Refetch the doc to get server-generated timestamp and ensure data consistency
+        const updatedDocSnap = await getDoc(noteRef);
+        if (updatedDocSnap.exists()) {
+            setSelectedNote({ id: updatedDocSnap.id, ...updatedDocSnap.data() } as Note);
+        }
+        
+        toast({ title: 'Note Updated' });
         setIsDirty(false);
 
       } else {
@@ -310,15 +316,19 @@ export default function NotesPage() {
           title: newTitle,
           content: contentHTML,
           category,
-        };
-        const docRef = await addDoc(collection(firestore, 'users', user.uid, 'notes'), {
-          ...noteData,
           createdAt: serverTimestamp(),
           updatedAt: serverTimestamp(),
-        });
+        };
+        const docRef = await addDoc(collection(firestore, 'users', user.uid, 'notes'), noteData);
+
+        // Fetch the newly created doc to get server-generated timestamps
+        const newDocSnap = await getDoc(docRef);
+        if (newDocSnap.exists()) {
+             const newNote: Note = { id: newDocSnap.id, ...newDocSnap.data() } as Note;
+             setSelectedNote(newNote);
+        }
+
         toast({ title: 'Note Saved' });
-        const newNote: Note = { id: docRef.id, ...noteData, createdAt: new (serverTimestamp as any)(), updatedAt: new (serverTimestamp as any)()};
-        setSelectedNote(newNote);
         setIsCreatingNew(false);
         setIsDirty(false);
       }
