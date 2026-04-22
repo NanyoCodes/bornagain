@@ -110,16 +110,10 @@ service cloud.firestore {
     
     // Global souls collection for aggregation.
     match /souls/{soulId} {
-       function isSoulOwner() {
-        return request.auth != null && exists(/databases/$(database)/documents/users/$(request.auth.uid)/souls/$(soulId));
-      }
-
       allow get, list: if request.auth != null;
-      // Allow any authenticated user to create a document here.
-      // The user's private /users/{userId}/souls collection has the stricter rule.
-      allow create: if request.auth != null;
-      // Only the owner can update or delete their soul record from the global collection.
-      allow update, delete: if isSoulOwner();
+      // Allow create, update, and delete only by the user who owns the soul record.
+      allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if request.auth != null && resource.data.userId == request.auth.uid;
     }
 
     // Testimonies are public, but only writable by the author.
