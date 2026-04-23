@@ -1,4 +1,3 @@
-
 'use client';
 
 import * as React from 'react';
@@ -66,14 +65,17 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
     const fellowshipsWithDistance = filtered.map(f => {
       const distance = (soulLocation?.latitude && soulLocation?.longitude && f.latitude && f.longitude)
         ? haversineDistance({ lat: soulLocation.latitude, lng: soulLocation.longitude }, { lat: f.latitude, lng: f.longitude })
-        : Infinity;
+        : null;
       return { ...f, distance };
     });
 
     return fellowshipsWithDistance.sort((a, b) => {
-        if (a.distance < b.distance) return -1;
-        if (a.distance > b.distance) return 1;
-        return a.name.localeCompare(b.name); // Fallback sort by name for same distance (including two Infinities)
+        if (a.distance !== null && b.distance !== null) {
+            return a.distance - b.distance;
+        }
+        if (a.distance !== null) return -1;
+        if (b.distance !== null) return 1;
+        return a.name.localeCompare(b.name);
     });
   }, [fellowships, soul.locationWon, country, state]);
 
@@ -93,17 +95,17 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
           <DialogDescription>Filter by location and select a fellowship to assign this soul to.</DialogDescription>
         </DialogHeader>
         <div className="grid grid-cols-2 gap-4 py-4">
-          <Select value={country} onValueChange={(val) => { setCountry(val); setState(''); }}>
+          <Select value={country || 'all'} onValueChange={(val) => { setCountry(val === 'all' ? '' : val); setState(''); }}>
             <SelectTrigger><SelectValue placeholder="Select Country" /></SelectTrigger>
             <SelectContent>
-                <SelectItem value="">All Countries</SelectItem>
+                <SelectItem value="all">All Countries</SelectItem>
                 {countries.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
             </SelectContent>
           </Select>
-          <Select value={state} onValueChange={setState} disabled={!country}>
+          <Select value={state || 'all'} onValueChange={(val) => setState(val === 'all' ? '' : val)} disabled={!country}>
             <SelectTrigger><SelectValue placeholder="Select State/Province" /></SelectTrigger>
             <SelectContent>
-                <SelectItem value="">All States/Provinces</SelectItem>
+                <SelectItem value="all">All States/Provinces</SelectItem>
                 {states.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
             </SelectContent>
           </Select>
@@ -117,7 +119,7 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
                                 <div>
                                     <p className="font-semibold">{f.name}</p>
                                     <p className="text-sm text-muted-foreground">{f.location}</p>
-                                    {f.distance !== Infinity && <p className="text-xs text-primary">{f.distance.toFixed(1)} km away</p>}
+                                    {f.distance !== null && <p className="text-xs text-primary">{f.distance.toFixed(1)} km away</p>}
                                 </div>
                                 <Button
                                     size="sm"
