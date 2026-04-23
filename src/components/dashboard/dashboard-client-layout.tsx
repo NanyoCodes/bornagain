@@ -335,28 +335,34 @@ export default function DashboardClientLayout({
   }, [user, firestore, lastActiveUpdated]);
 
   useEffect(() => {
-    // Effect for Welcome Popup logic. Depends on userProfile.
-    if (!loading && user && userProfile) {
-      const isNewUserSession = sessionStorage.getItem('isNewUserSession');
-      if (isNewUserSession === null && user.metadata.creationTime && user.metadata.lastSignInTime) {
-          const creationTime = new Date(user.metadata.creationTime).getTime();
-          const lastSignInTime = new Date(user.metadata.lastSignInTime).getTime();
-          if (Math.abs(lastSignInTime - creationTime) < 5000) { // Heuristic for first login
-              sessionStorage.setItem('isNewUserSession', 'true');
-          } else {
-              sessionStorage.setItem('isNewUserSession', 'false');
-          }
-      }
-      
-      const isProfileComplete = userProfile.firstName && userProfile.lastName;
-      const welcomePopupShown = sessionStorage.getItem('welcomePopupShown');
-
-      if (sessionStorage.getItem('isNewUserSession') === 'true' && isProfileComplete && !welcomePopupShown) {
-          setShowWelcomePopup(true);
-          sessionStorage.setItem('welcomePopupShown', 'true');
-      }
+    if (loading || !user) return;
+    const isNewUserSession = sessionStorage.getItem('isNewUserSession');
+    if (isNewUserSession === null && user.metadata.creationTime && user.metadata.lastSignInTime) {
+        const creationTime = new Date(user.metadata.creationTime).getTime();
+        const lastSignInTime = new Date(user.metadata.lastSignInTime).getTime();
+        if (Math.abs(lastSignInTime - creationTime) < 5000) { // Heuristic for first login
+            sessionStorage.setItem('isNewUserSession', 'true');
+        } else {
+            sessionStorage.setItem('isNewUserSession', 'false');
+        }
     }
-  }, [user, loading, userProfile]);
+  }, [user, loading]);
+
+  useEffect(() => {
+    if (profileLoading || !userProfile) return;
+
+    const isNewUserSession = sessionStorage.getItem('isNewUserSession') === 'true';
+    const welcomePopupShown = sessionStorage.getItem('welcomePopupShown');
+    const isProfileComplete = !!(userProfile.firstName && userProfile.lastName);
+
+    if (isNewUserSession && isProfileComplete && !welcomePopupShown) {
+        const timer = setTimeout(() => {
+            setShowWelcomePopup(true);
+            sessionStorage.setItem('welcomePopupShown', 'true');
+        }, 500); // Small delay to allow profile completion dialog to animate out.
+        return () => clearTimeout(timer);
+    }
+  }, [profileLoading, userProfile]);
 
   const getLoadingMessage = (path: string) => {
     if (path.startsWith('/dashboard/souls-won')) return 'Loading souls won...';
