@@ -290,7 +290,8 @@ function FellowshipCard({ fellowship, userProfile, onManage, onClick }: { fellow
         );
     }, [userProfile, fellowship]);
 
-    const handleJoin = async () => {
+    const handleJoin = async (e: React.MouseEvent) => {
+        e.stopPropagation();
         if (!user || !userProfile || !firestore || isMember || isOrganizer) return;
         setIsJoining(true);
 
@@ -330,7 +331,7 @@ function FellowshipCard({ fellowship, userProfile, onManage, onClick }: { fellow
             <CardHeader>
                 <div className="flex justify-between items-start">
                     <CardTitle>{fellowship.name}</CardTitle>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
                         {fellowship.locationType && <Badge variant="secondary">{fellowship.locationType}</Badge>}
                         {isOrganizer && (
                             <DropdownMenu>
@@ -371,7 +372,7 @@ function FellowshipCard({ fellowship, userProfile, onManage, onClick }: { fellow
                     <Users className="mr-2 h-4 w-4" /> {fellowship.memberCount} member(s)
                 </div>
                  {distance !== null && <p className="text-xs text-muted-foreground">{distance.toFixed(1)} km away</p>}
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
                     {fellowship.streamUrl && (
                         <Button asChild variant="outline" size="sm">
                             <Link href={fellowship.streamUrl} target="_blank" rel="noopener noreferrer">
@@ -574,3 +575,5 @@ export default function FellowshipPage() {
         </div>
     );
 }
+
+  
