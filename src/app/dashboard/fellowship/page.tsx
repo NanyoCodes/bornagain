@@ -118,7 +118,7 @@ function FellowshipForm({ onFormSubmit, isSubmitting }: { onFormSubmit: (values:
     );
 }
 
-function FellowshipCard({ fellowship, userProfile, onDelete }: { fellowship: Fellowship; userProfile: UserProfile | null; onDelete: () => void; }) {
+function FellowshipCard({ fellowship, userProfile }: { fellowship: Fellowship; userProfile: UserProfile | null; }) {
     const { user } = useUser();
     const firestore = useFirestore();
     const { toast } = useToast();
@@ -196,18 +196,7 @@ function FellowshipCard({ fellowship, userProfile, onDelete }: { fellowship: Fel
                 </div>
                  {distance !== null && <p className="text-xs text-muted-foreground">{distance.toFixed(1)} km away</p>}
                 {isOrganizer ? (
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon">
-                                <MoreVertical className="h-4 w-4" />
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={onDelete} className="text-destructive focus:text-destructive">
-                                <Trash2 className="mr-2 h-4 w-4" /> Delete
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
+                   null
                 ) : (
                     <Button onClick={handleJoin} disabled={isMember || isJoining}>
                         {isJoining ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : null}
@@ -226,9 +215,7 @@ export default function FellowshipPage() {
     const { toast } = useToast();
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [fellowshipToDelete, setFellowshipToDelete] = useState<Fellowship | null>(null);
-    const [isDeleting, setIsDeleting] = useState(false);
-
+    
     const userDocRef = useMemo(() => (user ? doc(firestore, 'users', user.uid) : null), [user, firestore]);
     const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userDocRef);
 
@@ -297,27 +284,6 @@ export default function FellowshipPage() {
         }
     };
     
-    const handleDeleteFellowship = async () => {
-        if (!fellowshipToDelete || !user || !firestore) return;
-        setIsDeleting(true);
-    
-        const fellowshipRef = doc(firestore, 'fellowships', fellowshipToDelete.id);
-        const deleteData = {
-            status: 'deleted'
-        };
-    
-        try {
-            await updateDoc(fellowshipRef, deleteData);
-            toast({ title: 'Fellowship Deleted', description: `"${fellowshipToDelete.name}" has been marked as deleted.` });
-            setFellowshipToDelete(null);
-        } catch (e) {
-            const permissionError = new FirestorePermissionError({ path: fellowshipRef.path, operation: 'update' }, user);
-            errorEmitter.emit('permission-error', permissionError);
-        } finally {
-            setIsDeleting(false);
-        }
-      };
-
     return (
         <div className="space-y-8">
             <div className="flex items-center justify-between">
@@ -349,7 +315,7 @@ export default function FellowshipPage() {
                 </div>
             ) : activeFellowships && activeFellowships.length > 0 ? (
                  <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                    {activeFellowships.map(f => <FellowshipCard key={f.id} fellowship={f} userProfile={userProfile} onDelete={() => setFellowshipToDelete(f)} />)}
+                    {activeFellowships.map(f => <FellowshipCard key={f.id} fellowship={f} userProfile={userProfile} />)}
                 </div>
             ) : (
                 <div className="text-center py-12 flex flex-col items-center">
@@ -357,25 +323,6 @@ export default function FellowshipPage() {
                     <h3 className="mt-4 text-xl font-semibold">No Fellowships Yet</h3>
                     <p className="mt-2 text-sm text-muted-foreground">Be the first to create a fellowship group!</p>
                 </div>
-            )}
-             {fellowshipToDelete && (
-                <AlertDialog open={!!fellowshipToDelete} onOpenChange={(open) => !open && setFellowshipToDelete(null)}>
-                <AlertDialogContent>
-                    <AlertDialogHeader>
-                        <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                        <AlertDialogDescription>
-                            This will mark the fellowship as deleted. This action can't be undone.
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                    <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleDeleteFellowship} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90">
-                        {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                        Confirm Delete
-                    </AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-                </AlertDialog>
             )}
         </div>
     );

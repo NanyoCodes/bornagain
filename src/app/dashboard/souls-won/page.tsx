@@ -53,10 +53,8 @@ export default function SoulsWonPage() {
 
   // Centralize state for all dialogs on this page
   const [soulToEdit, setSoulToEdit] = useState<Soul | null>(null);
-  const [soulToDelete, setSoulToDelete] = useState<Soul | null>(null);
   const [soulForFollowUp, setSoulForFollowUp] = useState<Soul | null>(null);
   const [soulForHistory, setSoulForHistory] = useState<Soul | null>(null);
-  const [isDeleting, setIsDeleting] = useState(false);
   const [isAssigning, setIsAssigning] = useState(false);
 
   useEffect(() => {
@@ -112,37 +110,6 @@ export default function SoulsWonPage() {
   
   const handleFollowUpLogged = () => {
     setSoulForFollowUp(null);
-  };
-  
-  const handleDeleteSoul = async () => {
-    if (!soulToDelete || !user || !firestore) return;
-    setIsDeleting(true);
-
-    const userSoulRef = doc(firestore, `users/${user.uid}/souls`, soulToDelete.id);
-    const globalSoulRef = doc(firestore, 'souls', soulToDelete.id);
-    
-    try {
-        const batch = writeBatch(firestore);
-        batch.delete(userSoulRef);
-        batch.delete(globalSoulRef);
-        
-        await batch.commit();
-
-        toast({
-            title: "Soul Record Deleted",
-            description: `${soulToDelete.firstName}'s record has been removed.`,
-        });
-        setSoulToDelete(null); // Close dialog on success
-    } catch (error) {
-        // On error, dialog remains open because `setSoulToDelete(null)` is not called.
-        const permissionError = new FirestorePermissionError({
-            path: `BATCH_DELETE:SOUL:${soulToDelete.id}`,
-            operation: 'delete',
-        }, user);
-        errorEmitter.emit('permission-error', permissionError);
-    } finally {
-        setIsDeleting(false);
-    }
   };
 
   const handleAssignFellowship = async (soul: Soul, fellowshipId: string) => {
@@ -516,7 +483,6 @@ export default function SoulsWonPage() {
         souls={filteredSouls || []} 
         loading={loading}
         onEdit={setSoulToEdit}
-        onDelete={setSoulToDelete}
         onFollowUp={setSoulForFollowUp}
         onViewHistory={setSoulForHistory}
         onExportSingle={handleExportSingleSoul}
@@ -554,27 +520,6 @@ export default function SoulsWonPage() {
             onOpenChange={(isOpen) => { if (!isOpen) setSoulForHistory(null); }}
         />
       )}
-
-      {soulToDelete && (
-        <AlertDialog open={!!soulToDelete} onOpenChange={(isOpen) => { if (!isOpen) setSoulToDelete(null); }}>
-            <AlertDialogContent>
-                <AlertDialogHeader>
-                    <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                    <AlertDialogDescription>
-                        This will permanently delete the record for {soulToDelete?.firstName} {soulToDelete?.lastName}. This action cannot be undone.
-                    </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                    <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleDeleteSoul} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90">
-                        {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                        Confirm Delete
-                    </AlertDialogAction>
-                </AlertDialogFooter>
-            </AlertDialogContent>
-        </AlertDialog>
-      )}
-
     </div>
   );
 }
