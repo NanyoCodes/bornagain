@@ -95,6 +95,25 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign, fellowships, campai
         form.setValue('wonAt', new Date());
     }
   }, [form]);
+  
+  const watchedLocationCity = form.watch('locationWonCity');
+
+  const sortedFellowships = useMemo(() => {
+    if (!fellowships || fellowships.length === 0) return [];
+    if (!watchedLocationCity) return fellowships;
+
+    const lowerCaseCity = watchedLocationCity.toLowerCase();
+    
+    return [...fellowships].sort((a, b) => {
+        const aMatches = a.location?.toLowerCase().includes(lowerCaseCity) ?? false;
+        const bMatches = b.location?.toLowerCase().includes(lowerCaseCity) ?? false;
+
+        if (aMatches && !bMatches) return -1; // a comes first
+        if (!aMatches && bMatches) return 1;  // b comes first
+        return a.name.localeCompare(b.name); // otherwise, sort alphabetically
+    });
+  }, [fellowships, watchedLocationCity]);
+
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (!user || !userProfile) {
@@ -391,7 +410,7 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign, fellowships, campai
                                         </FormControl>
                                         <SelectContent>
                                             <SelectItem value="none">None</SelectItem>
-                                            {fellowships?.map((f) => (
+                                            {sortedFellowships?.map((f) => (
                                                 <SelectItem key={f.id} value={f.id}>
                                                     <div className="flex flex-col py-1">
                                                         <span className="font-medium">{f.name}</span>

@@ -318,6 +318,8 @@ export type Fellowship = {
   organizerPhotoURL?: string;
   memberCount: number;
   location?: string;
+  latitude?: number;
+  longitude?: number;
   schedule?: string;
   memberIds: string[];
 };

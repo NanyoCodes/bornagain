@@ -34,6 +34,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
+import { haversineDistance } from '@/lib/utils';
 
 // Define a new type for Fellowship
 type Fellowship = {
@@ -45,6 +46,8 @@ type Fellowship = {
   organizerPhotoURL?: string;
   memberCount: number;
   location?: string;
+  latitude?: number;
+  longitude?: number;
   schedule?: string;
   memberIds: string[];
 };
@@ -53,7 +56,6 @@ const formSchema = z.object({
   name: z.string().min(3, "Name must be at least 3 characters.").max(100),
   description: z.string().min(10, "Description must be at least 10 characters.").max(500),
   schedule: z.string().min(3, "Schedule is required.").max(100),
-  location: z.string().max(100).optional(),
 });
 
 function FellowshipForm({ onFormSubmit, isSubmitting }: { onFormSubmit: (values: z.infer<typeof formSchema>) => void, isSubmitting: boolean }) {
@@ -63,7 +65,6 @@ function FellowshipForm({ onFormSubmit, isSubmitting }: { onFormSubmit: (values:
             name: "",
             description: "",
             schedule: "",
-            location: "",
         },
     });
 
@@ -91,13 +92,6 @@ function FellowshipForm({ onFormSubmit, isSubmitting }: { onFormSubmit: (values:
                         <FormMessage />
                     </FormItem>
                 )} />
-                <FormField control={form.control} name="location" render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>Location (Optional)</FormLabel>
-                        <FormControl><Input placeholder="e.g., Online via Zoom" {...field} /></FormControl>
-                        <FormMessage />
-                    </FormItem>
-                )} />
                 <Button type="submit" disabled={isSubmitting} className="w-full">
                     {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                     Create Fellowship
@@ -107,15 +101,23 @@ function FellowshipForm({ onFormSubmit, isSubmitting }: { onFormSubmit: (values:
     );
 }
 
-function FellowshipCard({ fellowship }: { fellowship: Fellowship }) {
+function FellowshipCard({ fellowship, userProfile }: { fellowship: Fellowship; userProfile: UserProfile | null }) {
     const { user } = useUser();
     const firestore = useFirestore();
     const { toast } = useToast();
     const [isJoining, setIsJoining] = useState(false);
     const isMember = user ? fellowship.memberIds.includes(user.uid) : false;
     const isOrganizer = user ? fellowship.organizerId === user.uid : false;
-    const userDocRef = useMemo(() => (user ? doc(firestore, 'users', user.uid) : null), [user, firestore]);
-    const { data: userProfile } = useDoc<UserProfile>(userDocRef);
+    
+    const distance = useMemo(() => {
+        if (!userProfile?.location?.latitude || !userProfile?.location?.longitude || !fellowship.latitude || !fellowship.longitude) {
+            return null;
+        }
+        return haversineDistance(
+            { lat: userProfile.location.latitude, lng: userProfile.location.longitude },
+            { lat: fellowship.latitude, lng: fellowship.longitude }
+        );
+    }, [userProfile, fellowship]);
 
     const handleJoin = async () => {
         if (!user || !userProfile || !firestore || isMember || isOrganizer) return;
@@ -171,10 +173,11 @@ function FellowshipCard({ fellowship }: { fellowship: Fellowship }) {
                     {fellowship.location && <p><strong>Location:</strong> {fellowship.location}</p>}
                 </div>
             </CardContent>
-            <CardFooter className="flex justify-between">
+            <CardFooter className="flex justify-between items-center">
                 <div className="flex items-center text-sm text-muted-foreground">
                     <Users className="mr-2 h-4 w-4" /> {fellowship.memberCount} member(s)
                 </div>
+                 {distance !== null && <p className="text-xs text-muted-foreground">{distance.toFixed(1)} km away</p>}
                 <Button onClick={handleJoin} disabled={isMember || isOrganizer || isJoining}>
                     {isJoining ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : null}
                     {isMember ? 'Joined' : 'Join'}
@@ -208,12 +211,16 @@ export default function FellowshipPage() {
         const newFellowshipRef = doc(collection(firestore, "fellowships"));
         const userFellowshipRef = doc(firestore, 'users', user.uid, 'fellowships', newFellowshipRef.id);
         const fellowshipMemberRef = doc(firestore, 'fellowships', newFellowshipRef.id, 'members', user.uid);
+        
+        const locationString = [userProfile.location?.city, userProfile.location?.country].filter(Boolean).join(', ');
 
         const newFellowshipData = {
             name: values.name,
             description: values.description,
             schedule: values.schedule,
-            location: values.location || 'Not specified',
+            location: locationString || 'Not specified',
+            latitude: userProfile.location?.latitude || null,
+            longitude: userProfile.location?.longitude || null,
             organizerId: user.uid,
             organizerName: `${userProfile.firstName} ${userProfile.lastName}`,
             organizerPhotoURL: userProfile.photoURL || '',
@@ -275,7 +282,7 @@ export default function FellowshipPage() {
                 </div>
             ) : fellowships && fellowships.length > 0 ? (
                  <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                    {fellowships.map(f => <FellowshipCard key={f.id} fellowship={f} />)}
+                    {fellowships.map(f => <FellowshipCard key={f.id} fellowship={f} userProfile={userProfile} />)}
                 </div>
             ) : (
                 <div className="text-center py-12 flex flex-col items-center">
