@@ -169,6 +169,24 @@ export function EditSoulForm({ soul, onSoulUpdated }: EditSoulFormProps) {
             updateDoc(soulRef, soulUpdateData),
             updateDoc(globalSoulRef, soulUpdateData), // Keep global collection in sync
         ]);
+
+        const wasNewlyAssigned = values.fellowshipId && values.fellowshipId !== 'none' && values.fellowshipId !== soul.fellowshipId;
+        if (wasNewlyAssigned) {
+            const selectedFellowship = fellowships?.find(f => f.id === values.fellowshipId);
+            if (selectedFellowship && selectedFellowship.organizerId !== user.uid) {
+                const notificationRef = collection(firestore, `users/${selectedFellowship.organizerId}/notifications`);
+                const contactInfo = values.email || values.phone;
+                await addDoc(notificationRef, {
+                    userId: selectedFellowship.organizerId,
+                    type: 'new_soul_in_fellowship',
+                    title: `New Member in ${selectedFellowship.name}`,
+                    message: `${values.firstName} ${values.lastName} was assigned to your fellowship. Please reach out to them${contactInfo ? ` at ${contactInfo}` : ''}.`,
+                    link: `/dashboard/fellowship`,
+                    isRead: false,
+                    createdAt: serverTimestamp(),
+                });
+            }
+        }
         
         toast({
             title: "Soul Updated",
@@ -347,7 +365,7 @@ export function EditSoulForm({ soul, onSoulUpdated }: EditSoulFormProps) {
                                     <FormLabel>Assign to Fellowship</FormLabel>
                                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                                         <FormControl>
-                                            <SelectTrigger className="text-base">
+                                            <SelectTrigger className="text-base h-auto">
                                                 <SelectValue placeholder={loadingFellowships ? "Loading fellowships..." : "Select a fellowship group"} />
                                             </SelectTrigger>
                                         </FormControl>
@@ -355,7 +373,10 @@ export function EditSoulForm({ soul, onSoulUpdated }: EditSoulFormProps) {
                                             <SelectItem value="none">None</SelectItem>
                                             {fellowships?.map((f) => (
                                                 <SelectItem key={f.id} value={f.id}>
-                                                    {f.name}
+                                                    <div className="flex flex-col py-1">
+                                                        <span className="font-medium">{f.name}</span>
+                                                        {f.location && <span className="text-xs text-muted-foreground">{f.location}</span>}
+                                                    </div>
                                                 </SelectItem>
                                             ))}
                                         </SelectContent>

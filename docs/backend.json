@@ -688,7 +688,7 @@
         },
         "type": {
           "type": "string",
-          "enum": ["campaign_join", "new_chat_message", "accountability_nudge", "accountability_request", "request_accepted", "request_declined", "accountability_partner_removed"]
+          "enum": ["campaign_join", "new_chat_message", "accountability_nudge", "accountability_request", "request_accepted", "request_declined", "accountability_partner_removed", "new_soul_in_fellowship"]
         },
         "title": {
           "type": "string"
