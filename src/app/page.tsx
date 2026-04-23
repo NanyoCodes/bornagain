@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from 'next/link';
@@ -63,7 +62,7 @@ export default function Page() {
       setDoc(userDocRef, userData, { merge: true }).catch((serverError) => {
         const permissionError = new FirestorePermissionError({
           path: userDocRef.path,
-          operation: 'create',
+          operation: 'write',
           requestResourceData: userData,
         }, user);
         errorEmitter.emit('permission-error', permissionError);

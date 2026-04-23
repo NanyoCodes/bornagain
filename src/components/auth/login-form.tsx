@@ -1,4 +1,3 @@
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -209,10 +208,17 @@ export function LoginForm() {
       }
 
       const userDocRef = doc(firestore, "users", user.uid);
-      const displayName = user.displayName || '';
+      const nameParts = user.displayName?.split(' ') || [];
+      const firstName = nameParts[0] || '';
+      const lastName = nameParts.slice(1).join(' ');
+      const fullName = `${firstName} ${lastName}`;
+      const nameTokens = fullName.toLowerCase().split(' ').filter(Boolean);
+
       const userData = {
-        displayName: displayName,
-        displayName_lowercase: displayName.toLowerCase(),
+        firstName: firstName,
+        lastName: lastName,
+        fullName_lowercase: fullName.toLowerCase(),
+        name_tokens: nameTokens,
         email: user.email,
         photoURL: user.photoURL,
       };
