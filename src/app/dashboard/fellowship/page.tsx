@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -302,7 +302,7 @@ export default function FellowshipPage() {
     
     const activeFellowships = useMemo(() => {
         if (!fellowships) return [];
-        return fellowships.filter(f => f.status !== 'deleted');
+        return fellowships;
     }, [fellowships]);
 
     const loading = userLoading || profileLoading || fellowshipsLoading;
@@ -390,7 +390,6 @@ export default function FellowshipPage() {
             <div className="flex items-center justify-between">
                 <div className="space-y-2">
                     <h1 className="text-xl sm:text-2xl font-bold tracking-tight font-headline">Fellowship Groups</h1>
-                    <p className="text-sm text-muted-foreground">"All the believers were one in heart and mind." - Acts 4:32</p>
                 </div>
                 <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
                     <DialogTrigger asChild>
