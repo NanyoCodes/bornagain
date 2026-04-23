@@ -22,7 +22,7 @@ import type { Campaign, Soul, UserProfile, Fellowship } from "@/lib/types";
 import { Textarea } from "@/components/ui/textarea";
 import { format } from "date-fns";
 import { useFirestore, useUser, useCollection, useDoc } from "@/firebase";
-import { collection, query, orderBy, serverTimestamp, doc, runTransaction, addDoc } from "firebase/firestore";
+import { collection, query, orderBy, serverTimestamp, doc, runTransaction, addDoc, increment } from "firebase/firestore";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -194,6 +194,11 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign, fellowships, campai
                 }
                 const currentSoulsLogged = campaignDoc.data().soulsLogged || 0;
                 transaction.update(campaignRef, { soulsLogged: currentSoulsLogged + 1 });
+            }
+
+            if (values.fellowshipId) {
+                const fellowshipRef = doc(firestore, 'fellowships', values.fellowshipId);
+                transaction.update(fellowshipRef, { memberCount: increment(1) });
             }
         });
 

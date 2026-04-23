@@ -21,7 +21,7 @@ import { Loader2 } from "lucide-react";
 import type { Soul, Campaign, Fellowship } from "@/lib/types";
 import { format } from "date-fns";
 import { useFirestore, useUser } from "@/firebase";
-import { collection, query, orderBy, doc, updateDoc, addDoc, deleteField } from "firebase/firestore";
+import { collection, query, orderBy, doc, updateDoc, addDoc, deleteField, runTransaction, increment } from "firebase/firestore";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -173,10 +173,25 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
     }
 
     try {
-        await Promise.all([
-            updateDoc(soulRef, soulUpdateData),
-            updateDoc(globalSoulRef, soulUpdateData), // Keep global collection in sync
-        ]);
+        await runTransaction(firestore, async (transaction) => {
+            const oldFellowshipId = soul.fellowshipId;
+            const newFellowshipId = values.fellowshipId;
+            
+            // Decrement old fellowship count if it exists and is different from the new one
+            if (oldFellowshipId && oldFellowshipId !== newFellowshipId) {
+                const oldFellowshipRef = doc(firestore, "fellowships", oldFellowshipId);
+                transaction.update(oldFellowshipRef, { memberCount: increment(-1) });
+            }
+
+            // Increment new fellowship count if it's not 'none' and is different from the old one
+            if (newFellowshipId && newFellowshipId !== 'none' && newFellowshipId !== oldFellowshipId) {
+                const newFellowshipRef = doc(firestore, "fellowships", newFellowshipId);
+                transaction.update(newFellowshipRef, { memberCount: increment(1) });
+            }
+
+            transaction.update(soulRef, soulUpdateData);
+            transaction.update(globalSoulRef, soulUpdateData);
+        });
 
         const wasNewlyAssigned = values.fellowshipId && values.fellowshipId !== 'none' && values.fellowshipId !== soul.fellowshipId;
         if (wasNewlyAssigned) {

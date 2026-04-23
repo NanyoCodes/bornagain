@@ -27,7 +27,7 @@ import { SoulsWonTable } from "@/components/souls/souls-won-table";
 import { LogSoulForm } from "@/components/souls/log-soul-form";
 import type { Soul, Campaign, Fellowship } from "@/lib/types";
 import { useCollection, useFirestore, useUser } from "@/firebase";
-import { collection, query, orderBy, doc, writeBatch, updateDoc, runTransaction, addDoc, deleteField, serverTimestamp } from "firebase/firestore";
+import { collection, query, orderBy, doc, writeBatch, updateDoc, runTransaction, addDoc, deleteField, serverTimestamp, increment } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useSearch } from "@/context/search-context";
@@ -170,6 +170,20 @@ export default function SoulsWonPage() {
 
     try {
         await runTransaction(firestore, async (transaction) => {
+            const oldFellowshipId = soul.fellowshipId;
+            
+            // Decrement old fellowship count
+            if (oldFellowshipId && oldFellowshipId !== fellowshipId) {
+                const oldFellowshipRef = doc(firestore, "fellowships", oldFellowshipId);
+                transaction.update(oldFellowshipRef, { memberCount: increment(-1) });
+            }
+
+            // Increment new fellowship count
+            if (fellowshipId !== 'none' && oldFellowshipId !== fellowshipId) {
+                const newFellowshipRef = doc(firestore, "fellowships", fellowshipId);
+                transaction.update(newFellowshipRef, { memberCount: increment(1) });
+            }
+            
             transaction.update(soulRef, updateData);
             transaction.update(globalSoulRef, updateData);
         });
