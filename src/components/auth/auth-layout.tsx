@@ -4,10 +4,32 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+} from "@/components/ui/carousel";
+import Autoplay from "embla-carousel-autoplay"
+import React from 'react';
+
+const scriptures = [
+  {
+    text: "And they overcame him by the blood of the Lamb, and by the word of their testimony; and they loved not their lives unto the death.",
+    reference: "Revelation 12:11"
+  },
+  {
+    text: "All the believers were one in heart and mind. No one claimed that any of their possessions was their own, but they shared everything they had. With great power the apostles continued to testify to the resurrection of the Lord Jesus, and abundant grace was upon them all.",
+    reference: "Acts 4:32-33"
+  }
+];
 
 export function AuthLayout({ children }: { children: React.ReactNode }) {
   const logo = PlaceHolderImages.find((img) => img.id === 'logo');
   const authBackground = PlaceHolderImages.find((img) => img.id === 'auth-background');
+  
+  const plugin = React.useRef(
+    Autoplay({ delay: 7000, stopOnInteraction: true })
+  )
 
   return (
     <div className="w-full lg:grid lg:grid-cols-2 min-h-screen">
@@ -56,10 +78,23 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
              <p className="text-zinc-400">Join thousands of others in this digital revival.</p>
         </div>
 
-        <div className="bg-zinc-900/50 backdrop-blur-sm p-8 rounded-2xl space-y-4 max-w-md relative z-10 shadow-lg">
-            <p className="text-xl font-semibold leading-relaxed">"And they overcame him by the blood of the Lamb, and by the word of their testimony; and they loved not their lives unto the death."</p>
-            <p className="text-right text-zinc-400">- Revelation 12:11</p>
-        </div>
+        <Carousel
+          plugins={[plugin.current]}
+          className="w-full max-w-md"
+          onMouseEnter={plugin.current.stop}
+          onMouseLeave={plugin.current.reset}
+        >
+          <CarouselContent>
+            {scriptures.map((scripture, index) => (
+              <CarouselItem key={index}>
+                <div className="bg-zinc-900/50 backdrop-blur-sm p-8 rounded-2xl space-y-4 relative z-10 shadow-lg">
+                  <p className="text-xl font-semibold leading-relaxed">"{scripture.text}"</p>
+                  <p className="text-right text-zinc-400">- {scripture.reference}</p>
+                </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+        </Carousel>
       </div>
     </div>
   );
