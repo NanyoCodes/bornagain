@@ -18,11 +18,14 @@ export default function FellowshipPageClient() {
     const firestore = useFirestore();
     const { user } = useUser();
 
-    const fellowshipDocRef = useMemo(() => doc(firestore, 'fellowships', fellowshipId), [firestore, fellowshipId]);
+    const fellowshipDocRef = useMemo(() => {
+        if (!firestore || !fellowshipId) return null;
+        return doc(firestore, 'fellowships', fellowshipId)
+    }, [firestore, fellowshipId]);
     const { data: fellowship, loading: fellowshipLoading, error: fellowshipError } = useDoc<Fellowship>(fellowshipDocRef);
 
     const organizerDocRef = useMemo(() => {
-        if (!fellowship?.organizerId) return null;
+        if (!fellowship?.organizerId || !firestore) return null;
         return doc(firestore, 'users', fellowship.organizerId);
     }, [fellowship?.organizerId, firestore]);
     const { data: organizer, loading: organizerLoading } = useDoc<UserProfile>(organizerDocRef);
