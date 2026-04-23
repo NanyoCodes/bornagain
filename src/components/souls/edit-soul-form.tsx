@@ -133,7 +133,7 @@ export function EditSoulForm({ soul, onSoulUpdated }: EditSoulFormProps) {
     if (values.church) soulUpdateData.church = values.church; else soulUpdateData.church = deleteField();
     if (values.sourceDetails) soulUpdateData.sourceDetails = values.sourceDetails; else soulUpdateData.sourceDetails = deleteField();
 
-    if (values.fellowshipId) {
+    if (values.fellowshipId && values.fellowshipId !== 'none') {
         const selectedFellowship = fellowships?.find(f => f.id === values.fellowshipId);
         soulUpdateData.fellowshipId = values.fellowshipId;
         soulUpdateData.fellowshipName = selectedFellowship?.name;
@@ -352,7 +352,7 @@ export function EditSoulForm({ soul, onSoulUpdated }: EditSoulFormProps) {
                                             </SelectTrigger>
                                         </FormControl>
                                         <SelectContent>
-                                            <SelectItem value="">None</SelectItem>
+                                            <SelectItem value="none">None</SelectItem>
                                             {fellowships?.map((f) => (
                                                 <SelectItem key={f.id} value={f.id}>
                                                     {f.name}
