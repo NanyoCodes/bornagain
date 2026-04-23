@@ -63,17 +63,19 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
       filtered = filtered.filter(f => f.location && f.location.toLowerCase().includes(state.toLowerCase()));
     }
     
-    if (!soulLocation?.latitude || !soulLocation?.longitude) {
-        return filtered.sort((a,b) => a.name.localeCompare(b.name));
-    }
+    const fellowshipsWithDistance = filtered.map(f => {
+      const distance = (soulLocation?.latitude && soulLocation?.longitude && f.latitude && f.longitude)
+        ? haversineDistance({ lat: soulLocation.latitude, lng: soulLocation.longitude }, { lat: f.latitude, lng: f.longitude })
+        : Infinity;
+      return { ...f, distance };
+    });
 
-    return filtered.map(f => {
-        const distance = f.latitude && f.longitude
-            ? haversineDistance({ lat: soulLocation.latitude!, lng: soulLocation.longitude! }, { lat: f.latitude, lng: f.longitude })
-            : Infinity;
-        return { ...f, distance };
-    }).sort((a, b) => a.distance - b.distance);
-  }, [fellowships, soul, country, state]);
+    return fellowshipsWithDistance.sort((a, b) => {
+        if (a.distance < b.distance) return -1;
+        if (a.distance > b.distance) return 1;
+        return a.name.localeCompare(b.name); // Fallback sort by name for same distance (including two Infinities)
+    });
+  }, [fellowships, soul.locationWon, country, state]);
 
   React.useEffect(() => {
     if (isOpen) {
