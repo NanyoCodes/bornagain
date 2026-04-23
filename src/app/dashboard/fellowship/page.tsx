@@ -52,6 +52,15 @@ import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { haversineDistance, safeToDate } from '@/lib/utils';
 import Link from 'next/link';
+import { useIsMobile } from '@/hooks/use-mobile';
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
 const formSchema = z.object({
   name: z.string().min(3, "Name must be at least 3 characters.").max(100),
@@ -293,7 +302,13 @@ export default function FellowshipPage() {
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [fellowshipToManage, setFellowshipToManage] = useState<Fellowship | null>(null);
+    const [mounted, setMounted] = useState(false);
+    const isMobile = useIsMobile();
     
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
     const userDocRef = useMemo(() => (user ? doc(firestore, 'users', user.uid) : null), [user, firestore]);
     const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userDocRef);
 
@@ -385,26 +400,48 @@ export default function FellowshipPage() {
         }
     };
     
+    const triggerButton = (
+        <Button disabled={loading} size={isMobile ? 'icon' : 'default'}>
+            <PlusCircle className="h-4 w-4 md:mr-2" />
+            <span className="hidden md:inline">Create Fellowship</span>
+        </Button>
+    );
+
+    const formContent = <FellowshipForm onFormSubmit={handleCreateFellowship} isSubmitting={isSubmitting} />;
+
     return (
         <div className="space-y-8">
             <div className="flex items-center justify-between">
                 <div className="space-y-2">
                     <h1 className="text-xl sm:text-2xl font-bold tracking-tight font-headline">Fellowship Groups</h1>
                 </div>
-                <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-                    <DialogTrigger asChild>
-                        <Button disabled={loading}>
-                            <PlusCircle className="mr-2 h-4 w-4" /> Create Fellowship
-                        </Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                        <DialogHeader>
-                            <DialogTitle>Create a New Fellowship</DialogTitle>
-                            <DialogDescription>Fill in the details to start your group.</DialogDescription>
-                        </DialogHeader>
-                        <FellowshipForm onFormSubmit={handleCreateFellowship} isSubmitting={isSubmitting} />
-                    </DialogContent>
-                </Dialog>
+                {mounted && isMobile ? (
+                    <Sheet open={isCreateOpen} onOpenChange={setIsCreateOpen}>
+                        <SheetTrigger asChild>{triggerButton}</SheetTrigger>
+                        <SheetContent side="bottom">
+                            <SheetHeader>
+                                <SheetTitle>Create a New Fellowship</SheetTitle>
+                                <SheetDescription>Fill in the details to start your group.</SheetDescription>
+                            </SheetHeader>
+                            <div className="max-h-[80vh] overflow-y-auto p-1 mt-4">
+                                {formContent}
+                            </div>
+                        </SheetContent>
+                    </Sheet>
+                ) : (
+                    <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
+                        <DialogTrigger asChild>{triggerButton}</DialogTrigger>
+                        <DialogContent>
+                            <DialogHeader>
+                                <DialogTitle>Create a New Fellowship</DialogTitle>
+                                <DialogDescription>Fill in the details to start your group.</DialogDescription>
+                            </DialogHeader>
+                            <div className="max-h-[70vh] overflow-y-auto pr-2">
+                                {formContent}
+                            </div>
+                        </DialogContent>
+                    </Dialog>
+                )}
             </div>
 
             {loading ? (
