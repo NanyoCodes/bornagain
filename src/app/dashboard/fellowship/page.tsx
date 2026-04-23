@@ -11,37 +11,20 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-  CardFooter,
-} from "@/components/ui/card";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { useCollection, useFirestore, useUser, useDoc } from "@/firebase";
 import { collection, query, orderBy, addDoc, serverTimestamp, doc, runTransaction, arrayUnion, increment, updateDoc } from "firebase/firestore";
 import type { UserProfile, Fellowship } from "@/lib/types";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { PlusCircle, HeartHandshake, Loader2, Users, MoreVertical, PlayCircle, Edit } from 'lucide-react';
+import { PlusCircle, HeartHandshake, Loader2 } from 'lucide-react';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from '@/components/ui/skeleton';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
-import { haversineDistance, safeToDate } from '@/lib/utils';
-import Link from 'next/link';
 import { useIsMobile } from '@/hooks/use-mobile';
 import {
   Sheet,
@@ -53,7 +36,8 @@ import {
 } from "@/components/ui/sheet";
 import { useRouter } from 'next/navigation';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Badge } from '@/components/ui/badge';
+import { FellowshipCard } from '@/components/fellowship/fellowship-card';
+import { Card, CardHeader, CardContent } from '@/components/ui/card';
 
 const formSchema = z.object({
   name: z.string().min(3, "Name must be at least 3 characters.").max(100),
@@ -272,128 +256,6 @@ function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting }: { fell
 }
 
 
-function FellowshipCard({ fellowship, userProfile, onManage, onClick }: { fellowship: Fellowship; userProfile: UserProfile | null; onManage: () => void; onClick?: () => void }) {
-    const { user } = useUser();
-    const firestore = useFirestore();
-    const { toast } = useToast();
-    const [isJoining, setIsJoining] = useState(false);
-    const isMember = user ? fellowship.memberIds.includes(user.uid) : false;
-    const isOrganizer = user ? fellowship.organizerId === user.uid : false;
-    
-    const distance = useMemo(() => {
-        if (!userProfile?.location?.latitude || !userProfile?.location?.longitude || !fellowship.latitude || !fellowship.longitude) {
-            return null;
-        }
-        return haversineDistance(
-            { lat: userProfile.location.latitude, lng: userProfile.location.longitude },
-            { lat: fellowship.latitude, lng: fellowship.longitude }
-        );
-    }, [userProfile?.location?.latitude, userProfile?.location?.longitude, fellowship.latitude, fellowship.longitude]);
-
-    const handleJoin = async (e: React.MouseEvent) => {
-        e.stopPropagation();
-        if (!user || !userProfile || !firestore || isMember || isOrganizer) return;
-        setIsJoining(true);
-
-        const fellowshipRef = doc(firestore, "fellowships", fellowship.id);
-        const userFellowshipRef = doc(firestore, 'users', user.uid, 'fellowships', fellowship.id);
-        const fellowshipMemberRef = doc(firestore, 'fellowships', fellowship.id, 'members', user.uid);
-        
-        try {
-            await runTransaction(firestore, async (transaction) => {
-                const fellowshipDoc = await transaction.get(fellowshipRef);
-                if (!fellowshipDoc.exists()) throw new Error("Fellowship no longer exists.");
-
-                transaction.update(fellowshipRef, {
-                    memberIds: arrayUnion(user.uid),
-                    memberCount: increment(1)
-                });
-                transaction.set(userFellowshipRef, { fellowshipId: fellowship.id, joinedAt: serverTimestamp() });
-                transaction.set(fellowshipMemberRef, {
-                    userId: user.uid,
-                    firstName: userProfile.firstName,
-                    lastName: userProfile.lastName,
-                    photoURL: userProfile.photoURL || '',
-                    joinedAt: serverTimestamp()
-                });
-            });
-            toast({ title: "Successfully Joined!", description: `You are now a member of ${fellowship.name}.`});
-        } catch (e) {
-            const permissionError = new FirestorePermissionError({ path: `fellowships/${fellowship.id}`, operation: 'update' }, user);
-            errorEmitter.emit('permission-error', permissionError);
-        } finally {
-            setIsJoining(false);
-        }
-    };
-
-    return (
-        <Card onClick={onClick} className="cursor-pointer">
-            <CardHeader>
-                <div className="flex justify-between items-start">
-                    <CardTitle>{fellowship.name}</CardTitle>
-                    <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
-                        {fellowship.locationType && <Badge variant="secondary">{fellowship.locationType}</Badge>}
-                        {isOrganizer && (
-                            <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                    <Button variant="ghost" size="icon" className="h-8 w-8 -mr-2">
-                                        <MoreVertical className="h-4 w-4" />
-                                    </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
-                                    <DropdownMenuItem onSelect={onManage}>
-                                        <Edit className="mr-2 h-4 w-4" />
-                                        Manage
-                                    </DropdownMenuItem>
-                                </DropdownMenuContent>
-                            </DropdownMenu>
-                        )}
-                    </div>
-                </div>
-                <CardDescription className="flex items-center gap-2 pt-2">
-                    <Avatar className="h-6 w-6">
-                        <AvatarImage src={fellowship.organizerPhotoURL} />
-                        <AvatarFallback>{fellowship.organizerName?.charAt(0)}</AvatarFallback>
-                    </Avatar>
-                    Organized by {fellowship.organizerName}
-                </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-                <p className="text-sm text-muted-foreground">{fellowship.description}</p>
-                <div className="text-sm">
-                    <p><strong>Schedule:</strong> {fellowship.schedule}</p>
-                    {fellowship.location && (fellowship.locationType === 'Physical' || fellowship.locationType === 'Physical and Virtual') && (
-                        <p><strong>Location:</strong> {fellowship.location}</p>
-                    )}
-                </div>
-            </CardContent>
-            <CardFooter className="flex justify-between items-center">
-                <div className="flex items-center text-sm text-muted-foreground">
-                    <Users className="mr-2 h-4 w-4" /> {fellowship.memberCount} member(s)
-                </div>
-                 {distance !== null && <p className="text-xs text-muted-foreground">{distance.toFixed(1)} km away</p>}
-                <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
-                    {fellowship.streamUrl && (
-                        <Button asChild variant="outline" size="sm">
-                            <Link href={fellowship.streamUrl} target="_blank" rel="noopener noreferrer">
-                                <PlayCircle className="mr-2 h-4 w-4" />
-                                Stream
-                            </Link>
-                        </Button>
-                    )}
-                    {!isOrganizer && (
-                        <Button onClick={handleJoin} disabled={isMember || isJoining} size="sm">
-                            {isJoining ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : null}
-                            {isMember ? 'Joined' : 'Join'}
-                        </Button>
-                    )}
-                </div>
-            </CardFooter>
-        </Card>
-    );
-}
-
-
 export default function FellowshipPage() {
   const router = useRouter();
     const { user, loading: userLoading } = useUser();
@@ -575,7 +437,3 @@ export default function FellowshipPage() {
         </div>
     );
 }
-
-  
-
-    
