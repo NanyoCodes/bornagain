@@ -54,7 +54,6 @@ const navItems = [
   { href: "/dashboard/testimonies", label: "Testimonies", icon: Newspaper, color: "text-chart-3" },
   { href: "/dashboard/campaigns", label: "Campaigns", icon: Target, color: "text-chart-4" },
   { href: "/dashboard/fellowship", label: "Fellowship", icon: HeartHandshake, color: "text-primary" },
-  { href: "/dashboard/chats", label: "Chats", icon: MessagesSquare, color: "text-chart-5" },
 ];
 
 function AppHeader({ unreadChatCount }: { unreadChatCount: number }) {
@@ -135,7 +134,6 @@ function AppHeader({ unreadChatCount }: { unreadChatCount: number }) {
         <nav className="hidden items-center gap-5 text-sm font-medium md:flex lg:gap-6">
             {navItems.map((item) => {
               const isActive = item.href === '/dashboard' ? pathname === item.href : pathname.startsWith(item.href);
-              const isChats = item.label === 'Chats';
               return (
                 <Link
                     key={item.href}
@@ -148,11 +146,6 @@ function AppHeader({ unreadChatCount }: { unreadChatCount: number }) {
                 >
                     <item.icon className={cn("h-4 w-4", !isActive && item.color)} />
                     {item.label}
-                    {isChats && unreadChatCount > 0 && (
-                      <span className="flex h-5 w-5 items-center justify-center rounded-full bg-destructive text-xs font-bold text-destructive-foreground">
-                        {unreadChatCount}
-                      </span>
-                    )}
                 </Link>
               );
             })}
@@ -182,6 +175,17 @@ function AppHeader({ unreadChatCount }: { unreadChatCount: number }) {
             <span className="sr-only">Search</span>
           </Button>
         )}
+        <Link href="/dashboard/chats">
+            <Button variant="ghost" size="icon" className="relative">
+              <MessagesSquare className="h-5 w-5" />
+              {unreadChatCount > 0 && (
+                <div className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-xs font-bold text-destructive-foreground">
+                  {unreadChatCount}
+                </div>
+              )}
+              <span className="sr-only">View chats</span>
+            </Button>
+        </Link>
         <Link href="/dashboard/notifications">
             <Button variant="ghost" size="icon" className="relative">
               <Bell className="h-5 w-5" />
@@ -250,10 +254,9 @@ function BottomNavBar({ unreadChatCount }: { unreadChatCount: number }) {
   
     return (
       <nav className="fixed bottom-0 left-0 right-0 z-40 border-t bg-background md:hidden">
-        <div className="grid h-16 grid-cols-6 items-center">
+        <div className="grid h-16 grid-cols-5 items-center">
           {navItems.map((item) => {
             const isActive = item.href === '/dashboard' ? pathname === item.href : pathname.startsWith(item.href);
-            const isChats = item.label === 'Chats';
             return (
               <Link
                 key={item.href}
@@ -264,11 +267,6 @@ function BottomNavBar({ unreadChatCount }: { unreadChatCount: number }) {
                   isActive ? "text-primary" : "text-muted-foreground"
                 )}
               >
-                 {isChats && unreadChatCount > 0 && (
-                    <div className="absolute top-1 right-2 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[9px] font-bold text-destructive-foreground">
-                        {unreadChatCount}
-                    </div>
-                )}
                 <item.icon className={cn("h-5 w-5", !isActive && item.color)} />
                 <span className="text-center">{item.label}</span>
               </Link>
