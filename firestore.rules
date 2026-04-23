@@ -257,8 +257,10 @@ service cloud.firestore {
       allow read: if request.auth != null;
       allow create: if request.auth != null && request.resource.data.organizerId == request.auth.uid;
       allow update: if request.auth != null && (
-        (request.auth.uid == resource.data.organizerId && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['memberIds', 'memberCount'])) ||
-        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['memberIds', 'memberCount'])) // New member joining
+        (request.auth.uid == resource.data.organizerId && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['memberIds', 'memberCount', 'status'])) ||
+        // Allow updates to only memberIds and/or memberCount for joining, leaving, and soul assignment.
+        (request.resource.data.diff(resource.data).affectedKeys().size() > 0 && 
+         request.resource.data.diff(resource.data).affectedKeys().subsetOf(['memberIds', 'memberCount']))
       );
 
       match /members/{memberId} {
