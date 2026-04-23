@@ -48,7 +48,7 @@ export default function SoulsWonPage() {
   const [soulForFollowUp, setSoulForFollowUp] = useState<Soul | null>(null);
   const [soulForHistory, setSoulForHistory] = useState<Soul | null>(null);
   const [soulToAssign, setSoulToAssign] = useState<Soul | null>(null);
-  const [isAssigning, setIsAssigning] = useState(false);
+  const [isAssigning, setIsAssigning] = useState<string | null>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -107,7 +107,7 @@ export default function SoulsWonPage() {
 
   const handleAssignFellowship = async (soul: Soul, fellowshipId: string) => {
     if (!user || !firestore || isAssigning) return;
-    setIsAssigning(true);
+    setIsAssigning(fellowshipId);
 
     const soulRef = doc(firestore, `users/${user.uid}/souls`, soul.id);
     const globalSoulRef = doc(firestore, 'souls', soul.id);
@@ -124,7 +124,7 @@ export default function SoulsWonPage() {
         updateData.fellowshipName = selectedFellowship.name;
     } else {
         toast({ variant: "destructive", title: "Error", description: "Selected fellowship not found." });
-        setIsAssigning(false);
+        setIsAssigning(null);
         return;
     }
 
@@ -160,7 +160,7 @@ export default function SoulsWonPage() {
                 type: 'new_soul_in_fellowship',
                 title: `New Member in ${selectedFellowship.name}`,
                 message: `${soul.firstName} ${soul.lastName} was assigned to your fellowship. Please reach out to them${contactInfo ? ` at ${contactInfo}` : ''}.`,
-                link: `/dashboard/fellowship`,
+                link: `/dashboard/fellowship/${selectedFellowship.id}`,
                 isRead: false,
                 createdAt: serverTimestamp(),
             });
@@ -173,7 +173,7 @@ export default function SoulsWonPage() {
         }, user);
         errorEmitter.emit('permission-error', permissionError);
     } finally {
-        setIsAssigning(false);
+        setIsAssigning(null);
     }
   };
 

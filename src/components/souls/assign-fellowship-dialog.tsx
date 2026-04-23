@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -17,7 +18,7 @@ interface AssignFellowshipDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   onAssignFellowship: (soul: Soul, fellowshipId: string) => void;
-  isAssigning: boolean;
+  isAssigning: string | null;
 }
 
 export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange, onAssignFellowship, isAssigning }: AssignFellowshipDialogProps) {
@@ -119,14 +120,14 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
                                 <div>
                                     <p className="font-semibold">{f.name}</p>
                                     <p className="text-sm text-muted-foreground">{f.location}</p>
-                                    {f.distance !== null && <p className="text-xs text-primary">{f.distance.toFixed(1)} km away</p>}
+                                    {f.distance !== null ? <p className="text-xs text-primary">{f.distance.toFixed(1)} km away</p> : null}
                                 </div>
                                 <Button
                                     size="sm"
                                     onClick={() => onAssignFellowship(soul, f.id)}
-                                    disabled={isAssigning || soul.fellowshipId === f.id}
+                                    disabled={!!isAssigning || soul.fellowshipId === f.id}
                                 >
-                                    {isAssigning ? <Loader2 className="h-4 w-4 animate-spin"/> : (soul.fellowshipId === f.id ? 'Assigned' : 'Assign')}
+                                    {isAssigning === f.id ? <Loader2 className="h-4 w-4 animate-spin"/> : (soul.fellowshipId === f.id ? 'Assigned' : 'Assign')}
                                 </Button>
                             </CardContent>
                         </Card>
