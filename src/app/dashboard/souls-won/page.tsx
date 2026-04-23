@@ -72,6 +72,11 @@ export default function SoulsWonPage() {
   }, [user?.uid, firestore]);
   const { data: campaigns, loading: loadingCampaigns } = useCollection<Campaign>(campaignsQuery);
   
+  const activeCampaigns = useMemo(() => {
+    if (!campaigns) return [];
+    return campaigns.filter(c => c.status !== 'deleted');
+  }, [campaigns]);
+  
   const fellowshipsQuery = useMemo(() => {
     if (!firestore) return null;
     return query(collection(firestore, 'fellowships'), orderBy('name', 'asc'));
@@ -413,7 +418,7 @@ export default function SoulsWonPage() {
     </Button>
   );
 
-  const formContent = <LogSoulForm onSoulLogged={handleSoulLogged} fellowships={fellowships || []} campaigns={campaigns || []} />;
+  const formContent = <LogSoulForm onSoulLogged={handleSoulLogged} fellowships={fellowships || []} campaigns={activeCampaigns || []} />;
 
   return (
     <div className="space-y-8">
@@ -491,7 +496,7 @@ export default function SoulsWonPage() {
                       <DialogDescription>Make changes to the record for {soulToEdit?.firstName} {soulToEdit?.lastName}.</DialogDescription>
                   </DialogHeader>
                   <div className="max-h-[70vh] overflow-y-auto pr-2">
-                      <EditSoulForm soul={soulToEdit} onSoulUpdated={handleSoulUpdated} fellowships={fellowships || []} campaigns={campaigns || []} />
+                      <EditSoulForm soul={soulToEdit} onSoulUpdated={handleSoulUpdated} fellowships={fellowships || []} campaigns={activeCampaigns || []} />
                   </div>
               </DialogContent>
           </Dialog>
@@ -521,7 +526,7 @@ export default function SoulsWonPage() {
             isOpen={!!soulToAssign}
             onOpenChange={() => setSoulToAssign(null)}
             onAssignFellowship={handleAssignFellowship}
-            isAssigning={isAssigning}
+            isAssigning={isAssigning ? soulToAssign.id : null}
         />
       )}
     </div>
