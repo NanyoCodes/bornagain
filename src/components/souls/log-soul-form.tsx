@@ -87,14 +87,14 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign, fellowships, campai
     if (sourceValue !== 'Campaign') {
         form.setValue('sourceDetails', '');
     }
-  }, [sourceValue, form]);
+  }, [sourceValue, form.setValue]);
 
   useEffect(() => {
     // Set default date on client to avoid hydration mismatch
     if (!form.getValues('wonAt')) {
         form.setValue('wonAt', new Date());
     }
-  }, [form]);
+  }, [form.getValues, form.setValue]);
   
   const watchedLocationCity = form.watch('locationWonCity');
 
@@ -535,3 +535,5 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign, fellowships, campai
     </Form>
   );
 }
+
+    

@@ -91,7 +91,7 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
       wonAt: soul.wonAt.toDate(),
       fellowshipId: soul.fellowshipId || "",
     });
-  }, [soul, form]);
+  }, [soul]);
   
   const sourceValue = form.watch("source");
   useEffect(() => {
@@ -501,3 +501,5 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
     </Form>
   );
 }
+
+    

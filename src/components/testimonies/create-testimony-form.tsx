@@ -67,7 +67,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
         content: ""
       });
     }
-  }, [prayerRequest, campaign, form]);
+  }, [prayerRequest, campaign, form.reset]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (!user || !firestore || !userProfile) {
@@ -222,3 +222,5 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
     </Form>
   );
 }
+
+    
