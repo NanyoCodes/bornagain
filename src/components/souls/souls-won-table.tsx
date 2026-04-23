@@ -72,11 +72,10 @@ type SoulCardProps = {
   onFollowUp: (soul: Soul) => void; 
   onViewHistory: (soul: Soul) => void; 
   onExportSingle: (soul: Soul, formatType: 'csv' | 'pdf') => void;
-  fellowships: Fellowship[];
-  onAssignFellowship: (soul: Soul, fellowshipId: string) => void;
+  onOpenAssignDialog: (soul: Soul) => void;
 };
 
-function SoulCard({ soul, onEdit, onFollowUp, onViewHistory, onExportSingle, fellowships, onAssignFellowship }: SoulCardProps) {
+function SoulCard({ soul, onEdit, onFollowUp, onViewHistory, onExportSingle, onOpenAssignDialog }: SoulCardProps) {
     const latestFollowUp = React.useMemo(() => {
         if (!soul.followUpLog || soul.followUpLog.length === 0) return null;
         return soul.followUpLog.reduce((latest, current) => {
@@ -135,26 +134,10 @@ function SoulCard({ soul, onEdit, onFollowUp, onViewHistory, onExportSingle, fel
                                         Edit
                                     </DropdownMenuItem>
                                     <DropdownMenuItem onSelect={() => onViewHistory(soul)}>View History</DropdownMenuItem>
-                                    <DropdownMenuSub>
-                                        <DropdownMenuSubTrigger>
-                                            <HeartHandshake className="mr-2 h-4 w-4" />
-                                            <span>Assign Fellowship</span>
-                                        </DropdownMenuSubTrigger>
-                                        <DropdownMenuPortal>
-                                            <DropdownMenuSubContent>
-                                                <DropdownMenuItem onSelect={() => onAssignFellowship(soul, 'none')}>
-                                                    {!soul.fellowshipId ? <Check className="mr-2 h-4 w-4" /> : <X className="mr-2 h-4 w-4" />}
-                                                    <span>None</span>
-                                                </DropdownMenuItem>
-                                                {fellowships.map(f => (
-                                                    <DropdownMenuItem key={f.id} onSelect={() => onAssignFellowship(soul, f.id)}>
-                                                        {soul.fellowshipId === f.id && <Check className="mr-2 h-4 w-4" />}
-                                                        <span className={cn(soul.fellowshipId !== f.id && "ml-6")}>{f.name}</span>
-                                                    </DropdownMenuItem>
-                                                ))}
-                                            </DropdownMenuSubContent>
-                                        </DropdownMenuPortal>
-                                    </DropdownMenuSub>
+                                    <DropdownMenuItem onSelect={() => onOpenAssignDialog(soul)}>
+                                        <HeartHandshake className="mr-2 h-4 w-4" />
+                                        <span>Assign Fellowship</span>
+                                    </DropdownMenuItem>
                                     <DropdownMenuSub>
                                         <DropdownMenuSubTrigger>
                                             <Download className="mr-2 h-4 w-4" />
@@ -214,11 +197,10 @@ type SoulTableRowProps = {
   onFollowUp: (soul: Soul) => void; 
   onViewHistory: (soul: Soul) => void;
   onExportSingle: (soul: Soul, formatType: 'csv' | 'pdf') => void;
-  fellowships: Fellowship[];
-  onAssignFellowship: (soul: Soul, fellowshipId: string) => void;
+  onOpenAssignDialog: (soul: Soul) => void;
 };
 
-function SoulTableRow({ soul, onEdit, onFollowUp, onViewHistory, onExportSingle, fellowships, onAssignFellowship }: SoulTableRowProps) {
+function SoulTableRow({ soul, onEdit, onFollowUp, onViewHistory, onExportSingle, onOpenAssignDialog }: SoulTableRowProps) {
     const latestFollowUp = React.useMemo(() => {
         if (!soul.followUpLog || soul.followUpLog.length === 0) return null;
         return soul.followUpLog.reduce((latest, current) => {
@@ -305,26 +287,10 @@ function SoulTableRow({ soul, onEdit, onFollowUp, onViewHistory, onExportSingle,
                         </DropdownMenuItem>
                         <DropdownMenuItem onSelect={() => onFollowUp(soul)}>Follow-up</DropdownMenuItem>
                         <DropdownMenuItem onSelect={() => onViewHistory(soul)}>View History</DropdownMenuItem>
-                        <DropdownMenuSub>
-                            <DropdownMenuSubTrigger>
-                                <HeartHandshake className="mr-2 h-4 w-4" />
-                                <span>Assign Fellowship</span>
-                            </DropdownMenuSubTrigger>
-                            <DropdownMenuPortal>
-                                <DropdownMenuSubContent>
-                                    <DropdownMenuItem onSelect={() => onAssignFellowship(soul, 'none')}>
-                                        {!soul.fellowshipId ? <Check className="mr-2 h-4 w-4" /> : <X className="mr-2 h-4 w-4" />}
-                                        <span>None</span>
-                                    </DropdownMenuItem>
-                                    {fellowships.map(f => (
-                                        <DropdownMenuItem key={f.id} onSelect={() => onAssignFellowship(soul, f.id)}>
-                                            {soul.fellowshipId === f.id && <Check className="mr-2 h-4 w-4" />}
-                                            <span className={cn(soul.fellowshipId !== f.id && "ml-6")}>{f.name}</span>
-                                        </DropdownMenuItem>
-                                    ))}
-                                </DropdownMenuSubContent>
-                            </DropdownMenuPortal>
-                        </DropdownMenuSub>
+                        <DropdownMenuItem onSelect={() => onOpenAssignDialog(soul)}>
+                            <HeartHandshake className="mr-2 h-4 w-4" />
+                            <span>Assign Fellowship</span>
+                        </DropdownMenuItem>
                         <DropdownMenuSub>
                             <DropdownMenuSubTrigger>
                                 <Download className="mr-2 h-4 w-4" />
@@ -351,11 +317,10 @@ type SoulsWonTableProps = {
   onFollowUp: (soul: Soul) => void;
   onViewHistory: (soul: Soul) => void;
   onExportSingle: (soul: Soul, formatType: 'csv' | 'pdf') => void;
-  fellowships: Fellowship[];
-  onAssignFellowship: (soul: Soul, fellowshipId: string) => void;
+  onOpenAssignDialog: (soul: Soul) => void;
 };
 
-export function SoulsWonTable({ souls, loading, onEdit, onFollowUp, onViewHistory, onExportSingle, fellowships, onAssignFellowship }: SoulsWonTableProps) {
+export function SoulsWonTable({ souls, loading, onEdit, onFollowUp, onViewHistory, onExportSingle, onOpenAssignDialog }: SoulsWonTableProps) {
   const isMobile = useIsMobile();
   const [mounted, setMounted] = React.useState(false);
 
@@ -419,7 +384,7 @@ export function SoulsWonTable({ souls, loading, onEdit, onFollowUp, onViewHistor
                     </CardDescription>
                 </CardHeader>
             </Card>
-            {souls.map((soul) => <SoulCard key={soul.id} soul={soul} onEdit={onEdit} onDelete={() => {}} onFollowUp={onFollowUp} onViewHistory={onViewHistory} onExportSingle={onExportSingle} fellowships={fellowships} onAssignFellowship={onAssignFellowship} />)}
+            {souls.map((soul) => <SoulCard key={soul.id} soul={soul} onEdit={onEdit} onFollowUp={onFollowUp} onViewHistory={onViewHistory} onExportSingle={onExportSingle} onOpenAssignDialog={onOpenAssignDialog} />)}
         </div>
       )
   }
@@ -450,7 +415,7 @@ export function SoulsWonTable({ souls, loading, onEdit, onFollowUp, onViewHistor
           </TableHeader>
           <TableBody>
             {souls.map((soul) => (
-              <SoulTableRow key={soul.id} soul={soul} onEdit={onEdit} onFollowUp={onFollowUp} onViewHistory={onViewHistory} onExportSingle={onExportSingle} fellowships={fellowships} onAssignFellowship={onAssignFellowship} />
+              <SoulTableRow key={soul.id} soul={soul} onEdit={onEdit} onFollowUp={onFollowUp} onViewHistory={onViewHistory} onExportSingle={onExportSingle} onOpenAssignDialog={onOpenAssignDialog} />
             ))}
           </TableBody>
         </Table>

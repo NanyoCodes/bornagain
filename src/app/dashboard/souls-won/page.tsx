@@ -5,16 +5,6 @@ import { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import {
   Sheet,
   SheetContent,
   SheetDescription,
@@ -41,6 +31,8 @@ import { FirestorePermissionError } from "@/firebase/errors";
 import { EditSoulForm } from "@/components/souls/edit-soul-form";
 import { LogFollowUpDialog } from "@/components/souls/log-follow-up-dialog";
 import { ViewHistoryDialog } from "@/components/souls/view-history-dialog";
+import { AssignFellowshipDialog } from "@/components/souls/assign-fellowship-dialog";
+
 
 export default function SoulsWonPage() {
   const { user, loading: userLoading } = useUser();
@@ -55,6 +47,7 @@ export default function SoulsWonPage() {
   const [soulToEdit, setSoulToEdit] = useState<Soul | null>(null);
   const [soulForFollowUp, setSoulForFollowUp] = useState<Soul | null>(null);
   const [soulForHistory, setSoulForHistory] = useState<Soul | null>(null);
+  const [soulToAssign, setSoulToAssign] = useState<Soul | null>(null);
   const [isAssigning, setIsAssigning] = useState(false);
 
   useEffect(() => {
@@ -156,6 +149,7 @@ export default function SoulsWonPage() {
         });
 
         toast({ title: "Fellowship Assigned", description: `${soul.firstName} has been assigned to ${selectedFellowship ? selectedFellowship.name : 'no fellowship'}.` });
+        setSoulToAssign(null);
 
         const wasNewlyAssigned = fellowshipId !== 'none' && fellowshipId !== soul.fellowshipId;
         if (wasNewlyAssigned && selectedFellowship && selectedFellowship.organizerId !== user.uid) {
@@ -486,8 +480,7 @@ export default function SoulsWonPage() {
         onFollowUp={setSoulForFollowUp}
         onViewHistory={setSoulForHistory}
         onExportSingle={handleExportSingleSoul}
-        fellowships={fellowships || []}
-        onAssignFellowship={handleAssignFellowship}
+        onOpenAssignDialog={setSoulToAssign}
       />
 
       {soulToEdit && (
@@ -518,6 +511,17 @@ export default function SoulsWonPage() {
             soul={soulForHistory}
             isOpen={!!soulForHistory}
             onOpenChange={(isOpen) => { if (!isOpen) setSoulForHistory(null); }}
+        />
+      )}
+
+      {soulToAssign && (
+        <AssignFellowshipDialog
+            soul={soulToAssign}
+            fellowships={fellowships || []}
+            isOpen={!!soulToAssign}
+            onOpenChange={() => setSoulToAssign(null)}
+            onAssignFellowship={handleAssignFellowship}
+            isAssigning={isAssigning}
         />
       )}
     </div>
