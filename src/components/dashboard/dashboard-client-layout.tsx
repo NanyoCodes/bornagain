@@ -53,6 +53,7 @@ const navItems = [
   { href: "/dashboard/souls-won", label: "Souls Won", icon: UserPlus, color: "text-chart-2" },
   { href: "/dashboard/testimonies", label: "Testimonies", icon: Newspaper, color: "text-chart-3" },
   { href: "/dashboard/campaigns", label: "Campaigns", icon: Target, color: "text-chart-4" },
+  { href: "/dashboard/fellowship", label: "Fellowship", icon: HeartHandshake, color: "text-primary" },
   { href: "/dashboard/chats", label: "Chats", icon: MessagesSquare, color: "text-chart-5" },
 ];
 
@@ -249,7 +250,7 @@ function BottomNavBar({ unreadChatCount }: { unreadChatCount: number }) {
   
     return (
       <nav className="fixed bottom-0 left-0 right-0 z-40 border-t bg-background md:hidden">
-        <div className="grid h-16 grid-cols-5 items-center">
+        <div className="grid h-16 grid-cols-6 items-center">
           {navItems.map((item) => {
             const isActive = item.href === '/dashboard' ? pathname === item.href : pathname.startsWith(item.href);
             const isChats = item.label === 'Chats';
@@ -369,6 +370,7 @@ export default function DashboardClientLayout({
     if (path.startsWith('/dashboard/profile')) return 'Loading your profile...';
     if (path.startsWith('/dashboard/settings')) return 'Loading settings...';
     if (path.startsWith('/dashboard/notifications')) return 'Loading notifications...';
+    if (path.startsWith('/dashboard/fellowship')) return 'Loading fellowships...';
     return 'Loading your dashboard...';
   };
 
@@ -392,7 +394,7 @@ export default function DashboardClientLayout({
   return (
     <SearchProvider>
       <div className={cn("flex w-full flex-col overflow-x-hidden", isChatPage || isNotesPage ? "h-dvh" : "min-h-dvh")}>
-        {!isNotesPage && <AppHeader unreadChatCount={unreadChatCount} />}
+        {!(isNotesPage || isChatPage) && <AppHeader unreadChatCount={unreadChatCount} />}
         <div className="flex-1 relative min-h-0">
           <main className={cn("absolute inset-0", !(isChatPage || isNotesPage) && "overflow-y-auto")}>
             <div className={cn(

@@ -774,6 +774,47 @@
         "createdAt": { "type": "object" }
       },
       "required": ["userId", "book", "chapter", "verses", "color", "createdAt"]
+    },
+    "Fellowship": {
+      "title": "Fellowship",
+      "description": "A small group of believers who meet regularly for prayer, study, and mutual support.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "The name of the fellowship group." },
+        "description": { "type": "string", "description": "A short description of the fellowship's purpose and goals." },
+        "organizerId": { "type": "string" },
+        "organizerName": { "type": "string" },
+        "organizerPhotoURL": { "type": "string", "format": "uri" },
+        "createdAt": { "type": "object" },
+        "memberIds": { "type": "array", "items": { "type": "string" }, "description": "An array of member UIDs for efficient security rule checks." },
+        "memberCount": { "type": "number", "description": "The total number of members in the fellowship." },
+        "location": { "type": "string", "description": "Where the fellowship meets (e.g., 'Online via Zoom', '123 Main St, Anytown')." },
+        "schedule": { "type": "string", "description": "The meeting schedule (e.g., 'Wednesdays at 7pm')." }
+      },
+      "required": ["name", "description", "organizerId", "organizerName", "createdAt", "memberIds", "memberCount"]
+    },
+    "FellowshipMember": {
+        "title": "Fellowship Member",
+        "description": "Represents a user who has joined a fellowship.",
+        "type": "object",
+        "properties": {
+            "userId": { "type": "string" },
+            "firstName": { "type": "string" },
+            "lastName": { "type": "string" },
+            "photoURL": { "type": "string", "format": "uri" },
+            "joinedAt": { "type": "object" }
+        },
+        "required": ["userId", "firstName", "joinedAt"]
+    },
+    "JoinedFellowship": {
+        "title": "Joined Fellowship",
+        "description": "A record indicating that a user has joined a specific fellowship.",
+        "type": "object",
+        "properties": {
+            "fellowshipId": { "type": "string" },
+            "joinedAt": { "type": "object" }
+        },
+        "required": ["fellowshipId", "joinedAt"]
     }
   },
   "auth": {
@@ -873,6 +914,18 @@
         "$ref": "#/entities/Mail"
       },
       "description": "Emails to be sent by the Trigger Email extension."
+    },
+    "/fellowships/{fellowshipId}": {
+      "schema": { "$ref": "#/entities/Fellowship" },
+      "description": "Stores details for each fellowship group."
+    },
+    "/fellowships/{fellowshipId}/members/{userId}": {
+      "schema": { "$ref": "#/entities/FellowshipMember" },
+      "description": "Stores members of a specific fellowship."
+    },
+    "/users/{userId}/fellowships/{fellowshipId}": {
+      "schema": { "$ref": "#/entities/JoinedFellowship" },
+      "description": "A subcollection to track which fellowships a user has joined."
     }
   }
 }
