@@ -1,4 +1,3 @@
-
 "use client";
 
 import * as React from "react";
@@ -135,7 +134,6 @@ function SoulCard({ soul, onEdit, onDelete, onFollowUp, onViewHistory, onExportS
                                         <Edit className="mr-2 h-4 w-4"/>
                                         Edit
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem onSelect={() => onFollowUp(soul)}>Follow-up</DropdownMenuItem>
                                     <DropdownMenuItem onSelect={() => onViewHistory(soul)}>View History</DropdownMenuItem>
                                     <DropdownMenuSub>
                                         <DropdownMenuSubTrigger>
