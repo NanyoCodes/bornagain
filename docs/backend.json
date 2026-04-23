@@ -556,6 +556,14 @@
         "inServiceDepartment": {
           "type": "boolean",
           "description": "Indicates if the soul is serving in a department in church."
+        },
+        "fellowshipId": {
+            "type": "string",
+            "description": "The ID of the fellowship group the soul is a part of."
+        },
+        "fellowshipName": {
+            "type": "string",
+            "description": "The name of the fellowship group, denormalized for display."
         }
       },
       "required": [

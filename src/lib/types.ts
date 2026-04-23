@@ -237,6 +237,8 @@ export type Soul = {
   inBibleStudy?: boolean;
   attendingPrayer?: boolean;
   inServiceDepartment?: boolean;
+  fellowshipId?: string;
+  fellowshipName?: string;
 };
 
 export type ChatParticipantInfo = {
@@ -305,4 +307,17 @@ export type Mail = {
     subject: string;
     html: string;
   };
+};
+
+export type Fellowship = {
+  id: string;
+  name: string;
+  description: string;
+  organizerId: string;
+  organizerName: string;
+  organizerPhotoURL?: string;
+  memberCount: number;
+  location?: string;
+  schedule?: string;
+  memberIds: string[];
 };

@@ -3,7 +3,7 @@
 
 import * as React from "react";
 import { format } from "date-fns";
-import { MoreHorizontal, Church, UserPlus, Edit, MapPin, Phone, ChevronDown, Trash2, Download } from "lucide-react";
+import { MoreHorizontal, Church, UserPlus, Edit, MapPin, Phone, ChevronDown, Trash2, Download, HeartHandshake } from "lucide-react";
 import type { Soul, FollowUpStatus } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import {
@@ -118,6 +118,7 @@ function SoulCard({ soul, onEdit, onDelete, onFollowUp, onViewHistory, onExportS
                                 {soul.phone && <div className="truncate flex items-center gap-2 mt-1"><Phone className="h-4 w-4"/>{soul.phone}</div>}
                                 {soul.church && <div className="flex items-center gap-1 pt-2"><Church className="h-4 w-4" /> {soul.church}</div>}
                                 {locationWonString && <div className="flex items-center gap-1 pt-1"><MapPin className="h-4 w-4" /> {locationWonString}</div>}
+                                {soul.fellowshipName && <div className="flex items-center gap-1 pt-1"><HeartHandshake className="h-4 w-4" /> {soul.fellowshipName}</div>}
                             </div>
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
@@ -233,6 +234,16 @@ function SoulTableRow({ soul, onEdit, onDelete, onFollowUp, onViewHistory, onExp
             </TableCell>
             <TableCell>
                 <Badge className={cn("w-[150px] justify-center", getStatusClasses(soul.status))} variant="outline">{soul.status}</Badge>
+            </TableCell>
+            <TableCell>
+                {soul.fellowshipName ? (
+                    <div className="flex items-center gap-2 text-xs">
+                        <HeartHandshake className="h-3 w-3" />
+                        {soul.fellowshipName}
+                    </div>
+                ) : (
+                    <span className="text-muted-foreground text-xs">N/A</span>
+                )}
             </TableCell>
             <TableCell>
                 {latestFollowUp ? (
@@ -396,6 +407,7 @@ export function SoulsWonTable({ souls, loading, onEdit, onDelete, onFollowUp, on
               <TableHead>Name</TableHead>
               <TableHead>Contact Info</TableHead>
               <TableHead>Status</TableHead>
+              <TableHead>Fellowship</TableHead>
               <TableHead>Last Follow-up</TableHead>
               <TableHead>Won At</TableHead>
               <TableHead>Source</TableHead>

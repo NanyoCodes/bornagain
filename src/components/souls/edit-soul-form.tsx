@@ -18,7 +18,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { useState, useMemo, useEffect } from "react";
 import { Loader2 } from "lucide-react";
-import type { Soul, Campaign } from "@/lib/types";
+import type { Soul, Campaign, Fellowship } from "@/lib/types";
 import { format } from "date-fns";
 import { useFirestore, useUser, useCollection } from "@/firebase";
 import { collection, query, orderBy, doc, updateDoc, addDoc, deleteField } from "firebase/firestore";
@@ -41,6 +41,7 @@ const formSchema = z.object({
   wonAt: z.date({
     required_error: "A date is required.",
   }),
+  fellowshipId: z.string().optional(),
 });
 
 type EditSoulFormProps = {
@@ -59,6 +60,13 @@ export function EditSoulForm({ soul, onSoulUpdated }: EditSoulFormProps) {
     return query(collection(firestore, 'campaigns'), orderBy('createdAt', 'desc'));
   }, [user?.uid, firestore]);
   const { data: campaigns, loading: loadingCampaigns } = useCollection<Campaign>(campaignsQuery);
+  
+  const fellowshipsQuery = useMemo(() => {
+    if (!firestore) return null;
+    return query(collection(firestore, 'fellowships'), orderBy('name', 'asc'));
+  }, [firestore]);
+  const { data: fellowships, loading: loadingFellowships } = useCollection<Fellowship>(fellowshipsQuery);
+
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -74,6 +82,7 @@ export function EditSoulForm({ soul, onSoulUpdated }: EditSoulFormProps) {
       source: soul.source || "Personal",
       sourceDetails: soul.sourceDetails || "",
       wonAt: soul.wonAt.toDate(),
+      fellowshipId: soul.fellowshipId || "",
     },
   });
 
@@ -91,6 +100,7 @@ export function EditSoulForm({ soul, onSoulUpdated }: EditSoulFormProps) {
       source: soul.source || "Personal",
       sourceDetails: soul.sourceDetails || "",
       wonAt: soul.wonAt.toDate(),
+      fellowshipId: soul.fellowshipId || "",
     });
   }, [soul, form]);
   
@@ -122,6 +132,15 @@ export function EditSoulForm({ soul, onSoulUpdated }: EditSoulFormProps) {
     if (values.phone) soulUpdateData.phone = values.phone; else soulUpdateData.phone = deleteField();
     if (values.church) soulUpdateData.church = values.church; else soulUpdateData.church = deleteField();
     if (values.sourceDetails) soulUpdateData.sourceDetails = values.sourceDetails; else soulUpdateData.sourceDetails = deleteField();
+
+    if (values.fellowshipId) {
+        const selectedFellowship = fellowships?.find(f => f.id === values.fellowshipId);
+        soulUpdateData.fellowshipId = values.fellowshipId;
+        soulUpdateData.fellowshipName = selectedFellowship?.name;
+    } else {
+        soulUpdateData.fellowshipId = deleteField();
+        soulUpdateData.fellowshipName = deleteField();
+    }
 
     if (values.locationWonCity || values.locationWonState || values.locationWonCountry) {
         const locationWonData: { [key: string]: string } = {};
@@ -320,6 +339,31 @@ export function EditSoulForm({ soul, onSoulUpdated }: EditSoulFormProps) {
                 <AccordionTrigger>Optional Details</AccordionTrigger>
                 <AccordionContent>
                     <div className="space-y-4 pt-4">
+                        <FormField
+                            control={form.control}
+                            name="fellowshipId"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Assign to Fellowship</FormLabel>
+                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                        <FormControl>
+                                            <SelectTrigger className="text-base">
+                                                <SelectValue placeholder={loadingFellowships ? "Loading fellowships..." : "Select a fellowship group"} />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            <SelectItem value="">None</SelectItem>
+                                            {fellowships?.map((f) => (
+                                                <SelectItem key={f.id} value={f.id}>
+                                                    {f.name}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
                         <FormField
                             control={form.control}
                             name="email"
