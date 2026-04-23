@@ -12,16 +12,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import {
   Card,
   CardContent,
   CardDescription,
@@ -41,7 +31,7 @@ import type { UserProfile, Fellowship } from "@/lib/types";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { PlusCircle, HeartHandshake, Loader2, Users, MoreVertical, Trash2, PlayCircle, Edit } from 'lucide-react';
+import { PlusCircle, HeartHandshake, Loader2, Users, MoreVertical, PlayCircle, Edit } from 'lucide-react';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -61,6 +51,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { useRouter } from 'next/navigation';
 
 const formSchema = z.object({
   name: z.string().min(3, "Name must be at least 3 characters.").max(100),
@@ -233,7 +224,7 @@ function FellowshipCard({ fellowship, userProfile, onManage, onClick }: { fellow
     };
 
     return (
-        <Card onClick={onClick}>
+        <Card onClick={onClick} className="cursor-pointer">
             <CardHeader>
                 <div className="flex justify-between items-start">
                     <CardTitle>{fellowship.name}</CardTitle>
@@ -296,6 +287,7 @@ function FellowshipCard({ fellowship, userProfile, onManage, onClick }: { fellow
 
 
 export default function FellowshipPage() {
+  const router = useRouter();
     const { user, loading: userLoading } = useUser();
     const firestore = useFirestore();
     const { toast } = useToast();
@@ -317,16 +309,13 @@ export default function FellowshipPage() {
     
     const activeFellowships = useMemo(() => {
         if (!fellowships) return [];
-        return fellowships;
+        return fellowships.filter(f => f.status !== 'deleted');
     }, [fellowships]);
 
     const loading = userLoading || profileLoading || fellowshipsLoading;
 
-    const handleCardClick = (fellowshipName: string) => {
-        toast({
-            title: "Card Clicked!",
-            description: `You clicked on the ${fellowshipName} fellowship. A detail page can be implemented here.`,
-        });
+    const handleCardClick = (fellowshipId: string) => {
+        router.push(`/dashboard/fellowship/${fellowshipId}`);
     };
 
     const handleCreateFellowship = async (values: z.infer<typeof formSchema>) => {
@@ -459,7 +448,7 @@ export default function FellowshipPage() {
                 </div>
             ) : activeFellowships && activeFellowships.length > 0 ? (
                  <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                    {activeFellowships.map(f => <FellowshipCard key={f.id} fellowship={f} userProfile={userProfile} onManage={() => setFellowshipToManage(f)} onClick={() => handleCardClick(f.name)} />)}
+                    {activeFellowships.map(f => <FellowshipCard key={f.id} fellowship={f} userProfile={userProfile} onManage={() => setFellowshipToManage(f)} onClick={() => handleCardClick(f.id)} />)}
                 </div>
             ) : (
                 <div className="text-center py-12 flex flex-col items-center">
