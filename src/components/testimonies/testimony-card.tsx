@@ -34,6 +34,7 @@ import { doc, updateDoc, arrayUnion } from "firebase/firestore";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { cn } from "@/lib/utils";
+import { Icons } from "@/components/icons";
 
 export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDelete, onEdit }: { testimony: Testimony, onDelete: () => void, onEdit: () => void }) {
   const { user } = useUser();
@@ -183,12 +184,15 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
               <DropdownMenuContent align="end">
                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onSelect={() => handleShare('link')}><Share2 className="mr-2 h-4 w-4" /><span>Copy Link</span></DropdownMenuItem>
-                <DropdownMenuItem onSelect={() => handleShare('facebook')}>Share on Facebook</DropdownMenuItem>
-                <DropdownMenuItem onSelect={() => handleShare('twitter')}>Share on Twitter (X)</DropdownMenuItem>
+                <DropdownMenuItem onSelect={() => handleShare('link')}><Share2 /><span>Copy Link</span></DropdownMenuItem>
+                <DropdownMenuItem onSelect={() => handleShare('facebook')}><Icons.facebook /><span>Share on Facebook</span></DropdownMenuItem>
+                <DropdownMenuItem onSelect={() => handleShare('twitter')}>
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                  <span>Share on Twitter (X)</span>
+                </DropdownMenuItem>
                 {isAuthor && <DropdownMenuSeparator />}
-                {isAuthor && <DropdownMenuItem onSelect={onEdit}><Edit className="mr-2 h-4 w-4" /><span>Edit</span></DropdownMenuItem>}
-                {isAuthor && <DropdownMenuItem onSelect={onDelete} className="text-destructive focus:text-destructive"><Trash2 className="mr-2 h-4 w-4" /><span>Delete</span></DropdownMenuItem>}
+                {isAuthor && <DropdownMenuItem onSelect={onEdit}><Edit /><span>Edit</span></DropdownMenuItem>}
+                {isAuthor && <DropdownMenuItem onSelect={onDelete} className="text-destructive focus:text-destructive"><Trash2 /><span>Delete</span></DropdownMenuItem>}
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
