@@ -52,13 +52,26 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { useRouter } from 'next/navigation';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Badge } from '@/components/ui/badge';
 
 const formSchema = z.object({
   name: z.string().min(3, "Name must be at least 3 characters.").max(100),
   description: z.string().min(10, "Description must be at least 10 characters.").max(500),
   schedule: z.string().min(3, "Schedule is required.").max(100),
   streamUrl: z.string().url({ message: "Please enter a valid URL." }).optional().or(z.literal('')),
+  locationType: z.enum(['Physical', 'Virtual', 'Hybrid'], { required_error: "Please select a location type." }),
+  location: z.string().max(100).optional(),
+}).refine((data) => {
+    if (data.locationType === 'Physical' || data.locationType === 'Hybrid') {
+        return !!data.location && data.location.trim().length > 2;
+    }
+    return true;
+}, {
+    message: "Location is required for physical or hybrid meetings.",
+    path: ["location"],
 });
+
 
 function FellowshipForm({ onFormSubmit, isSubmitting }: { onFormSubmit: (values: z.infer<typeof formSchema>) => void, isSubmitting: boolean }) {
     const form = useForm<z.infer<typeof formSchema>>({
@@ -68,6 +81,8 @@ function FellowshipForm({ onFormSubmit, isSubmitting }: { onFormSubmit: (values:
             description: "",
             schedule: "",
             streamUrl: "",
+            locationType: 'Physical',
+            location: '',
         },
     });
 
@@ -95,6 +110,51 @@ function FellowshipForm({ onFormSubmit, isSubmitting }: { onFormSubmit: (values:
                         <FormMessage />
                     </FormItem>
                 )} />
+                 <FormField
+                    control={form.control}
+                    name="locationType"
+                    render={({ field }) => (
+                        <FormItem className="space-y-3">
+                        <FormLabel>Location Type</FormLabel>
+                        <FormControl>
+                            <RadioGroup
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                            className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4"
+                            >
+                            <FormItem className="flex items-center space-x-2 space-y-0">
+                                <FormControl>
+                                <RadioGroupItem value="Physical" />
+                                </FormControl>
+                                <FormLabel className="font-normal">Physical</FormLabel>
+                            </FormItem>
+                            <FormItem className="flex items-center space-x-2 space-y-0">
+                                <FormControl>
+                                <RadioGroupItem value="Virtual" />
+                                </FormControl>
+                                <FormLabel className="font-normal">Virtual</FormLabel>
+                            </FormItem>
+                            <FormItem className="flex items-center space-x-2 space-y-0">
+                                <FormControl>
+                                <RadioGroupItem value="Hybrid" />
+                                </FormControl>
+                                <FormLabel className="font-normal">Hybrid</FormLabel>
+                            </FormItem>
+                            </RadioGroup>
+                        </FormControl>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                    />
+                {(form.watch('locationType') === 'Physical' || form.watch('locationType') === 'Hybrid') && (
+                    <FormField control={form.control} name="location" render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Physical Location</FormLabel>
+                            <FormControl><Input placeholder="e.g., 123 Main St, Anytown" {...field} value={field.value ?? ''} /></FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )} />
+                )}
                 <FormField control={form.control} name="streamUrl" render={({ field }) => (
                     <FormItem>
                         <FormLabel>Live Stream URL (Optional)</FormLabel>
@@ -111,12 +171,7 @@ function FellowshipForm({ onFormSubmit, isSubmitting }: { onFormSubmit: (values:
     );
 }
 
-const manageFormSchema = z.object({
-  name: z.string().min(3, "Name must be at least 3 characters.").max(100),
-  description: z.string().min(10, "Description must be at least 10 characters.").max(500),
-  schedule: z.string().min(3, "Schedule is required.").max(100),
-  streamUrl: z.string().url({ message: "Please enter a valid URL." }).optional().or(z.literal('')),
-});
+const manageFormSchema = formSchema; // Use the same schema for management
 
 function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting }: { fellowship: Fellowship, onFormSubmit: (values: z.infer<typeof manageFormSchema>) => void, isSubmitting: boolean }) {
   const form = useForm<z.infer<typeof manageFormSchema>>({
@@ -126,6 +181,8 @@ function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting }: { fell
       description: fellowship.description || "",
       schedule: fellowship.schedule || "",
       streamUrl: fellowship.streamUrl || "",
+      locationType: fellowship.locationType || 'Physical',
+      location: fellowship.location || "",
     },
   });
 
@@ -153,6 +210,51 @@ function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting }: { fell
                 <FormMessage />
             </FormItem>
         )} />
+        <FormField
+            control={form.control}
+            name="locationType"
+            render={({ field }) => (
+                <FormItem className="space-y-3">
+                <FormLabel>Location Type</FormLabel>
+                <FormControl>
+                    <RadioGroup
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                    className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4"
+                    >
+                    <FormItem className="flex items-center space-x-2 space-y-0">
+                        <FormControl>
+                        <RadioGroupItem value="Physical" />
+                        </FormControl>
+                        <FormLabel className="font-normal">Physical</FormLabel>
+                    </FormItem>
+                    <FormItem className="flex items-center space-x-2 space-y-0">
+                        <FormControl>
+                        <RadioGroupItem value="Virtual" />
+                        </FormControl>
+                        <FormLabel className="font-normal">Virtual</FormLabel>
+                    </FormItem>
+                    <FormItem className="flex items-center space-x-2 space-y-0">
+                        <FormControl>
+                        <RadioGroupItem value="Hybrid" />
+                        </FormControl>
+                        <FormLabel className="font-normal">Hybrid</FormLabel>
+                    </FormItem>
+                    </RadioGroup>
+                </FormControl>
+                <FormMessage />
+                </FormItem>
+            )}
+            />
+        {(form.watch('locationType') === 'Physical' || form.watch('locationType') === 'Hybrid') && (
+            <FormField control={form.control} name="location" render={({ field }) => (
+                <FormItem>
+                    <FormLabel>Physical Location</FormLabel>
+                    <FormControl><Input placeholder="e.g., 123 Main St, Anytown" {...field} value={field.value ?? ''} /></FormControl>
+                    <FormMessage />
+                </FormItem>
+            )} />
+        )}
         <FormField control={form.control} name="streamUrl" render={({ field }) => (
             <FormItem>
                 <FormLabel>Live Stream URL (Optional)</FormLabel>
@@ -228,21 +330,24 @@ function FellowshipCard({ fellowship, userProfile, onManage, onClick }: { fellow
             <CardHeader>
                 <div className="flex justify-between items-start">
                     <CardTitle>{fellowship.name}</CardTitle>
-                    {isOrganizer && (
-                         <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="icon" className="h-8 w-8">
-                                    <MoreVertical className="h-4 w-4" />
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                                <DropdownMenuItem onSelect={onManage}>
-                                    <Edit className="mr-2 h-4 w-4" />
-                                    Manage
-                                </DropdownMenuItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
-                    )}
+                    <div className="flex items-center gap-2">
+                        {fellowship.locationType && <Badge variant="secondary">{fellowship.locationType}</Badge>}
+                        {isOrganizer && (
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="ghost" size="icon" className="h-8 w-8 -mr-2">
+                                        <MoreVertical className="h-4 w-4" />
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                    <DropdownMenuItem onSelect={onManage}>
+                                        <Edit className="mr-2 h-4 w-4" />
+                                        Manage
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        )}
+                    </div>
                 </div>
                 <CardDescription className="flex items-center gap-2 pt-2">
                     <Avatar className="h-6 w-6">
@@ -256,7 +361,9 @@ function FellowshipCard({ fellowship, userProfile, onManage, onClick }: { fellow
                 <p className="text-sm text-muted-foreground">{fellowship.description}</p>
                 <div className="text-sm">
                     <p><strong>Schedule:</strong> {fellowship.schedule}</p>
-                    {fellowship.location && <p><strong>Location:</strong> {fellowship.location}</p>}
+                    {fellowship.location && (fellowship.locationType === 'Physical' || fellowship.locationType === 'Hybrid') && (
+                        <p><strong>Location:</strong> {fellowship.location}</p>
+                    )}
                 </div>
             </CardContent>
             <CardFooter className="flex justify-between items-center">
@@ -326,21 +433,14 @@ export default function FellowshipPage() {
         const newFellowshipRef = doc(collection(firestore, "fellowships"));
         const userFellowshipRef = doc(firestore, 'users', user.uid, 'fellowships', newFellowshipRef.id);
         const fellowshipMemberRef = doc(firestore, 'fellowships', newFellowshipRef.id, 'members', user.uid);
-        
-        let locationString = 'Not specified';
-        if (userProfile.churchInfo?.name) {
-            locationString = [userProfile.churchInfo.name, userProfile.churchInfo.location].filter(Boolean).join(', ');
-        } else if (userProfile.location?.city) {
-            locationString = [userProfile.location.city, userProfile.location.country].filter(Boolean).join(', ');
-        }
-
 
         const newFellowshipData = {
             name: values.name,
             description: values.description,
             schedule: values.schedule,
             streamUrl: values.streamUrl || null,
-            location: locationString,
+            locationType: values.locationType,
+            location: values.locationType === 'Physical' || values.locationType === 'Hybrid' ? values.location : null,
             latitude: userProfile.location?.latitude || null,
             longitude: userProfile.location?.longitude || null,
             organizerId: user.uid,
@@ -385,6 +485,8 @@ export default function FellowshipPage() {
                 description: values.description,
                 schedule: values.schedule,
                 streamUrl: values.streamUrl || null,
+                locationType: values.locationType,
+                location: values.locationType === 'Physical' || values.locationType === 'Hybrid' ? values.location : null,
             });
             toast({ title: 'Fellowship Updated' });
             setFellowshipToManage(null);

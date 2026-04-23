@@ -798,7 +798,12 @@
         "createdAt": { "type": "object" },
         "memberIds": { "type": "array", "items": { "type": "string" }, "description": "An array of member UIDs for efficient security rule checks." },
         "memberCount": { "type": "number", "description": "The total number of members in the fellowship." },
-        "location": { "type": "string", "description": "Where the fellowship meets (e.g., 'Online via Zoom', '123 Main St, Anytown')." },
+        "location": { "type": "string", "description": "Where the fellowship meets for physical gatherings (e.g., '123 Main St, Anytown')." },
+        "locationType": {
+          "type": "string",
+          "description": "Specifies if the fellowship is physical, virtual, or a hybrid of both.",
+          "enum": ["Physical", "Virtual", "Hybrid"]
+        },
         "latitude": { "type": "number" },
         "longitude": { "type": "number" },
         "schedule": { "type": "string", "description": "The meeting schedule (e.g., 'Wednesdays at 7pm')." },

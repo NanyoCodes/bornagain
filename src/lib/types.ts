@@ -320,6 +320,7 @@ export type Fellowship = {
   organizerPhotoURL?: string;
   memberCount: number;
   location?: string;
+  locationType?: 'Physical' | 'Virtual' | 'Hybrid';
   latitude?: number;
   longitude?: number;
   schedule?: string;
