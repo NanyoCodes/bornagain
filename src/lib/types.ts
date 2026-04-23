@@ -322,4 +322,5 @@ export type Fellowship = {
   longitude?: number;
   schedule?: string;
   memberIds: string[];
+  status?: 'active' | 'deleted';
 };
