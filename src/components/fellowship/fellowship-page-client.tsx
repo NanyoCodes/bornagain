@@ -3,9 +3,9 @@
 import { useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useDoc, useFirestore, useUser, useCollection } from '@/firebase';
-import type { Fellowship, FellowshipMember, UserProfile } from '@/lib/types';
+import type { Fellowship, UserProfile } from '@/lib/types';
 import { doc, collection, query, orderBy } from 'firebase/firestore';
-import { Loader2, ArrowLeft, MapPin, Users, Calendar, PlayCircle } from 'lucide-react';
+import { Loader2, ArrowLeft, Users, Calendar, PlayCircle } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
@@ -19,19 +19,13 @@ export default function FellowshipPageClient({ fellowshipId }: { fellowshipId: s
     const fellowshipDocRef = useMemo(() => doc(firestore, 'fellowships', fellowshipId), [firestore, fellowshipId]);
     const { data: fellowship, loading: fellowshipLoading, error: fellowshipError } = useDoc<Fellowship>(fellowshipDocRef);
 
-    const membersQuery = useMemo(() => {
-        if (!firestore || !fellowshipId) return null;
-        return query(collection(firestore, `fellowships/${fellowshipId}/members`), orderBy('joinedAt', 'asc'));
-    }, [firestore, fellowshipId]);
-    const { data: members, loading: membersLoading } = useCollection<FellowshipMember>(membersQuery);
-
     const organizerDocRef = useMemo(() => {
         if (!fellowship?.organizerId) return null;
         return doc(firestore, 'users', fellowship.organizerId);
     }, [fellowship?.organizerId, firestore]);
     const { data: organizer, loading: organizerLoading } = useDoc<UserProfile>(organizerDocRef);
     
-    const loading = fellowshipLoading || membersLoading || organizerLoading;
+    const loading = fellowshipLoading || organizerLoading;
 
     if (loading) {
         return (
@@ -75,17 +69,8 @@ export default function FellowshipPageClient({ fellowshipId }: { fellowshipId: s
                             <CardTitle>Members</CardTitle>
                              <CardDescription>{fellowship.memberCount} total members</CardDescription>
                         </CardHeader>
-                        <CardContent className="space-y-2 max-h-96 overflow-y-auto">
-                            {members && members.map(member => (
-                                <div key={member.id} className="flex items-center gap-3 p-2 border rounded-md">
-                                    <Avatar className="h-8 w-8">
-                                        <AvatarImage src={member.photoURL ?? undefined} />
-                                        <AvatarFallback>{member.firstName?.charAt(0)}{member.lastName?.charAt(0)}</AvatarFallback>
-                                    </Avatar>
-                                    <span className="text-sm font-medium">{member.firstName} {member.lastName}</span>
-                                </div>
-                            ))}
-                            {members?.length === 0 && <p className="text-sm text-muted-foreground text-center">No members yet.</p>}
+                        <CardContent>
+                           <p className="text-sm text-muted-foreground">For privacy, the list of members is not publicly visible.</p>
                         </CardContent>
                     </Card>
                 </div>
