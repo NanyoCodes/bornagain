@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { useDoc, useFirestore, useUser, useCollection } from '@/firebase';
 import type { Fellowship, UserProfile } from '@/lib/types';
 import { doc, collection, query, orderBy } from 'firebase/firestore';
@@ -11,8 +11,10 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import Link from 'next/link';
 
-export default function FellowshipPageClient({ fellowshipId }: { fellowshipId: string }) {
+export default function FellowshipPageClient() {
     const router = useRouter();
+    const params = useParams();
+    const fellowshipId = params.fellowshipId as string;
     const firestore = useFirestore();
     const { user } = useUser();
 
