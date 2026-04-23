@@ -60,15 +60,15 @@ const formSchema = z.object({
   description: z.string().min(10, "Description must be at least 10 characters.").max(500),
   schedule: z.string().min(3, "Schedule is required.").max(100),
   streamUrl: z.string().url({ message: "Please enter a valid URL." }).optional().or(z.literal('')),
-  locationType: z.enum(['Physical', 'Virtual', 'Hybrid'], { required_error: "Please select a location type." }),
+  locationType: z.enum(['Physical', 'Virtual', 'Physical and Virtual'], { required_error: "Please select a location type." }),
   location: z.string().max(100).optional(),
 }).refine((data) => {
-    if (data.locationType === 'Physical' || data.locationType === 'Hybrid') {
+    if (data.locationType === 'Physical' || data.locationType === 'Physical and Virtual') {
         return !!data.location && data.location.trim().length > 2;
     }
     return true;
 }, {
-    message: "Location is required for physical or hybrid meetings.",
+    message: "Location is required for physical or 'Physical and Virtual' meetings.",
     path: ["location"],
 });
 
@@ -136,9 +136,9 @@ function FellowshipForm({ onFormSubmit, isSubmitting }: { onFormSubmit: (values:
                             </FormItem>
                             <FormItem className="flex items-center space-x-2 space-y-0">
                                 <FormControl>
-                                <RadioGroupItem value="Hybrid" />
+                                <RadioGroupItem value="Physical and Virtual" />
                                 </FormControl>
-                                <FormLabel className="font-normal">Hybrid</FormLabel>
+                                <FormLabel className="font-normal">Physical and Virtual</FormLabel>
                             </FormItem>
                             </RadioGroup>
                         </FormControl>
@@ -146,7 +146,7 @@ function FellowshipForm({ onFormSubmit, isSubmitting }: { onFormSubmit: (values:
                         </FormItem>
                     )}
                     />
-                {(form.watch('locationType') === 'Physical' || form.watch('locationType') === 'Hybrid') && (
+                {(form.watch('locationType') === 'Physical' || form.watch('locationType') === 'Physical and Virtual') && (
                     <FormField control={form.control} name="location" render={({ field }) => (
                         <FormItem>
                             <FormLabel>Physical Location</FormLabel>
@@ -236,9 +236,9 @@ function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting }: { fell
                     </FormItem>
                     <FormItem className="flex items-center space-x-2 space-y-0">
                         <FormControl>
-                        <RadioGroupItem value="Hybrid" />
+                        <RadioGroupItem value="Physical and Virtual" />
                         </FormControl>
-                        <FormLabel className="font-normal">Hybrid</FormLabel>
+                        <FormLabel className="font-normal">Physical and Virtual</FormLabel>
                     </FormItem>
                     </RadioGroup>
                 </FormControl>
@@ -246,7 +246,7 @@ function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting }: { fell
                 </FormItem>
             )}
             />
-        {(form.watch('locationType') === 'Physical' || form.watch('locationType') === 'Hybrid') && (
+        {(form.watch('locationType') === 'Physical' || form.watch('locationType') === 'Physical and Virtual') && (
             <FormField control={form.control} name="location" render={({ field }) => (
                 <FormItem>
                     <FormLabel>Physical Location</FormLabel>
@@ -288,7 +288,7 @@ function FellowshipCard({ fellowship, userProfile, onManage, onClick }: { fellow
             { lat: userProfile.location.latitude, lng: userProfile.location.longitude },
             { lat: fellowship.latitude, lng: fellowship.longitude }
         );
-    }, [userProfile, fellowship]);
+    }, [userProfile?.location?.latitude, userProfile?.location?.longitude, fellowship.latitude, fellowship.longitude]);
 
     const handleJoin = async (e: React.MouseEvent) => {
         e.stopPropagation();
@@ -362,7 +362,7 @@ function FellowshipCard({ fellowship, userProfile, onManage, onClick }: { fellow
                 <p className="text-sm text-muted-foreground">{fellowship.description}</p>
                 <div className="text-sm">
                     <p><strong>Schedule:</strong> {fellowship.schedule}</p>
-                    {fellowship.location && (fellowship.locationType === 'Physical' || fellowship.locationType === 'Hybrid') && (
+                    {fellowship.location && (fellowship.locationType === 'Physical' || fellowship.locationType === 'Physical and Virtual') && (
                         <p><strong>Location:</strong> {fellowship.location}</p>
                     )}
                 </div>
@@ -441,7 +441,7 @@ export default function FellowshipPage() {
             schedule: values.schedule,
             streamUrl: values.streamUrl || null,
             locationType: values.locationType,
-            location: values.locationType === 'Physical' || values.locationType === 'Hybrid' ? values.location : null,
+            location: values.locationType === 'Physical' || values.locationType === 'Physical and Virtual' ? values.location : null,
             latitude: userProfile.location?.latitude || null,
             longitude: userProfile.location?.longitude || null,
             organizerId: user.uid,
@@ -487,7 +487,7 @@ export default function FellowshipPage() {
                 schedule: values.schedule,
                 streamUrl: values.streamUrl || null,
                 locationType: values.locationType,
-                location: values.locationType === 'Physical' || values.locationType === 'Hybrid' ? values.location : null,
+                location: values.locationType === 'Physical' || values.locationType === 'Physical and Virtual' ? values.location : null,
             });
             toast({ title: 'Fellowship Updated' });
             setFellowshipToManage(null);
@@ -577,3 +577,5 @@ export default function FellowshipPage() {
 }
 
   
+
+    

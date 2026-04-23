@@ -801,8 +801,8 @@
         "location": { "type": "string", "description": "Where the fellowship meets for physical gatherings (e.g., '123 Main St, Anytown')." },
         "locationType": {
           "type": "string",
-          "description": "Specifies if the fellowship is physical, virtual, or a hybrid of both.",
-          "enum": ["Physical", "Virtual", "Hybrid"]
+          "description": "Specifies if the fellowship is physical, virtual, or both.",
+          "enum": ["Physical", "Virtual", "Physical and Virtual"]
         },
         "latitude": { "type": "number" },
         "longitude": { "type": "number" },
@@ -959,4 +959,5 @@
   }
 }
 
+    
     
