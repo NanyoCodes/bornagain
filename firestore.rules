@@ -75,9 +75,9 @@ service cloud.firestore {
 
       // --- Subcollection Rules ---
 
-      // Souls are private to the user.
+      // Souls are private to the user. Deletes are disallowed.
       match /souls/{soulId} {
-        allow read, write: if isOwner(userId);
+        allow read, create, update: if isOwner(userId);
       }
       
       // Joined campaigns are private to the user.
@@ -112,12 +112,11 @@ service cloud.firestore {
       }
     }
     
-    // Global souls collection for aggregation.
+    // Global souls collection for aggregation. Deletes are disallowed.
     match /souls/{soulId} {
       allow get, list: if request.auth != null;
-      // Allow create, update, and delete only by the user who owns the soul record.
       allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
-      allow update, delete: if request.auth != null && resource.data.userId == request.auth.uid;
+      allow update: if request.auth != null && resource.data.userId == request.auth.uid;
     }
 
     // Testimonies are public, but only writable by the author.
@@ -256,11 +255,10 @@ service cloud.firestore {
     match /fellowships/{fellowshipId} {
       allow read: if request.auth != null;
       allow create: if request.auth != null && request.resource.data.organizerId == request.auth.uid;
+      // Organizer can't change member counts or status. Only joining/leaving/assigning can do that via transaction.
       allow update: if request.auth != null && (
         (request.auth.uid == resource.data.organizerId && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['memberIds', 'memberCount', 'status'])) ||
-        // Allow updates to only memberIds and/or memberCount for joining, leaving, and soul assignment.
-        (request.resource.data.diff(resource.data).affectedKeys().size() > 0 && 
-         request.resource.data.diff(resource.data).affectedKeys().subsetOf(['memberIds', 'memberCount']))
+        (request.resource.data.diff(resource.data).affectedKeys().subsetOf(['memberIds', 'memberCount'])) // New member joining/leaving or soul assignment
       );
 
       match /members/{memberId} {
@@ -280,3 +278,5 @@ service cloud.firestore {
     }
   }
 }
+
+    

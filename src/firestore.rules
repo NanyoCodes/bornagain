@@ -258,7 +258,7 @@ service cloud.firestore {
       // Organizer can't change member counts or status. Only joining/leaving/assigning can do that via transaction.
       allow update: if request.auth != null && (
         (request.auth.uid == resource.data.organizerId && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['memberIds', 'memberCount', 'status'])) ||
-        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['memberIds', 'memberCount'])) // New member joining
+        (request.resource.data.diff(resource.data).affectedKeys().subsetOf(['memberIds', 'memberCount'])) // New member joining/leaving or soul assignment
       );
 
       match /members/{memberId} {
@@ -278,3 +278,5 @@ service cloud.firestore {
     }
   }
 }
+
+    
