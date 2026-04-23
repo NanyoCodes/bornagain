@@ -25,9 +25,9 @@ import {
 import { PlusCircle, Download, Loader2 } from "lucide-react";
 import { SoulsWonTable } from "@/components/souls/souls-won-table";
 import { LogSoulForm } from "@/components/souls/log-soul-form";
-import type { Soul } from "@/lib/types";
+import type { Soul, Campaign, Fellowship } from "@/lib/types";
 import { useCollection, useFirestore, useUser } from "@/firebase";
-import { collection, query, orderBy, doc, writeBatch, updateDoc } from "firebase/firestore";
+import { collection, query, orderBy, doc, writeBatch, updateDoc, runTransaction, addDoc, deleteField, serverTimestamp } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useSearch } from "@/context/search-context";
@@ -57,6 +57,7 @@ export default function SoulsWonPage() {
   const [soulForFollowUp, setSoulForFollowUp] = useState<Soul | null>(null);
   const [soulForHistory, setSoulForHistory] = useState<Soul | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isAssigning, setIsAssigning] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -74,7 +75,19 @@ export default function SoulsWonPage() {
   }, [user?.uid, firestore]);
   const { data: souls, loading: soulsLoading } = useCollection<Soul>(soulsQuery);
 
-  const loading = userLoading || soulsLoading;
+  const campaignsQuery = useMemo(() => {
+    if (!user?.uid || !firestore) return null;
+    return query(collection(firestore, 'campaigns'), orderBy('createdAt', 'desc'));
+  }, [user?.uid, firestore]);
+  const { data: campaigns, loading: loadingCampaigns } = useCollection<Campaign>(campaignsQuery);
+  
+  const fellowshipsQuery = useMemo(() => {
+    if (!firestore) return null;
+    return query(collection(firestore, 'fellowships'), orderBy('name', 'asc'));
+  }, [firestore]);
+  const { data: fellowships, loading: loadingFellowships } = useCollection<Fellowship>(fellowshipsQuery);
+
+  const loading = userLoading || soulsLoading || loadingCampaigns || loadingFellowships;
   
   const filteredSouls = useMemo(() => {
     if (!souls) return [];
@@ -129,6 +142,63 @@ export default function SoulsWonPage() {
         errorEmitter.emit('permission-error', permissionError);
     } finally {
         setIsDeleting(false);
+    }
+  };
+
+  const handleAssignFellowship = async (soul: Soul, fellowshipId: string) => {
+    if (!user || !firestore || isAssigning) return;
+    setIsAssigning(true);
+
+    const soulRef = doc(firestore, `users/${user.uid}/souls`, soul.id);
+    const globalSoulRef = doc(firestore, 'souls', soul.id);
+
+    const selectedFellowship = fellowships?.find(f => f.id === fellowshipId);
+    
+    const updateData: { [key: string]: any } = {};
+
+    if (fellowshipId === 'none') {
+        updateData.fellowshipId = deleteField();
+        updateData.fellowshipName = deleteField();
+    } else if (selectedFellowship) {
+        updateData.fellowshipId = selectedFellowship.id;
+        updateData.fellowshipName = selectedFellowship.name;
+    } else {
+        toast({ variant: "destructive", title: "Error", description: "Selected fellowship not found." });
+        setIsAssigning(false);
+        return;
+    }
+
+    try {
+        await runTransaction(firestore, async (transaction) => {
+            transaction.update(soulRef, updateData);
+            transaction.update(globalSoulRef, updateData);
+        });
+
+        toast({ title: "Fellowship Assigned", description: `${soul.firstName} has been assigned to ${selectedFellowship ? selectedFellowship.name : 'no fellowship'}.` });
+
+        const wasNewlyAssigned = fellowshipId !== 'none' && fellowshipId !== soul.fellowshipId;
+        if (wasNewlyAssigned && selectedFellowship && selectedFellowship.organizerId !== user.uid) {
+            const notificationRef = collection(firestore, `users/${selectedFellowship.organizerId}/notifications`);
+            const contactInfo = soul.email || soul.phone;
+            await addDoc(notificationRef, {
+                userId: selectedFellowship.organizerId,
+                type: 'new_soul_in_fellowship',
+                title: `New Member in ${selectedFellowship.name}`,
+                message: `${soul.firstName} ${soul.lastName} was assigned to your fellowship. Please reach out to them${contactInfo ? ` at ${contactInfo}` : ''}.`,
+                link: `/dashboard/fellowship`,
+                isRead: false,
+                createdAt: serverTimestamp(),
+            });
+        }
+    } catch (error) {
+        const permissionError = new FirestorePermissionError({
+            path: `TRANSACTION:ASSIGN_FELLOWSHIP:${soul.id}`,
+            operation: 'update',
+            requestResourceData: updateData,
+        }, user);
+        errorEmitter.emit('permission-error', permissionError);
+    } finally {
+        setIsAssigning(false);
     }
   };
 
@@ -368,7 +438,7 @@ export default function SoulsWonPage() {
     </Button>
   );
 
-  const formContent = <LogSoulForm onSoulLogged={handleSoulLogged} />;
+  const formContent = <LogSoulForm onSoulLogged={handleSoulLogged} fellowships={fellowships || []} campaigns={campaigns || []} />;
 
   return (
     <div className="space-y-8">
@@ -436,6 +506,8 @@ export default function SoulsWonPage() {
         onFollowUp={setSoulForFollowUp}
         onViewHistory={setSoulForHistory}
         onExportSingle={handleExportSingleSoul}
+        fellowships={fellowships || []}
+        onAssignFellowship={handleAssignFellowship}
       />
 
       {soulToEdit && (
@@ -446,7 +518,7 @@ export default function SoulsWonPage() {
                       <DialogDescription>Make changes to the record for {soulToEdit?.firstName} {soulToEdit?.lastName}.</DialogDescription>
                   </DialogHeader>
                   <div className="max-h-[70vh] overflow-y-auto pr-2">
-                      <EditSoulForm soul={soulToEdit} onSoulUpdated={handleSoulUpdated} />
+                      <EditSoulForm soul={soulToEdit} onSoulUpdated={handleSoulUpdated} fellowships={fellowships || []} campaigns={campaigns || []} />
                   </div>
               </DialogContent>
           </Dialog>

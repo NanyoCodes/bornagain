@@ -3,8 +3,8 @@
 
 import * as React from "react";
 import { format } from "date-fns";
-import { MoreHorizontal, Church, UserPlus, Edit, MapPin, Phone, ChevronDown, Trash2, Download, HeartHandshake } from "lucide-react";
-import type { Soul, FollowUpStatus } from "@/lib/types";
+import { MoreHorizontal, Church, UserPlus, Edit, MapPin, Phone, ChevronDown, Trash2, Download, HeartHandshake, Check, X } from "lucide-react";
+import type { Soul, FollowUpStatus, Fellowship } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -73,9 +73,11 @@ type SoulCardProps = {
   onFollowUp: (soul: Soul) => void; 
   onViewHistory: (soul: Soul) => void; 
   onExportSingle: (soul: Soul, formatType: 'csv' | 'pdf') => void;
+  fellowships: Fellowship[];
+  onAssignFellowship: (soul: Soul, fellowshipId: string) => void;
 };
 
-function SoulCard({ soul, onEdit, onDelete, onFollowUp, onViewHistory, onExportSingle }: SoulCardProps) {
+function SoulCard({ soul, onEdit, onDelete, onFollowUp, onViewHistory, onExportSingle, fellowships, onAssignFellowship }: SoulCardProps) {
     const latestFollowUp = React.useMemo(() => {
         if (!soul.followUpLog || soul.followUpLog.length === 0) return null;
         return soul.followUpLog.reduce((latest, current) => {
@@ -135,6 +137,26 @@ function SoulCard({ soul, onEdit, onDelete, onFollowUp, onViewHistory, onExportS
                                     </DropdownMenuItem>
                                     <DropdownMenuItem onSelect={() => onFollowUp(soul)}>Follow-up</DropdownMenuItem>
                                     <DropdownMenuItem onSelect={() => onViewHistory(soul)}>View History</DropdownMenuItem>
+                                    <DropdownMenuSub>
+                                        <DropdownMenuSubTrigger>
+                                            <HeartHandshake className="mr-2 h-4 w-4" />
+                                            <span>Assign Fellowship</span>
+                                        </DropdownMenuSubTrigger>
+                                        <DropdownMenuPortal>
+                                            <DropdownMenuSubContent>
+                                                <DropdownMenuItem onSelect={() => onAssignFellowship(soul, 'none')}>
+                                                    {!soul.fellowshipId ? <Check className="mr-2 h-4 w-4" /> : <X className="mr-2 h-4 w-4" />}
+                                                    <span>None</span>
+                                                </DropdownMenuItem>
+                                                {fellowships.map(f => (
+                                                    <DropdownMenuItem key={f.id} onSelect={() => onAssignFellowship(soul, f.id)}>
+                                                        {soul.fellowshipId === f.id && <Check className="mr-2 h-4 w-4" />}
+                                                        <span className={cn(soul.fellowshipId !== f.id && "ml-6")}>{f.name}</span>
+                                                    </DropdownMenuItem>
+                                                ))}
+                                            </DropdownMenuSubContent>
+                                        </DropdownMenuPortal>
+                                    </DropdownMenuSub>
                                     <DropdownMenuSub>
                                         <DropdownMenuSubTrigger>
                                             <Download className="mr-2 h-4 w-4" />
@@ -200,9 +222,11 @@ type SoulTableRowProps = {
   onFollowUp: (soul: Soul) => void; 
   onViewHistory: (soul: Soul) => void;
   onExportSingle: (soul: Soul, formatType: 'csv' | 'pdf') => void;
+  fellowships: Fellowship[];
+  onAssignFellowship: (soul: Soul, fellowshipId: string) => void;
 };
 
-function SoulTableRow({ soul, onEdit, onDelete, onFollowUp, onViewHistory, onExportSingle }: SoulTableRowProps) {
+function SoulTableRow({ soul, onEdit, onDelete, onFollowUp, onViewHistory, onExportSingle, fellowships, onAssignFellowship }: SoulTableRowProps) {
     const latestFollowUp = React.useMemo(() => {
         if (!soul.followUpLog || soul.followUpLog.length === 0) return null;
         return soul.followUpLog.reduce((latest, current) => {
@@ -291,6 +315,26 @@ function SoulTableRow({ soul, onEdit, onDelete, onFollowUp, onViewHistory, onExp
                         <DropdownMenuItem onSelect={() => onViewHistory(soul)}>View History</DropdownMenuItem>
                         <DropdownMenuSub>
                             <DropdownMenuSubTrigger>
+                                <HeartHandshake className="mr-2 h-4 w-4" />
+                                <span>Assign Fellowship</span>
+                            </DropdownMenuSubTrigger>
+                            <DropdownMenuPortal>
+                                <DropdownMenuSubContent>
+                                    <DropdownMenuItem onSelect={() => onAssignFellowship(soul, 'none')}>
+                                        {!soul.fellowshipId ? <Check className="mr-2 h-4 w-4" /> : <X className="mr-2 h-4 w-4" />}
+                                        <span>None</span>
+                                    </DropdownMenuItem>
+                                    {fellowships.map(f => (
+                                        <DropdownMenuItem key={f.id} onSelect={() => onAssignFellowship(soul, f.id)}>
+                                            {soul.fellowshipId === f.id && <Check className="mr-2 h-4 w-4" />}
+                                            <span className={cn(soul.fellowshipId !== f.id && "ml-6")}>{f.name}</span>
+                                        </DropdownMenuItem>
+                                    ))}
+                                </DropdownMenuSubContent>
+                            </DropdownMenuPortal>
+                        </DropdownMenuSub>
+                        <DropdownMenuSub>
+                            <DropdownMenuSubTrigger>
                                 <Download className="mr-2 h-4 w-4" />
                                 <span>Export</span>
                             </DropdownMenuSubTrigger>
@@ -321,9 +365,11 @@ type SoulsWonTableProps = {
   onFollowUp: (soul: Soul) => void;
   onViewHistory: (soul: Soul) => void;
   onExportSingle: (soul: Soul, formatType: 'csv' | 'pdf') => void;
+  fellowships: Fellowship[];
+  onAssignFellowship: (soul: Soul, fellowshipId: string) => void;
 };
 
-export function SoulsWonTable({ souls, loading, onEdit, onDelete, onFollowUp, onViewHistory, onExportSingle }: SoulsWonTableProps) {
+export function SoulsWonTable({ souls, loading, onEdit, onDelete, onFollowUp, onViewHistory, onExportSingle, fellowships, onAssignFellowship }: SoulsWonTableProps) {
   const isMobile = useIsMobile();
   const [mounted, setMounted] = React.useState(false);
 
@@ -387,7 +433,7 @@ export function SoulsWonTable({ souls, loading, onEdit, onDelete, onFollowUp, on
                     </CardDescription>
                 </CardHeader>
             </Card>
-            {souls.map((soul) => <SoulCard key={soul.id} soul={soul} onEdit={onEdit} onDelete={onDelete} onFollowUp={onFollowUp} onViewHistory={onViewHistory} onExportSingle={onExportSingle} />)}
+            {souls.map((soul) => <SoulCard key={soul.id} soul={soul} onEdit={onEdit} onDelete={onDelete} onFollowUp={onFollowUp} onViewHistory={onViewHistory} onExportSingle={onExportSingle} fellowships={fellowships} onAssignFellowship={onAssignFellowship} />)}
         </div>
       )
   }
@@ -418,7 +464,7 @@ export function SoulsWonTable({ souls, loading, onEdit, onDelete, onFollowUp, on
           </TableHeader>
           <TableBody>
             {souls.map((soul) => (
-              <SoulTableRow key={soul.id} soul={soul} onEdit={onEdit} onDelete={onDelete} onFollowUp={onFollowUp} onViewHistory={onViewHistory} onExportSingle={onExportSingle} />
+              <SoulTableRow key={soul.id} soul={soul} onEdit={onEdit} onDelete={onDelete} onFollowUp={onFollowUp} onViewHistory={onViewHistory} onExportSingle={onExportSingle} fellowships={fellowships} onAssignFellowship={onAssignFellowship} />
             ))}
           </TableBody>
         </Table>

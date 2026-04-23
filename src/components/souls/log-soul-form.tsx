@@ -50,9 +50,11 @@ const formSchema = z.object({
 type LogSoulFormProps = {
   onSoulLogged: () => void;
   defaultCampaign?: Campaign;
+  fellowships: Fellowship[];
+  campaigns: Campaign[];
 };
 
-export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps) {
+export function LogSoulForm({ onSoulLogged, defaultCampaign, fellowships, campaigns }: LogSoulFormProps) {
   const { toast } = useToast();
   const { user, loading: userLoading } = useUser();
   const firestore = useFirestore();
@@ -60,19 +62,6 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps)
 
   const userDocRef = useMemo(() => user ? doc(firestore, 'users', user.uid) : null, [user, firestore]);
   const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userDocRef);
-
-  const campaignsQuery = useMemo(() => {
-    if (!user?.uid || !firestore) return null;
-    return query(collection(firestore, 'campaigns'), orderBy('createdAt', 'desc'));
-  }, [user?.uid, firestore]);
-  const { data: campaigns, loading: loadingCampaigns } = useCollection<Campaign>(campaignsQuery);
-  
-  const fellowshipsQuery = useMemo(() => {
-    if (!firestore) return null;
-    return query(collection(firestore, 'fellowships'), orderBy('name', 'asc'));
-  }, [firestore]);
-  const { data: fellowships, loading: loadingFellowships } = useCollection<Fellowship>(fellowshipsQuery);
-
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -366,7 +355,7 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps)
                   <Select onValueChange={field.onChange} defaultValue={field.value} disabled={!!defaultCampaign}>
                     <FormControl>
                       <SelectTrigger className="text-base">
-                        <SelectValue placeholder={loadingCampaigns ? "Loading campaigns..." : "Select from your campaigns"} />
+                        <SelectValue placeholder={!campaigns ? "Loading campaigns..." : "Select from your campaigns"} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -397,7 +386,7 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign }: LogSoulFormProps)
                                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                                         <FormControl>
                                             <SelectTrigger className="text-base h-auto">
-                                                <SelectValue placeholder={loadingFellowships ? "Loading fellowships..." : "Select a fellowship group"} />
+                                                <SelectValue placeholder={!fellowships ? "Loading fellowships..." : "Select a fellowship group"} />
                                             </SelectTrigger>
                                         </FormControl>
                                         <SelectContent>
