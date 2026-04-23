@@ -37,11 +37,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useCollection, useFirestore, useUser, useDoc } from "@/firebase";
 import { collection, query, orderBy, addDoc, serverTimestamp, doc, runTransaction, arrayUnion, increment, updateDoc } from "firebase/firestore";
-import type { UserProfile } from "@/lib/types";
+import type { UserProfile, Fellowship } from "@/lib/types";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { PlusCircle, HeartHandshake, Loader2, Users, MoreVertical, Trash2 } from 'lucide-react';
+import { PlusCircle, HeartHandshake, Loader2, Users, MoreVertical, Trash2, PlayCircle, Edit } from 'lucide-react';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -50,29 +50,14 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
-import { haversineDistance } from '@/lib/utils';
-
-// Define a new type for Fellowship
-type Fellowship = {
-  id: string;
-  name: string;
-  description: string;
-  organizerId: string;
-  organizerName: string;
-  organizerPhotoURL?: string;
-  memberCount: number;
-  location?: string;
-  latitude?: number;
-  longitude?: number;
-  schedule?: string;
-  memberIds: string[];
-  status?: 'active' | 'deleted';
-};
+import { haversineDistance, safeToDate } from '@/lib/utils';
+import Link from 'next/link';
 
 const formSchema = z.object({
   name: z.string().min(3, "Name must be at least 3 characters.").max(100),
   description: z.string().min(10, "Description must be at least 10 characters.").max(500),
   schedule: z.string().min(3, "Schedule is required.").max(100),
+  streamUrl: z.string().url({ message: "Please enter a valid URL." }).optional().or(z.literal('')),
 });
 
 function FellowshipForm({ onFormSubmit, isSubmitting }: { onFormSubmit: (values: z.infer<typeof formSchema>) => void, isSubmitting: boolean }) {
@@ -82,6 +67,7 @@ function FellowshipForm({ onFormSubmit, isSubmitting }: { onFormSubmit: (values:
             name: "",
             description: "",
             schedule: "",
+            streamUrl: "",
         },
     });
 
@@ -109,6 +95,13 @@ function FellowshipForm({ onFormSubmit, isSubmitting }: { onFormSubmit: (values:
                         <FormMessage />
                     </FormItem>
                 )} />
+                <FormField control={form.control} name="streamUrl" render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Live Stream URL (Optional)</FormLabel>
+                        <FormControl><Input placeholder="https://youtube.com/live/..." {...field} value={field.value ?? ''} /></FormControl>
+                        <FormMessage />
+                    </FormItem>
+                )} />
                 <Button type="submit" disabled={isSubmitting} className="w-full">
                     {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                     Create Fellowship
@@ -118,7 +111,66 @@ function FellowshipForm({ onFormSubmit, isSubmitting }: { onFormSubmit: (values:
     );
 }
 
-function FellowshipCard({ fellowship, userProfile }: { fellowship: Fellowship; userProfile: UserProfile | null; }) {
+const manageFormSchema = z.object({
+  name: z.string().min(3, "Name must be at least 3 characters.").max(100),
+  description: z.string().min(10, "Description must be at least 10 characters.").max(500),
+  schedule: z.string().min(3, "Schedule is required.").max(100),
+  streamUrl: z.string().url({ message: "Please enter a valid URL." }).optional().or(z.literal('')),
+});
+
+function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting }: { fellowship: Fellowship, onFormSubmit: (values: z.infer<typeof manageFormSchema>) => void, isSubmitting: boolean }) {
+  const form = useForm<z.infer<typeof manageFormSchema>>({
+    resolver: zodResolver(manageFormSchema),
+    defaultValues: {
+      name: fellowship.name || "",
+      description: fellowship.description || "",
+      schedule: fellowship.schedule || "",
+      streamUrl: fellowship.streamUrl || "",
+    },
+  });
+
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onFormSubmit)} className="space-y-4">
+        <FormField control={form.control} name="name" render={({ field }) => (
+            <FormItem>
+                <FormLabel>Fellowship Name</FormLabel>
+                <FormControl><Input placeholder="e.g., Downtown Morning Prayer" {...field} /></FormControl>
+                <FormMessage />
+            </FormItem>
+        )} />
+        <FormField control={form.control} name="description" render={({ field }) => (
+            <FormItem>
+                <FormLabel>Description</FormLabel>
+                <FormControl><Textarea placeholder="What is the purpose of this fellowship?" {...field} /></FormControl>
+                <FormMessage />
+            </FormItem>
+        )} />
+        <FormField control={form.control} name="schedule" render={({ field }) => (
+            <FormItem>
+                <FormLabel>Schedule</FormLabel>
+                <FormControl><Input placeholder="e.g., Every Friday at 6:00 AM" {...field} /></FormControl>
+                <FormMessage />
+            </FormItem>
+        )} />
+        <FormField control={form.control} name="streamUrl" render={({ field }) => (
+            <FormItem>
+                <FormLabel>Live Stream URL (Optional)</FormLabel>
+                <FormControl><Input placeholder="https://youtube.com/live/..." {...field} value={field.value ?? ''} /></FormControl>
+                <FormMessage />
+            </FormItem>
+        )} />
+        <Button type="submit" disabled={isSubmitting} className="w-full">
+            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Save Changes
+        </Button>
+      </form>
+    </Form>
+  );
+}
+
+
+function FellowshipCard({ fellowship, userProfile, onManage }: { fellowship: Fellowship; userProfile: UserProfile | null; onManage: () => void; }) {
     const { user } = useUser();
     const firestore = useFirestore();
     const { toast } = useToast();
@@ -174,7 +226,24 @@ function FellowshipCard({ fellowship, userProfile }: { fellowship: Fellowship; u
     return (
         <Card>
             <CardHeader>
-                <CardTitle>{fellowship.name}</CardTitle>
+                <div className="flex justify-between items-start">
+                    <CardTitle>{fellowship.name}</CardTitle>
+                    {isOrganizer && (
+                         <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="icon" className="h-8 w-8">
+                                    <MoreVertical className="h-4 w-4" />
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                                <DropdownMenuItem onSelect={onManage}>
+                                    <Edit className="mr-2 h-4 w-4" />
+                                    Manage
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    )}
+                </div>
                 <CardDescription className="flex items-center gap-2 pt-2">
                     <Avatar className="h-6 w-6">
                         <AvatarImage src={fellowship.organizerPhotoURL} />
@@ -195,14 +264,22 @@ function FellowshipCard({ fellowship, userProfile }: { fellowship: Fellowship; u
                     <Users className="mr-2 h-4 w-4" /> {fellowship.memberCount} member(s)
                 </div>
                  {distance !== null && <p className="text-xs text-muted-foreground">{distance.toFixed(1)} km away</p>}
-                {isOrganizer ? (
-                   null
-                ) : (
-                    <Button onClick={handleJoin} disabled={isMember || isJoining}>
-                        {isJoining ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : null}
-                        {isMember ? 'Joined' : 'Join'}
-                    </Button>
-                )}
+                <div className="flex items-center gap-2">
+                    {fellowship.streamUrl && (
+                        <Button asChild variant="outline" size="sm">
+                            <Link href={fellowship.streamUrl} target="_blank" rel="noopener noreferrer">
+                                <PlayCircle className="mr-2 h-4 w-4" />
+                                Stream
+                            </Link>
+                        </Button>
+                    )}
+                    {!isOrganizer && (
+                        <Button onClick={handleJoin} disabled={isMember || isJoining} size="sm">
+                            {isJoining ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : null}
+                            {isMember ? 'Joined' : 'Join'}
+                        </Button>
+                    )}
+                </div>
             </CardFooter>
         </Card>
     );
@@ -215,6 +292,7 @@ export default function FellowshipPage() {
     const { toast } = useToast();
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [fellowshipToManage, setFellowshipToManage] = useState<Fellowship | null>(null);
     
     const userDocRef = useMemo(() => (user ? doc(firestore, 'users', user.uid) : null), [user, firestore]);
     const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userDocRef);
@@ -250,6 +328,7 @@ export default function FellowshipPage() {
             name: values.name,
             description: values.description,
             schedule: values.schedule,
+            streamUrl: values.streamUrl || null,
             location: locationString,
             latitude: userProfile.location?.latitude || null,
             longitude: userProfile.location?.longitude || null,
@@ -278,6 +357,28 @@ export default function FellowshipPage() {
             setIsCreateOpen(false);
         } catch (e) {
             const permissionError = new FirestorePermissionError({ path: 'fellowships', operation: 'create' }, user);
+            errorEmitter.emit('permission-error', permissionError);
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    const handleUpdateFellowship = async (values: z.infer<typeof manageFormSchema>) => {
+        if (!user || !fellowshipToManage) return;
+        setIsSubmitting(true);
+        const fellowshipRef = doc(firestore, 'fellowships', fellowshipToManage.id);
+        
+        try {
+            await updateDoc(fellowshipRef, {
+                name: values.name,
+                description: values.description,
+                schedule: values.schedule,
+                streamUrl: values.streamUrl || null,
+            });
+            toast({ title: 'Fellowship Updated' });
+            setFellowshipToManage(null);
+        } catch (e) {
+            const permissionError = new FirestorePermissionError({ path: `fellowships/${fellowshipToManage.id}`, operation: 'update' }, user);
             errorEmitter.emit('permission-error', permissionError);
         } finally {
             setIsSubmitting(false);
@@ -315,7 +416,7 @@ export default function FellowshipPage() {
                 </div>
             ) : activeFellowships && activeFellowships.length > 0 ? (
                  <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                    {activeFellowships.map(f => <FellowshipCard key={f.id} fellowship={f} userProfile={userProfile} />)}
+                    {activeFellowships.map(f => <FellowshipCard key={f.id} fellowship={f} userProfile={userProfile} onManage={() => setFellowshipToManage(f)} />)}
                 </div>
             ) : (
                 <div className="text-center py-12 flex flex-col items-center">
@@ -323,6 +424,18 @@ export default function FellowshipPage() {
                     <h3 className="mt-4 text-xl font-semibold">No Fellowships Yet</h3>
                     <p className="mt-2 text-sm text-muted-foreground">Be the first to create a fellowship group!</p>
                 </div>
+            )}
+
+            {fellowshipToManage && (
+                <Dialog open={!!fellowshipToManage} onOpenChange={() => setFellowshipToManage(null)}>
+                    <DialogContent>
+                        <DialogHeader>
+                            <DialogTitle>Manage Fellowship</DialogTitle>
+                            <DialogDescription>Edit the details of your fellowship group.</DialogDescription>
+                        </DialogHeader>
+                        <ManageFellowshipForm fellowship={fellowshipToManage} onFormSubmit={handleUpdateFellowship} isSubmitting={isSubmitting} />
+                    </DialogContent>
+                </Dialog>
             )}
         </div>
     );

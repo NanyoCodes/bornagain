@@ -323,4 +323,20 @@ export type Fellowship = {
   schedule?: string;
   memberIds: string[];
   status?: 'active' | 'deleted';
+  streamUrl?: string;
+};
+
+export type FellowshipMember = {
+    id: string;
+    userId: string;
+    firstName: string;
+    lastName: string;
+    photoURL?: string;
+    joinedAt: Timestamp;
+};
+
+export type JoinedFellowship = {
+    id: string;
+    fellowshipId: string;
+    joinedAt: Timestamp;
 };

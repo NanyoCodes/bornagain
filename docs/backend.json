@@ -798,7 +798,12 @@
         "memberCount": { "type": "number", "description": "The total number of members in the fellowship." },
         "location": { "type": "string", "description": "Where the fellowship meets (e.g., 'Online via Zoom', '123 Main St, Anytown')." },
         "schedule": { "type": "string", "description": "The meeting schedule (e.g., 'Wednesdays at 7pm')." },
-        "status": { "type": "string", "enum": ["active", "deleted"], "description": "The status of the fellowship." }
+        "status": { "type": "string", "enum": ["active", "deleted"], "description": "The status of the fellowship." },
+        "streamUrl": {
+          "type": "string",
+          "format": "uri",
+          "description": "A URL to a live stream for the fellowship (e.g., YouTube Live, Zoom)."
+        }
       },
       "required": ["name", "description", "organizerId", "organizerName", "createdAt", "memberIds", "memberCount"]
     },
