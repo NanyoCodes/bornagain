@@ -212,13 +212,19 @@ export default function FellowshipPage() {
         const userFellowshipRef = doc(firestore, 'users', user.uid, 'fellowships', newFellowshipRef.id);
         const fellowshipMemberRef = doc(firestore, 'fellowships', newFellowshipRef.id, 'members', user.uid);
         
-        const locationString = [userProfile.location?.city, userProfile.location?.country].filter(Boolean).join(', ');
+        let locationString = 'Not specified';
+        if (userProfile.churchInfo?.name) {
+            locationString = [userProfile.churchInfo.name, userProfile.churchInfo.location].filter(Boolean).join(', ');
+        } else if (userProfile.location?.city) {
+            locationString = [userProfile.location.city, userProfile.location.country].filter(Boolean).join(', ');
+        }
+
 
         const newFellowshipData = {
             name: values.name,
             description: values.description,
             schedule: values.schedule,
-            location: locationString || 'Not specified',
+            location: locationString,
             latitude: userProfile.location?.latitude || null,
             longitude: userProfile.location?.longitude || null,
             organizerId: user.uid,
