@@ -84,7 +84,8 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
     if (isOpen) {
         // Prefill filter based on soul's location if available
         setCountry(soul.locationWon?.country || '');
-        setState(soul.locationWon?.state || '');
+        // Do not prefill state, as it may not match unstructured fellowship locations
+        setState('');
     }
   }, [isOpen, soul.locationWon]);
 
