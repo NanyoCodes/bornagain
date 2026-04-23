@@ -5,7 +5,17 @@ import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useDoc, useFirestore, useUser } from '@/firebase';
 import type { Campaign, UserProfile } from '@/lib/types';
-import { doc } from 'firebase/firestore';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { doc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Loader2, ArrowLeft, MapPin, CalendarDays, Users, Share2, Edit, MessagesSquare, UserCheck2, PlayCircle, Newspaper, Target } from 'lucide-react';
@@ -26,7 +36,8 @@ import { safeToDate } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-
+import { FirestorePermissionError } from '@/firebase/errors';
+import { errorEmitter } from '@/firebase/error-emitter';
 
 const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 const libraries: ('places')[] = ['places'];
@@ -256,6 +267,8 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
     const [isManageOpen, setIsManageOpen] = useState(false);
     const [isLogSoulOpen, setIsLogSoulOpen] = useState(false);
     const [isTestimonyDialogOpen, setIsTestimonyDialogOpen] = useState(false);
+    const [campaignToDelete, setCampaignToDelete] = useState<Campaign | null>(null);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     const campaignDocRef = useMemo(() => doc(firestore, 'campaigns', campaignId as string), [firestore, campaignId]);
     const { data: campaign, loading: campaignLoading, error: campaignError } = useDoc<Campaign>(campaignDocRef);
@@ -275,6 +288,33 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
 
     const handleFormClose = () => {
       setIsManageOpen(false);
+    };
+
+    const handleDeleteCampaign = async () => {
+      if (!campaignToDelete || !user || !firestore) return;
+      setIsDeleting(true);
+      const campaignRef = doc(firestore, 'campaigns', campaignToDelete.id);
+      const deleteData = {
+          status: 'deleted',
+          deletionReason: 'Campaign deleted by organizer.',
+          deletedAt: serverTimestamp(),
+      };
+  
+      try {
+          await updateDoc(campaignRef, deleteData);
+          toast({ title: 'Campaign Deleted', description: 'The campaign has been successfully deleted.' });
+          setCampaignToDelete(null);
+          router.push('/dashboard/campaigns');
+      } catch (error) {
+          const permissionError = new FirestorePermissionError({
+              path: campaignRef.path,
+              operation: 'update',
+              requestResourceData: deleteData,
+          }, user);
+          errorEmitter.emit('permission-error', permissionError);
+      } finally {
+          setIsDeleting(false);
+      }
     };
 
     const handleShare = async () => {
@@ -533,7 +573,10 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                       key={(campaign.lastUpdatedAt?.seconds ?? campaign.createdAt.seconds).toString()}
                       campaign={campaign}
                       onCampaignUpdated={handleFormClose}
-                      onDelete={() => {}}
+                      onDelete={() => {
+                        setCampaignToDelete(campaign);
+                        setIsManageOpen(false);
+                      }}
                     />
                   </div>
                 </SheetContent>
@@ -550,11 +593,34 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                           key={(campaign.lastUpdatedAt?.seconds ?? campaign.createdAt.seconds).toString()}
                           campaign={campaign}
                           onCampaignUpdated={handleFormClose}
-                          onDelete={() => {}}
+                          onDelete={() => {
+                            setCampaignToDelete(campaign);
+                            setIsManageOpen(false);
+                          }}
                         />
                     </div>
                 </DialogContent>
               </Dialog>
+            )}
+
+            {campaignToDelete && (
+                <AlertDialog open={!!campaignToDelete} onOpenChange={(open) => !open && setCampaignToDelete(null)}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            This will mark the campaign as deleted and hide it from public view. This action cannot be undone.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleDeleteCampaign} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90">
+                            {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                            Confirm Deletion
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+                </AlertDialog>
             )}
         </>
     );

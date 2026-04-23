@@ -192,9 +192,9 @@ export default function CampaignsPage() {
     };
     
     try {
-        setCampaignToDelete(null);
         await updateDoc(campaignRef, deleteData);
         toast({ title: 'Campaign Deleted', description: 'The campaign has been successfully deleted.' });
+        setCampaignToDelete(null);
     } catch (error) {
         const permissionError = new FirestorePermissionError({
             path: campaignRef.path,
