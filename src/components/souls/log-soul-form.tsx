@@ -22,12 +22,14 @@ import type { Campaign, Soul, UserProfile, Fellowship } from "@/lib/types";
 import { Textarea } from "@/components/ui/textarea";
 import { format } from "date-fns";
 import { useFirestore, useUser, useCollection, useDoc } from "@/firebase";
-import { collection, query, orderBy, serverTimestamp, doc, runTransaction, addDoc, increment } from "firebase/firestore";
+import { collection, query, orderBy, serverTimestamp, doc, runTransaction, addDoc, increment, deleteField } from "firebase/firestore";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { ImageUpload } from "../common/image-upload";
+import { LocationWonInput } from "./location-won-input";
+import { haversineDistance } from "@/lib/utils";
 
 const formSchema = z.object({
   firstName: z.string().min(2, "First name must be at least 2 characters."),
@@ -38,6 +40,8 @@ const formSchema = z.object({
   locationWonCity: z.string().optional(),
   locationWonState: z.string().optional(),
   locationWonCountry: z.string().optional(),
+  locationWonLatitude: z.number().optional(),
+  locationWonLongitude: z.number().optional(),
   source: z.string({ required_error: "Please select a source." }),
   sourceDetails: z.string().optional(),
   initialNote: z.string().optional(),
@@ -94,25 +98,27 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign, fellowships, campai
     if (!form.getValues('wonAt')) {
         form.setValue('wonAt', new Date());
     }
-  }, [form.getValues, form.setValue]);
+  }, [form]);
   
-  const watchedLocationCity = form.watch('locationWonCity');
+  const watchedLat = form.watch('locationWonLatitude');
+  const watchedLng = form.watch('locationWonLongitude');
 
   const sortedFellowships = useMemo(() => {
     if (!fellowships || fellowships.length === 0) return [];
-    if (!watchedLocationCity) return fellowships;
-
-    const lowerCaseCity = watchedLocationCity.toLowerCase();
     
-    return [...fellowships].sort((a, b) => {
-        const aMatches = a.location?.toLowerCase().includes(lowerCaseCity) ?? false;
-        const bMatches = b.location?.toLowerCase().includes(lowerCaseCity) ?? false;
+    if (watchedLat === undefined || watchedLng === undefined) {
+        return [...fellowships].sort((a, b) => a.name.localeCompare(b.name));
+    }
 
-        if (aMatches && !bMatches) return -1; // a comes first
-        if (!aMatches && bMatches) return 1;  // b comes first
-        return a.name.localeCompare(b.name); // otherwise, sort alphabetically
-    });
-  }, [fellowships, watchedLocationCity]);
+    return [...fellowships]
+        .map(f => {
+            const distance = f.latitude && f.longitude
+                ? haversineDistance({ lat: watchedLat, lng: watchedLng }, { lat: f.latitude, lng: f.longitude })
+                : Infinity;
+            return { ...f, distance };
+        })
+        .sort((a, b) => a.distance - b.distance);
+  }, [fellowships, watchedLat, watchedLng]);
 
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
@@ -155,13 +161,17 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign, fellowships, campai
     if (values.initialNote) {
       soulData.followUpLog = [{ date: serverTimestamp(), note: values.initialNote }];
     }
-    if (values.locationWonCity || values.locationWonState || values.locationWonCountry) {
-        const locationWonData: { [key: string]: string } = {};
-        if (values.locationWonCity) locationWonData.city = values.locationWonCity;
-        if (values.locationWonState) locationWonData.state = values.locationWonState;
-        if (values.locationWonCountry) locationWonData.country = values.locationWonCountry;
-        soulData.locationWon = locationWonData;
+    
+    const locationWon: { [key: string]: any } = {};
+    if (values.locationWonCity) locationWon.city = values.locationWonCity;
+    if (values.locationWonState) locationWon.state = values.locationWonState;
+    if (values.locationWonCountry) locationWon.country = values.locationWonCountry;
+    if (values.locationWonLatitude) locationWon.latitude = values.locationWonLatitude;
+    if (values.locationWonLongitude) locationWon.longitude = values.locationWonLongitude;
+    if (Object.keys(locationWon).length > 0) {
+      soulData.locationWon = locationWon;
     }
+
 
     if (values.fellowshipId) {
         const selectedFellowship = fellowships?.find(f => f.id === values.fellowshipId);
@@ -470,44 +480,7 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign, fellowships, campai
                         />
                         <div className="space-y-2">
                             <FormLabel>Location Won</FormLabel>
-                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                               <FormField
-                                control={form.control}
-                                name="locationWonCity"
-                                render={({ field }) => (
-                                    <FormItem>
-                                    <FormControl>
-                                        <Input placeholder="City" {...field} value={field.value ?? ''} />
-                                    </FormControl>
-                                    <FormMessage />
-                                    </FormItem>
-                                )}
-                                />
-                                <FormField
-                                control={form.control}
-                                name="locationWonState"
-                                render={({ field }) => (
-                                    <FormItem>
-                                    <FormControl>
-                                        <Input placeholder="State/Province" {...field} value={field.value ?? ''} />
-                                    </FormControl>
-                                    <FormMessage />
-                                    </FormItem>
-                                )}
-                                />
-                                <FormField
-                                control={form.control}
-                                name="locationWonCountry"
-                                render={({ field }) => (
-                                    <FormItem>
-                                    <FormControl>
-                                        <Input placeholder="Country" {...field} value={field.value ?? ''} />
-                                    </FormControl>
-                                    <FormMessage />
-                                    </FormItem>
-                                )}
-                                />
-                            </div>
+                            <LocationWonInput form={form} />
                         </div>
                         <FormField
                         control={form.control}

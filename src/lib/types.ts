@@ -229,6 +229,8 @@ export type Soul = {
     city?: string;
     state?: string;
     country?: string;
+    latitude?: number;
+    longitude?: number;
   };
   wonAt: Timestamp; // ISO date string
   status: FollowUpStatus;
@@ -340,3 +342,5 @@ export type JoinedFellowship = {
     fellowshipId: string;
     joinedAt: Timestamp;
 };
+
+    
