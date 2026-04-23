@@ -179,7 +179,7 @@ function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting }: { fell
 }
 
 
-function FellowshipCard({ fellowship, userProfile, onManage }: { fellowship: Fellowship; userProfile: UserProfile | null; onManage: () => void; }) {
+function FellowshipCard({ fellowship, userProfile, onManage, onClick }: { fellowship: Fellowship; userProfile: UserProfile | null; onManage: () => void; onClick?: () => void }) {
     const { user } = useUser();
     const firestore = useFirestore();
     const { toast } = useToast();
@@ -233,7 +233,7 @@ function FellowshipCard({ fellowship, userProfile, onManage }: { fellowship: Fel
     };
 
     return (
-        <Card>
+        <Card onClick={onClick}>
             <CardHeader>
                 <div className="flex justify-between items-start">
                     <CardTitle>{fellowship.name}</CardTitle>
@@ -321,6 +321,13 @@ export default function FellowshipPage() {
     }, [fellowships]);
 
     const loading = userLoading || profileLoading || fellowshipsLoading;
+
+    const handleCardClick = (fellowshipName: string) => {
+        toast({
+            title: "Card Clicked!",
+            description: `You clicked on the ${fellowshipName} fellowship. A detail page can be implemented here.`,
+        });
+    };
 
     const handleCreateFellowship = async (values: z.infer<typeof formSchema>) => {
         if (!user || !userProfile || !firestore) return;
@@ -452,7 +459,7 @@ export default function FellowshipPage() {
                 </div>
             ) : activeFellowships && activeFellowships.length > 0 ? (
                  <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                    {activeFellowships.map(f => <FellowshipCard key={f.id} fellowship={f} userProfile={userProfile} onManage={() => setFellowshipToManage(f)} />)}
+                    {activeFellowships.map(f => <FellowshipCard key={f.id} fellowship={f} userProfile={userProfile} onManage={() => setFellowshipToManage(f)} onClick={() => handleCardClick(f.name)} />)}
                 </div>
             ) : (
                 <div className="text-center py-12 flex flex-col items-center">
