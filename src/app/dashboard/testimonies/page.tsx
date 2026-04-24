@@ -206,14 +206,14 @@ export default function TestimoniesPage() {
 
   const testimonyTriggerButton = (
     <Button onClick={() => handleOpenTestimonyDialog()} disabled={loading}>
-      {loading ? <Loader2 className="md:mr-2 h-4 w-4 animate-spin" /> : <PlusCircle className="md:mr-2 h-4 w-4" />}
+      {loading ? <Loader2 className="md:mr-2 h-4 w-4 animate-spin" /> : <PlusCircle className="h-4 w-4 md:mr-2" />}
       <span className="hidden md:inline">Share Testimony</span>
     </Button>
   );
 
   const prayerTriggerButton = (
     <Button onClick={() => setIsPrayerDialogOpen(true)} disabled={loading}>
-      {loading ? <Loader2 className="md:mr-2 h-4 w-4 animate-spin" /> : <PlusCircle className="md:mr-2 h-4 w-4" />}
+      {loading ? <Loader2 className="md:mr-2 h-4 w-4 animate-spin" /> : <PlusCircle className="h-4 w-4 md:mr-2" />}
       <span className="hidden md:inline">Share Prayer Request</span>
     </Button>
   );
@@ -228,6 +228,9 @@ export default function TestimoniesPage() {
           <h1 className="text-xl sm:text-2xl font-bold tracking-tight font-headline">
             Testimonies &amp; Prayer Requests
           </h1>
+          <p className="text-sm text-muted-foreground">
+            Share your story and pray for others in the community.
+          </p>
         </div>
         <div>
           {activeTab === 'testimonies' ? testimonyTriggerButton : prayerTriggerButton}
