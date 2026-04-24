@@ -228,9 +228,6 @@ export default function TestimoniesPage() {
           <h1 className="text-xl sm:text-2xl font-bold tracking-tight font-headline">
             Testimonies &amp; Prayer Requests
           </h1>
-          <p className="text-sm text-muted-foreground">
-            Share your story and pray for others in the community.
-          </p>
         </div>
         <div>
           {activeTab === 'testimonies' ? testimonyTriggerButton : prayerTriggerButton}
