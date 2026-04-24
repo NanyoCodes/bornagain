@@ -81,7 +81,12 @@ export default function SoulsWonPage() {
     if (!firestore) return null;
     return query(collection(firestore, 'fellowships'), orderBy('name', 'asc'));
   }, [firestore]);
-  const { data: fellowships, loading: loadingFellowships } = useCollection<Fellowship>(fellowshipsQuery);
+  const { data: allFellowships, loading: loadingFellowships } = useCollection<Fellowship>(fellowshipsQuery);
+  
+  const activeFellowships = useMemo(() => {
+    if (!allFellowships) return [];
+    return allFellowships.filter(f => f.status !== 'deleted');
+  }, [allFellowships]);
 
   const loading = userLoading || soulsLoading || loadingCampaigns || loadingFellowships;
   
@@ -117,7 +122,7 @@ export default function SoulsWonPage() {
     const soulRef = doc(firestore, `users/${user.uid}/souls`, soul.id);
     const globalSoulRef = doc(firestore, 'souls', soul.id);
 
-    const selectedFellowship = fellowships?.find(f => f.id === fellowshipId);
+    const selectedFellowship = activeFellowships?.find(f => f.id === fellowshipId);
     
     const updateData: { [key: string]: any } = {};
 
@@ -418,7 +423,7 @@ export default function SoulsWonPage() {
     </Button>
   );
 
-  const formContent = <LogSoulForm onSoulLogged={handleSoulLogged} fellowships={fellowships || []} campaigns={activeCampaigns || []} />;
+  const formContent = <LogSoulForm onSoulLogged={handleSoulLogged} fellowships={activeFellowships || []} campaigns={activeCampaigns || []} />;
 
   return (
     <div className="space-y-8">
@@ -496,7 +501,7 @@ export default function SoulsWonPage() {
                       <DialogDescription>Make changes to the record for {soulToEdit?.firstName} {soulToEdit?.lastName}.</DialogDescription>
                   </DialogHeader>
                   <div className="max-h-[70vh] overflow-y-auto pr-2">
-                      <EditSoulForm soul={soulToEdit} onSoulUpdated={handleSoulUpdated} fellowships={fellowships || []} campaigns={activeCampaigns || []} />
+                      <EditSoulForm soul={soulToEdit} onSoulUpdated={handleSoulUpdated} fellowships={activeFellowships || []} campaigns={activeCampaigns || []} />
                   </div>
               </DialogContent>
           </Dialog>
@@ -522,7 +527,7 @@ export default function SoulsWonPage() {
       {soulToAssign && (
         <AssignFellowshipDialog
             soul={soulToAssign}
-            fellowships={fellowships || []}
+            fellowships={activeFellowships || []}
             isOpen={!!soulToAssign}
             onOpenChange={() => setSoulToAssign(null)}
             onAssignFellowship={handleAssignFellowship}
