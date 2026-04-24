@@ -123,13 +123,24 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
                                     <p className="text-sm text-muted-foreground">{f.location}</p>
                                     {f.distance !== null ? <p className="text-xs text-primary">{f.distance.toFixed(1)} km away</p> : null}
                                 </div>
-                                <Button
-                                    size="sm"
-                                    onClick={() => onAssignFellowship(soul, f.id)}
-                                    disabled={!!isAssigning || soul.fellowshipId === f.id}
-                                >
-                                    {isAssigning === f.id ? <Loader2 className="h-4 w-4 animate-spin"/> : (soul.fellowshipId === f.id ? 'Assigned' : 'Assign')}
-                                </Button>
+                                {soul.fellowshipId === f.id ? (
+                                    <Button
+                                        size="sm"
+                                        variant="outline"
+                                        onClick={() => onAssignFellowship(soul, 'none')}
+                                        disabled={!!isAssigning}
+                                    >
+                                        {isAssigning === 'none' ? <Loader2 className="h-4 w-4 animate-spin"/> : 'Unassign'}
+                                    </Button>
+                                ) : (
+                                    <Button
+                                        size="sm"
+                                        onClick={() => onAssignFellowship(soul, f.id)}
+                                        disabled={!!isAssigning}
+                                    >
+                                        {isAssigning === f.id ? <Loader2 className="h-4 w-4 animate-spin"/> : 'Assign'}
+                                    </Button>
+                                )}
                             </CardContent>
                         </Card>
                     ))
