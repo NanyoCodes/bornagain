@@ -13,7 +13,7 @@ import { haversineDistance } from '@/lib/utils';
 import { cn } from '@/lib/utils';
 
 interface AssignFellowshipDialogProps {
-  soul: Soul;
+  soul: Soul | null;
   fellowships: Fellowship[];
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
@@ -53,7 +53,7 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
 }, [fellowships, country]);
 
   const filteredAndSortedFellowships = React.useMemo(() => {
-    const soulLocation = soul.locationWon;
+    const soulLocation = soul?.locationWon;
     let filtered = fellowships;
 
     if (country) {
@@ -78,22 +78,22 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
         if (b.distance !== null) return 1;
         return a.name.localeCompare(b.name);
     });
-  }, [fellowships, soul.locationWon, country, state]);
+  }, [fellowships, soul, country, state]);
 
   React.useEffect(() => {
-    if (isOpen) {
+    if (isOpen && soul) {
         // Prefill filter based on soul's location if available
         setCountry(soul.locationWon?.country || '');
         // Do not prefill state, as it may not match unstructured fellowship locations
         setState('');
     }
-  }, [isOpen, soul.locationWon]);
+  }, [isOpen, soul]);
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>Assign Fellowship for {soul.firstName}</DialogTitle>
+          <DialogTitle>Assign Fellowship for {soul?.firstName}</DialogTitle>
           <DialogDescription>Filter by location and select a fellowship to assign this soul to.</DialogDescription>
         </DialogHeader>
         <div className="grid grid-cols-2 gap-4 py-4">
@@ -116,18 +116,18 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
             <div className="p-2 space-y-2">
                 {filteredAndSortedFellowships.length > 0 ? (
                     filteredAndSortedFellowships.map(f => (
-                        <Card key={f.id} className={cn("transition-colors", soul.fellowshipId === f.id && "bg-muted")}>
+                        <Card key={f.id} className={cn("transition-colors", soul?.fellowshipId === f.id && "bg-muted")}>
                             <CardContent className="p-3 flex items-center justify-between">
                                 <div>
                                     <p className="font-semibold">{f.name}</p>
                                     <p className="text-sm text-muted-foreground">{f.location}</p>
                                     {f.distance !== null ? <p className="text-xs text-primary">{f.distance.toFixed(1)} km away</p> : null}
                                 </div>
-                                {soul.fellowshipId === f.id ? (
+                                {soul?.fellowshipId === f.id ? (
                                     <Button
                                         size="sm"
                                         variant="outline"
-                                        onClick={() => onAssignFellowship(soul, 'none')}
+                                        onClick={() => soul && onAssignFellowship(soul, 'none')}
                                         disabled={!!isAssigning}
                                     >
                                         {isAssigning === 'none' ? <Loader2 className="h-4 w-4 animate-spin"/> : 'Unassign'}
@@ -135,7 +135,7 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
                                 ) : (
                                     <Button
                                         size="sm"
-                                        onClick={() => onAssignFellowship(soul, f.id)}
+                                        onClick={() => soul && onAssignFellowship(soul, f.id)}
                                         disabled={!!isAssigning}
                                     >
                                         {isAssigning === f.id ? <Loader2 className="h-4 w-4 animate-spin"/> : 'Assign'}
