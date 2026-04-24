@@ -129,6 +129,13 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({ prayerRequest
                         <Award className="mr-2 h-4 w-4" />
                         Prayer Answered
                     </Button>
+                ) : prayerRequest.answeredTestimonyId ? (
+                    <Link href={`/dashboard/testimonies#${prayerRequest.answeredTestimonyId}`}>
+                        <Badge variant="secondary" className="flex items-center gap-2 py-1 px-2 border-green-500 text-green-600 dark:text-green-400 cursor-pointer hover:bg-green-500/10">
+                            <Award className="h-4 w-4" />
+                            <span>Answered</span>
+                        </Badge>
+                    </Link>
                 ) : (
                   <Badge variant="secondary" className="flex items-center gap-2 py-1 px-2 border-green-500 text-green-600 dark:text-green-400">
                       <Award className="h-4 w-4" />
@@ -140,11 +147,18 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({ prayerRequest
                     <span className="sr-only">Delete</span>
                 </Button>
             </div>
+          ) : isAnswered && prayerRequest.answeredTestimonyId ? (
+            <Link href={`/dashboard/testimonies#${prayerRequest.answeredTestimonyId}`}>
+                <Badge variant="secondary" className="flex items-center gap-2 py-1 px-2 border-green-500 text-green-600 dark:text-green-400 cursor-pointer hover:bg-green-500/10">
+                    <Award className="h-4 w-4" />
+                    <span>Answered!</span>
+                </Badge>
+            </Link>
           ) : isAnswered ? (
-             <div className="flex items-center gap-2 text-sm font-semibold text-green-600 dark:text-green-400">
-                <Award className="h-5 w-5" />
+            <Badge variant="secondary" className="flex items-center gap-2 py-1 px-2 border-green-500 text-green-600 dark:text-green-400">
+                <Award className="h-4 w-4" />
                 <span>Answered!</span>
-            </div>
+            </Badge>
           ) : (
               <Button onClick={handlePray} disabled={hasPrayed || isPraying || !user}>
                   {isPraying ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <HandHeart className={cn("mr-2 h-4 w-4", hasPrayed && "fill-current")} />}

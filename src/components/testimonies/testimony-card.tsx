@@ -109,7 +109,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
 
   return (
     <>
-      <Card className="flex flex-col h-full overflow-hidden shadow-md">
+      <Card id={testimony.id} className="flex flex-col h-full overflow-hidden shadow-md scroll-mt-20">
         <CardHeader className="flex flex-row items-start justify-between gap-4">
           <div className="flex items-center gap-3 min-w-0 flex-1">
             <Dialog>
