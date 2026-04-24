@@ -87,8 +87,8 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onClick }:
     return (
         <Card onClick={onClick} className="cursor-pointer">
             <CardHeader>
-                <div className="flex justify-between items-start">
-                    <CardTitle>{fellowship.name}</CardTitle>
+                <div className="flex justify-between items-center">
+                    <CardTitle className="text-xl">{fellowship.name}</CardTitle>
                     <div className="flex items-center gap-2" onClick={stopPropagation}>
                         {fellowship.locationType && <Badge variant="secondary">{fellowship.locationType}</Badge>}
                         {isOrganizer && (
