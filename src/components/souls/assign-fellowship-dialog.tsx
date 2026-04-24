@@ -89,6 +89,10 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
     }
   }, [isOpen, soul]);
 
+  if (!soul) {
+    return null;
+  }
+
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg">
@@ -116,29 +120,29 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
             <div className="p-2 space-y-2">
                 {filteredAndSortedFellowships.length > 0 ? (
                     filteredAndSortedFellowships.map(f => (
-                        <Card key={f.id} className={cn("transition-colors", soul?.fellowshipId === f.id && "bg-muted")}>
+                        <Card key={f.id} className={cn("transition-colors", soul.fellowshipId === f.id && "bg-muted")}>
                             <CardContent className="p-3 flex items-center justify-between">
                                 <div>
                                     <p className="font-semibold">{f.name}</p>
                                     <p className="text-sm text-muted-foreground">{f.location}</p>
                                     {f.distance !== null ? <p className="text-xs text-primary">{f.distance.toFixed(1)} km away</p> : null}
                                 </div>
-                                {soul?.fellowshipId === f.id ? (
+                                {soul.fellowshipId === f.id ? (
                                     <Button
                                         size="sm"
                                         variant="outline"
-                                        onClick={() => soul && onAssignFellowship(soul, 'none')}
+                                        onClick={() => onAssignFellowship(soul, 'none')}
                                         disabled={!!isAssigning}
                                     >
-                                        {isAssigning === 'none' ? <Loader2 className="h-4 w-4 animate-spin"/> : 'Unassign'}
+                                        {isAssigning ? <Loader2 className="h-4 w-4 animate-spin"/> : 'Unassign'}
                                     </Button>
                                 ) : (
                                     <Button
                                         size="sm"
-                                        onClick={() => soul && onAssignFellowship(soul, f.id)}
+                                        onClick={() => onAssignFellowship(soul, f.id)}
                                         disabled={!!isAssigning}
                                     >
-                                        {isAssigning === f.id ? <Loader2 className="h-4 w-4 animate-spin"/> : 'Assign'}
+                                        {isAssigning ? <Loader2 className="h-4 w-4 animate-spin"/> : 'Assign'}
                                     </Button>
                                 )}
                             </CardContent>
