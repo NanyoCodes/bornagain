@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect, useMemo } from "react";
@@ -205,14 +206,14 @@ export default function TestimoniesPage() {
 
   const testimonyTriggerButton = (
     <Button onClick={() => handleOpenTestimonyDialog()} disabled={loading}>
-      {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <PlusCircle className="h-4 w-4" />}
+      {loading ? <Loader2 className="md:mr-2 h-4 w-4 animate-spin" /> : <PlusCircle className="md:mr-2 h-4 w-4" />}
       <span className="hidden md:inline">Share Testimony</span>
     </Button>
   );
 
   const prayerTriggerButton = (
     <Button onClick={() => setIsPrayerDialogOpen(true)} disabled={loading}>
-      {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <PlusCircle className="h-4 w-4" />}
+      {loading ? <Loader2 className="md:mr-2 h-4 w-4 animate-spin" /> : <PlusCircle className="md:mr-2 h-4 w-4" />}
       <span className="hidden md:inline">Share Prayer Request</span>
     </Button>
   );

@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { useMemo, useState, useEffect } from "react";
@@ -327,7 +328,7 @@ export default function CampaignsPage() {
 
   const triggerButton = (
     <Button disabled={!user || profileLoading}>
-      {profileLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <PlusCircle className="h-4 w-4" />}
+      {profileLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <PlusCircle className="h-4 w-4 md:mr-2" />}
       <span className="hidden md:inline">Create Campaign</span>
     </Button>
   );
