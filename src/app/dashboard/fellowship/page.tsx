@@ -11,13 +11,23 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { useCollection, useFirestore, useUser, useDoc } from "@/firebase";
 import { collection, query, orderBy, addDoc, serverTimestamp, doc, runTransaction, arrayUnion, increment, updateDoc } from "firebase/firestore";
 import type { UserProfile, Fellowship } from "@/lib/types";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { PlusCircle, HeartHandshake, Loader2 } from 'lucide-react';
+import { PlusCircle, HeartHandshake, Loader2, Trash2 } from 'lucide-react';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -264,6 +274,8 @@ export default function FellowshipPage() {
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [fellowshipToManage, setFellowshipToManage] = useState<Fellowship | null>(null);
+    const [fellowshipToDelete, setFellowshipToDelete] = useState<Fellowship | null>(null);
+    const [isDeleting, setIsDeleting] = useState(false);
     const [mounted, setMounted] = useState(false);
     const isMobile = useIsMobile();
     
@@ -286,6 +298,26 @@ export default function FellowshipPage() {
 
     const handleCardClick = (fellowshipId: string) => {
         router.push(`/dashboard/fellowship/${fellowshipId}`);
+    };
+
+    const handleDeleteFellowship = async () => {
+        if (!fellowshipToDelete || !user || !firestore) return;
+        setIsDeleting(true);
+        const fellowshipRef = doc(firestore, 'fellowships', fellowshipToDelete.id);
+        const deleteData = {
+            status: 'deleted' as const,
+        };
+        
+        try {
+            await updateDoc(fellowshipRef, deleteData);
+            toast({ title: 'Fellowship Deleted', description: 'The fellowship group has been deleted.' });
+            setFellowshipToDelete(null);
+        } catch (e) {
+            const permissionError = new FirestorePermissionError({ path: fellowshipRef.path, operation: 'update' }, user);
+            errorEmitter.emit('permission-error', permissionError);
+        } finally {
+            setIsDeleting(false);
+        }
     };
 
     const handleCreateFellowship = async (values: z.infer<typeof formSchema>) => {
@@ -413,7 +445,7 @@ export default function FellowshipPage() {
                 </div>
             ) : activeFellowships && activeFellowships.length > 0 ? (
                  <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                    {activeFellowships.map(f => <FellowshipCard key={f.id} fellowship={f} userProfile={userProfile} onManage={() => setFellowshipToManage(f)} onClick={() => handleCardClick(f.id)} />)}
+                    {activeFellowships.map(f => <FellowshipCard key={f.id} fellowship={f} userProfile={userProfile} onManage={() => setFellowshipToManage(f)} onDelete={() => setFellowshipToDelete(f)} onClick={() => handleCardClick(f.id)} />)}
                 </div>
             ) : (
                 <div className="text-center py-12 flex flex-col items-center">
@@ -433,6 +465,26 @@ export default function FellowshipPage() {
                         <ManageFellowshipForm fellowship={fellowshipToManage} onFormSubmit={handleUpdateFellowship} isSubmitting={isSubmitting} />
                     </DialogContent>
                 </Dialog>
+            )}
+
+            {fellowshipToDelete && (
+                <AlertDialog open={!!fellowshipToDelete} onOpenChange={() => setFellowshipToDelete(null)}>
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                                This will mark the fellowship as deleted and hide it from the list. This action cannot be undone.
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+                            <AlertDialogAction onClick={handleDeleteFellowship} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90">
+                                {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                Confirm Deletion
+                            </AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
             )}
         </div>
     );

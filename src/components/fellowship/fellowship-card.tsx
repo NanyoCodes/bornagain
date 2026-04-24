@@ -13,8 +13,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Loader2, Users, MoreVertical, PlayCircle, Edit } from 'lucide-react';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Loader2, Users, MoreVertical, PlayCircle, Edit, Trash2 } from 'lucide-react';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 
@@ -22,10 +22,11 @@ type FellowshipCardProps = {
   fellowship: Fellowship;
   userProfile: UserProfile | null;
   onManage: () => void;
+  onDelete: () => void;
   onClick?: () => void;
 };
 
-const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onClick }: FellowshipCardProps) => {
+const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, onClick }: FellowshipCardProps) => {
     const { user } = useUser();
     const firestore = useFirestore();
     const { toast } = useToast();
@@ -88,7 +89,7 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onClick }:
         <Card onClick={onClick} className="cursor-pointer">
             <CardHeader>
                 <div className="flex justify-between items-start">
-                    <CardTitle className="text-lg">{fellowship.name}</CardTitle>
+                    <CardTitle className="text-xl flex items-center">{fellowship.name}</CardTitle>
                     <div className="flex items-center gap-2" onClick={stopPropagation}>
                         {fellowship.locationType && <Badge variant="secondary">{fellowship.locationType}</Badge>}
                         {isOrganizer && (
@@ -102,6 +103,11 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onClick }:
                                     <DropdownMenuItem onSelect={onManage}>
                                         <Edit className="mr-2 h-4 w-4" />
                                         Manage
+                                    </DropdownMenuItem>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem onSelect={onDelete} className="text-destructive focus:text-destructive">
+                                        <Trash2 className="mr-2 h-4 w-4" />
+                                        Delete
                                     </DropdownMenuItem>
                                 </DropdownMenuContent>
                             </DropdownMenu>
