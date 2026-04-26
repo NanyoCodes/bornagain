@@ -35,7 +35,7 @@ import {
 } from "@/components/ui/table";
 import { Skeleton } from "../ui/skeleton";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { cn } from "@/lib/utils";
+import { cn, safeToDate } from "@/lib/utils";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/collapsible";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -78,19 +78,22 @@ type SoulCardProps = {
 function SoulCard({ soul, onEdit, onFollowUp, onViewHistory, onExportSingle, onOpenAssignDialog }: SoulCardProps) {
     const latestFollowUp = React.useMemo(() => {
         if (!soul.followUpLog || soul.followUpLog.length === 0) return null;
-        return soul.followUpLog.reduce((latest, current) => {
-            if (!latest.date?.toDate) return current;
-            if (!current.date?.toDate) return latest;
-            return current.date.toDate() > latest.date.toDate() ? current : latest;
-        });
+        // Sort to get the most recent log entry
+        return [...soul.followUpLog].sort((a, b) => {
+            const dateB = safeToDate(b.date)?.getTime() ?? 0;
+            const dateA = safeToDate(a.date)?.getTime() ?? 0;
+            return dateB - dateA;
+        })[0];
     }, [soul.followUpLog]);
 
-    const wonAt = React.useMemo(() => soul.wonAt?.toDate ? soul.wonAt.toDate() : new Date(), [soul.wonAt]);
+    const wonAt = React.useMemo(() => safeToDate(soul.wonAt) ?? new Date(), [soul.wonAt]);
     
     const locationWonString = React.useMemo(() => {
         if (!soul.locationWon) return null;
         return [soul.locationWon.city, soul.locationWon.state, soul.locationWon.country].filter(Boolean).join(', ');
     }, [soul.locationWon]);
+    
+    const latestFollowUpDate = latestFollowUp ? safeToDate(latestFollowUp.date) : null;
 
     return (
         <Card>
@@ -157,9 +160,9 @@ function SoulCard({ soul, onEdit, onFollowUp, onViewHistory, onExportSingle, onO
                         <div className="space-y-3 pt-4 border-t">
                             <Label>Follow-up</Label>
                             <div className="border rounded-lg p-4 space-y-4">
-                               {latestFollowUp ? (
+                               {latestFollowUp && latestFollowUpDate ? (
                                     <div className="text-sm">
-                                        <p className="font-semibold text-muted-foreground">Latest Log: {format(latestFollowUp.date.toDate(), "PPP")}</p>
+                                        <p className="font-semibold text-muted-foreground">Latest Log: {format(latestFollowUpDate, "PPP")}</p>
                                         {latestFollowUp.actions && latestFollowUp.actions.length > 0 && (
                                             <div className="mt-2 flex flex-wrap gap-1">
                                                 {latestFollowUp.actions.map(actionId => {
@@ -168,7 +171,7 @@ function SoulCard({ soul, onEdit, onFollowUp, onViewHistory, onExportSingle, onO
                                                 })}
                                             </div>
                                         )}
-                                        <p className="italic line-clamp-2 mt-2">&ldquo;{latestFollowUp.note}&rdquo;</p>
+                                        {latestFollowUp.note && <p className="italic line-clamp-2 mt-2">&ldquo;{latestFollowUp.note}&rdquo;</p>}
                                     </div>
                                 ) : (
                                     <p className="text-sm text-muted-foreground">No follow-up logged yet.</p>
@@ -203,14 +206,15 @@ type SoulTableRowProps = {
 function SoulTableRow({ soul, onEdit, onFollowUp, onViewHistory, onExportSingle, onOpenAssignDialog }: SoulTableRowProps) {
     const latestFollowUp = React.useMemo(() => {
         if (!soul.followUpLog || soul.followUpLog.length === 0) return null;
-        return soul.followUpLog.reduce((latest, current) => {
-            const latestTime = latest.date?.toDate ? latest.date.toDate().getTime() : 0;
-            const currentTime = current.date?.toDate ? current.date.toDate().getTime() : 0;
-            return currentTime > latestTime ? current : latest;
-        });
+        return [...soul.followUpLog].sort((a, b) => {
+            const dateB = safeToDate(b.date)?.getTime() ?? 0;
+            const dateA = safeToDate(a.date)?.getTime() ?? 0;
+            return dateB - dateA;
+        })[0];
     }, [soul.followUpLog]);
 
-    const wonAt = React.useMemo(() => soul.wonAt?.toDate ? soul.wonAt.toDate() : new Date(), [soul.wonAt]);
+    const wonAt = React.useMemo(() => safeToDate(soul.wonAt) ?? new Date(), [soul.wonAt]);
+    const latestFollowUpDate = latestFollowUp ? safeToDate(latestFollowUp.date) : null;
 
     return (
         <TableRow>
@@ -244,10 +248,10 @@ function SoulTableRow({ soul, onEdit, onFollowUp, onViewHistory, onExportSingle,
                 )}
             </TableCell>
             <TableCell>
-                {latestFollowUp ? (
+                {latestFollowUp && latestFollowUpDate ? (
                     <div className="text-xs space-y-1">
                         <div className="text-muted-foreground font-semibold">
-                            {format(latestFollowUp.date.toDate(), "PPP")}
+                            {format(latestFollowUpDate, "PPP")}
                         </div>
                         {latestFollowUp.actions && latestFollowUp.actions.length > 0 && (
                             <div className="flex flex-wrap gap-1">
