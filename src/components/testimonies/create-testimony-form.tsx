@@ -1,4 +1,3 @@
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -17,13 +16,14 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { useState, useMemo, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Loader2 } from "lucide-react";
 import type { TestimonyCategory, Campaign, UserProfile, PrayerRequest } from "@/lib/types";
 import { useUser, useFirestore } from "@/firebase";
 import { collection, addDoc, serverTimestamp, doc, updateDoc, runTransaction } from "firebase/firestore";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { errorEmitter } from "@/firebase/error-emitter";
+import { Card, CardHeader, CardDescription } from "@/components/ui/card";
 
 const testimonyCategories: TestimonyCategory[] = ['Healing', 'Financial Breakthrough', 'Salvation', 'Relationships', 'Deliverance', 'General'];
 
@@ -58,7 +58,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
     if (prayerRequest) {
       form.reset({
         category: testimonyCategories.includes(prayerRequest.category as TestimonyCategory) ? prayerRequest.category : 'General',
-        content: `I prayed for: "${prayerRequest.content}"\n\nAnd God answered! Here's what happened...`
+        content: ""
       });
     } else {
       // Reset for a blank testimony
@@ -162,65 +162,77 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
   }
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <FormField
-          control={form.control}
-          name="category"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Category</FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  value={field.value}
-                  disabled={!!prayerRequest}
-                >
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a category for your testimony" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {testimonyCategories.map(cat => (
-                       <SelectItem key={cat} value={cat}>{cat}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {prayerRequest && (
-                    <FormDescription>
-                        Category inherited from the original prayer request.
-                    </FormDescription>
-                )}
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+    <>
+      {prayerRequest && (
+        <Card className="mb-4 bg-muted/50 shadow-inner">
+          <CardHeader className="p-4">
+            <CardDescription className="text-xs">
+              Answering prayer request:
+            </CardDescription>
+            <blockquote className="border-l-2 pl-3 italic text-sm text-muted-foreground">
+              &ldquo;{prayerRequest.content}&rdquo;
+            </blockquote>
+          </CardHeader>
+        </Card>
+      )}
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <FormField
+            control={form.control}
+            name="category"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Category</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    value={field.value}
+                    disabled={!!prayerRequest}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a category for your testimony" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {testimonyCategories.map(cat => (
+                        <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {prayerRequest && (
+                      <FormDescription>
+                          Category inherited from the original prayer request.
+                      </FormDescription>
+                  )}
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-        <FormField
-          control={form.control}
-          name="content"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Your Testimony</FormLabel>
-              <FormControl>
-                <Textarea
-                  placeholder="Share the details of what God has done..."
-                  className="min-h-[150px] text-base"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        
-        <Button type="submit" className="w-full" disabled={isSubmitting}>
-          {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          {isSubmitting ? 'Submitting...' : 'Submit Testimony'}
-        </Button>
-      </form>
-    </Form>
+          <FormField
+            control={form.control}
+            name="content"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Your Testimony</FormLabel>
+                <FormControl>
+                  <Textarea
+                    placeholder="Share the details of what God has done..."
+                    className="min-h-[150px] text-base"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          
+          <Button type="submit" className="w-full" disabled={isSubmitting}>
+            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {isSubmitting ? 'Submitting...' : 'Submit Testimony'}
+          </Button>
+        </form>
+      </Form>
+    </>
   );
 }
-
-    
