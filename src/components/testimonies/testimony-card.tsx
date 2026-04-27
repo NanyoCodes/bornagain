@@ -1,4 +1,3 @@
-
 "use client";
 
 import * as React from "react";
@@ -35,6 +34,7 @@ import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { cn } from "@/lib/utils";
 import { Icons } from "@/components/icons";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDelete, onEdit }: { testimony: Testimony, onDelete: () => void, onEdit: () => void }) {
   const { user } = useUser();
@@ -42,6 +42,9 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
   const { toast } = useToast();
 
   const [isSupporting, setIsSupporting] = useState(false);
+  const contentRef = React.useRef<HTMLParagraphElement>(null);
+  const [isTruncated, setIsTruncated] = React.useState(false);
+  const [showFullText, setShowFullText] = React.useState(false);
 
   const isAuthor = user?.uid === testimony.authorId;
   const authorFullName = [testimony.authorFirstName, testimony.authorLastName].filter(Boolean).join(' ').trim() || 'Anonymous';
@@ -61,6 +64,21 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
   }, [testimony.createdAt]);
   
   const locationString = [testimony.authorLocation?.city, testimony.authorLocation?.country].filter(Boolean).join(', ');
+
+  React.useEffect(() => {
+    const checkTruncation = () => {
+      if (contentRef.current) {
+        setIsTruncated(contentRef.current.scrollHeight > contentRef.current.clientHeight);
+      }
+    };
+    // Check after a short delay to allow for rendering
+    const timeoutId = setTimeout(checkTruncation, 100);
+    window.addEventListener('resize', checkTruncation);
+    return () => {
+      clearTimeout(timeoutId);
+      window.removeEventListener('resize', checkTruncation);
+    };
+  }, [testimony.content]);
 
   const handleSupport = () => {
     if (!user || !firestore || hasSupported || isAuthor) return;
@@ -142,9 +160,23 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
           <Badge variant="outline" className="shrink-0">{testimony.category}</Badge>
         </CardHeader>
         <CardContent className="flex-grow pt-0 space-y-4">
-          <p className="text-sm text-muted-foreground whitespace-pre-wrap line-clamp-4">
-            {testimony.content}
-          </p>
+          <div className="text-sm text-muted-foreground whitespace-pre-wrap">
+            <p ref={contentRef} className="line-clamp-4">
+              {testimony.content}
+            </p>
+            {isTruncated && (
+              <Button
+                variant="link"
+                className="p-0 h-auto text-xs"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowFullText(true);
+                }}
+              >
+                Read More
+              </Button>
+            )}
+          </div>
           {testimony.answeredPrayerId && testimony.answeredPrayerContent && (
             <Card className="bg-muted/50 shadow-inner">
                 <CardHeader className="p-3">
@@ -198,6 +230,20 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
           </div>
         </CardFooter>
       </Card>
+
+      <Dialog open={showFullText} onOpenChange={setShowFullText}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Testimony by {authorFullName}</DialogTitle>
+            <DialogDescription>{displayDate}</DialogDescription>
+          </DialogHeader>
+          <ScrollArea className="max-h-[60vh] pr-4">
+            <p className="text-sm text-muted-foreground whitespace-pre-wrap">
+              {testimony.content}
+            </p>
+          </ScrollArea>
+        </DialogContent>
+      </Dialog>
     </>
   );
 });
