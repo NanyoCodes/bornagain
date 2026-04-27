@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -16,14 +17,24 @@ import { type Soul } from '@/lib/types';
 import { generateFollowUpInsights, type FollowUpInsightsOutput } from '@/ai/flows/generate-follow-up-insights';
 import { formatDistanceToNow } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
+import { safeToDate } from '@/lib/utils';
 
 function formatHistory(soul: Soul): string {
+  const wonAtDate = safeToDate(soul.wonAt);
+  if (!wonAtDate) {
+    return "No interactions logged yet.";
+  }
+
   if (!soul.followUpLog || soul.followUpLog.length === 0) {
-    return `No interactions logged since they were won ${formatDistanceToNow(soul.wonAt.toDate(), { addSuffix: true })}.`;
+    return `No interactions logged since they were won ${formatDistanceToNow(wonAtDate, { addSuffix: true })}.`;
   }
   const latestLog = [...soul.followUpLog].sort((a, b) => b.date.seconds - a.date.seconds)[0];
-  const logDate = formatDistanceToNow(latestLog.date.toDate(), { addSuffix: true });
-  let history = `Last interaction was ${logDate}.`;
+  const logDate = safeToDate(latestLog.date);
+  if (!logDate) {
+    return `No interactions logged since they were won ${formatDistanceToNow(wonAtDate, { addSuffix: true })}.`;
+  }
+  
+  let history = `Last interaction was ${formatDistanceToNow(logDate, { addSuffix: true })}.`;
   if (latestLog.note) {
     history += ` Note: "${latestLog.note}"`;
   }

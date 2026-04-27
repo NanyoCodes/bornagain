@@ -26,7 +26,7 @@ import { FirestorePermissionError } from "@/firebase/errors";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
-import { haversineDistance } from "@/lib/utils";
+import { haversineDistance, safeToDate } from "@/lib/utils";
 import { LocationWonInput } from "./location-won-input";
 
 const formSchema = z.object({
@@ -76,7 +76,7 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
       locationWonLongitude: soul.locationWon?.longitude,
       source: soul.source || "Personal",
       sourceDetails: soul.sourceDetails || "",
-      wonAt: soul.wonAt.toDate(),
+      wonAt: safeToDate(soul.wonAt) ?? new Date(),
       fellowshipId: soul.fellowshipId || "",
     },
   });
@@ -96,7 +96,7 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
       locationWonLongitude: soul.locationWon?.longitude,
       source: soul.source || "Personal",
       sourceDetails: soul.sourceDetails || "",
-      wonAt: soul.wonAt.toDate(),
+      wonAt: safeToDate(soul.wonAt) ?? new Date(),
       fellowshipId: soul.fellowshipId || "",
     });
   }, [soul, form]);
@@ -476,5 +476,3 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
     </Form>
   );
 }
-
-    
