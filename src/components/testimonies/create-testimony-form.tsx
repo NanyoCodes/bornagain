@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -167,7 +168,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
         <Card className="mb-4 bg-muted/50 shadow-inner">
           <CardHeader className="p-4">
             <CardDescription className="text-xs">
-              Answering prayer request:
+              Answered Prayer Request
             </CardDescription>
             <blockquote className="border-l-2 pl-3 italic text-sm text-muted-foreground">
               &ldquo;{prayerRequest.content}&rdquo;
