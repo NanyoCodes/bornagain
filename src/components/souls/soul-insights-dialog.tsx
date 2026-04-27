@@ -28,7 +28,7 @@ function formatHistory(soul: Soul): string {
   if (!soul.followUpLog || soul.followUpLog.length === 0) {
     return `No interactions logged since they were won ${formatDistanceToNow(wonAtDate, { addSuffix: true })}.`;
   }
-  const latestLog = [...soul.followUpLog].sort((a, b) => b.date.seconds - a.date.seconds)[0];
+  const latestLog = [...soul.followUpLog].sort((a, b) => (safeToDate(b.date)?.getTime() ?? 0) - (safeToDate(a.date)?.getTime() ?? 0))[0];
   const logDate = safeToDate(latestLog.date);
   if (!logDate) {
     return `No interactions logged since they were won ${formatDistanceToNow(wonAtDate, { addSuffix: true })}.`;

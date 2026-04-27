@@ -2,6 +2,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import {
@@ -35,6 +36,7 @@ import { AssignFellowshipDialog } from "@/components/souls/assign-fellowship-dia
 
 
 export default function SoulsWonPage() {
+  const router = useRouter();
   const { user, loading: userLoading } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
@@ -83,7 +85,7 @@ export default function SoulsWonPage() {
   }, [firestore]);
   const { data: allFellowships, loading: loadingFellowships } = useCollection<Fellowship>(fellowshipsQuery);
   
-  const activeFellowships = useMemo(() => {
+  const fellowships = useMemo(() => {
     if (!allFellowships) return [];
     return allFellowships.filter(f => f.status !== 'deleted');
   }, [allFellowships]);
@@ -105,10 +107,12 @@ export default function SoulsWonPage() {
 
   const handleSoulLogged = () => {
     setIsLogDialogOpen(false);
+    router.refresh();
   };
 
   const handleSoulUpdated = () => {
     setSoulToEdit(null);
+    router.refresh();
   };
   
   const handleFollowUpLogged = () => {
@@ -122,7 +126,7 @@ export default function SoulsWonPage() {
     const soulRef = doc(firestore, `users/${user.uid}/souls`, soul.id);
     const globalSoulRef = doc(firestore, 'souls', soul.id);
 
-    const selectedFellowship = activeFellowships?.find(f => f.id === fellowshipId);
+    const selectedFellowship = fellowships?.find(f => f.id === fellowshipId);
     
     const updateData: { [key: string]: any } = {};
 
@@ -423,7 +427,7 @@ export default function SoulsWonPage() {
     </Button>
   );
 
-  const formContent = <LogSoulForm onSoulLogged={handleSoulLogged} fellowships={activeFellowships || []} campaigns={activeCampaigns || []} />;
+  const formContent = <LogSoulForm onSoulLogged={handleSoulLogged} fellowships={fellowships || []} campaigns={activeCampaigns || []} />;
 
   return (
     <div className="space-y-8">
@@ -494,14 +498,19 @@ export default function SoulsWonPage() {
       />
 
       {soulToEdit && (
-          <Dialog open={!!soulToEdit} onOpenChange={(isOpen) => !isOpen && setSoulToEdit(null)}>
+          <Dialog open={!!soulToEdit} onOpenChange={(isOpen) => {
+            if (!isOpen) {
+              setSoulToEdit(null);
+              router.refresh();
+            }
+          }}>
               <DialogContent className="sm:max-w-lg">
                   <DialogHeader>
                       <DialogTitle>Edit Soul Details</DialogTitle>
                       <DialogDescription>Make changes to the record for {soulToEdit?.firstName} {soulToEdit?.lastName}.</DialogDescription>
                   </DialogHeader>
                   <div className="max-h-[70vh] overflow-y-auto pr-2">
-                      <EditSoulForm soul={soulToEdit} onSoulUpdated={handleSoulUpdated} fellowships={activeFellowships || []} campaigns={activeCampaigns || []} />
+                      <EditSoulForm soul={soulToEdit} onSoulUpdated={handleSoulUpdated} fellowships={fellowships || []} campaigns={activeCampaigns || []} />
                   </div>
               </DialogContent>
           </Dialog>
@@ -527,7 +536,7 @@ export default function SoulsWonPage() {
       {soulToAssign && (
         <AssignFellowshipDialog
             soul={soulToAssign}
-            fellowships={activeFellowships || []}
+            fellowships={fellowships || []}
             isOpen={!!soulToAssign}
             onOpenChange={() => setSoulToAssign(null)}
             onAssignFellowship={handleAssignFellowship}
