@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import type { PrayerRequest } from "@/lib/types";
 import { format } from "date-fns";
-import { HandHeart, Users, Trash2, Loader2, User, Award } from "lucide-react";
+import { HandHeart, Users, Trash2, Loader2, User, Award, Newspaper } from "lucide-react";
 import { useUser, useFirestore } from "@/firebase";
 import { useState, useMemo, memo } from "react";
 import { useToast } from "@/hooks/use-toast";
@@ -133,14 +133,14 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({ prayerRequest
                     <Link href={`/dashboard/testimonies#${prayerRequest.answeredTestimonyId}`}>
                         <Badge variant="secondary" className="flex items-center gap-2 py-1 px-2 border-green-500 text-green-600 dark:text-green-400 cursor-pointer hover:bg-green-500/10">
                             <Award className="h-4 w-4" />
-                            <span>Answered</span>
+                            <span>View Testimony</span>
                         </Badge>
                     </Link>
                 ) : (
-                  <Badge variant="secondary" className="flex items-center gap-2 py-1 px-2 border-green-500 text-green-600 dark:text-green-400">
-                      <Award className="h-4 w-4" />
-                      <span>Answered</span>
-                  </Badge>
+                   <Button onClick={onAnswerPrayer} size="sm">
+                        <Newspaper className="mr-2 h-4 w-4" />
+                        Share Testimony
+                    </Button>
                 )}
                 <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={onDelete}>
                     <Trash2 className="h-4 w-4" />
@@ -151,13 +151,13 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({ prayerRequest
             <Link href={`/dashboard/testimonies#${prayerRequest.answeredTestimonyId}`}>
                 <Badge variant="secondary" className="flex items-center gap-2 py-1 px-2 border-green-500 text-green-600 dark:text-green-400 cursor-pointer hover:bg-green-500/10">
                     <Award className="h-4 w-4" />
-                    <span>Answered!</span>
+                    <span>View Testimony</span>
                 </Badge>
             </Link>
           ) : isAnswered ? (
             <Badge variant="secondary" className="flex items-center gap-2 py-1 px-2 border-green-500 text-green-600 dark:text-green-400">
                 <Award className="h-4 w-4" />
-                <span>Answered!</span>
+                <span>Answered</span>
             </Badge>
           ) : (
               <Button onClick={handlePray} disabled={hasPrayed || isPraying || !user}>
@@ -170,3 +170,4 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({ prayerRequest
     </>
   );
 });
+
