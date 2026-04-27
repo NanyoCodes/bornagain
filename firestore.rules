@@ -161,8 +161,14 @@ service cloud.firestore {
           resource.data.authorId == request.auth.uid &&
           resource.data.status == 'pending' &&
           request.resource.data.status == 'answered' &&
-          request.resource.data.diff(resource.data).affectedKeys().hasAll(['status', 'answeredTestimonyId']) &&
-          request.resource.data.diff(resource.data).affectedKeys().size() == 2
+          request.resource.data.diff(resource.data).affectedKeys().hasAll(['status', 'answeredTestimonyId'])
+        ) ||
+        // SCENARIO 3: Author of prayer request can revert it to pending when a testimony is deleted
+        (
+          resource.data.authorId == request.auth.uid &&
+          resource.data.status == 'answered' &&
+          request.resource.data.status == 'pending' &&
+          request.resource.data.diff(resource.data).affectedKeys().hasAll(['status', 'answeredTestimonyId'])
         )
       );
     }
@@ -257,11 +263,11 @@ service cloud.firestore {
       allow create: if request.auth != null && request.resource.data.organizerId == request.auth.uid;
       
       allow update: if request.auth != null && (
-        // SCENARIO 1: Organizer updates details.
-        (request.auth.uid == resource.data.organizerId && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['memberIds', 'memberCount', 'status'])) ||
+        // SCENARIO 1: Organizer updates details (including status for soft delete).
+        (request.auth.uid == resource.data.organizerId && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['memberIds', 'memberCount'])) ||
         
         // SCENARIO 2: A soul is assigned to the fellowship (only memberCount changes)
-        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['memberCount'])) ||
+        (request.resource.data.diff(resource.data).hasOnly(['memberCount'])) ||
 
         // SCENARIO 3: A new member joins the fellowship
         (
