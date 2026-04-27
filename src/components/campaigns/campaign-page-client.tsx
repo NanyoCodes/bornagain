@@ -49,6 +49,8 @@ function CampaignMap({ campaign }: { campaign: Campaign }) {
         libraries,
     });
 
+    const onMapUnmount = useCallback(() => {}, []);
+
     if (!GOOGLE_MAPS_API_KEY || GOOGLE_MAPS_API_KEY === 'YOUR_API_KEY_HERE') {
         return (
             <Card>
@@ -131,6 +133,7 @@ function CampaignMap({ campaign }: { campaign: Campaign }) {
                     center={center}
                     zoom={12}
                     options={{ streetViewControl: false, mapTypeControl: false, fullscreenControl: false, zoomControl: false }}
+                    onUnmount={onMapUnmount}
                 >
                     <MarkerF position={center} />
                     <CircleF

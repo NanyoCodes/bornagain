@@ -112,7 +112,6 @@ export default function SoulsWonPage() {
 
   const handleSoulUpdated = () => {
     setSoulToEdit(null);
-    router.refresh();
   };
   
   const handleFollowUpLogged = () => {
@@ -498,12 +497,7 @@ export default function SoulsWonPage() {
       />
 
       {soulToEdit && (
-          <Dialog open={!!soulToEdit} onOpenChange={(isOpen) => {
-            if (!isOpen) {
-              setSoulToEdit(null);
-              router.refresh();
-            }
-          }}>
+          <Dialog open={!!soulToEdit} onOpenChange={(isOpen) => !isOpen && setSoulToEdit(null)}>
               <DialogContent className="sm:max-w-lg">
                   <DialogHeader>
                       <DialogTitle>Edit Soul Details</DialogTitle>

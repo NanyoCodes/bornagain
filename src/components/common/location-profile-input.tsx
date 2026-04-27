@@ -1,6 +1,7 @@
+
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useJsApiLoader, Autocomplete } from '@react-google-maps/api';
 import { Input } from '@/components/ui/input';
 import { Loader2 } from 'lucide-react';
@@ -23,9 +24,13 @@ export function LocationProfileInput({ form }: LocationProfileInputProps) {
     const [inputValue, setInputValue] = useState('');
 
 
-    const onLoad = (autocompleteInstance: google.maps.places.Autocomplete) => {
+    const onLoad = useCallback((autocompleteInstance: google.maps.places.Autocomplete) => {
         setAutocomplete(autocompleteInstance);
-    };
+    }, []);
+
+    const onUnmount = useCallback(() => {
+        setAutocomplete(null);
+    }, []);
 
     const onPlaceChanged = () => {
         if (autocomplete) {
@@ -90,7 +95,7 @@ export function LocationProfileInput({ form }: LocationProfileInputProps) {
     }
 
     return (
-        <Autocomplete onLoad={onLoad} onPlaceChanged={onPlaceChanged} fields={['address_components', 'geometry.location']} types={['(regions)']}>
+        <Autocomplete onLoad={onLoad} onUnmount={onUnmount} onPlaceChanged={onPlaceChanged} fields={['address_components', 'geometry.location']} types={['(regions)']}>
             <Input
                 placeholder="Search location to autofill city/state/country"
                 type="text"

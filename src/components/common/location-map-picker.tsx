@@ -191,9 +191,17 @@ export function LocationMapPicker({ form }: LocationMapPickerProps) {
         }
     }, [isMobile]);
 
-    const onAutocompleteLoad = (autocompleteInstance: google.maps.places.Autocomplete) => {
+    const onMapUnmount = useCallback(() => {
+        setMap(null);
+    }, []);
+
+    const onAutocompleteLoad = useCallback((autocompleteInstance: google.maps.places.Autocomplete) => {
         setAutocomplete(autocompleteInstance);
-    };
+    }, []);
+
+    const onAutocompleteUnmount = useCallback(() => {
+        setAutocomplete(null);
+    }, []);
     
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
@@ -276,6 +284,7 @@ export function LocationMapPicker({ form }: LocationMapPickerProps) {
         <div className="relative">
             <Autocomplete
                 onLoad={onAutocompleteLoad}
+                onUnmount={onAutocompleteUnmount}
                 onPlaceChanged={onPlaceChanged}
                 fields={['formatted_address', 'name', 'geometry.location']}
                 types={['geocode']}
@@ -320,6 +329,7 @@ export function LocationMapPicker({ form }: LocationMapPickerProps) {
                 center={center}
                 zoom={markerPosition ? 14 : 10}
                 onLoad={onMapLoad}
+                onUnmount={onMapUnmount}
                 onClick={handleMapClick}
                 options={{
                     streetViewControl: false,

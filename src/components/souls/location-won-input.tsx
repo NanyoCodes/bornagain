@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useJsApiLoader, Autocomplete } from '@react-google-maps/api';
 import { Input } from '@/components/ui/input';
 import { Loader2 } from 'lucide-react';
@@ -30,9 +30,13 @@ export function LocationWonInput({ form }: LocationWonInputProps) {
     const [inputValue, setInputValue] = useState(initialDisplay);
 
 
-    const onLoad = (autocompleteInstance: google.maps.places.Autocomplete) => {
+    const onLoad = useCallback((autocompleteInstance: google.maps.places.Autocomplete) => {
         setAutocomplete(autocompleteInstance);
-    };
+    }, []);
+
+    const onUnmount = useCallback(() => {
+        setAutocomplete(null);
+    }, []);
 
     const onPlaceChanged = () => {
         if (autocomplete) {
@@ -97,7 +101,7 @@ export function LocationWonInput({ form }: LocationWonInputProps) {
     }
 
     return (
-        <Autocomplete onLoad={onLoad} onPlaceChanged={onPlaceChanged} fields={['address_components', 'geometry.location']} types={['(regions)']}>
+        <Autocomplete onLoad={onLoad} onUnmount={onUnmount} onPlaceChanged={onPlaceChanged} fields={['address_components', 'geometry.location']} types={['(regions)']}>
             <Input
                 placeholder="Search location where soul was won"
                 type="text"
@@ -108,5 +112,3 @@ export function LocationWonInput({ form }: LocationWonInputProps) {
         </Autocomplete>
     );
 }
-
-    
