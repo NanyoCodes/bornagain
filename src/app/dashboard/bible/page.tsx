@@ -732,56 +732,56 @@ export default function BibleReaderPage() {
                   )}
               </ScrollArea>
           </div>
-           <div className="flex-shrink-0 pt-4 flex flex-col sm:flex-row gap-4 items-center sm:justify-between">
-            <div className="flex items-center justify-center min-h-[40px]">
-                {selectedVerses.length > 0 && !unfinishedHighlight && (
-                    <Button onClick={handleSaveHighlight} disabled={isProcessingHighlight}>
-                        <Highlighter className="mr-2 h-4 w-4" />
-                        {isProcessingHighlight ? 'Saving...' : 'Highlight & Note'}
-                    </Button>
-                )}
-                {unfinishedHighlight && (
-                    <Card className="border-amber-500/50 bg-amber-500/10 p-3 w-full max-w-md">
-                        <div className="flex items-center justify-between gap-4">
-                            <div className="text-amber-700 dark:text-amber-400">
-                                <p className="font-semibold text-sm">Meditation Required</p>
-                                <p className="text-xs">Please add a note to your last highlight before creating another.</p>
+           <div className="flex-shrink-0 pt-4 flex flex-col sm:flex-row gap-4 items-center justify-between">
+                <div className="flex items-center justify-center min-h-[40px]">
+                    {selectedVerses.length > 0 && !unfinishedHighlight && (
+                        <Button onClick={handleSaveHighlight} disabled={isProcessingHighlight}>
+                            <Highlighter className="mr-2 h-4 w-4" />
+                            {isProcessingHighlight ? 'Saving...' : 'Highlight & Note'}
+                        </Button>
+                    )}
+                    {unfinishedHighlight && (
+                        <Card className="border-amber-500/50 bg-amber-500/10 p-3 w-full max-w-md">
+                            <div className="flex items-center justify-between gap-4">
+                                <div className="text-amber-700 dark:text-amber-400">
+                                    <p className="font-semibold text-sm">Meditation Required</p>
+                                    <p className="text-xs">Please add a note to your last highlight before creating another.</p>
+                                </div>
+                                <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => {
+                                        if (unfinishedHighlight) {
+                                          setActiveHighlightId(unfinishedHighlight.id);
+                                          if (isMobile) {
+                                              setMobileTab('notes');
+                                          }
+                                        }
+                                    }}
+                                >
+                                    Go to Note
+                                </Button>
                             </div>
-                            <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => {
-                                    if (unfinishedHighlight) {
-                                      setActiveHighlightId(unfinishedHighlight.id);
-                                      if (isMobile) {
-                                          setMobileTab('notes');
-                                      }
-                                    }
-                                }}
-                            >
-                                Go to Note
-                            </Button>
-                        </div>
-                    </Card>
-                )}
-            </div>
-            <div className="flex flex-wrap items-center justify-center gap-2">
-                <div className="flex items-center gap-2">
-                    <Input
-                        type="number"
-                        placeholder="Verse"
-                        value={goToVerse}
-                        onChange={(e) => setGoToVerse(e.target.value)}
-                        className="w-20 h-9"
-                        onKeyDown={(e) => e.key === 'Enter' && handleGoToVerse()}
-                    />
-                    <Button onClick={handleGoToVerse} size="sm" variant="secondary">Go</Button>
+                        </Card>
+                    )}
                 </div>
-                <Button onClick={handleMarkAsRead} disabled={isSubmitting || isLoadingChapter || !!chapterError}>
-                  {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Mark as Read & Next Chapter
-                </Button>
-            </div>
+                <div className="flex flex-col sm:flex-row items-center justify-center sm:justify-end gap-2 w-full sm:w-auto">
+                    <div className="flex items-center gap-2">
+                        <Input
+                            type="number"
+                            placeholder="Verse"
+                            value={goToVerse}
+                            onChange={(e) => setGoToVerse(e.target.value)}
+                            className="w-20 h-9"
+                            onKeyDown={(e) => e.key === 'Enter' && handleGoToVerse()}
+                        />
+                        <Button onClick={handleGoToVerse} size="sm" variant="secondary">Go</Button>
+                    </div>
+                    <Button onClick={handleMarkAsRead} disabled={isSubmitting || isLoadingChapter || !!chapterError} className="w-full sm:w-auto">
+                      {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                      Mark as Read & Next Chapter
+                    </Button>
+                </div>
           </div>
       </div>
     );
@@ -1061,5 +1061,3 @@ export default function BibleReaderPage() {
         </div>
     );
 }
-
-    
