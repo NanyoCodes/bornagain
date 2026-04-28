@@ -81,9 +81,11 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
     },
   });
 
+  const { reset } = form;
+
   // This useEffect will reset the form with new `soul` data when the prop changes.
   useEffect(() => {
-    form.reset({
+    reset({
       firstName: soul.firstName || "",
       lastName: soul.lastName || "",
       email: soul.email || "",
@@ -99,7 +101,7 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
       wonAt: safeToDate(soul.wonAt) ?? new Date(),
       fellowshipId: soul.fellowshipId || "",
     });
-  }, [soul, form]);
+  }, [soul, reset]);
   
   const sourceValue = form.watch("source");
   useEffect(() => {
