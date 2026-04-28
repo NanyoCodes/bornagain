@@ -732,8 +732,8 @@ export default function BibleReaderPage() {
                   )}
               </ScrollArea>
           </div>
-          <div className="flex-shrink-0 pt-4 flex flex-col sm:flex-row gap-2 sm:gap-4 items-center justify-between">
-            <div className="flex items-center justify-center min-h-[40px]">
+          <div className="flex-shrink-0 pt-4 flex flex-col sm:flex-row gap-4 items-center justify-between">
+            <div className="flex items-center justify-center min-h-[40px] flex-shrink-0">
                 {selectedVerses.length > 0 && !unfinishedHighlight && (
                     <Button size="sm" onClick={handleSaveHighlight} disabled={isProcessingHighlight}>
                         <Highlighter className="mr-2 h-4 w-4" />
@@ -770,14 +770,14 @@ export default function BibleReaderPage() {
                     </Card>
                 )}
             </div>
-            <div className="flex flex-wrap items-center justify-center sm:justify-end gap-2 w-full sm:w-auto">
+            <div className="flex items-center justify-end flex-wrap gap-2">
                 <div className="flex items-center gap-2">
                     <Input
                         type="number"
                         placeholder="Verse"
                         value={goToVerse}
                         onChange={(e) => setGoToVerse(e.target.value)}
-                        className="w-20 h-8"
+                        className="w-20 h-9"
                         onKeyDown={(e) => e.key === 'Enter' && handleGoToVerse()}
                     />
                     <Button onClick={handleGoToVerse} size="sm" variant="secondary">Go</Button>
@@ -1050,7 +1050,7 @@ export default function BibleReaderPage() {
     );
 
     return (
-        <div className="h-dvh flex flex-col p-4 md:p-6 md:pb-6">
+        <div className="h-dvh flex flex-col p-2 sm:p-4 md:p-6">
             <div className="flex-shrink-0 flex items-center gap-4 mb-4">
                 <Button variant="outline" size="icon" onClick={() => router.back()}>
                     <ArrowLeft className="h-4 w-4" />
@@ -1067,3 +1067,5 @@ export default function BibleReaderPage() {
         </div>
     );
 }
+
+    
