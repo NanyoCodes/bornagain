@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect, useRef, useLayoutEffect } from 'react';
@@ -501,7 +502,7 @@ export default function BibleReaderPage() {
             toast({
                 variant: "default",
                 title: "Finish Your Note",
-                description: "Please add a note to your previous highlight before selecting new verses.",
+                description: "Please add a note to your previous highlight before creating another.",
             });
             setActiveHighlightId(unfinishedHighlight.id);
             if (isMobile) {
@@ -731,7 +732,7 @@ export default function BibleReaderPage() {
                   )}
               </ScrollArea>
           </div>
-           <div className="flex-shrink-0 pt-4 flex flex-wrap gap-4 items-center justify-center sm:justify-between">
+           <div className="flex-shrink-0 pt-4 flex flex-col sm:flex-row gap-4 items-center sm:justify-between">
             <div className="flex items-center justify-center min-h-[40px]">
                 {selectedVerses.length > 0 && !unfinishedHighlight && (
                     <Button onClick={handleSaveHighlight} disabled={isProcessingHighlight}>
@@ -1060,3 +1061,5 @@ export default function BibleReaderPage() {
         </div>
     );
 }
+
+    
