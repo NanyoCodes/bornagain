@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { format, parse, isSameDay, differenceInDays } from "date-fns";
-import { CalendarDays, MapPin, Users, Share2, Edit, MoreVertical, Loader2, MessagesSquare, UserCheck2, PlayCircle, Newspaper } from "lucide-react";
+import { CalendarDays, MapPin, Users, Share2, Edit, MoreVertical, Loader2, MessagesSquare, UserCheck2, PlayCircle, Newspaper, UserPlus } from "lucide-react";
 import type { Campaign, CampaignParticipant, UserProfile } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -134,10 +134,11 @@ type CampaignCardProps = {
   onManage: () => void;
   onShareTestimony: () => void;
   onDelete: () => void;
+  onLogSoul: () => void;
 };
 
 
-export function CampaignCard({ campaign, userId, userProfile, distance, onManage, onShareTestimony, onDelete, isJoined }: CampaignCardProps) {
+export function CampaignCard({ campaign, userId, userProfile, distance, onManage, onShareTestimony, onDelete, isJoined, onLogSoul }: CampaignCardProps) {
   const { toast } = useToast();
   const firestore = useFirestore();
   const { user } = useUser();
@@ -390,6 +391,21 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
     </TooltipProvider>
   );
 
+  const LogSoulButton = (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button variant="outline" size="icon" onClick={(e) => { e.stopPropagation(); onLogSoul(); }}>
+            <UserPlus className="h-4 w-4" />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>Log Soul Won</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
+
 
   const shareButton = (
     <DropdownMenu>
@@ -521,6 +537,7 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
 
                 {isOwner ? (
                     <div onClick={stopPropagation} className="flex items-center gap-2">
+                      {status === "Ongoing" && LogSoulButton}
                       {(status === 'Ongoing' || status === 'Past') && ShareTestimonyButton}
                       <Button variant="outline" size="icon" onClick={(e) => { e.stopPropagation(); onManage(); }}>
                         <Edit className="h-4 w-4" /><span className="sr-only">Manage Campaign</span>
@@ -544,7 +561,8 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
                         {isJoined && (
                             <Badge variant="secondary" className="flex items-center gap-2 py-2 px-3"><UserCheck2 className="h-4 w-4" /> Joined</Badge>
                         )}
-
+                        
+                        {isJoined && status === 'Ongoing' && LogSoulButton}
                         {isJoined && (status === 'Ongoing' || status === 'Past') && ShareTestimonyButton}
                         
                         <TooltipProvider>

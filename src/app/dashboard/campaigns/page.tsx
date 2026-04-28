@@ -33,7 +33,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { CampaignCard } from "@/components/campaigns/campaign-card";
-import type { Campaign, UserProfile, JoinedCampaign, Testimony } from "@/lib/types";
+import type { Campaign, UserProfile, JoinedCampaign, Testimony, Fellowship } from "@/lib/types";
 import { useCollection, useFirestore, useUser } from "@/firebase";
 import { useDoc } from "@/firebase/firestore/use-doc";
 import { collection, query, orderBy, doc, updateDoc, serverTimestamp } from "firebase/firestore";
@@ -44,6 +44,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { safeToDate, haversineDistance } from "@/lib/utils";
 import { ManageCampaignForm } from "@/components/campaigns/manage-campaign-form";
+import { LogSoulForm } from "@/components/souls/log-soul-form";
 import { CreateTestimonyForm } from "@/components/testimonies/create-testimony-form";
 import { useToast } from "@/hooks/use-toast";
 import { errorEmitter } from "@/firebase/error-emitter";
@@ -130,6 +131,7 @@ export default function CampaignsPage() {
   // State for managed dialogs
   const [campaignToManage, setCampaignToManage] = useState<Campaign | null>(null);
   const [campaignForTestimony, setCampaignForTestimony] = useState<Campaign | null>(null);
+  const [campaignForSoul, setCampaignForSoul] = useState<Campaign | null>(null);
   const [campaignToDelete, setCampaignToDelete] = useState<Campaign | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -170,8 +172,19 @@ export default function CampaignsPage() {
   }, [user?.uid, firestore]);
   const { data: joinedCampaigns, loading: joinedCampaignsLoading } = useCollection<JoinedCampaign>(joinedCampaignsQuery);
   const joinedCampaignIds = useMemo(() => new Set(joinedCampaigns?.map(c => c.id)), [joinedCampaigns]);
+
+  const fellowshipsQuery = useMemo(() => {
+    if (!firestore) return null;
+    return query(collection(firestore, 'fellowships'), orderBy('name', 'asc'));
+  }, [firestore]);
+  const { data: allFellowships, loading: loadingFellowships } = useCollection<Fellowship>(fellowshipsQuery);
   
-  const loading = userLoading || profileLoading || campaignsLoading || joinedCampaignsLoading;
+  const fellowships = useMemo(() => {
+    if (!allFellowships) return [];
+    return allFellowships.filter(f => f.status !== 'deleted');
+  }, [allFellowships]);
+  
+  const loading = userLoading || profileLoading || campaignsLoading || joinedCampaignsLoading || loadingFellowships;
 
   const handleCampaignCreated = () => {
     setIsCreateOpen(false);
@@ -182,6 +195,11 @@ export default function CampaignsPage() {
     toast({ title: "Testimony Shared!", description: "Thank you for sharing." });
   };
   
+  const handleSoulLogged = () => {
+    setCampaignForSoul(null);
+    toast({ title: "Soul Logged!", description: "The new soul has been added to your personal dashboard." });
+  };
+
   const handleDeleteCampaign = async () => {
     if (!campaignToDelete || !user || !firestore) return;
     setIsDeleting(true);
@@ -325,6 +343,11 @@ export default function CampaignsPage() {
     });
 
   }, [processedCampaigns, searchTerm, mounted, filter, user?.uid, statusFilter, joinedCampaignIds]);
+  
+  const activeCampaigns = useMemo(() => {
+    if (!campaigns) return [];
+    return campaigns.filter(c => c.status !== 'deleted');
+  }, [campaigns]);
 
   const triggerButton = (
     <Button disabled={!user || profileLoading}>
@@ -416,6 +439,7 @@ export default function CampaignsPage() {
             onManage={() => setCampaignToManage(campaign)}
             onShareTestimony={() => setCampaignForTestimony(campaign)}
             onDelete={() => setCampaignToDelete(campaign)}
+            onLogSoul={() => setCampaignForSoul(campaign)}
           />
         ))}
          {!loading && sortedAndFilteredCampaigns?.length === 0 && (
@@ -502,6 +526,27 @@ export default function CampaignsPage() {
                         userProfile={userProfile}
                         onTestimonyCreated={handleTestimonyCreated}
                         campaign={campaignForTestimony}
+                    />
+                </div>
+            </DialogContent>
+        </Dialog>
+      )}
+
+      {campaignForSoul && (
+        <Dialog open={!!campaignForSoul} onOpenChange={(open) => !open && setCampaignForSoul(null)}>
+            <DialogContent className="sm:max-w-lg">
+                <DialogHeader>
+                    <DialogTitle>Log a Soul Won in "{campaignForSoul.title}"</DialogTitle>
+                    <DialogDescription>
+                        Record the details of the person ministered to during this campaign.
+                    </DialogDescription>
+                </DialogHeader>
+                <div className="max-h-[70vh] overflow-y-auto pr-2">
+                   <LogSoulForm
+                        onSoulLogged={handleSoulLogged}
+                        defaultCampaign={campaignForSoul}
+                        fellowships={fellowships || []}
+                        campaigns={activeCampaigns || []}
                     />
                 </div>
             </DialogContent>
