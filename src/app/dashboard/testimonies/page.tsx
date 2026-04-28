@@ -37,7 +37,7 @@ import type { Testimony, PrayerRequest, UserProfile } from "@/lib/types";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCollection, useFirestore, useUser, useDoc } from "@/firebase";
-import { collection, query, orderBy, doc, deleteDoc } from "firebase/firestore";
+import { collection, query, orderBy, doc, deleteDoc, runTransaction, deleteField } from "firebase/firestore";
 import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card";
 import { useSearch } from "@/context/search-context";
 import { Tabs, TabsList, TabsContent, TabsTrigger } from "@/components/ui/tabs";
@@ -55,6 +55,7 @@ export default function TestimoniesPage() {
   const isMobile = useIsMobile();
   const { searchTerm, setSearchPlaceholder, setIsSearchVisible, setSearchTerm } = useSearch();
   const [activeTab, setActiveTab] = useState("testimonies");
+  const [highlightedTestimonyId, setHighlightedTestimonyId] = React.useState<string | null>(null);
 
   const firestore = useFirestore();
   const { user, loading: userLoading } = useUser();
@@ -79,8 +80,7 @@ export default function TestimoniesPage() {
 
   const loading = userLoading || profileLoading || loadingTestimonies || loadingPrayers;
 
-  // State for delete dialog
-  const [itemToDelete, setItemToDelete] = useState<{ type: 'testimony' | 'prayer', id: string, name: string } | null>(null);
+  const [itemToDelete, setItemToDelete] = useState<{ type: 'testimony', data: Testimony } | { type: 'prayer', data: PrayerRequest } | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [itemToEdit, setItemToEdit] = useState<Testimony | null>(null);
   const [prayerToAnswer, setPrayerToAnswer] = useState<PrayerRequest | null>(null);
@@ -102,6 +102,42 @@ export default function TestimoniesPage() {
       setSearchPlaceholder("Search prayer requests by content, category...");
     }
   }, [activeTab, setSearchPlaceholder]);
+  
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash;
+      if (hash) {
+        const id = hash.substring(1);
+        // We need to switch to the testimonies tab to see the highlighted testimony
+        setActiveTab("testimonies");
+        setHighlightedTestimonyId(id);
+      }
+    };
+
+    handleHashChange(); // Check hash on initial load
+
+    window.addEventListener('hashchange', handleHashChange);
+
+    return () => {
+      window.removeEventListener('hashchange', handleHashChange);
+    };
+  }, []); // This effect should run only once to set up the listener.
+
+  useEffect(() => {
+    if (highlightedTestimonyId && activeTab === 'testimonies' && !loadingTestimonies) {
+      const element = document.getElementById(highlightedTestimonyId);
+      if (element) {
+        setTimeout(() => {
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          element.classList.add('ring-2', 'ring-primary', 'ring-offset-2', 'transition-shadow', 'duration-1000');
+          setTimeout(() => {
+            element.classList.remove('ring-2', 'ring-primary', 'ring-offset-2');
+          }, 2500);
+          setHighlightedTestimonyId(null);
+        }, 300);
+      }
+    }
+  }, [highlightedTestimonyId, activeTab, loadingTestimonies]);
 
 
   const filteredTestimonies = useMemo(() => {
@@ -127,7 +163,6 @@ export default function TestimoniesPage() {
         if (a._distance != null) return -1;
         if (b._distance != null) return 1;
         
-        // Fallback to createdAt
         const timeA = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : 0;
         const timeB = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : 0;
         return timeB - timeA;
@@ -178,22 +213,47 @@ export default function TestimoniesPage() {
     if (!itemToDelete || !firestore || !user) return;
     setIsDeleting(true);
     
-    const collectionName = itemToDelete.type === 'testimony' ? 'testimonies' : 'prayerRequests';
-    const docRef = doc(firestore, collectionName, itemToDelete.id);
-    const item = itemToDelete;
+    const { type, data } = itemToDelete;
+    const collectionName = type === 'testimony' ? 'testimonies' : 'prayerRequests';
+    const docRef = doc(firestore, collectionName, data.id);
     
-    // Close the dialog first to prevent race conditions on re-render
     setItemToDelete(null);
 
     try {
-        await deleteDoc(docRef);
+        if (type === 'testimony') {
+            const testimonyToDelete = data as Testimony;
+            
+            await runTransaction(firestore, async (transaction) => {
+                const testimonyDoc = await transaction.get(docRef);
+                if (!testimonyDoc.exists()) {
+                    throw new Error("This testimony has already been deleted.");
+                }
+
+                transaction.delete(docRef);
+                
+                if (testimonyToDelete.answeredPrayerId) {
+                    const prayerRef = doc(firestore, 'prayerRequests', testimonyToDelete.answeredPrayerId);
+                    transaction.update(prayerRef, {
+                        status: 'pending',
+                        answeredTestimonyId: deleteField()
+                    });
+                }
+            });
+
+        } else {
+            await deleteDoc(docRef);
+        }
+
         toast({
-            title: `${item.type === 'testimony' ? 'Testimony' : 'Prayer Request'} Deleted`,
-            description: `Your ${item.name} has been successfully removed.`,
+            title: `${type === 'testimony' ? 'Testimony' : 'Prayer Request'} Deleted`,
+            description: `The item has been successfully removed.`,
         });
-    } catch (error) {
-        // If the delete fails, re-open the dialog to allow the user to try again
-        setItemToDelete(item);
+    } catch (error: any) {
+        setItemToDelete({ type, data });
+        if (error.message === "This testimony has already been deleted.") {
+            toast({ variant: 'destructive', title: 'Already Deleted', description: error.message });
+            return;
+        }
         const permissionError = new FirestorePermissionError({
           path: docRef.path,
           operation: 'delete',
@@ -252,7 +312,7 @@ export default function TestimoniesPage() {
                             key={testimony.id} 
                             testimony={testimony} 
                             distance={(testimony as any)._distance}
-                            onDelete={() => setItemToDelete({ type: 'testimony', id: testimony.id, name: 'testimony' })}
+                            onDelete={() => setItemToDelete({ type: 'testimony', data: testimony })}
                             onEdit={() => setItemToEdit(testimony)}
                         />
                     );
@@ -279,7 +339,7 @@ export default function TestimoniesPage() {
                   <PrayerRequestCard 
                     key={req.id} 
                     prayerRequest={req}
-                    onDelete={() => setItemToDelete({ type: 'prayer', id: req.id, name: 'prayer request' })}
+                    onDelete={() => setItemToDelete({ type: 'prayer', data: req })}
                     onAnswerPrayer={() => handleOpenTestimonyDialog(req)}
                   />
                 ))}
@@ -302,7 +362,7 @@ export default function TestimoniesPage() {
             <AlertDialogHeader>
                 <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                 <AlertDialogDescription>
-                This will permanently delete this {itemToDelete.name}. This action cannot be undone.
+                This will permanently delete this {itemToDelete.type}. This action cannot be undone.
                 </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
