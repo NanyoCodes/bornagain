@@ -737,7 +737,14 @@ export default function BibleReaderPage() {
                     {selectedVerses.length > 0 && !unfinishedHighlight && (
                         <Button onClick={handleSaveHighlight} disabled={isProcessingHighlight}>
                             <Highlighter className="mr-2 h-4 w-4" />
-                            {isProcessingHighlight ? 'Saving...' : 'Highlight & Note'}
+                            {isProcessingHighlight ? (
+                                'Saving...'
+                            ) : (
+                                <>
+                                    <span className="sm:hidden">Highlight</span>
+                                    <span className="hidden sm:inline">Highlight & Note</span>
+                                </>
+                            )}
                         </Button>
                     )}
                     {unfinishedHighlight && (
@@ -778,8 +785,9 @@ export default function BibleReaderPage() {
                         <Button onClick={handleGoToVerse} size="sm" variant="secondary">Go</Button>
                     </div>
                     <Button onClick={handleMarkAsRead} disabled={isSubmitting || isLoadingChapter || !!chapterError} className="w-full sm:w-auto">
-                      {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                      Mark as Read & Next Chapter
+                        {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                        <span className="sm:hidden">Mark & Next</span>
+                        <span className="hidden sm:inline">Mark as Read & Next Chapter</span>
                     </Button>
                 </div>
           </div>
@@ -1061,3 +1069,5 @@ export default function BibleReaderPage() {
         </div>
     );
 }
+
+    
