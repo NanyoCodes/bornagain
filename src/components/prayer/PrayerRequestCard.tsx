@@ -133,7 +133,7 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({ prayerRequest
                     <Link href={`/dashboard/testimonies#${prayerRequest.answeredTestimonyId}`}>
                         <Badge variant="secondary" className="flex items-center gap-2 py-1 px-2 border-green-500 text-green-600 dark:text-green-400 cursor-pointer hover:bg-green-500/10">
                             <Award className="h-4 w-4" />
-                            <span>View Testimony</span>
+                            <span>Prayer Answered</span>
                         </Badge>
                     </Link>
                 ) : (
@@ -151,7 +151,7 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({ prayerRequest
             <Link href={`/dashboard/testimonies#${prayerRequest.answeredTestimonyId}`}>
                 <Badge variant="secondary" className="flex items-center gap-2 py-1 px-2 border-green-500 text-green-600 dark:text-green-400 cursor-pointer hover:bg-green-500/10">
                     <Award className="h-4 w-4" />
-                    <span>View Testimony</span>
+                    <span>Prayer Answered</span>
                 </Badge>
             </Link>
           ) : isAnswered ? (
@@ -170,4 +170,3 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({ prayerRequest
     </>
   );
 });
-
