@@ -201,7 +201,7 @@ export default function BibleReaderPage() {
   const [chapterError, setChapterError] = useState<string | null>(null);
 
   const [isScrolledToEnd, setIsScrolledToEnd] = useState(false);
-  const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const scrollAreaRef = useRef<HTMLDivLement>(null);
   const [filterDate, setFilterDate] = useState<Date | undefined>();
 
   // Highlighting state
@@ -703,91 +703,93 @@ export default function BibleReaderPage() {
                   </div>
                   )}
                   {!isLoadingChapter && !chapterError && chapterContent && (
-                  <div className={cn("space-y-1 font-serif", fontSizeClasses[fontSize])}>
-                      {chapterContent.verses.map(v => {
-                              const verseNum = v.verse;
-                              const isSelected = selectedVerses.includes(verseNum);
-                              const highlightInfo = highlightsMap.get(verseNum);
-                              const isActiveHighlight = activeHighlight?.verses.includes(verseNum) ?? false;
-                              return (
-                                  <p
-                                      key={verseNum}
-                                      id={`verse-${verseNum}`}
-                                      className={cn(
-                                          'rounded-sm transition-colors -mx-1 px-1 py-0.5',
-                                          'sm:leading-relaxed md:leading-loose',
-                                          highlightInfo && getHighlightClass(highlightInfo.color),
-                                          isSelected && 'bg-destructive/30',
-                                          isActiveHighlight && 'ring-2 ring-primary ring-offset-2 ring-offset-background',
-                                          'cursor-pointer'
+                    <>
+                        <div className={cn("space-y-1 font-serif", fontSizeClasses[fontSize])}>
+                            {chapterContent.verses.map(v => {
+                                    const verseNum = v.verse;
+                                    const isSelected = selectedVerses.includes(verseNum);
+                                    const highlightInfo = highlightsMap.get(verseNum);
+                                    const isActiveHighlight = activeHighlight?.verses.includes(verseNum) ?? false;
+                                    return (
+                                        <p
+                                            key={verseNum}
+                                            id={`verse-${verseNum}`}
+                                            className={cn(
+                                                'rounded-sm transition-colors -mx-1 px-1 py-0.5',
+                                                'sm:leading-relaxed md:leading-loose',
+                                                highlightInfo && getHighlightClass(highlightInfo.color),
+                                                isSelected && 'bg-destructive/30',
+                                                isActiveHighlight && 'ring-2 ring-primary ring-offset-2 ring-offset-background',
+                                                'cursor-pointer'
+                                            )}
+                                            onClick={() => handleVerseClick(verseNum)}
+                                        >
+                                            <sup className={cn("font-sans text-muted-foreground mr-1 sm:mr-1.5 select-none", subFontSizeClasses[fontSize])}>{v.verse}</sup>
+                                            {v.text}
+                                        </p>
+                                    )
+                            })}
+                        </div>
+                        <div className="pt-8 flex flex-col sm:flex-row gap-4 items-center justify-between">
+                          <div className="flex items-center justify-center min-h-[40px] flex-shrink-0">
+                              {selectedVerses.length > 0 && !unfinishedHighlight && (
+                                  <Button size="sm" onClick={handleSaveHighlight} disabled={isProcessingHighlight}>
+                                      <Highlighter className="mr-2 h-4 w-4" />
+                                      {isProcessingHighlight ? 'Saving...' : (
+                                          <>
+                                              <span className="sm:hidden">Highlight</span>
+                                              <span className="hidden sm:inline">Highlight & Note</span>
+                                          </>
                                       )}
-                                      onClick={() => handleVerseClick(verseNum)}
-                                  >
-                                      <sup className={cn("font-sans text-muted-foreground mr-1 sm:mr-1.5 select-none", subFontSizeClasses[fontSize])}>{v.verse}</sup>
-                                      {v.text}
-                                  </p>
-                              )
-                      })}
-                  </div>
+                                  </Button>
+                              )}
+                              {unfinishedHighlight && (
+                                  <Card className="border-amber-500/50 bg-amber-500/10 p-3 w-full max-w-md">
+                                      <div className="flex items-center justify-between gap-4">
+                                          <div className="text-amber-700 dark:text-amber-400">
+                                              <p className="font-semibold text-sm">Meditation Required</p>
+                                              <p className="text-xs">Please add a note to your last highlight before creating another.</p>
+                                          </div>
+                                          <Button
+                                              size="sm"
+                                              variant="outline"
+                                              onClick={() => {
+                                                  if (unfinishedHighlight) {
+                                                    setActiveHighlightId(unfinishedHighlight.id);
+                                                    if (isMobile) {
+                                                        setMobileTab('notes');
+                                                    }
+                                                  }
+                                              }}
+                                          >
+                                              Go to Note
+                                          </Button>
+                                      </div>
+                                  </Card>
+                              )}
+                          </div>
+                          <div className="flex items-center justify-end flex-wrap gap-2">
+                              <div className="flex items-center gap-2">
+                                  <Input
+                                      type="number"
+                                      placeholder="Verse"
+                                      value={goToVerse}
+                                      onChange={(e) => setGoToVerse(e.target.value)}
+                                      className="w-20 h-9"
+                                      onKeyDown={(e) => e.key === 'Enter' && handleGoToVerse()}
+                                  />
+                                  <Button onClick={handleGoToVerse} size="sm" variant="secondary">Go</Button>
+                              </div>
+                              <Button size="sm" onClick={handleMarkAsRead} disabled={isSubmitting || isLoadingChapter || !!chapterError}>
+                                  {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                  <span className="sm:hidden">Mark & Next</span>
+                                  <span className="hidden sm:inline">Mark as Read & Next Chapter</span>
+                              </Button>
+                          </div>
+                        </div>
+                    </>
                   )}
               </ScrollArea>
-          </div>
-          <div className="flex-shrink-0 pt-4 flex flex-col sm:flex-row gap-4 items-center justify-between">
-            <div className="flex items-center justify-center min-h-[40px] flex-shrink-0">
-                {selectedVerses.length > 0 && !unfinishedHighlight && (
-                    <Button size="sm" onClick={handleSaveHighlight} disabled={isProcessingHighlight}>
-                        <Highlighter className="mr-2 h-4 w-4" />
-                        {isProcessingHighlight ? 'Saving...' : (
-                             <>
-                                <span className="sm:hidden">Highlight</span>
-                                <span className="hidden sm:inline">Highlight & Note</span>
-                            </>
-                        )}
-                    </Button>
-                )}
-                {unfinishedHighlight && (
-                    <Card className="border-amber-500/50 bg-amber-500/10 p-3 w-full max-w-md">
-                        <div className="flex items-center justify-between gap-4">
-                            <div className="text-amber-700 dark:text-amber-400">
-                                <p className="font-semibold text-sm">Meditation Required</p>
-                                <p className="text-xs">Please add a note to your last highlight before creating another.</p>
-                            </div>
-                            <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => {
-                                    if (unfinishedHighlight) {
-                                      setActiveHighlightId(unfinishedHighlight.id);
-                                      if (isMobile) {
-                                          setMobileTab('notes');
-                                      }
-                                    }
-                                }}
-                            >
-                                Go to Note
-                            </Button>
-                        </div>
-                    </Card>
-                )}
-            </div>
-            <div className="flex items-center justify-end flex-wrap gap-2">
-                <div className="flex items-center gap-2">
-                    <Input
-                        type="number"
-                        placeholder="Verse"
-                        value={goToVerse}
-                        onChange={(e) => setGoToVerse(e.target.value)}
-                        className="w-20 h-9"
-                        onKeyDown={(e) => e.key === 'Enter' && handleGoToVerse()}
-                    />
-                    <Button onClick={handleGoToVerse} size="sm" variant="secondary">Go</Button>
-                </div>
-                <Button size="sm" onClick={handleMarkAsRead} disabled={isSubmitting || isLoadingChapter || !!chapterError}>
-                    {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    <span className="sm:hidden">Mark & Next</span>
-                    <span className="hidden sm:inline">Mark as Read & Next Chapter</span>
-                </Button>
-            </div>
           </div>
       </div>
     );
@@ -1050,7 +1052,7 @@ export default function BibleReaderPage() {
     );
 
     return (
-        <div className="h-dvh flex flex-col p-2 sm:p-4 md:p-6">
+        <div className="h-dvh flex flex-col p-2 sm:p-4">
             <div className="flex-shrink-0 flex items-center gap-4 mb-4">
                 <Button variant="outline" size="icon" onClick={() => router.back()}>
                     <ArrowLeft className="h-4 w-4" />
@@ -1067,5 +1069,3 @@ export default function BibleReaderPage() {
         </div>
     );
 }
-
-    
