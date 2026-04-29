@@ -25,7 +25,6 @@ First, you need an API key to authenticate your app's requests to Google Maps.
 3.  A new key will be created. **Copy this key immediately.** You will need it in a later step.
 4.  It is highly recommended to restrict your key for security. Click **"EDIT API KEY"** and under **"Application restrictions"**, select **"Websites"**. Add your app's domains:
     *   `localhost:3000` (for local development)
-    *   `https://6000-firebase-studio-1771339890236.cluster-64pjnskmlbaxowh5lzq6i7v4ra.cloudworkstations.dev` (your current development URL)
     *   `https://testifyglobal.com` (your future deployed URL)
 
 ---
