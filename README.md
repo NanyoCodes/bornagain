@@ -4,33 +4,32 @@ This is a NextJS application built for the global body of Christ.
 
 ## Production Domain: testifyglobal.com
 
-The app is configured to use **testifyglobal.com** as its primary domain and authentication handler.
+The app is hosted at **testifyglobal.com**.
 
-### Final Confirmation Steps (Action Required)
+### Troubleshooting the 404 Sign-in Error
 
-To ensure `testifyglobal.com` works as your main and auth domain, you must perform these steps in your dashboards:
+If you receive a 404 error when trying to sign in, it is because the `authDomain` in the code was set to your custom domain (`testifyglobal.com`) before the domain was fully provisioned by Firebase to handle authentication requests.
 
-#### 1. Firebase Console (Auth Confirmation)
-- Go to **Build > Authentication > Settings**.
-- Click **Authorized domains**.
-- Ensure `testifyglobal.com` is added to the list. This "confirms" to Firebase that your domain is allowed to handle sign-ins.
+**I have reverted the `authDomain` to the default project URL in `src/firebase/config.ts` to restore your ability to log in immediately.** 
 
-#### 2. Google Cloud Console (Social Login Confirmation)
-- Go to the [Google Cloud Credentials Page](https://console.cloud.google.com/apis/credentials).
-- Edit your **OAuth 2.0 Client ID** (usually named "Web client").
-- Under **Authorized redirect URIs**, add: `https://testifyglobal.com/__/auth/handler`.
-- This confirms your custom domain as a valid security handler for Google Sign-in.
+This is a background technical setting and **does not** affect your users visiting `testifyglobal.com`. It is recommended to leave this as the default `firebaseapp.com` address for maximum stability.
 
-#### 3. Firebase App Hosting (DNS Confirmation)
-- Go to **Build > App Hosting**.
-- Select your backend and click **Add custom domain**.
-- Follow the instructions to add a `TXT` record for verification and an `A` record to point your domain to Firebase.
+### How to use your Custom Domain for Emails
 
-#### 4. Storage CORS (Upload Confirmation)
-- Run the following command in your terminal to confirm your domain is allowed to upload files:
-  ```bash
-  gcloud storage buckets update gs://studio-6220967431-56fe2.appspot.com --cors-file=cors.json
-  ```
+To have password resets and verification emails point to your domain, you should configure the templates in the Firebase Console rather than changing the code:
+
+1. Go to the [Firebase Console](https://console.firebase.google.com/).
+2. Go to **Build > Authentication > Templates**.
+3. For each email type, click the **Edit (pencil)** icon.
+4. Click **"customize Action URL"** at the bottom.
+5. Set the URL to `https://testifyglobal.com/__/auth/action`.
+
+### Final Confirmation Steps for Hosting
+
+To point your domain to this app:
+1. Go to **Build > App Hosting** in the Firebase Console.
+2. Select your backend and click **Add custom domain**.
+3. Follow the instructions to add the `TXT` and `A` records to your DNS provider.
 
 ---
 

@@ -1,6 +1,6 @@
 export const firebaseConfig = {
   apiKey: "AIzaSyD9kYktgT6rSHdr5efM0cwHhIe61zf9ZeM",
-  authDomain: "testifyglobal.com",
+  authDomain: "studio-6220967431-56fe2.firebaseapp.com",
   projectId: "studio-6220967431-56fe2",
   storageBucket: "studio-6220967431-56fe2.appspot.com",
   messagingSenderId: "313468907372",
