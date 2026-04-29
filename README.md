@@ -1,39 +1,37 @@
-# Firebase Studio
+# Testify - Global Evangelism Platform
 
-This is a NextJS starter in Firebase Studio.
+This is a NextJS application built for the global body of Christ.
 
-## Initial Setup
+## Production Domain: testifyglobal.com
 
-Before your app can connect to Firebase services, you may need to enable them in the Firebase Console.
+The app is configured to use **testifyglobal.com** as its primary domain and authentication handler.
 
-### 1. Enable Authentication
+### Final Confirmation Steps (Action Required)
 
-1.  Go to the [Firebase Console](https://console.firebase.google.com/).
-2.  Select your project: **studio-6220967431-56fe2**.
-3.  In the left menu, go to **Build > Authentication**.
-4.  Click **Get started**.
-5.  Enable the sign-in providers you want to use (e.g., Email/Password, Google). This app is configured for Email/Password and Google.
+To ensure `testifyglobal.com` works as your main and auth domain, you must perform these steps in your dashboards:
 
-### 2. Create Firestore Database
+#### 1. Firebase Console (Auth Confirmation)
+- Go to **Build > Authentication > Settings**.
+- Click **Authorized domains**.
+- Ensure `testifyglobal.com` is added to the list. This "confirms" to Firebase that your domain is allowed to handle sign-ins.
 
-This app uses Firestore to store data. If you see connection timeout errors, it likely means you need to create a database instance.
+#### 2. Google Cloud Console (Social Login Confirmation)
+- Go to the [Google Cloud Credentials Page](https://console.cloud.google.com/apis/credentials).
+- Edit your **OAuth 2.0 Client ID** (usually named "Web client").
+- Under **Authorized redirect URIs**, add: `https://testifyglobal.com/__/auth/handler`.
+- This confirms your custom domain as a valid security handler for Google Sign-in.
 
-1.  In the Firebase Console, go to **Build > Firestore Database**.
-2.  Click **Create database**.
-3.  Choose **Start in production mode**. Click **Next**.
-4.  Choose a location for your data (a region close to you is best). Click **Enable**.
+#### 3. Firebase App Hosting (DNS Confirmation)
+- Go to **Build > App Hosting**.
+- Select your backend and click **Add custom domain**.
+- Follow the instructions to add a `TXT` record for verification and an `A` record to point your domain to Firebase.
 
-### 3. Enable Firebase Storage
-
-This app uses Firebase Storage for file uploads (like profile pictures).
-
-1.  In the Firebase Console, go to **Build > Storage**.
-2.  Click **Get started**.
-3.  Follow the on-screen prompts, accepting the default security rules. Click **Done**.
-4.  After the storage bucket is created, you must apply the correct CORS policy for uploads to work from your browser. Follow the steps in the [Storage CORS Guide](./docs/storage-cors-guide.md).
+#### 4. Storage CORS (Upload Confirmation)
+- Run the following command in your terminal to confirm your domain is allowed to upload files:
+  ```bash
+  gcloud storage buckets update gs://studio-6220967431-56fe2.appspot.com --cors-file=cors.json
+  ```
 
 ---
 
 To get started with coding, take a look at `src/app/page.tsx`.
-
-For instructions on how to push your code to a remote Git repository (like GitHub), please see the [Git Guide](./docs/git-guide.md).
