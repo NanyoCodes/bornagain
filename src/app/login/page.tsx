@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -101,7 +102,7 @@ export default function LoginPage() {
 
         <div className="text-center text-sm">
           Don&apos;t have an account?{' '}
-          <Link href="/signup" className="underline">
+          <Link href="/" className="underline">
             Sign up
           </Link>
         </div>
