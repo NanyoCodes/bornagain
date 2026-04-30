@@ -16,19 +16,23 @@ const nextConfig: NextConfig = {
   },
   async rewrites() {
     return [
-      // Route Firebase default email links to our custom UI page
+      // 1. Route specific Firebase action landing pages to our custom UI
       {
         source: '/__/auth/action',
         destination: '/auth/action',
       },
-      // Catch alternative underscore pattern often used in custom domains
       {
         source: '/_/auth/action',
         destination: '/auth/action',
       },
-      // Proxy the login handshake handlers to the secure Firebase backend
+      // 2. Proxy internal auth handler/handshake requests to the secure Firebase backend
+      // This handles both the standard (__) and alternative (_) path patterns
       {
         source: '/__/auth/:path*',
+        destination: `https://studio-6220967431-56fe2.firebaseapp.com/__/auth/:path*`,
+      },
+      {
+        source: '/_/auth/:path*',
         destination: `https://studio-6220967431-56fe2.firebaseapp.com/__/auth/:path*`,
       },
     ];

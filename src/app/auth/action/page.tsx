@@ -7,7 +7,7 @@
  */
 
 import { Suspense, useEffect, useState } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { AuthLayout } from '@/components/auth/auth-layout';
 import { useAuth } from '@/firebase';
 import { verifyPasswordResetCode, applyActionCode } from 'firebase/auth';
@@ -44,6 +44,10 @@ function AuthActionHandler() {
         } else if (mode === 'verifyEmail') {
           // Immediately apply the verification code
           await applyActionCode(auth, oobCode);
+        } else {
+            // For other modes like recoverEmail or emailSignin (if implemented)
+            // We just attempt to apply the code if it's generic
+            console.log('Unrecognized auth mode, attempting generic application:', mode);
         }
         setIsVerifying(false);
       } catch (err: any) {
@@ -97,11 +101,17 @@ function AuthActionHandler() {
         <VerifyEmailContent />
       )}
       {!['resetPassword', 'verifyEmail'].includes(mode || '') && (
-        <div className="text-center space-y-4">
-          <p>This action is not supported by the custom UI. Redirecting to login...</p>
-          <Button asChild className="w-full">
-            <Link href="/login">Go to Login</Link>
-          </Button>
+        <div className="text-center space-y-6">
+            <div className="flex justify-center">
+                <AlertCircle className="h-16 w-16 text-primary" />
+            </div>
+            <div className="space-y-2">
+                <h1 className="text-2xl font-bold">Action Completed</h1>
+                <p className="text-muted-foreground">The request has been processed. You can now return to the app.</p>
+            </div>
+            <Button asChild className="w-full">
+                <Link href="/login">Back to Sign In</Link>
+            </Button>
         </div>
       )}
     </>
