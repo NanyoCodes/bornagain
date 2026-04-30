@@ -57,6 +57,7 @@ export type UserProfile = {
     longitude?: number;
   };
   phone?: string;
+  defaultMeetingLink?: string;
   dailyDiscipline?: {
     completed: string[];
     lastUpdated: Timestamp;
@@ -343,6 +344,3 @@ export type JoinedFellowship = {
     fellowshipId: string;
     joinedAt: Timestamp;
 };
-
-    
-    

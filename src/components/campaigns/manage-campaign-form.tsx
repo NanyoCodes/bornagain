@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -9,7 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, MessagesSquare, Trash2 } from 'lucide-react';
+import { Loader2, MessagesSquare, Trash2, Video } from 'lucide-react';
 import { useCollection, useFirestore, useUser } from '@/firebase';
 import { collection, doc, updateDoc, serverTimestamp, getDoc, where, limit, addDoc, setDoc, runTransaction, query, orderBy, writeBatch } from 'firebase/firestore';
 import type { Campaign, CampaignParticipant } from '@/lib/types';
@@ -272,6 +271,10 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated, onDelete }: Ma
     });
   }
 
+  const handleCreateMeet = () => {
+    window.open('https://meet.google.com/new', '_blank', 'noopener,noreferrer');
+  };
+
   return (
     <div className="space-y-8">
         <Form {...form}>
@@ -475,8 +478,8 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated, onDelete }: Ma
                 
                 <Card>
                     <CardHeader>
-                        <CardTitle>Live Stream</CardTitle>
-                        <CardDescription>Add a link to a live stream (e.g., YouTube Live, Zoom). The link will be shown to users while the campaign is ongoing.</CardDescription>
+                        <CardTitle>Live Stream or Meeting</CardTitle>
+                        <CardDescription>Add a link to a live stream (e.g., YouTube) or virtual meeting (e.g., Google Meet). The link will be shown to users while the campaign is ongoing.</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <FormField
@@ -484,10 +487,15 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated, onDelete }: Ma
                             name="streamUrl"
                             render={({ field }) => (
                                 <FormItem>
-                                <FormLabel>Stream URL</FormLabel>
-                                <FormControl>
-                                    <Input placeholder="https://youtube.com/live/..." {...field} value={field.value ?? ''} />
-                                </FormControl>
+                                <FormLabel>Stream or Meeting URL</FormLabel>
+                                <div className="flex gap-2">
+                                  <FormControl>
+                                      <Input placeholder="https://..." {...field} value={field.value ?? ''} />
+                                  </FormControl>
+                                  <Button type="button" variant="outline" onClick={handleCreateMeet} title="Create a new Google Meet">
+                                    <Video className="h-4 w-4" />
+                                  </Button>
+                                </div>
                                 <FormMessage />
                                 </FormItem>
                             )}

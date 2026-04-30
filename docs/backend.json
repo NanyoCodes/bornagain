@@ -55,6 +55,11 @@
           "type": "string",
           "description": "The user's phone number."
         },
+        "defaultMeetingLink": {
+          "type": "string",
+          "format": "uri",
+          "description": "The user's default virtual meeting link (e.g., Google Meet)."
+        },
         "dailyDiscipline": {
           "type": "object",
           "description": "Tracks the user's completed daily disciplines for the current day.",
@@ -958,6 +963,3 @@
     }
   }
 }
-
-    
-    

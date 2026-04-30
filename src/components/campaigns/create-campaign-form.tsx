@@ -18,7 +18,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useRef, useEffect } from "react";
-import { Loader2 } from "lucide-react";
+import { Loader2, Video } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
@@ -53,6 +53,7 @@ const formSchema = z.object({
   scripture: z.string().min(3, "Scripture is too short.").max(100, "Scripture is too long."),
   scriptureTestimony: z.string().max(500, "Caption is too long.").optional(),
   maxParticipants: z.number().optional(),
+  streamUrl: z.string().url({ message: "Please enter a valid URL." }).optional().or(z.literal('')),
 }).refine((data) => data.endDate >= data.startDate, {
     message: "End date cannot be before start date.",
     path: ["endDate"],
@@ -109,6 +110,7 @@ export function CreateCampaignForm({ onCampaignCreated, userProfile }: CreateCam
       scriptureTestimony: "",
       startTime: "10:00",
       endTime: "12:00",
+      streamUrl: userProfile?.defaultMeetingLink || "",
     },
   });
 
@@ -189,6 +191,7 @@ export function CreateCampaignForm({ onCampaignCreated, userProfile }: CreateCam
             scriptureTestimony: values.scriptureTestimony,
             imageUrl: null,
             soulsLogged: 0,
+            streamUrl: values.streamUrl || null,
         };
         
         const batch = writeBatch(firestore);
@@ -233,6 +236,10 @@ export function CreateCampaignForm({ onCampaignCreated, userProfile }: CreateCam
         setIsCreating(false);
     }
   }
+
+  const handleCreateMeet = () => {
+    window.open('https://meet.google.com/new', '_blank', 'noopener,noreferrer');
+  };
 
   return (
     <>
@@ -435,6 +442,26 @@ export function CreateCampaignForm({ onCampaignCreated, userProfile }: CreateCam
                 )}
               />
            </div>
+           
+            <FormField
+              control={form.control}
+              name="streamUrl"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Meeting or Stream URL (Optional)</FormLabel>
+                  <div className="flex gap-2">
+                    <FormControl>
+                      <Input placeholder="https://meet.google.com/xxx-xxxx-xxx" {...field} value={field.value ?? ""} className="text-base" />
+                    </FormControl>
+                    <Button type="button" variant="outline" onClick={handleCreateMeet} title="Create a new Google Meet">
+                      <Video className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             <FormField
               control={form.control}
               name="maxParticipants"

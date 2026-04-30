@@ -12,12 +12,13 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import React, { useState } from "react";
-import { Loader2, LocateFixed } from "lucide-react";
+import { Loader2, LocateFixed, Video } from "lucide-react";
 import { useUser, useFirestore, useAuth } from "@/firebase";
 import { doc, updateDoc } from "firebase/firestore";
 import { updateProfile } from "firebase/auth";
@@ -47,6 +48,7 @@ const formSchema = z.object({
   latitude: z.number().optional(),
   longitude: z.number().optional(),
   phone: z.string().max(50, "Phone number is too long.").optional(),
+  defaultMeetingLink: z.string().url("Please enter a valid URL.").optional().or(z.literal('')),
 });
 
 type EditProfileModalProps = {
@@ -81,6 +83,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
       latitude: userProfile.location?.latitude,
       longitude: userProfile.location?.longitude,
       phone: userProfile.phone || "",
+      defaultMeetingLink: userProfile.defaultMeetingLink || "",
     },
   });
 
@@ -176,6 +179,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
         },
         phone: values.phone || "",
         photoURL: finalPhotoUrl,
+        defaultMeetingLink: values.defaultMeetingLink || null,
       };
       
       const firestoreUpdatePromise = updateDoc(doc(firestore, 'users', user.uid), firestoreUpdatePayload).catch((serverError) => {
@@ -202,6 +206,10 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
       setIsSubmitting(false);
     }
   }
+
+  const handleCreateMeet = () => {
+    window.open('https://meet.google.com/new', '_blank', 'noopener,noreferrer');
+  };
 
   return (
     <>
@@ -349,6 +357,26 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
               </AccordionContent>
             </AccordionItem>
           </Accordion>
+
+          <FormField
+            control={form.control}
+            name="defaultMeetingLink"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Default Virtual Meeting Link</FormLabel>
+                <div className="flex gap-2">
+                  <FormControl>
+                    <Input placeholder="https://meet.google.com/xxx-xxxx-xxx" {...field} value={field.value ?? ""} className="text-base" />
+                  </FormControl>
+                  <Button type="button" variant="outline" onClick={handleCreateMeet} title="Create a new Google Meet">
+                    <Video className="h-4 w-4" />
+                  </Button>
+                </div>
+                <FormDescription>This link will auto-fill when you create a new campaign or fellowship.</FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
           <FormField
             control={form.control}

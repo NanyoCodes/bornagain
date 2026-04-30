@@ -27,7 +27,7 @@ import type { UserProfile, Fellowship } from "@/lib/types";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { PlusCircle, HeartHandshake, Loader2, Trash2 } from 'lucide-react';
+import { PlusCircle, HeartHandshake, Loader2, Trash2, Video } from 'lucide-react';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -67,18 +67,22 @@ const formSchema = z.object({
 });
 
 
-function FellowshipForm({ onFormSubmit, isSubmitting }: { onFormSubmit: (values: z.infer<typeof formSchema>) => void, isSubmitting: boolean }) {
+function FellowshipForm({ userProfile, onFormSubmit, isSubmitting }: { userProfile: UserProfile | null, onFormSubmit: (values: z.infer<typeof formSchema>) => void, isSubmitting: boolean }) {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
             name: "",
             description: "",
             schedule: "",
-            streamUrl: "",
+            streamUrl: userProfile?.defaultMeetingLink || "",
             locationType: 'Physical',
             location: '',
         },
     });
+
+    const handleCreateMeet = () => {
+      window.open('https://meet.google.com/new', '_blank', 'noopener,noreferrer');
+    };
 
     return (
         <Form {...form}>
@@ -151,8 +155,15 @@ function FellowshipForm({ onFormSubmit, isSubmitting }: { onFormSubmit: (values:
                 )}
                 <FormField control={form.control} name="streamUrl" render={({ field }) => (
                     <FormItem>
-                        <FormLabel>Live Stream URL (Optional)</FormLabel>
-                        <FormControl><Input placeholder="https://youtube.com/live/..." {...field} value={field.value ?? ''} className="text-base" /></FormControl>
+                        <FormLabel>Meeting or Stream URL (Optional)</FormLabel>
+                        <div className="flex gap-2">
+                          <FormControl>
+                              <Input placeholder="https://..." {...field} value={field.value ?? ''} className="text-base" />
+                          </FormControl>
+                          <Button type="button" variant="outline" onClick={handleCreateMeet} title="Create a new Google Meet">
+                            <Video className="h-4 w-4" />
+                          </Button>
+                        </div>
                         <FormMessage />
                     </FormItem>
                 )} />
@@ -179,6 +190,10 @@ function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting }: { fell
       location: fellowship.location || "",
     },
   });
+
+  const handleCreateMeet = () => {
+    window.open('https://meet.google.com/new', '_blank', 'noopener,noreferrer');
+  };
 
   return (
     <Form {...form}>
@@ -251,8 +266,15 @@ function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting }: { fell
         )}
         <FormField control={form.control} name="streamUrl" render={({ field }) => (
             <FormItem>
-                <FormLabel>Live Stream URL (Optional)</FormLabel>
-                <FormControl><Input placeholder="https://youtube.com/live/..." {...field} value={field.value ?? ''} className="text-base" /></FormControl>
+                <FormLabel>Meeting or Stream URL (Optional)</FormLabel>
+                <div className="flex gap-2">
+                  <FormControl>
+                      <Input placeholder="https://..." {...field} value={field.value ?? ''} className="text-base" />
+                  </FormControl>
+                  <Button type="button" variant="outline" onClick={handleCreateMeet} title="Create a new Google Meet">
+                    <Video className="h-4 w-4" />
+                  </Button>
+                </div>
                 <FormMessage />
             </FormItem>
         )} />
@@ -400,7 +422,7 @@ export default function FellowshipPage() {
         </Button>
     );
 
-    const formContent = <FellowshipForm onFormSubmit={handleCreateFellowship} isSubmitting={isSubmitting} />;
+    const formContent = <FellowshipForm userProfile={userProfile ?? null} onFormSubmit={handleCreateFellowship} isSubmitting={isSubmitting} />;
 
     return (
         <div className="space-y-8">
@@ -448,7 +470,7 @@ export default function FellowshipPage() {
                 </div>
             ) : activeFellowships && activeFellowships.length > 0 ? (
                  <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                    {activeFellowships.map(f => <FellowshipCard key={f.id} fellowship={f} userProfile={userProfile} onManage={() => setFellowshipToManage(f)} onDelete={() => setFellowshipToDelete(f)} onClick={() => handleCardClick(f.id)} />)}
+                    {activeFellowships.map(f => <FellowshipCard key={f.id} fellowship={f} userProfile={userProfile ?? null} onManage={() => setFellowshipToManage(f)} onDelete={() => setFellowshipToDelete(f)} onClick={() => handleCardClick(f.id)} />)}
                 </div>
             ) : (
                 <div className="text-center py-12 flex flex-col items-center">
