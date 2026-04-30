@@ -101,7 +101,7 @@ export default function Page() {
 
         <div className="text-center text-sm">
           Already have an account?{' '}
-          <Link href="/login" className="underline">
+          <Link href="/login" className="underline cursor-pointer">
             Sign in
           </Link>
         </div>
