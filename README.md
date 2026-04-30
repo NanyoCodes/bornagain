@@ -4,23 +4,24 @@ This is a NextJS application built for the global body of Christ.
 
 ## Production Domain: testifyglobal.com
 
-The app is hosted at **testifyglobal.com**.
+The app is fully configured to use **testifyglobal.com** for all branding and authentication.
 
-### Troubleshooting "Invalid Request" or 404 Errors
+### Fixing "Invalid Request" or 404 Errors
 
-If you receive errors during Google Sign-in on `testifyglobal.com`, follow these manual steps in your consoles. These are **required** by Google for security and cannot be fixed by code alone:
+To make the "behind-the-scenes" handshake work on your custom domain, you **must** complete these manual steps in the Google and Firebase consoles. Code changes alone cannot bypass these security requirements:
 
-1.  **Google Cloud Console (Critical for "Invalid Request"):**
+1.  **Google Cloud Console (Fixes "Invalid Request"):**
     *   Go to [Google Cloud Credentials](https://console.cloud.google.com/apis/credentials).
-    *   Find your **OAuth 2.0 Client ID** (usually called 'Web client').
-    *   Add `https://testifyglobal.com` to the **Authorized JavaScript origins**.
-    *   Add `https://testifyglobal.com/__/auth/handler` to the **Authorized redirect URIs**.
+    *   Select project: **studio-6220967431-56fe2**.
+    *   Find your **OAuth 2.0 Client ID** (usually 'Web client').
+    *   Add `https://testifyglobal.com` to **Authorized JavaScript origins**.
+    *   Add `https://testifyglobal.com/__/auth/handler` to **Authorized redirect URIs**. **(Crucial Step)**
 
-2.  **Firebase Console (Critical for 404s):**
+2.  **Firebase Console (Fixes 404 Errors):**
     *   Go to [Firebase Console](https://console.firebase.google.com/) > Build > Authentication > Settings.
     *   Add `testifyglobal.com` to the **Authorized domains** list.
 
-**Note:** I have reverted the `authDomain` in `src/firebase/config.ts` to the stable project default. This is the recommended configuration to ensure your login works 100% of the time while your custom domain security settings are being provisioned by Google.
+**Why this matters:** By setting `authDomain` to `testifyglobal.com` in `src/firebase/config.ts`, users will see your domain in the Google Login window instead of a generic Firebase URL. The `next.config.ts` rewrite handles the technical communication between your domain and Firebase's servers.
 
 ---
 
