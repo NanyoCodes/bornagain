@@ -143,6 +143,10 @@ export default function SoulsWonPage() {
 
     try {
         await runTransaction(firestore, async (transaction) => {
+            // BEST PRACTICE: Fetch documents inside transaction to satisfy security rules and ensure data consistency
+            const soulDoc = await transaction.get(soulRef);
+            if (!soulDoc.exists()) throw new Error("Soul record not found.");
+            
             const oldFellowshipId = soul.fellowshipId;
             
             // Decrement old fellowship count
@@ -179,6 +183,7 @@ export default function SoulsWonPage() {
             });
         }
     } catch (error) {
+        console.error("Error assigning fellowship:", error);
         const permissionError = new FirestorePermissionError({
             path: `TRANSACTION:ASSIGN_FELLOWSHIP:${soul.id}`,
             operation: 'update',
@@ -534,7 +539,7 @@ export default function SoulsWonPage() {
             isOpen={!!soulToAssign}
             onOpenChange={() => setSoulToAssign(null)}
             onAssignFellowship={handleAssignFellowship}
-            isAssigning={isAssigning ? soulToAssign.id : null}
+            isAssigning={isAssigning}
         />
       )}
     </div>

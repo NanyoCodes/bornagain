@@ -41,8 +41,6 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
     fellowshipLocations.forEach(loc => {
         const parts = loc.split(',').map(p => p.trim());
         if (parts.length > 1 && parts[parts.length - 1].toLowerCase() === country.toLowerCase()) {
-            // This assumes state is the second to last part, which may not always be true.
-            // A more robust solution would require structured location data.
             if(parts[parts.length - 2]) {
               stateSet.add(parts[parts.length - 2]);
             }
@@ -82,9 +80,7 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
 
   React.useEffect(() => {
     if (isOpen && soul) {
-        // Prefill filter based on soul's location if available
         setCountry(soul.locationWon?.country || '');
-        // Do not prefill state, as it may not match unstructured fellowship locations
         setState('');
     }
   }, [isOpen, soul]);
@@ -134,7 +130,7 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
                                         onClick={() => onAssignFellowship(soul, 'none')}
                                         disabled={!!isAssigning}
                                     >
-                                        {isAssigning ? <Loader2 className="h-4 w-4 animate-spin"/> : 'Unassign'}
+                                        {isAssigning === 'none' ? <Loader2 className="h-4 w-4 animate-spin"/> : 'Unassign'}
                                     </Button>
                                 ) : (
                                     <Button
@@ -142,7 +138,7 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
                                         onClick={() => onAssignFellowship(soul, f.id)}
                                         disabled={!!isAssigning}
                                     >
-                                        {isAssigning ? <Loader2 className="h-4 w-4 animate-spin"/> : 'Assign'}
+                                        {isAssigning === f.id ? <Loader2 className="h-4 w-4 animate-spin"/> : 'Assign'}
                                     </Button>
                                 )}
                             </CardContent>
