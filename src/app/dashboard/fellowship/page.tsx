@@ -1,7 +1,6 @@
-
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, Fragment } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -48,6 +47,7 @@ import { useRouter } from 'next/navigation';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { FellowshipCard } from '@/components/fellowship/fellowship-card';
 import { Card, CardHeader, CardContent } from '@/components/ui/card';
+import AdsenseAd from '@/components/common/adsense-ad';
 
 const formSchema = z.object({
   name: z.string().min(3, "Name must be at least 3 characters.").max(100),
@@ -468,7 +468,20 @@ export default function FellowshipPage() {
                 </div>
             ) : activeFellowships && activeFellowships.length > 0 ? (
                  <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                    {activeFellowships.map(f => <FellowshipCard key={f.id} fellowship={f} userProfile={userProfile ?? null} onManage={() => setFellowshipToManage(f)} onDelete={() => setFellowshipToDelete(f)} onClick={() => handleCardClick(f.id)} />)}
+                    {activeFellowships.map((f, index) => (
+                      <Fragment key={f.id}>
+                        <FellowshipCard 
+                          fellowship={f} 
+                          userProfile={userProfile ?? null} 
+                          onManage={() => setFellowshipToManage(f)} 
+                          onDelete={() => setFellowshipToDelete(f)} 
+                          onClick={() => handleCardClick(f.id)} 
+                        />
+                        {(index + 1) % 4 === 0 && (
+                          <AdsenseAd adSlot={`fellowships-grid-ad-${index}`} className="h-full" />
+                        )}
+                      </Fragment>
+                    ))}
                 </div>
             ) : (
                 <div className="text-center py-12 flex flex-col items-center">

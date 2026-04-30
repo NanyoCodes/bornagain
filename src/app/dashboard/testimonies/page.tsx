@@ -1,7 +1,6 @@
-
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, Fragment } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { PlusCircle, Newspaper, HandHeart, Loader2, Award } from "lucide-react";
@@ -46,6 +45,7 @@ import { useToast } from "@/hooks/use-toast";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { EditTestimonyForm } from "@/components/testimonies/edit-testimony-form";
+import AdsenseAd from "@/components/common/adsense-ad";
 
 
 export default function TestimoniesPage() {
@@ -306,17 +306,18 @@ export default function TestimoniesPage() {
                     <Card key={i}><CardHeader><div className="flex items-center gap-4"><Skeleton className="h-12 w-12 rounded-full" /><div className="w-full space-y-2"><Skeleton className="h-4 w-1/4" /><Skeleton className="h-4 w-1/5" /></div></div></CardHeader><CardContent className="space-y-4"><Skeleton className="h-5 w-3/4" /><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-4/5" /></CardContent><CardFooter><Skeleton className="h-8 w-24 ml-auto" /></CardFooter></Card>
                   ))
                 )}
-                {!loading && filteredTestimonies.map((testimony) => {
-                    return (
+                {!loading && filteredTestimonies.map((testimony, index) => (
+                    <Fragment key={testimony.id}>
                         <TestimonyCard 
-                            key={testimony.id} 
                             testimony={testimony} 
-                            distance={(testimony as any)._distance}
                             onDelete={() => setItemToDelete({ type: 'testimony', data: testimony })}
                             onEdit={() => setItemToEdit(testimony)}
                         />
-                    );
-                })}
+                        {(index + 1) % 4 === 0 && (
+                          <AdsenseAd adSlot={`testimonies-grid-ad-${index}`} className="h-full" />
+                        )}
+                    </Fragment>
+                ))}
                  {!loading && filteredTestimonies?.length === 0 && (
                   <div className="col-span-full text-center py-12 flex flex-col items-center">
                     <Newspaper className="h-16 w-16 text-muted-foreground" />
@@ -335,13 +336,17 @@ export default function TestimoniesPage() {
                     <Card key={i}><CardHeader><div className="flex items-center gap-4"><Skeleton className="h-12 w-12 rounded-full" /><div className="w-full space-y-2"><Skeleton className="h-4 w-1/4" /><Skeleton className="h-4 w-1/5" /></div></div></CardHeader><CardContent className="space-y-4"><Skeleton className="h-5 w-3/4" /><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-4/5" /></CardContent><CardFooter><Skeleton className="h-8 w-24 ml-auto" /></CardFooter></Card>
                   ))
                 )}
-                {!loading && filteredPrayerRequests?.map((req) => (
-                  <PrayerRequestCard 
-                    key={req.id} 
-                    prayerRequest={req}
-                    onDelete={() => setItemToDelete({ type: 'prayer', data: req })}
-                    onAnswerPrayer={() => handleOpenTestimonyDialog(req)}
-                  />
+                {!loading && filteredPrayerRequests?.map((req, index) => (
+                  <Fragment key={req.id}>
+                    <PrayerRequestCard 
+                      prayerRequest={req}
+                      onDelete={() => setItemToDelete({ type: 'prayer', data: req })}
+                      onAnswerPrayer={() => handleOpenTestimonyDialog(req)}
+                    />
+                    {(index + 1) % 4 === 0 && (
+                      <AdsenseAd adSlot={`prayers-grid-ad-${index}`} className="h-full" />
+                    )}
+                  </Fragment>
                 ))}
                 {!loading && filteredPrayerRequests?.length === 0 && (
                   <div className="col-span-full text-center py-12 flex flex-col items-center">

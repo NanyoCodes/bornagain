@@ -1,4 +1,3 @@
-
 "use client";
 
 import * as React from "react";
@@ -50,6 +49,7 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog";
 import Image from "next/image";
+import AdsenseAd from "../common/adsense-ad";
 
 
 const getStatusClasses = (status: FollowUpStatus | undefined): string => {
@@ -126,7 +126,7 @@ function SoulCard({ soul, onEdit, onFollowUp, onViewHistory, onExportSingle, onO
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                     <Button aria-haspopup="true" size="icon" variant="ghost">
-                                    <MoreHorizontal className="h-4 w-4" />
+                                    < MoreHorizontal className="h-4 w-4" />
                                     <span className="sr-only">Toggle menu</span>
                                     </Button>
                                 </DropdownMenuTrigger>
@@ -388,7 +388,14 @@ export function SoulsWonTable({ souls, loading, onEdit, onFollowUp, onViewHistor
                     </CardDescription>
                 </CardHeader>
             </Card>
-            {souls.map((soul) => <SoulCard key={soul.id} soul={soul} onEdit={onEdit} onFollowUp={onFollowUp} onViewHistory={onViewHistory} onExportSingle={onExportSingle} onOpenAssignDialog={onOpenAssignDialog} />)}
+            {souls.map((soul, index) => (
+                <React.Fragment key={soul.id}>
+                    <SoulCard soul={soul} onEdit={onEdit} onFollowUp={onFollowUp} onViewHistory={onViewHistory} onExportSingle={onExportSingle} onOpenAssignDialog={onOpenAssignDialog} />
+                    {(index + 1) % 4 === 0 && (
+                        <AdsenseAd adSlot={`souls-list-ad-${index}`} className="h-full" />
+                    )}
+                </React.Fragment>
+            ))}
         </div>
       )
   }

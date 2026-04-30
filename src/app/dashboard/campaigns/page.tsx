@@ -1,8 +1,6 @@
-
-
 "use client";
 
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect, Fragment } from "react";
 import { Button } from "@/components/ui/button";
 import { PlusCircle, Target, Loader2, Trash2 } from "lucide-react";
 import { CreateCampaignForm } from "@/components/campaigns/create-campaign-form";
@@ -49,6 +47,7 @@ import { CreateTestimonyForm } from "@/components/testimonies/create-testimony-f
 import { useToast } from "@/hooks/use-toast";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
+import AdsenseAd from "@/components/common/adsense-ad";
 
 function CampaignSkeletons() {
   return (
@@ -428,19 +427,23 @@ export default function CampaignsPage() {
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {loading && <CampaignSkeletons />}
-        {!loading && sortedAndFilteredCampaigns?.map((campaign) => (
-          <CampaignCard 
-            key={campaign.id} 
-            campaign={campaign} 
-            userId={user?.uid}
-            userProfile={userProfile}
-            isJoined={joinedCampaignIds.has(campaign.id)}
-            distance={campaign._distance}
-            onManage={() => setCampaignToManage(campaign)}
-            onShareTestimony={() => setCampaignForTestimony(campaign)}
-            onDelete={() => setCampaignToDelete(campaign)}
-            onLogSoul={() => setCampaignForSoul(campaign)}
-          />
+        {!loading && sortedAndFilteredCampaigns?.map((campaign, index) => (
+          <Fragment key={campaign.id}>
+            <CampaignCard 
+              campaign={campaign} 
+              userId={user?.uid}
+              userProfile={userProfile}
+              isJoined={joinedCampaignIds.has(campaign.id)}
+              distance={campaign._distance}
+              onManage={() => setCampaignToManage(campaign)}
+              onShareTestimony={() => setCampaignForTestimony(campaign)}
+              onDelete={() => setCampaignToDelete(campaign)}
+              onLogSoul={() => setCampaignForSoul(campaign)}
+            />
+            {(index + 1) % 4 === 0 && (
+              <AdsenseAd adSlot={`campaigns-grid-ad-${index}`} className="h-full" />
+            )}
+          </Fragment>
         ))}
          {!loading && sortedAndFilteredCampaigns?.length === 0 && (
           <div className="col-span-full text-center py-12 flex flex-col items-center">
