@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
@@ -38,12 +37,12 @@ export function LocationMapPicker({ form }: LocationMapPickerProps) {
     const searchBoxRef = useRef<HTMLDivElement>(null);
     const [geocodingError, setGeocodingError] = useState<string | null>(null);
 
-    const latitude = form.getValues('latitude');
-    const longitude = form.getValues('longitude');
+    const initialLat = form.getValues('latitude');
+    const initialLng = form.getValues('longitude');
     const radiusValue = form.getValues('coverageRadius');
 
-    const [markerPosition, setMarkerPosition] = useState<google.maps.LatLngLiteral | null>(latitude && longitude ? { lat: latitude, lng: longitude } : null);
-    const [center, setCenter] = useState(latitude && longitude ? { lat: latitude, lng: longitude } : fallbackCenter);
+    const [markerPosition, setMarkerPosition] = useState<google.maps.LatLngLiteral | null>(initialLat && initialLng ? { lat: initialLat, lng: initialLng } : null);
+    const [center, setCenter] = useState(initialLat && initialLng ? { lat: initialLat, lng: initialLng } : fallbackCenter);
     const [radius, setRadius] = useState(radiusValue || 1000);
     const [inputValue, setInputValue] = useState(form.getValues('location') || '');
 
@@ -53,20 +52,17 @@ export function LocationMapPicker({ form }: LocationMapPickerProps) {
         setMounted(true);
     }, []);
 
-    const geocoderRef = useRef<google.maps.Geocoder>();
+    const geocoderRef = useRef<google.maps.Geocoder>(null);
     const hasFetchedLocation = useRef(false);
 
     useEffect(() => {
-        if (isLoaded) {
-            if (!geocoderRef.current) {
-                geocoderRef.current = new window.google.maps.Geocoder();
-            }
+        if (isLoaded && !geocoderRef.current) {
+            geocoderRef.current = new window.google.maps.Geocoder();
         }
     }, [isLoaded]);
     
     const watchedLocation = form.watch('location');
     useEffect(() => {
-        // Sync local state if form value changes from an external source (e.g. map click)
         if (watchedLocation !== inputValue) {
             setInputValue(watchedLocation || '');
         }
@@ -75,8 +71,11 @@ export function LocationMapPicker({ form }: LocationMapPickerProps) {
     const updateFormLocation = useCallback((latLng: google.maps.LatLng) => {
         if (!geocoderRef.current) return;
         const newPos = { lat: latLng.lat(), lng: latLng.lng() };
-        setCenter(newPos);
-        setMarkerPosition(newPos);
+        
+        // Prevent update if position is same to avoid loops
+        setCenter(prev => prev.lat === newPos.lat && prev.lng === newPos.lng ? prev : newPos);
+        setMarkerPosition(prev => prev?.lat === newPos.lat && prev?.lng === newPos.lng ? prev : newPos);
+        
         form.setValue('latitude', newPos.lat, { shouldDirty: true });
         form.setValue('longitude', newPos.lng, { shouldDirty: true });
 
@@ -89,9 +88,7 @@ export function LocationMapPicker({ form }: LocationMapPickerProps) {
             } else {
                 let errorMessage = `Could not find an address for this location. You can set it manually. (Status: ${status})`;
                 if (status === 'REQUEST_DENIED') {
-                    errorMessage = "Geocoding API Error: This service may not be enabled on your API key. Please enable the 'Geocoding API' in your Google Cloud Console to automatically find addresses when clicking the map.";
-                } else if (status === 'OVER_QUERY_LIMIT') {
-                    errorMessage = "API Limit Reached: You have exceeded your usage quota for the Geocoding API.";
+                    errorMessage = "Geocoding API Error: Service not enabled. Please enable 'Geocoding API' in Google Cloud Console.";
                 }
                 setGeocodingError(errorMessage);
 
@@ -102,7 +99,7 @@ export function LocationMapPicker({ form }: LocationMapPickerProps) {
         });
     }, [form]);
     
-    const handleGeolocate = () => {
+    const handleGeolocate = useCallback(() => {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
                 (position) => {
@@ -116,49 +113,43 @@ export function LocationMapPicker({ form }: LocationMapPickerProps) {
                         map.panTo(userLocation);
                         map.setZoom(14);
                     }
-                    toast({ title: 'Location Updated', description: 'Map centered on your current location.' });
+                    toast({ title: 'Location Updated' });
                 },
                 () => {
                     toast({
                         variant: 'destructive',
                         title: 'Geolocation Failed',
-                        description: 'Could not get your location. Please check your browser permissions.',
+                        description: 'Please check your browser permissions.',
                     });
                 }
             );
-        } else {
-            toast({
-                variant: 'destructive',
-                title: 'Geolocation Not Supported',
-                description: 'Your browser does not support geolocation.',
-            });
         }
-    };
+    }, [map, updateFormLocation, toast]);
     
-    // This effect runs once to set an initial location if none is provided.
     useEffect(() => {
         const initialLocation = form.getValues('location');
         if (isLoaded && !initialLocation && navigator.geolocation && !hasFetchedLocation.current) {
             hasFetchedLocation.current = true;
             handleGeolocate();
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isLoaded, map]);
+    }, [isLoaded, handleGeolocate, form]);
 
-    // This effect syncs the map to the form state
     const watchedLat = form.watch('latitude');
     const watchedLng = form.watch('longitude');
 
     useEffect(() => {
         if (watchedLat && watchedLng) {
             const newPos = { lat: watchedLat, lng: watchedLng };
-            if (map && (newPos.lat !== center.lat || newPos.lng !== center.lng)) {
-                map.panTo(newPos);
+            // Only update center/marker if actual values changed to break infinite loops
+            if (newPos.lat !== center.lat || newPos.lng !== center.lng) {
+                if (map) {
+                    map.panTo(newPos);
+                }
+                setCenter(newPos);
+                setMarkerPosition(newPos);
             }
-            setCenter(newPos);
-            setMarkerPosition(newPos);
         }
-    }, [watchedLat, watchedLng, center.lat, center.lng, map]);
+    }, [watchedLat, watchedLng, map, center.lat, center.lng]);
 
     const handleMapClick = useCallback((e: google.maps.MapMouseEvent) => {
         if (e.latLng) {
@@ -217,27 +208,17 @@ export function LocationMapPicker({ form }: LocationMapPickerProps) {
                 const newPos = { lat: place.geometry.location.lat(), lng: place.geometry.location.lng() };
                 const address = place.formatted_address || place.name || '';
                 
-                // Update local state for input
                 setInputValue(address);
-
-                // Update form
                 form.setValue('latitude', newPos.lat, { shouldDirty: true });
                 form.setValue('longitude', newPos.lng, { shouldDirty: true });
                 form.setValue('location', address, { shouldDirty: true, shouldValidate: true });
 
-                // Update map
                 if (map) {
                     map.panTo(newPos);
                     map.setZoom(14);
                 }
                 setCenter(newPos);
                 setMarkerPosition(newPos);
-            } else {
-                 toast({
-                    variant: "destructive",
-                    title: "Location not found",
-                    description: "Please select a valid location from the dropdown suggestions.",
-                });
             }
         }
     };
@@ -248,24 +229,18 @@ export function LocationMapPicker({ form }: LocationMapPickerProps) {
             <Alert variant="destructive">
                 <AlertTitle>Google Maps Not Configured</AlertTitle>
                 <AlertDescription>
-                    The Google Maps API key is missing. Please open <code className="font-code p-1 bg-destructive/20 rounded">docs/google-maps-setup-guide.md</code> for the setup guide to enable map features.
+                    The Google Maps API key is missing.
                 </AlertDescription>
             </Alert>
         );
     }
 
     if (loadError) {
-        let errorMessage = "Error loading Google Maps. This is likely an API key or network issue.";
-        if (loadError.message.includes("InvalidKeyMapError")) {
-            errorMessage = "The Google Maps API key provided is invalid. Please get a new key from the Google Cloud Console.";
-        } else if (loadError.message.includes("ApiNotActivatedMapError")) {
-            errorMessage = "One or more required Google Maps APIs (JavaScript, Places, Geocoding) are not enabled for your key.";
-        }
         return (
              <Alert variant="destructive">
                 <AlertTitle>Google Maps Error</AlertTitle>
                 <AlertDescription>
-                    {errorMessage} Please open <code className="font-code p-1 bg-destructive/20 rounded">docs/google-maps-setup-guide.md</code> for detailed instructions.
+                    Error loading Google Maps. Please check your API key.
                 </AlertDescription>
             </Alert>
         );
@@ -317,7 +292,6 @@ export function LocationMapPicker({ form }: LocationMapPickerProps) {
                 <div className="w-full">{searchInputEl}</div>
              )}
              
-             {/* This div is positioned by the Google Map onLoad callback and holds the search input for desktop. */}
              <div ref={searchBoxRef}>
                 {!isMobile && (
                     <div className="w-full max-w-sm sm:max-w-md px-4 pt-4">{searchInputEl}</div>
