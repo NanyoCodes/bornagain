@@ -3,6 +3,7 @@
 /**
  * @fileOverview This page handles Firebase Auth actions such as password reset and email verification.
  * It reads the 'mode' and 'oobCode' (Out Of Band code) from the URL parameters sent in Firebase emails.
+ * Next.js rewrites in next.config.ts ensure that standard Firebase links are routed here.
  */
 
 import { Suspense, useEffect, useState } from 'react';
@@ -18,7 +19,6 @@ import { VerifyEmailContent } from '@/components/auth/verify-email-content';
 
 function AuthActionHandler() {
   const searchParams = useSearchParams();
-  const router = useRouter();
   const auth = useAuth();
   
   const mode = searchParams.get('mode');
@@ -30,7 +30,7 @@ function AuthActionHandler() {
 
   useEffect(() => {
     if (!oobCode || !mode) {
-      setError('Invalid link. Please request a new one.');
+      setError('Invalid link parameters. Please request a new link from the app.');
       setIsVerifying(false);
       return;
     }
@@ -38,15 +38,23 @@ function AuthActionHandler() {
     const verifyCode = async () => {
       try {
         if (mode === 'resetPassword') {
+          // Get the email associated with the reset code to show the user
           const userEmail = await verifyPasswordResetCode(auth, oobCode);
           setEmail(userEmail);
         } else if (mode === 'verifyEmail') {
+          // Immediately apply the verification code
           await applyActionCode(auth, oobCode);
         }
         setIsVerifying(false);
       } catch (err: any) {
-        console.error('Auth action error:', err);
-        setError(err.message || 'The link has expired or already been used.');
+        console.error('Auth action verification error:', err);
+        let message = 'The link has expired or already been used. Please try requesting a new one.';
+        if (err.code === 'auth/invalid-action-code') {
+          message = 'This link is invalid or has expired.';
+        } else if (err.code === 'auth/user-not-found') {
+          message = 'The user associated with this link could not be found.';
+        }
+        setError(message);
         setIsVerifying(false);
       }
     };
@@ -58,7 +66,7 @@ function AuthActionHandler() {
     return (
       <div className="flex flex-col items-center justify-center py-12 space-y-4">
         <Loader2 className="h-10 w-10 animate-spin text-primary" />
-        <p className="text-muted-foreground">Verifying request...</p>
+        <p className="text-muted-foreground">Verifying security code...</p>
       </div>
     );
   }
@@ -70,7 +78,7 @@ function AuthActionHandler() {
           <AlertCircle className="h-16 w-16 text-destructive" />
         </div>
         <div className="space-y-2">
-          <h1 className="text-2xl font-bold">Something went wrong</h1>
+          <h1 className="text-2xl font-bold">Verification Failed</h1>
           <p className="text-muted-foreground">{error}</p>
         </div>
         <Button asChild className="w-full">
@@ -90,7 +98,7 @@ function AuthActionHandler() {
       )}
       {!['resetPassword', 'verifyEmail'].includes(mode || '') && (
         <div className="text-center space-y-4">
-          <p>Redirecting to login...</p>
+          <p>This action is not supported by the custom UI. Redirecting to login...</p>
           <Button asChild className="w-full">
             <Link href="/login">Go to Login</Link>
           </Button>

@@ -16,6 +16,12 @@ const nextConfig: NextConfig = {
   },
   async rewrites() {
     return [
+      // Route Firebase default email links to our custom UI page
+      {
+        source: '/__/auth/action',
+        destination: '/auth/action',
+      },
+      // Proxy the login handshake handlers to the secure Firebase backend
       {
         source: '/__/auth/:path*',
         destination: `https://studio-6220967431-56fe2.firebaseapp.com/__/auth/:path*`,
