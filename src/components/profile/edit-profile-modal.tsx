@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -26,7 +27,7 @@ import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { LocationProfileInput } from "../common/location-profile-input";
 import { Label } from "../ui/label";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../ui/accordion";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { ImageUpload } from "../common/image-upload";
 import { useJsApiLoader, GoogleMap, MarkerF } from '@react-google-maps/api';
 import { Skeleton } from "../ui/skeleton";
@@ -209,7 +210,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
 
   const handleCreateMeet = () => {
     const link = generateGoogleMeetLink();
-    form.setValue('defaultMeetingLink', link, { shouldDirty: true });
+    form.setValue('defaultMeetingLink', link, { shouldDirty: true, shouldValidate: true });
   };
 
   return (

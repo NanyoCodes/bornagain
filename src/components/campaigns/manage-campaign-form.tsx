@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -272,7 +273,7 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated, onDelete }: Ma
 
   const handleCreateMeet = () => {
     const link = generateGoogleMeetLink();
-    form.setValue('streamUrl', link, { shouldDirty: true });
+    form.setValue('streamUrl', link, { shouldDirty: true, shouldValidate: true });
   };
 
   return (

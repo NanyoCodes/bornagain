@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect, Fragment } from 'react';
@@ -83,7 +84,7 @@ function FellowshipForm({ userProfile, onFormSubmit, isSubmitting }: { userProfi
 
     const handleCreateMeet = () => {
         const link = generateGoogleMeetLink();
-        form.setValue('streamUrl', link, { shouldDirty: true });
+        form.setValue('streamUrl', link, { shouldDirty: true, shouldValidate: true });
     };
 
     return (
@@ -194,7 +195,7 @@ function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting }: { fell
 
   const handleCreateMeet = () => {
     const link = generateGoogleMeetLink();
-    form.setValue('streamUrl', link, { shouldDirty: true });
+    form.setValue('streamUrl', link, { shouldDirty: true, shouldValidate: true });
   };
 
   return (
@@ -528,9 +529,9 @@ export default function FellowshipPage() {
                     <AlertDialogContent>
                         <AlertDialogHeader>
                             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                            <AccordionContent>
+                            <div className="text-sm text-muted-foreground">
                                 This will mark the fellowship as deleted and hide it from the list. This action cannot be undone.
-                            </AccordionContent>
+                            </div>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
                             <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>

@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -239,7 +240,7 @@ export function CreateCampaignForm({ onCampaignCreated, userProfile }: CreateCam
 
   const handleCreateMeet = () => {
     const link = generateGoogleMeetLink();
-    form.setValue('streamUrl', link, { shouldDirty: true });
+    form.setValue('streamUrl', link, { shouldDirty: true, shouldValidate: true });
   };
 
   return (

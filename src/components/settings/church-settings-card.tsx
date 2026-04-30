@@ -13,11 +13,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Loader2, Church, Plus, X } from 'lucide-react';
+import { Loader2, Church, Plus, X, Video } from 'lucide-react';
 import { doc, updateDoc } from 'firebase/firestore';
 import { Label } from '../ui/label';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
+import { generateGoogleMeetLink } from '@/lib/utils';
 
 const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
@@ -91,6 +92,14 @@ export function ChurchSettingsCard({ userProfile, userId }: { userProfile: UserP
       .finally(() => {
         setIsSubmitting(false);
       });
+  };
+
+  const handleCreateMeetForSchedule = (originalIndex: number) => {
+    const link = generateGoogleMeetLink();
+    const updatedSchedule = [...(form.getValues('schedule') || [])];
+    if (!updatedSchedule[originalIndex]) return;
+    updatedSchedule[originalIndex].url = link;
+    form.setValue('schedule', updatedSchedule, { shouldDirty: true });
   };
 
   return (
@@ -209,6 +218,16 @@ export function ChurchSettingsCard({ userProfile, userId }: { userProfile: UserP
                                             form.setValue('schedule', updatedSchedule, { shouldDirty: true });
                                         }}
                                     />
+                                    <Button 
+                                      type="button" 
+                                      variant="outline" 
+                                      size="sm" 
+                                      className="mt-1 w-full" 
+                                      onClick={() => handleCreateMeetForSchedule(item.originalIndex)}
+                                    >
+                                      <Video className="mr-2 h-4 w-4" />
+                                      Create Google Meet
+                                    </Button>
                                 </div>
                             ))}
                       </div>
