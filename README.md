@@ -28,6 +28,16 @@ To ensure the **App Logo** appears as the profile photo when users receive verif
     *   In the **Templates** tab, ensure your "Public-facing name" is set to "Testify".
     *   If using custom SMTP, ensure the logo is embedded in the HTML templates.
 
+### Monetization: Going Live with Ads
+
+The app is ready to display Christian-themed advertisements. To enable them:
+
+1.  **Get your AdSense ID**: Sign up for [Google AdSense](https://adsense.google.com/) and get your Publisher ID (starts with `ca-pub-`).
+2.  **Update Environment Variables**: In your production environment (e.g., Firebase App Hosting), set `NEXT_PUBLIC_ADSENSE_CLIENT_ID` to your Publisher ID.
+3.  **AdSense Console Settings**:
+    *   To ensure **only Christian ads** appear, use the **Blocking controls** in the AdSense console to block irrelevant categories and allow faith-based categories.
+    *   We have included metadata hints like `data-ad-channel="christian-content"` in the code to help Google's crawlers understand your site's context.
+
 ### Troubleshooting (If needed)
 
 If you ever see "Invalid Request" or 404 errors in the future, verify these settings in the Google and Firebase consoles:

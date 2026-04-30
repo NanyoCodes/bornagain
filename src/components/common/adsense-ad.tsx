@@ -57,9 +57,23 @@ const AdsenseAd = ({ adSlot, adFormat = 'auto', style, className, provider = 'go
           data-ad-slot={adSlot}
           data-ad-format={adFormat}
           data-full-width-responsive="true"
-          // Hint for Christian-specific targeting if supported by specific ad configurations
+          // Hints for Christian-specific targeting
           data-ad-channel="christian-content"
+          data-ad-type="image_text"
         />
+      ) : provider === 'custom' ? (
+        <div className="text-center p-6 space-y-4">
+           {/* Replace this with your custom ad provider code */}
+           <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
+             <DollarSign className="h-6 w-6 text-primary" />
+          </div>
+          <div>
+            <CardTitle className="text-sm font-bold">Custom Partner Ad</CardTitle>
+            <p className="text-xs text-muted-foreground mt-1 max-w-[200px] mx-auto">
+              Custom partner ad space.
+            </p>
+          </div>
+        </div>
       ) : (
         <div className="text-center p-6 space-y-4">
           <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto">

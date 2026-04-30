@@ -1,4 +1,3 @@
-
 'use client';
 
 import {
@@ -93,6 +92,7 @@ import { LogSoulForm } from '@/components/souls/log-soul-form';
 import { ProgressOverview } from '@/components/dashboard/progress-overview';
 import { useRouter } from 'next/navigation';
 import { welcomeScriptures } from '@/lib/verses';
+import AdsenseAd from '@/components/common/adsense-ad';
 
 function RecentSoulsList() {
   const { user } = useUser();
@@ -662,6 +662,8 @@ export default function DashboardPage() {
               </ChartContainer>
             </CardContent>
           </Card>
+
+          <AdsenseAd adSlot="dashboard-middle-ad" />
 
           <ActionAnalyticsCard souls={soulsWon || []} />
 
