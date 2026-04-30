@@ -32,11 +32,16 @@ To ensure the **App Logo** appears as the profile photo when users receive verif
 
 The app is ready to display Christian-themed advertisements. To enable them:
 
-1.  **Get your AdSense ID**: Sign up for [Google AdSense](https://adsense.google.com/) and get your Publisher ID (starts with `ca-pub-`).
-2.  **Update Environment Variables**: In your production environment (e.g., Firebase App Hosting), set `NEXT_PUBLIC_ADSENSE_CLIENT_ID` to your Publisher ID.
-3.  **AdSense Console Settings**:
-    *   To ensure **only Christian ads** appear, use the **Blocking controls** in the AdSense console to block irrelevant categories and allow faith-based categories.
+1.  **AdSense Console Settings**:
+    *   To ensure **only Christian ads** appear, go to your [Google AdSense Console](https://adsense.google.com/).
+    *   Use the **Blocking controls** in the side menu.
+    *   Under **All sites**, select **Sensitive categories** and block categories that are not faith-aligned.
+    *   Under **General categories**, you can further refine the types of ads allowed.
     *   We have included metadata hints like `data-ad-channel="christian-content"` in the code to help Google's crawlers understand your site's context.
+
+2.  **Timeline**: 
+    *   **Review**: Google reviews new sites which can take 2-4 weeks.
+    *   **Serving**: Once approved, ads usually appear within 24-48 hours of your site receiving traffic.
 
 ### Troubleshooting (If needed)
 
