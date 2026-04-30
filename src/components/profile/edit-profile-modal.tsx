@@ -17,7 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import React, { useState } from "react";
-import { Loader2, LocateFixed, Video } from "lucide-react";
+import { Loader2, LocateFixed, Video, Map as MapIcon } from "lucide-react";
 import { useUser, useFirestore, useAuth } from "@/firebase";
 import { doc, updateDoc } from "firebase/firestore";
 import { updateProfile } from "firebase/auth";
@@ -30,10 +30,9 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { ImageUpload } from "../common/image-upload";
 import { useJsApiLoader, GoogleMap, MarkerF } from '@react-google-maps/api';
 import { Skeleton } from "../ui/skeleton";
-import { firebaseConfig } from '@/firebase/config';
 
 const libraries: ('places')[] = ['places'];
-const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || firebaseConfig.apiKey;
+const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
 const fallbackCenter = { lat: 34.0522, lng: -118.2437 };
 
@@ -211,6 +210,20 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
     window.open('https://meet.google.com/new', '_blank');
   };
 
+  const MapPlaceholder = () => (
+    <div className="h-60 w-full rounded-md bg-muted/30 border-2 border-dashed flex flex-col items-center justify-center text-center p-6 space-y-4">
+        <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
+            <MapIcon className="h-6 w-6 text-primary opacity-50" />
+        </div>
+        <div className="space-y-1">
+            <p className="font-semibold text-sm">Interactive Pin Unavailable</p>
+            <p className="text-xs text-muted-foreground">
+                Google Maps is not configured. Your public location can still be set via the text fields.
+            </p>
+        </div>
+    </div>
+  );
+
   return (
     <>
       <Form {...form}>
@@ -300,8 +313,8 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                           Use Live Location
                       </Button>
                     </div>
-                    {loadError ? (
-                       null
+                    {!GOOGLE_MAPS_API_KEY || loadError ? (
+                       <MapPlaceholder />
                     ) : !isLoaded ? (
                         <Skeleton className="h-60 w-full mt-2" />
                     ) : (
@@ -369,7 +382,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                 </FormControl>
                 <Button type="button" variant="outline" size="sm" onClick={handleCreateMeet} className="mt-1">
                   <Video className="mr-2 h-4 w-4" />
-                  Create Google Meet
+                  Establish New Meet
                 </Button>
                 <FormDescription>This link will auto-fill when you create a new campaign or fellowship.</FormDescription>
                 <FormMessage />

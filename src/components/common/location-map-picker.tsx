@@ -11,11 +11,10 @@ import { Input } from '@/components/ui/input';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Button } from '../ui/button';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
-import { firebaseConfig } from '@/firebase/config';
 
 
 const libraries: ('places')[] = ['places'];
-const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || firebaseConfig.apiKey;
+const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
 interface LocationMapPickerProps {
     form: UseFormReturn<any>;
@@ -239,7 +238,7 @@ export function LocationMapPicker({ form }: LocationMapPickerProps) {
         </div>
     );
 
-    if (!GOOGLE_MAPS_API_KEY || GOOGLE_MAPS_API_KEY === 'YOUR_API_KEY_HERE' || loadError) {
+    if (!GOOGLE_MAPS_API_KEY || loadError) {
         return (
             <div className="space-y-4">
                 <Input

@@ -37,9 +37,8 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { errorEmitter } from '@/firebase/error-emitter';
-import { firebaseConfig } from '@/firebase/config';
 
-const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || firebaseConfig.apiKey;
+const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 const libraries: ('places')[] = ['places'];
 
 
@@ -65,7 +64,7 @@ function CampaignMap({ campaign }: { campaign: Campaign }) {
         </div>
     );
 
-    if (!GOOGLE_MAPS_API_KEY || GOOGLE_MAPS_API_KEY === 'YOUR_API_KEY_HERE') {
+    if (!GOOGLE_MAPS_API_KEY) {
         return (
             <Card>
                 <CardHeader><CardTitle className="text-lg flex items-center gap-2"><MapPin className="h-5 w-5"/> Location</CardTitle></CardHeader>

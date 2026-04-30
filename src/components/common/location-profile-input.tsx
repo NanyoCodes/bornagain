@@ -5,10 +5,9 @@ import { useJsApiLoader, Autocomplete } from '@react-google-maps/api';
 import { Input } from '@/components/ui/input';
 import { Loader2 } from 'lucide-react';
 import { type UseFormReturn } from 'react-hook-form';
-import { firebaseConfig } from '@/firebase/config';
 
 const libraries: ('places')[] = ['places'];
-const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || firebaseConfig.apiKey;
+const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
 interface LocationProfileInputProps {
     form: UseFormReturn<any>;
@@ -65,7 +64,7 @@ export function LocationProfileInput({ form }: LocationProfileInputProps) {
         }
     };
     
-    if (!GOOGLE_MAPS_API_KEY || GOOGLE_MAPS_API_KEY === 'YOUR_API_KEY_HERE') {
+    if (!GOOGLE_MAPS_API_KEY) {
         return (
             <Input
                 placeholder="Location search not configured"

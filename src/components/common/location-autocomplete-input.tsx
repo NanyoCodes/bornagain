@@ -5,10 +5,9 @@ import { useJsApiLoader, Autocomplete } from '@react-google-maps/api';
 import { Input } from '@/components/ui/input';
 import { Loader2 } from 'lucide-react';
 import { type UseFormReturn } from 'react-hook-form';
-import { firebaseConfig } from '@/firebase/config';
 
 const libraries: ('places')[] = ['places'];
-const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || firebaseConfig.apiKey;
+const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
 
 interface LocationAutocompleteInputProps {
@@ -56,7 +55,7 @@ export function LocationAutocompleteInput({ form }: LocationAutocompleteInputPro
         form.setValue('location', e.target.value, { shouldDirty: true });
     }
 
-    if (!GOOGLE_MAPS_API_KEY || GOOGLE_MAPS_API_KEY === 'YOUR_API_KEY_HERE' || loadError) {
+    if (!GOOGLE_MAPS_API_KEY || loadError) {
         return (
             <Input
                 placeholder="Enter location address manually..."
