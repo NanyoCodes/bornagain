@@ -488,14 +488,13 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated, onDelete }: Ma
                             render={({ field }) => (
                                 <FormItem>
                                 <FormLabel>Stream or Meeting URL</FormLabel>
-                                <div className="flex gap-2">
-                                  <FormControl>
-                                      <Input placeholder="https://..." {...field} value={field.value ?? ''} />
-                                  </FormControl>
-                                  <Button type="button" variant="outline" onClick={handleCreateMeet} title="Create a new Google Meet">
-                                    <Video className="h-4 w-4" />
-                                  </Button>
-                                </div>
+                                <FormControl>
+                                    <Input placeholder="https://..." {...field} value={field.value ?? ''} />
+                                </FormControl>
+                                <Button type="button" variant="outline" size="sm" onClick={handleCreateMeet} className="mt-1">
+                                  <Video className="mr-2 h-4 w-4" />
+                                  Create Google Meet
+                                </Button>
                                 <FormMessage />
                                 </FormItem>
                             )}

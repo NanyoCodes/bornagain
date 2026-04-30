@@ -156,14 +156,13 @@ function FellowshipForm({ userProfile, onFormSubmit, isSubmitting }: { userProfi
                 <FormField control={form.control} name="streamUrl" render={({ field }) => (
                     <FormItem>
                         <FormLabel>Meeting or Stream URL (Optional)</FormLabel>
-                        <div className="flex gap-2">
-                          <FormControl>
-                              <Input placeholder="https://..." {...field} value={field.value ?? ''} className="text-base" />
-                          </FormControl>
-                          <Button type="button" variant="outline" onClick={handleCreateMeet} title="Create a new Google Meet">
-                            <Video className="h-4 w-4" />
-                          </Button>
-                        </div>
+                        <FormControl>
+                            <Input placeholder="https://..." {...field} value={field.value ?? ''} className="text-base" />
+                        </FormControl>
+                        <Button type="button" variant="outline" size="sm" onClick={handleCreateMeet} className="mt-1">
+                          <Video className="mr-2 h-4 w-4" />
+                          Create Google Meet
+                        </Button>
                         <FormMessage />
                     </FormItem>
                 )} />
@@ -267,14 +266,13 @@ function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting }: { fell
         <FormField control={form.control} name="streamUrl" render={({ field }) => (
             <FormItem>
                 <FormLabel>Meeting or Stream URL (Optional)</FormLabel>
-                <div className="flex gap-2">
-                  <FormControl>
-                      <Input placeholder="https://..." {...field} value={field.value ?? ''} className="text-base" />
-                  </FormControl>
-                  <Button type="button" variant="outline" onClick={handleCreateMeet} title="Create a new Google Meet">
-                    <Video className="h-4 w-4" />
-                  </Button>
-                </div>
+                <FormControl>
+                    <Input placeholder="https://..." {...field} value={field.value ?? ''} className="text-base" />
+                </FormControl>
+                <Button type="button" variant="outline" size="sm" onClick={handleCreateMeet} className="mt-1">
+                  <Video className="mr-2 h-4 w-4" />
+                  Create Google Meet
+                </Button>
                 <FormMessage />
             </FormItem>
         )} />
