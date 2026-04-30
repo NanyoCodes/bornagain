@@ -267,7 +267,7 @@ service cloud.firestore {
         (request.auth.uid == resource.data.organizerId && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['memberIds', 'memberCount'])) ||
         
         // SCENARIO 2: A soul is assigned to the fellowship (only memberCount changes)
-        (request.resource.data.diff(resource.data).hasOnly(['memberCount'])) ||
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['memberCount'])) ||
 
         // SCENARIO 3: A new member joins the fellowship
         (
@@ -297,5 +297,3 @@ service cloud.firestore {
     }
   }
 }
-
-    
