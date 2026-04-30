@@ -21,6 +21,11 @@ const nextConfig: NextConfig = {
         source: '/__/auth/action',
         destination: '/auth/action',
       },
+      // Catch alternative underscore pattern often used in custom domains
+      {
+        source: '/_/auth/action',
+        destination: '/auth/action',
+      },
       // Proxy the login handshake handlers to the secure Firebase backend
       {
         source: '/__/auth/:path*',
