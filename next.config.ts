@@ -15,6 +15,14 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  async rewrites() {
+    return [
+      {
+        source: '/__/auth/:path*',
+        destination: `https://studio-6220967431-56fe2.firebaseapp.com/__/auth/:path*`,
+      },
+    ];
+  },
   /* config options here */
   typescript: {
     ignoreBuildErrors: true,
