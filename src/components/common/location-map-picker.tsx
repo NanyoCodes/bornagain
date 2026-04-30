@@ -224,16 +224,10 @@ export function LocationMapPicker({ form }: LocationMapPickerProps) {
     };
 
 
-    const MapPlaceholder = ({ title }: { title: string }) => (
+    const MapPlaceholder = () => (
         <div className="h-80 w-full rounded-md bg-muted/30 border-2 border-dashed flex flex-col items-center justify-center text-center p-6 space-y-4">
             <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center">
                 <MapIcon className="h-8 w-8 text-primary opacity-50" />
-            </div>
-            <div className="space-y-1">
-                <p className="font-semibold text-sm">{title}</p>
-                <p className="text-xs text-muted-foreground max-w-[250px]">
-                    Interactive location picker is unavailable. Please enter the address manually in the field above.
-                </p>
             </div>
         </div>
     );
@@ -247,7 +241,7 @@ export function LocationMapPicker({ form }: LocationMapPickerProps) {
                     value={inputValue}
                     onChange={handleInputChange}
                 />
-                <MapPlaceholder title="Location Map Unavailable" />
+                <MapPlaceholder />
             </div>
         );
     }

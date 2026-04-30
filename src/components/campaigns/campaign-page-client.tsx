@@ -50,16 +50,10 @@ function CampaignMap({ campaign }: { campaign: Campaign }) {
 
     const onMapUnmount = useCallback(() => {}, []);
 
-    const MapPlaceholder = ({ message }: { message: string }) => (
+    const MapPlaceholder = () => (
         <div className="h-80 w-full rounded-md bg-muted/50 border-2 border-dashed flex flex-col items-center justify-center text-center p-6 space-y-4">
             <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center">
                 <MapIcon className="h-8 w-8 text-primary opacity-50" />
-            </div>
-            <div className="space-y-1">
-                <p className="font-semibold text-sm">{message}</p>
-                <p className="text-xs text-muted-foreground max-w-[200px]">
-                    Interactive maps are currently unavailable. Location: {campaign.location}
-                </p>
             </div>
         </div>
     );
@@ -69,7 +63,7 @@ function CampaignMap({ campaign }: { campaign: Campaign }) {
             <Card>
                 <CardHeader><CardTitle className="text-lg flex items-center gap-2"><MapPin className="h-5 w-5"/> Location</CardTitle></CardHeader>
                 <CardContent>
-                    <MapPlaceholder message="Map Not Configured" />
+                    <MapPlaceholder />
                 </CardContent>
             </Card>
         );
@@ -82,7 +76,7 @@ function CampaignMap({ campaign }: { campaign: Campaign }) {
                     <CardTitle className="text-lg flex items-center gap-2"><MapPin className="h-5 w-5"/> Location</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <MapPlaceholder message="No Precise Coordinates" />
+                    <MapPlaceholder />
                 </CardContent>
             </Card>
         );
@@ -96,7 +90,7 @@ function CampaignMap({ campaign }: { campaign: Campaign }) {
             <Card>
                 <CardHeader><CardTitle className="text-lg flex items-center gap-2"><MapPin className="h-5 w-5"/> Location</CardTitle></CardHeader>
                 <CardContent>
-                    <MapPlaceholder message="Map Load Error" />
+                    <MapPlaceholder />
                 </CardContent>
             </Card>
         );

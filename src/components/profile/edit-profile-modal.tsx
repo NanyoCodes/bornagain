@@ -215,12 +215,6 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
         <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
             <MapIcon className="h-6 w-6 text-primary opacity-50" />
         </div>
-        <div className="space-y-1">
-            <p className="font-semibold text-sm">Interactive Pin Unavailable</p>
-            <p className="text-xs text-muted-foreground">
-                Google Maps is not configured. Your public location can still be set via the text fields.
-            </p>
-        </div>
     </div>
   );
 
