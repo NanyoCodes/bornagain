@@ -17,7 +17,6 @@ import { doc, updateDoc } from 'firebase/firestore';
 import { Label } from '../ui/label';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
-import { generateGoogleMeetLink } from '@/lib/utils';
 
 const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
@@ -93,12 +92,8 @@ export function ChurchSettingsCard({ userProfile, userId }: { userProfile: UserP
       });
   };
 
-  const handleCreateMeetForSchedule = (originalIndex: number) => {
-    const link = generateGoogleMeetLink();
-    const updatedSchedule = [...(form.getValues('schedule') || [])];
-    if (!updatedSchedule[originalIndex]) return;
-    updatedSchedule[originalIndex].url = link;
-    form.setValue('schedule', updatedSchedule, { shouldDirty: true });
+  const handleCreateMeet = () => {
+    window.open('https://meet.google.com/new', '_blank');
   };
 
   return (
@@ -222,7 +217,7 @@ export function ChurchSettingsCard({ userProfile, userId }: { userProfile: UserP
                                       variant="outline" 
                                       size="sm" 
                                       className="mt-1 w-full" 
-                                      onClick={() => handleCreateMeetForSchedule(item.originalIndex)}
+                                      onClick={handleCreateMeet}
                                     >
                                       <Video className="mr-2 h-4 w-4" />
                                       Create Google Meet

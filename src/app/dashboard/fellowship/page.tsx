@@ -48,7 +48,6 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { FellowshipCard } from '@/components/fellowship/fellowship-card';
 import { Card, CardHeader, CardContent } from '@/components/ui/card';
 import AdsenseAd from '@/components/common/adsense-ad';
-import { generateGoogleMeetLink } from '@/lib/utils';
 
 const formSchema = z.object({
   name: z.string().min(3, "Name must be at least 3 characters.").max(100),
@@ -82,8 +81,7 @@ function FellowshipForm({ userProfile, onFormSubmit, isSubmitting }: { userProfi
     });
 
     const handleCreateMeet = () => {
-        const link = generateGoogleMeetLink();
-        form.setValue('streamUrl', link, { shouldDirty: true, shouldValidate: true });
+        window.open('https://meet.google.com/new', '_blank');
     };
 
     return (
@@ -193,8 +191,7 @@ function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting }: { fell
   });
 
   const handleCreateMeet = () => {
-    const link = generateGoogleMeetLink();
-    form.setValue('streamUrl', link, { shouldDirty: true, shouldValidate: true });
+    window.open('https://meet.google.com/new', '_blank');
   };
 
   return (

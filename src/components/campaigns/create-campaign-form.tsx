@@ -30,7 +30,6 @@ import { format, differenceInDays, isSameDay } from "date-fns";
 import { LocationMapPicker } from "../common/location-map-picker";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import type { UserProfile } from "@/lib/types";
-import { generateGoogleMeetLink } from "@/lib/utils";
 
 const formSchema = z.object({
   goal: z.string({
@@ -238,8 +237,7 @@ export function CreateCampaignForm({ onCampaignCreated, userProfile }: CreateCam
   }
 
   const handleCreateMeet = () => {
-    const link = generateGoogleMeetLink();
-    form.setValue('streamUrl', link, { shouldDirty: true, shouldValidate: true });
+    window.open('https://meet.google.com/new', '_blank');
   };
 
   return (
@@ -451,7 +449,7 @@ export function CreateCampaignForm({ onCampaignCreated, userProfile }: CreateCam
                 <FormItem>
                   <FormLabel>Meeting or Stream URL (Optional)</FormLabel>
                   <FormControl>
-                    <Input placeholder="https://meet.google.com/xxx-xxxx-xxx" {...field} value={field.value ?? ""} className="text-base" />
+                    <Input placeholder="https://..." {...field} value={field.value ?? ""} className="text-base" />
                   </FormControl>
                   <Button type="button" variant="outline" size="sm" onClick={handleCreateMeet} className="mt-1">
                     <Video className="mr-2 h-4 w-4" />
