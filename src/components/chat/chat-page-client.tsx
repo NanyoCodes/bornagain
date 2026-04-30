@@ -261,14 +261,14 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                             <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
                               <div style="max-width: 600px; margin: 20px auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
                                 <div style="text-align: center; margin-bottom: 20px;">
-                                  <img src="${logoUrl}" alt="Testify Logo" style="width: 80px; height: 80px; border-radius: 8px;">
+                                  <img src="${logoUrl}" alt="Testify Logo" style="width: 80px; height: 80px; border-radius: 50%; border: 2px solid #f97416;">
                                 </div>
                                 <p>Hi ${recipientInfo?.firstName || 'there'},</p>
                                 <p>You have a new ${replyingTo ? 'reply' : 'message'} from <strong>${user.displayName || 'a user'}</strong> ${chat.campaignTitle ? `in the chat for the campaign "<strong>${chat.campaignTitle}</strong>"` : ''}.</p>
                                 <blockquote style="border-left: 4px solid #ccc; padding-left: 1rem; margin-left: 0; font-style: italic; color: #666;">${newMessage}</blockquote>
                                 <p>You can view the full conversation and reply by clicking the button below:</p>
                                 <div style="text-align: center; margin: 30px 0;">
-                                    <a href="${link}" style="background-color: #3b82f6; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-size: 16px;">View Chat</a>
+                                    <a href="${link}" style="background-color: #f97416; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-size: 16px; font-weight: bold;">View Chat</a>
                                 </div>
                                 <p>God bless,</p>
                                 <p><strong>The Testify Team</strong></p>
@@ -568,5 +568,3 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
         </div>
     )
 }
-
-    

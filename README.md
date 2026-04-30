@@ -14,6 +14,20 @@ The application is now configured to handle the secure authentication handshake 
 - **Handshake Proxy:** Next.js rewrites handle the `/__/auth/` routes by proxying them to the secure Firebase backend.
 - **Branding:** Users will now see `testifyglobal.com` in the Google Sign-in popup.
 
+### Email Branding: Profile Photos
+
+To ensure the **App Logo** appears as the profile photo when users receive verification or password reset emails, you must perform a one-time manual setup:
+
+1.  **Google Account Profile Picture**: The sender email address (e.g., `support@testifyglobal.com` or your Gmail address used for sending) must have its profile picture set to the app logo.
+    *   Go to [myaccount.google.com](https://myaccount.google.com/) for that specific email account.
+    *   Click on the profile icon and upload the app logo.
+    *   *Note:* It may take up to 48 hours for this to propagate to all email clients like Gmail.
+
+2.  **Firebase Console Branding**:
+    *   Go to the [Firebase Console Authentication Settings](https://console.firebase.google.com/project/_/authentication/settings).
+    *   In the **Templates** tab, ensure your "Public-facing name" is set to "Testify".
+    *   If using custom SMTP, ensure the logo is embedded in the HTML templates.
+
 ### Troubleshooting (If needed)
 
 If you ever see "Invalid Request" or 404 errors in the future, verify these settings in the Google and Firebase consoles:

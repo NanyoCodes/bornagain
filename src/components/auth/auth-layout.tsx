@@ -35,13 +35,14 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
     <div className="w-full lg:grid lg:grid-cols-2 min-h-screen">
       <div className="flex flex-col items-center justify-center p-8 sm:p-12">
         <div className="mx-auto grid w-full max-w-xs gap-6">
-            <div className="grid gap-2 text-left mb-6">
+            <div className="flex flex-col items-center justify-center text-center mb-4">
                 {logo && (
-                    <Avatar className="h-16 w-16 mb-2">
+                    <Avatar className="h-20 w-20 mb-4 border-2 border-primary/20 shadow-sm">
                         <AvatarImage src={logo.imageUrl} alt={logo.description} />
                         <AvatarFallback>T</AvatarFallback>
                     </Avatar>
                 )}
+                <h2 className="text-2xl font-bold font-headline tracking-tight text-primary">Testify</h2>
             </div>
             {children}
         </div>
@@ -62,7 +63,7 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
             src={authBackground.imageUrl}
             alt={authBackground.description}
             fill
-            objectFit="cover"
+            style={{ objectFit: 'cover' }}
             className="-z-10"
             data-ai-hint={authBackground.imageHint}
             priority
