@@ -16,9 +16,15 @@ export const metadata: Metadata = {
     'A platform for believers to share testimonies, organize soul-winning campaigns, and track evangelism progress.',
   manifest: '/manifest.webmanifest',
   icons: {
-    icon: { url: testifyLogoUrl, type: 'image/png' },
-    shortcut: { url: testifyLogoUrl, type: 'image/png' },
-    apple: { url: testifyLogoUrl, type: 'image/png' },
+    icon: [
+      { url: testifyLogoUrl, type: 'image/png' },
+      { url: testifyLogoUrl, sizes: '32x32', type: 'image/png' },
+      { url: testifyLogoUrl, sizes: '16x16', type: 'image/png' },
+    ],
+    shortcut: testifyLogoUrl,
+    apple: [
+      { url: testifyLogoUrl, sizes: '180x180', type: 'image/png' },
+    ],
     other: [
       {
         rel: 'apple-touch-icon-precomposed',
