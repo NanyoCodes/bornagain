@@ -17,14 +17,14 @@ type AdsenseAdProps = {
 
 /**
  * @fileOverview Flexible Ad component supporting Google AdSense and custom providers.
- * To use a different provider, add a case to the render logic below.
  */
 const AdsenseAd = ({ adSlot, adFormat = 'auto', style, className, provider = 'google' }: AdsenseAdProps) => {
-  const ADSENSE_CLIENT_ID = process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID;
+  const RAW_ADSENSE_ID = process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID;
+  const ADSENSE_CLIENT_ID = RAW_ADSENSE_ID?.startsWith('ca-') ? RAW_ADSENSE_ID : `ca-${RAW_ADSENSE_ID}`;
   const isDevelopment = process.env.NODE_ENV === 'development';
 
   useEffect(() => {
-    if (provider === 'google') {
+    if (provider === 'google' && RAW_ADSENSE_ID) {
       try {
         // @ts-ignore
         if (window.adsbygoogle) {
@@ -32,15 +32,13 @@ const AdsenseAd = ({ adSlot, adFormat = 'auto', style, className, provider = 'go
           (window.adsbygoogle = window.adsbygoogle || []).push({});
         }
       } catch (err: any) {
-        if (!err.message.includes("already have ads in them")) {
-          console.error('AdSense error:', err);
-        }
+        // Silently ignore errors related to multiple pushes or already-filled slots
+        // which are common during React re-renders or navigations.
       }
     }
-  }, [adSlot, provider]);
+  }, [adSlot, provider, RAW_ADSENSE_ID]);
 
-  // If no AdSense ID and using Google, show a placeholder
-  const isGoogleConfigured = ADSENSE_CLIENT_ID && ADSENSE_CLIENT_ID !== 'ca-pub-YOUR_PUBLISHER_ID';
+  const isGoogleConfigured = RAW_ADSENSE_ID && RAW_ADSENSE_ID !== 'ca-pub-YOUR_PUBLISHER_ID';
 
   return (
     <Card className={cn("w-full flex flex-col justify-center items-center bg-muted/20 rounded-lg border min-h-[350px] relative overflow-hidden", className)}>
@@ -57,13 +55,12 @@ const AdsenseAd = ({ adSlot, adFormat = 'auto', style, className, provider = 'go
           data-ad-slot={adSlot}
           data-ad-format={adFormat}
           data-full-width-responsive="true"
-          // Hints for Christian-specific targeting
+          // Hints for targeted content
           data-ad-channel="christian-content"
           data-ad-type="image_text"
         />
       ) : provider === 'custom' ? (
         <div className="text-center p-6 space-y-4">
-           {/* Replace this with your custom ad provider code */}
            <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
              <DollarSign className="h-6 w-6 text-primary" />
           </div>
