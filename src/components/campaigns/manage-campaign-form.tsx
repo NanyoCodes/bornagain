@@ -273,10 +273,6 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated, onDelete }: Ma
   const handleCreateMeet = () => {
     const link = generateGoogleMeetLink();
     form.setValue('streamUrl', link, { shouldDirty: true });
-    toast({
-        title: "Meet Link Generated",
-        description: "A new meeting link has been inserted into the field below.",
-    });
   };
 
   return (

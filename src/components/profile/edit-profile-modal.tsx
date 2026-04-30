@@ -210,10 +210,6 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
   const handleCreateMeet = () => {
     const link = generateGoogleMeetLink();
     form.setValue('defaultMeetingLink', link, { shouldDirty: true });
-    toast({
-        title: "Meet Link Generated",
-        description: "A new default meeting link has been inserted.",
-    });
   };
 
   return (
