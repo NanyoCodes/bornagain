@@ -1,4 +1,3 @@
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -31,6 +30,7 @@ import { format, differenceInDays, isSameDay } from "date-fns";
 import { LocationMapPicker } from "../common/location-map-picker";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import type { UserProfile } from "@/lib/types";
+import { generateGoogleMeetLink } from "@/lib/utils";
 
 const formSchema = z.object({
   goal: z.string({
@@ -238,7 +238,12 @@ export function CreateCampaignForm({ onCampaignCreated, userProfile }: CreateCam
   }
 
   const handleCreateMeet = () => {
-    window.open('https://meet.google.com/new', '_blank', 'noopener,noreferrer');
+    const link = generateGoogleMeetLink();
+    form.setValue('streamUrl', link, { shouldDirty: true });
+    toast({
+        title: "Meet Link Generated",
+        description: "A new meeting link has been inserted into the field below.",
+    });
   };
 
   return (

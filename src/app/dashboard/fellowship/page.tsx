@@ -48,6 +48,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { FellowshipCard } from '@/components/fellowship/fellowship-card';
 import { Card, CardHeader, CardContent } from '@/components/ui/card';
 import AdsenseAd from '@/components/common/adsense-ad';
+import { generateGoogleMeetLink } from '@/lib/utils';
 
 const formSchema = z.object({
   name: z.string().min(3, "Name must be at least 3 characters.").max(100),
@@ -68,6 +69,7 @@ const formSchema = z.object({
 
 
 function FellowshipForm({ userProfile, onFormSubmit, isSubmitting }: { userProfile: UserProfile | null, onFormSubmit: (values: z.infer<typeof formSchema>) => void, isSubmitting: boolean }) {
+    const { toast } = useToast();
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -81,7 +83,12 @@ function FellowshipForm({ userProfile, onFormSubmit, isSubmitting }: { userProfi
     });
 
     const handleCreateMeet = () => {
-      window.open('https://meet.google.com/new', '_blank', 'noopener,noreferrer');
+        const link = generateGoogleMeetLink();
+        form.setValue('streamUrl', link, { shouldDirty: true });
+        toast({
+            title: "Meet Link Generated",
+            description: "A new meeting link has been inserted into the field below.",
+        });
     };
 
     return (
@@ -178,6 +185,7 @@ function FellowshipForm({ userProfile, onFormSubmit, isSubmitting }: { userProfi
 const manageFormSchema = formSchema; // Use the same schema for management
 
 function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting }: { fellowship: Fellowship, onFormSubmit: (values: z.infer<typeof manageFormSchema>) => void, isSubmitting: boolean }) {
+  const { toast } = useToast();
   const form = useForm<z.infer<typeof manageFormSchema>>({
     resolver: zodResolver(manageFormSchema),
     defaultValues: {
@@ -191,7 +199,12 @@ function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting }: { fell
   });
 
   const handleCreateMeet = () => {
-    window.open('https://meet.google.com/new', '_blank', 'noopener,noreferrer');
+    const link = generateGoogleMeetLink();
+    form.setValue('streamUrl', link, { shouldDirty: true });
+    toast({
+        title: "Meet Link Generated",
+        description: "A new meeting link has been inserted into the field below.",
+    });
   };
 
   return (
@@ -525,9 +538,9 @@ export default function FellowshipPage() {
                     <AlertDialogContent>
                         <AlertDialogHeader>
                             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                            <AlertDialogDescription>
+                            <AccordionContent>
                                 This will mark the fellowship as deleted and hide it from the list. This action cannot be undone.
-                            </AlertDialogDescription>
+                            </AccordionContent>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
                             <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>

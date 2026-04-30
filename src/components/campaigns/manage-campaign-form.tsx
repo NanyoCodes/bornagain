@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -29,7 +28,7 @@ import {
 import { useRouter } from 'next/navigation';
 import { LocationMapPicker } from '../common/location-map-picker';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion';
-import { safeToDate } from '@/lib/utils';
+import { safeToDate, generateGoogleMeetLink } from '@/lib/utils';
 
 const formSchema = z.object({
   title: z.string().min(3, "Title is too short.").max(100, "Title is too long."),
@@ -272,7 +271,12 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated, onDelete }: Ma
   }
 
   const handleCreateMeet = () => {
-    window.open('https://meet.google.com/new', '_blank', 'noopener,noreferrer');
+    const link = generateGoogleMeetLink();
+    form.setValue('streamUrl', link, { shouldDirty: true });
+    toast({
+        title: "Meet Link Generated",
+        description: "A new meeting link has been inserted into the field below.",
+    });
   };
 
   return (

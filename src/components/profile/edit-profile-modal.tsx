@@ -1,4 +1,3 @@
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -31,6 +30,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "..
 import { ImageUpload } from "../common/image-upload";
 import { useJsApiLoader, GoogleMap, MarkerF } from '@react-google-maps/api';
 import { Skeleton } from "../ui/skeleton";
+import { generateGoogleMeetLink } from "@/lib/utils";
 
 const libraries: ('places')[] = ['places'];
 const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
@@ -208,7 +208,12 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
   }
 
   const handleCreateMeet = () => {
-    window.open('https://meet.google.com/new', '_blank', 'noopener,noreferrer');
+    const link = generateGoogleMeetLink();
+    form.setValue('defaultMeetingLink', link, { shouldDirty: true });
+    toast({
+        title: "Meet Link Generated",
+        description: "A new default meeting link has been inserted.",
+    });
   };
 
   return (
