@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useJsApiLoader, GoogleMap, MarkerF, CircleF, Autocomplete } from '@react-google-maps/api';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
-import { Loader2, LocateFixed } from 'lucide-react';
+import { Loader2, LocateFixed, Map as MapIcon } from 'lucide-react';
 import { type UseFormReturn } from 'react-hook-form';
 import { useToast } from '@/hooks/use-toast';
 import { Input } from '@/components/ui/input';
@@ -225,25 +225,31 @@ export function LocationMapPicker({ form }: LocationMapPickerProps) {
     };
 
 
-    if (!GOOGLE_MAPS_API_KEY || GOOGLE_MAPS_API_KEY === 'YOUR_API_KEY_HERE') {
-        return (
-            <Alert variant="destructive">
-                <AlertTitle>Google Maps Not Configured</AlertTitle>
-                <AlertDescription>
-                    The Google Maps API key is missing.
-                </AlertDescription>
-            </Alert>
-        );
-    }
+    const MapPlaceholder = ({ title }: { title: string }) => (
+        <div className="h-80 w-full rounded-md bg-muted/30 border-2 border-dashed flex flex-col items-center justify-center text-center p-6 space-y-4">
+            <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center">
+                <MapIcon className="h-8 w-8 text-primary opacity-50" />
+            </div>
+            <div className="space-y-1">
+                <p className="font-semibold text-sm">{title}</p>
+                <p className="text-xs text-muted-foreground max-w-[250px]">
+                    Interactive location picker is unavailable. Please enter the address manually in the field above.
+                </p>
+            </div>
+        </div>
+    );
 
-    if (loadError) {
+    if (!GOOGLE_MAPS_API_KEY || GOOGLE_MAPS_API_KEY === 'YOUR_API_KEY_HERE' || loadError) {
         return (
-             <Alert variant="destructive">
-                <AlertTitle>Google Maps Error</AlertTitle>
-                <AlertDescription>
-                    Error loading Google Maps. Please check your API key.
-                </AlertDescription>
-            </Alert>
+            <div className="space-y-4">
+                <Input
+                    placeholder="Enter location address manually..."
+                    className="text-base"
+                    value={inputValue}
+                    onChange={handleInputChange}
+                />
+                <MapPlaceholder title="Location Map Unavailable" />
+            </div>
         );
     }
 

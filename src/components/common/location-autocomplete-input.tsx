@@ -5,7 +5,6 @@ import { useJsApiLoader, Autocomplete } from '@react-google-maps/api';
 import { Input } from '@/components/ui/input';
 import { Loader2 } from 'lucide-react';
 import { type UseFormReturn } from 'react-hook-form';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { firebaseConfig } from '@/firebase/config';
 
 const libraries: ('places')[] = ['places'];
@@ -57,32 +56,15 @@ export function LocationAutocompleteInput({ form }: LocationAutocompleteInputPro
         form.setValue('location', e.target.value, { shouldDirty: true });
     }
 
-    if (!GOOGLE_MAPS_API_KEY || GOOGLE_MAPS_API_KEY === 'YOUR_API_KEY_HERE') {
+    if (!GOOGLE_MAPS_API_KEY || GOOGLE_MAPS_API_KEY === 'YOUR_API_KEY_HERE' || loadError) {
         return (
-            <Alert variant="destructive">
-                <AlertTitle>Google Maps Not Configured</AlertTitle>
-                <AlertDescription>
-                    The Google Maps API key is missing. Please open <code className="font-code p-1 bg-destructive/20 rounded">docs/google-maps-setup-guide.md</code> for the setup guide to enable map features.
-                </AlertDescription>
-            </Alert>
-        );
-    }
-
-    if (loadError) {
-        let errorMessage = 'Error loading Google Maps. Please check your API key and network connection.';
-        if (loadError.message.includes("InvalidKeyMapError")) {
-            errorMessage = "The Google Maps API key provided is invalid. Please get a new key from the Google Cloud Console.";
-        } else if (loadError.message.includes('ApiNotActivatedMapError')) {
-            errorMessage = "The Places API is not enabled for your key. Please enable it in the Google Cloud Console.";
-        }
-        
-        return (
-            <Alert variant="destructive">
-                <AlertTitle>Google Maps Error</AlertTitle>
-                <AlertDescription>
-                    {errorMessage} Please open <code className="font-code p-1 bg-destructive/20 rounded">docs/google-maps-setup-guide.md</code> for detailed instructions.
-                </AlertDescription>
-            </Alert>
+            <Input
+                placeholder="Enter location address manually..."
+                type="text"
+                className="text-base"
+                value={inputValue}
+                onChange={handleInputChange}
+            />
         );
     }
 

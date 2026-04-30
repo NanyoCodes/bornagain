@@ -17,7 +17,7 @@ import {
 import { doc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Loader2, ArrowLeft, MapPin, CalendarDays, Users, Share2, Edit, MessagesSquare, UserCheck2, PlayCircle, Newspaper, Target } from 'lucide-react';
+import { Loader2, ArrowLeft, MapPin, CalendarDays, Users, Share2, Edit, MessagesSquare, UserCheck2, PlayCircle, Newspaper, Target, Map as MapIcon } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
@@ -51,17 +51,26 @@ function CampaignMap({ campaign }: { campaign: Campaign }) {
 
     const onMapUnmount = useCallback(() => {}, []);
 
+    const MapPlaceholder = ({ message }: { message: string }) => (
+        <div className="h-80 w-full rounded-md bg-muted/50 border-2 border-dashed flex flex-col items-center justify-center text-center p-6 space-y-4">
+            <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center">
+                <MapIcon className="h-8 w-8 text-primary opacity-50" />
+            </div>
+            <div className="space-y-1">
+                <p className="font-semibold text-sm">{message}</p>
+                <p className="text-xs text-muted-foreground max-w-[200px]">
+                    Interactive maps are currently unavailable. Location: {campaign.location}
+                </p>
+            </div>
+        </div>
+    );
+
     if (!GOOGLE_MAPS_API_KEY || GOOGLE_MAPS_API_KEY === 'YOUR_API_KEY_HERE') {
         return (
             <Card>
-                <CardHeader><CardTitle className="text-lg flex items-center gap-2"><MapPin className="h-5 w-5"/> Map</CardTitle></CardHeader>
+                <CardHeader><CardTitle className="text-lg flex items-center gap-2"><MapPin className="h-5 w-5"/> Location</CardTitle></CardHeader>
                 <CardContent>
-                    <Alert variant="destructive">
-                        <AlertTitle>Google Maps Not Configured</AlertTitle>
-                        <AlertDescription>
-                            The Google Maps API key is missing. Please open <code className="font-code p-1 bg-destructive/20 rounded">docs/google-maps-setup-guide.md</code> for the setup guide to enable map features.
-                        </AlertDescription>
-                    </Alert>
+                    <MapPlaceholder message="Map Not Configured" />
                 </CardContent>
             </Card>
         );
@@ -71,12 +80,10 @@ function CampaignMap({ campaign }: { campaign: Campaign }) {
         return (
              <Card>
                 <CardHeader>
-                    <CardTitle className="text-lg flex items-center gap-2"><MapPin className="h-5 w-5"/> Map</CardTitle>
+                    <CardTitle className="text-lg flex items-center gap-2"><MapPin className="h-5 w-5"/> Location</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <div className="text-center text-muted-foreground py-10">
-                        No precise location set for this campaign.
-                    </div>
+                    <MapPlaceholder message="No Precise Coordinates" />
                 </CardContent>
             </Card>
         );
@@ -86,22 +93,11 @@ function CampaignMap({ campaign }: { campaign: Campaign }) {
     const radius = campaign.coverageRadius || 1000;
 
     if (loadError) {
-        let errorMessage = "The map could not be loaded. This is likely an API key or network issue.";
-        if (loadError.message.includes("InvalidKeyMapError")) {
-            errorMessage = "The Google Maps API key provided is invalid. Please get a new key from the Google Cloud Console.";
-        } else if (loadError.message.includes("ApiNotActivatedMapError")) {
-            errorMessage = "The Maps JavaScript API is not enabled for your key. Please enable it in the Google Cloud Console.";
-        }
         return (
             <Card>
-                <CardHeader><CardTitle className="text-lg flex items-center gap-2"><MapPin className="h-5 w-5"/> Map</CardTitle></CardHeader>
+                <CardHeader><CardTitle className="text-lg flex items-center gap-2"><MapPin className="h-5 w-5"/> Location</CardTitle></CardHeader>
                 <CardContent>
-                    <Alert variant="destructive">
-                        <AlertTitle>Google Maps Error</AlertTitle>
-                        <AlertDescription>
-                            {errorMessage} Please open <code className="font-code p-1 bg-destructive/20 rounded">docs/google-maps-setup-guide.md</code> for detailed instructions.
-                        </AlertDescription>
-                    </Alert>
+                    <MapPlaceholder message="Map Load Error" />
                 </CardContent>
             </Card>
         );
@@ -111,11 +107,11 @@ function CampaignMap({ campaign }: { campaign: Campaign }) {
         return (
             <Card>
                  <CardHeader>
-                    <CardTitle className="text-lg flex items-center gap-2"><MapPin className="h-5 w-5"/> Map</CardTitle>
+                    <CardTitle className="text-lg flex items-center gap-2"><MapPin className="h-5 w-5"/> Location</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <div className="h-80 w-full rounded-md bg-muted flex items-center justify-center">
-                        <p className="text-muted-foreground">Loading map...</p>
+                    <div className="h-80 w-full rounded-md bg-muted animate-pulse flex items-center justify-center">
+                        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
                     </div>
                 </CardContent>
             </Card>
