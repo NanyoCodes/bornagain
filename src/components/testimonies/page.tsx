@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useEffect, useMemo } from "react";
@@ -49,7 +48,7 @@ import { EditTestimonyForm } from "@/components/testimonies/edit-testimony-form"
 
 
 export default function TestimoniesPage() {
-  const [isTestimonyDialogOpen, setIsTestimonyDialogOpen] = useState(false);
+  const [isTestimonyDialogOpen] = useState(false);
   const [isPrayerDialogOpen, setIsPrayerDialogOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const isMobile = useIsMobile();
@@ -179,7 +178,6 @@ export default function TestimoniesPage() {
   }, [prayerRequests, searchTerm, activeTab]);
 
   const handleTestimonyCreated = () => {
-    setIsTestimonyDialogOpen(false);
     setPrayerToAnswer(null);
   };
   const handlePrayerRequestCreated = () => {
@@ -190,11 +188,9 @@ export default function TestimoniesPage() {
     if (prayer) {
       setPrayerToAnswer(prayer);
     }
-    setIsTestimonyDialogOpen(true);
   };
 
   const handleCloseTestimonyDialog = () => {
-    setIsTestimonyDialogOpen(false);
     setPrayerToAnswer(null);
   };
   
@@ -274,7 +270,7 @@ export default function TestimoniesPage() {
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div className="space-y-2">
-          <h1 className="text-xl sm:text-2xl font-bold tracking-tight font-headline">
+          <h1 className="text-lg sm:text-xl font-bold tracking-tight font-headline">
             Testimonies &amp; Prayer Requests
           </h1>
         </div>
@@ -380,7 +376,7 @@ export default function TestimoniesPage() {
       </Dialog>
       
       {mounted && isMobile ? (
-        <Sheet open={isTestimonyDialogOpen} onOpenChange={handleCloseTestimonyDialog}>
+        <Sheet open={false} onOpenChange={handleCloseTestimonyDialog}>
           <SheetContent side="bottom">
             <SheetHeader>
               <SheetTitle>{prayerToAnswer ? 'Share Answered Prayer' : 'Share Testimony'}</SheetTitle>
@@ -390,7 +386,7 @@ export default function TestimoniesPage() {
           </SheetContent>
         </Sheet>
       ) : (
-        <Dialog open={isTestimonyDialogOpen} onOpenChange={handleCloseTestimonyDialog}>
+        <Dialog open={false} onOpenChange={handleCloseTestimonyDialog}>
           <DialogContent className="sm:max-w-lg">
             <DialogHeader>
               <DialogTitle>{prayerToAnswer ? 'Share Answered Prayer' : 'Share Testimony'}</DialogTitle>
