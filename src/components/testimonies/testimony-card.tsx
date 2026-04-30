@@ -16,7 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Testimony } from "@/lib/types";
 import { format } from "date-fns";
-import { Share2, MoreVertical, Edit, Trash2, Loader2, MapPin, HandHeart } from "lucide-react";
+import { Share2, MoreVertical, Edit, Trash2, Loader2, MapPin, HandHeart, MessageCircle } from "lucide-react";
 import { useUser, useFirestore } from "@/firebase";
 import { useState, useMemo } from "react";
 import {
@@ -101,9 +101,10 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
         });
   }
 
-  const handleShare = (platform: "link" | "facebook" | "twitter") => {
-    const url = typeof window !== "undefined" ? `${window.location.origin}/dashboard/testimonies` : '';
+  const handleShare = (platform: "link" | "facebook" | "twitter" | "whatsapp") => {
+    const url = typeof window !== "undefined" ? `${window.location.origin}/dashboard/testimonies#${testimony.id}` : '';
     const text = `Read this inspiring testimony by ${authorFullName} on Testify!`;
+    const shareTextWithUrl = `${text} ${url}`;
     let shareUrl = "";
 
     switch (platform) {
@@ -115,8 +116,12 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
         shareUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`;
         window.open(shareUrl, "_blank");
         break;
+      case "whatsapp":
+        shareUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareTextWithUrl)}`;
+        window.open(shareUrl, "_blank");
+        break;
       case "link":
-        navigator.clipboard.writeText(`${text} ${url}`);
+        navigator.clipboard.writeText(shareTextWithUrl);
         toast({
           title: "Link Copied!",
           description: "Testimony link copied to your clipboard.",
@@ -217,6 +222,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onSelect={() => handleShare('link')}><Share2 /><span>Copy Link</span></DropdownMenuItem>
+                <DropdownMenuItem onSelect={() => handleShare('whatsapp')}><MessageCircle /><span>Share on WhatsApp</span></DropdownMenuItem>
                 <DropdownMenuItem onSelect={() => handleShare('facebook')}><Icons.facebook /><span>Share on Facebook</span></DropdownMenuItem>
                 <DropdownMenuItem onSelect={() => handleShare('twitter')}>
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
