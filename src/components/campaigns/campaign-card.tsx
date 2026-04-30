@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from "next/link";
@@ -293,10 +292,12 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
 
 
   const handleShare = async () => {
+    const baseUrl = "https://testifyglobal.com";
+    const shareUrl = `${baseUrl}/dashboard/campaigns/${campaign.id}`;
     const shareData = {
       title: `Join the '${campaign.title}' campaign on Testify!`,
       text: `Join me in the '${campaign.title}' evangelism campaign. Let's make an impact together!`,
-      url: window.location.href,
+      url: shareUrl,
     };
     try {
       if (navigator.share) {
@@ -313,7 +314,8 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
   };
 
   const handleShareDropdown = (platform: "link" | "facebook" | "twitter" | "whatsapp") => {
-    const url = typeof window !== "undefined" ? window.location.origin + '/dashboard/campaigns' : '';
+    const baseUrl = "https://testifyglobal.com";
+    const url = `${baseUrl}/dashboard/campaigns/${campaign.id}`;
     const titleText = `Join the '${campaign.title}' campaign on Testify!`;
     const shareTextWithUrl = `${titleText} ${url}`;
     let shareUrl = "";
@@ -412,9 +414,7 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
         <DropdownMenuTrigger asChild>
             <Button variant="outline" size="icon" onClick={(e) => {
               e.preventDefault();
-              if (navigator.share) {
-                handleShare();
-              }
+              handleShare();
             }} disabled={status === 'Past'}>
                 <Share2 className="h-4 w-4" />
                 <span className="sr-only">Share Campaign</span>

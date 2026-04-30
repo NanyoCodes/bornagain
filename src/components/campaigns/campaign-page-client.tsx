@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
@@ -322,10 +321,12 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
 
     const handleShare = async () => {
         if (!campaign) return;
+        const baseUrl = "https://testifyglobal.com";
+        const shareUrl = `${baseUrl}/dashboard/campaigns/${campaign.id}`;
         const shareData = {
           title: `Join the '${campaign.title}' campaign on Testify!`,
           text: `Join me in the '${campaign.title}' evangelism campaign. Let's make an impact together!`,
-          url: window.location.href,
+          url: shareUrl,
         };
         try {
           if (navigator.share) {

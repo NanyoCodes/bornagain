@@ -11,7 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Testimony } from "@/lib/types";
@@ -102,7 +102,9 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
   }
 
   const handleShare = (platform: "link" | "facebook" | "twitter" | "whatsapp") => {
-    const url = typeof window !== "undefined" ? `${window.location.origin}/dashboard/testimonies#${testimony.id}` : '';
+    // Always use the production domain for sharing
+    const baseUrl = "https://testifyglobal.com";
+    const url = `${baseUrl}/dashboard/testimonies#${testimony.id}`;
     const text = `Read this inspiring testimony by ${authorFullName} on Testify!`;
     const shareTextWithUrl = `${text} ${url}`;
     let shareUrl = "";
