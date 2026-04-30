@@ -42,7 +42,6 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
                         <AvatarFallback>T</AvatarFallback>
                     </Avatar>
                 )}
-                <h2 className="text-2xl font-bold font-headline tracking-tight text-primary">Testify</h2>
             </div>
             {children}
         </div>
