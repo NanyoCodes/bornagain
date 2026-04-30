@@ -86,21 +86,21 @@ function FellowshipForm({ onFormSubmit, isSubmitting }: { onFormSubmit: (values:
                 <FormField control={form.control} name="name" render={({ field }) => (
                     <FormItem>
                         <FormLabel>Fellowship Name</FormLabel>
-                        <FormControl><Input placeholder="e.g., Downtown Morning Prayer" {...field} /></FormControl>
+                        <FormControl><Input placeholder="e.g., Downtown Morning Prayer" {...field} className="text-base" /></FormControl>
                         <FormMessage />
                     </FormItem>
                 )} />
                 <FormField control={form.control} name="description" render={({ field }) => (
                     <FormItem>
                         <FormLabel>Description</FormLabel>
-                        <FormControl><Textarea placeholder="What is the purpose of this fellowship?" {...field} /></FormControl>
+                        <FormControl><Textarea placeholder="What is the purpose of this fellowship?" {...field} className="text-base min-h-[100px]" /></FormControl>
                         <FormMessage />
                     </FormItem>
                 )} />
                 <FormField control={form.control} name="schedule" render={({ field }) => (
                     <FormItem>
                         <FormLabel>Schedule</FormLabel>
-                        <FormControl><Input placeholder="e.g., Every Friday at 6:00 AM" {...field} /></FormControl>
+                        <FormControl><Input placeholder="e.g., Every Friday at 6:00 AM" {...field} className="text-base" /></FormControl>
                         <FormMessage />
                     </FormItem>
                 )} />
@@ -144,7 +144,7 @@ function FellowshipForm({ onFormSubmit, isSubmitting }: { onFormSubmit: (values:
                     <FormField control={form.control} name="location" render={({ field }) => (
                         <FormItem>
                             <FormLabel>Physical Location</FormLabel>
-                            <FormControl><Input placeholder="e.g., 123 Main St, Anytown" {...field} value={field.value ?? ''} /></FormControl>
+                            <FormControl><Input placeholder="e.g., 123 Main St, Anytown" {...field} value={field.value ?? ''} className="text-base" /></FormControl>
                             <FormMessage />
                         </FormItem>
                     )} />
@@ -152,7 +152,7 @@ function FellowshipForm({ onFormSubmit, isSubmitting }: { onFormSubmit: (values:
                 <FormField control={form.control} name="streamUrl" render={({ field }) => (
                     <FormItem>
                         <FormLabel>Live Stream URL (Optional)</FormLabel>
-                        <FormControl><Input placeholder="https://youtube.com/live/..." {...field} value={field.value ?? ''} /></FormControl>
+                        <FormControl><Input placeholder="https://youtube.com/live/..." {...field} value={field.value ?? ''} className="text-base" /></FormControl>
                         <FormMessage />
                     </FormItem>
                 )} />
@@ -186,21 +186,21 @@ function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting }: { fell
         <FormField control={form.control} name="name" render={({ field }) => (
             <FormItem>
                 <FormLabel>Fellowship Name</FormLabel>
-                <FormControl><Input placeholder="e.g., Downtown Morning Prayer" {...field} /></FormControl>
+                <FormControl><Input placeholder="e.g., Downtown Morning Prayer" {...field} className="text-base" /></FormControl>
                 <FormMessage />
             </FormItem>
         )} />
         <FormField control={form.control} name="description" render={({ field }) => (
             <FormItem>
                 <FormLabel>Description</FormLabel>
-                <FormControl><Textarea placeholder="What is the purpose of this fellowship?" {...field} /></FormControl>
+                <FormControl><Textarea placeholder="What is the purpose of this fellowship?" {...field} className="text-base min-h-[100px]" /></FormControl>
                 <FormMessage />
             </FormItem>
         )} />
         <FormField control={form.control} name="schedule" render={({ field }) => (
             <FormItem>
                 <FormLabel>Schedule</FormLabel>
-                <FormControl><Input placeholder="e.g., Every Friday at 6:00 AM" {...field} /></FormControl>
+                <FormControl><Input placeholder="e.g., Every Friday at 6:00 AM" {...field} className="text-base" /></FormControl>
                 <FormMessage />
             </FormItem>
         )} />
@@ -244,7 +244,7 @@ function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting }: { fell
             <FormField control={form.control} name="location" render={({ field }) => (
                 <FormItem>
                     <FormLabel>Physical Location</FormLabel>
-                    <FormControl><Input placeholder="e.g., 123 Main St, Anytown" {...field} value={field.value ?? ''} /></FormControl>
+                    <FormControl><Input placeholder="e.g., 123 Main St, Anytown" {...field} value={field.value ?? ''} className="text-base" /></FormControl>
                     <FormMessage />
                 </FormItem>
             )} />
@@ -252,7 +252,7 @@ function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting }: { fell
         <FormField control={form.control} name="streamUrl" render={({ field }) => (
             <FormItem>
                 <FormLabel>Live Stream URL (Optional)</FormLabel>
-                <FormControl><Input placeholder="https://youtube.com/live/..." {...field} value={field.value ?? ''} /></FormControl>
+                <FormControl><Input placeholder="https://youtube.com/live/..." {...field} value={field.value ?? ''} className="text-base" /></FormControl>
                 <FormMessage />
             </FormItem>
         )} />
@@ -411,13 +411,16 @@ export default function FellowshipPage() {
                 {mounted && isMobile ? (
                     <Sheet open={isCreateOpen} onOpenChange={setIsCreateOpen}>
                         <SheetTrigger asChild>{triggerButton}</SheetTrigger>
-                        <SheetContent side="bottom">
-                            <SheetHeader>
-                                <SheetTitle>Create a New Fellowship</SheetTitle>
-                                <SheetDescription>Fill in the details to start your group.</SheetDescription>
-                            </SheetHeader>
-                            <div className="max-h-[80vh] overflow-y-auto p-1 mt-4">
+                        <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0">
+                            <div className="p-6 border-b flex-shrink-0">
+                                <SheetHeader>
+                                    <SheetTitle>Create a New Fellowship</SheetTitle>
+                                    <SheetDescription>Fill in the details to start your group.</SheetDescription>
+                                </SheetHeader>
+                            </div>
+                            <div className="flex-grow overflow-y-auto p-6 pt-2">
                                 {formContent}
+                                <Button variant="ghost" className="w-full mt-4" onClick={() => setIsCreateOpen(false)}>Close</Button>
                             </div>
                         </SheetContent>
                     </Sheet>
@@ -456,15 +459,32 @@ export default function FellowshipPage() {
             )}
 
             {fellowshipToManage && (
-                <Dialog open={!!fellowshipToManage} onOpenChange={() => setFellowshipToManage(null)}>
-                    <DialogContent>
-                        <DialogHeader>
-                            <DialogTitle>Manage Fellowship</DialogTitle>
-                            <DialogDescription>Edit the details of your fellowship group.</DialogDescription>
-                        </DialogHeader>
-                        <ManageFellowshipForm fellowship={fellowshipToManage} onFormSubmit={handleUpdateFellowship} isSubmitting={isSubmitting} />
-                    </DialogContent>
-                </Dialog>
+                mounted && isMobile ? (
+                    <Sheet open={!!fellowshipToManage} onOpenChange={(open) => !open && setFellowshipToManage(null)}>
+                        <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0">
+                            <div className="p-6 border-b flex-shrink-0">
+                                <SheetHeader>
+                                    <SheetTitle>Manage Fellowship</SheetTitle>
+                                    <SheetDescription>Edit the details of your fellowship group.</SheetDescription>
+                                </SheetHeader>
+                            </div>
+                            <div className="flex-grow overflow-y-auto p-6 pt-2">
+                                <ManageFellowshipForm fellowship={fellowshipToManage} onFormSubmit={handleUpdateFellowship} isSubmitting={isSubmitting} />
+                                <Button variant="ghost" className="w-full mt-4" onClick={() => setFellowshipToManage(null)}>Close</Button>
+                            </div>
+                        </SheetContent>
+                    </Sheet>
+                ) : (
+                    <Dialog open={!!fellowshipToManage} onOpenChange={() => setFellowshipToManage(null)}>
+                        <DialogContent>
+                            <DialogHeader>
+                                <DialogTitle>Manage Fellowship</DialogTitle>
+                                <DialogDescription>Edit the details of your fellowship group.</DialogDescription>
+                            </DialogHeader>
+                            <ManageFellowshipForm fellowship={fellowshipToManage} onFormSubmit={handleUpdateFellowship} isSubmitting={isSubmitting} />
+                        </DialogContent>
+                    </Dialog>
+                )
             )}
 
             {fellowshipToDelete && (
