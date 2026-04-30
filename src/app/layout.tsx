@@ -1,4 +1,3 @@
-
 import type { Metadata } from 'next';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
@@ -14,6 +13,7 @@ export const metadata: Metadata = {
   title: 'Testify',
   description:
     'A platform for believers to share testimonies, organize soul-winning campaigns, and track evangelism progress.',
+  metadataBase: new URL('https://testifyglobal.com'),
   manifest: '/manifest.webmanifest',
   icons: {
     icon: [
@@ -31,6 +31,28 @@ export const metadata: Metadata = {
         url: testifyLogoUrl,
       },
     ],
+  },
+  openGraph: {
+    title: 'Testify',
+    description: 'A platform for believers to share testimonies, organize soul-winning campaigns, and track evangelism progress.',
+    url: 'https://testifyglobal.com',
+    siteName: 'Testify',
+    images: [
+      {
+        url: testifyLogoUrl,
+        width: 512,
+        height: 512,
+        alt: 'Testify Logo',
+      },
+    ],
+    locale: 'en_US',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary',
+    title: 'Testify',
+    description: 'A platform for believers to share testimonies, organize soul-winning campaigns, and track evangelism progress.',
+    images: [testifyLogoUrl],
   },
 };
 
