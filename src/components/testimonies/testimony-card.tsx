@@ -28,6 +28,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { useToast } from "@/hooks/use-toast";
 import { doc, updateDoc, arrayUnion } from "firebase/firestore";
 import { errorEmitter } from "@/firebase/error-emitter";
@@ -35,11 +36,14 @@ import { FirestorePermissionError } from "@/firebase/errors";
 import { cn } from "@/lib/utils";
 import { Icons } from "@/components/icons";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDelete, onEdit }: { testimony: Testimony, onDelete: () => void, onEdit: () => void }) {
   const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
+  const isMobile = useIsMobile();
+  const [mounted, setMounted] = useState(false);
 
   const [isSupporting, setIsSupporting] = useState(false);
   const contentRef = React.useRef<HTMLParagraphElement>(null);
@@ -66,12 +70,12 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
   const locationString = [testimony.authorLocation?.city, testimony.authorLocation?.country].filter(Boolean).join(', ');
 
   React.useEffect(() => {
+    setMounted(true);
     const checkTruncation = () => {
       if (contentRef.current) {
         setIsTruncated(contentRef.current.scrollHeight > contentRef.current.clientHeight);
       }
     };
-    // Check after a short delay to allow for rendering
     const timeoutId = setTimeout(checkTruncation, 100);
     window.addEventListener('resize', checkTruncation);
     return () => {
@@ -102,7 +106,6 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
   }
 
   const handleShare = (platform: "link" | "facebook" | "twitter" | "whatsapp") => {
-    // Always use the production domain for sharing
     const baseUrl = "https://testifyglobal.com";
     const url = `${baseUrl}/dashboard/testimonies#${testimony.id}`;
     const text = `Read this inspiring testimony by ${authorFullName} on Testify!`;
@@ -131,6 +134,14 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
         break;
     }
   };
+
+  const fullTextContent = (
+    <ScrollArea className={cn("pr-4", isMobile ? "h-full" : "max-h-[60vh]")}>
+      <p className="text-sm text-muted-foreground whitespace-pre-wrap leading-relaxed pb-6">
+        {testimony.content}
+      </p>
+    </ScrollArea>
+  );
 
   return (
     <>
@@ -187,8 +198,8 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
           {testimony.answeredPrayerId && testimony.answeredPrayerContent && (
             <Card className="bg-muted/50 shadow-inner">
                 <CardHeader className="p-3">
-                    <CardDescription className="text-xs">
-                        This is the Testimony to Prayer Request:
+                    <CardDescription className="text-[10px] uppercase tracking-wider">
+                        Answer to Prayer Request:
                     </CardDescription>
                     <blockquote className="border-l-2 pl-3 italic text-xs text-muted-foreground">
                         &ldquo;{testimony.answeredPrayerContent}&rdquo;
@@ -227,7 +238,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
                 <DropdownMenuItem onSelect={() => handleShare('whatsapp')}><MessageCircle /><span>Share on WhatsApp</span></DropdownMenuItem>
                 <DropdownMenuItem onSelect={() => handleShare('facebook')}><Icons.facebook /><span>Share on Facebook</span></DropdownMenuItem>
                 <DropdownMenuItem onSelect={() => handleShare('twitter')}>
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-4 h-4"><path fill="currentColor" d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
                   <span>Share on Twitter (X)</span>
                 </DropdownMenuItem>
                 {isAuthor && <DropdownMenuSeparator />}
@@ -239,19 +250,29 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
         </CardFooter>
       </Card>
 
-      <Dialog open={showFullText} onOpenChange={setShowFullText}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Testimony by {authorFullName}</DialogTitle>
-            <DialogDescription>{displayDate}</DialogDescription>
-          </DialogHeader>
-          <ScrollArea className="max-h-[60vh] pr-4">
-            <p className="text-sm text-muted-foreground whitespace-pre-wrap">
-              {testimony.content}
-            </p>
-          </ScrollArea>
-        </DialogContent>
-      </Dialog>
+      {mounted && isMobile ? (
+        <Sheet open={showFullText} onOpenChange={setShowFullText}>
+          <SheetContent side="bottom" className="h-[80dvh] flex flex-col">
+            <SheetHeader className="text-left flex-shrink-0">
+              <SheetTitle>Testimony by {authorFullName}</SheetTitle>
+              <SheetDescription>{displayDate}</SheetDescription>
+            </SheetHeader>
+            <div className="flex-grow min-h-0 pt-6">
+              {fullTextContent}
+            </div>
+          </SheetContent>
+        </Sheet>
+      ) : (
+        <Dialog open={showFullText} onOpenChange={setShowFullText}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Testimony by {authorFullName}</DialogTitle>
+              <DialogDescription>{displayDate}</DialogDescription>
+            </DialogHeader>
+            {fullTextContent}
+          </DialogContent>
+        </Dialog>
+      )}
     </>
   );
 });

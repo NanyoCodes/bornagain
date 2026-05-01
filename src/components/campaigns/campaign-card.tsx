@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { format, parse, isSameDay, differenceInDays } from "date-fns";
-import { CalendarDays, MapPin, Users, Share2, Edit, MoreVertical, Loader2, MessagesSquare, UserCheck2, PlayCircle, Newspaper, UserPlus } from "lucide-react";
+import { CalendarDays, MapPin, Users, Share2, Edit, MoreVertical, Loader2, MessagesSquare, UserCheck2, PlayCircle, Newspaper, UserPlus, ChevronDown } from "lucide-react";
 import type { Campaign, CampaignParticipant, UserProfile } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -41,15 +41,21 @@ import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { safeToDate } from "@/lib/utils";
 import { JoinCampaignDialog } from "./join-campaign-dialog";
+import { ScrollArea } from "../ui/scroll-area";
 
 
 function ParticipantsDialog({ campaign, children }: { campaign: Campaign; children: React.ReactNode; }) {
   const firestore = useFirestore();
   const { user } = useUser();
   const [isOpen, setIsOpen] = useState(false);
+  const isMobile = useIsMobile();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const participantsQuery = useMemo(() => {
-    // Only create query when dialog is open and user is organizer to avoid unnecessary fetches/permission errors
     if (!isOpen || !firestore || !user || user.uid !== campaign.organizerId) return null;
     return query(collection(firestore, 'campaigns', campaign.id, 'participants'));
   }, [isOpen, firestore, campaign.id, user, campaign.organizerId]);
@@ -59,6 +65,82 @@ function ParticipantsDialog({ campaign, children }: { campaign: Campaign; childr
   const organizer = useMemo(() => participants?.find(p => p.id === campaign.organizerId), [participants, campaign.organizerId]);
   const otherParticipants = useMemo(() => participants?.filter(p => p.id !== campaign.organizerId), [participants, campaign.organizerId]);
 
+  const content = (
+    <ScrollArea className={cn("pr-4", isMobile ? "h-full" : "max-h-[60vh]")}>
+      {loading ? (
+        <div className="space-y-4">
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-full" />
+        </div>
+      ) : participants ? (
+         <div className="space-y-6 pb-6">
+            {organizer && (
+                <div className="space-y-3">
+                    <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Organizer</h3>
+                    <div className="flex items-center gap-3 rounded-lg p-3 bg-muted/50 border">
+                        <Avatar className="h-8 w-8">
+                            <AvatarImage src={organizer.photoURL} />
+                            <AvatarFallback>{organizer.firstName?.charAt(0)}</AvatarFallback>
+                        </Avatar>
+                        <span className='font-medium'>{organizer.firstName} {organizer.lastName}</span>
+                    </div>
+                </div>
+            )}
+            {otherParticipants && otherParticipants.length > 0 && (
+              <div className="space-y-3">
+                <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Members ({otherParticipants.length})</h3>
+                <div className="space-y-3">
+                  {otherParticipants.map(p => (
+                    <div key={p.id} className="p-3 border rounded-lg space-y-3">
+                      <div className="flex items-center gap-3">
+                        <Avatar className="h-8 w-8 text-xs">
+                            <AvatarImage src={p.photoURL} />
+                            <AvatarFallback>{p.firstName?.charAt(0)}</AvatarFallback>
+                        </Avatar>
+                        <span className='font-medium text-sm'>{p.firstName} {p.lastName}</span>
+                      </div>
+                      {p.joinReason && (
+                        <blockquote className="border-l-2 pl-3 text-xs italic text-muted-foreground bg-muted/20 py-1">
+                            &ldquo;{p.joinReason}&rdquo;
+                        </blockquote>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            {otherParticipants?.length === 0 && user?.uid === campaign.organizerId && (
+                <p className="text-center text-muted-foreground py-8 text-sm italic">No other participants yet.</p>
+            )}
+        </div>
+      ) : user?.uid !== campaign.organizerId ? (
+        <div className="text-center py-10 bg-muted/20 rounded-lg border border-dashed">
+            <p className="text-sm text-muted-foreground px-6">Only the campaign organizer can see the full participant list.</p>
+        </div>
+      ) : null}
+    </ScrollArea>
+  );
+
+  if (mounted && isMobile) {
+    return (
+      <Sheet open={isOpen} onOpenChange={setIsOpen}>
+        <SheetTrigger asChild>{children}</SheetTrigger>
+        <SheetContent side="bottom" className="h-[80dvh] flex flex-col">
+          <SheetHeader className="text-left flex-shrink-0">
+            <SheetTitle>Participants: {campaign.title}</SheetTitle>
+            <SheetDescription>
+              {campaign.participants || 0} people have joined this campaign.
+            </SheetDescription>
+          </SheetHeader>
+          <div className="flex-grow min-h-0 pt-6">
+            {content}
+          </div>
+        </SheetContent>
+      </Sheet>
+    );
+  }
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
@@ -66,59 +148,10 @@ function ParticipantsDialog({ campaign, children }: { campaign: Campaign; childr
         <DialogHeader>
           <DialogTitle>Participants for "{campaign.title}"</DialogTitle>
           <DialogDescription>
-            {loading ? 'Loading...' : `${campaign.participants || 0} people have joined this campaign.`}
-            <br/>
-             {user?.uid !== campaign.organizerId && (
-                <span className="text-xs">Note: Only the campaign organizer can see the full participant list.</span>
-             )}
+            {campaign.participants || 0} people have joined this campaign.
           </DialogDescription>
         </DialogHeader>
-        <div className="max-h-[60vh] overflow-y-auto pr-4">
-          {loading && (
-            <div className="space-y-2">
-              <div className="h-10 w-full" />
-              <div className="h-10 w-full" />
-              <div className="h-10 w-full" />
-            </div>
-          )}
-          {!loading && participants && (
-             <div className="space-y-4">
-                {organizer && (
-                    <div className="space-y-3">
-                        <h3 className="text-sm font-semibold text-muted-foreground">ORGANIZER</h3>
-                        <div className="flex items-center justify-between rounded-lg p-3 bg-muted/50">
-                            <span className='font-medium'>{organizer.firstName} {organizer.lastName}</span>
-                        </div>
-                    </div>
-                )}
-                {otherParticipants && otherParticipants.length > 0 && (
-                  <div className="space-y-3">
-                    <h3 className="text-sm font-semibold text-muted-foreground">MEMBERS ({otherParticipants.length})</h3>
-                    <div className="space-y-2">
-                      {otherParticipants.map(p => (
-                        <div key={p.id} className="p-3 border rounded-lg space-y-2">
-                          <div className="flex items-center justify-between">
-                            <span className='font-medium'>{p.firstName} {p.lastName}</span>
-                          </div>
-                          {p.joinReason && (
-                            <blockquote className="border-l-2 pl-3 text-sm italic text-muted-foreground">
-                                {p.joinReason}
-                            </blockquote>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-            </div>
-          )}
-           {!loading && (!participants || participants.length === 0) && user?.uid === campaign.organizerId && (
-                <p className="text-center text-muted-foreground py-4">No other participants yet.</p>
-           )}
-           {!loading && !participants && user?.uid !== campaign.organizerId && (
-            <p className="text-center text-muted-foreground py-4">You do not have permission to view the participant list.</p>
-           )}
-        </div>
+        {content}
       </DialogContent>
     </Dialog>
   );
@@ -151,7 +184,6 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
   const [showFullDescription, setShowFullDescription] = useState(false);
 
   const handleCardClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    // Prevent navigation if a button, link or interactive element was clicked
     if (
       (e.target as HTMLElement).closest('button') ||
       (e.target as HTMLElement).closest('a') ||
@@ -213,7 +245,6 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
 
   useEffect(() => {
     if (descriptionRef.current) {
-      // We need to check after a small delay to ensure rendering is complete
       const checkTruncation = () => {
         if (descriptionRef.current) {
           setIsDescriptionTruncated(
@@ -221,8 +252,8 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
           );
         }
       };
-      setTimeout(checkTruncation, 100); // A small delay
-      window.addEventListener('resize', checkTruncation); // Re-check on resize
+      setTimeout(checkTruncation, 100);
+      window.addEventListener('resize', checkTruncation);
       return () => window.removeEventListener('resize', checkTruncation);
     }
   }, [campaign.description]);
@@ -237,7 +268,6 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
       const participantIds = [user.uid, campaign.organizerId].sort();
       const chatsRef = collection(firestore, 'chats');
 
-      // Simplified query
       const q = query(
         chatsRef,
         where('participantIds', '==', participantIds),
@@ -245,8 +275,6 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
       );
 
       const querySnapshot = await getDocs(q);
-      
-      // Find the specific one for this campaign, or the one without a campaignId (accountability chat)
       let existingChat = querySnapshot.docs.find(doc => doc.data().campaignId === campaign.id);
 
       let chatId: string;
@@ -303,12 +331,10 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
       if (navigator.share) {
         await navigator.share(shareData);
       } else {
-        // Fallback for desktop browsers
          handleShareDropdown('link');
       }
     } catch (err) {
       console.error('Share failed:', err);
-      // Fallback for when navigator.share fails
       handleShareDropdown('link');
     }
   };
@@ -511,7 +537,7 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
                 <ParticipantsDialog campaign={campaign}>
                     <Button variant="ghost" className="h-auto p-0 justify-start text-sm font-normal text-muted-foreground hover:bg-transparent hover:text-primary" onClick={stopPropagation}>
                         <Users className="h-4 w-4" />
-                        <span>
+                        <span className="ml-1">
                             {campaign.participants}
                             {campaign.maxParticipants ? ` / ${campaign.maxParticipants}` : ''} participant{campaign.participants === 1 ? '' : 's'}
                         </span>
