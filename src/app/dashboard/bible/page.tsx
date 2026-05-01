@@ -201,7 +201,7 @@ export default function BibleReaderPage() {
   const [chapterError, setChapterError] = useState<string | null>(null);
 
   const [isScrolledToEnd, setIsScrolledToEnd] = useState(false);
-  const scrollAreaRef = useRef<HTMLDivLement>(null);
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
   const [filterDate, setFilterDate] = useState<Date | undefined>();
 
   // Highlighting state
@@ -730,10 +730,10 @@ export default function BibleReaderPage() {
                                     )
                             })}
                         </div>
-                        <div className="pt-8 flex flex-col sm:flex-row gap-4 items-center justify-between">
-                          <div className="flex items-center justify-center min-h-[40px] flex-shrink-0">
+                        <div className="pt-8 pb-10 flex flex-col sm:flex-row gap-6 items-center justify-between">
+                          <div className="flex items-center justify-center min-h-[40px] flex-shrink-0 w-full sm:w-auto">
                               {selectedVerses.length > 0 && !unfinishedHighlight && (
-                                  <Button size="sm" onClick={handleSaveHighlight} disabled={isProcessingHighlight}>
+                                  <Button size="default" className="w-full sm:w-auto" onClick={handleSaveHighlight} disabled={isProcessingHighlight}>
                                       <Highlighter className="mr-2 h-4 w-4" />
                                       {isProcessingHighlight ? 'Saving...' : (
                                           <>
@@ -748,7 +748,7 @@ export default function BibleReaderPage() {
                                       <div className="flex items-center justify-between gap-4">
                                           <div className="text-amber-700 dark:text-amber-400">
                                               <p className="font-semibold text-sm">Meditation Required</p>
-                                              <p className="text-xs">Please add a note to your last highlight before creating another.</p>
+                                              <p className="text-xs">Please add a note to your last highlight.</p>
                                           </div>
                                           <Button
                                               size="sm"
@@ -768,19 +768,19 @@ export default function BibleReaderPage() {
                                   </Card>
                               )}
                           </div>
-                          <div className="flex items-center justify-end flex-wrap gap-2">
-                              <div className="flex items-center gap-2">
+                          <div className="flex flex-col sm:flex-row items-center justify-end gap-4 w-full sm:w-auto">
+                              <div className="flex items-center gap-2 w-full sm:w-auto">
                                   <Input
                                       type="number"
                                       placeholder="Verse"
                                       value={goToVerse}
                                       onChange={(e) => setGoToVerse(e.target.value)}
-                                      className="w-20 h-9"
+                                      className="flex-grow sm:w-20 h-9"
                                       onKeyDown={(e) => e.key === 'Enter' && handleGoToVerse()}
                                   />
                                   <Button onClick={handleGoToVerse} size="sm" variant="secondary">Go</Button>
                               </div>
-                              <Button size="sm" onClick={handleMarkAsRead} disabled={isSubmitting || isLoadingChapter || !!chapterError}>
+                              <Button size="default" className="w-full sm:w-auto" onClick={handleMarkAsRead} disabled={isSubmitting || isLoadingChapter || !!chapterError}>
                                   {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                   <span className="sm:hidden">Mark & Next</span>
                                   <span className="hidden sm:inline">Mark as Read & Next Chapter</span>
