@@ -1,5 +1,8 @@
 import CampaignPageClient from "@/components/campaigns/campaign-page-client";
 
-export default function CampaignPage({ params, searchParams }: { params: { campaignId: string }, searchParams: { [key: string]: string | string[] | undefined } }) {
+type Params = Promise<{ campaignId: string }>;
+
+export default async function CampaignPage(props: { params: Params }) {
+    const params = await props.params;
     return <CampaignPageClient campaignId={params.campaignId} />;
 }

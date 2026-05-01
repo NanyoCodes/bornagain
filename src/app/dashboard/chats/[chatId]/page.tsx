@@ -1,5 +1,8 @@
 import ChatPageClient from "@/components/chat/chat-page-client";
 
-export default function ChatPage({ params, searchParams }: { params: { chatId: string }, searchParams: { [key: string]: string | string[] | undefined } }) {
+type Params = Promise<{ chatId: string }>;
+
+export default async function ChatPage(props: { params: Params }) {
+    const params = await props.params;
     return <ChatPageClient chatId={params.chatId} />;
 }
