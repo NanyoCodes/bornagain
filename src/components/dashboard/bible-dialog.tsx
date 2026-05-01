@@ -13,9 +13,9 @@ import {
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '../ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
-import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from '../ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from '@/components/ui/card';
 import { bibleData } from '@/lib/bible-data';
 import { useUser, useFirestore, useDoc, useCollection } from '@/firebase';
 import { doc, updateDoc, arrayUnion, collection, query, where, addDoc, serverTimestamp, deleteDoc, setDoc } from 'firebase/firestore';
@@ -27,7 +27,7 @@ import { Skeleton } from '../ui/skeleton';
 import { getBibleChapter, type BibleChapterOutput } from '@/ai/flows/get-bible-chapter-flow';
 import { Input } from '../ui/input';
 import { Textarea } from '../ui/textarea';
-import { cn } from '@/lib/utils';
+import { cn, safeToDate } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '../ui/sheet';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion';
@@ -195,6 +195,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
   const selectedBook = useMemo(() => bibleData.find(b => b.name === selectedBookName), [selectedBookName]);
 
   const hasInitializedSelection = useRef(false);
+  const lastBookRef = useRef(bibleData[0].name);
 
   useEffect(() => {
     if (!isOpen) {
@@ -205,13 +206,16 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
     if (isOpen && userProfile && !hasInitializedSelection.current) {
       if (userProfile.readingHistory && userProfile.readingHistory.length > 0) {
         // Sort history to find the most recent entry
-        const lastRead = [...userProfile.readingHistory].sort((a, b) => {
-          const timeA = a.readAt?.toDate?.().getTime() ?? 0;
-          const timeB = b.readAt?.toDate?.().getTime() ?? 0;
+        const sortedHistory = [...userProfile.readingHistory].sort((a, b) => {
+          const timeA = safeToDate(a.readAt)?.getTime() ?? 0;
+          const timeB = safeToDate(b.readAt)?.getTime() ?? 0;
           return timeB - timeA;
-        })[0];
+        });
+        
+        const lastRead = sortedHistory[0];
         
         if (lastRead) {
+          lastBookRef.current = lastRead.book;
           setSelectedBookName(lastRead.book);
           setSelectedChapterNumber(lastRead.chapter);
         }
@@ -222,7 +226,16 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
       }
       hasInitializedSelection.current = true;
     }
-  }, [isOpen, userProfile]); // Only initialize when opening or profile first loads
+  }, [isOpen, userProfile]);
+
+  useEffect(() => {
+    // Only reset chapter to 1 if the book name changed AND it's not the initial load from history
+    if (hasInitializedSelection.current && selectedBookName !== lastBookRef.current) {
+      setSelectedChapterNumber(1);
+      setActiveHighlightId(null);
+      lastBookRef.current = selectedBookName;
+    }
+  }, [selectedBookName]);
 
   const highlightsQuery = useMemo(() => {
     if (!user || !chapterContent) return null;
@@ -250,13 +263,6 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
         activeNoteRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
   }, [activeHighlightId]);
-
-  useEffect(() => {
-    if (hasInitializedSelection.current) {
-      setSelectedChapterNumber(1);
-      setActiveHighlightId(null);
-    }
-  }, [selectedBookName]);
 
   const highlightsMap = useMemo(() => {
     const map = new Map<number, BibleHighlight>();
@@ -611,7 +617,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
             {highlights && highlights
                 .sort((a, b) => (a.createdAt?.seconds ?? 0) - (b.createdAt?.seconds ?? 0))
                 .map(h => {
-                    const updatedAt = h.updatedAt?.toDate();
+                    const updatedAt = h.updatedAt?.toDate ? h.updatedAt.toDate() : null;
                     if (h.id === activeHighlightId) {
                         return (
                             <div key={h.id} ref={activeNoteRef}>

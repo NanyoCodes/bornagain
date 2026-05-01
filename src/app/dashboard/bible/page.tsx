@@ -52,7 +52,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { getBibleChapter, type BibleChapterOutput } from '@/ai/flows/get-bible-chapter-flow';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { cn } from '@/lib/utils';
+import { cn, safeToDate } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 import {
   Sheet,
@@ -234,18 +234,22 @@ export default function BibleReaderPage() {
   const selectedBook = useMemo(() => bibleData.find(b => b.name === selectedBookName), [selectedBookName]);
 
   const hasInitializedSelection = useRef(false);
+  const lastBookRef = useRef(bibleData[0].name);
 
   useEffect(() => {
     if (userProfile && !hasInitializedSelection.current) {
       if (userProfile.readingHistory && userProfile.readingHistory.length > 0) {
         // Sort history to find the most recent entry
-        const lastRead = [...userProfile.readingHistory].sort((a, b) => {
-          const timeA = a.readAt?.toDate?.().getTime() ?? 0;
-          const timeB = b.readAt?.toDate?.().getTime() ?? 0;
+        const sortedHistory = [...userProfile.readingHistory].sort((a, b) => {
+          const timeA = safeToDate(a.readAt)?.getTime() ?? 0;
+          const timeB = safeToDate(b.readAt)?.getTime() ?? 0;
           return timeB - timeA;
-        })[0];
+        });
+        
+        const lastRead = sortedHistory[0];
         
         if (lastRead) {
+          lastBookRef.current = lastRead.book;
           setSelectedBookName(lastRead.book);
           setSelectedChapterNumber(lastRead.chapter);
         }
@@ -257,6 +261,15 @@ export default function BibleReaderPage() {
       hasInitializedSelection.current = true;
     }
   }, [userProfile]);
+
+  useEffect(() => {
+    // Only reset chapter to 1 if the book name changed AND it's not the initial load from history
+    if (hasInitializedSelection.current && selectedBookName !== lastBookRef.current) {
+      setSelectedChapterNumber(1);
+      setActiveHighlightId(null);
+      lastBookRef.current = selectedBookName;
+    }
+  }, [selectedBookName]);
 
   const highlightsQuery = useMemo(() => {
     if (!user || !chapterContent) return null;
@@ -284,13 +297,6 @@ export default function BibleReaderPage() {
         activeNoteRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
   }, [activeHighlightId]);
-
-  useEffect(() => {
-    if (hasInitializedSelection.current) {
-      setSelectedChapterNumber(1);
-      setActiveHighlightId(null);
-    }
-  }, [selectedBookName]);
 
   const highlightsMap = useMemo(() => {
     const map = new Map<number, BibleHighlight>();
@@ -658,7 +664,7 @@ export default function BibleReaderPage() {
             {highlights && highlights
                 .sort((a, b) => (a.createdAt?.seconds ?? 0) - (b.createdAt?.seconds ?? 0))
                 .map(h => {
-                    const updatedAt = h.updatedAt?.toDate();
+                    const updatedAt = h.updatedAt?.toDate ? h.updatedAt.toDate() : null;
                     if (h.id === activeHighlightId) {
                         return (
                             <div key={h.id} ref={activeNoteRef}>
