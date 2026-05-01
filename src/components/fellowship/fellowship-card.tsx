@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useMemo } from 'react';
@@ -137,7 +136,7 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
                 </div>
                  {distance !== null && <p className="text-xs text-muted-foreground">{distance.toFixed(1)} km away</p>}
                 <div className="flex items-center gap-2" onClick={stopPropagation}>
-                    {fellowship.streamUrl && (
+                    {(isMember || isOrganizer) && fellowship.streamUrl && (
                         <Button asChild variant="outline" size="sm">
                             <Link href={fellowship.streamUrl} target="_blank" rel="noopener noreferrer">
                                 <PlayCircle className="mr-2 h-4 w-4" />

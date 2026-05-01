@@ -32,6 +32,16 @@ export default function FellowshipPageClient() {
     
     const loading = fellowshipLoading || organizerLoading;
 
+    const isMember = useMemo(() => {
+        if (!user || !fellowship) return false;
+        return fellowship.memberIds.includes(user.uid);
+    }, [user, fellowship]);
+
+    const isOrganizer = useMemo(() => {
+        if (!user || !fellowship) return false;
+        return fellowship.organizerId === user.uid;
+    }, [user, fellowship]);
+
     if (loading) {
         return (
             <div className="flex items-center justify-center h-full">
@@ -97,13 +107,16 @@ export default function FellowshipPageClient() {
                                     <p className="text-muted-foreground">{fellowship.location}</p>
                                 </div>
                             )}
-                            {fellowship.streamUrl && (
+                            {(isMember || isOrganizer) && fellowship.streamUrl && (
                                 <Button asChild className="w-full mt-2">
                                     <Link href={fellowship.streamUrl} target="_blank" rel="noopener noreferrer">
                                         <PlayCircle className="mr-2 h-4 w-4" />
                                         Join Stream
                                     </Link>
                                 </Button>
+                            )}
+                            {!(isMember || isOrganizer) && fellowship.streamUrl && (
+                                <p className="text-xs text-muted-foreground mt-2 italic text-center">Join the fellowship to access the stream link.</p>
                             )}
                         </CardContent>
                     </Card>
