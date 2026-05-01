@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useMemo, useRef } from 'react';
@@ -11,7 +10,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -46,7 +44,7 @@ import { useRouter } from 'next/navigation';
 
 const noteCategories: NoteCategory[] = ['Personal', 'Church', 'Revelation', 'Other'];
 
-export default function NotesPage({ params, searchParams }: { params: {}, searchParams: { [key: string]: string | string[] | undefined } }) {
+export default function NotesPage() {
   const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
@@ -300,8 +298,8 @@ export default function NotesPage({ params, searchParams }: { params: {}, search
   };
   
   const NoteList = (
-    <div className="space-y-2">
-       <div className="flex flex-col sm:flex-row gap-2 mb-4">
+    <div className="space-y-2 h-full flex flex-col">
+       <div className="flex flex-col sm:flex-row gap-2 mb-4 shrink-0">
           <Input
               placeholder="Search by title or content..."
               value={searchTerm}
@@ -312,71 +310,73 @@ export default function NotesPage({ params, searchParams }: { params: {}, search
               <Plus className="mr-2 h-4 w-4" /> Add Note
           </Button>
       </div>
-      {notesLoading ? (
-        <div className="flex justify-center py-10"><Loader2 className="h-8 w-8 animate-spin" /></div>
-      ) : filteredNotes && filteredNotes.length > 0 ? (
-        <Accordion type="multiple" defaultValue={noteCategories} className="w-full">
-            {noteCategories.map(cat => {
-                const categoryNotes = groupedNotes[cat] || [];
-                if (categoryNotes.length === 0) return null;
+      <ScrollArea className="flex-grow">
+        {notesLoading ? (
+          <div className="flex justify-center py-10"><Loader2 className="h-8 w-8 animate-spin" /></div>
+        ) : filteredNotes && filteredNotes.length > 0 ? (
+          <Accordion type="multiple" defaultValue={noteCategories} className="w-full">
+              {noteCategories.map(cat => {
+                  const categoryNotes = groupedNotes[cat] || [];
+                  if (categoryNotes.length === 0) return null;
 
-                return (
-                    <AccordionItem value={cat} key={cat}>
-                        <AccordionTrigger>{cat} ({categoryNotes.length})</AccordionTrigger>
-                        <AccordionContent>
-                           <div className="space-y-2">
-                                {categoryNotes.map(note => {
-                                    const contentPreview = (note.content || "No content").replace(/<[^>]*>?/gm, '').replace(/\s+/g, ' ').trim();
-                                    const truncatedContent = contentPreview.length > 150 
-                                        ? `${''}${contentPreview.substring(0, 150)}...` 
-                                        : contentPreview;
+                  return (
+                      <AccordionItem value={cat} key={cat}>
+                          <AccordionTrigger className="hover:no-underline">{cat} ({categoryNotes.length})</AccordionTrigger>
+                          <AccordionContent>
+                             <div className="space-y-2">
+                                  {categoryNotes.map(note => {
+                                      const contentPreview = (note.content || "No content").replace(/<[^>]*>?/gm, '').replace(/\s+/g, ' ').trim();
+                                      const truncatedContent = contentPreview.length > 150 
+                                          ? `${contentPreview.substring(0, 150)}...` 
+                                          : contentPreview;
 
-                                    return (
-                                        <Card
-                                            key={note.id}
-                                            onClick={() => handleSelectNote(note)}
-                                            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleSelectNote(note); }}
-                                            role="button"
-                                            tabIndex={0}
-                                            className={cn(
-                                                "cursor-pointer",
-                                                selectedNote?.id === note.id && "ring-2 ring-primary"
-                                            )}
-                                        >
-                                            <CardHeader className="p-4 pb-2">
-                                                <CardTitle className="text-base truncate">{note.title}</CardTitle>
-                                                <CardDescription className="text-xs">
-                                                    {note.updatedAt?.toDate ? format(note.updatedAt.toDate(), 'PPP') : 'Just now'}
-                                                </CardDescription>
-                                            </CardHeader>
-                                            <CardContent className="p-4 pt-0">
-                                                <p className="text-sm text-muted-foreground">{truncatedContent}</p>
-                                            </CardContent>
-                                        </Card>
-                                    );
-                                })}
-                           </div>
-                        </AccordionContent>
-                    </AccordionItem>
-                )
-            })}
-        </Accordion>
-      ) : (
-        <div className="text-center py-10 border-2 border-dashed rounded-lg">
-          <FileText className="mx-auto h-12 w-12 text-muted-foreground" />
-          <h3 className="mt-4 text-lg font-semibold">{searchTerm ? 'No Results Found' : 'No Notes Yet'}</h3>
-          <p className="mt-1 text-sm text-muted-foreground">
-            {searchTerm ? 'Try a different search term.' : 'Click "Add Note" to start journaling.'}
-          </p>
-        </div>
-      )}
+                                      return (
+                                          <Card
+                                              key={note.id}
+                                              onClick={() => handleSelectNote(note)}
+                                              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleSelectNote(note); }}
+                                              role="button"
+                                              tabIndex={0}
+                                              className={cn(
+                                                  "cursor-pointer hover:bg-muted/50 transition-colors",
+                                                  selectedNote?.id === note.id && "ring-2 ring-primary bg-muted"
+                                              )}
+                                          >
+                                              <CardHeader className="p-4 pb-2">
+                                                  <CardTitle className="text-base truncate">{note.title}</CardTitle>
+                                                  <CardDescription className="text-xs">
+                                                      {note.updatedAt?.toDate ? format(note.updatedAt.toDate(), 'PPP') : 'Just now'}
+                                                  </CardDescription>
+                                              </CardHeader>
+                                              <CardContent className="p-4 pt-0">
+                                                  <p className="text-sm text-muted-foreground line-clamp-2">{truncatedContent}</p>
+                                              </CardContent>
+                                          </Card>
+                                      );
+                                  })}
+                             </div>
+                          </AccordionContent>
+                      </AccordionItem>
+                  )
+              })}
+          </Accordion>
+        ) : (
+          <div className="text-center py-10 border-2 border-dashed rounded-lg">
+            <FileText className="mx-auto h-12 w-12 text-muted-foreground" />
+            <h3 className="mt-4 text-lg font-semibold">{searchTerm ? 'No Results Found' : 'No Notes Yet'}</h3>
+            <p className="mt-1 text-sm text-muted-foreground">
+              {searchTerm ? 'Try a different search term.' : 'Click "Add Note" to start journaling.'}
+            </p>
+          </div>
+        )}
+      </ScrollArea>
     </div>
   );
   
   const NoteEditor = (
-    <div className="flex flex-col h-full" key={selectedNote?.id || (isCreatingNew ? 'new-note' : 'empty-editor')}>
-      <div className="space-y-4 flex-grow flex flex-col">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div className="flex flex-col h-full overflow-hidden" key={selectedNote?.id || (isCreatingNew ? 'new-note' : 'empty-editor')}>
+      <div className="space-y-4 flex-grow flex flex-col min-h-0">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 shrink-0">
             <Input
                 placeholder="Note Title (optional)"
                 value={title}
@@ -384,13 +384,13 @@ export default function NotesPage({ params, searchParams }: { params: {}, search
                     setTitle(e.target.value);
                     setIsDirty(true);
                 }}
-                className="text-lg font-semibold"
+                className="text-lg font-semibold h-11"
             />
             <Select value={category} onValueChange={(value) => {
                 setCategory(value as NoteCategory);
                 setIsDirty(true);
             }}>
-                <SelectTrigger>
+                <SelectTrigger className="h-11">
                     <SelectValue placeholder="Select a category" />
                 </SelectTrigger>
                 <SelectContent>
@@ -408,39 +408,39 @@ export default function NotesPage({ params, searchParams }: { params: {}, search
             setContent(e.target.value);
             setIsDirty(true);
           }}
-          className="flex-grow min-h-[300px] text-base"
+          className="flex-grow min-h-0 text-base leading-relaxed p-4"
         />
       </div>
-      <div className="flex justify-between items-center mt-4 flex-shrink-0">
-        <div>
-        {selectedNote && (
-          <div className="flex gap-2">
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button variant="destructive" size="sm" disabled={isDeleting}>
-                  {isDeleting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
+      <div className="flex justify-between items-center py-4 shrink-0 border-t mt-auto">
+        <div className="flex gap-2">
+            {selectedNote && (
+                <>
+                <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                        <Button variant="destructive" size="icon" disabled={isDeleting} className="h-10 w-10">
+                            {isDeleting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
+                        </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                        <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            This will permanently delete the note titled "{selectedNote.title}".
+                        </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleDeleteNote} className="bg-destructive hover:bg-destructive/90">Confirm</AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
+                <Button variant="outline" size="icon" onClick={handleExportPdf} className="h-10 w-10" title="Export as PDF">
+                    <Download className="h-4 w-4" />
                 </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    This will permanently delete the note titled "{selectedNote.title}".
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction onClick={handleDeleteNote} className="bg-destructive hover:bg-destructive/90">Confirm</AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-             <Button variant="outline" size="sm" onClick={handleExportPdf}>
-                <Download className="mr-2 h-4 w-4" /> Export as PDF
-            </Button>
-          </div>
-        )}
+                </>
+            )}
         </div>
-        <Button onClick={handleSaveNote} disabled={isSaving || !isDirty}>
+        <Button onClick={handleSaveNote} disabled={isSaving || !isDirty} className="px-8 h-10">
           {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
           {selectedNote ? 'Save Changes' : 'Save Note'}
         </Button>
@@ -449,30 +449,29 @@ export default function NotesPage({ params, searchParams }: { params: {}, search
   );
   
   return (
-    <div className="space-y-4 h-full flex flex-col p-4 md:p-6 md:pb-6">
-       <div className="flex-shrink-0 flex items-center gap-4">
+    <div className="h-full flex flex-col p-4 md:p-6 overflow-hidden">
+       <div className="flex-shrink-0 flex items-center gap-4 mb-4">
             <Button variant="outline" size="icon" onClick={() => router.back()}>
               <ArrowLeft className="h-4 w-4" />
               <span className="sr-only">Back</span>
             </Button>
-            <h1 className="text-2xl font-bold tracking-tight">My Notes</h1>
+            <h1 className="text-xl md:text-2xl font-bold tracking-tight">My Notes</h1>
        </div>
        <div className="flex-grow min-h-0">
             {(!mounted || !isMobile) ? (
-                <div className="grid grid-cols-3 gap-6 h-full pt-4">
-                    <div className="col-span-1 h-full">
-                        <ScrollArea className="h-full">
-                           <div className="pr-1">
-                            {NoteList}
-                           </div>
-                        </ScrollArea>
+                <div className="grid grid-cols-3 gap-6 h-full">
+                    <div className="col-span-1 h-full overflow-hidden">
+                        {NoteList}
                     </div>
-                    <div className="col-span-2 h-full flex flex-col">
+                    <div className="col-span-2 h-full flex flex-col overflow-hidden">
                         {editorVisible ? NoteEditor : (
                             <div className="flex flex-col items-center justify-center h-full text-center text-muted-foreground border-2 border-dashed rounded-lg p-8">
-                                <FileText className="h-12 w-12 mb-4" />
+                                <FileText className="h-12 w-12 mb-4 opacity-20" />
                                 <h3 className="font-semibold">Select a note to view or edit</h3>
                                 <p className="text-sm">Or, create a new one to get started.</p>
+                                <Button onClick={handleNewNote} variant="outline" className="mt-4">
+                                     <Plus className="mr-2 h-4 w-4" /> Create Note
+                                </Button>
                             </div>
                         )}
                     </div>
@@ -482,38 +481,29 @@ export default function NotesPage({ params, searchParams }: { params: {}, search
                   if (isDirty) {
                     setNavigationTarget(newTab as 'list' | 'editor');
                     setIsDiscardAlertOpen(true);
-                  } else if (newTab === 'list') {
-                      handleBackToList();
                   } else {
                       setActiveTab(newTab);
                   }
-                }}>
-                    <TabsList className="grid w-full grid-cols-2">
+                }} className="h-full flex flex-col">
+                    <TabsList className="grid w-full grid-cols-2 shrink-0">
+                        <TabsTrigger value="list">Notes ({notes?.length || 0})</TabsTrigger>
                         <TabsTrigger value="editor">{editorVisible && !isCreatingNew ? 'Edit Note' : 'New Note'}</TabsTrigger>
-                        <TabsTrigger value="list">All Notes ({notes?.length || 0})</TabsTrigger>
                     </TabsList>
-                    <TabsContent value="editor" className="flex-grow flex flex-col min-h-0 mt-2">
+                    <TabsContent value="list" className="flex-grow min-h-0 mt-4 overflow-hidden data-[state=inactive]:hidden">
+                        {NoteList}
+                    </TabsContent>
+                    <TabsContent value="editor" className="flex-grow flex flex-col min-h-0 mt-4 overflow-hidden data-[state=inactive]:hidden">
                         {editorVisible ? NoteEditor : (
                             <div className="text-center text-muted-foreground py-10 flex flex-col items-center justify-center h-full border-2 border-dashed rounded-lg">
                                <p className="font-semibold">No note selected</p>
-                               <p className="text-sm">Select a note to edit, or create a new one.</p>
+                               <p className="text-sm">Select a note from the list or start a fresh one.</p>
                                <div className="flex items-center gap-4 mt-4">
                                     <Button onClick={handleNewNote} variant="outline">
                                         <Plus className="mr-2 h-4 w-4" /> New Note
                                     </Button>
-                                    <Button onClick={() => router.back()} variant="secondary">
-                                      Close
-                                    </Button>
                                </div>
                             </div>
                         )}
-                    </TabsContent>
-                    <TabsContent value="list" className="flex-grow min-h-0 mt-2">
-                        <ScrollArea className="h-full">
-                            <div className="pr-1">
-                                {NoteList}
-                            </div>
-                        </ScrollArea>
                     </TabsContent>
                 </Tabs>
             )}
@@ -523,7 +513,7 @@ export default function NotesPage({ params, searchParams }: { params: {}, search
             <AlertDialogHeader>
               <AlertDialogTitle>You have unsaved changes</AlertDialogTitle>
               <AlertDialogDescription>
-                Are you sure you want to leave? Your changes will be discarded.
+                Are you sure you want to switch views? Your unsaved changes will be lost.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
