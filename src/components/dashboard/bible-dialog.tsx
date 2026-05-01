@@ -193,8 +193,15 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
   
   const selectedBook = useMemo(() => bibleData.find(b => b.name === selectedBookName), [selectedBookName]);
 
+  const hasInitializedSelection = useRef(false);
+
   useEffect(() => {
-    if (isOpen && userProfile) {
+    if (!isOpen) {
+      hasInitializedSelection.current = false;
+      return;
+    }
+
+    if (isOpen && userProfile && !hasInitializedSelection.current) {
       if (userProfile.readingHistory && userProfile.readingHistory.length > 0) {
         // Sort history to find the most recent entry
         const lastRead = [...userProfile.readingHistory].sort((a, b) => {
@@ -212,8 +219,9 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
         setSelectedBookName(bibleData[0].name);
         setSelectedChapterNumber(1);
       }
+      hasInitializedSelection.current = true;
     }
-  }, [isOpen, userProfile]); // Re-evaluate when dialog opens or profile data changes
+  }, [isOpen, userProfile]); // Only initialize when opening or profile first loads
 
   const highlightsQuery = useMemo(() => {
     if (!user || !chapterContent) return null;
@@ -243,8 +251,10 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
   }, [activeHighlightId]);
 
   useEffect(() => {
-    setSelectedChapterNumber(1);
-    setActiveHighlightId(null);
+    if (hasInitializedSelection.current) {
+      setSelectedChapterNumber(1);
+      setActiveHighlightId(null);
+    }
   }, [selectedBookName]);
 
   const highlightsMap = useMemo(() => {
@@ -329,27 +339,28 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
         if (!completedToday.includes('read_bible')) {
           onDisciplineCompleted();
         }
-        toast({ title: 'Chapter Marked as Read', description: `${''}${chapterContent.book} ${chapterContent.chapter} has been added to your history.`});
+        toast({ title: 'Chapter Marked as Read', description: `${chapterContent.book} ${chapterContent.chapter} has been added to your history.`});
         
-        const currentBookIndex = bibleData.findIndex(b => b.name === selectedBookName);
+        const currentBookIndex = bibleData.findIndex(b => b.name === chapterContent.book);
         const currentBook = bibleData[currentBookIndex];
         if (!currentBook) {
           return;
         }
 
-        const isLastChapter = selectedChapterNumber >= currentBook.chapters.length;
+        const isLastChapter = chapterContent.chapter >= currentBook.chapters.length;
 
         if (isLastChapter) {
             const isLastBook = currentBookIndex >= bibleData.length - 1;
             if (!isLastBook) {
                 const nextBook = bibleData[currentBookIndex + 1];
                 setSelectedBookName(nextBook.name);
+                setSelectedChapterNumber(1);
             } else {
                 toast({ title: 'Congratulations!', description: 'You have finished reading the entire Bible!' });
                 onOpenChange(false);
             }
         } else {
-            setSelectedChapterNumber(prev => prev + 1);
+            setSelectedChapterNumber(chapterContent.chapter + 1);
         }
       })
       .catch(() => {
@@ -880,7 +891,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                 </div>
             ) : (
                 <Tabs value={mobileTab} onValueChange={setMobileTab} className="flex-grow flex flex-col min-h-0">
-                    <TabsList className="grid w-full grid-cols-2">
+                    <TabsList className="grid w-full grid-cols-2 shrink-0">
                         <TabsTrigger value="reader">Read</TabsTrigger>
                         <TabsTrigger value="notes">Notes ({highlights?.length || 0})</TabsTrigger>
                     </TabsList>

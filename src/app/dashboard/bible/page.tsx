@@ -232,8 +232,10 @@ export default function BibleReaderPage() {
   
   const selectedBook = useMemo(() => bibleData.find(b => b.name === selectedBookName), [selectedBookName]);
 
+  const hasInitializedSelection = useRef(false);
+
   useEffect(() => {
-    if (userProfile) {
+    if (userProfile && !hasInitializedSelection.current) {
       if (userProfile.readingHistory && userProfile.readingHistory.length > 0) {
         // Sort history to find the most recent entry
         const lastRead = [...userProfile.readingHistory].sort((a, b) => {
@@ -247,10 +249,11 @@ export default function BibleReaderPage() {
           setSelectedChapterNumber(lastRead.chapter);
         }
       } else {
-        // If no history, default to Genesis 1 when dialog is opened
+        // If no history, default to Genesis 1
         setSelectedBookName(bibleData[0].name);
         setSelectedChapterNumber(1);
       }
+      hasInitializedSelection.current = true;
     }
   }, [userProfile]);
 
@@ -282,8 +285,10 @@ export default function BibleReaderPage() {
   }, [activeHighlightId]);
 
   useEffect(() => {
-    setSelectedChapterNumber(1);
-    setActiveHighlightId(null);
+    if (hasInitializedSelection.current) {
+      setSelectedChapterNumber(1);
+      setActiveHighlightId(null);
+    }
   }, [selectedBookName]);
 
   const highlightsMap = useMemo(() => {
@@ -398,22 +403,23 @@ export default function BibleReaderPage() {
         toast({ title: 'Chapter Marked as Read', description: `${chapterContent.book} ${chapterContent.chapter} has been added to your history.`});
         
         // --- Navigate to next chapter ---
-        const currentBookIndex = bibleData.findIndex(b => b.name === selectedBookName);
+        const currentBookIndex = bibleData.findIndex(b => b.name === chapterContent.book);
         const currentBook = bibleData[currentBookIndex];
         if (!currentBook) return;
-        const isLastChapter = selectedChapterNumber >= currentBook.chapters.length;
+        const isLastChapter = chapterContent.chapter >= currentBook.chapters.length;
 
         if (isLastChapter) {
             const isLastBook = currentBookIndex >= bibleData.length - 1;
             if (!isLastBook) {
                 const nextBook = bibleData[currentBookIndex + 1];
                 setSelectedBookName(nextBook.name);
+                setSelectedChapterNumber(1);
             } else {
                 toast({ title: 'Congratulations!', description: 'You have finished reading the entire Bible!' });
                 router.back();
             }
         } else {
-            setSelectedChapterNumber(prev => prev + 1);
+            setSelectedChapterNumber(chapterContent.chapter + 1);
         }
     } catch (error) {
         const permissionError = new FirestorePermissionError({
@@ -940,7 +946,7 @@ export default function BibleReaderPage() {
                 </div>
             ) : (
                 <Tabs value={mobileTab} onValueChange={setMobileTab} className="flex-grow flex flex-col min-h-0">
-                    <TabsList className="grid w-full grid-cols-2">
+                    <TabsList className="grid w-full grid-cols-2 shrink-0">
                         <TabsTrigger value="reader">Read</TabsTrigger>
                         <TabsTrigger value="notes">Notes ({highlights?.length || 0})</TabsTrigger>
                     </TabsList>
