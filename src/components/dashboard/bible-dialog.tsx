@@ -169,6 +169,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
   const [selectedVerses, setSelectedVerses] = useState<number[]>([]);
   const [isProcessingHighlight, setIsProcessingHighlight] = useState(false);
   const [activeHighlightId, setActiveHighlightId] = useState<string | null>(null);
+  const [toolbarPos, setToolbarPos] = useState<{ top: number; left: number } | null>(null);
   const activeNoteRef = useRef<HTMLDivElement>(null);
 
   const isMobile = useIsMobile();
@@ -279,6 +280,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
       setIsScrolledToEnd(false);
       setSelectedVerses([]);
       setActiveHighlightId(null);
+      setToolbarPos(null);
 
       try {
         const content = await getBibleChapter({
@@ -470,11 +472,25 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
             return;
         }
 
-        setSelectedVerses(prev =>
-            prev.includes(verseNumber)
-                ? prev.filter(v => v !== verseNumber)
-                : [...prev, verseNumber].sort((a, b) => a - b)
-        );
+        const newSelection = selectedVerses.includes(verseNumber)
+            ? selectedVerses.filter(v => v !== verseNumber)
+            : [...selectedVerses, verseNumber].sort((a, b) => a - b);
+
+        setSelectedVerses(newSelection);
+
+        if (verseElement && newSelection.length > 0) {
+            const rect = verseElement.getBoundingClientRect();
+            const viewport = scrollAreaRef.current?.querySelector('div[data-radix-scroll-area-viewport]');
+            if (viewport) {
+                const vRect = viewport.getBoundingClientRect();
+                setToolbarPos({
+                    top: rect.top - vRect.top + viewport.scrollTop,
+                    left: rect.left - vRect.left + rect.width / 2
+                });
+            }
+        } else if (newSelection.length === 0) {
+            setToolbarPos(null);
+        }
     };
 
     const handleSaveHighlight = async () => {
@@ -495,6 +511,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
         setDoc(newHighlightRef, newHighlightData)
             .then(() => {
                 setSelectedVerses([]);
+                setToolbarPos(null);
                 setActiveHighlightId(newHighlightRef.id);
                 if (isMobile) {
                     setMobileTab('notes');
@@ -647,7 +664,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                  <Button variant="outline" size="icon" className="h-7 w-7" onClick={decreaseFontSize} disabled={fontSize === 'sm'}><Minus className="h-4 w-4" /></Button>
                  <Button variant="outline" size="icon" className="h-7 w-7" onClick={increaseFontSize} disabled={fontSize === 'xl'}><Plus className="h-4 w-4" /></Button>
                </div>
-              <ScrollArea ref={scrollAreaRef} onScroll={handleScroll} className="h-full border rounded-md p-2 sm:p-4 pt-12">
+              <ScrollArea ref={scrollAreaRef} onScroll={handleScroll} className="h-full border rounded-md p-2 sm:p-4 pt-12 relative">
                   {isLoadingChapter && (
                   <div className="absolute inset-0 flex items-center justify-center bg-background/50 z-20">
                       <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -662,43 +679,61 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                   </div>
                   )}
                   {!isLoadingChapter && !chapterError && chapterContent && (
-                  <div className={cn("space-y-1 font-serif", fontSizeClasses[fontSize])}>
-                      {chapterContent.verses.map(v => {
-                              const verseNum = v.verse;
-                              const isSelected = selectedVerses.includes(verseNum);
-                              const highlightInfo = highlightsMap.get(verseNum);
-                              const isActiveHighlight = activeHighlight?.verses.includes(verseNum) ?? false;
-                              return (
-                                  <p
-                                      key={verseNum}
-                                      id={`verse-${verseNum}`}
-                                      className={cn(
-                                          'rounded-sm transition-colors -mx-1 px-1 py-0.5',
-                                          'sm:leading-relaxed md:leading-loose',
-                                          highlightInfo && getHighlightClass(highlightInfo.color),
-                                          isSelected && 'bg-destructive/30',
-                                          isActiveHighlight && 'ring-2 ring-primary ring-offset-2 ring-offset-background',
-                                          'cursor-pointer'
-                                      )}
-                                      onClick={() => handleVerseClick(verseNum)}
-                                  >
-                                      <sup className={cn("font-sans text-muted-foreground mr-1 sm:mr-1.5 select-none", subFontSizeClasses[fontSize])}>{v.verse}</sup>
-                                      {v.text}
-                                  </p>
-                              )
-                      })}
-                  </div>
+                  <>
+                    <div className={cn("space-y-1 font-serif", fontSizeClasses[fontSize])}>
+                        {chapterContent.verses.map(v => {
+                                const verseNum = v.verse;
+                                const isSelected = selectedVerses.includes(verseNum);
+                                const highlightInfo = highlightsMap.get(verseNum);
+                                const isActiveHighlight = activeHighlight?.verses.includes(verseNum) ?? false;
+                                return (
+                                    <p
+                                        key={verseNum}
+                                        id={`verse-${verseNum}`}
+                                        className={cn(
+                                            'rounded-sm transition-colors -mx-1 px-1 py-0.5',
+                                            'sm:leading-relaxed md:leading-loose',
+                                            highlightInfo && getHighlightClass(highlightInfo.color),
+                                            isSelected && 'bg-destructive/30',
+                                            isActiveHighlight && 'ring-2 ring-primary ring-offset-2 ring-offset-background',
+                                            'cursor-pointer'
+                                        )}
+                                        onClick={() => handleVerseClick(verseNum)}
+                                    >
+                                        <sup className={cn("font-sans text-muted-foreground mr-1 sm:mr-1.5 select-none", subFontSizeClasses[fontSize])}>{v.verse}</sup>
+                                        {v.text}
+                                    </p>
+                                )
+                        })}
+                    </div>
+
+                    {/* Floating Highlight Toolbar */}
+                    {selectedVerses.length > 0 && !unfinishedHighlight && toolbarPos && (
+                        <div 
+                            className="absolute z-30 transition-all pointer-events-none"
+                            style={{ 
+                                top: `${toolbarPos.top}px`, 
+                                left: `${toolbarPos.left}px`,
+                                transform: 'translate(-50%, -120%)'
+                            }}
+                        >
+                            <Button 
+                                size="default" 
+                                className="shadow-xl pointer-events-auto animate-in zoom-in slide-in-from-bottom-2 duration-200" 
+                                onClick={handleSaveHighlight}
+                                disabled={isProcessingHighlight}
+                            >
+                                {isProcessingHighlight ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Highlighter className="mr-2 h-4 w-4" />}
+                                Highlight & Note
+                            </Button>
+                        </div>
+                    )}
+                  </>
                   )}
               </ScrollArea>
           </div>
            <div className="flex-shrink-0 pt-4 flex flex-col sm:flex-row gap-2 items-center justify-between">
             <div className="flex items-center justify-center min-h-[40px]">
-                {selectedVerses.length > 0 && !unfinishedHighlight && (
-                    <Button onClick={handleSaveHighlight} disabled={isProcessingHighlight}>
-                        <Highlighter className="mr-2 h-4 w-4" />
-                        {isProcessingHighlight ? 'Saving...' : 'Highlight & Note'}
-                    </Button>
-                )}
                 {unfinishedHighlight && (
                     <Card className="border-amber-500/50 bg-amber-500/10 p-3 w-full max-w-md">
                         <div className="flex items-center justify-between gap-4">
