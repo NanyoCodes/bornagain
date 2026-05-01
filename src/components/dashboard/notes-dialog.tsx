@@ -268,7 +268,9 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted, userP
                                     >
                                         <p className="font-semibold truncate">{note.title}</p>
                                         <p className="text-sm text-muted-foreground line-clamp-1">{note.content || 'No content'}</p>
-                                        <p className="text-[10px] text-muted-foreground mt-1">{format(note.updatedAt.toDate(), 'PPP')}</p>
+                                        <p className="text-[10px] text-muted-foreground mt-1">
+                                          {note.updatedAt?.toDate ? format(note.updatedAt.toDate(), 'PPP') : 'Just now'}
+                                        </p>
                                     </button>
                                 ))}
                              </div>
@@ -337,6 +339,7 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted, userP
                     This action cannot be undone.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
+                <AccordionPrimitive.Header />
                 <AlertDialogFooter>
                   <AlertDialogCancel>Cancel</AlertDialogCancel>
                   <AlertDialogAction onClick={handleDeleteNote} className="bg-destructive hover:bg-destructive/90">Delete</AlertDialogAction>
