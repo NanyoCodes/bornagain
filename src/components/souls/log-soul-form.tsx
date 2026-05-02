@@ -20,13 +20,12 @@ import { Loader2 } from "lucide-react";
 import type { Campaign, Soul, UserProfile, Fellowship } from "@/lib/types";
 import { Textarea } from "@/components/ui/textarea";
 import { format } from "date-fns";
-import { useFirestore, useUser, useCollection, useDoc } from "@/firebase";
-import { collection, query, orderBy, serverTimestamp, doc, runTransaction, addDoc, increment, deleteField } from "firebase/firestore";
+import { useFirestore, useUser, useDoc } from "@/firebase";
+import { collection, serverTimestamp, doc, runTransaction, addDoc, increment } from "firebase/firestore";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
-import { ImageUpload } from "../common/image-upload";
 import { LocationWonInput } from "./location-won-input";
 import { haversineDistance } from "@/lib/utils";
 
@@ -39,8 +38,8 @@ const formSchema = z.object({
   locationWonCity: z.string().optional(),
   locationWonState: z.string().optional(),
   locationWonCountry: z.string().optional(),
-  locationWonLatitude: z.number().optional(),
-  locationWonLongitude: z.number().optional(),
+  locationWonLatitude: z.number().optional().nullable(),
+  locationWonLongitude: z.number().optional().nullable(),
   source: z.string({ required_error: "Please select a source." }),
   sourceDetails: z.string().optional(),
   initialNote: z.string().optional(),
@@ -77,6 +76,8 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign, fellowships, campai
       locationWonCity: "",
       locationWonState: "",
       locationWonCountry: "",
+      locationWonLatitude: null,
+      locationWonLongitude: null,
       source: defaultCampaign ? "Campaign" : "Personal",
       sourceDetails: defaultCampaign ? defaultCampaign.title : "",
       initialNote: "",
@@ -93,7 +94,6 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign, fellowships, campai
   }, [sourceValue, form.setValue]);
 
   useEffect(() => {
-    // Set default date on client to avoid hydration mismatch
     if (!form.getValues('wonAt')) {
         form.setValue('wonAt', new Date());
     }
@@ -105,7 +105,7 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign, fellowships, campai
   const sortedFellowships = useMemo(() => {
     if (!fellowships || fellowships.length === 0) return [];
     
-    if (watchedLat === undefined || watchedLng === undefined) {
+    if (typeof watchedLat !== 'number' || typeof watchedLng !== 'number') {
         return [...fellowships].sort((a, b) => a.name.localeCompare(b.name));
     }
 
@@ -128,7 +128,7 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign, fellowships, campai
     setIsLoading(true);
     
     const soulsCollectionRef = collection(firestore, `users/${user.uid}/souls`);
-    const newSoulRef = doc(soulsCollectionRef); // Create a reference for the new soul
+    const newSoulRef = doc(soulsCollectionRef);
     const globalSoulRef = doc(firestore, 'souls', newSoulRef.id);
 
     const processedUserLocation = userProfile?.location ? {
@@ -136,7 +136,7 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign, fellowships, campai
         country: userProfile.location.country || "",
         city_lowercase: (userProfile.location.city || "").toLowerCase(),
         country_lowercase: (userProfile.location.country || "").toLowerCase(),
-    } : undefined;
+    } : null;
 
     const soulData: { [key: string]: any } = {
       userId: user.uid,
@@ -145,42 +145,37 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign, fellowships, campai
       source: values.source as 'Campaign' | 'Personal',
       wonAt: values.wonAt,
       status: "New",
-      followUpLog: [],
+      followUpLog: values.initialNote ? [{ date: new Date(), note: values.initialNote }] : [],
       attendingChurch: false,
       inBibleStudy: false,
       attendingPrayer: false,
       inServiceDepartment: false,
+      userLocation: processedUserLocation || null,
+      email: values.email || null,
+      phone: values.phone || null,
+      church: values.church || null,
+      sourceDetails: values.sourceDetails || null,
     };
-
-    if (processedUserLocation) soulData.userLocation = processedUserLocation;
-    if (values.email) soulData.email = values.email;
-    if (values.phone) soulData.phone = values.phone;
-    if (values.church) soulData.church = values.church;
-    if (values.sourceDetails) soulData.sourceDetails = values.sourceDetails;
-    if (values.initialNote) {
-      soulData.followUpLog = [{ date: new Date(), note: values.initialNote }];
-    }
     
-    const locationWon: { [key: string]: any } = {};
-    if (values.locationWonCity) locationWon.city = values.locationWonCity;
-    if (values.locationWonState) locationWon.state = values.locationWonState;
-    if (values.locationWonCountry) locationWon.country = values.locationWonCountry;
-    if (typeof values.locationWonLatitude === 'number') locationWon.latitude = values.locationWonLatitude;
-    if (typeof values.locationWonLongitude === 'number') locationWon.longitude = values.locationWonLongitude;
-    
-    if (Object.keys(locationWon).length > 0) {
-      soulData.locationWon = locationWon;
-    }
+    const locationWon: { [key: string]: any } = {
+      city: values.locationWonCity || null,
+      state: values.locationWonState || null,
+      country: values.locationWonCountry || null,
+      latitude: values.locationWonLatitude ?? null,
+      longitude: values.locationWonLongitude ?? null,
+    };
+    soulData.locationWon = locationWon;
 
-    const campaignId = values.source === 'Campaign' ? (defaultCampaign?.id || campaigns?.find(c => c.title === values.sourceDetails)?.id) : undefined;
-    if (campaignId) soulData.campaignId = campaignId;
+    const campaignId = values.source === 'Campaign' ? (defaultCampaign?.id || campaigns?.find(c => c.title === values.sourceDetails)?.id) : null;
+    soulData.campaignId = campaignId || null;
 
     if (values.fellowshipId && values.fellowshipId !== 'none' && values.fellowshipId !== '') {
         const selectedFellowship = fellowships?.find(f => f.id === values.fellowshipId);
-        if (selectedFellowship) {
-            soulData.fellowshipId = selectedFellowship.id;
-            soulData.fellowshipName = selectedFellowship.name;
-        }
+        soulData.fellowshipId = values.fellowshipId;
+        soulData.fellowshipName = selectedFellowship?.name || null;
+    } else {
+        soulData.fellowshipId = null;
+        soulData.fellowshipName = null;
     }
 
     try {
@@ -272,7 +267,7 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign, fellowships, campai
 
         toast({
             title: "Soul Logged",
-            description: `${values.firstName} ${values.lastName} has been added to your list.`,
+            description: "A new soul has been added.",
         });
         onSoulLogged();
     } catch (serverError: any) {
@@ -448,7 +443,7 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign, fellowships, campai
                             <FormItem>
                             <FormLabel>Email</FormLabel>
                             <FormControl>
-                                <Input placeholder="john.doe@example.com" {...field} value={field.value ?? ''} className="text-base"/>
+                                <Input placeholder="john.doe@example.com" {...field} className="text-base"/>
                             </FormControl>
                             <FormMessage />
                             </FormItem>
@@ -461,7 +456,7 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign, fellowships, campai
                             <FormItem>
                             <FormLabel>Phone Number</FormLabel>
                             <FormControl>
-                                <Input placeholder="+1 123 456 7890" {...field} value={field.value ?? ''} className="text-base"/>
+                                <Input placeholder="+1 123 456 7890" {...field} className="text-base"/>
                             </FormControl>
                             <FormMessage />
                             </FormItem>
@@ -474,7 +469,7 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign, fellowships, campai
                             <FormItem>
                             <FormLabel>Church and Address</FormLabel>
                             <FormControl>
-                                <Input placeholder="e.g., New Life Church" {...field} value={field.value ?? ''} className="text-base"/>
+                                <Input placeholder="e.g., New Life Church" {...field} className="text-base"/>
                             </FormControl>
                             <FormMessage />
                             </FormItem>

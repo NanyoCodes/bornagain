@@ -24,7 +24,6 @@ import { collection, doc, serverTimestamp, runTransaction, increment, deleteFiel
 import { FirestorePermissionError } from "@/firebase/errors";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { haversineDistance, safeToDate } from "@/lib/utils";
 import { LocationWonInput } from "./location-won-input";
 
@@ -149,44 +148,34 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
       source: values.source as 'Personal' | 'Campaign',
       wonAt: values.wonAt,
       updatedAt: serverTimestamp(),
+      email: values.email || null,
+      phone: values.phone || null,
+      church: values.church || null,
+      sourceDetails: values.sourceDetails || null,
     };
-    
-    soulUpdateData.email = values.email || deleteField();
-    soulUpdateData.phone = values.phone || deleteField();
-    soulUpdateData.church = values.church || deleteField();
-    soulUpdateData.sourceDetails = values.sourceDetails || deleteField();
 
     if (values.fellowshipId && values.fellowshipId !== 'none' && values.fellowshipId !== '') {
         const selectedFellowship = fellowships?.find(f => f.id === values.fellowshipId);
         soulUpdateData.fellowshipId = values.fellowshipId;
         soulUpdateData.fellowshipName = selectedFellowship?.name || null;
     } else {
-        soulUpdateData.fellowshipId = deleteField();
-        soulUpdateData.fellowshipName = deleteField();
+        soulUpdateData.fellowshipId = null;
+        soulUpdateData.fellowshipName = null;
     }
     
-    const locationWon: { [key: string]: any } = {};
-    if (values.locationWonCity) locationWon.city = values.locationWonCity;
-    if (values.locationWonState) locationWon.state = values.locationWonState;
-    if (values.locationWonCountry) locationWon.country = values.locationWonCountry;
-    if (typeof values.locationWonLatitude === 'number') locationWon.latitude = values.locationWonLatitude;
-    if (typeof values.locationWonLongitude === 'number') locationWon.longitude = values.locationWonLongitude;
-    
-    if (Object.keys(locationWon).length > 0) {
-      soulUpdateData.locationWon = locationWon;
-    } else {
-        soulUpdateData.locationWon = deleteField();
-    }
+    soulUpdateData.locationWon = {
+      city: values.locationWonCity || null,
+      state: values.locationWonState || null,
+      country: values.locationWonCountry || null,
+      latitude: values.locationWonLatitude ?? null,
+      longitude: values.locationWonLongitude ?? null,
+    };
     
     if (values.source === 'Campaign') {
       const campaign = campaigns?.find(c => c.title === values.sourceDetails);
-      if (campaign) {
-          soulUpdateData.campaignId = campaign.id;
-      } else {
-          soulUpdateData.campaignId = deleteField(); 
-      }
+      soulUpdateData.campaignId = campaign?.id || null;
     } else {
-        soulUpdateData.campaignId = deleteField();
+      soulUpdateData.campaignId = null;
     }
 
     try {
@@ -201,8 +190,18 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
                 ? doc(firestore, "fellowships", newFellowshipId) : null;
 
             // --- ALL READS MUST HAPPEN FIRST ---
-            if (oldFellowshipRef) await transaction.get(oldFellowshipRef);
-            if (newFellowshipRef) await transaction.get(newFellowshipRef);
+            if (oldFellowshipRef) {
+                const oldDoc = await transaction.get(oldFellowshipRef);
+                if (!oldDoc.exists()) {
+                    // If it doesn't exist, we skip updating it
+                }
+            }
+            if (newFellowshipRef) {
+                const newDoc = await transaction.get(newFellowshipRef);
+                if (!newDoc.exists()) {
+                    throw new Error("Target fellowship group not found.");
+                }
+            }
 
             // --- ALL WRITES MUST HAPPEN LAST ---
             if (oldFellowshipRef) {
@@ -236,7 +235,7 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
         
         toast({
             title: "Soul Updated",
-            description: `${values.firstName} ${values.lastName}'s record has been updated.`,
+            description: "A new soul has been added.",
         });
 
         onSoulUpdated();

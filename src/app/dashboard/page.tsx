@@ -412,7 +412,6 @@ export default function DashboardPage() {
   useEffect(() => {
     setMounted(true);
     // This effect runs on the client after hydration.
-    // It's safe to use Math.random() here.
     const randomScripture =
       welcomeScriptures[Math.floor(Math.random() * welcomeScriptures.length)];
     setWelcomeMessage(randomScripture);
@@ -430,20 +429,15 @@ export default function DashboardPage() {
     if (lastActive && differenceInHours(now, lastActive) > 48) {
       const fetchSummaryData = async () => {
         try {
-          // 1. Get new testimonies count
           const testimoniesQuery = query(
             collection(firestore, 'testimonies'),
             where('createdAt', '>', lastActive)
           );
           const testimoniesSnapshot = await getCountFromServer(testimoniesQuery);
           const newTestimoniesCount = testimoniesSnapshot.data().count;
-
-          // 2. Get souls won count (already available from page data)
           const soulsWonCount = soulsWon?.length ?? 0;
-
-          // 3. Get recent discipline history
           const recentDisciplines: { date: string; completed: boolean }[] = [];
-          const threeDaysAgo = subDays(now, 4); // Go back a bit further to be safe
+          const threeDaysAgo = subDays(now, 4);
           const disciplineHistoryQuery = query(
             collection(firestore, `users/${user.uid}/disciplineHistory`),
             where('date', '>=', threeDaysAgo)
@@ -465,7 +459,7 @@ export default function DashboardPage() {
               completed: historyMap.get(dateString) || false,
             });
           }
-          recentDisciplines.reverse(); // Show oldest first
+          recentDisciplines.reverse();
 
           setSummaryData({
             newTestimoniesCount,
@@ -475,7 +469,6 @@ export default function DashboardPage() {
           setShowWelcomeBack(true);
         } catch (error) {
           console.error('Failed to fetch welcome back summary:', error);
-          // Don't show the dialog if data fetching fails.
         }
       };
 
@@ -531,7 +524,7 @@ export default function DashboardPage() {
       if (soul.status && soul.status in statusCounts) {
         statusCounts[soul.status]++;
       } else {
-        statusCounts['New']++; // Default to New if status is missing
+        statusCounts['New']++;
       }
     });
 
@@ -559,10 +552,9 @@ export default function DashboardPage() {
         return { ...soul, daysSinceContact };
       })
       .filter(soul => soul.daysSinceContact > 1)
-      .sort((a, b) => b.daysSinceContact - a.daysSinceContact) // Show longest ago first
+      .sort((a, b) => b.daysSinceContact - a.daysSinceContact)
       .slice(0, 3);
   }, [soulsWon]);
-
 
   const followUpStatusColors: Record<Soul['status'], string> = {
     New: 'hsl(var(--status-new))',
@@ -571,6 +563,12 @@ export default function DashboardPage() {
   };
 
   const displayName = userProfile?.firstName || user?.displayName || 'User';
+
+  const handleSoulLogged = () => {
+    setIsLogSoulOpen(false);
+    toast({ title: "Soul Logged!", description: "A new soul has been added." });
+    router.refresh();
+  };
 
   if (loading || !userProfile) {
       return (
@@ -789,7 +787,7 @@ export default function DashboardPage() {
               </SheetDescription>
             </SheetHeader>
             <div className="max-h-[80vh] overflow-y-auto p-1 mt-4">
-              <LogSoulForm onSoulLogged={() => { setIsLogSoulOpen(false); router.refresh(); }} />
+              <LogSoulForm onSoulLogged={handleSoulLogged} fellowships={[]} campaigns={[]} />
             </div>
           </SheetContent>
         </Sheet>
@@ -803,7 +801,7 @@ export default function DashboardPage() {
               </DialogDescription>
             </DialogHeader>
             <div className="max-h-[70vh] overflow-y-auto pr-2">
-              <LogSoulForm onSoulLogged={() => { setIsLogSoulOpen(false); router.refresh(); }} />
+              <LogSoulForm onSoulLogged={handleSoulLogged} fellowships={[]} campaigns={[]} />
             </div>
           </DialogContent>
         </Dialog>
