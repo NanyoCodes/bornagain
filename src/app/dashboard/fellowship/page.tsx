@@ -26,7 +26,7 @@ import type { UserProfile, Fellowship } from "@/lib/types";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { PlusCircle, HeartHandshake, Loader2, Trash2, Video } from 'lucide-react';
+import { PlusCircle, HeartHandshake, Loader2, Trash2, Video, Search } from 'lucide-react';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -48,6 +48,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { FellowshipCard } from '@/components/fellowship/fellowship-card';
 import { Card, CardHeader, CardContent } from '@/components/ui/card';
 import AdsenseAd from '@/components/common/adsense-ad';
+import { useSearch } from '@/context/search-context';
 
 const formSchema = z.object({
   name: z.string().min(3, "Name must be at least 3 characters.").max(100),
@@ -291,6 +292,7 @@ export default function FellowshipPage() {
     const { user, loading: userLoading } = useUser();
     const firestore = useFirestore();
     const { toast } = useToast();
+    const { searchTerm, setSearchPlaceholder, setIsSearchVisible, setSearchTerm } = useSearch();
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [fellowshipToManage, setFellowshipToManage] = useState<Fellowship | null>(null);
@@ -301,7 +303,13 @@ export default function FellowshipPage() {
     
     useEffect(() => {
         setMounted(true);
-    }, []);
+        setIsSearchVisible(true);
+        setSearchPlaceholder("Search fellowships by name, description, location...");
+        return () => {
+            setIsSearchVisible(false);
+            setSearchTerm("");
+        };
+    }, [setIsSearchVisible, setSearchPlaceholder, setSearchTerm]);
 
     const userDocRef = useMemo(() => (user ? doc(firestore, 'users', user.uid) : null), [user, firestore]);
     const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userDocRef);
@@ -313,6 +321,18 @@ export default function FellowshipPage() {
         if (!fellowships) return [];
         return fellowships.filter(f => f.status !== 'deleted');
     }, [fellowships]);
+
+    const filteredFellowships = useMemo(() => {
+        if (!activeFellowships) return [];
+        if (!searchTerm) return activeFellowships;
+        const term = searchTerm.toLowerCase();
+        return activeFellowships.filter(f => 
+            f.name.toLowerCase().includes(term) || 
+            f.description.toLowerCase().includes(term) ||
+            (f.location && f.location.toLowerCase().includes(term)) ||
+            f.organizerName.toLowerCase().includes(term)
+        );
+    }, [activeFellowships, searchTerm]);
 
     const loading = userLoading || profileLoading || fellowshipsLoading;
 
@@ -466,9 +486,9 @@ export default function FellowshipPage() {
                         <Card key={i}><CardHeader><Skeleton className="h-5 w-3/4" /></CardHeader><CardContent><Skeleton className="h-10 w-full" /></CardContent></Card>
                     ))}
                 </div>
-            ) : activeFellowships && activeFellowships.length > 0 ? (
+            ) : filteredFellowships && filteredFellowships.length > 0 ? (
                  <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                    {activeFellowships.map((f, index) => (
+                    {filteredFellowships.map((f, index) => (
                       <Fragment key={f.id}>
                         <FellowshipCard 
                           fellowship={f} 
@@ -485,9 +505,20 @@ export default function FellowshipPage() {
                 </div>
             ) : (
                 <div className="text-center py-12 flex flex-col items-center">
-                    <HeartHandshake className="h-16 w-16 text-muted-foreground" />
-                    <h3 className="mt-4 text-xl font-semibold">No Fellowships Yet</h3>
-                    <p className="mt-2 text-sm text-muted-foreground">Be the first to create a fellowship group!</p>
+                    {searchTerm ? (
+                        <Search className="h-16 w-16 text-muted-foreground opacity-20" />
+                    ) : (
+                        <HeartHandshake className="h-16 w-16 text-muted-foreground" />
+                    )}
+                    <h3 className="mt-4 text-xl font-semibold">
+                        {searchTerm ? `No results for "${searchTerm}"` : 'No Fellowships Yet'}
+                    </h3>
+                    <p className="mt-2 text-sm text-muted-foreground">
+                        {searchTerm ? 'Try a different search term.' : 'Be the first to create a fellowship group!'}
+                    </p>
+                    {searchTerm && (
+                        <Button variant="ghost" onClick={() => setSearchTerm("")} className="mt-4">Clear Search</Button>
+                    )}
                 </div>
             )}
 
