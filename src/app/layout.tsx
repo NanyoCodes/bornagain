@@ -24,6 +24,7 @@ export const metadata: Metadata = {
       { url: testifyLogoUrl, type: 'image/png' },
       { url: testifyLogoUrl, sizes: '32x32', type: 'image/png' },
       { url: testifyLogoUrl, sizes: '16x16', type: 'image/png' },
+      { url: testifyLogoUrl, sizes: '192x192', type: 'image/png' },
     ],
     shortcut: testifyLogoUrl,
     apple: [
@@ -34,6 +35,10 @@ export const metadata: Metadata = {
         rel: 'apple-touch-icon-precomposed',
         url: testifyLogoUrl,
       },
+      {
+        rel: 'mask-icon',
+        url: testifyLogoUrl,
+      }
     ],
   },
   openGraph: {
