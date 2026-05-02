@@ -161,12 +161,14 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
   if (mounted && isMobile) {
     return (
       <Sheet open={isOpen} onOpenChange={onOpenChange}>
-        <SheetContent side="bottom" className="h-[90dvh] flex flex-col">
-          <SheetHeader className="text-left">
-            <SheetTitle>Assign Fellowship for {soul.firstName}</SheetTitle>
-            <SheetDescription>Filter by location and select a fellowship to assign this soul to.</SheetDescription>
-          </SheetHeader>
-          <div className="flex-grow overflow-hidden pt-4">
+        <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0">
+          <div className="p-6 border-b flex-shrink-0">
+            <SheetHeader className="text-left">
+                <SheetTitle>Assign Fellowship for {soul.firstName}</SheetTitle>
+                <SheetDescription>Filter by location and select a fellowship to assign this soul to.</SheetDescription>
+            </SheetHeader>
+          </div>
+          <div className="flex-grow overflow-hidden px-6">
             {content}
           </div>
         </SheetContent>

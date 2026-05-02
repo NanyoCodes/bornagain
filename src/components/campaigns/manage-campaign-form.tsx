@@ -9,7 +9,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDes
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, MessagesSquare, Trash2, Video } from 'lucide-react';
 import { useCollection, useFirestore, useUser } from '@/firebase';
-import { collection, doc, updateDoc, serverTimestamp, getDoc, where, limit, addDoc, setDoc, runTransaction, query, orderBy, writeBatch } from 'firebase/firestore';
+import { collection, doc, updateDoc, serverTimestamp, query, orderBy, writeBatch } from 'firebase/firestore';
 import type { Campaign, CampaignParticipant } from '@/lib/types';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
@@ -70,10 +70,8 @@ type ManageCampaignFormProps = {
 };
 
 function ParticipantList({ campaign, participants, loading }: { campaign: Campaign, participants: CampaignParticipant[], loading: boolean }) {
-    const { user } = useUser();
-
-    const organizer = useMemo(() => participants?.find(p => p.id === campaign.organizerId), [participants, campaign.organizerId]);
-    const otherParticipants = useMemo(() => participants?.filter(p => p.id !== campaign.organizerId), [participants, campaign.organizerId]);
+  const organizer = useMemo(() => participants?.find(p => p.id === campaign.organizerId), [participants, campaign.organizerId]);
+  const otherParticipants = useMemo(() => participants?.filter(p => p.id !== campaign.organizerId), [participants, campaign.organizerId]);
 
   if (loading) {
     return (
@@ -244,8 +242,8 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated, onDelete }: Ma
         endDate: values.endDate,
         startTime: values.startTime,
         endTime: values.endTime,
-        scripture: values.scripture,
-        scriptureTestimony: values.scriptureTestimony,
+        scripture: values.scripture || null,
+        scriptureTestimony: values.scriptureTestimony || null,
         maxParticipants: values.maxParticipants ?? null,
         streamUrl: values.streamUrl || null,
         lastUpdateReason: values.lastUpdateReason || null,

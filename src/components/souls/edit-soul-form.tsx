@@ -1,4 +1,3 @@
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -21,7 +20,7 @@ import { Loader2 } from "lucide-react";
 import type { Soul, Campaign, Fellowship } from "@/lib/types";
 import { format } from "date-fns";
 import { useFirestore, useUser } from "@/firebase";
-import { collection, query, orderBy, doc, updateDoc, addDoc, deleteField, runTransaction, increment } from "firebase/firestore";
+import { collection, doc, serverTimestamp, runTransaction, increment, deleteField } from "firebase/firestore";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -83,7 +82,6 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
 
   const { reset } = form;
 
-  // This useEffect will reset the form with new `soul` data when the prop changes.
   useEffect(() => {
     reset({
       firstName: soul.firstName || "",
@@ -148,15 +146,15 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
       wonAt: values.wonAt,
     };
     
-    if (values.email) soulUpdateData.email = values.email; else soulUpdateData.email = deleteField();
-    if (values.phone) soulUpdateData.phone = values.phone; else soulUpdateData.phone = deleteField();
-    if (values.church) soulUpdateData.church = values.church; else soulUpdateData.church = deleteField();
-    if (values.sourceDetails) soulUpdateData.sourceDetails = values.sourceDetails; else soulUpdateData.sourceDetails = deleteField();
+    soulUpdateData.email = values.email || deleteField();
+    soulUpdateData.phone = values.phone || deleteField();
+    soulUpdateData.church = values.church || deleteField();
+    soulUpdateData.sourceDetails = values.sourceDetails || deleteField();
 
-    if (values.fellowshipId && values.fellowshipId !== 'none') {
+    if (values.fellowshipId && values.fellowshipId !== 'none' && values.fellowshipId !== '') {
         const selectedFellowship = fellowships?.find(f => f.id === values.fellowshipId);
         soulUpdateData.fellowshipId = values.fellowshipId;
-        soulUpdateData.fellowshipName = selectedFellowship?.name;
+        soulUpdateData.fellowshipName = selectedFellowship?.name || null;
     } else {
         soulUpdateData.fellowshipId = deleteField();
         soulUpdateData.fellowshipName = deleteField();
@@ -166,8 +164,9 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
     if (values.locationWonCity) locationWon.city = values.locationWonCity;
     if (values.locationWonState) locationWon.state = values.locationWonState;
     if (values.locationWonCountry) locationWon.country = values.locationWonCountry;
-    if (values.locationWonLatitude) locationWon.latitude = values.locationWonLatitude;
-    if (values.locationWonLongitude) locationWon.longitude = values.locationWonLongitude;
+    if (values.locationWonLatitude !== undefined) locationWon.latitude = values.locationWonLatitude;
+    if (values.locationWonLongitude !== undefined) locationWon.longitude = values.locationWonLongitude;
+    
     if (Object.keys(locationWon).length > 0) {
       soulUpdateData.locationWon = locationWon;
     } else {
@@ -189,16 +188,16 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
     try {
         await runTransaction(firestore, async (transaction) => {
             const oldFellowshipId = soul.fellowshipId;
-            const newFellowshipId = values.fellowshipId;
+            const newFellowshipId = values.fellowshipId === 'none' ? '' : values.fellowshipId;
             
             // Decrement old fellowship count if it exists and is different from the new one
-            if (oldFellowshipId && oldFellowshipId !== newFellowshipId) {
+            if (oldFellowshipId && oldFellowshipId !== 'none' && oldFellowshipId !== '' && oldFellowshipId !== newFellowshipId) {
                 const oldFellowshipRef = doc(firestore, "fellowships", oldFellowshipId);
                 transaction.update(oldFellowshipRef, { memberCount: increment(-1) });
             }
 
-            // Increment new fellowship count if it's not 'none' and is different from the old one
-            if (newFellowshipId && newFellowshipId !== 'none' && newFellowshipId !== oldFellowshipId) {
+            // Increment new fellowship count if it's not empty and is different from the old one
+            if (newFellowshipId && newFellowshipId !== 'none' && newFellowshipId !== '' && newFellowshipId !== oldFellowshipId) {
                 const newFellowshipRef = doc(firestore, "fellowships", newFellowshipId);
                 transaction.update(newFellowshipRef, { memberCount: increment(1) });
             }
@@ -207,7 +206,7 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
             transaction.update(globalSoulRef, soulUpdateData);
         });
 
-        const wasNewlyAssigned = values.fellowshipId && values.fellowshipId !== 'none' && values.fellowshipId !== soul.fellowshipId;
+        const wasNewlyAssigned = values.fellowshipId && values.fellowshipId !== 'none' && values.fellowshipId !== '' && values.fellowshipId !== soul.fellowshipId;
         if (wasNewlyAssigned) {
             const selectedFellowship = fellowships?.find(f => f.id === values.fellowshipId);
             if (selectedFellowship && selectedFellowship.organizerId !== user.uid) {
