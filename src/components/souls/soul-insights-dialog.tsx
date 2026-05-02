@@ -170,7 +170,7 @@ export function SoulInsightsDialog({ soul, children }: { soul: Soul, children: R
               <SheetDescription>{descText}</SheetDescription>
             </SheetHeader>
           </div>
-          <div className="flex-grow min-h-0 pt-6">
+          <div className="flex-grow min-h-0 pt-6 px-6">
             {bodyContent}
           </div>
         </SheetContent>

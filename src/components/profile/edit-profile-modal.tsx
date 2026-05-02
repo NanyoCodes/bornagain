@@ -173,7 +173,6 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
         ? updateProfile(auth.currentUser, authUpdatePayload) 
         : Promise.resolve();
       
-      // CRITICAL: Ensure no field is undefined. Firestore throws error on undefined.
       const firestoreUpdatePayload = {
         firstName: values.firstName,
         lastName: values.lastName,
