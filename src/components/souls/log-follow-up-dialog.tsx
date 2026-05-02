@@ -1,4 +1,3 @@
-
 "use client";
 
 import * as React from "react";
@@ -155,7 +154,7 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
                 name="note"
                 render={({ field }) => (
                     <FormItem>
-                        <Label>Notes</Label>
+                        <FormLabel>Notes</FormLabel>
                         <FormControl>
                             <Textarea placeholder="e.g., They are struggling with..." {...field} className="text-base" />
                         </FormControl>
@@ -168,7 +167,7 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
                 name="status"
                 render={({ field }) => (
                     <FormItem>
-                        <Label>Update Status</Label>
+                        <FormLabel>Update Status</FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                             <FormControl>
                                 <SelectTrigger className={cn("font-semibold text-base", getStatusClasses(field.value as FollowUpStatus))}>
@@ -280,7 +279,7 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
                                 name="inBibleStudy"
                                 render={({ field }) => (
                                     <FormItem className="flex flex-row items-center justify-between rounded-md p-2 -mx-2 hover:bg-muted/50">
-                                        <FormLabel className="font-normal flex items-center gap-2 cursor-pointer"><BookOpen className="h-4 w-4" />In Bible Study</Label>
+                                        <FormLabel className="font-normal flex items-center gap-2 cursor-pointer"><BookOpen className="h-4 w-4" />In Bible Study</FormLabel>
                                         <FormControl>
                                             <Switch checked={field.value} onCheckedChange={field.onChange} />
                                         </FormControl>

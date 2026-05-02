@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
@@ -51,6 +50,27 @@ export default function SoulsWonPage() {
   const [soulForHistory, setSoulForHistory] = useState<Soul | null>(null);
   const [soulToAssign, setSoulToAssign] = useState<Soul | null>(null);
   const [isAssigning, setIsAssigning] = useState<string | null>(null);
+
+  // Stabilize active soul data for dialog transitions to prevent freezes
+  const [activeEditSoul, setActiveEditSoul] = useState<Soul | null>(null);
+  useEffect(() => {
+    if (soulToEdit) setActiveEditSoul(soulToEdit);
+  }, [soulToEdit]);
+
+  const [activeFollowUpSoul, setActiveFollowUpSoul] = useState<Soul | null>(null);
+  useEffect(() => {
+    if (soulForFollowUp) setActiveFollowUpSoul(soulForFollowUp);
+  }, [soulForFollowUp]);
+
+  const [activeHistorySoul, setActiveHistorySoul] = useState<Soul | null>(null);
+  useEffect(() => {
+    if (soulForHistory) setActiveHistorySoul(soulForHistory);
+  }, [soulForHistory]);
+
+  const [activeAssignSoul, setActiveAssignSoul] = useState<Soul | null>(null);
+  useEffect(() => {
+    if (soulToAssign) setActiveAssignSoul(soulToAssign);
+  }, [soulToAssign]);
 
   useEffect(() => {
     setMounted(true);
@@ -500,14 +520,14 @@ export default function SoulsWonPage() {
 
       <Dialog open={!!soulToEdit} onOpenChange={(isOpen) => !isOpen && setSoulToEdit(null)}>
           <DialogContent className="sm:max-w-lg">
-              {soulToEdit && (
+              {activeEditSoul && (
                 <>
                   <DialogHeader>
                       <DialogTitle>Edit Soul Details</DialogTitle>
-                      <DialogDescription>Make changes to the record for {soulToEdit.firstName} {soulToEdit.lastName}.</DialogDescription>
+                      <DialogDescription>Make changes to the record for {activeEditSoul.firstName} {activeEditSoul.lastName}.</DialogDescription>
                   </DialogHeader>
                   <div className="max-h-[70vh] overflow-y-auto pr-2">
-                      <EditSoulForm soul={soulToEdit} onSoulUpdated={handleSoulUpdated} fellowships={fellowships || []} campaigns={activeCampaigns || []} />
+                      <EditSoulForm soul={activeEditSoul} onSoulUpdated={handleSoulUpdated} fellowships={fellowships || []} campaigns={activeCampaigns || []} />
                   </div>
                 </>
               )}
@@ -515,20 +535,20 @@ export default function SoulsWonPage() {
       </Dialog>
 
       <LogFollowUpDialog
-          soul={soulForFollowUp!}
+          soul={activeFollowUpSoul}
           isOpen={!!soulForFollowUp}
           onOpenChange={(isOpen) => { if (!isOpen) setSoulForFollowUp(null); }}
           onFollowUpLogged={handleFollowUpLogged}
       />
 
       <ViewHistoryDialog
-          soul={soulForHistory!}
+          soul={activeHistorySoul}
           isOpen={!!soulForHistory}
           onOpenChange={(isOpen) => { if (!isOpen) setSoulForHistory(null); }}
       />
 
       <AssignFellowshipDialog
-          soul={soulToAssign!}
+          soul={activeAssignSoul}
           fellowships={fellowships || []}
           isOpen={!!soulToAssign}
           onOpenChange={() => setSoulToAssign(null)}
