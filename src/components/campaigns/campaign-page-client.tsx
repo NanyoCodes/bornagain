@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
@@ -17,7 +18,7 @@ import {
 import { doc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Loader2, ArrowLeft, MapPin, CalendarDays, Users, Share2, Edit, MessagesSquare, UserCheck2, PlayCircle, Newspaper, Target, Map as MapIcon } from 'lucide-react';
+import { Loader2, ArrowLeft, MapPin, CalendarDays, Users, Share2, Edit, MessagesSquare, UserCheck2, PlayCircle, Newspaper, Target, Map as MapIcon, AlertTriangle } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
@@ -41,8 +42,22 @@ import { errorEmitter } from '@/firebase/error-emitter';
 const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 const libraries: ('places')[] = ['places'];
 
+function MapKeyMissingAlert() {
+    return (
+        <Alert variant="destructive" className="bg-destructive/5 border-destructive/20">
+            <AlertTriangle className="h-4 w-4" />
+            <AlertTitle>Google Maps Key Missing</AlertTitle>
+            <AlertDescription className="text-xs space-y-2">
+                <p>The campaign map cannot be displayed because the API key is not configured.</p>
+                <Button asChild variant="outline" size="sm" className="h-7 text-[10px]">
+                    <Link href="/dashboard/guide">Setup Guide</Link>
+                </Button>
+            </AlertDescription>
+        </Alert>
+    );
+}
 
-function CampaignMap({ campaign }: { campaign: Campaign }) {
+function CampaignMapInner({ campaign }: { campaign: Campaign }) {
     const { isLoaded, loadError } = useJsApiLoader({
         googleMapsApiKey: GOOGLE_MAPS_API_KEY || '',
         libraries,
@@ -50,87 +65,71 @@ function CampaignMap({ campaign }: { campaign: Campaign }) {
 
     const onMapUnmount = useCallback(() => {}, []);
 
-    const MapPlaceholder = () => (
-        <div className="h-80 w-full rounded-md bg-muted/50 border-2 border-dashed flex flex-col items-center justify-center text-center p-6 space-y-4">
-            <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center">
-                <MapIcon className="h-8 w-8 text-primary opacity-50" />
-            </div>
-        </div>
-    );
-
-    if (!GOOGLE_MAPS_API_KEY) {
-        return (
-            <Card>
-                <CardHeader><CardTitle className="text-lg flex items-center gap-2"><MapPin className="h-5 w-5"/> Location</CardTitle></CardHeader>
-                <CardContent>
-                    <MapPlaceholder />
-                </CardContent>
-            </Card>
-        );
-    }
+    const center = useMemo(() => ({ 
+        lat: campaign.latitude || 0, 
+        lng: campaign.longitude || 0 
+    }), [campaign.latitude, campaign.longitude]);
     
-    if (!campaign.latitude || !campaign.longitude) {
-        return (
-             <Card>
-                <CardHeader>
-                    <CardTitle className="text-lg flex items-center gap-2"><MapPin className="h-5 w-5"/> Location</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <MapPlaceholder />
-                </CardContent>
-            </Card>
-        );
-    }
-    
-    const center = { lat: campaign.latitude, lng: campaign.longitude };
     const radius = campaign.coverageRadius || 1000;
 
     if (loadError) {
         return (
-            <Card>
-                <CardHeader><CardTitle className="text-lg flex items-center gap-2"><MapPin className="h-5 w-5"/> Location</CardTitle></CardHeader>
-                <CardContent>
-                    <MapPlaceholder />
-                </CardContent>
-            </Card>
+            <div className="h-80 w-full rounded-md bg-muted/50 border-2 border-dashed flex flex-col items-center justify-center text-center p-6 space-y-4">
+                <AlertTriangle className="h-8 w-8 text-destructive opacity-50" />
+                <p className="text-sm text-muted-foreground">Error loading Google Maps</p>
+            </div>
         );
     }
 
     if (!isLoaded) {
         return (
-            <Card>
-                 <CardHeader>
-                    <CardTitle className="text-lg flex items-center gap-2"><MapPin className="h-5 w-5"/> Location</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <div className="h-80 w-full rounded-md bg-muted animate-pulse flex items-center justify-center">
-                        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-                    </div>
-                </CardContent>
-            </Card>
+            <div className="h-80 w-full rounded-md bg-muted animate-pulse flex items-center justify-center">
+                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+            </div>
         );
     }
 
     return (
+        <GoogleMap
+            mapContainerClassName="h-80 w-full rounded-md"
+            center={center}
+            zoom={12}
+            options={{ streetViewControl: false, mapTypeControl: false, fullscreenControl: false, zoomControl: false }}
+            onUnmount={onMapUnmount}
+        >
+            <MarkerF position={center} />
+            <CircleF
+                center={center}
+                radius={radius}
+                options={{ strokeColor: '#3b82f6', strokeOpacity: 0.8, strokeWeight: 2, fillColor: '#3b82f6', fillOpacity: 0.2 }}
+            />
+        </GoogleMap>
+    );
+}
+
+function CampaignMap({ campaign }: { campaign: Campaign }) {
+    const MapPlaceholder = () => (
+        <div className="h-80 w-full rounded-md bg-muted/50 border-2 border-dashed flex flex-col items-center justify-center text-center p-6 space-y-4">
+            <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center">
+                <MapIcon className="h-8 w-8 text-primary opacity-50" />
+            </div>
+            {!campaign.latitude && <p className="text-sm text-muted-foreground">No coordinates provided for this campaign.</p>}
+        </div>
+    );
+
+    return (
         <Card>
-             <CardHeader>
-                <CardTitle className="text-lg flex items-center gap-2"><MapPin className="h-5 w-5"/> Map</CardTitle>
+            <CardHeader>
+                <CardTitle className="text-lg flex items-center gap-2"><MapPin className="h-5 w-5"/> Location</CardTitle>
             </CardHeader>
             <CardContent>
-                <GoogleMap
-                    mapContainerClassName="h-80 w-full rounded-md"
-                    center={center}
-                    zoom={12}
-                    options={{ streetViewControl: false, mapTypeControl: false, fullscreenControl: false, zoomControl: false }}
-                    onUnmount={onMapUnmount}
-                >
-                    <MarkerF position={center} />
-                    <CircleF
-                        center={center}
-                        radius={radius}
-                        options={{ strokeColor: '#3b82f6', strokeOpacity: 0.8, strokeWeight: 2, fillColor: '#3b82f6', fillOpacity: 0.2 }}
-                    />
-                </GoogleMap>
+                {!GOOGLE_MAPS_API_KEY ? (
+                    <MapKeyMissingAlert />
+                ) : (!campaign.latitude || !campaign.longitude) ? (
+                    <MapPlaceholder />
+                ) : (
+                    <CampaignMapInner campaign={campaign} />
+                )}
             </CardContent>
         </Card>
     );
@@ -213,17 +212,17 @@ function ScriptureDisplay({ reference, caption }: { reference: string; caption?:
   // Fallback to old display if fetch fails or reference is bad
   if (error || !scriptureText) {
     return (
-         <blockquote className="mt-6 border-l-2 pl-6 italic">
+         <blockquote className="mt-6 border-l-2 pl-6 italic text-muted-foreground">
             &ldquo;{caption || "An inspirational scripture for this campaign."}&rdquo;
-            <footer className="text-right text-sm not-italic mt-2">- {reference}</footer>
+            <footer className="text-right text-sm not-italic mt-2 text-foreground">- {reference}</footer>
         </blockquote>
     );
   }
 
   // Success display
   return (
-    <blockquote className="mt-6 border-l-2 pl-6 italic">
-        <p ref={scriptureRef} className={cn("whitespace-pre-wrap", !isExpanded && "line-clamp-5")}>
+    <blockquote className="mt-6 border-l-2 pl-6 italic text-muted-foreground">
+        <p ref={scriptureRef} className={cn("whitespace-pre-wrap leading-relaxed", !isExpanded && "line-clamp-5")}>
             &ldquo;{scriptureText}&rdquo;
         </p>
         {isTruncated && !isExpanded && (
@@ -235,9 +234,9 @@ function ScriptureDisplay({ reference, caption }: { reference: string; caption?:
                 Read More
             </Button>
         )}
-        <footer className="text-right text-sm not-italic mt-2">
+        <footer className="text-right text-sm not-italic mt-2 text-foreground font-semibold">
             - {reference}
-            {caption && <div className="mt-1 opacity-80">&ldquo;{caption}&rdquo;</div>}
+            {caption && <div className="mt-1 font-normal opacity-80">&ldquo;{caption}&rdquo;</div>}
         </footer>
     </blockquote>
   );
@@ -385,7 +384,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                    This campaign may have been removed or the link is incorrect.
                 </p>
                 <Button asChild variant="outline" className="mt-6">
-                    <a href="/dashboard/campaigns"><ArrowLeft className="mr-2 h-4 w-4" /> Back to Campaigns</a>
+                    <Link href="/dashboard/campaigns"><ArrowLeft className="mr-2 h-4 w-4" /> Back to Campaigns</Link>
                 </Button>
             </div>
         );
@@ -431,7 +430,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                     <div className="lg:col-span-2 space-y-6">
                         <Card>
                             <CardContent className="p-6">
-                                <p className="text-muted-foreground whitespace-pre-wrap">{campaign.description}</p>
+                                <p className="text-muted-foreground whitespace-pre-wrap leading-relaxed">{campaign.description}</p>
                                 {campaign.scripture && (
                                      <ScriptureDisplay reference={campaign.scripture} caption={campaign.scriptureTestimony} />
                                 )}

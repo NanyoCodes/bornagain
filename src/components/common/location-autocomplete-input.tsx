@@ -1,9 +1,10 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
 import { useJsApiLoader, Autocomplete } from '@react-google-maps/api';
 import { Input } from '@/components/ui/input';
-import { Loader2 } from 'lucide-react';
+import { Loader2, AlertTriangle } from 'lucide-react';
 import { type UseFormReturn } from 'react-hook-form';
 
 const libraries: ('places')[] = ['places'];
@@ -14,23 +15,13 @@ interface LocationAutocompleteInputProps {
     form: UseFormReturn<any>;
 }
 
-export function LocationAutocompleteInput({ form }: LocationAutocompleteInputProps) {
+function LocationAutocompleteInner({ form, inputValue, setInputValue }: LocationAutocompleteInputProps & { inputValue: string, setInputValue: (v: string) => void }) {
     const { isLoaded, loadError } = useJsApiLoader({
         googleMapsApiKey: GOOGLE_MAPS_API_KEY || '',
         libraries,
     });
 
     const [autocomplete, setAutocomplete] = useState<google.maps.places.Autocomplete | null>(null);
-    const [inputValue, setInputValue] = useState(form.getValues('location') || '');
-
-    const watchedLocation = form.watch('location');
-    useEffect(() => {
-        // Sync local state if form value changes from an external source (e.g. map click)
-        if (watchedLocation !== inputValue) {
-            setInputValue(watchedLocation || '');
-        }
-    }, [watchedLocation, inputValue]);
-
 
     const onLoad = (autocompleteInstance: google.maps.places.Autocomplete) => {
         setAutocomplete(autocompleteInstance);
@@ -55,10 +46,10 @@ export function LocationAutocompleteInput({ form }: LocationAutocompleteInputPro
         form.setValue('location', e.target.value, { shouldDirty: true });
     }
 
-    if (!GOOGLE_MAPS_API_KEY || loadError) {
+    if (loadError) {
         return (
             <Input
-                placeholder="Enter location address manually..."
+                placeholder="Enter address manually (Maps failed to load)..."
                 type="text"
                 className="text-base"
                 value={inputValue}
@@ -87,4 +78,37 @@ export function LocationAutocompleteInput({ form }: LocationAutocompleteInputPro
             />
         </Autocomplete>
     );
+}
+
+export function LocationAutocompleteInput({ form }: LocationAutocompleteInputProps) {
+    const [inputValue, setInputValue] = useState(form.getValues('location') || '');
+
+    const watchedLocation = form.watch('location');
+    useEffect(() => {
+        if (watchedLocation !== inputValue) {
+            setInputValue(watchedLocation || '');
+        }
+    }, [watchedLocation, inputValue]);
+
+    if (!GOOGLE_MAPS_API_KEY) {
+        return (
+            <div className="space-y-2">
+                <Input
+                    placeholder="Enter location address manually..."
+                    className="text-base"
+                    value={inputValue}
+                    onChange={(e) => {
+                        setInputValue(e.target.value);
+                        form.setValue('location', e.target.value, { shouldDirty: true });
+                    }}
+                />
+                <p className="text-[10px] text-destructive flex items-center gap-1">
+                    <AlertTriangle className="h-3 w-3" />
+                    Google Maps API Key Missing. Search disabled.
+                </p>
+            </div>
+        );
+    }
+
+    return <LocationAutocompleteInner form={form} inputValue={inputValue} setInputValue={setInputValue} />;
 }

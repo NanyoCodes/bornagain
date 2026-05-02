@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -17,7 +18,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import React, { useState } from "react";
-import { Loader2, LocateFixed, Video, Map as MapIcon } from "lucide-react";
+import { Loader2, LocateFixed, Video, Map as MapIcon, AlertTriangle } from "lucide-react";
 import { useUser, useFirestore, useAuth } from "@/firebase";
 import { doc, updateDoc } from "firebase/firestore";
 import { updateProfile } from "firebase/auth";
@@ -30,6 +31,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { ImageUpload } from "../common/image-upload";
 import { useJsApiLoader, GoogleMap, MarkerF } from '@react-google-maps/api';
 import { Skeleton } from "../ui/skeleton";
+import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
 
 const libraries: ('places')[] = ['places'];
 const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
@@ -55,6 +57,50 @@ type EditProfileModalProps = {
   onClose: () => void;
 };
 
+function PrivateLocationMap({ form, markerPosition }: { form: any, markerPosition: google.maps.LatLngLiteral | null }) {
+    const { isLoaded, loadError } = useJsApiLoader({
+        googleMapsApiKey: GOOGLE_MAPS_API_KEY || '',
+        libraries,
+    });
+
+    const handleMapClick = (e: google.maps.MapMouseEvent) => {
+        if (e.latLng) {
+            form.setValue('latitude', e.latLng.lat(), { shouldDirty: true });
+            form.setValue('longitude', e.latLng.lng(), { shouldDirty: true });
+        }
+    };
+
+    const handleMarkerDragEnd = (e: google.maps.MapMouseEvent) => {
+        if (e.latLng) {
+            form.setValue('latitude', e.latLng.lat(), { shouldDirty: true });
+            form.setValue('longitude', e.latLng.lng(), { shouldDirty: true });
+        }
+    };
+
+    if (loadError) return <div className="h-60 w-full bg-muted/50 rounded-md flex items-center justify-center border-2 border-dashed"><p className="text-xs text-muted-foreground">Map Error</p></div>;
+    if (!isLoaded) return <Skeleton className="h-60 w-full mt-2" />;
+
+    return (
+        <div className="h-60 w-full rounded-md overflow-hidden mt-2 border">
+            <GoogleMap
+                mapContainerClassName="h-full w-full"
+                center={markerPosition || fallbackCenter}
+                zoom={markerPosition ? 12 : 4}
+                onClick={handleMapClick}
+                options={{ streetViewControl: false, mapTypeControl: false }}
+            >
+                {markerPosition && (
+                    <MarkerF
+                        position={markerPosition}
+                        draggable={true}
+                        onDragEnd={handleMarkerDragEnd}
+                    />
+                )}
+            </GoogleMap>
+        </div>
+    );
+}
+
 
 export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps) {
   const { toast } = useToast();
@@ -63,11 +109,6 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
   const auth = useAuth();
   
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const { isLoaded, loadError } = useJsApiLoader({
-    googleMapsApiKey: GOOGLE_MAPS_API_KEY || '',
-    libraries,
-  });
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -95,55 +136,25 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
     }
     return null;
   }, [watchedLat, watchedLng]);
-
-  const handleMapClick = (e: google.maps.MapMouseEvent) => {
-    if (e.latLng) {
-      const lat = e.latLng.lat();
-      const lng = e.latLng.lng();
-      form.setValue('latitude', lat, { shouldDirty: true });
-      form.setValue('longitude', lng, { shouldDirty: true });
-    }
-  };
-
-  const handleMarkerDragEnd = (e: google.maps.MapMouseEvent) => {
-    if (e.latLng) {
-      const lat = e.latLng.lat();
-      const lng = e.latLng.lng();
-      form.setValue('latitude', lat, { shouldDirty: true });
-      form.setValue('longitude', lng, { shouldDirty: true });
-    }
-  };
   
   const handleGeolocate = () => {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
             (position) => {
-                const lat = position.coords.latitude;
-                const lng = position.coords.longitude;
-                form.setValue('latitude', lat, { shouldDirty: true });
-                form.setValue('longitude', lng, { shouldDirty: true });
-                toast({ title: 'Location Updated', description: 'Your private location pin has been set to your current location.' });
+                form.setValue('latitude', position.coords.latitude, { shouldDirty: true });
+                form.setValue('longitude', position.coords.longitude, { shouldDirty: true });
+                toast({ title: 'Location Updated', description: 'Your private location pin has been set to your current position.' });
             },
             () => {
-                toast({
-                    variant: 'destructive',
-                    title: 'Geolocation Failed',
-                    description: 'Could not get your location. Please check your browser permissions.',
-                });
+                toast({ variant: 'destructive', title: 'Geolocation Failed' });
             }
         );
-    } else {
-        toast({
-            variant: 'destructive',
-            title: 'Geolocation Not Supported',
-            description: 'Your browser does not support geolocation.',
-        });
     }
   };
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (!user || !firestore || !auth.currentUser) {
-      toast({ variant: 'destructive', title: 'Not authenticated or Firebase not ready' });
+      toast({ variant: 'destructive', title: 'Firebase not ready' });
       return;
     }
     setIsSubmitting(true);
@@ -181,26 +192,14 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
         defaultMeetingLink: values.defaultMeetingLink || null,
       };
       
-      const firestoreUpdatePromise = updateDoc(doc(firestore, 'users', user.uid), firestoreUpdatePayload).catch((serverError) => {
-        const permissionError = new FirestorePermissionError({
-            path: `users/${user.uid}`,
-            operation: 'update',
-            requestResourceData: firestoreUpdatePayload,
-        }, user);
-        errorEmitter.emit('permission-error', permissionError);
-        throw permissionError;
-      });
+      await updateDoc(doc(firestore, 'users', user.uid), firestoreUpdatePayload);
+      await authUpdatePromise;
       
-      await Promise.all([authUpdatePromise, firestoreUpdatePromise]);
-      
-      toast({ title: "Profile Updated", description: "Your profile details have been saved." });
+      toast({ title: "Profile Updated" });
       onClose();
 
     } catch (error: any) {
-       console.error("Profile update process failed:", error);
-       if (error.name !== 'FirestorePermissionError') {
-         toast({ variant: 'destructive', title: "Update Failed", description: error.message || "Could not update profile details." });
-       }
+         toast({ variant: 'destructive', title: "Update Failed", description: error.message });
     } finally {
       setIsSubmitting(false);
     }
@@ -275,7 +274,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
               <FormItem>
                 <FormLabel>Bio</FormLabel>
                 <FormControl>
-                  <Textarea placeholder="Share your personal testimony to encourage others..." className="resize-none text-base" {...field} />
+                  <Textarea placeholder="Share your personal testimony..." className="resize-none text-base" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -288,7 +287,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                 <div className="flex flex-col items-start text-left">
                   <Label>Location Settings</Label>
                   <p className="text-sm text-muted-foreground font-normal">
-                    Set your public city/state and private location pin.
+                    Public city and private location pin.
                   </p>
                 </div>
               </AccordionTrigger>
@@ -296,49 +295,33 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                 <div>
                   <Label>Location Search</Label>
                   <LocationProfileInput form={form} />
-                   <p className="text-xs text-muted-foreground mt-2">Search to autofill your public location (city, state, country) and set an initial private pin.</p>
                 </div>
 
                 <div>
-                    <div className="flex justify-between items-center">
-                      <Label>Private Location Pin</Label>
-                      <Button type="button" variant="ghost" size="sm" onClick={handleGeolocate}>
-                          <LocateFixed className="mr-2 h-4 w-4" />
-                          Use Live Location
+                    <div className="flex justify-between items-center mb-2">
+                      <Label className="text-xs">Private Location Pin</Label>
+                      <Button type="button" variant="ghost" size="sm" onClick={handleGeolocate} className="h-7 text-[10px]">
+                          <LocateFixed className="mr-1 h-3 w-3" />
+                          Set to Current
                       </Button>
                     </div>
-                    {!GOOGLE_MAPS_API_KEY || loadError ? (
-                       <MapPlaceholder />
-                    ) : !isLoaded ? (
-                        <Skeleton className="h-60 w-full mt-2" />
-                    ) : (
-                        <div className="h-60 w-full rounded-md overflow-hidden mt-2">
-                            <GoogleMap
-                                mapContainerClassName="h-full w-full"
-                                center={markerPosition || fallbackCenter}
-                                zoom={markerPosition ? 12 : 4}
-                                onClick={handleMapClick}
-                                options={{ streetViewControl: false, mapTypeControl: false }}
-                            >
-                                {markerPosition && (
-                                <MarkerF
-                                    position={markerPosition}
-                                    draggable={true}
-                                    onDragEnd={handleMarkerDragEnd}
-                                />
-                                )}
-                            </GoogleMap>
+                    {!GOOGLE_MAPS_API_KEY ? (
+                        <div className="space-y-2">
+                            <Alert variant="destructive" className="py-2 px-3">
+                                <AlertTriangle className="h-4 w-4" />
+                                <AlertTitle className="text-xs font-bold">API Key Missing</AlertTitle>
+                            </Alert>
+                            <MapPlaceholder />
                         </div>
+                    ) : (
+                        <PrivateLocationMap form={form} markerPosition={markerPosition} />
                     )}
-                    <p className="text-xs text-muted-foreground mt-2">
-                        Click or drag the pin on the map to set your precise private location. This is used for nearby features and is not public.
-                    </p>
                 </div>
                 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <FormField control={form.control} name="city" render={({ field }) => (
                       <FormItem>
-                        <FormLabel>City (Public)</FormLabel>
+                        <FormLabel className="text-xs">City (Public)</FormLabel>
                         <FormControl><Input placeholder="e.g., Nairobi" {...field} value={field.value ?? ""} /></FormControl>
                         <FormMessage />
                       </FormItem>
@@ -346,7 +329,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                   />
                   <FormField control={form.control} name="state" render={({ field }) => (
                       <FormItem>
-                        <FormLabel>State/Province (Public)</FormLabel>
+                        <FormLabel className="text-xs">State (Public)</FormLabel>
                         <FormControl><Input placeholder="e.g., California" {...field} value={field.value ?? ""} /></FormControl>
                         <FormMessage />
                       </FormItem>
@@ -355,7 +338,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                 </div>
                 <FormField control={form.control} name="country" render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Country (Public)</FormLabel>
+                      <FormLabel className="text-xs">Country (Public)</FormLabel>
                       <FormControl><Input placeholder="e.g., Kenya" {...field} value={field.value ?? ""} /></FormControl>
                       <FormMessage />
                     </FormItem>
@@ -370,15 +353,14 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
             name="defaultMeetingLink"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Default Virtual Meeting Link</FormLabel>
+                <FormLabel>Default Meeting Link</FormLabel>
                 <FormControl>
-                  <Input placeholder="https://meet.google.com/xxx-xxxx-xxx" {...field} value={field.value ?? ""} className="text-base" />
+                  <Input placeholder="https://meet.google.com/..." {...field} value={field.value ?? ""} className="text-base" />
                 </FormControl>
                 <Button type="button" variant="outline" size="sm" onClick={handleCreateMeet} className="mt-1">
                   <Video className="mr-2 h-4 w-4" />
-                  Establish New Meet
+                  New Meet
                 </Button>
-                <FormDescription>This link will auto-fill when you create a new campaign or fellowship.</FormDescription>
                 <FormMessage />
               </FormItem>
             )}

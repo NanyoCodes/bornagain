@@ -1,9 +1,10 @@
+
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useJsApiLoader, Autocomplete } from '@react-google-maps/api';
 import { Input } from '@/components/ui/input';
-import { Loader2 } from 'lucide-react';
+import { Loader2, AlertTriangle } from 'lucide-react';
 import { type UseFormReturn } from 'react-hook-form';
 
 const libraries: ('places')[] = ['places'];
@@ -13,7 +14,7 @@ interface LocationProfileInputProps {
     form: UseFormReturn<any>;
 }
 
-export function LocationProfileInput({ form }: LocationProfileInputProps) {
+function LocationProfileInputInner({ form }: LocationProfileInputProps) {
     const { isLoaded, loadError } = useJsApiLoader({
         googleMapsApiKey: GOOGLE_MAPS_API_KEY || '',
         libraries,
@@ -21,15 +22,6 @@ export function LocationProfileInput({ form }: LocationProfileInputProps) {
 
     const [autocomplete, setAutocomplete] = useState<google.maps.places.Autocomplete | null>(null);
     const [inputValue, setInputValue] = useState('');
-
-
-    const onLoad = useCallback((autocompleteInstance: google.maps.places.Autocomplete) => {
-        setAutocomplete(autocompleteInstance);
-    }, []);
-
-    const onUnmount = useCallback(() => {
-        setAutocomplete(null);
-    }, []);
 
     const onPlaceChanged = () => {
         if (autocomplete) {
@@ -64,37 +56,21 @@ export function LocationProfileInput({ form }: LocationProfileInputProps) {
         }
     };
     
-    if (!GOOGLE_MAPS_API_KEY) {
-        return (
-            <Input
-                placeholder="Location search not configured"
-                disabled
-                className="text-base"
-            />
-        );
-    }
-
     if (loadError) {
-        return (
-             <Input
-                placeholder="Location search unavailable"
-                disabled
-                className="text-base"
-            />
-        );
+        return <Input placeholder="Location search unavailable" disabled className="text-base" />;
     }
 
     if (!isLoaded) {
         return (
              <div className="flex items-center h-9 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-muted-foreground">
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                <span>Loading Location Search...</span>
+                <span>Loading Search...</span>
             </div>
         );
     }
 
     return (
-        <Autocomplete onLoad={onLoad} onUnmount={onUnmount} onPlaceChanged={onPlaceChanged} fields={['address_components', 'geometry.location']} types={['(regions)']}>
+        <Autocomplete onLoad={(a) => setAutocomplete(a)} onPlaceChanged={onPlaceChanged} fields={['address_components', 'geometry.location']} types={['(regions)']}>
             <Input
                 placeholder="Search location to autofill city/state/country"
                 type="text"
@@ -104,4 +80,20 @@ export function LocationProfileInput({ form }: LocationProfileInputProps) {
             />
         </Autocomplete>
     );
+}
+
+export function LocationProfileInput({ form }: LocationProfileInputProps) {
+    if (!GOOGLE_MAPS_API_KEY) {
+        return (
+            <div className="space-y-2">
+                <Input placeholder="Location search not configured" disabled className="text-base" />
+                <p className="text-[10px] text-destructive flex items-center gap-1">
+                    <AlertTriangle className="h-3 w-3" />
+                    Google Maps API Key Missing. Setup guide in docs.
+                </p>
+            </div>
+        );
+    }
+
+    return <LocationProfileInputInner form={form} />;
 }
