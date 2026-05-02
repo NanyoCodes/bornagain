@@ -1,4 +1,3 @@
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -117,12 +116,12 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign, fellowships, campai
                 : Infinity;
             return { ...f, distance };
         })
-        .sort((a, b) => a.distance - b.distance);
+        .sort((a, b) => (a.distance ?? Infinity) - (b.distance ?? Infinity));
   }, [fellowships, watchedLat, watchedLng]);
 
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    if (!user || !userProfile) {
+    if (!user || !userProfile || !firestore) {
       toast({ variant: 'destructive', title: 'Not Authenticated', description: 'You must be logged in to log a soul.' });
       return;
     }
@@ -159,21 +158,24 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign, fellowships, campai
     if (values.church) soulData.church = values.church;
     if (values.sourceDetails) soulData.sourceDetails = values.sourceDetails;
     if (values.initialNote) {
-      soulData.followUpLog = [{ date: serverTimestamp(), note: values.initialNote }];
+      soulData.followUpLog = [{ date: new Date(), note: values.initialNote }];
     }
     
     const locationWon: { [key: string]: any } = {};
     if (values.locationWonCity) locationWon.city = values.locationWonCity;
     if (values.locationWonState) locationWon.state = values.locationWonState;
     if (values.locationWonCountry) locationWon.country = values.locationWonCountry;
-    if (values.locationWonLatitude) locationWon.latitude = values.locationWonLatitude;
-    if (values.locationWonLongitude) locationWon.longitude = values.locationWonLongitude;
+    if (typeof values.locationWonLatitude === 'number') locationWon.latitude = values.locationWonLatitude;
+    if (typeof values.locationWonLongitude === 'number') locationWon.longitude = values.locationWonLongitude;
+    
     if (Object.keys(locationWon).length > 0) {
       soulData.locationWon = locationWon;
     }
 
+    const campaignId = values.source === 'Campaign' ? (defaultCampaign?.id || campaigns?.find(c => c.title === values.sourceDetails)?.id) : undefined;
+    if (campaignId) soulData.campaignId = campaignId;
 
-    if (values.fellowshipId) {
+    if (values.fellowshipId && values.fellowshipId !== 'none' && values.fellowshipId !== '') {
         const selectedFellowship = fellowships?.find(f => f.id === values.fellowshipId);
         if (selectedFellowship) {
             soulData.fellowshipId = selectedFellowship.id;
@@ -181,38 +183,42 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign, fellowships, campai
         }
     }
 
-    let campaignId: string | undefined;
-
-    if (values.source === 'Campaign') {
-      const campaign = defaultCampaign || campaigns?.find(c => c.title === values.sourceDetails);
-      if (campaign) {
-          campaignId = campaign.id;
-          soulData.campaignId = campaign.id;
-      }
-    }
-
     try {
         await runTransaction(firestore, async (transaction) => {
+            // --- ALL READS MUST HAPPEN FIRST ---
+            let currentSoulsLogged = 0;
+            if (campaignId) {
+                const campaignRef = doc(firestore, 'campaigns', campaignId);
+                const campaignDoc = await transaction.get(campaignRef);
+                if (campaignDoc.exists()) {
+                    currentSoulsLogged = campaignDoc.data().soulsLogged || 0;
+                }
+            }
+
+            if (values.fellowshipId && values.fellowshipId !== 'none' && values.fellowshipId !== '') {
+                const fellowshipRef = doc(firestore, 'fellowships', values.fellowshipId);
+                const fellowshipDoc = await transaction.get(fellowshipRef);
+                if (!fellowshipDoc.exists()) {
+                    throw new Error("Fellowship group not found.");
+                }
+            }
+
+            // --- ALL WRITES MUST HAPPEN LAST ---
             transaction.set(newSoulRef, soulData);
             transaction.set(globalSoulRef, soulData);
 
             if (campaignId) {
                 const campaignRef = doc(firestore, 'campaigns', campaignId);
-                const campaignDoc = await transaction.get(campaignRef);
-                if (!campaignDoc.exists()) {
-                    throw new Error("Campaign does not exist!");
-                }
-                const currentSoulsLogged = campaignDoc.data().soulsLogged || 0;
                 transaction.update(campaignRef, { soulsLogged: currentSoulsLogged + 1 });
             }
 
-            if (values.fellowshipId) {
+            if (values.fellowshipId && values.fellowshipId !== 'none' && values.fellowshipId !== '') {
                 const fellowshipRef = doc(firestore, 'fellowships', values.fellowshipId);
                 transaction.update(fellowshipRef, { memberCount: increment(1) });
             }
         });
 
-        if (values.fellowshipId) {
+        if (values.fellowshipId && values.fellowshipId !== 'none' && values.fellowshipId !== '') {
             const selectedFellowship = fellowships?.find(f => f.id === values.fellowshipId);
             if (selectedFellowship && selectedFellowship.organizerId !== user.uid) {
                 const notificationRef = collection(firestore, `users/${selectedFellowship.organizerId}/notifications`);
@@ -250,7 +256,7 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign, fellowships, campai
                             <p><strong>${inviterName}</strong> has invited you to join Testify, a platform for believers to share testimonies, organize soul-winning campaigns, and track evangelism progress.</p>
                             <p>Join the movement and start your journey today!</p>
                             <div style="text-align: center; margin: 30px 0;">
-                              <a href="${appUrl}" style="background-color: #3b82f6; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-size: 16px;">Join Testify</a>
+                              <a href="${appUrl}" style="background-color: #f97416; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-size: 16px;">Join Testify</a>
                             </div>
                             <p>God bless,</p>
                             <p><strong>The Testify Team</strong></p>
@@ -261,11 +267,6 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign, fellowships, campai
                         </div>
                     `,
                 },
-            }).then(() => {
-                toast({
-                    title: 'Invitation Sent!',
-                    description: `An invitation email has been sent to ${values.email}.`
-                });
             }).catch(err => console.error("Failed to send invitation email:", err));
         }
 
@@ -274,7 +275,8 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign, fellowships, campai
             description: `${values.firstName} ${values.lastName} has been added to your list.`,
         });
         onSoulLogged();
-    } catch (serverError) {
+    } catch (serverError: any) {
+        console.error("Log Soul Error:", serverError);
         const permissionError = new FirestorePermissionError({
             path: `TRANSACTION:LOG_SOUL`,
             operation: 'write',
@@ -508,5 +510,3 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign, fellowships, campai
     </Form>
   );
 }
-
-    

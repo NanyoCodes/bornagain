@@ -84,7 +84,6 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
   const lastSoulId = useRef(soul.id);
 
   useEffect(() => {
-    // Only reset if the soul ID changed, to avoid wiping user input on real-time updates
     if (soul.id !== lastSoulId.current) {
         reset({
             firstName: soul.firstName || "",
@@ -144,7 +143,6 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
     const soulRef = doc(firestore, `users/${user.uid}/souls`, soul.id);
     const globalSoulRef = doc(firestore, 'souls', soul.id);
 
-    // CRITICAL: Ensure no field is undefined. Firestore throws error on undefined.
     const soulUpdateData: { [key: string]: any } = {
       firstName: values.firstName,
       lastName: values.lastName,
@@ -196,22 +194,22 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
             const oldFellowshipId = soul.fellowshipId;
             const newFellowshipId = (values.fellowshipId === 'none' || !values.fellowshipId) ? '' : values.fellowshipId;
             
-            // Decrement old fellowship count if it exists and is different from the new one
-            if (oldFellowshipId && oldFellowshipId !== 'none' && oldFellowshipId !== '' && oldFellowshipId !== newFellowshipId) {
-                const oldFellowshipRef = doc(firestore, "fellowships", oldFellowshipId);
-                const oldFellowshipSnap = await transaction.get(oldFellowshipRef);
-                if (oldFellowshipSnap.exists()) {
-                    transaction.update(oldFellowshipRef, { memberCount: increment(-1) });
-                }
-            }
+            // Collect references
+            const oldFellowshipRef = (oldFellowshipId && oldFellowshipId !== 'none' && oldFellowshipId !== '' && oldFellowshipId !== newFellowshipId) 
+                ? doc(firestore, "fellowships", oldFellowshipId) : null;
+            const newFellowshipRef = (newFellowshipId && newFellowshipId !== 'none' && newFellowshipId !== '' && newFellowshipId !== oldFellowshipId)
+                ? doc(firestore, "fellowships", newFellowshipId) : null;
 
-            // Increment new fellowship count if it's not empty and is different from the old one
-            if (newFellowshipId && newFellowshipId !== 'none' && newFellowshipId !== '' && newFellowshipId !== oldFellowshipId) {
-                const newFellowshipRef = doc(firestore, "fellowships", newFellowshipId);
-                const newFellowshipSnap = await transaction.get(newFellowshipRef);
-                if (newFellowshipSnap.exists()) {
-                    transaction.update(newFellowshipRef, { memberCount: increment(1) });
-                }
+            // --- ALL READS MUST HAPPEN FIRST ---
+            if (oldFellowshipRef) await transaction.get(oldFellowshipRef);
+            if (newFellowshipRef) await transaction.get(newFellowshipRef);
+
+            // --- ALL WRITES MUST HAPPEN LAST ---
+            if (oldFellowshipRef) {
+                transaction.update(oldFellowshipRef, { memberCount: increment(-1) });
+            }
+            if (newFellowshipRef) {
+                transaction.update(newFellowshipRef, { memberCount: increment(1) });
             }
 
             transaction.update(soulRef, soulUpdateData);
@@ -264,17 +262,9 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
     }
   }
 
-  const handleInvalidSubmit = () => {
-    toast({
-        variant: "destructive",
-        title: "Incomplete Form",
-        description: "Please check all fields for errors before saving.",
-    });
-  };
-
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit, handleInvalidSubmit)} className="space-y-4">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <div className="grid grid-cols-2 gap-4">
             <FormField
             control={form.control}
