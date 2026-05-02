@@ -11,7 +11,6 @@ import { useToast } from '@/hooks/use-toast';
 import { Input } from '@/components/ui/input';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Button } from '../ui/button';
-import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 
 
 const libraries: ('places')[] = ['places'];
@@ -301,13 +300,6 @@ export function LocationMapPicker({ form }: LocationMapPickerProps) {
                         form.setValue('location', e.target.value, { shouldDirty: true });
                     }}
                 />
-                <Alert variant="destructive" className="bg-destructive/5 border-destructive/20 py-2 px-3">
-                    <AlertTriangle className="h-4 w-4" />
-                    <AlertTitle className="text-xs">Interactive Map Unavailable</AlertTitle>
-                    <AlertDescription className="text-[10px]">
-                        Google Maps API key is missing. Please enter the location manually.
-                    </AlertDescription>
-                </Alert>
                 <MapPlaceholder />
             </div>
         );
