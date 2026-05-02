@@ -20,7 +20,7 @@ import { useToast } from "@/hooks/use-toast";
 import React, { useState } from "react";
 import { Loader2, LocateFixed, Video, Map as MapIcon, AlertTriangle } from "lucide-react";
 import { useUser, useFirestore, useAuth } from "@/firebase";
-import { doc, updateDoc } from "firebase/firestore";
+import { doc, updateDoc, serverTimestamp } from "firebase/firestore";
 import { updateProfile } from "firebase/auth";
 import type { UserProfile } from "@/lib/types";
 import { errorEmitter } from "@/firebase/error-emitter";
@@ -54,10 +54,10 @@ const formSchema = z.object({
   defaultMeetingLink: z.string().url("Please enter a valid URL.").optional().or(z.literal('')),
 });
 
-type EditProfileModalProps = {
+interface EditProfileModalProps {
   userProfile: UserProfile;
   onClose: () => void;
-};
+}
 
 function PrivateLocationMap({ form, markerPosition }: { form: any, markerPosition: google.maps.LatLngLiteral | null }) {
     const { isLoaded, loadError } = useJsApiLoader({
@@ -157,6 +157,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (!user || !firestore || !auth.currentUser) {
       toast({ variant: 'destructive', title: 'Firebase not ready' });
+      setIsSubmitting(false);
       return;
     }
     setIsSubmitting(true);
@@ -204,7 +205,15 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
 
     } catch (error: any) {
          console.error("Profile update failed:", error);
-         toast({ variant: 'destructive', title: "Update Failed", description: error.message || "An unexpected error occurred." });
+         if (error.code === 'permission-denied') {
+            const permissionError = new FirestorePermissionError({
+                path: `users/${user.uid}`,
+                operation: 'update',
+            }, user);
+            errorEmitter.emit('permission-error', permissionError);
+         } else {
+            toast({ variant: 'destructive', title: "Update Failed", description: error.message || "An unexpected error occurred." });
+         }
     } finally {
       setIsSubmitting(false);
     }
