@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
@@ -15,6 +14,8 @@ import { Button } from '../ui/button';
 
 const libraries: ('places')[] = ['places'];
 const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+
+const isValidKey = (key: string | undefined) => !!(key && key.startsWith('AIza') && key.length > 20);
 
 interface LocationMapPickerProps {
     form: UseFormReturn<any>;
@@ -288,7 +289,7 @@ export function LocationMapPicker({ form }: LocationMapPickerProps) {
         </div>
     );
 
-    if (!GOOGLE_MAPS_API_KEY) {
+    if (!isValidKey(GOOGLE_MAPS_API_KEY)) {
         return (
             <div className="space-y-4">
                 <Input

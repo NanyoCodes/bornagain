@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
@@ -14,7 +13,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
+} from '@/components/ui/dialog';
 import { doc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -42,20 +41,7 @@ import { errorEmitter } from '@/firebase/error-emitter';
 const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 const libraries: ('places')[] = ['places'];
 
-function MapKeyMissingAlert() {
-    return (
-        <Alert variant="destructive" className="bg-destructive/5 border-destructive/20">
-            <AlertTriangle className="h-4 w-4" />
-            <AlertTitle>Google Maps Key Missing</AlertTitle>
-            <AlertDescription className="text-xs space-y-2">
-                <p>The campaign map cannot be displayed because the API key is not configured.</p>
-                <Button asChild variant="outline" size="sm" className="h-7 text-[10px]">
-                    <Link href="/dashboard/guide">Setup Guide</Link>
-                </Button>
-            </AlertDescription>
-        </Alert>
-    );
-}
+const isValidKey = (key: string | undefined) => !!(key && key.startsWith('AIza') && key.length > 20);
 
 function CampaignMapInner({ campaign }: { campaign: Campaign }) {
     const { isLoaded, loadError } = useJsApiLoader({
@@ -123,8 +109,8 @@ function CampaignMap({ campaign }: { campaign: Campaign }) {
                 <CardTitle className="text-lg flex items-center gap-2"><MapPin className="h-5 w-5"/> Location</CardTitle>
             </CardHeader>
             <CardContent>
-                {!GOOGLE_MAPS_API_KEY ? (
-                    <MapKeyMissingAlert />
+                {!isValidKey(GOOGLE_MAPS_API_KEY) ? (
+                    <MapPlaceholder />
                 ) : (!campaign.latitude || !campaign.longitude) ? (
                     <MapPlaceholder />
                 ) : (
@@ -183,9 +169,7 @@ function ScriptureDisplay({ reference, caption }: { reference: string; caption?:
             setIsTruncated(scriptureRef.current.scrollHeight > scriptureRef.current.clientHeight);
         }
     }
-    // Only check for truncation if the content is not expanded.
     if (scriptureText && !isExpanded) {
-        // Use a timeout to allow the DOM to render before checking height.
         const timeoutId = setTimeout(checkTruncation, 100);
         window.addEventListener('resize', checkTruncation);
 
@@ -194,7 +178,6 @@ function ScriptureDisplay({ reference, caption }: { reference: string; caption?:
             window.removeEventListener('resize', checkTruncation);
         };
     } else if (isExpanded) {
-        // When expanded, we know it's not truncated anymore.
         setIsTruncated(false);
     }
   }, [scriptureText, isExpanded]);
@@ -209,7 +192,6 @@ function ScriptureDisplay({ reference, caption }: { reference: string; caption?:
     );
   }
 
-  // Fallback to old display if fetch fails or reference is bad
   if (error || !scriptureText) {
     return (
          <blockquote className="mt-6 border-l-2 pl-6 italic text-muted-foreground">
@@ -219,7 +201,6 @@ function ScriptureDisplay({ reference, caption }: { reference: string; caption?:
     );
   }
 
-  // Success display
   return (
     <blockquote className="mt-6 border-l-2 pl-6 italic text-muted-foreground">
         <p ref={scriptureRef} className={cn("whitespace-pre-wrap leading-relaxed", !isExpanded && "line-clamp-5")}>
@@ -473,7 +454,6 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                                     <span className="font-semibold group-hover:underline">{campaign.organizerFirstName} {campaign.organizerLastName}</span>
                                 </Link>
                             </CardContent>
-                        </Card>
 
                         <Card>
                             <CardHeader>

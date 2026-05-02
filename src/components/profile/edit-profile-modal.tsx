@@ -1,4 +1,3 @@
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -35,6 +34,8 @@ import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
 
 const libraries: ('places')[] = ['places'];
 const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+
+const isValidKey = (key: string | undefined) => !!(key && key.startsWith('AIza') && key.length > 20);
 
 const fallbackCenter = { lat: 34.0522, lng: -118.2437 };
 
@@ -305,14 +306,8 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                           Set to Current
                       </Button>
                     </div>
-                    {!GOOGLE_MAPS_API_KEY ? (
-                        <div className="space-y-2">
-                            <Alert variant="destructive" className="py-2 px-3">
-                                <AlertTriangle className="h-4 w-4" />
-                                <AlertTitle className="text-xs font-bold">API Key Missing</AlertTitle>
-                            </Alert>
-                            <MapPlaceholder />
-                        </div>
+                    {!isValidKey(GOOGLE_MAPS_API_KEY) ? (
+                        <MapPlaceholder />
                     ) : (
                         <PrivateLocationMap form={form} markerPosition={markerPosition} />
                     )}

@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useCallback, useEffect } from 'react';
@@ -9,6 +8,8 @@ import { type UseFormReturn } from 'react-hook-form';
 
 const libraries: ('places')[] = ['places'];
 const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+
+const isValidKey = (key: string | undefined) => !!(key && key.startsWith('AIza') && key.length > 20);
 
 interface LocationProfileInputProps {
     form: UseFormReturn<any>;
@@ -83,14 +84,10 @@ function LocationProfileInputInner({ form }: LocationProfileInputProps) {
 }
 
 export function LocationProfileInput({ form }: LocationProfileInputProps) {
-    if (!GOOGLE_MAPS_API_KEY) {
+    if (!isValidKey(GOOGLE_MAPS_API_KEY)) {
         return (
             <div className="space-y-2">
                 <Input placeholder="Location search not configured" disabled className="text-base" />
-                <p className="text-[10px] text-destructive flex items-center gap-1">
-                    <AlertTriangle className="h-3 w-3" />
-                    Google Maps API Key Missing. Setup guide in docs.
-                </p>
             </div>
         );
     }
