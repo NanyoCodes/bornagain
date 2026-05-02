@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useState, useContext, Dispatch, SetStateAction } from 'react';
+import React, { createContext, useState, useContext, useMemo, Dispatch, SetStateAction } from 'react';
 
 interface SearchContextType {
   searchTerm: string;
@@ -18,14 +18,15 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
   const [searchPlaceholder, setSearchPlaceholder] = useState('Search...');
   const [isSearchVisible, setIsSearchVisible] = useState(false);
 
-  const value = {
+  // Memoize the value to prevent unnecessary re-renders of consuming components
+  const value = useMemo(() => ({
     searchTerm,
     setSearchTerm,
     searchPlaceholder,
     setSearchPlaceholder,
     isSearchVisible,
     setIsSearchVisible,
-  };
+  }), [searchTerm, searchPlaceholder, isSearchVisible]);
 
   return (
     <SearchContext.Provider value={value}>

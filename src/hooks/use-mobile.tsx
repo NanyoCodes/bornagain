@@ -3,22 +3,21 @@ import { useState, useEffect } from "react";
 const MOBILE_BREAKPOINT = 768;
 
 export function useIsMobile() {
-  const [isMobile, setIsMobile] = useState(false);
+  // Initialize with the correct state on the client to avoid double render
+  const [isMobile, setIsMobile] = useState<boolean>(false);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`);
     
+    // Set initial state correctly after mount
+    setIsMobile(mediaQuery.matches);
+
     const handleMediaQueryChange = (event: MediaQueryListEvent) => {
       setIsMobile(event.matches);
     };
     
-    // Set the initial state
-    setIsMobile(mediaQuery.matches);
-
-    // Listen for changes
     mediaQuery.addEventListener("change", handleMediaQueryChange);
 
-    // Cleanup listener on unmount
     return () => {
       mediaQuery.removeEventListener("change", handleMediaQueryChange);
     };

@@ -79,6 +79,8 @@
     background-image: radial-gradient(ellipse at 50% -20%, hsl(30 100% 94%), transparent 70%);
     background-repeat: no-repeat;
     background-attachment: fixed;
+    /* Ensure no weird cursors are inherited */
+    cursor: default;
   }
 
   .dark body {
@@ -124,17 +126,5 @@
     color: hsl(var(--muted-foreground));
     pointer-events: none;
     display: block;
-  }
-  .note-editor h1 {
-    @apply text-2xl font-bold my-4;
-  }
-  .note-editor h2 {
-    @apply text-xl font-semibold my-3;
-  }
-  .note-editor h3 {
-    @apply text-lg font-semibold my-2;
-  }
-  .note-editor p {
-    @apply min-h-[1.5rem];
   }
 }

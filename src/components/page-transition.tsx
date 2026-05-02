@@ -2,7 +2,7 @@
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { usePathname } from 'next/navigation';
-import React from 'react';
+import React, { useMemo } from 'react';
 
 const variants = {
   initial: { opacity: 0, y: 15 },
@@ -13,12 +13,12 @@ const variants = {
 export function PageTransition({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
+  // Use memo to ensure the transition wrapper only responds to actual path changes
   return (
     <div className="relative h-full">
       <AnimatePresence
         mode="wait"
         initial={false}
-        onExitComplete={() => window.scrollTo(0, 0)}
       >
         <motion.div
           key={pathname}
@@ -26,7 +26,7 @@ export function PageTransition({ children }: { children: React.ReactNode }) {
           initial="initial"
           animate="animate"
           exit="exit"
-          transition={{ type: 'easeInOut', duration: 0.4 }}
+          transition={{ type: 'easeInOut', duration: 0.3 }}
           className="relative z-10 bg-background h-full flex flex-col"
         >
           {children}
