@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { type Soul } from "@/lib/types";
 import { format } from "date-fns";
 import { actionItems } from "@/lib/follow-up-data";
-import { safeToDate } from "@/lib/utils";
+import { cn, safeToDate } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 interface ViewHistoryDialogProps {
@@ -76,11 +76,13 @@ export function ViewHistoryDialog({ soul, isOpen, onOpenChange }: ViewHistoryDia
   if (mounted && isMobile) {
     return (
       <Sheet open={isOpen} onOpenChange={onOpenChange}>
-        <SheetContent side="bottom" className="h-[90dvh] flex flex-col">
-          <SheetHeader className="text-left flex-shrink-0">
-            <SheetTitle>Follow-up History: {soul.firstName}</SheetTitle>
-            <SheetDescription>A complete log of all follow-up interactions.</SheetDescription>
-          </SheetHeader>
+        <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0">
+          <div className="p-6 border-b flex-shrink-0">
+            <SheetHeader className="text-left flex-shrink-0">
+              <SheetTitle>Follow-up History: {soul.firstName}</SheetTitle>
+              <SheetDescription>A complete log of all follow-up interactions.</SheetDescription>
+            </SheetHeader>
+          </div>
           <div className="flex-grow min-h-0 pt-6">
             {historyContent}
           </div>
