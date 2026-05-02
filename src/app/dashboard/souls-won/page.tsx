@@ -143,19 +143,16 @@ export default function SoulsWonPage() {
 
     try {
         await runTransaction(firestore, async (transaction) => {
-            // BEST PRACTICE: Fetch documents inside transaction to satisfy security rules and ensure data consistency
             const soulDoc = await transaction.get(soulRef);
             if (!soulDoc.exists()) throw new Error("Soul record not found.");
             
             const oldFellowshipId = soul.fellowshipId;
             
-            // Decrement old fellowship count
             if (oldFellowshipId && oldFellowshipId !== fellowshipId) {
                 const oldFellowshipRef = doc(firestore, "fellowships", oldFellowshipId);
                 transaction.update(oldFellowshipRef, { memberCount: increment(-1) });
             }
 
-            // Increment new fellowship count
             if (fellowshipId !== 'none' && oldFellowshipId !== fellowshipId) {
                 const newFellowshipRef = doc(firestore, "fellowships", fellowshipId);
                 transaction.update(newFellowshipRef, { memberCount: increment(1) });
@@ -214,7 +211,7 @@ export default function SoulsWonPage() {
     const body = filteredSouls.map(soul => {
         const followUpHistoryString = soul.followUpLog && soul.followUpLog.length > 0
             ? [...soul.followUpLog]
-                .sort((a, b) => (a.date?.toDate ? a.date.toDate().getTime() : 0) - (b.date?.toDate ? b.date.toDate().getTime() : 0)) // Sort oldest to newest
+                .sort((a, b) => (a.date?.toDate ? a.date.toDate().getTime() : 0) - (b.date?.toDate ? b.date.toDate().getTime() : 0))
                 .map(log => {
                     const date = log.date?.toDate ? format(log.date.toDate(), 'yyyy-MM-dd') : 'N/A';
                     const note = log.note || '';
@@ -317,7 +314,7 @@ export default function SoulsWonPage() {
 
     const followUpHistoryString = soul.followUpLog && soul.followUpLog.length > 0
         ? [...soul.followUpLog]
-            .sort((a, b) => (a.date?.toDate ? a.date.toDate().getTime() : 0) - (b.date?.toDate ? b.date.toDate().getTime() : 0)) // Sort oldest to newest
+            .sort((a, b) => (a.date?.toDate ? a.date.toDate().getTime() : 0) - (b.date?.toDate ? b.date.toDate().getTime() : 0))
             .map(log => {
                 const date = log.date?.toDate ? format(log.date.toDate(), 'yyyy-MM-dd') : 'N/A';
                 const note = log.note || '';
@@ -501,47 +498,43 @@ export default function SoulsWonPage() {
         onOpenAssignDialog={setSoulToAssign}
       />
 
-      {soulToEdit && (
-          <Dialog open={!!soulToEdit} onOpenChange={(isOpen) => !isOpen && setSoulToEdit(null)}>
-              <DialogContent className="sm:max-w-lg">
+      <Dialog open={!!soulToEdit} onOpenChange={(isOpen) => !isOpen && setSoulToEdit(null)}>
+          <DialogContent className="sm:max-w-lg">
+              {soulToEdit && (
+                <>
                   <DialogHeader>
                       <DialogTitle>Edit Soul Details</DialogTitle>
-                      <DialogDescription>Make changes to the record for {soulToEdit?.firstName} {soulToEdit?.lastName}.</DialogDescription>
+                      <DialogDescription>Make changes to the record for {soulToEdit.firstName} {soulToEdit.lastName}.</DialogDescription>
                   </DialogHeader>
                   <div className="max-h-[70vh] overflow-y-auto pr-2">
                       <EditSoulForm soul={soulToEdit} onSoulUpdated={handleSoulUpdated} fellowships={fellowships || []} campaigns={activeCampaigns || []} />
                   </div>
-              </DialogContent>
-          </Dialog>
-      )}
+                </>
+              )}
+          </DialogContent>
+      </Dialog>
 
-      {soulForFollowUp && (
-        <LogFollowUpDialog
-            soul={soulForFollowUp}
-            isOpen={!!soulForFollowUp}
-            onOpenChange={(isOpen) => { if (!isOpen) setSoulForFollowUp(null); }}
-            onFollowUpLogged={handleFollowUpLogged}
-        />
-      )}
+      <LogFollowUpDialog
+          soul={soulForFollowUp!}
+          isOpen={!!soulForFollowUp}
+          onOpenChange={(isOpen) => { if (!isOpen) setSoulForFollowUp(null); }}
+          onFollowUpLogged={handleFollowUpLogged}
+      />
 
-      {soulForHistory && (
-        <ViewHistoryDialog
-            soul={soulForHistory}
-            isOpen={!!soulForHistory}
-            onOpenChange={(isOpen) => { if (!isOpen) setSoulForHistory(null); }}
-        />
-      )}
+      <ViewHistoryDialog
+          soul={soulForHistory!}
+          isOpen={!!soulForHistory}
+          onOpenChange={(isOpen) => { if (!isOpen) setSoulForHistory(null); }}
+      />
 
-      {soulToAssign && (
-        <AssignFellowshipDialog
-            soul={soulToAssign}
-            fellowships={fellowships || []}
-            isOpen={!!soulToAssign}
-            onOpenChange={() => setSoulToAssign(null)}
-            onAssignFellowship={handleAssignFellowship}
-            isAssigning={isAssigning}
-        />
-      )}
+      <AssignFellowshipDialog
+          soul={soulToAssign!}
+          fellowships={fellowships || []}
+          isOpen={!!soulToAssign}
+          onOpenChange={() => setSoulToAssign(null)}
+          onAssignFellowship={handleAssignFellowship}
+          isAssigning={isAssigning}
+      />
     </div>
   );
 }

@@ -1,3 +1,4 @@
+
 "use client";
 
 import * as React from "react";
@@ -50,7 +51,7 @@ const getStatusClasses = (status: FollowUpStatus | undefined): string => {
 }
 
 interface LogFollowUpDialogProps {
-  soul: Soul;
+  soul: Soul | null;
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   onFollowUpLogged: () => void;
@@ -72,17 +73,17 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
     resolver: zodResolver(logFollowUpFormSchema),
     defaultValues: {
       note: '',
-      status: soul.status,
-      attendingChurch: soul.attendingChurch || false,
-      inBibleStudy: soul.inBibleStudy || false,
-      attendingPrayer: soul.attendingPrayer || false,
-      inServiceDepartment: soul.inServiceDepartment || false,
+      status: 'New',
+      attendingChurch: false,
+      inBibleStudy: false,
+      attendingPrayer: false,
+      inServiceDepartment: false,
       actions: [],
     },
   });
   
   React.useEffect(() => {
-    if (isOpen) {
+    if (isOpen && soul) {
       form.reset({
         note: '',
         status: soul.status,
@@ -96,8 +97,8 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
   }, [isOpen, soul, form]);
 
   async function onSubmit(values: z.infer<typeof logFollowUpFormSchema>) {
-    if (!user || !firestore) {
-      toast({ variant: 'destructive', title: 'Not Authenticated' });
+    if (!user || !firestore || !soul) {
+      toast({ variant: 'destructive', title: 'Error' });
       return;
     }
     
@@ -105,7 +106,7 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
 
     const soulRef = doc(firestore, `users/${user.uid}/souls`, soul.id);
     const newLogEntry: FollowUpLogItem = {
-        date: new Date() as any, // Firestore will convert this to Timestamp on server
+        date: new Date() as any,
         note: values.note || '',
         actions: values.actions || [],
     };
@@ -124,21 +125,21 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
             title: 'Follow-up Logged',
             description: `A new entry has been added for ${soul.firstName} ${soul.lastName}.`,
         });
-        onFollowUpLogged(); // This will close the dialog via the parent state
+        onFollowUpLogged();
     } catch (err: any) {
         console.error("Failed to log follow-up:", err);
         if (err.code === 'permission-denied') {
             const permissionError = new FirestorePermissionError({
                 path: soulRef.path,
                 operation: 'update',
-                requestResourceData: { status: values.status, note: values.note },
+                requestResourceData: updatePayload,
             }, user);
             errorEmitter.emit('permission-error', permissionError);
         } else {
             toast({
                 variant: "destructive",
                 title: "Update Failed",
-                description: err.message || "Could not log follow-up. Please check your connection and try again.",
+                description: err.message || "Could not log follow-up.",
             });
         }
     } finally {
@@ -279,7 +280,7 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
                                 name="inBibleStudy"
                                 render={({ field }) => (
                                     <FormItem className="flex flex-row items-center justify-between rounded-md p-2 -mx-2 hover:bg-muted/50">
-                                        <FormLabel className="font-normal flex items-center gap-2 cursor-pointer"><BookOpen className="h-4 w-4" />In Bible Study</FormLabel>
+                                        <FormLabel className="font-normal flex items-center gap-2 cursor-pointer"><BookOpen className="h-4 w-4" />In Bible Study</Label>
                                         <FormControl>
                                             <Switch checked={field.value} onCheckedChange={field.onChange} />
                                         </FormControl>
@@ -306,25 +307,31 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
     </Form>
   );
 
-  if (mounted && isMobile) {
+  if (!mounted) return null;
+
+  if (isMobile) {
     return (
       <Sheet open={isOpen} onOpenChange={onOpenChange}>
         <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0">
-          <div className="p-6 border-b flex-shrink-0">
-            <SheetHeader className="text-left">
-                <SheetTitle>Log Follow-up: {soul.firstName}</SheetTitle>
-                <SheetDescription>Record your interaction and update their progress.</SheetDescription>
-            </SheetHeader>
-          </div>
-          <div className="flex-grow overflow-y-auto px-6 py-4">
-            {formBody}
-          </div>
-          <div className="p-6 border-t flex-shrink-0">
-            <Button type="submit" form="log-follow-up-form" disabled={isLoading} className="w-full h-12 text-lg">
-                {isLoading && <Loader2 className="mr-2 h-5 w-5 animate-spin" />}
-                Save Follow-up
-            </Button>
-          </div>
+          {soul && (
+            <>
+              <div className="p-6 border-b flex-shrink-0">
+                <SheetHeader className="text-left flex-shrink-0">
+                    <SheetTitle>Log Follow-up: {soul.firstName}</SheetTitle>
+                    <SheetDescription>Record your interaction and update their progress.</SheetDescription>
+                </SheetHeader>
+              </div>
+              <div className="flex-grow overflow-y-auto px-6 py-4">
+                {formBody}
+              </div>
+              <div className="p-6 border-t flex-shrink-0">
+                <Button type="submit" form="log-follow-up-form" disabled={isLoading} className="w-full h-12 text-lg">
+                    {isLoading && <Loader2 className="mr-2 h-5 w-5 animate-spin" />}
+                    Save Follow-up
+                </Button>
+              </div>
+            </>
+          )}
         </SheetContent>
       </Sheet>
     );
@@ -333,21 +340,25 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
   return (
     <Dialog open={isOpen} onOpenChange={(open) => { if (!isLoading) { onOpenChange(open); } }}>
       <DialogContent className="sm:max-w-md flex flex-col max-h-[90vh]">
-        <DialogHeader>
-            <DialogTitle>Log Follow-up for {soul.firstName} {soul.lastName}</DialogTitle>
-            <DialogDescription>
-                Record your interaction and update their progress.
-            </DialogDescription>
-        </DialogHeader>
-        <div className="flex-grow overflow-y-auto -mx-6 px-6">
-            {formBody}
-        </div>
-        <DialogFooter className="flex-shrink-0 pt-4 border-t">
-            <Button type="submit" form="log-follow-up-form" disabled={isLoading}>
-                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Save Log
-            </Button>
-        </DialogFooter>
+        {soul && (
+          <>
+            <DialogHeader>
+                <DialogTitle>Log Follow-up for {soul.firstName} {soul.lastName}</DialogTitle>
+                <DialogDescription>
+                    Record your interaction and update their progress.
+                </DialogDescription>
+            </DialogHeader>
+            <div className="flex-grow overflow-y-auto -mx-6 px-6">
+                {formBody}
+            </div>
+            <DialogFooter className="flex-shrink-0 pt-4 border-t">
+                <Button type="submit" form="log-follow-up-form" disabled={isLoading}>
+                    {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    Save Log
+                </Button>
+            </DialogFooter>
+          </>
+        )}
       </DialogContent>
     </Dialog>
   );

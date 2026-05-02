@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -183,18 +184,13 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
             const oldFellowshipId = soul.fellowshipId;
             const newFellowshipId = (values.fellowshipId === 'none' || !values.fellowshipId) ? '' : values.fellowshipId;
             
-            // Collect references
             const oldFellowshipRef = (oldFellowshipId && oldFellowshipId !== 'none' && oldFellowshipId !== '' && oldFellowshipId !== newFellowshipId) 
                 ? doc(firestore, "fellowships", oldFellowshipId) : null;
             const newFellowshipRef = (newFellowshipId && newFellowshipId !== 'none' && newFellowshipId !== '' && newFellowshipId !== oldFellowshipId)
                 ? doc(firestore, "fellowships", newFellowshipId) : null;
 
-            // --- ALL READS MUST HAPPEN FIRST ---
             if (oldFellowshipRef) {
-                const oldDoc = await transaction.get(oldFellowshipRef);
-                if (!oldDoc.exists()) {
-                    // If it doesn't exist, we skip updating it
-                }
+                await transaction.get(oldFellowshipRef);
             }
             if (newFellowshipRef) {
                 const newDoc = await transaction.get(newFellowshipRef);
@@ -203,7 +199,6 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
                 }
             }
 
-            // --- ALL WRITES MUST HAPPEN LAST ---
             if (oldFellowshipRef) {
                 transaction.update(oldFellowshipRef, { memberCount: increment(-1) });
             }
@@ -235,7 +230,7 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
         
         toast({
             title: "Soul Updated",
-            description: "A new soul has been added.",
+            description: "Record has been updated successfully.",
         });
 
         onSoulUpdated();

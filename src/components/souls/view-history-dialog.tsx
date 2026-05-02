@@ -1,3 +1,4 @@
+
 "use client";
 
 import * as React from "react";
@@ -13,7 +14,7 @@ import { cn, safeToDate } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 interface ViewHistoryDialogProps {
-  soul: Soul;
+  soul: Soul | null;
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
 }
@@ -27,13 +28,13 @@ export function ViewHistoryDialog({ soul, isOpen, onOpenChange }: ViewHistoryDia
   }, []);
 
   const sortedHistory = React.useMemo(() => {
-    if (!isOpen || !soul.followUpLog || soul.followUpLog.length === 0) return [];
+    if (!isOpen || !soul?.followUpLog || soul.followUpLog.length === 0) return [];
     return [...soul.followUpLog].sort((a, b) => {
       const dateB = safeToDate(b.date)?.getTime() ?? 0;
       const dateA = safeToDate(a.date)?.getTime() ?? 0;
       return dateB - dateA;
     });
-  }, [soul.followUpLog, isOpen]);
+  }, [soul, isOpen]);
 
   const historyContent = (
     <ScrollArea className={cn("pr-4", isMobile ? "h-full" : "max-h-[60vh]")}>
@@ -73,19 +74,25 @@ export function ViewHistoryDialog({ soul, isOpen, onOpenChange }: ViewHistoryDia
     </ScrollArea>
   );
 
-  if (mounted && isMobile) {
+  if (!mounted) return null;
+
+  if (isMobile) {
     return (
       <Sheet open={isOpen} onOpenChange={onOpenChange}>
         <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0">
-          <div className="p-6 border-b flex-shrink-0">
-            <SheetHeader className="text-left flex-shrink-0">
-              <SheetTitle>Follow-up History: {soul.firstName}</SheetTitle>
-              <SheetDescription>A complete log of all follow-up interactions.</SheetDescription>
-            </SheetHeader>
-          </div>
-          <div className="flex-grow min-h-0 pt-6">
-            {historyContent}
-          </div>
+          {soul && (
+            <>
+              <div className="p-6 border-b flex-shrink-0">
+                <SheetHeader className="text-left flex-shrink-0">
+                  <SheetTitle>Follow-up History: {soul.firstName}</SheetTitle>
+                  <SheetDescription>A complete log of all follow-up interactions.</SheetDescription>
+                </SheetHeader>
+              </div>
+              <div className="flex-grow min-h-0 pt-6 px-6">
+                {historyContent}
+              </div>
+            </>
+          )}
         </SheetContent>
       </Sheet>
     );
@@ -94,11 +101,15 @@ export function ViewHistoryDialog({ soul, isOpen, onOpenChange }: ViewHistoryDia
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>Follow-up History for {soul.firstName} {soul.lastName}</DialogTitle>
-          <DialogDescription>A complete log of all follow-up interactions.</DialogDescription>
-        </DialogHeader>
-        {historyContent}
+        {soul && (
+          <>
+            <DialogHeader>
+              <DialogTitle>Follow-up History for {soul.firstName} {soul.lastName}</DialogTitle>
+              <DialogDescription>A complete log of all follow-up interactions.</DialogDescription>
+            </DialogHeader>
+            {historyContent}
+          </>
+        )}
       </DialogContent>
     </Dialog>
   );
