@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -80,26 +81,30 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
     },
   });
 
-  const { reset } = form;
+  const { reset, formState: { isDirty } } = form;
 
   useEffect(() => {
-    reset({
-      firstName: soul.firstName || "",
-      lastName: soul.lastName || "",
-      email: soul.email || "",
-      phone: soul.phone || "",
-      church: soul.church || "",
-      locationWonCity: soul.locationWon?.city || "",
-      locationWonState: soul.locationWon?.state || "",
-      locationWonCountry: soul.locationWon?.country || "",
-      locationWonLatitude: soul.locationWon?.latitude,
-      locationWonLongitude: soul.locationWon?.longitude,
-      source: soul.source || "Personal",
-      sourceDetails: soul.sourceDetails || "",
-      wonAt: safeToDate(soul.wonAt) ?? new Date(),
-      fellowshipId: soul.fellowshipId || "",
-    });
-  }, [soul, reset]);
+    // Only reset if the soul ID changed, to avoid wiping user input on real-time updates
+    // unless the user hasn't made any changes yet.
+    if (!isDirty || (soul.id !== form.getValues('firstName'))) {
+        reset({
+            firstName: soul.firstName || "",
+            lastName: soul.lastName || "",
+            email: soul.email || "",
+            phone: soul.phone || "",
+            church: soul.church || "",
+            locationWonCity: soul.locationWon?.city || "",
+            locationWonState: soul.locationWon?.state || "",
+            locationWonCountry: soul.locationWon?.country || "",
+            locationWonLatitude: soul.locationWon?.latitude,
+            locationWonLongitude: soul.locationWon?.longitude,
+            source: soul.source || "Personal",
+            sourceDetails: soul.sourceDetails || "",
+            wonAt: safeToDate(soul.wonAt) ?? new Date(),
+            fellowshipId: soul.fellowshipId || "",
+        });
+    }
+  }, [soul.id, reset, isDirty]);
   
   const sourceValue = form.watch("source");
   useEffect(() => {
@@ -139,11 +144,13 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
     const soulRef = doc(firestore, `users/${user.uid}/souls`, soul.id);
     const globalSoulRef = doc(firestore, 'souls', soul.id);
 
+    // CRITICAL: Ensure no field is undefined. Firestore throws error on undefined.
     const soulUpdateData: { [key: string]: any } = {
       firstName: values.firstName,
       lastName: values.lastName,
       source: values.source as 'Personal' | 'Campaign',
       wonAt: values.wonAt,
+      updatedAt: serverTimestamp(),
     };
     
     soulUpdateData.email = values.email || deleteField();
@@ -173,8 +180,7 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
         soulUpdateData.locationWon = deleteField();
     }
     
-    const isCampaignSource = values.source === 'Campaign';
-    if (isCampaignSource) {
+    if (values.source === 'Campaign') {
       const campaign = campaigns?.find(c => c.title === values.sourceDetails);
       if (campaign) {
           soulUpdateData.campaignId = campaign.id;
@@ -188,18 +194,24 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
     try {
         await runTransaction(firestore, async (transaction) => {
             const oldFellowshipId = soul.fellowshipId;
-            const newFellowshipId = values.fellowshipId === 'none' ? '' : values.fellowshipId;
+            const newFellowshipId = values.fellowshipId === 'none' ? '' : (values.fellowshipId || '');
             
             // Decrement old fellowship count if it exists and is different from the new one
             if (oldFellowshipId && oldFellowshipId !== 'none' && oldFellowshipId !== '' && oldFellowshipId !== newFellowshipId) {
                 const oldFellowshipRef = doc(firestore, "fellowships", oldFellowshipId);
-                transaction.update(oldFellowshipRef, { memberCount: increment(-1) });
+                const oldFellowshipSnap = await transaction.get(oldFellowshipRef);
+                if (oldFellowshipSnap.exists()) {
+                    transaction.update(oldFellowshipRef, { memberCount: increment(-1) });
+                }
             }
 
             // Increment new fellowship count if it's not empty and is different from the old one
             if (newFellowshipId && newFellowshipId !== 'none' && newFellowshipId !== '' && newFellowshipId !== oldFellowshipId) {
                 const newFellowshipRef = doc(firestore, "fellowships", newFellowshipId);
-                transaction.update(newFellowshipRef, { memberCount: increment(1) });
+                const newFellowshipSnap = await transaction.get(newFellowshipRef);
+                if (newFellowshipSnap.exists()) {
+                    transaction.update(newFellowshipRef, { memberCount: increment(1) });
+                }
             }
 
             transaction.update(soulRef, soulUpdateData);
@@ -229,56 +241,24 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
             description: `${values.firstName} ${values.lastName}'s record has been updated.`,
         });
 
-        if (!soul.email && values.email) {
-            const mailCollectionRef = collection(firestore, 'mail');
-            const appUrl = window.location.origin;
-            const inviterName = user.displayName || 'A friend';
-            const logo = PlaceHolderImages.find(img => img.id === 'logo');
-            const logoUrl = logo ? logo.imageUrl : '';
-
-            await addDoc(mailCollectionRef, {
-                to: [values.email],
-                message: {
-                    subject: `You're invited to join Testify!`,
-                    html: `
-                        <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
-                          <div style="max-width: 600px; margin: 20px auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
-                            <div style="text-align: center; margin-bottom: 20px;">
-                              <img src="${logoUrl}" alt="Testify Logo" style="width: 80px; height: 80px; border-radius: 8px;">
-                              <h1 style="font-size: 24px; margin-top: 10px;">You're Invited to Testify</h1>
-                            </div>
-                            <p>Hi ${values.firstName},</p>
-                            <p><strong>${inviterName}</strong> has invited you to join Testify, a platform for believers to share testimonies, organize soul-winning campaigns, and track evangelism progress.</p>
-                            <p>Join the movement and start your journey today!</p>
-                            <div style="text-align: center; margin: 30px 0;">
-                              <a href="${appUrl}" style="background-color: #3b82f6; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-size: 16px;">Join Testify</a>
-                            </div>
-                            <p>God bless,</p>
-                            <p><strong>The Testify Team</strong></p>
-                          </div>
-                          <div style="text-align: center; font-size: 12px; color: #999; margin-top: 20px;">
-                            <p>&copy; Testify. All rights reserved.</p>
-                          </div>
-                        </div>
-                    `,
-                },
-            });
-            toast({
-                title: 'Invitation Sent!',
-                description: `An invitation email has been sent to ${values.email}.`
-            });
-        }
-        
         onSoulUpdated();
 
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to update soul record:", error);
-      const permissionError = new FirestorePermissionError({
-        path: soulRef.path,
-        operation: 'update',
-        requestResourceData: soulUpdateData,
-      }, user);
-      errorEmitter.emit('permission-error', permissionError);
+      if (error.code === 'permission-denied') {
+          const permissionError = new FirestorePermissionError({
+            path: soulRef.path,
+            operation: 'update',
+            requestResourceData: soulUpdateData,
+          }, user);
+          errorEmitter.emit('permission-error', permissionError);
+      } else {
+          toast({
+              variant: "destructive",
+              title: "Update Failed",
+              description: error.message || "An unexpected error occurred. Please try again."
+          });
+      }
     } finally {
         setIsLoading(false);
     }

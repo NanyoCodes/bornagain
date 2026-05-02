@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -132,7 +133,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
   const watchedLng = form.watch('longitude');
 
   const markerPosition = React.useMemo(() => {
-    if (watchedLat && watchedLng) {
+    if (watchedLat !== undefined && watchedLng !== undefined) {
       return { lat: watchedLat, lng: watchedLng };
     }
     return null;
@@ -172,6 +173,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
         ? updateProfile(auth.currentUser, authUpdatePayload) 
         : Promise.resolve();
       
+      // CRITICAL: Ensure no field is undefined. Firestore throws error on undefined.
       const firestoreUpdatePayload = {
         firstName: values.firstName,
         lastName: values.lastName,
@@ -185,12 +187,13 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
           city_lowercase: (values.city || "").toLowerCase(),
           state_lowercase: (values.state || "").toLowerCase(),
           country_lowercase: (values.country || "").toLowerCase(),
-          latitude: values.latitude || null,
-          longitude: values.longitude || null,
+          latitude: values.latitude ?? null,
+          longitude: values.longitude ?? null,
         },
         phone: values.phone || "",
         photoURL: finalPhotoUrl,
         defaultMeetingLink: values.defaultMeetingLink || null,
+        lastUpdatedAt: serverTimestamp(),
       };
       
       await updateDoc(doc(firestore, 'users', user.uid), firestoreUpdatePayload);
@@ -200,7 +203,8 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
       onClose();
 
     } catch (error: any) {
-         toast({ variant: 'destructive', title: "Update Failed", description: error.message });
+         console.error("Profile update failed:", error);
+         toast({ variant: 'destructive', title: "Update Failed", description: error.message || "An unexpected error occurred." });
     } finally {
       setIsSubmitting(false);
     }

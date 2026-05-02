@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -230,6 +231,7 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated, onDelete }: Ma
     setIsSubmitting(true);
     
     const campaignRef = doc(firestore, 'campaigns', campaign.id);
+    // CRITICAL: Normalizing undefined values to null for Firestore compatibility
     const updateData: { [key: string]: any } = {
         title: values.title,
         description: values.description,
@@ -256,13 +258,21 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated, onDelete }: Ma
             description: 'Your changes have been saved successfully.',
         });
         onCampaignUpdated();
-    }).catch(() => {
-        const permissionError = new FirestorePermissionError({
-        path: campaignRef.path,
-        operation: 'update',
-        requestResourceData: updateData,
-        }, user);
-        errorEmitter.emit('permission-error', permissionError);
+    }).catch((err: any) => {
+        if (err.code === 'permission-denied') {
+            const permissionError = new FirestorePermissionError({
+                path: campaignRef.path,
+                operation: 'update',
+                requestResourceData: updateData,
+            }, user);
+            errorEmitter.emit('permission-error', permissionError);
+        } else {
+            toast({
+                variant: 'destructive',
+                title: 'Update Failed',
+                description: err.message || "An unexpected error occurred. Please try again."
+            });
+        }
     }).finally(() => {
         setIsSubmitting(false);
     });
