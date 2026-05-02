@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { useDoc, useFirestore, useUser } from '@/firebase';
 import type { Campaign, UserProfile } from '@/lib/types';
 import {
@@ -13,7 +13,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/dialog';
+} from '@/components/ui/alert-dialog';
 import { doc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -454,6 +454,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                                     <span className="font-semibold group-hover:underline">{campaign.organizerFirstName} {campaign.organizerLastName}</span>
                                 </Link>
                             </CardContent>
+                        </Card>
 
                         <Card>
                             <CardHeader>
@@ -516,7 +517,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                     <DialogHeader>
                     <DialogTitle>Log a Soul Won in "{campaign.title}"</DialogTitle>
                     </DialogHeader>
-                    <LogSoulForm onSoulLogged={() => setIsLogSoulOpen(false)} defaultCampaign={campaign} />
+                    <LogSoulForm onSoulLogged={() => setIsLogSoulOpen(false)} defaultCampaign={campaign} fellowships={[]} campaigns={[]} />
                 </DialogContent>
             </Dialog>
             <Dialog open={isTestimonyDialogOpen} onOpenChange={setIsTestimonyDialogOpen}>
