@@ -16,6 +16,7 @@ import {
   SheetHeader,
   SheetTitle,
   SheetDescription,
+  SheetTrigger,
 } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Sparkles, Loader2, Lightbulb, MessageSquare, ListChecks, Clipboard, ChevronRight } from 'lucide-react';
@@ -162,11 +163,13 @@ export function SoulInsightsDialog({ soul, children }: { soul: Soul, children: R
     return (
       <Sheet open={isOpen} onOpenChange={setIsOpen}>
         <SheetTrigger asChild>{children}</SheetTrigger>
-        <SheetContent side="bottom" className="h-[90dvh] flex flex-col">
-          <SheetHeader className="text-left flex-shrink-0">
-            <SheetTitle>{titleText}</SheetTitle>
-            <SheetDescription>{descText}</SheetDescription>
-          </SheetHeader>
+        <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0">
+          <div className="p-6 border-b flex-shrink-0">
+            <SheetHeader className="text-left flex-shrink-0">
+              <SheetTitle>{titleText}</SheetTitle>
+              <SheetDescription>{descText}</SheetDescription>
+            </SheetHeader>
+          </div>
           <div className="flex-grow min-h-0 pt-6">
             {bodyContent}
           </div>
