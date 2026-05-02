@@ -19,7 +19,7 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { Sparkles, Loader2, Lightbulb, MessageSquare, ListChecks, Clipboard, ChevronRight } from 'lucide-react';
+import { Loader2, Lightbulb, MessageSquare, ListChecks, Clipboard, ChevronRight } from 'lucide-react';
 import { type Soul } from '@/lib/types';
 import { generateFollowUpInsights, type FollowUpInsightsOutput } from '@/ai/flows/generate-follow-up-insights';
 import { formatDistanceToNow } from 'date-fns';
@@ -150,7 +150,7 @@ export function SoulInsightsDialog({ soul, children }: { soul: Soul, children: R
                         &ldquo;{insights.suggestedMessage}&rdquo;
                     </p>
                 </div>
-                <p className="text-[10px] text-center text-muted-foreground italic">Tip: Tap to copy and personalize this message before sending.</p>
+                <p className="text-[10px] text-center text-muted-foreground italic">Tip: Personalize this message before sending.</p>
             </div>
           </div>
         )}

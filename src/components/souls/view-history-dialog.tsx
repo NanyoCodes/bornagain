@@ -99,14 +99,16 @@ export function ViewHistoryDialog({ soul, isOpen, onOpenChange }: ViewHistoryDia
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md flex flex-col max-h-[90vh]">
         {soul && (
           <>
             <DialogHeader>
               <DialogTitle>Follow-up History for {soul.firstName} {soul.lastName}</DialogTitle>
               <DialogDescription>A complete log of all follow-up interactions.</DialogDescription>
             </DialogHeader>
-            {historyContent}
+            <div className="flex-grow overflow-y-auto -mx-6 px-6">
+                {historyContent}
+            </div>
           </>
         )}
       </DialogContent>

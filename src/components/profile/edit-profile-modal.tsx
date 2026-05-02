@@ -47,8 +47,8 @@ const formSchema = z.object({
   city: z.string().max(50, "City is too long.").optional(),
   state: z.string().max(50, "State is too long.").optional(),
   country: z.string().max(50, "Country is too long.").optional(),
-  latitude: z.number().optional(),
-  longitude: z.number().optional(),
+  latitude: z.number().optional().nullable(),
+  longitude: z.number().optional().nullable(),
   phone: z.string().max(50, "Phone number is too long.").optional(),
   defaultMeetingLink: z.string().url("Please enter a valid URL.").optional().or(z.literal('')),
 });
@@ -121,8 +121,8 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
       city: userProfile.location?.city || "",
       state: userProfile.location?.state || "",
       country: userProfile.location?.country || "",
-      latitude: userProfile.location?.latitude,
-      longitude: userProfile.location?.longitude,
+      latitude: userProfile.location?.latitude ?? null,
+      longitude: userProfile.location?.longitude ?? null,
       phone: userProfile.phone || "",
       defaultMeetingLink: userProfile.defaultMeetingLink || "",
     },
@@ -132,7 +132,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
   const watchedLng = form.watch('longitude');
 
   const markerPosition = React.useMemo(() => {
-    if (watchedLat !== undefined && watchedLng !== undefined) {
+    if (watchedLat != null && watchedLng != null) {
       return { lat: watchedLat, lng: watchedLng };
     }
     return null;

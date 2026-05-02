@@ -17,7 +17,7 @@ import { SoulsWonTable } from "@/components/souls/souls-won-table";
 import { LogSoulForm } from "@/components/souls/log-soul-form";
 import type { Soul, Campaign, Fellowship } from "@/lib/types";
 import { useCollection, useFirestore, useUser } from "@/firebase";
-import { collection, query, orderBy, doc, writeBatch, updateDoc, runTransaction, addDoc, deleteField, serverTimestamp, increment } from "firebase/firestore";
+import { collection, query, orderBy, doc, writeBatch, updateDoc, runTransaction, addDoc, deleteField, serverTimestamp, increment, getDoc } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useSearch } from "@/context/search-context";
@@ -35,7 +35,6 @@ import { AssignFellowshipDialog } from "@/components/souls/assign-fellowship-dia
 
 
 export default function SoulsWonPage() {
-  const router = useRouter();
   const { user, loading: userLoading } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
@@ -51,7 +50,7 @@ export default function SoulsWonPage() {
   const [soulToAssign, setSoulToAssign] = useState<Soul | null>(null);
   const [isAssigning, setIsAssigning] = useState<string | null>(null);
 
-  // Stabilized states to prevent flashes/freezes during closing animations
+  // Stabilized active states to prevent unmounting issues during closing animations
   const [activeEditSoul, setActiveEditSoul] = useState<Soul | null>(null);
   useEffect(() => { if (soulToEdit) setActiveEditSoul(soulToEdit); }, [soulToEdit]);
 

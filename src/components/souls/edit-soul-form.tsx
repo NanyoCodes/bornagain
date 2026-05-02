@@ -1,4 +1,3 @@
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -21,7 +20,7 @@ import { Loader2 } from "lucide-react";
 import type { Soul, Campaign, Fellowship } from "@/lib/types";
 import { format } from "date-fns";
 import { useFirestore, useUser } from "@/firebase";
-import { collection, doc, serverTimestamp, runTransaction, increment, deleteField } from "firebase/firestore";
+import { collection, doc, serverTimestamp, runTransaction, increment } from "firebase/firestore";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -47,12 +46,12 @@ const formSchema = z.object({
   fellowshipId: z.string().optional(),
 });
 
-type EditSoulFormProps = {
+interface EditSoulFormProps {
   soul: Soul;
   onSoulUpdated: () => void;
   fellowships: Fellowship[];
   campaigns: Campaign[];
-};
+}
 
 export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: EditSoulFormProps) {
   const { toast } = useToast();
@@ -84,6 +83,7 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
   const lastSoulId = useRef(soul.id);
 
   useEffect(() => {
+    // Only reset if the soul ID actually changes to prevent resetting while the user is typing
     if (soul.id !== lastSoulId.current) {
         reset({
             firstName: soul.firstName || "",
@@ -184,26 +184,29 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
             const oldFellowshipId = soul.fellowshipId;
             const newFellowshipId = (values.fellowshipId === 'none' || !values.fellowshipId) ? '' : values.fellowshipId;
             
-            const oldFellowshipRef = (oldFellowshipId && oldFellowshipId !== 'none' && oldFellowshipId !== '' && oldFellowshipId !== newFellowshipId) 
-                ? doc(firestore, "fellowships", oldFellowshipId) : null;
-            const newFellowshipRef = (newFellowshipId && newFellowshipId !== 'none' && newFellowshipId !== '' && newFellowshipId !== oldFellowshipId)
-                ? doc(firestore, "fellowships", newFellowshipId) : null;
+            // --- ALL READS FIRST ---
+            let oldFellowshipDoc = null;
+            let newFellowshipDoc = null;
 
-            if (oldFellowshipRef) {
-                await transaction.get(oldFellowshipRef);
+            if (oldFellowshipId && oldFellowshipId !== 'none' && oldFellowshipId !== '' && oldFellowshipId !== newFellowshipId) {
+                const oldFellowshipRef = doc(firestore, "fellowships", oldFellowshipId);
+                oldFellowshipDoc = await transaction.get(oldFellowshipRef);
             }
-            if (newFellowshipRef) {
-                const newDoc = await transaction.get(newFellowshipRef);
-                if (!newDoc.exists()) {
+            
+            if (newFellowshipId && newFellowshipId !== 'none' && newFellowshipId !== '' && newFellowshipId !== oldFellowshipId) {
+                const newFellowshipRef = doc(firestore, "fellowships", newFellowshipId);
+                newFellowshipDoc = await transaction.get(newFellowshipRef);
+                if (!newFellowshipDoc.exists()) {
                     throw new Error("Target fellowship group not found.");
                 }
             }
 
-            if (oldFellowshipRef) {
-                transaction.update(oldFellowshipRef, { memberCount: increment(-1) });
+            // --- ALL WRITES SECOND ---
+            if (oldFellowshipDoc?.exists()) {
+                transaction.update(oldFellowshipDoc.ref, { memberCount: increment(-1) });
             }
-            if (newFellowshipRef) {
-                transaction.update(newFellowshipRef, { memberCount: increment(1) });
+            if (newFellowshipDoc?.exists()) {
+                transaction.update(newFellowshipDoc.ref, { memberCount: increment(1) });
             }
 
             transaction.update(soulRef, soulUpdateData);

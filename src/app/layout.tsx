@@ -83,6 +83,7 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Source+Code+Pro:wght@400;600&display=swap"
           rel="stylesheet"
         />
+        {/* Force Favicon */}
         <link rel="icon" href={testifyLogoUrl} />
         {RAW_ADSENSE_ID && (
           <Script

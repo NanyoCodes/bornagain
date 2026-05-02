@@ -231,7 +231,7 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated, onDelete }: Ma
     
     const campaignRef = doc(firestore, 'campaigns', campaign.id);
     
-    // CRITICAL: Normalizing undefined values to null for Firestore compatibility
+    // Normalize data: convert undefined values to null for Firestore compatibility
     const updateData: { [key: string]: any } = {
         title: values.title,
         description: values.description,
@@ -268,8 +268,8 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated, onDelete }: Ma
             errorEmitter.emit('permission-error', permissionError);
         } else {
             toast({
-                variant: 'destructive',
-                title: 'Update Failed',
+                variant: "destructive",
+                title: "Update Failed",
                 description: err.message || "An unexpected error occurred. Please try again."
             });
         }
