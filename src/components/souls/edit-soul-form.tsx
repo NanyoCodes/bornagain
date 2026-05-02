@@ -1,4 +1,3 @@
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -16,7 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { Loader2 } from "lucide-react";
 import type { Soul, Campaign, Fellowship } from "@/lib/types";
 import { format } from "date-fns";
@@ -38,8 +37,8 @@ const formSchema = z.object({
   locationWonCity: z.string().optional(),
   locationWonState: z.string().optional(),
   locationWonCountry: z.string().optional(),
-  locationWonLatitude: z.number().optional(),
-  locationWonLongitude: z.number().optional(),
+  locationWonLatitude: z.number().optional().nullable(),
+  locationWonLongitude: z.number().optional().nullable(),
   source: z.string({ required_error: "Please select a source." }),
   sourceDetails: z.string().optional(),
   wonAt: z.date({
@@ -72,8 +71,8 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
       locationWonCity: soul.locationWon?.city || "",
       locationWonState: soul.locationWon?.state || "",
       locationWonCountry: soul.locationWon?.country || "",
-      locationWonLatitude: soul.locationWon?.latitude,
-      locationWonLongitude: soul.locationWon?.longitude,
+      locationWonLatitude: soul.locationWon?.latitude ?? null,
+      locationWonLongitude: soul.locationWon?.longitude ?? null,
       source: soul.source || "Personal",
       sourceDetails: soul.sourceDetails || "",
       wonAt: safeToDate(soul.wonAt) ?? new Date(),
@@ -81,12 +80,12 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
     },
   });
 
-  const { reset, formState: { isDirty } } = form;
+  const { reset } = form;
+  const lastSoulId = useRef(soul.id);
 
   useEffect(() => {
     // Only reset if the soul ID changed, to avoid wiping user input on real-time updates
-    // unless the user hasn't made any changes yet.
-    if (!isDirty || (soul.id !== form.getValues('firstName'))) {
+    if (soul.id !== lastSoulId.current) {
         reset({
             firstName: soul.firstName || "",
             lastName: soul.lastName || "",
@@ -96,15 +95,16 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
             locationWonCity: soul.locationWon?.city || "",
             locationWonState: soul.locationWon?.state || "",
             locationWonCountry: soul.locationWon?.country || "",
-            locationWonLatitude: soul.locationWon?.latitude,
-            locationWonLongitude: soul.locationWon?.longitude,
+            locationWonLatitude: soul.locationWon?.latitude ?? null,
+            locationWonLongitude: soul.locationWon?.longitude ?? null,
             source: soul.source || "Personal",
             sourceDetails: soul.sourceDetails || "",
             wonAt: safeToDate(soul.wonAt) ?? new Date(),
             fellowshipId: soul.fellowshipId || "",
         });
+        lastSoulId.current = soul.id;
     }
-  }, [soul.id, reset, isDirty]);
+  }, [soul.id, reset, soul]);
   
   const sourceValue = form.watch("source");
   useEffect(() => {
@@ -119,7 +119,7 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
   const sortedFellowships = useMemo(() => {
     if (!fellowships || fellowships.length === 0) return [];
     
-    if (watchedLat === undefined || watchedLng === undefined) {
+    if (typeof watchedLat !== 'number' || typeof watchedLng !== 'number') {
         return [...fellowships].sort((a, b) => a.name.localeCompare(b.name));
     }
 
@@ -130,7 +130,7 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
                 : Infinity;
             return { ...f, distance };
         })
-        .sort((a, b) => a.distance - b.distance);
+        .sort((a, b) => (a.distance ?? Infinity) - (b.distance ?? Infinity));
   }, [fellowships, watchedLat, watchedLng]);
 
 
@@ -171,8 +171,8 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
     if (values.locationWonCity) locationWon.city = values.locationWonCity;
     if (values.locationWonState) locationWon.state = values.locationWonState;
     if (values.locationWonCountry) locationWon.country = values.locationWonCountry;
-    if (values.locationWonLatitude !== undefined) locationWon.latitude = values.locationWonLatitude;
-    if (values.locationWonLongitude !== undefined) locationWon.longitude = values.locationWonLongitude;
+    if (typeof values.locationWonLatitude === 'number') locationWon.latitude = values.locationWonLatitude;
+    if (typeof values.locationWonLongitude === 'number') locationWon.longitude = values.locationWonLongitude;
     
     if (Object.keys(locationWon).length > 0) {
       soulUpdateData.locationWon = locationWon;
@@ -194,7 +194,7 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
     try {
         await runTransaction(firestore, async (transaction) => {
             const oldFellowshipId = soul.fellowshipId;
-            const newFellowshipId = values.fellowshipId === 'none' ? '' : (values.fellowshipId || '');
+            const newFellowshipId = (values.fellowshipId === 'none' || !values.fellowshipId) ? '' : values.fellowshipId;
             
             // Decrement old fellowship count if it exists and is different from the new one
             if (oldFellowshipId && oldFellowshipId !== 'none' && oldFellowshipId !== '' && oldFellowshipId !== newFellowshipId) {
@@ -264,9 +264,17 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
     }
   }
 
+  const handleInvalidSubmit = () => {
+    toast({
+        variant: "destructive",
+        title: "Incomplete Form",
+        description: "Please check all fields for errors before saving.",
+    });
+  };
+
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={form.handleSubmit(onSubmit, handleInvalidSubmit)} className="space-y-4">
         <div className="grid grid-cols-2 gap-4">
             <FormField
             control={form.control}
@@ -275,7 +283,7 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
                 <FormItem>
                 <FormLabel>First Name</FormLabel>
                 <FormControl>
-                    <Input placeholder="John" {...field} className="text-base"/>
+                    <Input placeholder="John" {...field} value={field.value ?? ""} className="text-base"/>
                 </FormControl>
                 <FormMessage />
                 </FormItem>
@@ -288,7 +296,7 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
                 <FormItem>
                 <FormLabel>Last Name</FormLabel>
                 <FormControl>
-                    <Input placeholder="Doe" {...field} className="text-base"/>
+                    <Input placeholder="Doe" {...field} value={field.value ?? ""} className="text-base"/>
                 </FormControl>
                 <FormMessage />
                 </FormItem>

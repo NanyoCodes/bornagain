@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -36,18 +35,18 @@ const formSchema = z.object({
   description: z.string().min(3, "Description is too short.").max(5000, "Description is too long."),
   goal: z.string().min(3, "Goal is too short.").max(100, "Goal is too long."),
   location: z.string().min(3, "A location is required.").max(200, "Location is too long."),
-  latitude: z.number().optional(),
-  longitude: z.number().optional(),
-  coverageRadius: z.number().min(100, "Minimum radius is 100m").max(50000, "Maximum radius is 50km").optional(),
+  latitude: z.number().optional().nullable(),
+  longitude: z.number().optional().nullable(),
+  coverageRadius: z.number().min(100, "Minimum radius is 100m").max(50000, "Maximum radius is 50km").optional().nullable(),
   startDate: z.date(),
   endDate: z.date(),
   startTime: z.string().min(1, "A start time is required."),
   endTime: z.string().min(1, "An end time is required."),
-  scripture: z.string().max(100, "Scripture is too long.").optional(),
-  scriptureTestimony: z.string().max(500, "Caption is too long.").optional(),
-  maxParticipants: z.number().min(1, "Maximum participants must be at least 1.").optional(),
-  streamUrl: z.string().url({ message: "Please enter a valid URL." }).optional().or(z.literal('')),
-  lastUpdateReason: z.string().max(500, "Reason is too long.").optional(),
+  scripture: z.string().max(100, "Scripture is too long.").optional().nullable(),
+  scriptureTestimony: z.string().max(500, "Caption is too long.").optional().nullable(),
+  maxParticipants: z.number().min(1, "Maximum participants must be at least 1.").optional().nullable(),
+  streamUrl: z.string().url({ message: "Please enter a valid URL." }).optional().or(z.literal('')).nullable(),
+  lastUpdateReason: z.string().max(500, "Reason is too long.").optional().nullable(),
 }).refine((data) => data.endDate >= data.startDate, {
     message: "End date cannot be before start date.",
     path: ["endDate"],
@@ -145,17 +144,17 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated, onDelete }: Ma
       description: campaign.description || "",
       goal: campaign.goal || "",
       location: campaign.location || "",
-      latitude: campaign.latitude,
-      longitude: campaign.longitude,
-      coverageRadius: campaign.coverageRadius,
+      latitude: campaign.latitude ?? null,
+      longitude: campaign.longitude ?? null,
+      coverageRadius: campaign.coverageRadius ?? null,
       startDate: safeToDate(campaign.startDate) ?? new Date(),
       endDate: safeToDate(campaign.endDate) ?? new Date(),
       startTime: campaign.startTime || "",
       endTime: campaign.endTime || "",
-      scripture: campaign.scripture || "",
-      scriptureTestimony: campaign.scriptureTestimony || "",
+      scripture: campaign.scripture ?? "",
+      scriptureTestimony: campaign.scriptureTestimony ?? "",
       maxParticipants: campaign.maxParticipants ?? undefined,
-      streamUrl: campaign.streamUrl || "",
+      streamUrl: campaign.streamUrl ?? "",
       lastUpdateReason: "",
     },
   });
@@ -231,22 +230,23 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated, onDelete }: Ma
     setIsSubmitting(true);
     
     const campaignRef = doc(firestore, 'campaigns', campaign.id);
+    
     // CRITICAL: Normalizing undefined values to null for Firestore compatibility
     const updateData: { [key: string]: any } = {
         title: values.title,
         description: values.description,
         goal: values.goal,
         location: values.location,
-        latitude: values.latitude ?? null,
-        longitude: values.longitude ?? null,
-        coverageRadius: values.coverageRadius ?? null,
+        latitude: typeof values.latitude === 'number' ? values.latitude : null,
+        longitude: typeof values.longitude === 'number' ? values.longitude : null,
+        coverageRadius: typeof values.coverageRadius === 'number' ? values.coverageRadius : null,
         startDate: values.startDate,
         endDate: values.endDate,
         startTime: values.startTime,
         endTime: values.endTime,
         scripture: values.scripture || null,
         scriptureTestimony: values.scriptureTestimony || null,
-        maxParticipants: values.maxParticipants ?? null,
+        maxParticipants: typeof values.maxParticipants === 'number' ? values.maxParticipants : null,
         streamUrl: values.streamUrl || null,
         lastUpdateReason: values.lastUpdateReason || null,
         lastUpdatedAt: serverTimestamp(),
@@ -282,10 +282,18 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated, onDelete }: Ma
     window.open('https://meet.google.com/new', '_blank');
   };
 
+  const handleInvalidSubmit = () => {
+    toast({
+        variant: "destructive",
+        title: "Incomplete Form",
+        description: "Please check all fields for errors before saving.",
+    });
+  };
+
   return (
     <div className="space-y-8">
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <form onSubmit={form.handleSubmit(onSubmit, handleInvalidSubmit)} className="space-y-6">
                 <FormField
                   control={form.control}
                   name="title"
@@ -293,7 +301,7 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated, onDelete }: Ma
                     <FormItem>
                       <FormLabel>Title</FormLabel>
                       <FormControl>
-                        <Input placeholder="Campaign Title" {...field} className="text-base" />
+                        <Input placeholder="Campaign Title" {...field} value={field.value ?? ""} className="text-base" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -306,7 +314,7 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated, onDelete }: Ma
                     <FormItem>
                       <FormLabel>Goal</FormLabel>
                       <FormControl>
-                        <Input placeholder="e.g. Evangelism" {...field} className="text-base" />
+                        <Input placeholder="e.g. Evangelism" {...field} value={field.value ?? ""} className="text-base" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -319,7 +327,7 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated, onDelete }: Ma
                       <FormItem>
                       <FormLabel>Description</FormLabel>
                       <FormControl>
-                          <Textarea placeholder="Campaign description" {...field} className="text-base min-h-[120px]" />
+                          <Textarea placeholder="Campaign description" {...field} value={field.value ?? ""} className="text-base min-h-[120px]" />
                       </FormControl>
                       <FormMessage />
                       </FormItem>
@@ -358,7 +366,7 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated, onDelete }: Ma
                     <FormItem>
                         <FormLabel>Inspirational Scripture</FormLabel>
                         <FormControl>
-                        <Input placeholder="e.g., John 3:16" {...field} />
+                        <Input placeholder="e.g., John 3:16" {...field} value={field.value ?? ""} />
                         </FormControl>
                         <FormMessage />
                     </FormItem>
@@ -371,7 +379,7 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated, onDelete }: Ma
                         <FormItem>
                         <FormLabel>Scripture Caption (Optional)</FormLabel>
                         <FormControl>
-                            <Textarea placeholder="Your short testimony or caption related to the scripture..." {...field} />
+                            <Textarea placeholder="Your short testimony or caption related to the scripture..." {...field} value={field.value ?? ""} />
                         </FormControl>
                         <FormDescription>
                             This will be displayed with the scripture on the campaign card.
@@ -441,7 +449,7 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated, onDelete }: Ma
                       <FormItem>
                         <FormLabel>Start Time</FormLabel>
                         <FormControl>
-                          <Input type="time" {...field} className="text-base" />
+                          <Input type="time" {...field} value={field.value ?? ""} className="text-base" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -454,7 +462,7 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated, onDelete }: Ma
                       <FormItem>
                         <FormLabel>End Time</FormLabel>
                         <FormControl>
-                          <Input type="time" {...field} className="text-base" />
+                          <Input type="time" {...field} value={field.value ?? ""} className="text-base" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -473,7 +481,7 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated, onDelete }: Ma
                             placeholder="e.g., 20" 
                             {...field} 
                             className="text-base"
-                            onChange={e => field.onChange(e.target.value === '' ? undefined : parseInt(e.target.value, 10))}
+                            onChange={e => field.onChange(e.target.value === '' ? null : parseInt(e.target.value, 10))}
                             value={field.value ?? ''}
                             />
                         </FormControl>
@@ -516,7 +524,7 @@ export function ManageCampaignForm({ campaign, onCampaignUpdated, onDelete }: Ma
                       <FormItem>
                       <FormLabel>Reason for Update (Optional)</FormLabel>
                       <FormControl>
-                          <Textarea placeholder="e.g., Updated progress after event" {...field} className="text-base" />
+                          <Textarea placeholder="e.g., Updated progress after event" {...field} value={field.value ?? ""} className="text-base" />
                       </FormControl>
                       <FormMessage />
                       </FormItem>
