@@ -3,13 +3,14 @@
 import { useMemo } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useDoc, useFirestore, useUser, useCollection } from '@/firebase';
-import type { Fellowship, UserProfile } from '@/lib/types';
+import type { Fellowship, UserProfile, FellowshipMember } from '@/lib/types';
 import { doc, collection, query, orderBy } from 'firebase/firestore';
-import { Loader2, ArrowLeft, Users, Calendar, PlayCircle } from 'lucide-react';
+import { Loader2, ArrowLeft, Users, Calendar, PlayCircle, MapPin } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import Link from 'next/link';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 export default function FellowshipPageClient() {
     const router = useRouter();
@@ -30,8 +31,6 @@ export default function FellowshipPageClient() {
     }, [fellowship?.organizerId, firestore]);
     const { data: organizer, loading: organizerLoading } = useDoc<UserProfile>(organizerDocRef);
     
-    const loading = fellowshipLoading || organizerLoading;
-
     const isMember = useMemo(() => {
         if (!user || !fellowship) return false;
         return fellowship.memberIds.includes(user.uid);
@@ -39,8 +38,16 @@ export default function FellowshipPageClient() {
 
     const isOrganizer = useMemo(() => {
         if (!user || !fellowship) return false;
-        return fellowship.organizerId === user.uid;
+        return fellowship.organizerId === user.uid);
     }, [user, fellowship]);
+
+    const membersQuery = useMemo(() => {
+        if (!firestore || !fellowshipId || !(isMember || isOrganizer)) return null;
+        return query(collection(firestore, 'fellowships', fellowshipId, 'members'), orderBy('joinedAt', 'desc'));
+    }, [firestore, fellowshipId, isMember, isOrganizer]);
+    const { data: members, loading: membersLoading } = useCollection<FellowshipMember>(membersQuery);
+
+    const loading = fellowshipLoading || organizerLoading;
 
     if (loading) {
         return (
@@ -50,7 +57,7 @@ export default function FellowshipPageClient() {
         );
     }
     
-    if (fellowshipError || !fellowship) {
+    if (fellowshipError || !fellowship || fellowship.status === 'deleted') {
         return (
             <div className="text-center py-12 flex flex-col items-center">
                 <Users className="h-16 w-16 text-muted-foreground" />
@@ -81,11 +88,49 @@ export default function FellowshipPageClient() {
                 <div className="lg:col-span-2 space-y-6">
                     <Card>
                         <CardHeader>
-                            <CardTitle>Members</CardTitle>
-                             <CardDescription>{fellowship.memberCount} total members</CardDescription>
+                            <CardTitle className="flex items-center gap-2">
+                                <Users className="h-5 w-5" /> Members ({fellowship.memberCount})
+                            </CardTitle>
+                             <CardDescription>
+                                {isMember || isOrganizer 
+                                    ? "Fellowship members are listed below." 
+                                    : "Join the fellowship to see who else is part of this group."}
+                             </CardDescription>
                         </CardHeader>
                         <CardContent>
-                           <p className="text-sm text-muted-foreground">For privacy, the list of members is not publicly visible.</p>
+                           {(isMember || isOrganizer) ? (
+                               membersLoading ? (
+                                   <div className="flex justify-center py-8"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>
+                               ) : members && members.length > 0 ? (
+                                   <ScrollArea className="h-96 pr-4">
+                                       <div className="space-y-4">
+                                           {members.map(member => (
+                                               <div key={member.id} className="flex items-center gap-4 p-2 rounded-lg border bg-muted/20">
+                                                   <Avatar>
+                                                       <AvatarImage src={member.photoURL} />
+                                                       <AvatarFallback>{member.firstName?.charAt(0)}</AvatarFallback>
+                                                   </Avatar>
+                                                   <div className="flex-1 min-w-0">
+                                                       <p className="font-semibold truncate">{member.firstName} {member.lastName}</p>
+                                                       {member.userId === fellowship.organizerId && (
+                                                           <Badge variant="secondary" className="text-[10px] h-4">Organizer</Badge>
+                                                       )}
+                                                   </div>
+                                                   <Button asChild variant="ghost" size="sm">
+                                                       <Link href={`/dashboard/profile/${member.userId}`}>Profile</Link>
+                                                   </Button>
+                                               </div>
+                                           ))}
+                                       </div>
+                                   </ScrollArea>
+                               ) : (
+                                   <p className="text-sm text-muted-foreground text-center py-8">No members found.</p>
+                               )
+                           ) : (
+                               <div className="p-8 text-center bg-muted/30 rounded-lg border-2 border-dashed">
+                                   <p className="text-sm text-muted-foreground italic">List is restricted to fellowship members.</p>
+                               </div>
+                           )}
                         </CardContent>
                     </Card>
                 </div>
@@ -103,7 +148,7 @@ export default function FellowshipPageClient() {
                             )}
                             {fellowship.location && (
                                 <div>
-                                    <p className="font-semibold">Location</p>
+                                    <p className="font-semibold flex items-center gap-1"><MapPin className="h-3 w-3" /> Location</p>
                                     <p className="text-muted-foreground">{fellowship.location}</p>
                                 </div>
                             )}

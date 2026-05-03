@@ -16,6 +16,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSepara
 import { Loader2, Users, MoreVertical, PlayCircle, Edit, Trash2 } from 'lucide-react';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 type FellowshipCardProps = {
   fellowship: Fellowship;
@@ -122,27 +123,32 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
                 </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-                <p className="text-sm text-muted-foreground">{fellowship.description}</p>
+                <p className="text-sm text-muted-foreground line-clamp-2">{fellowship.description}</p>
                 <div className="text-sm">
-                    <p><strong>Schedule:</strong> {fellowship.schedule}</p>
-                    {(fellowship.locationType === 'Physical' || fellowship.locationType === 'Physical and Virtual') && fellowship.location && (
-                        <p><strong>Location:</strong> {fellowship.location}</p>
-                    )}
+                    <p className="truncate"><strong>Schedule:</strong> {fellowship.schedule}</p>
                 </div>
             </CardContent>
             <CardFooter className="flex justify-between items-center">
                 <div className="flex items-center text-sm text-muted-foreground">
                     <Users className="mr-2 h-4 w-4" /> {fellowship.memberCount} member(s)
                 </div>
-                 {distance !== null && <p className="text-xs text-muted-foreground">{distance.toFixed(1)} km away</p>}
                 <div className="flex items-center gap-2" onClick={stopPropagation}>
                     {(isMember || isOrganizer) && fellowship.streamUrl && (
-                        <Button asChild variant="outline" size="sm">
-                            <Link href={fellowship.streamUrl} target="_blank" rel="noopener noreferrer">
-                                <PlayCircle className="mr-2 h-4 w-4" />
-                                Stream
-                            </Link>
-                        </Button>
+                        <TooltipProvider>
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <Button asChild variant="outline" size="icon" className="h-8 w-8">
+                                        <Link href={fellowship.streamUrl} target="_blank" rel="noopener noreferrer">
+                                            <PlayCircle className="h-4 w-4" />
+                                            <span className="sr-only">Stream</span>
+                                        </Link>
+                                    </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    <p>Join Stream</p>
+                                </TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
                     )}
                     {!isOrganizer && (
                         <Button onClick={handleJoin} disabled={isMember || isJoining} size="sm">
