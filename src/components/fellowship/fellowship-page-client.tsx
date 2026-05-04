@@ -3,15 +3,16 @@
 import { useMemo } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useDoc, useFirestore, useUser, useCollection } from '@/firebase';
-import type { Fellowship, UserProfile, FellowshipMember } from '@/lib/types';
-import { doc, collection, query, orderBy } from 'firebase/firestore';
-import { Loader2, ArrowLeft, Users, Calendar, PlayCircle, MapPin } from 'lucide-react';
+import type { Fellowship, UserProfile, FellowshipMember, Soul } from '@/lib/types';
+import { doc, collection, query, orderBy, where } from 'firebase/firestore';
+import { Loader2, ArrowLeft, Users, Calendar, PlayCircle, MapPin, UserCheck2, Heart } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export default function FellowshipPageClient() {
     const router = useRouter();
@@ -42,11 +43,19 @@ export default function FellowshipPageClient() {
         return fellowship.organizerId === user.uid;
     }, [user, fellowship]);
 
+    // Query for believers (app users who joined)
     const membersQuery = useMemo(() => {
         if (!firestore || !fellowshipId || !(isMember || isOrganizer)) return null;
         return query(collection(firestore, 'fellowships', fellowshipId, 'members'), orderBy('joinedAt', 'desc'));
     }, [firestore, fellowshipId, isMember, isOrganizer]);
     const { data: members, loading: membersLoading } = useCollection<FellowshipMember>(membersQuery);
+
+    // Query for souls (converts assigned to this group)
+    const soulsQuery = useMemo(() => {
+        if (!firestore || !fellowshipId || !(isMember || isOrganizer)) return null;
+        return query(collection(firestore, 'souls'), where('fellowshipId', '==', fellowshipId));
+    }, [firestore, fellowshipId, isMember, isOrganizer]);
+    const { data: assignedSouls, loading: soulsLoading } = useCollection<Soul>(soulsQuery);
 
     const loading = fellowshipLoading || organizerLoading;
 
@@ -90,46 +99,83 @@ export default function FellowshipPageClient() {
                     <Card>
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
-                                <Users className="h-5 w-5" /> Members ({fellowship.memberCount})
+                                <Users className="h-5 w-5" /> Fellowship Directory
                             </CardTitle>
                              <CardDescription>
                                 {isMember || isOrganizer 
-                                    ? "Fellowship members are listed below." 
-                                    : "Join the fellowship to see who else is part of this group."}
+                                    ? "View believers and converts in this fellowship." 
+                                    : "Join the fellowship to access the member directory."}
                              </CardDescription>
                         </CardHeader>
                         <CardContent>
                            {(isMember || isOrganizer) ? (
-                               membersLoading ? (
-                                   <div className="flex justify-center py-8"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>
-                               ) : members && members.length > 0 ? (
-                                   <ScrollArea className="h-96 pr-4">
-                                       <div className="space-y-4">
-                                           {members.map(member => (
-                                               <div key={member.id} className="flex items-center gap-4 p-2 rounded-lg border bg-muted/20">
-                                                   <Avatar>
-                                                       <AvatarImage src={member.photoURL} />
-                                                       <AvatarFallback>{member.firstName?.charAt(0)}</AvatarFallback>
-                                                   </Avatar>
-                                                   <div className="flex-1 min-w-0">
-                                                       <p className="font-semibold truncate">{member.firstName} {member.lastName}</p>
-                                                       {member.userId === fellowship.organizerId && (
-                                                           <Badge variant="secondary" className="text-[10px] h-4">Organizer</Badge>
-                                                       )}
-                                                   </div>
-                                                   <Button asChild variant="ghost" size="sm">
-                                                       <Link href={`/dashboard/profile/${member.userId}`}>Profile</Link>
-                                                   </Button>
-                                               </div>
-                                           ))}
-                                       </div>
-                                   </ScrollArea>
-                               ) : (
-                                   <p className="text-sm text-muted-foreground text-center py-8">No members found.</p>
-                               )
+                               <Tabs defaultValue="believers">
+                                    <TabsList className="grid w-full grid-cols-2 mb-4">
+                                        <TabsTrigger value="believers">Believers ({members?.length || 0})</TabsTrigger>
+                                        <TabsTrigger value="souls">Assigned Souls ({assignedSouls?.length || 0})</TabsTrigger>
+                                    </TabsList>
+                                    <TabsContent value="believers">
+                                        {membersLoading ? (
+                                            <div className="flex justify-center py-8"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>
+                                        ) : members && members.length > 0 ? (
+                                            <ScrollArea className="h-96 pr-4">
+                                                <div className="space-y-4">
+                                                    {members.map(member => (
+                                                        <div key={member.id} className="flex items-center gap-4 p-3 rounded-lg border bg-muted/20">
+                                                            <Avatar>
+                                                                <AvatarImage src={member.photoURL} />
+                                                                <AvatarFallback>{member.firstName?.charAt(0)}</AvatarFallback>
+                                                            </Avatar>
+                                                            <div className="flex-1 min-w-0">
+                                                                <p className="font-semibold truncate">{member.firstName} {member.lastName}</p>
+                                                                {member.userId === fellowship.organizerId && (
+                                                                    <Badge variant="secondary" className="text-[10px] h-4">Organizer</Badge>
+                                                                )}
+                                                            </div>
+                                                            <Button asChild variant="ghost" size="sm">
+                                                                <Link href={`/dashboard/profile/${member.userId}`}>Profile</Link>
+                                                            </Button>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </ScrollArea>
+                                        ) : (
+                                            <p className="text-sm text-muted-foreground text-center py-8">No believers found.</p>
+                                        )}
+                                    </TabsContent>
+                                    <TabsContent value="souls">
+                                        {soulsLoading ? (
+                                            <div className="flex justify-center py-8"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>
+                                        ) : assignedSouls && assignedSouls.length > 0 ? (
+                                            <ScrollArea className="h-96 pr-4">
+                                                <div className="space-y-4">
+                                                    {assignedSouls.map(soul => (
+                                                        <div key={soul.id} className="flex items-center gap-4 p-3 rounded-lg border bg-primary/5 border-primary/10">
+                                                            <Avatar>
+                                                                <AvatarFallback><Heart className="h-4 w-4 text-primary" /></AvatarFallback>
+                                                            </Avatar>
+                                                            <div className="flex-1 min-w-0">
+                                                                <p className="font-semibold truncate">{soul.firstName} {soul.lastName}</p>
+                                                                <p className="text-xs text-muted-foreground">Status: <span className="font-medium text-primary">{soul.status}</span></p>
+                                                            </div>
+                                                            <Button asChild variant="outline" size="sm">
+                                                                <Link href="/dashboard/souls-won">Follow-up</Link>
+                                                            </Button>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </ScrollArea>
+                                        ) : (
+                                            <div className="p-8 text-center bg-muted/30 rounded-lg border-2 border-dashed">
+                                                <p className="text-sm text-muted-foreground italic">No souls have been assigned to this fellowship yet.</p>
+                                            </div>
+                                        )}
+                                    </TabsContent>
+                               </Tabs>
                            ) : (
-                               <div className="p-8 text-center bg-muted/30 rounded-lg border-2 border-dashed">
-                                   <p className="text-sm text-muted-foreground italic">List is restricted to fellowship members.</p>
+                               <div className="p-12 text-center bg-muted/30 rounded-lg border-2 border-dashed">
+                                   <Users className="h-10 w-10 text-muted-foreground/30 mx-auto mb-4" />
+                                   <p className="text-sm text-muted-foreground italic">The member directory is only visible to people who have joined this fellowship.</p>
                                </div>
                            )}
                         </CardContent>
