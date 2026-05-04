@@ -206,6 +206,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
             const permissionError = new FirestorePermissionError({
                 path: `users/${user.uid}`,
                 operation: 'update',
+                requestResourceData: values,
             }, user);
             errorEmitter.emit('permission-error', permissionError);
          } else {

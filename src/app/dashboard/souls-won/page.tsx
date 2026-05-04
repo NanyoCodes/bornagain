@@ -181,7 +181,7 @@ export default function SoulsWonPage() {
                 type: 'new_soul_in_fellowship',
                 title: `New Member in ${selectedFellowship.name}`,
                 message: `${soul.firstName} ${soul.lastName} was assigned to your fellowship. Please reach out to them${contactInfo ? ` at ${contactInfo}` : ''}.`,
-                link: `/dashboard/fellowship/${selectedFellowship.id}`,
+                link: `/dashboard/fellowship`,
                 isRead: false,
                 createdAt: serverTimestamp(),
             });
@@ -262,7 +262,7 @@ export default function SoulsWonPage() {
     if (!soul) return;
     const headers = ["Logged By", "First Name", "Last Name", "Email", "Phone", "Church", "Location Won", "Date Won", "Source", "Source Details", "Status", "Attending Church", "In Bible Study", "Attending Prayer", "In Service Dept.", "Follow Up History"];
     const followUpHistoryString = soul.followUpLog && soul.followUpLog.length > 0
-        ? [...soul.followUpLog].sort((a, b) => (safeToDate(a.date)?.getTime() ?? 0) - (safeToDate(b.date)?.getTime() ?? 0)).map(log => {
+        ? [...soul.followUpLog].sort((a, b) => (safeToDate(a.date)?.getTime() ?? 0) - (safeToDate(a.date)?.getTime() ?? 0)).map(log => {
                 const date = log.date?.toDate ? format(log.date.toDate(), 'yyyy-MM-dd') : 'N/A';
                 const note = log.note || '';
                 const actions = log.actions && log.actions.length > 0 ? `Actions: ${log.actions.join(', ')}` : '';

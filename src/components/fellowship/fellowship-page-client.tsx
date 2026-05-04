@@ -5,7 +5,7 @@ import { useRouter, useParams } from 'next/navigation';
 import { useDoc, useFirestore, useUser, useCollection } from '@/firebase';
 import type { Fellowship, UserProfile, FellowshipMember, Soul } from '@/lib/types';
 import { doc, collection, query, orderBy, where } from 'firebase/firestore';
-import { Loader2, ArrowLeft, Users, Calendar, PlayCircle, MapPin, UserCheck2, Heart, Phone, Mail, Church } from 'lucide-react';
+import { Loader2, ArrowLeft, Users, Calendar, PlayCircle, MapPin, UserCheck2, Heart, Phone, Mail, Church, History, PlusCircle } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
@@ -18,6 +18,9 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '
 import { useIsMobile } from '@/hooks/use-mobile';
 import { format } from 'date-fns';
 import { safeToDate, cn } from '@/lib/utils';
+import { LogFollowUpDialog } from '@/components/souls/log-follow-up-dialog';
+import { actionItems } from '@/lib/follow-up-data';
+import { Separator } from '@/components/ui/separator';
 
 export default function FellowshipPageClient() {
     const router = useRouter();
@@ -29,6 +32,7 @@ export default function FellowshipPageClient() {
 
     const [selectedSoul, setSelectedSoul] = useState<Soul | null>(null);
     const [isSoulDetailsOpen, setIsSoulDetailsOpen] = useState(false);
+    const [isLogFollowUpOpen, setIsLogFollowUpOpen] = useState(false);
 
     const fellowshipDocRef = useMemo(() => {
         if (!firestore || !fellowshipId) return null;
@@ -66,6 +70,10 @@ export default function FellowshipPageClient() {
 
     const loading = fellowshipLoading || organizerLoading;
 
+    const handleLogFollowUp = () => {
+        setIsLogFollowUpOpen(true);
+    };
+
     if (loading) {
         return (
             <div className="flex items-center justify-center h-full">
@@ -95,10 +103,14 @@ export default function FellowshipPageClient() {
               <Avatar className="h-14 w-14 border-2">
                   <AvatarFallback className="text-lg">{selectedSoul.firstName?.charAt(0)}{selectedSoul.lastName?.charAt(0)}</AvatarFallback>
               </Avatar>
-              <div>
-                  <h3 className="text-xl font-bold font-headline">{selectedSoul.firstName} {selectedSoul.lastName}</h3>
+              <div className="flex-1 min-w-0">
+                  <h3 className="text-xl font-bold font-headline truncate">{selectedSoul.firstName} {selectedSoul.lastName}</h3>
                   <Badge className="mt-1" variant="secondary">{selectedSoul.status}</Badge>
               </div>
+              <Button onClick={handleLogFollowUp} size="sm">
+                  <PlusCircle className="mr-2 h-4 w-4" />
+                  Log
+              </Button>
           </div>
 
           <div className="grid gap-4">
@@ -137,6 +149,40 @@ export default function FellowshipPageClient() {
                           <Heart className={cn("h-4 w-4", selectedSoul.inBibleStudy ? "text-green-500" : "text-muted-foreground")} />
                           Bible Study
                       </div>
+                  </div>
+              </div>
+
+              <div className="space-y-3">
+                  <h4 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+                      <History className="h-4 w-4" /> Follow-up History
+                  </h4>
+                  <div className="border rounded-lg bg-muted/10">
+                      {selectedSoul.followUpLog && selectedSoul.followUpLog.length > 0 ? (
+                          <div className="divide-y max-h-60 overflow-y-auto">
+                              {[...selectedSoul.followUpLog].reverse().map((log, i) => {
+                                  const date = safeToDate(log.date);
+                                  return (
+                                      <div key={i} className="p-3 text-xs space-y-1">
+                                          <div className="flex justify-between items-center text-muted-foreground">
+                                              <span className="font-semibold">{date ? format(date, 'PPP') : 'N/A'}</span>
+                                              <span>{date ? format(date, 'p') : ''}</span>
+                                          </div>
+                                          {log.actions && log.actions.length > 0 && (
+                                              <div className="flex flex-wrap gap-1 py-1">
+                                                  {log.actions.map(id => {
+                                                      const action = actionItems.find(a => a.id === id);
+                                                      return action ? <Badge key={id} variant="outline" className="text-[9px] px-1 h-4">{action.label}</Badge> : null;
+                                                  })}
+                                              </div>
+                                          )}
+                                          {log.note && <p className="italic text-muted-foreground leading-relaxed">&ldquo;{log.note}&rdquo;</p>}
+                                      </div>
+                                  );
+                              })}
+                          </div>
+                      ) : (
+                          <p className="text-center py-6 text-sm text-muted-foreground italic">No follow-up history yet.</p>
+                      )}
                   </div>
               </div>
 
@@ -337,6 +383,16 @@ export default function FellowshipPageClient() {
                   </DialogContent>
               </Dialog>
             )}
+
+            <LogFollowUpDialog 
+                soul={selectedSoul}
+                isOpen={isLogFollowUpOpen}
+                onOpenChange={setIsLogFollowUpOpen}
+                onFollowUpLogged={() => {
+                    setIsLogFollowUpOpen(false);
+                    // No need to close the details dialog, just let the history update via firestore listener if any
+                }}
+            />
         </div>
     );
 }
