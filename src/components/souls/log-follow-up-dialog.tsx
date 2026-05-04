@@ -103,11 +103,9 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
     
     setIsLoading(true);
 
-    // CRITICAL: use soul.userId instead of user.uid to ensure correct path for collective tracking
     const soulRef = doc(firestore, `users/${soul.userId}/souls`, soul.id);
     const globalSoulRef = doc(firestore, 'souls', soul.id);
 
-    // CRITICAL: use new Date() as serverTimestamp() is invalid inside arrays
     const newLogEntry: FollowUpLogItem = {
         date: new Date() as any, 
         note: values.note || '',
