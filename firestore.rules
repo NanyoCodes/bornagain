@@ -16,7 +16,12 @@ service cloud.firestore {
     }
 
     function isFellowshipMember(fellowshipId) {
-      return request.auth != null && fellowshipId != null && 
+      return request.auth != null && 
+             fellowshipId != null && 
+             fellowshipId is string && 
+             fellowshipId != "" && 
+             fellowshipId != "none" &&
+             exists(/databases/$(database)/documents/fellowships/$(fellowshipId)) &&
              request.auth.uid in get(/databases/$(database)/documents/fellowships/$(fellowshipId)).data.memberIds;
     }
 
@@ -41,8 +46,7 @@ service cloud.firestore {
           request.resource.data.accountabilityPartners.size() == resource.data.accountabilityPartners.size() - 1
         ) ||
         
-        // A user can ADD a partner to their OWN list. This is safe because it's only called in a transaction
-        // that also updates the other user's list, which IS strictly validated against a pending request.
+        // A user can ADD a partner to their OWN list.
         (
           isOwner(userId) &&
           request.resource.data.diff(resource.data).affectedKeys().hasOnly(['accountabilityPartners', 'partnerIds']) &&
@@ -82,9 +86,10 @@ service cloud.firestore {
 
       // Souls are private to the user, or accessible by assigned fellowship members.
       match /souls/{soulId} {
-        allow read: if isOwner(userId) || isFellowshipMember(resource.data.fellowshipId);
+        allow read: if isOwner(userId) || isFellowshipMember(data.fellowshipId) || isFellowshipMember(resource.data.fellowshipId);
         allow create: if isOwner(userId);
-        allow update: if isOwner(userId) || isFellowshipMember(resource.data.fellowshipId);
+        // Allow fellowship members to update spiritual progress and logs
+        allow update: if request.auth != null && (isOwner(userId) || isFellowshipMember(data.fellowshipId));
       }
       
       // Joined campaigns are private to the user.
@@ -123,7 +128,8 @@ service cloud.firestore {
     match /souls/{soulId} {
       allow get, list: if request.auth != null;
       allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
-      allow update: if request.auth != null && (resource.data.userId == request.auth.uid || isFellowshipMember(resource.data.fellowshipId));
+      // Allow fellowship members to update spiritual progress and logs globally too
+      allow update: if request.auth != null && (data.userId == request.auth.uid || isFellowshipMember(data.fellowshipId));
     }
 
     // Testimonies are public, but only writable by the author.
@@ -202,7 +208,7 @@ service cloud.firestore {
         (
           request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participants']) &&
           request.resource.data.participants == resource.data.participants + 1 &&
-          (resource.data.maxParticipants == null || resource.data.participants < resource.data.maxParticipants)
+          (resource.data.maxParticipants == null || request.resource.data.participants <= resource.data.maxParticipants)
         )
       );
 
