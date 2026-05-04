@@ -8,6 +8,7 @@ import {
 } from '@/components/ui/accordion';
 import { BookOpen, TrendingUp, UserPlus, Target, Newspaper, HeartHandshake, Share2, Users, Flame } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
+import { Button } from '@/components/ui/button';
 
 const tutorials = [
   {
@@ -140,13 +141,13 @@ export default function GuidePage() {
         <h3 className="font-bold text-lg mb-2">Ready to expand the Kingdom?</h3>
         <p className="text-sm text-muted-foreground mb-4">Sharing this tool with others helps build a stronger network of believers dedicated to the Great Commission.</p>
         <Button onClick={() => {
-          if (navigator.share) {
+          if (typeof navigator !== 'undefined' && navigator.share) {
             navigator.share({
               title: 'Join Testify - Global Evangelism Platform',
               text: 'Help us organize the harvest and track evangelism progress for the Kingdom of God.',
-              url: window.location.origin
+              url: typeof window !== 'undefined' ? window.location.origin : 'https://testifyglobal.com'
             });
-          } else {
+          } else if (typeof window !== 'undefined') {
             navigator.clipboard.writeText(window.location.origin);
             alert('App link copied to clipboard! Share it with your brethren.');
           }

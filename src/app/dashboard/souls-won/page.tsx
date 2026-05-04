@@ -50,7 +50,7 @@ export default function SoulsWonPage() {
   const [soulToAssign, setSoulToAssign] = useState<Soul | null>(null);
   const [isAssigning, setIsAssigning] = useState<string | null>(null);
 
-  // Stable data references to prevent "freeze" during dialog closing
+  // Persistent references for stable dialog content during transitions
   const activeEditSoul = useRef<Soul | null>(null);
   useEffect(() => { if (soulToEdit) activeEditSoul.current = soulToEdit; }, [soulToEdit]);
 
@@ -197,7 +197,6 @@ export default function SoulsWonPage() {
         setIsAssigning(null);
     }
   };
-
 
   const handleExport = (formatType: 'csv' | 'pdf') => {
     if (!filteredSouls || filteredSouls.length === 0) {
