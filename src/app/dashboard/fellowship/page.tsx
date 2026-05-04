@@ -176,7 +176,7 @@ function FellowshipForm({ userProfile, onFormSubmit, isSubmitting }: { userProfi
     );
 }
 
-const manageFormSchema = formSchema; // Use the same schema for management
+const manageFormSchema = formSchema;
 
 function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting }: { fellowship: Fellowship, onFormSubmit: (values: z.infer<typeof manageFormSchema>) => void, isSubmitting: boolean }) {
   const form = useForm<z.infer<typeof manageFormSchema>>({
