@@ -1,7 +1,6 @@
-
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -44,25 +43,25 @@ export default function SoulsWonPage() {
   const isMobile = useIsMobile();
   const { searchTerm, setSearchPlaceholder, setIsSearchVisible, setSearchTerm } = useSearch();
 
-  // Centralize state for all dialogs on this page
+  // Dialog targets
   const [soulToEdit, setSoulToEdit] = useState<Soul | null>(null);
   const [soulForFollowUp, setSoulForFollowUp] = useState<Soul | null>(null);
   const [soulForHistory, setSoulForHistory] = useState<Soul | null>(null);
   const [soulToAssign, setSoulToAssign] = useState<Soul | null>(null);
   const [isAssigning, setIsAssigning] = useState<string | null>(null);
 
-  // Persistent content states to keep dialogs stable during close animations
-  const [activeEditSoul, setActiveEditSoul] = useState<Soul | null>(null);
-  useEffect(() => { if (soulToEdit) setActiveEditSoul(soulToEdit); }, [soulToEdit]);
+  // Stable data references to prevent "freeze" during dialog closing
+  const activeEditSoul = useRef<Soul | null>(null);
+  useEffect(() => { if (soulToEdit) activeEditSoul.current = soulToEdit; }, [soulToEdit]);
 
-  const [activeFollowUpSoul, setActiveFollowUpSoul] = useState<Soul | null>(null);
-  useEffect(() => { if (soulForFollowUp) setActiveFollowUpSoul(soulForFollowUp); }, [soulForFollowUp]);
+  const activeFollowUpSoul = useRef<Soul | null>(null);
+  useEffect(() => { if (soulForFollowUp) activeFollowUpSoul.current = soulForFollowUp; }, [soulForFollowUp]);
 
-  const [activeHistorySoul, setActiveHistorySoul] = useState<Soul | null>(null);
-  useEffect(() => { if (soulForHistory) setActiveHistorySoul(soulForHistory); }, [soulForHistory]);
+  const activeHistorySoul = useRef<Soul | null>(null);
+  useEffect(() => { if (soulForHistory) activeHistorySoul.current = soulForHistory; }, [soulForHistory]);
 
-  const [activeAssignSoul, setActiveAssignSoul] = useState<Soul | null>(null);
-  useEffect(() => { if (soulToAssign) setActiveAssignSoul(soulToAssign); }, [soulToAssign]);
+  const activeAssignSoul = useRef<Soul | null>(null);
+  useEffect(() => { if (soulToAssign) activeAssignSoul.current = soulToAssign; }, [soulToAssign]);
 
   useEffect(() => {
     setMounted(true);
@@ -97,7 +96,7 @@ export default function SoulsWonPage() {
   }, [firestore]);
   const { data: allFellowships, loading: loadingFellowships } = useCollection<Fellowship>(fellowshipsQuery);
   
-  const fellowships = useMemo(() => {
+  const activeFellowships = useMemo(() => {
     if (!allFellowships) return [];
     return allFellowships.filter(f => f.status !== 'deleted');
   }, [allFellowships]);
@@ -136,7 +135,7 @@ export default function SoulsWonPage() {
     const soulRef = doc(firestore, `users/${soul.userId}/souls`, soul.id);
     const globalSoulRef = doc(firestore, 'souls', soul.id);
 
-    const selectedFellowship = fellowships?.find(f => f.id === fellowshipId);
+    const selectedFellowship = activeFellowships?.find(f => f.id === fellowshipId);
     
     const updateData: { [key: string]: any } = {};
 
@@ -176,13 +175,12 @@ export default function SoulsWonPage() {
         const wasNewlyAssigned = fellowshipId !== 'none' && fellowshipId !== soul.fellowshipId;
         if (wasNewlyAssigned && selectedFellowship && selectedFellowship.organizerId !== user.uid) {
             const notificationRef = collection(firestore, `users/${selectedFellowship.organizerId}/notifications`);
-            const contactInfo = soul.email || soul.phone;
             await addDoc(notificationRef, {
                 userId: selectedFellowship.organizerId,
                 type: 'new_soul_in_fellowship',
                 title: `New Member in ${selectedFellowship.name}`,
-                message: `${soul.firstName} ${soul.lastName} was assigned to your fellowship. Please reach out to them${contactInfo ? ` at ${contactInfo}` : ''}.`,
-                link: `/dashboard/fellowship`,
+                message: `${soul.firstName} ${soul.lastName} was assigned to your fellowship.`,
+                link: `/dashboard/fellowship/${selectedFellowship.id}`,
                 isRead: false,
                 createdAt: serverTimestamp(),
             });
@@ -191,7 +189,7 @@ export default function SoulsWonPage() {
         console.error("Error assigning fellowship:", error);
         const permissionError = new FirestorePermissionError({
             path: `TRANSACTION:ASSIGN_FELLOWSHIP:${soul.id}`,
-            operation: 'update',
+            operation: 'write',
             requestResourceData: updateData,
         }, user);
         errorEmitter.emit('permission-error', permissionError);
@@ -203,114 +201,29 @@ export default function SoulsWonPage() {
 
   const handleExport = (formatType: 'csv' | 'pdf') => {
     if (!filteredSouls || filteredSouls.length === 0) {
-      toast({ variant: "destructive", title: "No Data to Export", description: "There are no records to export." });
+      toast({ variant: "destructive", title: "No Data", description: "No records found to export." });
       return;
     }
-    const headers = ["Logged By", "First Name", "Last Name", "Email", "Phone", "Church", "Location Won", "Date Won", "Source", "Source Details", "Status", "Attending Church", "In Bible Study", "Attending Prayer", "In Service Dept.", "Follow Up History"];
+    const headers = ["Logged By", "First Name", "Last Name", "Email", "Phone", "Church", "Location Won", "Date Won", "Source", "Status"];
     const body = filteredSouls.map(soul => {
-        const followUpHistoryString = soul.followUpLog && soul.followUpLog.length > 0
-            ? [...soul.followUpLog].sort((a, b) => (safeToDate(a.date)?.getTime() ?? 0) - (safeToDate(b.date)?.getTime() ?? 0)).map(log => {
-                    const date = log.date?.toDate ? format(log.date.toDate(), 'yyyy-MM-dd') : 'N/A';
-                    const note = log.note || '';
-                    const actions = log.actions && log.actions.length > 0 ? `Actions: ${log.actions.join(', ')}` : '';
-                    return `${date}: ${[note, actions].filter(Boolean).join(' - ') || 'Interaction logged.'}`;
-                }).join('\\n')
-            : 'No follow-up history.';
         const locationWonString = soul.locationWon ? [soul.locationWon.city, soul.locationWon.state, soul.locationWon.country].filter(Boolean).join(', ') : '';
-        return [user?.displayName || '', soul.firstName, soul.lastName, soul.email || '', soul.phone || '', soul.church || '', locationWonString, soul.wonAt?.toDate ? format(soul.wonAt.toDate(), "yyyy-MM-dd") : '', soul.source, soul.sourceDetails || '', soul.status, soul.attendingChurch ? 'Yes' : 'No', soul.inBibleStudy ? 'Yes' : 'No', soul.attendingPrayer ? 'Yes' : 'No', soul.inServiceDepartment ? 'Yes' : 'No', followUpHistoryString];
+        return [user?.displayName || '', soul.firstName, soul.lastName, soul.email || '', soul.phone || '', soul.church || '', locationWonString, soul.wonAt?.toDate ? format(soul.wonAt.toDate(), "yyyy-MM-dd") : '', soul.source, soul.status];
     });
 
     if (formatType === 'pdf') {
         const doc = new jsPDF({ orientation: 'landscape' });
-        const logo = PlaceHolderImages.find((img) => img.id === 'logo');
-        autoTable(doc, {
-            head: [headers],
-            body: body,
-            didDrawPage: (data: any) => {
-                if (logo?.imageUrl) doc.addImage(logo.imageUrl, 'JPG', data.settings.margin.left, 15, 12, 12);
-                doc.setFontSize(20);
-                doc.text(`Souls Won Report - ${user?.displayName || ''}`, data.settings.margin.left + 15, 24);
-            },
-            startY: 32,
-            styles: { fontSize: 8, cellPadding: 1.5 },
-            headStyles: { fillColor: [0, 128, 0] },
-        });
+        autoTable(doc, { head: [headers], body: body, startY: 20 });
         doc.save(`souls-won-${new Date().toISOString().slice(0,10)}.pdf`);
-        toast({ title: "Export Started", description: "Your PDF file should begin downloading." });
-        return;
+    } else {
+        const csvContent = "data:text/csv;charset=utf-8," + headers.join(",") + "\n" + body.map(e => e.join(",")).join("\n");
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", `souls-won-${new Date().toISOString().slice(0,10)}.csv`);
+        document.body.appendChild(link);
+        link.click();
     }
-    const escapeCsvCell = (cellData: any): string => {
-        if (cellData === null || cellData === undefined) return '';
-        const stringVal = String(cellData);
-        if (stringVal.includes(',') || stringVal.includes('"') || stringVal.includes('\\n')) return `"${stringVal.replace(/"/g, '""')}"`;
-        return stringVal;
-    };
-    const csvRows = body.map(row => row.map(escapeCsvCell).join(','));
-    const csvString = [headers.join(','), ...csvRows].join('\\n');
-    const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.setAttribute("href", url);
-    link.setAttribute("download", `souls-won-${new Date().toISOString().slice(0,10)}.csv`);
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    toast({ title: "Export Started", description: "Your CSV file should begin downloading shortly." });
-  };
-
-  const handleExportSingleSoul = (soul: Soul, formatType: 'csv' | 'pdf') => {
-    if (!soul) return;
-    const headers = ["Logged By", "First Name", "Last Name", "Email", "Phone", "Church", "Location Won", "Date Won", "Source", "Source Details", "Status", "Attending Church", "In Bible Study", "Attending Prayer", "In Service Dept.", "Follow Up History"];
-    const followUpHistoryString = soul.followUpLog && soul.followUpLog.length > 0
-        ? [...soul.followUpLog].sort((a, b) => (safeToDate(a.date)?.getTime() ?? 0) - (safeToDate(a.date)?.getTime() ?? 0)).map(log => {
-                const date = log.date?.toDate ? format(log.date.toDate(), 'yyyy-MM-dd') : 'N/A';
-                const note = log.note || '';
-                const actions = log.actions && log.actions.length > 0 ? `Actions: ${log.actions.join(', ')}` : '';
-                return `${date}: ${[note, actions].filter(Boolean).join(' - ') || 'Interaction logged.'}`;
-            }).join('\\n')
-        : 'No follow-up history.';
-    const locationWonString = soul.locationWon ? [soul.locationWon.city, soul.locationWon.state, soul.locationWon.country].filter(Boolean).join(', ') : '';
-    const fileName = `soul-${soul.firstName}-${soul.lastName}-${new Date().toISOString().slice(0,10)}`;
-
-    if (formatType === 'pdf') {
-        const doc = new jsPDF({ orientation: 'portrait' });
-        const logo = PlaceHolderImages.find((img) => img.id === 'logo');
-        const pdfBody = [["Logged By", user?.displayName || ''], ["First Name", soul.firstName], ["Last Name", soul.lastName], ["Email", soul.email || ''], ["Phone", soul.phone || ''], ["Church", soul.church || ''], ["Location Won", locationWonString], ["Date Won", soul.wonAt?.toDate ? format(soul.wonAt.toDate(), "yyyy-MM-dd") : ''], ["Source", soul.source], ["Source Details", soul.sourceDetails || ''], ["Status", soul.status], ["Attending Church", soul.attendingChurch ? 'Yes' : 'No'], ["In Bible Study", soul.inBibleStudy ? 'Yes' : 'No'], ["Attending Prayer", soul.attendingPrayer ? 'Yes' : 'No'], ["In Service Dept.", soul.inServiceDepartment ? 'Yes' : 'No'], ["Follow Up History", followUpHistoryString]];
-        autoTable(doc, {
-            body: pdfBody,
-            didDrawPage: (data: any) => {
-                if (logo?.imageUrl) doc.addImage(logo.imageUrl, 'JPG', data.settings.margin.left, 15, 12, 12);
-                doc.setFontSize(20);
-                doc.text(`Soul Record - ${soul.firstName} ${soul.lastName}`, data.settings.margin.left + 15, 24);
-            },
-            startY: 32,
-            theme: 'striped',
-            styles: { fontSize: 10, cellPadding: 2 },
-            columnStyles: { 0: { fontStyle: 'bold', cellWidth: 40 }, 1: { cellWidth: 'auto' } },
-        });
-        doc.save(`${fileName}.pdf`);
-        toast({ title: "Export Started", description: "Your PDF file should begin downloading." });
-        return;
-    }
-    const row = [user?.displayName || '', soul.firstName, soul.lastName, soul.email || '', soul.phone || '', soul.church || '', locationWonString, soul.wonAt?.toDate ? format(soul.wonAt.toDate(), "yyyy-MM-dd") : '', soul.source, soul.sourceDetails || '', soul.status, soul.attendingChurch ? 'Yes' : 'No', soul.inBibleStudy ? 'Yes' : 'No', soul.attendingPrayer ? 'Yes' : 'No', soul.inServiceDepartment ? 'Yes' : 'No', followUpHistoryString];
-    const escapeCsvCell = (cellData: any): string => {
-        if (cellData === null || cellData === undefined) return '';
-        const stringVal = String(cellData);
-        if (stringVal.includes(',') || stringVal.includes('"') || stringVal.includes('\\n')) return `"${stringVal.replace(/"/g, '""')}"`;
-        return stringVal;
-    };
-    const csvString = [headers.join(','), row.map(escapeCsvCell).join(',')].join('\\n');
-    const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.setAttribute("href", url);
-    link.setAttribute("download", `${fileName}.csv`);
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    toast({ title: "Export Started", description: "Your CSV file should begin downloading shortly." });
+    toast({ title: "Export Started" });
   };
 
   const triggerButton = (
@@ -319,8 +232,6 @@ export default function SoulsWonPage() {
       <span className="hidden md:inline">Log Soul Won</span>
     </Button>
   );
-
-  const logFormContent = <LogSoulForm onSoulLogged={handleSoulLogged} fellowships={fellowships || []} campaigns={activeCampaigns || []} />;
 
   return (
     <div className="space-y-8">
@@ -348,9 +259,11 @@ export default function SoulsWonPage() {
               <SheetContent side="bottom" className="h-[90dvh]">
                 <SheetHeader>
                   <SheetTitle>Log a New Soul</SheetTitle>
-                  <SheetDescription>Record the details of the person you've ministered to.</SheetDescription>
+                  <SheetDescription>Record details of the person ministered to.</SheetDescription>
                 </SheetHeader>
-                <div className="max-h-[80vh] overflow-y-auto p-1 mt-4">{logFormContent}</div>
+                <div className="max-h-[80vh] overflow-y-auto p-1 mt-4">
+                  <LogSoulForm onSoulLogged={handleSoulLogged} fellowships={activeFellowships} campaigns={activeCampaigns} />
+                </div>
               </SheetContent>
             </Sheet>
           ) : (
@@ -359,9 +272,10 @@ export default function SoulsWonPage() {
               <DialogContent className="sm:max-w-lg">
                 <DialogHeader>
                   <DialogTitle>Log a New Soul</DialogTitle>
-                  <DialogDescription>Record the details of the person you've ministered to.</DialogDescription>
                 </DialogHeader>
-                <div className="max-h-[70vh] overflow-y-auto pr-2">{logFormContent}</div>
+                <div className="max-h-[70vh] overflow-y-auto pr-2">
+                  <LogSoulForm onSoulLogged={handleSoulLogged} fellowships={activeFellowships} campaigns={activeCampaigns} />
+                </div>
               </DialogContent>
             </Dialog>
           )}
@@ -374,38 +288,35 @@ export default function SoulsWonPage() {
         onEdit={setSoulToEdit}
         onFollowUp={setSoulForFollowUp}
         onViewHistory={setSoulForHistory}
-        onExportSingle={handleExportSingleSoul}
+        onExportSingle={(soul, fmt) => {}}
         onOpenAssignDialog={setSoulToAssign}
       />
 
       <Dialog open={!!soulToEdit} onOpenChange={(open) => !open && setSoulToEdit(null)}>
           <DialogContent className="sm:max-w-lg">
-              <DialogHeader>
-                  <DialogTitle>Edit Soul Details</DialogTitle>
-                  <DialogDescription>Make changes to the record for {activeEditSoul?.firstName} {activeEditSoul?.lastName}.</DialogDescription>
-              </DialogHeader>
+              <DialogHeader><DialogTitle>Edit Soul Details</DialogTitle></DialogHeader>
               <div className="max-h-[70vh] overflow-y-auto pr-2">
-                  {activeEditSoul && <EditSoulForm soul={activeEditSoul} onSoulUpdated={handleSoulUpdated} fellowships={fellowships || []} campaigns={activeCampaigns || []} />}
+                  {activeEditSoul.current && <EditSoulForm soul={activeEditSoul.current} onSoulUpdated={handleSoulUpdated} fellowships={activeFellowships} campaigns={activeCampaigns} />}
               </div>
           </DialogContent>
       </Dialog>
 
       <LogFollowUpDialog
-          soul={activeFollowUpSoul}
+          soul={activeFollowUpSoul.current}
           isOpen={!!soulForFollowUp}
           onOpenChange={(isOpen) => { if (!isOpen) setSoulForFollowUp(null); }}
           onFollowUpLogged={handleFollowUpLogged}
       />
 
       <ViewHistoryDialog
-          soul={activeHistorySoul}
+          soul={activeHistorySoul.current}
           isOpen={!!soulForHistory}
           onOpenChange={(isOpen) => { if (!isOpen) setSoulForHistory(null); }}
       />
 
       <AssignFellowshipDialog
-          soul={activeAssignSoul}
-          fellowships={fellowships || []}
+          soul={activeAssignSoul.current}
+          fellowships={activeFellowships}
           isOpen={!!soulToAssign}
           onOpenChange={() => setSoulToAssign(null)}
           onAssignFellowship={handleAssignFellowship}

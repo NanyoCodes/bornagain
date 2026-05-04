@@ -1,4 +1,3 @@
-
 "use client";
 
 import * as React from "react";
@@ -39,11 +38,11 @@ const getStatusClasses = (status: FollowUpStatus | undefined): string => {
     if (!status) return 'bg-secondary text-secondary-foreground border-border';
     switch (status) {
         case 'New':
-            return 'bg-[hsl(var(--status-new)/0.1)] text-[hsl(var(--status-new))] border-[hsl(var(--status-new)/0.2)]';
+            return 'bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-500';
         case 'Contacted':
-            return 'bg-[hsl(var(--status-contacted)/0.1)] text-[hsl(var(--status-contacted))] border-[hsl(var(--status-contacted)/0.2)]';
+            return 'bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-500';
         case 'Established':
-            return 'bg-[hsl(var(--status-established)/0.1)] text-[hsl(var(--status-established))] border-[hsl(var(--status-established)/0.2)]';
+            return 'bg-green-100 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-500';
         default:
             return 'bg-secondary text-secondary-foreground border-border';
     }
@@ -85,7 +84,7 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
     if (isOpen && soul) {
       form.reset({
         note: '',
-        status: soul.status,
+        status: soul.status || 'New',
         attendingChurch: soul.attendingChurch || false,
         inBibleStudy: soul.inBibleStudy || false,
         attendingPrayer: soul.attendingPrayer || false,
@@ -96,17 +95,14 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
   }, [isOpen, soul, form]);
 
   async function onSubmit(values: z.infer<typeof logFollowUpFormSchema>) {
-    if (!user || !firestore || !soul) {
-      toast({ variant: 'destructive', title: 'Error' });
-      return;
-    }
+    if (!user || !firestore || !soul) return;
     
     setIsLoading(true);
 
     const soulRef = doc(firestore, `users/${soul.userId}/souls`, soul.id);
     const globalSoulRef = doc(firestore, 'souls', soul.id);
 
-    // CRITICAL: Must use client-side date inside arrayUnion as serverTimestamp() is not supported in arrays
+    // Use client-side Date inside arrayUnion
     const newLogEntry = {
         date: new Date(), 
         note: values.note || '',
@@ -130,27 +126,16 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
 
         await batch.commit();
 
-        toast({
-            title: 'Follow-up Logged',
-            description: `A new entry has been added for ${soul.firstName} ${soul.lastName}.`,
-        });
+        toast({ title: 'Follow-up Logged' });
         onFollowUpLogged();
     } catch (err: any) {
         console.error("Failed to log follow-up:", err);
-        if (err.code === 'permission-denied' || err.code === 'not-found') {
-            const permissionError = new FirestorePermissionError({
-                path: soulRef.path,
-                operation: 'update',
-                requestResourceData: updatePayload,
-            }, user);
-            errorEmitter.emit('permission-error', permissionError);
-        } else {
-            toast({
-                variant: "destructive",
-                title: "Update Failed",
-                description: err.message || "Could not log follow-up.",
-            });
-        }
+        const permissionError = new FirestorePermissionError({
+            path: soulRef.path,
+            operation: 'update',
+            requestResourceData: updatePayload,
+        }, user);
+        errorEmitter.emit('permission-error', permissionError);
     } finally {
         setIsLoading(false);
     }
@@ -166,7 +151,7 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
                     <FormItem>
                         <FormLabel>Notes</FormLabel>
                         <FormControl>
-                            <Textarea placeholder="e.g., They are struggling with..." {...field} className="text-base" />
+                            <Textarea placeholder="How was the interaction? What is the current prayer point?" {...field} className="text-base" />
                         </FormControl>
                         <FormMessage />
                     </FormItem>
@@ -204,9 +189,6 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
                             name="actions"
                             render={() => (
                                 <FormItem className="space-y-3 pt-4">
-                                    <FormDescription>
-                                        Select all relationship-building actions taken during this follow-up.
-                                    </FormDescription>
                                     <div className="grid grid-cols-2 gap-4">
                                         {actionItems.map((item) => (
                                         <FormField
@@ -249,33 +231,12 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
                      <AccordionTrigger className="text-sm font-medium">Progress Update</AccordionTrigger>
                      <AccordionContent>
                         <div className="space-y-1 pt-4">
-                             <p className="text-sm text-muted-foreground pb-2">
-                                Update their progress on key spiritual disciplines.
-                            </p>
                             <FormField
                                 control={form.control}
                                 name="attendingChurch"
                                 render={({ field }) => (
                                     <FormItem className="flex flex-row items-center justify-between rounded-md p-2 -mx-2 hover:bg-muted/50">
-                                        <div>
-                                            <FormLabel className="font-normal flex items-center gap-2 cursor-pointer"><Church className="h-4 w-4" />Attending Church</FormLabel>
-                                            <FormMessage className="text-xs" />
-                                        </div>
-                                        <FormControl>
-                                            <Switch checked={field.value} onCheckedChange={field.onChange} />
-                                        </FormControl>
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="inServiceDepartment"
-                                render={({ field }) => (
-                                    <FormItem className="flex flex-row items-center justify-between rounded-md p-2 -mx-2 hover:bg-muted/50">
-                                        <div>
-                                            <FormLabel className="font-normal flex items-center gap-2 cursor-pointer"><Users className="h-4 w-4" />In Service Department</FormLabel>
-                                            <FormMessage className="text-xs" />
-                                        </div>
+                                        <FormLabel className="font-normal flex items-center gap-2 cursor-pointer"><Church className="h-4 w-4" />Attending Church</FormLabel>
                                         <FormControl>
                                             <Switch checked={field.value} onCheckedChange={field.onChange} />
                                         </FormControl>
@@ -294,12 +255,12 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
                                     </FormItem>
                                 )}
                             />
-                            <FormField
+                             <FormField
                                 control={form.control}
-                                name="attendingPrayer"
+                                name="inServiceDepartment"
                                 render={({ field }) => (
                                     <FormItem className="flex flex-row items-center justify-between rounded-md p-2 -mx-2 hover:bg-muted/50">
-                                        <FormLabel className="font-normal flex items-center gap-2 cursor-pointer"><Heart className="h-4 w-4" />Attending Prayer</FormLabel>
+                                        <FormLabel className="font-normal flex items-center gap-2 cursor-pointer"><Users className="h-4 w-4" />In Service Dept.</FormLabel>
                                         <FormControl>
                                             <Switch checked={field.value} onCheckedChange={field.onChange} />
                                         </FormControl>
@@ -325,7 +286,7 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
               <div className="p-6 border-b flex-shrink-0">
                 <SheetHeader className="text-left flex-shrink-0">
                     <SheetTitle>Log Follow-up: {soul.firstName}</SheetTitle>
-                    <SheetDescription>Record your interaction and update their progress.</SheetDescription>
+                    <SheetDescription>Nurture the seed and track progress.</SheetDescription>
                 </SheetHeader>
               </div>
               <div className="flex-grow overflow-y-auto px-6 py-4">
@@ -334,7 +295,7 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
               <div className="p-6 border-t flex-shrink-0">
                 <Button type="submit" form="log-follow-up-form" disabled={isLoading} className="w-full h-12 text-lg">
                     {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    Save Follow-up
+                    Save Log
                 </Button>
               </div>
             </>
@@ -345,15 +306,13 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => { if (!isLoading) { onOpenChange(open); } }}>
+    <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md flex flex-col max-h-[90vh]">
         {soul && (
           <>
             <DialogHeader>
                 <DialogTitle>Log Follow-up for {soul.firstName} {soul.lastName}</DialogTitle>
-                <DialogDescription>
-                    Record your interaction and update their progress.
-                </DialogDescription>
+                <DialogDescription>Record spiritual growth and interaction.</DialogDescription>
             </DialogHeader>
             <div className="flex-grow overflow-y-auto -mx-6 px-6">
                 {formBody}

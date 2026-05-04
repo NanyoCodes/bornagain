@@ -1,4 +1,3 @@
-
 'use client';
 
 import {
@@ -7,107 +6,154 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import { BookOpen, TrendingUp, UserPlus, Target, Newspaper, HeartHandshake } from 'lucide-react';
+import { BookOpen, TrendingUp, UserPlus, Target, Newspaper, HeartHandshake, Share2, Users, Flame } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 
 const tutorials = [
   {
+    id: 'kingdom-service',
+    title: 'Service to the Kingdom',
+    icon: Flame,
+    content: [
+      'Testify is more than an app; it is a digital tool for the Great Commission (Matthew 28:19).',
+      'Use this platform to organize your personal and community evangelism efforts with a spirit of excellence.',
+      'Remember: every soul logged represents a precious child of God returning home.',
+      'Encourage others by sharing the app with your church and fellow believers to mobilize the body of Christ.',
+    ],
+  },
+  {
     id: 'dashboard',
-    title: 'The Dashboard',
+    title: 'The Dashboard (Overview)',
     icon: TrendingUp,
     content: [
-      'Your main hub for an at-a-glance overview of your spiritual journey.',
-      'Complete your Daily Disciplines: Pray, Read the Bible, and Attend Church.',
+      'Your main hub for an at-a-glance overview of your spiritual journey and harvest progress.',
+      'Complete your Daily Disciplines: Pray, Read the Bible, and Attend Church to stay spiritually sharp.',
       'Track your evangelism progress with the monthly souls won chart and follow-up funnel.',
       'View your streaks for sharing testimonies and completing daily disciplines.',
-      'Quickly log a new soul or share a testimony.',
     ],
   },
   {
     id: 'souls-won',
-    title: 'Souls Won & Follow-up',
+    title: 'Harvest: Souls Won',
     icon: UserPlus,
     content: [
-      'This is your personal directory of every soul you lead to Christ.',
-      'Log new souls, edit their details, and track their progress from "New" to "Established".',
-      'Use the "Follow-up" action to log interactions like phone calls, Bible studies, or prayers.',
-      'View a complete interaction history for each person.',
-      'Use the AI-powered "Insights" feature to get suggestions for your next follow-up steps.',
-      'Export your data to CSV or PDF for your records.',
+      'Log every soul you lead to Christ to ensure they are nurtured and not forgotten.',
+      'Initial logging creates a record in your personal dashboard and the global Kingdom list.',
+      'Export your harvest data to CSV or PDF for church reporting or personal records.',
+      'Use AI-powered "Insights" to understand the best next steps for each person\'s spiritual growth.',
+    ],
+  },
+  {
+    id: 'fellowship-assignment',
+    title: 'Nurture: Fellowship Assignment',
+    icon: Users,
+    content: [
+      'A soul won is a seed planted; a Fellowship is where they are nurtured to grow.',
+      'On the Souls Won page, use the "Assign Fellowship" action to connect a convert to a local group.',
+      'Fellowships can be filtered by location (Country/State) to find the closest group for the convert.',
+      'Once assigned, the Fellowship Organizer is notified, and all group members gain access to help with follow-up.',
+    ],
+  },
+  {
+    id: 'collaborative-followup',
+    title: 'Growth: Collaborative Follow-up',
+    icon: HeartHandshake,
+    content: [
+      'Fellowship members can collaboratively track the progress of assigned souls.',
+      'Any authorized member can log an interaction (Shared a meal, Studied Bible, etc.).',
+      'All interactions are added to a "Collective History" visible to the whole group.',
+      'This ensures that the burden of discipleship is shared and progress is transparent.',
     ],
   },
   {
     id: 'campaigns',
-    title: 'Campaigns',
+    title: 'Mobilize: Campaigns',
     icon: Target,
     content: [
-      'Join or create soul-winning campaigns in your area or globally.',
-      'Use the filters to find ongoing, upcoming, or past campaigns.',
-      'Create your own campaign by setting a goal, location, date, and description.',
-      'Manage your campaigns: update details, add a live stream link, and view participants.',
-      'Start a group chat with all participants for easy coordination.',
+      'Join or create soul-winning campaigns to unite with other believers for mass outreach.',
+      'Set goals, locations, and inspirational scriptures to define your mission.',
+      'Use the Group Chat feature to coordinate logistics and share real-time updates.',
+      'Live stream your efforts to allow the global community to pray and watch with you.',
     ],
   },
   {
     id: 'testimonies',
-    title: 'Testimonies & Prayer',
+    title: 'Encourage: Testimonies & Prayer',
     icon: Newspaper,
     content: [
-      'Share your story of what God has done to encourage the community.',
-      'Read testimonies from others around the world.',
-      'Support others by reacting to their testimonies.',
-      'Submit confidential prayer requests for the community to pray over.',
-      'Pray for others by clicking the "Pray" button on their requests.',
+      'Overcome the enemy by the word of your testimony (Revelation 12:11).',
+      'Share what God has done in your life or during campaigns to ignite faith in others.',
+      'Submit prayer requests and join the community in lifting up the needs of the brethren.',
+      'Support testimonies with an "Amen!" to let others know you are standing with them.',
     ],
   },
   {
-    id: 'accountability',
-    title: 'Accountability Partners',
-    icon: HeartHandshake,
+    id: 'sharing',
+    title: 'Kingdom Expansion: Referral',
+    icon: Share2,
     content: [
-      'Find and connect with an accountability partner to stay motivated.',
-      'Search for users by name or email and send them a request.',
-      'Accept or decline incoming requests.',
-      'View your partner\'s daily discipline status to encourage them.',
-      'Send a "Nudge" to remind them to complete their disciplines.',
-      'Start a private chat with your partner directly from the accountability page.',
+      'The harvest is plentiful but the workers are few. Help us expand the workforce.',
+      'Refer the Testify app to your Pastors, youth leaders, and friends.',
+      'Use the sharing tools on Campaign and Testimony pages to spread the light of the Gospel.',
+      'Invite new converts to create their own accounts to begin tracking their disciplines.',
     ],
   },
 ];
 
 export default function GuidePage() {
   return (
-    <div className="space-y-8 max-w-3xl mx-auto">
+    <div className="space-y-8 max-w-3xl mx-auto pb-12">
       <div className="space-y-2">
         <h1 className="text-3xl font-bold tracking-tight font-headline flex items-center gap-3">
-          <BookOpen className="h-8 w-8" />
+          <BookOpen className="h-8 w-8 text-primary" />
           App Guide & Tutorials
         </h1>
-        <p className="text-muted-foreground">
-          Learn how to use the key features of the Testify app to maximize your impact.
+        <p className="text-muted-foreground italic">
+          Equipping you for every good work in service to the Kingdom of God.
         </p>
       </div>
       <Separator />
 
-      <Accordion type="single" collapsible className="w-full" defaultValue="dashboard">
+      <Accordion type="single" collapsible className="w-full" defaultValue="kingdom-service">
         {tutorials.map((tutorial) => (
-          <AccordionItem value={tutorial.id} key={tutorial.id}>
-            <AccordionTrigger className="text-lg">
+          <AccordionItem value={tutorial.id} key={tutorial.id} className="border rounded-lg px-4 mb-4 bg-card shadow-sm">
+            <AccordionTrigger className="text-lg hover:no-underline py-4">
               <div className="flex items-center gap-3">
-                <tutorial.icon className="h-5 w-5 text-primary" />
+                <div className="bg-primary/10 p-2 rounded-md">
+                  <tutorial.icon className="h-5 w-5 text-primary" />
+                </div>
                 {tutorial.title}
               </div>
             </AccordionTrigger>
             <AccordionContent>
-              <ul className="list-disc list-outside space-y-2 pl-6 text-sm text-muted-foreground">
+              <ul className="list-disc list-outside space-y-3 pl-6 text-sm text-muted-foreground py-2">
                 {tutorial.content.map((point, index) => (
-                  <li key={index}>{point}</li>
+                  <li key={index} className="leading-relaxed">{point}</li>
                 ))}
               </ul>
             </AccordionContent>
           </AccordionItem>
         ))}
       </Accordion>
+      
+      <div className="mt-12 p-6 rounded-xl bg-primary/5 border border-primary/20 text-center">
+        <h3 className="font-bold text-lg mb-2">Ready to expand the Kingdom?</h3>
+        <p className="text-sm text-muted-foreground mb-4">Sharing this tool with others helps build a stronger network of believers dedicated to the Great Commission.</p>
+        <Button onClick={() => {
+          if (navigator.share) {
+            navigator.share({
+              title: 'Join Testify - Global Evangelism Platform',
+              text: 'Help us organize the harvest and track evangelism progress for the Kingdom of God.',
+              url: window.location.origin
+            });
+          } else {
+            navigator.clipboard.writeText(window.location.origin);
+            alert('App link copied to clipboard! Share it with your brethren.');
+          }
+        }}>
+          <Share2 className="mr-2 h-4 w-4" /> Share App
+        </Button>
+      </div>
     </div>
   );
 }

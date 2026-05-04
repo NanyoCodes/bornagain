@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -345,9 +344,6 @@ export default function FellowshipPageClient() {
                                         Join Stream
                                     </Link>
                                 </Button>
-                            )}
-                            {!(isMember || isOrganizer) && fellowship.streamUrl && (
-                                <p className="text-xs text-muted-foreground mt-2 italic text-center">Join the fellowship to access the stream link.</p>
                             )}
                         </CardContent>
                     </Card>
