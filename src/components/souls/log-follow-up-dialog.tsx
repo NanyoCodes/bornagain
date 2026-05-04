@@ -1,8 +1,9 @@
+
 "use client";
 
 import * as React from "react";
 import { useToast } from "@/hooks/use-toast";
-import { doc, updateDoc, arrayUnion } from "firebase/firestore";
+import { doc, arrayUnion, writeBatch, serverTimestamp } from "firebase/firestore";
 import { useFirestore, useUser } from "@/firebase";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
@@ -102,12 +103,15 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
     
     setIsLoading(true);
 
-    const soulRef = doc(firestore, `users/${user.uid}/souls`, soul.id);
+    const soulRef = doc(firestore, `users/${soul.userId}/souls`, soul.id);
+    const globalSoulRef = doc(firestore, 'souls', soul.id);
+
     const newLogEntry: FollowUpLogItem = {
-        date: new Date() as any,
+        date: serverTimestamp() as any,
         note: values.note || '',
         actions: values.actions || [],
     };
+
     const updatePayload = {
         followUpLog: arrayUnion(newLogEntry),
         status: values.status,
@@ -115,10 +119,16 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
         inBibleStudy: values.inBibleStudy,
         attendingPrayer: values.attendingPrayer,
         inServiceDepartment: values.inServiceDepartment,
+        lastUpdatedAt: serverTimestamp(),
     };
     
     try {
-        await updateDoc(soulRef, updatePayload);
+        const batch = writeBatch(firestore);
+        batch.update(soulRef, updatePayload);
+        batch.update(globalSoulRef, updatePayload);
+
+        await batch.commit();
+
         toast({
             title: 'Follow-up Logged',
             description: `A new entry has been added for ${soul.firstName} ${soul.lastName}.`,
@@ -126,7 +136,7 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
         onFollowUpLogged();
     } catch (err: any) {
         console.error("Failed to log follow-up:", err);
-        if (err.code === 'permission-denied') {
+        if (err.code === 'permission-denied' || err.code === 'not-found') {
             const permissionError = new FirestorePermissionError({
                 path: soulRef.path,
                 operation: 'update',

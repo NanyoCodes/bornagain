@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -140,7 +141,7 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
     }
     setIsLoading(true);
 
-    const soulRef = doc(firestore, `users/${user.uid}/souls`, soul.id);
+    const soulRef = doc(firestore, `users/${soul.userId}/souls`, soul.id);
     const globalSoulRef = doc(firestore, 'souls', soul.id);
 
     const soulUpdateData: { [key: string]: any } = {

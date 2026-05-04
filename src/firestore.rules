@@ -15,6 +15,11 @@ service cloud.firestore {
              user2Data != null && 'partnerIds' in user2Data && user2Data.partnerIds is list && user1 in user2Data.partnerIds;
     }
 
+    function isFellowshipMember(fellowshipId) {
+      return request.auth != null && fellowshipId != null && 
+             request.auth.uid in get(/databases/$(database)/documents/fellowships/$(fellowshipId)).data.memberIds;
+    }
+
     // User profile access rules and all subcollections
     match /users/{userId} {
       // Allow any authenticated user to read user profiles
@@ -75,9 +80,11 @@ service cloud.firestore {
 
       // --- Subcollection Rules ---
 
-      // Souls are private to the user. Deletes are disallowed.
+      // Souls are private to the user, or accessible by assigned fellowship members.
       match /souls/{soulId} {
-        allow read, create, update: if isOwner(userId);
+        allow read: if isOwner(userId) || isFellowshipMember(resource.data.fellowshipId);
+        allow create: if isOwner(userId);
+        allow update: if isOwner(userId) || isFellowshipMember(resource.data.fellowshipId);
       }
       
       // Joined campaigns are private to the user.
@@ -112,11 +119,11 @@ service cloud.firestore {
       }
     }
     
-    // Global souls collection for aggregation. Deletes are disallowed.
+    // Global souls collection for aggregation and shared follow-up.
     match /souls/{soulId} {
       allow get, list: if request.auth != null;
       allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
-      allow update: if request.auth != null && (resource.data.userId == request.auth.uid || request.auth.uid == resource.data.userId);
+      allow update: if request.auth != null && (resource.data.userId == request.auth.uid || isFellowshipMember(resource.data.fellowshipId));
     }
 
     // Testimonies are public, but only writable by the author.

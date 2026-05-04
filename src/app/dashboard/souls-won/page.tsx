@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
@@ -132,7 +133,7 @@ export default function SoulsWonPage() {
     if (!user || !firestore || isAssigning) return;
     setIsAssigning(fellowshipId);
 
-    const soulRef = doc(firestore, `users/${user.uid}/souls`, soul.id);
+    const soulRef = doc(firestore, `users/${soul.userId}/souls`, soul.id);
     const globalSoulRef = doc(firestore, 'souls', soul.id);
 
     const selectedFellowship = fellowships?.find(f => f.id === fellowshipId);
