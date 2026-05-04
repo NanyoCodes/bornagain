@@ -9,6 +9,7 @@ import {
 import { BookOpen, TrendingUp, UserPlus, Target, Newspaper, HeartHandshake, Share2, Users, Flame } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
+import { useToast } from '@/hooks/use-toast';
 
 const tutorials = [
   {
@@ -102,6 +103,33 @@ const tutorials = [
 ];
 
 export default function GuidePage() {
+  const { toast } = useToast();
+
+  const handleShare = async () => {
+    const shareData = {
+      title: 'Join Testify - Global Evangelism Platform',
+      text: 'Help us organize the harvest and track evangelism progress for the Kingdom of God.',
+      url: typeof window !== 'undefined' ? window.location.origin : 'https://testifyglobal.com'
+    };
+
+    try {
+      if (typeof navigator !== 'undefined' && navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        throw new Error('Not supported');
+      }
+    } catch (err) {
+      // Fallback for browsers that don't support sharing or deny permission (e.g. in some dev environments)
+      if (typeof window !== 'undefined') {
+        navigator.clipboard.writeText(shareData.url);
+        toast({
+          title: 'Link Copied',
+          description: 'The app link has been copied to your clipboard. Share it with your brethren!',
+        });
+      }
+    }
+  };
+
   return (
     <div className="space-y-8 max-w-3xl mx-auto pb-12">
       <div className="space-y-2">
@@ -140,18 +168,7 @@ export default function GuidePage() {
       <div className="mt-12 p-6 rounded-xl bg-primary/5 border border-primary/20 text-center">
         <h3 className="font-bold text-lg mb-2">Ready to expand the Kingdom?</h3>
         <p className="text-sm text-muted-foreground mb-4">Sharing this tool with others helps build a stronger network of believers dedicated to the Great Commission.</p>
-        <Button onClick={() => {
-          if (typeof navigator !== 'undefined' && navigator.share) {
-            navigator.share({
-              title: 'Join Testify - Global Evangelism Platform',
-              text: 'Help us organize the harvest and track evangelism progress for the Kingdom of God.',
-              url: typeof window !== 'undefined' ? window.location.origin : 'https://testifyglobal.com'
-            });
-          } else if (typeof window !== 'undefined') {
-            navigator.clipboard.writeText(window.location.origin);
-            alert('App link copied to clipboard! Share it with your brethren.');
-          }
-        }}>
+        <Button onClick={handleShare}>
           <Share2 className="mr-2 h-4 w-4" /> Share App
         </Button>
       </div>

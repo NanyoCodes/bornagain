@@ -189,7 +189,7 @@ export default function SoulsWonPage() {
         console.error("Error assigning fellowship:", error);
         const permissionError = new FirestorePermissionError({
             path: `TRANSACTION:ASSIGN_FELLOWSHIP:${soul.id}`,
-            operation: 'write',
+            operation: 'update',
             requestResourceData: updateData,
         }, user);
         errorEmitter.emit('permission-error', permissionError);
