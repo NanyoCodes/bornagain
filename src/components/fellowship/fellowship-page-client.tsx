@@ -1,11 +1,11 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useDoc, useFirestore, useUser, useCollection } from '@/firebase';
 import type { Fellowship, UserProfile, FellowshipMember, Soul } from '@/lib/types';
 import { doc, collection, query, orderBy, where } from 'firebase/firestore';
-import { Loader2, ArrowLeft, Users, Calendar, PlayCircle, MapPin, UserCheck2, Heart } from 'lucide-react';
+import { Loader2, ArrowLeft, Users, Calendar, PlayCircle, MapPin, UserCheck2, Heart, Phone, Mail, Church } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
@@ -13,6 +13,11 @@ import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { format } from 'date-fns';
+import { safeToDate, cn } from '@/lib/utils';
 
 export default function FellowshipPageClient() {
     const router = useRouter();
@@ -20,10 +25,14 @@ export default function FellowshipPageClient() {
     const fellowshipId = params.fellowshipId as string;
     const firestore = useFirestore();
     const { user } = useUser();
+    const isMobile = useIsMobile();
+
+    const [selectedSoul, setSelectedSoul] = useState<Soul | null>(null);
+    const [isSoulDetailsOpen, setIsSoulDetailsOpen] = useState(false);
 
     const fellowshipDocRef = useMemo(() => {
         if (!firestore || !fellowshipId) return null;
-        return doc(firestore, 'fellowships', fellowshipId)
+        return doc(firestore, 'fellowships', fellowshipId);
     }, [firestore, fellowshipId]);
     const { data: fellowship, loading: fellowshipLoading, error: fellowshipError } = useDoc<Fellowship>(fellowshipDocRef);
 
@@ -43,14 +52,12 @@ export default function FellowshipPageClient() {
         return fellowship.organizerId === user.uid;
     }, [user, fellowship]);
 
-    // Query for believers (app users who joined)
     const membersQuery = useMemo(() => {
         if (!firestore || !fellowshipId || !(isMember || isOrganizer)) return null;
         return query(collection(firestore, 'fellowships', fellowshipId, 'members'), orderBy('joinedAt', 'desc'));
     }, [firestore, fellowshipId, isMember, isOrganizer]);
     const { data: members, loading: membersLoading } = useCollection<FellowshipMember>(membersQuery);
 
-    // Query for souls (converts assigned to this group)
     const soulsQuery = useMemo(() => {
         if (!firestore || !fellowshipId || !(isMember || isOrganizer)) return null;
         return query(collection(firestore, 'souls'), where('fellowshipId', '==', fellowshipId));
@@ -81,6 +88,74 @@ export default function FellowshipPageClient() {
             </div>
         );
     }
+
+    const soulDetailsContent = selectedSoul ? (
+      <div className="space-y-6 pt-4 pb-6">
+          <div className="flex items-center gap-4 border rounded-lg p-4 bg-muted/20">
+              <Avatar className="h-14 w-14 border-2">
+                  <AvatarFallback className="text-lg">{selectedSoul.firstName?.charAt(0)}{selectedSoul.lastName?.charAt(0)}</AvatarFallback>
+              </Avatar>
+              <div>
+                  <h3 className="text-xl font-bold font-headline">{selectedSoul.firstName} {selectedSoul.lastName}</h3>
+                  <Badge className="mt-1" variant="secondary">{selectedSoul.status}</Badge>
+              </div>
+          </div>
+
+          <div className="grid gap-4">
+              <div className="space-y-3">
+                  <h4 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Contact & Identity</h4>
+                  <div className="space-y-2">
+                      {selectedSoul.email && (
+                          <div className="flex items-center gap-3 text-sm">
+                              <Mail className="h-4 w-4 text-primary" />
+                              <a href={`mailto:${selectedSoul.email}`} className="hover:underline">{selectedSoul.email}</a>
+                          </div>
+                      )}
+                      {selectedSoul.phone && (
+                          <div className="flex items-center gap-3 text-sm">
+                              <Phone className="h-4 w-4 text-primary" />
+                              <a href={`tel:${selectedSoul.phone}`} className="hover:underline">{selectedSoul.phone}</a>
+                          </div>
+                      )}
+                      {selectedSoul.church && (
+                          <div className="flex items-center gap-3 text-sm">
+                              <Church className="h-4 w-4 text-primary" />
+                              <span>Attends: {selectedSoul.church}</span>
+                          </div>
+                      )}
+                  </div>
+              </div>
+
+              <div className="space-y-3">
+                  <h4 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Spiritual Progress</h4>
+                  <div className="grid grid-cols-2 gap-3">
+                      <div className={cn("p-2 rounded border text-xs flex items-center gap-2", selectedSoul.attendingChurch ? "bg-green-500/10 border-green-500/20" : "bg-muted/50")}>
+                          <UserCheck2 className={cn("h-4 w-4", selectedSoul.attendingChurch ? "text-green-500" : "text-muted-foreground")} />
+                          Church
+                      </div>
+                      <div className={cn("p-2 rounded border text-xs flex items-center gap-2", selectedSoul.inBibleStudy ? "bg-green-500/10 border-green-500/20" : "bg-muted/50")}>
+                          <Heart className={cn("h-4 w-4", selectedSoul.inBibleStudy ? "text-green-500" : "text-muted-foreground")} />
+                          Bible Study
+                      </div>
+                  </div>
+              </div>
+
+              <div className="space-y-3">
+                  <h4 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Context</h4>
+                  <div className="text-sm space-y-1">
+                      <p><span className="font-medium">Won On:</span> {format(safeToDate(selectedSoul.wonAt)!, 'PPP')}</p>
+                      <p><span className="font-medium">Source:</span> {selectedSoul.source} {selectedSoul.sourceDetails ? `(${selectedSoul.sourceDetails})` : ''}</p>
+                      {selectedSoul.locationWon?.city && (
+                          <p className="flex items-center gap-2 pt-1">
+                              <MapPin className="h-3 w-3 text-muted-foreground" />
+                              {selectedSoul.locationWon.city}, {selectedSoul.locationWon.country}
+                          </p>
+                      )}
+                  </div>
+              </div>
+          </div>
+      </div>
+    ) : null;
 
     return (
         <div className="space-y-6 max-w-4xl mx-auto">
@@ -158,8 +233,15 @@ export default function FellowshipPageClient() {
                                                                 <p className="font-semibold truncate">{soul.firstName} {soul.lastName}</p>
                                                                 <p className="text-xs text-muted-foreground">Status: <span className="font-medium text-primary">{soul.status}</span></p>
                                                             </div>
-                                                            <Button asChild variant="outline" size="sm">
-                                                                <Link href="/dashboard/souls-won">Follow-up</Link>
+                                                            <Button 
+                                                                variant="outline" 
+                                                                size="sm"
+                                                                onClick={() => {
+                                                                    setSelectedSoul(soul);
+                                                                    setIsSoulDetailsOpen(true);
+                                                                }}
+                                                            >
+                                                                Details
                                                             </Button>
                                                         </div>
                                                     ))}
@@ -231,6 +313,30 @@ export default function FellowshipPageClient() {
                     )}
                 </div>
             </div>
+
+            {isMobile ? (
+              <Sheet open={isSoulDetailsOpen} onOpenChange={setIsSoulDetailsOpen}>
+                  <SheetContent side="bottom" className="h-auto max-h-[90dvh]">
+                      <SheetHeader className="text-left">
+                          <SheetTitle>Soul Record</SheetTitle>
+                          <SheetDescription>Assigned member details.</SheetDescription>
+                      </SheetHeader>
+                      <ScrollArea className="h-full">
+                        {soulDetailsContent}
+                      </ScrollArea>
+                  </SheetContent>
+              </Sheet>
+            ) : (
+              <Dialog open={isSoulDetailsOpen} onOpenChange={setIsSoulDetailsOpen}>
+                  <DialogContent className="sm:max-w-md">
+                      <DialogHeader>
+                          <DialogTitle>Soul Record Details</DialogTitle>
+                          <DialogDescription>Information for assigned member.</DialogDescription>
+                      </DialogHeader>
+                      {soulDetailsContent}
+                  </DialogContent>
+              </Dialog>
+            )}
         </div>
     );
 }
