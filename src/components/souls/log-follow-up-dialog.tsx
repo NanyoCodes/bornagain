@@ -1,3 +1,4 @@
+
 "use client";
 
 import * as React from "react";
@@ -102,7 +103,6 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
     const soulRef = doc(firestore, `users/${soul.userId}/souls`, soul.id);
     const globalSoulRef = doc(firestore, 'souls', soul.id);
 
-    // Use client-side Date inside arrayUnion to avoid Firestore serverTimestamp crash in arrays
     const newLogEntry = {
         date: new Date(), 
         note: values.note || '',

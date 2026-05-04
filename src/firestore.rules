@@ -16,7 +16,7 @@ service cloud.firestore {
     }
 
     function isFellowshipMember(fellowshipId) {
-      return request.auth != null && fellowshipId != null && 
+      return request.auth != null && fellowshipId != null && fellowshipId is string && fellowshipId != "" && fellowshipId != "none" &&
              exists(/databases/$(database)/documents/fellowships/$(fellowshipId)) &&
              request.auth.uid in get(/databases/$(database)/documents/fellowships/$(fellowshipId)).data.memberIds;
     }
