@@ -1,4 +1,3 @@
-
 "use client";
 
 import * as React from "react";
@@ -323,22 +322,26 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md flex flex-col max-h-[90vh]">
+      <DialogContent className="sm:max-w-md flex flex-col max-h-[90vh] p-0">
         {soul && (
           <>
-            <DialogHeader>
-                <DialogTitle>Log Follow-up for {soul.firstName} {soul.lastName}</DialogTitle>
-                <DialogDescription>Record spiritual growth and interaction.</DialogDescription>
-            </DialogHeader>
-            <div className="flex-grow overflow-y-auto -mx-6 px-6">
+            <div className="p-6 border-b shrink-0">
+                <DialogHeader>
+                    <DialogTitle>Log Follow-up for {soul.firstName} {soul.lastName}</DialogTitle>
+                    <DialogDescription>Record spiritual growth and interaction.</DialogDescription>
+                </DialogHeader>
+            </div>
+            <div className="flex-grow overflow-y-auto px-6 py-4">
                 {formBody}
             </div>
-            <DialogFooter className="flex-shrink-0 pt-4 border-t">
-                <Button type="submit" form="log-follow-up-form" disabled={isLoading}>
-                    {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    Save Log
-                </Button>
-            </DialogFooter>
+            <div className="p-6 border-t shrink-0">
+                <DialogFooter>
+                    <Button type="submit" form="log-follow-up-form" disabled={isLoading} className="w-full">
+                        {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                        Save Log
+                    </Button>
+                </DialogFooter>
+            </div>
           </>
         )}
       </DialogContent>

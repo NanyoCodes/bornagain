@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -6,7 +5,7 @@ import { useRouter, useParams } from 'next/navigation';
 import { useDoc, useFirestore, useUser, useCollection } from '@/firebase';
 import type { Fellowship, UserProfile, FellowshipMember, Soul } from '@/lib/types';
 import { doc, collection, query, orderBy, where } from 'firebase/firestore';
-import { Loader2, ArrowLeft, Users, Calendar, PlayCircle, MapPin, UserCheck2, Heart, Phone, Mail, Church, History, PlusCircle } from 'lucide-react';
+import { Loader2, ArrowLeft, Users, Calendar, PlayCircle, MapPin, UserCheck2, Heart, Phone, Mail, Church, History, PlusCircle, User } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
@@ -21,8 +20,24 @@ import { format } from 'date-fns';
 import { safeToDate, cn } from '@/lib/utils';
 import { LogFollowUpDialog } from '@/components/souls/log-follow-up-dialog';
 import { actionItems } from '@/lib/follow-up-data';
-import { Separator } from '@/components/ui/separator';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Skeleton } from '@/components/ui/skeleton';
+
+function SoulWinnerInfo({ userId }: { userId: string }) {
+    const firestore = useFirestore();
+    const winnerRef = useMemo(() => userId ? doc(firestore, 'users', userId) : null, [firestore, userId]);
+    const { data: winnerProfile, loading } = useDoc<UserProfile>(winnerRef);
+
+    if (loading) return <Skeleton className="h-4 w-24" />;
+    if (!winnerProfile) return <span className="text-muted-foreground">Unknown User</span>;
+
+    return (
+        <Link href={`/dashboard/profile/${userId}`} className="text-primary font-medium hover:underline inline-flex items-center gap-1">
+            <User className="h-3 w-3" />
+            {winnerProfile.firstName} {winnerProfile.lastName}
+        </Link>
+    );
+}
 
 export default function FellowshipPageClient() {
     const router = useRouter();
@@ -103,7 +118,7 @@ export default function FellowshipPageClient() {
     }
 
     const soulDetailsContent = selectedSoul ? (
-      <div className="space-y-6 pt-4 pb-6">
+      <div className="space-y-6 pt-4 pb-12 sm:pb-6">
           <div className="flex items-center gap-4 border rounded-lg p-4 bg-muted/20">
               <Avatar className="h-14 w-14 border-2">
                   <AvatarFallback className="text-lg">{selectedSoul.firstName?.charAt(0)}{selectedSoul.lastName?.charAt(0)}</AvatarFallback>
@@ -127,14 +142,18 @@ export default function FellowshipPageClient() {
               </TooltipProvider>
           </div>
 
-          <div className="grid gap-4">
+          <div className="grid gap-6">
               <div className="space-y-3">
                   <h4 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Contact & Identity</h4>
                   <div className="space-y-2">
+                      <div className="text-sm flex items-center gap-2">
+                          <span className="font-medium text-muted-foreground shrink-0">Won By:</span>
+                          <SoulWinnerInfo userId={selectedSoul.userId} />
+                      </div>
                       {selectedSoul.email && (
                           <div className="flex items-center gap-3 text-sm">
                               <Mail className="h-4 w-4 text-primary" />
-                              <a href={`mailto:${selectedSoul.email}`} className="hover:underline">{selectedSoul.email}</a>
+                              <a href={`mailto:${selectedSoul.email}`} className="hover:underline truncate">{selectedSoul.email}</a>
                           </div>
                       )}
                       {selectedSoul.phone && (
@@ -144,9 +163,9 @@ export default function FellowshipPageClient() {
                           </div>
                       )}
                       {selectedSoul.church && (
-                          <div className="flex items-center gap-3 text-sm">
-                              <Church className="h-4 w-4 text-primary" />
-                              <span>Attends: {selectedSoul.church}</span>
+                          <div className="flex items-start gap-3 text-sm">
+                              <Church className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                              <span className="leading-tight">Attends: {selectedSoul.church}</span>
                           </div>
                       )}
                   </div>
@@ -170,24 +189,24 @@ export default function FellowshipPageClient() {
                   <h4 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
                       <History className="h-4 w-4" /> Collective Follow-up History
                   </h4>
-                  <div className="border rounded-lg bg-muted/10">
+                  <div className="border rounded-lg bg-muted/10 overflow-hidden">
                       {selectedSoul.followUpLog && selectedSoul.followUpLog.length > 0 ? (
                           <div className="divide-y max-h-60 overflow-y-auto">
                               {[...selectedSoul.followUpLog].reverse().map((log, i) => {
                                   const date = safeToDate(log.date);
                                   return (
-                                      <div key={i} className="p-3 text-xs space-y-1">
+                                      <div key={i} className="p-3 text-xs space-y-1 bg-background/50">
                                           <div className="flex justify-between items-center text-muted-foreground">
                                               <span className="font-semibold">{date ? format(date, 'PPP') : 'N/A'}</span>
                                               {log.memberName && (
-                                                <span className="text-[9px] bg-muted px-1 rounded">By {log.memberName}</span>
+                                                <span className="text-[9px] bg-muted px-1.5 py-0.5 rounded-full border">By {log.memberName}</span>
                                               )}
                                           </div>
                                           {log.actions && log.actions.length > 0 && (
                                               <div className="flex flex-wrap gap-1 py-1">
                                                   {log.actions.map(id => {
                                                       const action = actionItems.find(a => a.id === id);
-                                                      return action ? <Badge key={id} variant="outline" className="text-[9px] px-1 h-4">{action.label}</Badge> : null;
+                                                      return action ? <Badge key={id} variant="outline" className="text-[9px] px-1 h-4 font-normal">{action.label}</Badge> : null;
                                                   })}
                                               </div>
                                           )}
@@ -197,7 +216,7 @@ export default function FellowshipPageClient() {
                               })}
                           </div>
                       ) : (
-                          <p className="text-center py-6 text-sm text-muted-foreground italic">No follow-up history yet.</p>
+                          <p className="text-center py-8 text-sm text-muted-foreground italic">No follow-up history yet.</p>
                       )}
                   </div>
               </div>
@@ -375,24 +394,30 @@ export default function FellowshipPageClient() {
 
             {isMobile ? (
               <Sheet open={isSoulDetailsOpen} onOpenChange={setIsSoulDetailsOpen}>
-                  <SheetContent side="bottom" className="h-auto max-h-[90dvh]">
-                      <SheetHeader className="text-left">
-                          <SheetTitle>Soul Record</SheetTitle>
-                          <SheetDescription>Assigned member details.</SheetDescription>
-                      </SheetHeader>
-                      <ScrollArea className="h-full">
+                  <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0">
+                      <div className="p-6 border-b flex-shrink-0">
+                        <SheetHeader className="text-left">
+                            <SheetTitle>Soul Record Details</SheetTitle>
+                            <SheetDescription>Information for assigned convert.</SheetDescription>
+                        </SheetHeader>
+                      </div>
+                      <ScrollArea className="flex-grow min-h-0 px-6">
                         {soulDetailsContent}
                       </ScrollArea>
                   </SheetContent>
               </Sheet>
             ) : (
               <Dialog open={isSoulDetailsOpen} onOpenChange={setIsSoulDetailsOpen}>
-                  <DialogContent className="sm:max-w-md">
-                      <DialogHeader>
-                          <DialogTitle>Soul Record Details</DialogTitle>
-                          <DialogDescription>Information for assigned member.</DialogDescription>
-                      </DialogHeader>
-                      {soulDetailsContent}
+                  <DialogContent className="sm:max-w-md max-h-[90vh] flex flex-col p-0">
+                      <div className="p-6 border-b flex-shrink-0">
+                        <DialogHeader>
+                            <DialogTitle>Soul Record Details</DialogTitle>
+                            <DialogDescription>Information for assigned convert.</DialogDescription>
+                        </DialogHeader>
+                      </div>
+                      <ScrollArea className="flex-grow min-h-0 px-6">
+                        {soulDetailsContent}
+                      </ScrollArea>
                   </DialogContent>
               </Dialog>
             )}
