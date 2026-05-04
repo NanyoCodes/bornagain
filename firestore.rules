@@ -86,10 +86,10 @@ service cloud.firestore {
 
       // Souls are private to the user, or accessible by assigned fellowship members.
       match /souls/{soulId} {
-        allow read: if isOwner(userId) || isFellowshipMember(data.fellowshipId) || isFellowshipMember(resource.data.fellowshipId);
+        allow read: if isOwner(userId) || isFellowshipMember(resource.data.fellowshipId);
         allow create: if isOwner(userId);
         // Allow fellowship members to update spiritual progress and logs
-        allow update: if request.auth != null && (isOwner(userId) || isFellowshipMember(data.fellowshipId));
+        allow update: if request.auth != null && (isOwner(userId) || isFellowshipMember(resource.data.fellowshipId));
       }
       
       // Joined campaigns are private to the user.
@@ -129,7 +129,7 @@ service cloud.firestore {
       allow get, list: if request.auth != null;
       allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
       // Allow fellowship members to update spiritual progress and logs globally too
-      allow update: if request.auth != null && (data.userId == request.auth.uid || isFellowshipMember(data.fellowshipId));
+      allow update: if request.auth != null && (resource.data.userId == request.auth.uid || isFellowshipMember(resource.data.fellowshipId));
     }
 
     // Testimonies are public, but only writable by the author.

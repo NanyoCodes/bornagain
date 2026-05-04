@@ -16,8 +16,8 @@ import {
 import { PlusCircle, Download, Loader2 } from "lucide-react";
 import { SoulsWonTable } from "@/components/souls/souls-won-table";
 import { LogSoulForm } from "@/components/souls/log-soul-form";
-import type { Soul, Campaign, Fellowship } from "@/lib/types";
-import { useCollection, useFirestore, useUser } from "@/firebase";
+import type { Soul, Campaign, Fellowship, UserProfile } from "@/lib/types";
+import { useCollection, useFirestore, useUser, useDoc } from "@/firebase";
 import { collection, query, orderBy, doc, writeBatch, updateDoc, runTransaction, addDoc, deleteField, serverTimestamp, increment, getDoc } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -73,6 +73,9 @@ export default function SoulsWonPage() {
       setSearchTerm("");
     };
   }, [setIsSearchVisible, setSearchPlaceholder, setSearchTerm]);
+
+  const userDocRef = useMemo(() => user ? doc(firestore, 'users', user.uid) : null, [user, firestore]);
+  const { data: userProfile } = useDoc<UserProfile>(userDocRef);
 
   const soulsQuery = useMemo(() => {
     if (!user?.uid || !firestore) return null;
@@ -306,6 +309,7 @@ export default function SoulsWonPage() {
           isOpen={!!soulForFollowUp}
           onOpenChange={(isOpen) => { if (!isOpen) setSoulForFollowUp(null); }}
           onFollowUpLogged={handleFollowUpLogged}
+          userProfile={userProfile}
       />
 
       <ViewHistoryDialog

@@ -47,6 +47,9 @@ export default function FellowshipPageClient() {
         return doc(firestore, 'users', fellowship.organizerId);
     }, [fellowship?.organizerId, firestore]);
     const { data: organizer, loading: organizerLoading } = useDoc<UserProfile>(organizerDocRef);
+
+    const currentUserRef = useMemo(() => user ? doc(firestore, 'users', user.uid) : null, [user, firestore]);
+    const { data: userProfile } = useDoc<UserProfile>(currentUserRef);
     
     const isMember = useMemo(() => {
         if (!user || !fellowship) return false;
@@ -176,7 +179,9 @@ export default function FellowshipPageClient() {
                                       <div key={i} className="p-3 text-xs space-y-1">
                                           <div className="flex justify-between items-center text-muted-foreground">
                                               <span className="font-semibold">{date ? format(date, 'PPP') : 'N/A'}</span>
-                                              <span>{date ? format(date, 'p') : ''}</span>
+                                              {log.memberName && (
+                                                <span className="text-[9px] bg-muted px-1 rounded">By {log.memberName}</span>
+                                              )}
                                           </div>
                                           {log.actions && log.actions.length > 0 && (
                                               <div className="flex flex-wrap gap-1 py-1">
@@ -399,6 +404,7 @@ export default function FellowshipPageClient() {
                 onFollowUpLogged={() => {
                     setIsLogFollowUpOpen(false);
                 }}
+                userProfile={userProfile}
             />
         </div>
     );

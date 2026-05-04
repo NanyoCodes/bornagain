@@ -43,16 +43,23 @@ export function ViewHistoryDialog({ soul, isOpen, onOpenChange }: ViewHistoryDia
                 const logDate = safeToDate(log.date);
                 return (
                 <div key={index}>
-                    <p className="font-semibold text-sm mb-2">
-                       {logDate ? format(logDate, "PPP 'at' p") : 'Date not available'}
-                    </p>
+                    <div className="flex justify-between items-start mb-2 flex-wrap gap-2">
+                        <p className="font-semibold text-sm">
+                           {logDate ? format(logDate, "PPP 'at' p") : 'Date not available'}
+                        </p>
+                        {log.memberName && (
+                            <span className="text-[10px] font-medium text-muted-foreground bg-muted px-2 py-0.5 rounded-full border">
+                                By {log.memberName}
+                            </span>
+                        )}
+                    </div>
                     <div className="pl-4 border-l-2 space-y-3">
                        {log.actions && log.actions.length > 0 && (
                             <div className="flex flex-wrap gap-2">
                                 {log.actions.map(actionId => {
                                     const action = actionItems.find(a => a.id === actionId);
                                     return action ? (
-                                        <Badge key={actionId} variant="secondary" className="font-normal">{action.label}</Badge>
+                                        <Badge key={actionId} variant="secondary" className="font-normal text-[10px] px-1.5 h-5">{action.label}</Badge>
                                     ) : null;
                                 })}
                             </div>

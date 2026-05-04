@@ -207,6 +207,8 @@ export type FollowUpLogItem = {
   date: Timestamp;
   note?: string;
   actions?: string[];
+  memberId?: string;
+  memberName?: string;
 };
 
 export type Soul = {

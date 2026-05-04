@@ -4,7 +4,7 @@
 import * as React from "react";
 import { useToast } from "@/hooks/use-toast";
 import { doc, arrayUnion, writeBatch, serverTimestamp } from "firebase/firestore";
-import { useFirestore, useUser } from "@/firebase";
+import { useFirestore, useUser, useDoc } from "@/firebase";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -18,7 +18,7 @@ import { Switch } from "../ui/switch";
 import { Textarea } from "../ui/textarea";
 import { cn } from "@/lib/utils";
 import { actionItems, statusOptions } from "@/lib/follow-up-data";
-import type { Soul, FollowUpStatus } from "@/lib/types";
+import type { Soul, FollowUpStatus, UserProfile } from "@/lib/types";
 import { Church, BookOpen, Heart, Users, Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -54,15 +54,20 @@ interface LogFollowUpDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   onFollowUpLogged: () => void;
+  userProfile?: UserProfile | null;
 }
 
-export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged }: LogFollowUpDialogProps) {
+export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged, userProfile: providedProfile }: LogFollowUpDialogProps) {
   const { toast } = useToast();
   const { user } = useUser();
   const firestore = useFirestore();
   const [isLoading, setIsLoading] = React.useState(false);
   const isMobile = useIsMobile();
   const [mounted, setMounted] = React.useState(false);
+
+  const currentUserRef = React.useMemo(() => user ? doc(firestore, 'users', user.uid) : null, [user, firestore]);
+  const { data: fetchedProfile } = useDoc<UserProfile>(currentUserRef);
+  const userProfile = providedProfile || fetchedProfile;
 
   React.useEffect(() => {
     setMounted(true);
@@ -108,6 +113,8 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
         date: new Date(), 
         note: values.note || '',
         actions: values.actions || [],
+        memberId: user.uid,
+        memberName: `${userProfile?.firstName || ''} ${userProfile?.lastName || ''}`.trim() || user.displayName || 'Member',
     };
 
     const updatePayload = {
