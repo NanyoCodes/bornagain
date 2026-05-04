@@ -50,7 +50,7 @@ export function ViewHistoryDialog({ soul, isOpen, onOpenChange }: ViewHistoryDia
                        {log.actions && log.actions.length > 0 && (
                             <div className="flex flex-wrap gap-2">
                                 {log.actions.map(actionId => {
-                                    const action = actionItems.find(a => a.id === id);
+                                    const action = actionItems.find(a => a.id === actionId);
                                     return action ? (
                                         <Badge key={actionId} variant="secondary" className="font-normal">{action.label}</Badge>
                                     ) : null;

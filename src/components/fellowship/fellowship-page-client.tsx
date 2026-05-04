@@ -155,7 +155,7 @@ export default function FellowshipPageClient() {
 
               <div className="space-y-3">
                   <h4 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
-                      <History className="h-4 w-4" /> Follow-up History
+                      <History className="h-4 w-4" /> Collective Follow-up History
                   </h4>
                   <div className="border rounded-lg bg-muted/10">
                       {selectedSoul.followUpLog && selectedSoul.followUpLog.length > 0 ? (
