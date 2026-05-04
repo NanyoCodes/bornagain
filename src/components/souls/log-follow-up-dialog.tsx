@@ -7,7 +7,7 @@ import { doc, arrayUnion, writeBatch, serverTimestamp } from "firebase/firestore
 import { useFirestore, useUser } from "@/firebase";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogFooter, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -103,12 +103,10 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
     
     setIsLoading(true);
 
-    // CRITICAL: We must use soul.userId (the owner) instead of user.uid (the reporter)
     const soulRef = doc(firestore, `users/${soul.userId}/souls`, soul.id);
     const globalSoulRef = doc(firestore, 'souls', soul.id);
 
-    // Firestore arrayUnion does not support serverTimestamp() inside array elements.
-    // We use a client-side Date for the entry, and serverTimestamp for the parent doc update.
+    // CRITICAL: Use new Date() instead of serverTimestamp() inside arrayUnion
     const newLogEntry: FollowUpLogItem = {
         date: new Date() as any, 
         note: values.note || '',
