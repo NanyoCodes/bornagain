@@ -43,14 +43,14 @@ export default function SoulsWonPage() {
   const isMobile = useIsMobile();
   const { searchTerm, setSearchPlaceholder, setIsSearchVisible, setSearchTerm } = useSearch();
 
-  // Dialog management states
+  // Centralize state for all dialogs on this page
   const [soulToEdit, setSoulToEdit] = useState<Soul | null>(null);
   const [soulForFollowUp, setSoulForFollowUp] = useState<Soul | null>(null);
   const [soulForHistory, setSoulForHistory] = useState<Soul | null>(null);
   const [soulToAssign, setSoulToAssign] = useState<Soul | null>(null);
   const [isAssigning, setIsAssigning] = useState<string | null>(null);
 
-  // Stabilized active states to prevent unmounting issues during closing animations
+  // Persistent content states to keep dialogs stable during close animations
   const [activeEditSoul, setActiveEditSoul] = useState<Soul | null>(null);
   useEffect(() => { if (soulToEdit) setActiveEditSoul(soulToEdit); }, [soulToEdit]);
 
@@ -134,7 +134,9 @@ export default function SoulsWonPage() {
 
     const soulRef = doc(firestore, `users/${user.uid}/souls`, soul.id);
     const globalSoulRef = doc(firestore, 'souls', soul.id);
+
     const selectedFellowship = fellowships?.find(f => f.id === fellowshipId);
+    
     const updateData: { [key: string]: any } = {};
 
     if (fellowshipId === 'none') {
@@ -151,18 +153,18 @@ export default function SoulsWonPage() {
 
     try {
         await runTransaction(firestore, async (transaction) => {
-            const soulDoc = await transaction.get(soulRef);
-            if (!soulDoc.exists()) throw new Error("Soul record not found.");
-            
             const oldFellowshipId = soul.fellowshipId;
+            
             if (oldFellowshipId && oldFellowshipId !== fellowshipId) {
                 const oldFellowshipRef = doc(firestore, "fellowships", oldFellowshipId);
                 transaction.update(oldFellowshipRef, { memberCount: increment(-1) });
             }
+
             if (fellowshipId !== 'none' && oldFellowshipId !== fellowshipId) {
                 const newFellowshipRef = doc(firestore, "fellowships", fellowshipId);
                 transaction.update(newFellowshipRef, { memberCount: increment(1) });
             }
+            
             transaction.update(soulRef, updateData);
             transaction.update(globalSoulRef, updateData);
         });
@@ -342,7 +344,7 @@ export default function SoulsWonPage() {
           {mounted && isMobile ? (
             <Sheet open={isLogDialogOpen} onOpenChange={setIsLogDialogOpen}>
               <SheetTrigger asChild>{triggerButton}</SheetTrigger>
-              <SheetContent side="bottom">
+              <SheetContent side="bottom" className="h-[90dvh]">
                 <SheetHeader>
                   <SheetTitle>Log a New Soul</SheetTitle>
                   <SheetDescription>Record the details of the person you've ministered to.</SheetDescription>
@@ -377,17 +379,13 @@ export default function SoulsWonPage() {
 
       <Dialog open={!!soulToEdit} onOpenChange={(open) => !open && setSoulToEdit(null)}>
           <DialogContent className="sm:max-w-lg">
-              {activeEditSoul && (
-                <>
-                  <DialogHeader>
-                      <DialogTitle>Edit Soul Details</DialogTitle>
-                      <DialogDescription>Make changes to the record for {activeEditSoul.firstName} {activeEditSoul.lastName}.</DialogDescription>
-                  </DialogHeader>
-                  <div className="max-h-[70vh] overflow-y-auto pr-2">
-                      <EditSoulForm soul={activeEditSoul} onSoulUpdated={handleSoulUpdated} fellowships={fellowships || []} campaigns={activeCampaigns || []} />
-                  </div>
-                </>
-              )}
+              <DialogHeader>
+                  <DialogTitle>Edit Soul Details</DialogTitle>
+                  <DialogDescription>Make changes to the record for {activeEditSoul?.firstName} {activeEditSoul?.lastName}.</DialogDescription>
+              </DialogHeader>
+              <div className="max-h-[70vh] overflow-y-auto pr-2">
+                  {activeEditSoul && <EditSoulForm soul={activeEditSoul} onSoulUpdated={handleSoulUpdated} fellowships={fellowships || []} campaigns={activeCampaigns || []} />}
+              </div>
           </DialogContent>
       </Dialog>
 
