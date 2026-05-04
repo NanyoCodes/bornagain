@@ -391,7 +391,6 @@ export default function FellowshipPageClient() {
                 onOpenChange={setIsLogFollowUpOpen}
                 onFollowUpLogged={() => {
                     setIsLogFollowUpOpen(false);
-                    // No need to close the details dialog, just let the history update via firestore listener if any
                 }}
             />
         </div>

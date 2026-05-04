@@ -103,11 +103,14 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
     
     setIsLoading(true);
 
+    // CRITICAL: We must use soul.userId (the owner) instead of user.uid (the reporter)
     const soulRef = doc(firestore, `users/${soul.userId}/souls`, soul.id);
     const globalSoulRef = doc(firestore, 'souls', soul.id);
 
+    // Firestore arrayUnion does not support serverTimestamp() inside array elements.
+    // We use a client-side Date for the entry, and serverTimestamp for the parent doc update.
     const newLogEntry: FollowUpLogItem = {
-        date: serverTimestamp() as any,
+        date: new Date() as any, 
         note: values.note || '',
         actions: values.actions || [],
     };
