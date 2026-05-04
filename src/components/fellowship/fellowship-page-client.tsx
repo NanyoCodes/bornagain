@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -22,6 +21,7 @@ import { safeToDate, cn } from '@/lib/utils';
 import { LogFollowUpDialog } from '@/components/souls/log-follow-up-dialog';
 import { actionItems } from '@/lib/follow-up-data';
 import { Separator } from '@/components/ui/separator';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 export default function FellowshipPageClient() {
     const router = useRouter();
@@ -108,10 +108,19 @@ export default function FellowshipPageClient() {
                   <h3 className="text-xl font-bold font-headline truncate">{selectedSoul.firstName} {selectedSoul.lastName}</h3>
                   <Badge className="mt-1" variant="secondary">{selectedSoul.status}</Badge>
               </div>
-              <Button onClick={handleLogFollowUp} size="sm">
-                  <PlusCircle className="mr-2 h-4 w-4" />
-                  Log
-              </Button>
+              <TooltipProvider>
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <Button onClick={handleLogFollowUp} size="icon" variant="outline" className="shrink-0">
+                            <PlusCircle className="h-4 w-4" />
+                            <span className="sr-only">Log Follow-up</span>
+                        </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                        <p>Log Follow-up</p>
+                    </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
           </div>
 
           <div className="grid gap-4">
