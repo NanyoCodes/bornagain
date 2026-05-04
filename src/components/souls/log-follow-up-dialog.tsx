@@ -106,7 +106,7 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
     const soulRef = doc(firestore, `users/${soul.userId}/souls`, soul.id);
     const globalSoulRef = doc(firestore, 'souls', soul.id);
 
-    // CRITICAL: Use new Date() instead of serverTimestamp() inside arrayUnion
+    // CRITICAL: use new Date() as serverTimestamp() is invalid inside arrays
     const newLogEntry: FollowUpLogItem = {
         date: new Date() as any, 
         note: values.note || '',

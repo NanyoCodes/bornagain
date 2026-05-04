@@ -99,7 +99,7 @@ export default function SoulsWonPage() {
   
   const fellowships = useMemo(() => {
     if (!allFellowships) return [];
-    return allFellowships.filter(f => f.status !== 'deleted');
+    return fellowships.filter(f => f.status !== 'deleted');
   }, [allFellowships]);
 
   const loading = userLoading || soulsLoading || loadingCampaigns || loadingFellowships;
