@@ -16,7 +16,11 @@ service cloud.firestore {
     }
 
     function isFellowshipMember(fellowshipId) {
-      return request.auth != null && fellowshipId != null && fellowshipId is string && fellowshipId != "" && fellowshipId != "none" &&
+      return request.auth != null && 
+             fellowshipId != null && 
+             fellowshipId is string && 
+             fellowshipId != "" && 
+             fellowshipId != "none" &&
              exists(/databases/$(database)/documents/fellowships/$(fellowshipId)) &&
              request.auth.uid in get(/databases/$(database)/documents/fellowships/$(fellowshipId)).data.memberIds;
     }
@@ -204,7 +208,7 @@ service cloud.firestore {
         (
           request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participants']) &&
           request.resource.data.participants == resource.data.participants + 1 &&
-          (resource.data.maxParticipants == null || resource.data.participants < resource.data.maxParticipants)
+          (resource.data.maxParticipants == null || request.resource.data.participants <= resource.data.maxParticipants)
         )
       );
 

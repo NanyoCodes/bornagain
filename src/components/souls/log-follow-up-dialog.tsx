@@ -9,7 +9,7 @@ import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "../ui/button";
 import { Checkbox } from "../ui/checkbox";
@@ -18,7 +18,7 @@ import { Switch } from "../ui/switch";
 import { Textarea } from "../ui/textarea";
 import { cn } from "@/lib/utils";
 import { actionItems, statusOptions } from "@/lib/follow-up-data";
-import type { Soul, FollowUpLogItem, FollowUpStatus } from "@/lib/types";
+import type { Soul, FollowUpStatus } from "@/lib/types";
 import { Church, BookOpen, Heart, Users, Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -103,6 +103,7 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
     const soulRef = doc(firestore, `users/${soul.userId}/souls`, soul.id);
     const globalSoulRef = doc(firestore, 'souls', soul.id);
 
+    // CRITICAL: Must use client-side Date inside an arrayUnion as serverTimestamp() is NOT supported in arrays.
     const newLogEntry = {
         date: new Date(), 
         note: values.note || '',
@@ -130,12 +131,20 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
         onFollowUpLogged();
     } catch (err: any) {
         console.error("Failed to log follow-up:", err);
-        const permissionError = new FirestorePermissionError({
-            path: soulRef.path,
-            operation: 'update',
-            requestResourceData: updatePayload,
-        }, user);
-        errorEmitter.emit('permission-error', permissionError);
+        if (err.code === 'permission-denied' || err.code === 'not-found') {
+            const permissionError = new FirestorePermissionError({
+                path: soulRef.path,
+                operation: 'update',
+                requestResourceData: updatePayload,
+            }, user);
+            errorEmitter.emit('permission-error', permissionError);
+        } else {
+            toast({
+                variant: "destructive",
+                title: "Error",
+                description: "Could not save follow-up interaction. Please try again."
+            });
+        }
     } finally {
         setIsLoading(false);
     }
