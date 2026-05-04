@@ -333,7 +333,7 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
               </div>
               <div className="p-6 border-t flex-shrink-0">
                 <Button type="submit" form="log-follow-up-form" disabled={isLoading} className="w-full h-12 text-lg">
-                    {isLoading && <Loader2 className="mr-2 h-5 w-5 animate-spin" />}
+                    {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                     Save Follow-up
                 </Button>
               </div>
