@@ -107,12 +107,13 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
     const soulRef = doc(firestore, `users/${soul.userId}/souls`, soul.id);
     const globalSoulRef = doc(firestore, 'souls', soul.id);
 
+    // Track member identity in the history log
     const newLogEntry = {
-        date: new Date(), 
+        date: new Date(), // Use client Date for arrayUnion compatibility
         note: values.note || '',
         actions: values.actions || [],
         memberId: user.uid,
-        memberName: `${userProfile?.firstName || ''} ${userProfile?.lastName || ''}`.trim() || user.displayName || 'Member',
+        memberName: `${userProfile?.firstName || ''} ${userProfile?.lastName || ''}`.trim() || user.displayName || 'Fellowship Member',
     };
 
     const updatePayload = {
@@ -132,7 +133,7 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
 
         await batch.commit();
 
-        toast({ title: 'Follow-up Logged' });
+        toast({ title: 'Follow-up Logged', description: 'Your interaction has been saved to the collective history.' });
         onFollowUpLogged();
     } catch (err: any) {
         console.error("Failed to log follow-up:", err);
@@ -165,7 +166,7 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
                     <FormItem>
                         <FormLabel>Notes</FormLabel>
                         <FormControl>
-                            <Textarea placeholder="How was the interaction? What is the current prayer point?" {...field} className="text-base" />
+                            <Textarea placeholder="Describe the interaction and spiritual state..." {...field} className="text-base" />
                         </FormControl>
                         <FormMessage />
                     </FormItem>
@@ -196,7 +197,7 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
             
             <Accordion type="single" collapsible className="w-full">
                 <AccordionItem value="actions">
-                    <AccordionTrigger className="text-sm font-medium">Actions Taken</AccordionTrigger>
+                    <AccordionTrigger className="text-sm font-medium">Relationship Actions</AccordionTrigger>
                     <AccordionContent>
                         <FormField
                             control={form.control}
@@ -242,7 +243,7 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
                     </AccordionContent>
                 </AccordionItem>
                 <AccordionItem value="progress">
-                     <AccordionTrigger className="text-sm font-medium">Progress Update</AccordionTrigger>
+                     <AccordionTrigger className="text-sm font-medium">Growth Progress</AccordionTrigger>
                      <AccordionContent>
                         <div className="space-y-1 pt-4">
                             <FormField
@@ -274,7 +275,7 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
                                 name="inServiceDepartment"
                                 render={({ field }) => (
                                     <FormItem className="flex flex-row items-center justify-between rounded-md p-2 -mx-2 hover:bg-muted/50">
-                                        <FormLabel className="font-normal flex items-center gap-2 cursor-pointer"><Users className="h-4 w-4" />In Service Dept.</FormLabel>
+                                        <FormLabel className="font-normal flex items-center gap-2 cursor-pointer"><Users className="h-4 w-4" />Serving in Church</FormLabel>
                                         <FormControl>
                                             <Switch checked={field.value} onCheckedChange={field.onChange} />
                                         </FormControl>
@@ -300,7 +301,7 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
               <div className="p-6 border-b flex-shrink-0">
                 <SheetHeader className="text-left flex-shrink-0">
                     <SheetTitle>Log Follow-up: {soul.firstName}</SheetTitle>
-                    <SheetDescription>Nurture the seed and track progress.</SheetDescription>
+                    <SheetDescription>Nurture the seed and track their journey.</SheetDescription>
                 </SheetHeader>
               </div>
               <div className="flex-grow overflow-y-auto px-6 py-4">
@@ -309,7 +310,7 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
               <div className="p-6 border-t flex-shrink-0">
                 <Button type="submit" form="log-follow-up-form" disabled={isLoading} className="w-full h-12 text-lg">
                     {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    Save Log
+                    Save Interaction
                 </Button>
               </div>
             </>
@@ -327,7 +328,7 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
             <div className="p-6 border-b shrink-0">
                 <DialogHeader>
                     <DialogTitle>Log Follow-up for {soul.firstName} {soul.lastName}</DialogTitle>
-                    <DialogDescription>Record spiritual growth and interaction.</DialogDescription>
+                    <DialogDescription>Your interaction will be added to the shared history.</DialogDescription>
                 </DialogHeader>
             </div>
             <div className="flex-grow overflow-y-auto px-6 py-4">
@@ -337,7 +338,7 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
                 <DialogFooter>
                     <Button type="submit" form="log-follow-up-form" disabled={isLoading} className="w-full">
                         {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                        Save Log
+                        Save Interaction
                     </Button>
                 </DialogFooter>
             </div>

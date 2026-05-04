@@ -5,7 +5,7 @@ import { useRouter, useParams } from 'next/navigation';
 import { useDoc, useFirestore, useUser, useCollection } from '@/firebase';
 import type { Fellowship, UserProfile, FellowshipMember, Soul } from '@/lib/types';
 import { doc, collection, query, orderBy, where } from 'firebase/firestore';
-import { Loader2, ArrowLeft, Users, Calendar, PlayCircle, MapPin, UserCheck2, Heart, Phone, Mail, Church, History, PlusCircle, User } from 'lucide-react';
+import { Loader2, ArrowLeft, Users, Calendar, PlayCircle, MapPin, UserCheck2, Heart, Phone, Mail, Church, History, PlusCircle, User, Award } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
@@ -23,17 +23,20 @@ import { actionItems } from '@/lib/follow-up-data';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Skeleton } from '@/components/ui/skeleton';
 
+/**
+ * Fetches and displays the profile name of the original soul-winner.
+ */
 function SoulWinnerInfo({ userId }: { userId: string }) {
     const firestore = useFirestore();
     const winnerRef = useMemo(() => userId ? doc(firestore, 'users', userId) : null, [firestore, userId]);
     const { data: winnerProfile, loading } = useDoc<UserProfile>(winnerRef);
 
     if (loading) return <Skeleton className="h-4 w-24" />;
-    if (!winnerProfile) return <span className="text-muted-foreground">Unknown User</span>;
+    if (!winnerProfile) return <span className="text-muted-foreground">Original winner unknown</span>;
 
     return (
         <Link href={`/dashboard/profile/${userId}`} className="text-primary font-medium hover:underline inline-flex items-center gap-1">
-            <User className="h-3 w-3" />
+            <Award className="h-3 w-3" />
             {winnerProfile.firstName} {winnerProfile.lastName}
         </Link>
     );
@@ -108,10 +111,10 @@ export default function FellowshipPageClient() {
                 <Users className="h-16 w-16 text-muted-foreground" />
                 <h3 className="mt-4 text-xl font-semibold">Fellowship Not Found</h3>
                 <p className="mt-2 text-sm text-muted-foreground">
-                   This fellowship may have been removed or the link is incorrect.
+                   This group may have been removed or the link is incorrect.
                 </p>
                 <Button asChild variant="outline" className="mt-6">
-                    <Link href="/dashboard/fellowship"><ArrowLeft className="mr-2 h-4 w-4" /> Back to Fellowships</Link>
+                    <Link href="/dashboard/fellowship"><ArrowLeft className="mr-2 h-4 w-4" /> Back to Directory</Link>
                 </Button>
             </div>
         );
@@ -144,7 +147,7 @@ export default function FellowshipPageClient() {
 
           <div className="grid gap-6">
               <div className="space-y-3">
-                  <h4 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Contact & Identity</h4>
+                  <h4 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Context & Accountability</h4>
                   <div className="space-y-2">
                       <div className="text-sm flex items-center gap-2">
                           <span className="font-medium text-muted-foreground shrink-0">Won By:</span>
@@ -172,7 +175,7 @@ export default function FellowshipPageClient() {
               </div>
 
               <div className="space-y-3">
-                  <h4 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Spiritual Progress</h4>
+                  <h4 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Current Spiritual Progress</h4>
                   <div className="grid grid-cols-2 gap-3">
                       <div className={cn("p-2 rounded border text-xs flex items-center gap-2", selectedSoul.attendingChurch ? "bg-green-500/10 border-green-500/20" : "bg-muted/50")}>
                           <UserCheck2 className={cn("h-4 w-4", selectedSoul.attendingChurch ? "text-green-500" : "text-muted-foreground")} />
@@ -216,13 +219,13 @@ export default function FellowshipPageClient() {
                               })}
                           </div>
                       ) : (
-                          <p className="text-center py-8 text-sm text-muted-foreground italic">No follow-up history yet.</p>
+                          <p className="text-center py-8 text-sm text-muted-foreground italic">No shared interactions yet.</p>
                       )}
                   </div>
               </div>
 
               <div className="space-y-3">
-                  <h4 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Context</h4>
+                  <h4 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Harvest Context</h4>
                   <div className="text-sm space-y-1">
                       <p><span className="font-medium">Won On:</span> {format(safeToDate(selectedSoul.wonAt)!, 'PPP')}</p>
                       <p><span className="font-medium">Source:</span> {selectedSoul.source} {selectedSoul.sourceDetails ? `(${selectedSoul.sourceDetails})` : ''}</p>
@@ -255,12 +258,12 @@ export default function FellowshipPageClient() {
                     <Card>
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
-                                <Users className="h-5 w-5" /> Fellowship Directory
+                                <Users className="h-5 w-5" /> Member Directory
                             </CardTitle>
                              <CardDescription>
                                 {isMember || isOrganizer 
-                                    ? "View believers and converts in this fellowship." 
-                                    : "Join the fellowship to access the member directory."}
+                                    ? "Shared view of believers and converts in this group." 
+                                    : "Join to access the directory and help with follow-up."}
                              </CardDescription>
                         </CardHeader>
                         <CardContent>
@@ -268,7 +271,7 @@ export default function FellowshipPageClient() {
                                <Tabs defaultValue="believers">
                                     <TabsList className="grid w-full grid-cols-2 mb-4">
                                         <TabsTrigger value="believers">Believers ({members?.length || 0})</TabsTrigger>
-                                        <TabsTrigger value="souls">Assigned Souls ({assignedSouls?.length || 0})</TabsTrigger>
+                                        <TabsTrigger value="souls">Converts ({assignedSouls?.length || 0})</TabsTrigger>
                                     </TabsList>
                                     <TabsContent value="believers">
                                         {membersLoading ? (
@@ -296,7 +299,7 @@ export default function FellowshipPageClient() {
                                                 </div>
                                             </ScrollArea>
                                         ) : (
-                                            <p className="text-sm text-muted-foreground text-center py-8">No believers found.</p>
+                                            <p className="text-sm text-muted-foreground text-center py-8">No other believers joined yet.</p>
                                         )}
                                     </TabsContent>
                                     <TabsContent value="souls">
@@ -330,7 +333,7 @@ export default function FellowshipPageClient() {
                                             </ScrollArea>
                                         ) : (
                                             <div className="p-8 text-center bg-muted/30 rounded-lg border-2 border-dashed">
-                                                <p className="text-sm text-muted-foreground italic">No souls have been assigned to this fellowship yet.</p>
+                                                <p className="text-sm text-muted-foreground italic">No converts assigned to this group yet.</p>
                                             </div>
                                         )}
                                     </TabsContent>
@@ -338,7 +341,7 @@ export default function FellowshipPageClient() {
                            ) : (
                                <div className="p-12 text-center bg-muted/30 rounded-lg border-2 border-dashed">
                                    <Users className="h-10 w-10 text-muted-foreground/30 mx-auto mb-4" />
-                                   <p className="text-sm text-muted-foreground italic">The member directory is only visible to people who have joined this fellowship.</p>
+                                   <p className="text-sm text-muted-foreground italic">Join this fellowship to collaborate on follow-up and view the member directory.</p>
                                </div>
                            )}
                         </CardContent>
@@ -347,7 +350,7 @@ export default function FellowshipPageClient() {
                 <div className="space-y-6">
                     <Card>
                         <CardHeader>
-                            <CardTitle className="text-lg flex items-center gap-2"><Calendar className="h-5 w-5"/> Schedule & Location</CardTitle>
+                            <CardTitle className="text-lg flex items-center gap-2"><Calendar className="h-5 w-5"/> Gathering Details</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4 text-sm">
                             {fellowship.schedule && (
@@ -358,7 +361,7 @@ export default function FellowshipPageClient() {
                             )}
                             {fellowship.location && (
                                 <div>
-                                    <p className="font-semibold flex items-center gap-1"><MapPin className="h-3 w-3" /> Location</p>
+                                    <p className="font-semibold flex items-center gap-1"><MapPin className="h-3 w-3" /> Area</p>
                                     <p className="text-muted-foreground">{fellowship.location}</p>
                                 </div>
                             )}
@@ -366,7 +369,7 @@ export default function FellowshipPageClient() {
                                 <Button asChild className="w-full mt-2">
                                     <Link href={fellowship.streamUrl} target="_blank" rel="noopener noreferrer">
                                         <PlayCircle className="mr-2 h-4 w-4" />
-                                        Join Stream
+                                        Gather Online
                                     </Link>
                                 </Button>
                             )}
@@ -382,9 +385,9 @@ export default function FellowshipPageClient() {
                                 <Link href={`/dashboard/profile/${organizer.id}`} className="flex items-center gap-3 group">
                                     <Avatar>
                                         <AvatarImage src={organizer.photoURL ?? undefined} />
-                                        <AvatarFallback>{organizer.firstName?.charAt(0)}{organizer.lastName?.charAt(0)}</AvatarFallback>
+                                        <AvatarFallback>{fellowship.organizerName?.charAt(0)}</AvatarFallback>
                                     </Avatar>
-                                    <span className="font-semibold group-hover:underline">{organizer.firstName} {organizer.lastName}</span>
+                                    <span className="font-semibold group-hover:underline">{fellowship.organizerName}</span>
                                 </Link>
                             </CardContent>
                         </Card>
@@ -397,8 +400,8 @@ export default function FellowshipPageClient() {
                   <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0">
                       <div className="p-6 border-b flex-shrink-0">
                         <SheetHeader className="text-left">
-                            <SheetTitle>Soul Record Details</SheetTitle>
-                            <SheetDescription>Information for assigned convert.</SheetDescription>
+                            <SheetTitle>Convert Journey Details</SheetTitle>
+                            <SheetDescription>Track growth and record collaborative follow-up.</SheetDescription>
                         </SheetHeader>
                       </div>
                       <ScrollArea className="flex-grow min-h-0 px-6">
@@ -411,8 +414,8 @@ export default function FellowshipPageClient() {
                   <DialogContent className="sm:max-w-md max-h-[90vh] flex flex-col p-0">
                       <div className="p-6 border-b flex-shrink-0">
                         <DialogHeader>
-                            <DialogTitle>Soul Record Details</DialogTitle>
-                            <DialogDescription>Information for assigned convert.</DialogDescription>
+                            <DialogTitle>Convert Journey Details</DialogTitle>
+                            <DialogDescription>Track growth and record collaborative follow-up.</DialogDescription>
                         </DialogHeader>
                       </div>
                       <ScrollArea className="flex-grow min-h-0 px-6">

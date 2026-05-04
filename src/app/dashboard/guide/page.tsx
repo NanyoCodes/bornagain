@@ -6,7 +6,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import { BookOpen, TrendingUp, UserPlus, Target, Newspaper, HeartHandshake, Share2, Users, Flame } from 'lucide-react';
+import { BookOpen, TrendingUp, UserPlus, Target, Newspaper, HeartHandshake, Share2, Users, Flame, UserCheck2, History } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
@@ -14,90 +14,66 @@ import { useToast } from '@/hooks/use-toast';
 const tutorials = [
   {
     id: 'kingdom-service',
-    title: 'Service to the Kingdom',
+    title: 'Kingdom Service & Great Commission',
     icon: Flame,
     content: [
-      'Testify is more than an app; it is a digital tool for the Great Commission (Matthew 28:19).',
-      'Use this platform to organize your personal and community evangelism efforts with a spirit of excellence.',
-      'Remember: every soul logged represents a precious child of God returning home.',
-      'Encourage others by sharing the app with your church and fellow believers to mobilize the body of Christ.',
+      'Testify is a tool designed to empower the Great Commission (Matthew 28:19). Every interaction recorded is an act of service to the Lord.',
+      'Organize your personal and community evangelism efforts with a spirit of excellence and accountability.',
+      'Remember: every soul logged represents a precious child of God being nurtured back to their Father.',
+      'Expanding the workforce: Refer the app to your pastors, youth leaders, and fellow believers to mobilize the global body of Christ.',
     ],
   },
   {
-    id: 'dashboard',
-    title: 'The Dashboard (Overview)',
-    icon: TrendingUp,
-    content: [
-      'Your main hub for an at-a-glance overview of your spiritual journey and harvest progress.',
-      'Complete your Daily Disciplines: Pray, Read the Bible, and Attend Church to stay spiritually sharp.',
-      'Track your evangelism progress with the monthly souls won chart and follow-up funnel.',
-      'View your streaks for sharing testimonies and completing daily disciplines.',
-    ],
-  },
-  {
-    id: 'souls-won',
-    title: 'Harvest: Souls Won',
+    id: 'harvest',
+    title: 'The Harvest: Logging Souls Won',
     icon: UserPlus,
     content: [
-      'Log every soul you lead to Christ to ensure they are nurtured and not forgotten.',
-      'Initial logging creates a record in your personal dashboard and the global Kingdom list.',
-      'Export your harvest data to CSV or PDF for church reporting or personal records.',
-      'Use AI-powered "Insights" to understand the best next steps for each person\'s spiritual growth.',
+      'Record new converts immediately to ensure they are never forgotten or neglected.',
+      'Logging a soul creates a record in your personal dashboard and the global Kingdom harvest list.',
+      'You can export your harvest data to CSV or PDF for church reporting or personal prayer records.',
+      'Use AI-powered "Insights" to get practical, personalized suggestions for the best next steps for each convert.',
     ],
   },
   {
-    id: 'fellowship-assignment',
-    title: 'Nurture: Fellowship Assignment',
+    id: 'nurture',
+    title: 'Nurture: Assigning to Fellowships',
     icon: Users,
     content: [
-      'A soul won is a seed planted; a Fellowship is where they are nurtured to grow.',
-      'On the Souls Won page, use the "Assign Fellowship" action to connect a convert to a local group.',
-      'Fellowships can be filtered by location (Country/State) to find the closest group for the convert.',
-      'Once assigned, the Fellowship Organizer is notified, and all group members gain access to help with follow-up.',
+      'A soul won is a seed planted; a local Fellowship is the soil where they are nurtured to grow.',
+      'On the "Souls Won" page, use the "Assign Fellowship" action to connect a convert to a local group based on their city or proximity.',
+      'Once assigned, the Fellowship Organizer is notified, and all members of that group gain access to the convert\'s record.',
+      'This transition ensures that discipleship becomes a shared responsibility of the community.',
     ],
   },
   {
     id: 'collaborative-followup',
-    title: 'Growth: Collaborative Follow-up',
-    icon: HeartHandshake,
+    title: 'Collaborative Care & History',
+    icon: History,
     content: [
-      'Fellowship members can collaboratively track the progress of assigned souls.',
-      'Any authorized member can log an interaction (Shared a meal, Studied Bible, etc.).',
-      'All interactions are added to a "Collective History" visible to the whole group.',
-      'This ensures that the burden of discipleship is shared and progress is transparent.',
+      'Within a Fellowship, any authorized member can log a follow-up interaction (e.g., Shared a meal, Studied Bible).',
+      'The app automatically records the identity of the member who performed the follow-up.',
+      'The "Collective Follow-up History" allows the whole group to see a transparent timeline of spiritual progress.',
+      'Sharing the burden: Members can encourage each other and ensure that no convert is left without support.',
     ],
   },
   {
-    id: 'campaigns',
-    title: 'Mobilize: Campaigns',
+    id: 'mobilize',
+    title: 'Mobilize: Campaigns & Coordination',
     icon: Target,
     content: [
-      'Join or create soul-winning campaigns to unite with other believers for mass outreach.',
-      'Set goals, locations, and inspirational scriptures to define your mission.',
-      'Use the Group Chat feature to coordinate logistics and share real-time updates.',
-      'Live stream your efforts to allow the global community to pray and watch with you.',
+      'Join or create soul-winning campaigns to unite with other believers for mass outreach events.',
+      'Use the integrated Group Chat feature to coordinate logistics, share real-time updates, and pray together.',
+      'Live stream your efforts or gather online via virtual meeting links to include those who cannot be physically present.',
     ],
   },
   {
-    id: 'testimonies',
-    title: 'Encourage: Testimonies & Prayer',
+    id: 'encouragement',
+    title: 'Encouragement: Testimonies & Prayer',
     icon: Newspaper,
     content: [
-      'Overcome the enemy by the word of your testimony (Revelation 12:11).',
-      'Share what God has done in your life or during campaigns to ignite faith in others.',
-      'Submit prayer requests and join the community in lifting up the needs of the brethren.',
-      'Support testimonies with an "Amen!" to let others know you are standing with them.',
-    ],
-  },
-  {
-    id: 'sharing',
-    title: 'Kingdom Expansion: Referral',
-    icon: Share2,
-    content: [
-      'The harvest is plentiful but the workers are few. Help us expand the workforce.',
-      'Refer the Testify app to your Pastors, youth leaders, and friends.',
-      'Use the sharing tools on Campaign and Testimony pages to spread the light of the Gospel.',
-      'Invite new converts to create their own accounts to begin tracking their disciplines.',
+      'Overcome the enemy by the word of your testimony (Revelation 12:11). Share what God is doing to ignite faith in others.',
+      'Submit prayer requests and join the community in lifting up the needs of the brethren with an "Amen!".',
+      'Linking prayers to answers: When a prayer is answered, share a testimony directly from the request to close the loop of faith.',
     ],
   },
 ];
@@ -116,15 +92,15 @@ export default function GuidePage() {
       if (typeof navigator !== 'undefined' && navigator.share) {
         await navigator.share(shareData);
       } else {
-        throw new Error('Not supported');
+        throw new Error('Share API not supported or permission denied');
       }
     } catch (err) {
-      // Fallback for browsers that don't support sharing or deny permission (e.g. in some dev environments)
+      // Fallback to clipboard
       if (typeof window !== 'undefined') {
         navigator.clipboard.writeText(shareData.url);
         toast({
           title: 'Link Copied',
-          description: 'The app link has been copied to your clipboard. Share it with your brethren!',
+          description: 'Browser sharing was denied. The referral link has been copied to your clipboard instead.',
         });
       }
     }
@@ -167,9 +143,9 @@ export default function GuidePage() {
       
       <div className="mt-12 p-6 rounded-xl bg-primary/5 border border-primary/20 text-center">
         <h3 className="font-bold text-lg mb-2">Ready to expand the Kingdom?</h3>
-        <p className="text-sm text-muted-foreground mb-4">Sharing this tool with others helps build a stronger network of believers dedicated to the Great Commission.</p>
+        <p className="text-sm text-muted-foreground mb-4">Sharing this tool with fellow believers helps build a stronger network dedicated to the Great Commission.</p>
         <Button onClick={handleShare}>
-          <Share2 className="mr-2 h-4 w-4" /> Share App
+          <Share2 className="mr-2 h-4 w-4" /> Share App & Refer Brethren
         </Button>
       </div>
     </div>

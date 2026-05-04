@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import {
   Sheet,
   SheetContent,
@@ -42,14 +42,14 @@ export default function SoulsWonPage() {
   const isMobile = useIsMobile();
   const { searchTerm, setSearchPlaceholder, setIsSearchVisible, setSearchTerm } = useSearch();
 
-  // Dialog targets
+  // Centralize state for all dialogs on this page
   const [soulToEdit, setSoulToEdit] = useState<Soul | null>(null);
   const [soulForFollowUp, setSoulForFollowUp] = useState<Soul | null>(null);
   const [soulForHistory, setSoulForHistory] = useState<Soul | null>(null);
   const [soulToAssign, setSoulToAssign] = useState<Soul | null>(null);
   const [isAssigning, setIsAssigning] = useState<string | null>(null);
 
-  // Persistent references for stable dialog content during transitions
+  // Use refs for stable identity during transitions
   const activeEditSoul = useRef<Soul | null>(null);
   useEffect(() => { if (soulToEdit) activeEditSoul.current = soulToEdit; }, [soulToEdit]);
 
@@ -100,7 +100,7 @@ export default function SoulsWonPage() {
   
   const fellowships = useMemo(() => {
     if (!allFellowships) return [];
-    // Fixed circular reference crash
+    // Corrected circular reference to fellowships
     return allFellowships.filter(f => f.status !== 'deleted');
   }, [allFellowships]);
 
@@ -189,7 +189,6 @@ export default function SoulsWonPage() {
             });
         }
     } catch (error) {
-        console.error("Error assigning fellowship:", error);
         const permissionError = new FirestorePermissionError({
             path: `TRANSACTION:ASSIGN_FELLOWSHIP:${soul.id}`,
             operation: 'update',
