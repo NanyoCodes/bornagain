@@ -9,6 +9,7 @@ import { Loader2, ArrowLeft, Users, Calendar, PlayCircle, MapPin } from 'lucide-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
@@ -38,7 +39,7 @@ export default function FellowshipPageClient() {
 
     const isOrganizer = useMemo(() => {
         if (!user || !fellowship) return false;
-        return fellowship.organizerId === user.uid);
+        return fellowship.organizerId === user.uid;
     }, [user, fellowship]);
 
     const membersQuery = useMemo(() => {
