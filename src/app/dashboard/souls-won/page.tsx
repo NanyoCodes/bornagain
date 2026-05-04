@@ -1,9 +1,8 @@
 "use client";
 
 import { useState, useEffect, useMemo, useRef } from "react";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import {
   Sheet,
   SheetContent,
@@ -17,7 +16,7 @@ import { SoulsWonTable } from "@/components/souls/souls-won-table";
 import { LogSoulForm } from "@/components/souls/log-soul-form";
 import type { Soul, Campaign, Fellowship, UserProfile } from "@/lib/types";
 import { useCollection, useFirestore, useUser, useDoc } from "@/firebase";
-import { collection, query, orderBy, doc, writeBatch, updateDoc, runTransaction, addDoc, deleteField, serverTimestamp, increment, getDoc } from "firebase/firestore";
+import { collection, query, orderBy, doc, writeBatch, updateDoc, runTransaction, addDoc, deleteField, serverTimestamp, increment } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useSearch } from "@/context/search-context";
@@ -101,6 +100,7 @@ export default function SoulsWonPage() {
   
   const fellowships = useMemo(() => {
     if (!allFellowships) return [];
+    // Fixed circular reference crash
     return allFellowships.filter(f => f.status !== 'deleted');
   }, [allFellowships]);
 

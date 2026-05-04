@@ -286,6 +286,10 @@ export function LocationMapPicker({ form }: LocationMapPickerProps) {
             <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
                 <MapIcon className="h-6 w-6 text-primary opacity-50" />
             </div>
+            <p className="text-xs text-muted-foreground px-4">Interactive map requires a valid Google Maps API Key.</p>
+            <Button asChild variant="link" className="h-auto p-0 text-xs">
+                <Link href="/docs/google-maps-setup-guide.md">Setup Guide</Link>
+            </Button>
         </div>
     );
 

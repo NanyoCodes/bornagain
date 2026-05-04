@@ -13,7 +13,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
+} from '@/components/ui/dialog';
 import { doc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -100,6 +100,14 @@ function CampaignMap({ campaign }: { campaign: Campaign }) {
                 <MapIcon className="h-8 w-8 text-primary opacity-50" />
             </div>
             {!campaign.latitude && <p className="text-sm text-muted-foreground">No coordinates provided for this campaign.</p>}
+            {!isValidKey(GOOGLE_MAPS_API_KEY) && (
+                <>
+                    <p className="text-xs text-muted-foreground px-12">Interactive map requires a valid Google Maps API Key.</p>
+                    <Button asChild variant="link" className="h-auto p-0 text-xs">
+                        <Link href="/docs/google-maps-setup-guide.md">Setup Guide</Link>
+                    </Button>
+                </>
+            )}
         </div>
     );
 
