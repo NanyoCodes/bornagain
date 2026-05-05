@@ -242,24 +242,22 @@ export default function FellowshipPageClient() {
                                         {membersLoading ? (
                                             <div className="flex justify-center py-8"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>
                                         ) : members && members.length > 0 ? (
-                                            <ScrollArea className="h-96 pr-4">
-                                                <div className="space-y-4">
-                                                    {members.map(member => (
-                                                        <div key={member.id} className="flex items-center gap-4 p-3 rounded-lg border bg-muted/20">
-                                                            <Avatar>
-                                                                <AvatarImage src={member.photoURL} />
-                                                                <AvatarFallback>{member.firstName?.charAt(0)}</AvatarFallback>
-                                                            </Avatar>
-                                                            <div className="flex-1 min-w-0">
-                                                                <p className="font-semibold truncate">{member.firstName} {member.lastName}</p>
-                                                            </div>
-                                                            <Button asChild variant="ghost" size="sm">
-                                                                <Link href={`/dashboard/profile/${member.userId}`}>Profile</Link>
-                                                            </Button>
+                                            <div className="space-y-4">
+                                                {members.map(member => (
+                                                    <div key={member.id} className="flex items-center gap-4 p-3 rounded-lg border bg-muted/20">
+                                                        <Avatar>
+                                                            <AvatarImage src={member.photoURL} />
+                                                            <AvatarFallback>{member.firstName?.charAt(0)}</AvatarFallback>
+                                                        </Avatar>
+                                                        <div className="flex-1 min-w-0">
+                                                            <p className="font-semibold truncate">{member.firstName} {member.lastName}</p>
                                                         </div>
-                                                    ))}
-                                                </div>
-                                            </ScrollArea>
+                                                        <Button asChild variant="ghost" size="sm">
+                                                            <Link href={`/dashboard/profile/${member.userId}`}>Profile</Link>
+                                                        </Button>
+                                                    </div>
+                                                ))}
+                                            </div>
                                         ) : (
                                             <p className="text-sm text-muted-foreground text-center py-8">No other believers joined yet.</p>
                                         )}
@@ -268,31 +266,29 @@ export default function FellowshipPageClient() {
                                         {soulsLoading ? (
                                             <div className="flex justify-center py-8"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>
                                         ) : assignedSouls && assignedSouls.length > 0 ? (
-                                            <ScrollArea className="h-96 pr-4">
-                                                <div className="space-y-4">
-                                                    {assignedSouls.map(soul => (
-                                                        <div key={soul.id} className="flex items-center gap-4 p-3 rounded-lg border bg-primary/5 border-primary/10">
-                                                            <Avatar>
-                                                                <AvatarFallback><Heart className="h-4 w-4 text-primary" /></AvatarFallback>
-                                                            </Avatar>
-                                                            <div className="flex-1 min-w-0">
-                                                                <p className="font-semibold truncate">{soul.firstName} {soul.lastName}</p>
-                                                                <p className="text-xs text-muted-foreground">Status: <span className="font-medium text-primary">{soul.status}</span></p>
-                                                            </div>
-                                                            <Button 
-                                                                variant="outline" 
-                                                                size="sm"
-                                                                onClick={() => {
-                                                                    setSelectedSoul(soul);
-                                                                    setIsSoulDetailsOpen(true);
-                                                                }}
-                                                            >
-                                                                Details
-                                                            </Button>
+                                            <div className="space-y-4">
+                                                {assignedSouls.map(soul => (
+                                                    <div key={soul.id} className="flex items-center gap-4 p-3 rounded-lg border bg-primary/5 border-primary/10">
+                                                        <Avatar>
+                                                            <AvatarFallback><Heart className="h-4 w-4 text-primary" /></AvatarFallback>
+                                                        </Avatar>
+                                                        <div className="flex-1 min-w-0">
+                                                            <p className="font-semibold truncate">{soul.firstName} {soul.lastName}</p>
+                                                            <p className="text-xs text-muted-foreground">Status: <span className="font-medium text-primary">{soul.status}</span></p>
                                                         </div>
-                                                    ))}
-                                                </div>
-                                            </ScrollArea>
+                                                        <Button 
+                                                            variant="outline" 
+                                                            size="sm"
+                                                            onClick={() => {
+                                                                setSelectedSoul(soul);
+                                                                setIsSoulDetailsOpen(true);
+                                                            }}
+                                                        >
+                                                            Details
+                                                        </Button>
+                                                    </div>
+                                                ))}
+                                            </div>
                                         ) : (
                                             <div className="p-8 text-center bg-muted/30 rounded-lg border-2 border-dashed">
                                                 <p className="text-sm text-muted-foreground italic">No converts assigned to this group yet.</p>

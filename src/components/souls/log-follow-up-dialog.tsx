@@ -104,10 +104,10 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
     
     setIsLoading(true);
 
+    // CRITICAL: Correct pathing to convert's original owner
     const soulRef = doc(firestore, `users/${soul.userId}/souls`, soul.id);
     const globalSoulRef = doc(firestore, 'souls', soul.id);
 
-    // Using new Date() instead of serverTimestamp() inside the log entry for array compatibility.
     const newLogEntry = {
         date: new Date(), 
         note: values.note || '',

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import {
@@ -14,8 +14,8 @@ import {
 import { PlusCircle, Download, Loader2 } from "lucide-react";
 import { SoulsWonTable } from "@/components/souls/souls-won-table";
 import { LogSoulForm } from "@/components/souls/log-soul-form";
-import type { Soul, Campaign, Fellowship, UserProfile } from "@/lib/types";
-import { useCollection, useFirestore, useUser, useDoc } from "@/firebase";
+import type { Soul, Campaign, Fellowship } from "@/lib/types";
+import { useCollection, useFirestore, useUser } from "@/firebase";
 import { collection, query, orderBy, doc, deleteField, serverTimestamp, increment, runTransaction, addDoc } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -58,9 +58,6 @@ export default function SoulsWonPage() {
     };
   }, [setIsSearchVisible, setSearchPlaceholder, setSearchTerm]);
 
-  const userDocRef = useMemo(() => user ? doc(firestore, 'users', user.uid) : null, [user, firestore]);
-  const { data: userProfile } = useDoc<UserProfile>(userDocRef);
-
   const soulsQuery = useMemo(() => {
     if (!user?.uid || !firestore) return null;
     return query(collection(firestore, `users/${user.uid}/souls`), orderBy("wonAt", "desc"));
@@ -84,7 +81,7 @@ export default function SoulsWonPage() {
   }, [firestore]);
   const { data: allFellowships, loading: loadingFellowships } = useCollection<Fellowship>(fellowshipsQuery);
   
-  const fellowships = useMemo(() => {
+  const fellowshipsList = useMemo(() => {
     if (!allFellowships) return [];
     return allFellowships.filter(f => f.status !== 'deleted');
   }, [allFellowships]);
@@ -120,10 +117,10 @@ export default function SoulsWonPage() {
     if (!user || !firestore || isAssigning) return;
     setIsAssigning(fellowshipId);
 
-    const soulRef = doc(firestore, `users/${soul.userId}/souls`, soul.id);
+    const soulRef = doc(firestore, `users/${user.uid}/souls`, soul.id);
     const globalSoulRef = doc(firestore, 'souls', soul.id);
 
-    const selectedFellowship = fellowships?.find(f => f.id === fellowshipId);
+    const selectedFellowship = fellowshipsList?.find(f => f.id === fellowshipId);
     
     const updateData: { [key: string]: any } = {};
 
@@ -248,7 +245,7 @@ export default function SoulsWonPage() {
                   <SheetDescription>Record details of the person ministered to.</SheetDescription>
                 </SheetHeader>
                 <div className="max-h-[80vh] overflow-y-auto p-1 mt-4">
-                  <LogSoulForm onSoulLogged={handleSoulLogged} fellowships={fellowships} campaigns={activeCampaigns} />
+                  <LogSoulForm onSoulLogged={handleSoulLogged} fellowships={fellowshipsList} campaigns={activeCampaigns} />
                 </div>
               </SheetContent>
             </Sheet>
@@ -260,7 +257,7 @@ export default function SoulsWonPage() {
                   <DialogTitle>Log a New Soul</DialogTitle>
                 </DialogHeader>
                 <div className="max-h-[70vh] overflow-y-auto pr-2">
-                  <LogSoulForm onSoulLogged={handleSoulLogged} fellowships={fellowships} campaigns={activeCampaigns} />
+                  <LogSoulForm onSoulLogged={handleSoulLogged} fellowships={fellowshipsList} campaigns={activeCampaigns} />
                 </div>
               </DialogContent>
             </Dialog>
@@ -282,7 +279,7 @@ export default function SoulsWonPage() {
           <DialogContent className="sm:max-w-lg">
               <DialogHeader><DialogTitle>Edit Soul Details</DialogTitle></DialogHeader>
               <div className="max-h-[70vh] overflow-y-auto pr-2">
-                  {soulToEdit && <EditSoulForm soul={soulToEdit} onSoulUpdated={handleSoulUpdated} fellowships={fellowships} campaigns={activeCampaigns} />}
+                  {soulToEdit && <EditSoulForm soul={soulToEdit} onSoulUpdated={handleSoulUpdated} fellowships={fellowshipsList} campaigns={activeCampaigns} />}
               </div>
           </DialogContent>
       </Dialog>
@@ -292,7 +289,6 @@ export default function SoulsWonPage() {
           isOpen={!!soulForFollowUp}
           onOpenChange={(isOpen) => { if (!isOpen) setSoulForFollowUp(null); }}
           onFollowUpLogged={handleFollowUpLogged}
-          userProfile={userProfile}
       />
 
       <ViewHistoryDialog
@@ -303,7 +299,7 @@ export default function SoulsWonPage() {
 
       <AssignFellowshipDialog
           soul={soulToAssign}
-          fellowships={fellowships}
+          fellowships={fellowshipsList}
           isOpen={!!soulToAssign}
           onOpenChange={() => setSoulToAssign(null)}
           onAssignFellowship={handleAssignFellowship}
