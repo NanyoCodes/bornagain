@@ -1,8 +1,8 @@
 export const firebaseConfig = {
   apiKey: "AIzaSyD9kYktgT6rSHdr5efM0cwHhIe61zf9ZeM",
-  authDomain: typeof window !== 'undefined' && window.location.hostname.includes('testifyglobal.com') 
-    ? "testifyglobal.com" 
-    : "studio-6220967431-56fe2.firebaseapp.com",
+  // Using the project domain as primary to resolve "Invalid Request" in dev, 
+  // while ensuring testifyglobal.com is maintained in the Next.js rewrites.
+  authDomain: "studio-6220967431-56fe2.firebaseapp.com",
   projectId: "studio-6220967431-56fe2",
   storageBucket: "studio-6220967431-56fe2.firebasestorage.app",
   messagingSenderId: "313468907372",

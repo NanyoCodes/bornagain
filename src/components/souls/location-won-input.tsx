@@ -32,7 +32,7 @@ export function LocationWonInput({ form }: LocationWonInputProps) {
         const val = e.target.value;
         setInputValue(val);
         
-        // When user types, we treat the whole string as the "city" for simplicity in a text-only mode
+        // Treat the input string as the "city" for simplicity in text-only mode
         form.setValue('locationWonCity', val, { shouldDirty: true });
         form.setValue('locationWonState', '', { shouldDirty: true });
         form.setValue('locationWonCountry', '', { shouldDirty: true });

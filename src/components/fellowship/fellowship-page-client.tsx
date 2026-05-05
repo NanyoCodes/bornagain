@@ -5,7 +5,7 @@ import { useRouter, useParams } from 'next/navigation';
 import { useDoc, useFirestore, useUser, useCollection } from '@/firebase';
 import type { Fellowship, UserProfile, FellowshipMember, Soul } from '@/lib/types';
 import { doc, collection, query, orderBy, where } from 'firebase/firestore';
-import { Loader2, ArrowLeft, Users, Calendar, PlayCircle, MapPin, UserCheck2, Heart, Phone, Mail, Church, History, PlusCircle, User, Award } from 'lucide-react';
+import { Loader2, ArrowLeft, Users, Calendar, PlayCircle, MapPin, UserCheck2, Heart, Phone, Mail, Church, History, PlusCircle, Award } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
@@ -23,9 +23,6 @@ import { actionItems } from '@/lib/follow-up-data';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Skeleton } from '@/components/ui/skeleton';
 
-/**
- * Fetches and displays the profile name of the original soul-winner.
- */
 function SoulWinnerInfo({ userId }: { userId: string }) {
     const firestore = useFirestore();
     const winnerRef = useMemo(() => userId ? doc(firestore, 'users', userId) : null, [firestore, userId]);
@@ -93,10 +90,6 @@ export default function FellowshipPageClient() {
 
     const loading = fellowshipLoading || organizerLoading;
 
-    const handleLogFollowUp = () => {
-        setIsLogFollowUpOpen(true);
-    };
-
     if (loading) {
         return (
             <div className="flex items-center justify-center h-full">
@@ -133,7 +126,7 @@ export default function FellowshipPageClient() {
               <TooltipProvider>
                 <Tooltip>
                     <TooltipTrigger asChild>
-                        <Button onClick={handleLogFollowUp} size="icon" variant="outline" className="shrink-0">
+                        <Button onClick={() => setIsLogFollowUpOpen(true)} size="icon" variant="outline" className="shrink-0">
                             <PlusCircle className="h-4 w-4" />
                             <span className="sr-only">Log Follow-up</span>
                         </Button>
@@ -175,20 +168,6 @@ export default function FellowshipPageClient() {
               </div>
 
               <div className="space-y-3">
-                  <h4 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Current Spiritual Progress</h4>
-                  <div className="grid grid-cols-2 gap-3">
-                      <div className={cn("p-2 rounded border text-xs flex items-center gap-2", selectedSoul.attendingChurch ? "bg-green-500/10 border-green-500/20" : "bg-muted/50")}>
-                          <UserCheck2 className={cn("h-4 w-4", selectedSoul.attendingChurch ? "text-green-500" : "text-muted-foreground")} />
-                          Church
-                      </div>
-                      <div className={cn("p-2 rounded border text-xs flex items-center gap-2", selectedSoul.inBibleStudy ? "bg-green-500/10 border-green-500/20" : "bg-muted/50")}>
-                          <Heart className={cn("h-4 w-4", selectedSoul.inBibleStudy ? "text-green-500" : "text-muted-foreground")} />
-                          Bible Study
-                      </div>
-                  </div>
-              </div>
-
-              <div className="space-y-3">
                   <h4 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
                       <History className="h-4 w-4" /> Collective Follow-up History
                   </h4>
@@ -223,20 +202,6 @@ export default function FellowshipPageClient() {
                       )}
                   </div>
               </div>
-
-              <div className="space-y-3">
-                  <h4 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Harvest Context</h4>
-                  <div className="text-sm space-y-1">
-                      <p><span className="font-medium">Won On:</span> {format(safeToDate(selectedSoul.wonAt)!, 'PPP')}</p>
-                      <p><span className="font-medium">Source:</span> {selectedSoul.source} {selectedSoul.sourceDetails ? `(${selectedSoul.sourceDetails})` : ''}</p>
-                      {selectedSoul.locationWon?.city && (
-                          <p className="flex items-center gap-2 pt-1">
-                              <MapPin className="h-3 w-3 text-muted-foreground" />
-                              {selectedSoul.locationWon.city}, {selectedSoul.locationWon.country}
-                          </p>
-                      )}
-                  </div>
-              </div>
           </div>
       </div>
     ) : null;
@@ -262,7 +227,7 @@ export default function FellowshipPageClient() {
                             </CardTitle>
                              <CardDescription>
                                 {isMember || isOrganizer 
-                                    ? "Shared view of believers and converts in this group." 
+                                    ? "Collaborative view of members and converts." 
                                     : "Join to access the directory and help with follow-up."}
                              </CardDescription>
                         </CardHeader>
@@ -287,9 +252,6 @@ export default function FellowshipPageClient() {
                                                             </Avatar>
                                                             <div className="flex-1 min-w-0">
                                                                 <p className="font-semibold truncate">{member.firstName} {member.lastName}</p>
-                                                                {member.userId === fellowship.organizerId && (
-                                                                    <Badge variant="secondary" className="text-[10px] h-4">Organizer</Badge>
-                                                                )}
                                                             </div>
                                                             <Button asChild variant="ghost" size="sm">
                                                                 <Link href={`/dashboard/profile/${member.userId}`}>Profile</Link>
@@ -375,23 +337,6 @@ export default function FellowshipPageClient() {
                             )}
                         </CardContent>
                     </Card>
-
-                    {organizer && (
-                         <Card>
-                            <CardHeader>
-                                <CardTitle className="text-lg">Organizer</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <Link href={`/dashboard/profile/${organizer.id}`} className="flex items-center gap-3 group">
-                                    <Avatar>
-                                        <AvatarImage src={organizer.photoURL ?? undefined} />
-                                        <AvatarFallback>{fellowship.organizerName?.charAt(0)}</AvatarFallback>
-                                    </Avatar>
-                                    <span className="font-semibold group-hover:underline">{fellowship.organizerName}</span>
-                                </Link>
-                            </CardContent>
-                        </Card>
-                    )}
                 </div>
             </div>
 

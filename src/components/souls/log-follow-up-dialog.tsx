@@ -107,7 +107,7 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
     const soulRef = doc(firestore, `users/${soul.userId}/souls`, soul.id);
     const globalSoulRef = doc(firestore, 'souls', soul.id);
 
-    // Track member identity in the history log
+    // Using new Date() instead of serverTimestamp() inside the log entry for array compatibility.
     const newLogEntry = {
         date: new Date(), 
         note: values.note || '',
@@ -133,7 +133,7 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
 
         await batch.commit();
 
-        toast({ title: 'Follow-up Logged', description: 'Your interaction has been saved to the collective history.' });
+        toast({ title: 'Follow-up Logged', description: 'Your interaction has been saved to the history.' });
         onFollowUpLogged();
     } catch (err: any) {
         console.error("Failed to log follow-up:", err);
@@ -148,7 +148,7 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
             toast({
                 variant: "destructive",
                 title: "Error",
-                description: "Could not save follow-up interaction. Please try again."
+                description: "Could not save interaction. Please try again."
             });
         }
     } finally {
@@ -270,18 +270,6 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
                                     </FormItem>
                                 )}
                             />
-                             <FormField
-                                control={form.control}
-                                name="inServiceDepartment"
-                                render={({ field }) => (
-                                    <FormItem className="flex flex-row items-center justify-between rounded-md p-2 -mx-2 hover:bg-muted/50">
-                                        <FormLabel className="font-normal flex items-center gap-2 cursor-pointer"><Users className="h-4 w-4" />Serving in Church</FormLabel>
-                                        <FormControl>
-                                            <Switch checked={field.value} onCheckedChange={field.onChange} />
-                                        </FormControl>
-                                    </FormItem>
-                                )}
-                            />
                         </div>
                      </AccordionContent>
                 </AccordionItem>
@@ -301,7 +289,7 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
               <div className="p-6 border-b flex-shrink-0">
                 <SheetHeader className="text-left flex-shrink-0">
                     <SheetTitle>Log Follow-up: {soul.firstName}</SheetTitle>
-                    <SheetDescription>Nurture the seed and track their journey.</SheetDescription>
+                    <SheetDescription>Track their spiritual journey.</SheetDescription>
                 </SheetHeader>
               </div>
               <div className="flex-grow overflow-y-auto px-6 py-4">

@@ -16,7 +16,7 @@ import { SoulsWonTable } from "@/components/souls/souls-won-table";
 import { LogSoulForm } from "@/components/souls/log-soul-form";
 import type { Soul, Campaign, Fellowship, UserProfile } from "@/lib/types";
 import { useCollection, useFirestore, useUser, useDoc } from "@/firebase";
-import { collection, query, orderBy, doc, writeBatch, updateDoc, runTransaction, addDoc, deleteField, serverTimestamp, increment } from "firebase/firestore";
+import { collection, query, orderBy, doc, deleteField, serverTimestamp, increment, runTransaction, addDoc } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useSearch } from "@/context/search-context";
@@ -42,25 +42,11 @@ export default function SoulsWonPage() {
   const isMobile = useIsMobile();
   const { searchTerm, setSearchPlaceholder, setIsSearchVisible, setSearchTerm } = useSearch();
 
-  // Centralize state for all dialogs on this page
   const [soulToEdit, setSoulToEdit] = useState<Soul | null>(null);
   const [soulForFollowUp, setSoulForFollowUp] = useState<Soul | null>(null);
   const [soulForHistory, setSoulForHistory] = useState<Soul | null>(null);
   const [soulToAssign, setSoulToAssign] = useState<Soul | null>(null);
   const [isAssigning, setIsAssigning] = useState<string | null>(null);
-
-  // Use refs for stable identity during transitions
-  const activeEditSoul = useRef<Soul | null>(null);
-  useEffect(() => { if (soulToEdit) activeEditSoul.current = soulToEdit; }, [soulToEdit]);
-
-  const activeFollowUpSoul = useRef<Soul | null>(null);
-  useEffect(() => { if (soulForFollowUp) activeFollowUpSoul.current = soulForFollowUp; }, [soulForFollowUp]);
-
-  const activeHistorySoul = useRef<Soul | null>(null);
-  useEffect(() => { if (soulForHistory) activeHistorySoul.current = soulForHistory; }, [soulForHistory]);
-
-  const activeAssignSoul = useRef<Soul | null>(null);
-  useEffect(() => { if (soulToAssign) activeAssignSoul.current = soulToAssign; }, [soulToAssign]);
 
   useEffect(() => {
     setMounted(true);
@@ -262,7 +248,7 @@ export default function SoulsWonPage() {
                   <SheetDescription>Record details of the person ministered to.</SheetDescription>
                 </SheetHeader>
                 <div className="max-h-[80vh] overflow-y-auto p-1 mt-4">
-                  {formContent}
+                  <LogSoulForm onSoulLogged={handleSoulLogged} fellowships={fellowships} campaigns={activeCampaigns} />
                 </div>
               </SheetContent>
             </Sheet>
@@ -274,7 +260,7 @@ export default function SoulsWonPage() {
                   <DialogTitle>Log a New Soul</DialogTitle>
                 </DialogHeader>
                 <div className="max-h-[70vh] overflow-y-auto pr-2">
-                  {formContent}
+                  <LogSoulForm onSoulLogged={handleSoulLogged} fellowships={fellowships} campaigns={activeCampaigns} />
                 </div>
               </DialogContent>
             </Dialog>
@@ -296,13 +282,13 @@ export default function SoulsWonPage() {
           <DialogContent className="sm:max-w-lg">
               <DialogHeader><DialogTitle>Edit Soul Details</DialogTitle></DialogHeader>
               <div className="max-h-[70vh] overflow-y-auto pr-2">
-                  {activeEditSoul.current && <EditSoulForm soul={activeEditSoul.current} onSoulUpdated={handleSoulUpdated} fellowships={fellowships} campaigns={activeCampaigns} />}
+                  {soulToEdit && <EditSoulForm soul={soulToEdit} onSoulUpdated={handleSoulUpdated} fellowships={fellowships} campaigns={activeCampaigns} />}
               </div>
           </DialogContent>
       </Dialog>
 
       <LogFollowUpDialog
-          soul={activeFollowUpSoul.current}
+          soul={soulForFollowUp}
           isOpen={!!soulForFollowUp}
           onOpenChange={(isOpen) => { if (!isOpen) setSoulForFollowUp(null); }}
           onFollowUpLogged={handleFollowUpLogged}
@@ -310,13 +296,13 @@ export default function SoulsWonPage() {
       />
 
       <ViewHistoryDialog
-          soul={activeHistorySoul.current}
+          soul={soulForHistory}
           isOpen={!!soulForHistory}
           onOpenChange={(isOpen) => { if (!isOpen) setSoulForHistory(null); }}
       />
 
       <AssignFellowshipDialog
-          soul={activeAssignSoul.current}
+          soul={soulToAssign}
           fellowships={fellowships}
           isOpen={!!soulToAssign}
           onOpenChange={() => setSoulToAssign(null)}

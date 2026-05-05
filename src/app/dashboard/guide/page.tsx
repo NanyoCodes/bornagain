@@ -6,7 +6,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import { BookOpen, TrendingUp, UserPlus, Target, Newspaper, HeartHandshake, Share2, Users, Flame, UserCheck2, History } from 'lucide-react';
+import { BookOpen, UserPlus, Target, Newspaper, HeartHandshake, Share2, Users, Flame, History } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
@@ -92,15 +92,14 @@ export default function GuidePage() {
       if (typeof navigator !== 'undefined' && navigator.share) {
         await navigator.share(shareData);
       } else {
-        throw new Error('Share API not supported or permission denied');
+        throw new Error('Share API not supported');
       }
     } catch (err) {
-      // Fallback to clipboard
       if (typeof window !== 'undefined') {
         navigator.clipboard.writeText(shareData.url);
         toast({
           title: 'Link Copied',
-          description: 'Browser sharing was denied. The referral link has been copied to your clipboard instead.',
+          description: 'Referral link has been copied to your clipboard.',
         });
       }
     }

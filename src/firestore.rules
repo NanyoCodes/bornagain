@@ -14,9 +14,6 @@ service cloud.firestore {
              user2Data != null && 'partnerIds' in user2Data && user2Data.partnerIds is list && user1 in user2Data.partnerIds;
     }
 
-    /**
-     * Checks if the authenticated user is a member of the specified fellowship.
-     */
     function isFellowshipMember(fellowshipId) {
       return request.auth != null && 
              fellowshipId != null && 
@@ -27,7 +24,6 @@ service cloud.firestore {
              request.auth.uid in get(/databases/$(database)/documents/fellowships/$(fellowshipId)).data.memberIds;
     }
 
-    // User profile access rules and all subcollections
     match /users/{userId} {
       allow read: if request.auth != null;
       allow create, delete: if isOwner(userId);
@@ -43,8 +39,7 @@ service cloud.firestore {
       match /souls/{soulId} {
         allow read: if isOwner(userId) || isFellowshipMember(resource.data.fellowshipId);
         allow create: if isOwner(userId);
-        // Explicitly allow fellowship members to update spiritual progress and logs for assigned souls
-        allow update: if request.auth != null && (isOwner(userId) || ( 'fellowshipId' in resource.data && isFellowshipMember(resource.data.fellowshipId) ));
+        allow update: if request.auth != null && (isOwner(userId) || isFellowshipMember(resource.data.fellowshipId));
       }
       
       match /joinedCampaigns/{campaignId} {
@@ -77,8 +72,7 @@ service cloud.firestore {
     match /souls/{soulId} {
       allow get, list: if request.auth != null;
       allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
-      // Allow collaborative tracking for members of the convert's assigned fellowship globally
-      allow update: if request.auth != null && (resource.data.userId == request.auth.uid || ( 'fellowshipId' in resource.data && isFellowshipMember(resource.data.fellowshipId) ));
+      allow update: if request.auth != null && (resource.data.userId == request.auth.uid || isFellowshipMember(resource.data.fellowshipId));
     }
 
     match /testimonies/{testimonyId} {
