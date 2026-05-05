@@ -5,10 +5,10 @@ import { useRouter, useParams } from 'next/navigation';
 import { useDoc, useFirestore, useUser, useCollection } from '@/firebase';
 import type { Fellowship, UserProfile, FellowshipMember, Soul } from '@/lib/types';
 import { doc, collection, query, orderBy, where } from 'firebase/firestore';
-import { Loader2, ArrowLeft, Users, Calendar, PlayCircle, MapPin, UserCheck2, Heart, Phone, Mail, Church, History, PlusCircle, Award } from 'lucide-react';
+import { Loader2, ArrowLeft, Users, Calendar, PlayCircle, MapPin, Heart, Phone, Mail, Church, History, PlusCircle, Award } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -246,7 +246,6 @@ export default function FellowshipPageClient() {
                                                 {members.map(member => (
                                                     <div key={member.id} className="flex items-center gap-4 p-3 rounded-lg border bg-muted/20">
                                                         <Avatar>
-                                                            <AvatarImage src={member.photoURL} />
                                                             <AvatarFallback>{member.firstName?.charAt(0)}</AvatarFallback>
                                                         </Avatar>
                                                         <div className="flex-1 min-w-0">

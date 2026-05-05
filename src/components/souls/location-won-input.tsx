@@ -9,8 +9,7 @@ interface LocationWonInputProps {
 }
 
 /**
- * Simplified text-only location input.
- * Replaces complex autocomplete with a robust text field to avoid Google Maps initialization errors.
+ * Simplified text-only location input to ensure compatibility and fulfill "text only" requirement.
  */
 export function LocationWonInput({ form }: LocationWonInputProps) {
     const initialCity = form.getValues('locationWonCity');

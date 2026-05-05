@@ -6,7 +6,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import { BookOpen, UserPlus, Target, Newspaper, HeartHandshake, Share2, Users, Flame, History } from 'lucide-react';
+import { BookOpen, UserPlus, Target, Newspaper, Share2, Users, Flame, History } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';

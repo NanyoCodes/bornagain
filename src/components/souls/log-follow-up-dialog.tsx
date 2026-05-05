@@ -104,14 +104,15 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
     
     setIsLoading(true);
 
+    // Fellowship members log follow-ups on the soul record in the original winner's subcollection
     const soulRef = doc(firestore, `users/${soul.userId}/souls`, soul.id);
     const globalSoulRef = doc(firestore, 'souls', soul.id);
 
-    // Identify the member performing the follow-up
+    // Identify the member performing the follow-up for the history log
     const memberName = `${userProfile?.firstName || ''} ${userProfile?.lastName || ''}`.trim() || user.displayName || 'Member';
 
     const newLogEntry = {
-        date: new Date(), // Use client-side date for valid arrayUnion entry
+        date: new Date(), // Use client-side date for arrayUnion
         note: values.note || '',
         actions: values.actions || [],
         memberId: user.uid,
@@ -139,7 +140,7 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
         onFollowUpLogged();
     } catch (err: any) {
         console.error("Failed to log follow-up:", err);
-        if (err.code === 'permission-denied' || err.code === 'not-found') {
+        if (err.code === 'permission-denied') {
             const permissionError = new FirestorePermissionError({
                 path: soulRef.path,
                 operation: 'update',

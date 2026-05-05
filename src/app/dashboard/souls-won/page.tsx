@@ -241,13 +241,16 @@ export default function SoulsWonPage() {
           {mounted && isMobile ? (
             <Sheet open={isLogDialogOpen} onOpenChange={setIsLogDialogOpen}>
               <SheetTrigger asChild>{triggerButton}</SheetTrigger>
-              <SheetContent side="bottom" className="h-[90dvh]">
-                <SheetHeader>
-                  <SheetTitle>Log a New Soul</SheetTitle>
-                  <SheetDescription>Record details of the person ministered to.</SheetDescription>
-                </SheetHeader>
-                <div className="max-h-[80vh] overflow-y-auto p-1 mt-4">
+              <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0">
+                <div className="p-6 border-b flex-shrink-0">
+                    <SheetHeader className="text-left">
+                    <SheetTitle>Log a New Soul</SheetTitle>
+                    <SheetDescription>Record details of the person ministered to.</SheetDescription>
+                    </SheetHeader>
+                </div>
+                <div className="flex-grow overflow-y-auto p-6 pt-2">
                   {formContent}
+                  <Button variant="ghost" className="w-full mt-4" onClick={() => setIsLogDialogOpen(false)}>Close</Button>
                 </div>
               </SheetContent>
             </Sheet>
