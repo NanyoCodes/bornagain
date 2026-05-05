@@ -55,7 +55,7 @@ export default function PrivacyPolicyPage() {
           </div>
            <div className="space-y-2">
                 <h2 className="text-xl font-semibold text-foreground">5. Contact Us</h2>
-                <p>If you have any questions about this privacy policy, please contact us at <a href="mailto:testifyitsaboutjesus@gmail.com" className="text-primary hover:underline">testifyitsaboutjesus@gmail.com</a>.</p>
+                <p>If you have any questions about this privacy policy, please contact us at <a href="mailto:testifyglobal360@gmail.com" className="text-primary hover:underline">testifyglobal360@gmail.com</a>.</p>
            </div>
            
             <p className="pt-2 text-xs text-center text-muted-foreground/80">

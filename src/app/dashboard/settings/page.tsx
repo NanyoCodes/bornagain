@@ -1,4 +1,3 @@
-
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -203,8 +202,8 @@ function ContactCard() {
       <CardContent className="space-y-4">
         <div className="flex items-center gap-4">
             <Mail className="h-5 w-5 text-muted-foreground" />
-            <a href="mailto:testifyitsaboutjesus@gmail.com" className="text-sm font-medium hover:underline">
-                testifyitsaboutjesus@gmail.com
+            <a href="mailto:testifyglobal360@gmail.com" className="text-sm font-medium hover:underline">
+                testifyglobal360@gmail.com
             </a>
         </div>
         <div className="flex items-center gap-4">
