@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, useMemo } from 'react';
-import { useUser, useFirestore, useCollection, useDoc } from '@/firebase';
+import { useUser, useAuth, useFirestore, useCollection, useDoc } from '@/firebase';
 import {
   collection,
   query,
@@ -15,10 +15,10 @@ import {
   where,
   getDocs,
 } from 'firebase/firestore';
-import type { Chat, ChatMessage, Campaign } from '@/lib/types';
+import type { Chat, ChatMessage, Campaign, UserProfile } from '@/lib/types';
 import { Loader2, Send, ArrowLeft, Reply, X } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { cn } from '@/lib/utils';
+import { cn, safeToDate } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -26,7 +26,6 @@ import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
 import { format, isSameDay, differenceInHours } from 'date-fns';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { safeToDate } from '@/lib/utils';
 import { ChatParticipantsDialog } from '@/components/chat/participants-dialog';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
@@ -127,7 +126,6 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                 });
                 await batch.commit();
             } catch (error) {
-                // This can fail silently as it's not critical. The user can clear them from the notifications page.
                 console.warn("Failed to mark chat notifications as read:", error);
             }
         };
@@ -236,7 +234,6 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                         ? `${user.displayName || 'User'}: ${newMessage.substring(0, 50)}${newMessage.length > 50 ? '...' : ''}`
                         : `You have a new message from your accountability partner.`;
 
-                    // In-app notification
                     batch.set(notificationRef, {
                         userId: participantId,
                         type: 'new_chat_message',
@@ -247,7 +244,6 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                         createdAt: serverTimestamp()
                     });
 
-                    // Email notification
                     if (recipientInfo?.email) {
                         const logo = PlaceHolderImages.find(img => img.id === 'logo');
                         const logoUrl = logo ? logo.imageUrl : '';
@@ -292,7 +288,6 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
             setNewMessage('');
             setReplyingTo(null);
         } catch (error) {
-            console.error("Error sending message:", error);
             const permissionError = new FirestorePermissionError({
                 path: `chats/${chatId}/messages`,
                 operation: 'create',
@@ -526,7 +521,7 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                 </TooltipProvider>
             </div>
 
-            <div className="shrink-0 border-t p-4 bg-background pb-20 md:pb-4">
+            <div className="shrink-0 border-t p-4 bg-background pb-4">
                 {isChatFrozen ? (
                     <div className="p-3 text-center text-sm text-muted-foreground bg-muted/50">
                         This group chat has been frozen as the campaign ended more than 24 hours ago.

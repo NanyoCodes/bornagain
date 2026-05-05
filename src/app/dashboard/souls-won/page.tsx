@@ -1,8 +1,15 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { 
+  Dialog, 
+  DialogContent, 
+  DialogDescription, 
+  DialogHeader, 
+  DialogTitle, 
+  DialogTrigger 
+} from "@/components/ui/dialog";
 import {
   Sheet,
   SheetContent,
@@ -14,7 +21,7 @@ import {
 import { PlusCircle, Download, Loader2 } from "lucide-react";
 import { SoulsWonTable } from "@/components/souls/souls-won-table";
 import { LogSoulForm } from "@/components/souls/log-soul-form";
-import type { Soul, Campaign, Fellowship } from "@/lib/types";
+import type { Soul, Campaign, Fellowship, UserProfile } from "@/lib/types";
 import { useCollection, useFirestore, useUser } from "@/firebase";
 import { collection, query, orderBy, doc, serverTimestamp, increment, runTransaction, addDoc, deleteField } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
@@ -210,7 +217,7 @@ export default function SoulsWonPage() {
     toast({ title: "Export Started" });
   };
 
-  const handleExportSingleSoul = (soul: Soul, formatType: 'csv' | 'pdf') => {
+  const handleExportSingleSoul = useCallback((soul: Soul, formatType: 'csv' | 'pdf') => {
     const headers = ["Field", "Value"];
     const locationWonString = soul.locationWon ? [soul.locationWon.city, soul.locationWon.state, soul.locationWon.country].filter(Boolean).join(', ') : '';
     const wonAtDate = soul.wonAt?.toDate ? soul.wonAt.toDate() : null;
@@ -246,7 +253,8 @@ export default function SoulsWonPage() {
 
         doc.save(`soul-${soul.firstName}-${soul.lastName}.pdf`);
     } else {
-        const csvContent = "data:text/csv;charset=utf-8," + body.map(e => e.join(",")).join("\n");
+        const csvRows = body.map(row => row.join(",")).join("\n");
+        const csvContent = "data:text/csv;charset=utf-8," + csvRows;
         const link = document.createElement("a");
         link.setAttribute("href", encodeURI(csvContent));
         link.setAttribute("download", `soul-${soul.firstName}-${soul.lastName}.csv`);
@@ -254,7 +262,7 @@ export default function SoulsWonPage() {
         link.click();
     }
     toast({ title: "Export Started" });
-  };
+  }, [user?.displayName, toast]);
 
   const triggerButton = (
     <Button disabled={!user}>
