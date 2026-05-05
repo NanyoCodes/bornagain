@@ -29,7 +29,7 @@ function SoulWinnerInfo({ userId }: { userId: string }) {
     const { data: winnerProfile, loading } = useDoc<UserProfile>(winnerRef);
 
     if (loading) return <Skeleton className="h-4 w-24" />;
-    if (!winnerProfile) return <span className="text-muted-foreground">Original winner unknown</span>;
+    if (!winnerProfile) return <span className="text-muted-foreground italic text-xs">Original winner unknown</span>;
 
     return (
         <Link href={`/dashboard/profile/${userId}`} className="text-primary font-medium hover:underline inline-flex items-center gap-1">

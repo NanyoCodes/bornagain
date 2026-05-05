@@ -216,6 +216,8 @@ export default function SoulsWonPage() {
     </Button>
   );
 
+  const formContent = <LogSoulForm onSoulLogged={handleSoulLogged} fellowships={activeFellowships || []} campaigns={activeCampaigns || []} />;
+
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">

@@ -107,12 +107,15 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
     const soulRef = doc(firestore, `users/${soul.userId}/souls`, soul.id);
     const globalSoulRef = doc(firestore, 'souls', soul.id);
 
+    // Identify the member performing the follow-up
+    const memberName = `${userProfile?.firstName || ''} ${userProfile?.lastName || ''}`.trim() || user.displayName || 'Member';
+
     const newLogEntry = {
-        date: new Date(), 
+        date: new Date(), // Use client-side date for valid arrayUnion entry
         note: values.note || '',
         actions: values.actions || [],
         memberId: user.uid,
-        memberName: `${userProfile?.firstName || ''} ${userProfile?.lastName || ''}`.trim() || user.displayName || 'Fellowship Member',
+        memberName: memberName,
     };
 
     const updatePayload = {

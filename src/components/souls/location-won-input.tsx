@@ -9,8 +9,8 @@ interface LocationWonInputProps {
 }
 
 /**
- * Simplified text-only location input to replace Google Maps autocomplete.
- * This ensures compatibility and fulfills user request for "input text only".
+ * Simplified text-only location input.
+ * Replaces complex autocomplete with a robust text field to avoid Google Maps initialization errors.
  */
 export function LocationWonInput({ form }: LocationWonInputProps) {
     const initialCity = form.getValues('locationWonCity');
@@ -32,7 +32,7 @@ export function LocationWonInput({ form }: LocationWonInputProps) {
         const val = e.target.value;
         setInputValue(val);
         
-        // Treat the input string as the "city" for simplicity in text-only mode
+        // Map the entire text input to 'city' for simple persistent storage
         form.setValue('locationWonCity', val, { shouldDirty: true });
         form.setValue('locationWonState', '', { shouldDirty: true });
         form.setValue('locationWonCountry', '', { shouldDirty: true });
