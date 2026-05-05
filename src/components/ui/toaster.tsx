@@ -1,6 +1,5 @@
 "use client"
 
-import Image from "next/image";
 import { useToast } from "@/hooks/use-toast"
 import {
   Toast,

@@ -9,7 +9,7 @@ interface LocationWonInputProps {
 }
 
 /**
- * Simplified text-only location input to ensure compatibility and fulfill "text only" requirement.
+ * Text-only location input to ensure compatibility and simplicity.
  */
 export function LocationWonInput({ form }: LocationWonInputProps) {
     const initialCity = form.getValues('locationWonCity');

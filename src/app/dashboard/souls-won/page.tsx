@@ -16,7 +16,7 @@ import { SoulsWonTable } from "@/components/souls/souls-won-table";
 import { LogSoulForm } from "@/components/souls/log-soul-form";
 import type { Soul, Campaign, Fellowship } from "@/lib/types";
 import { useCollection, useFirestore, useUser } from "@/firebase";
-import { collection, query, orderBy, doc, deleteField, serverTimestamp, increment, runTransaction, addDoc } from "firebase/firestore";
+import { collection, query, orderBy, doc, serverTimestamp, increment, runTransaction, addDoc, deleteField } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useSearch } from "@/context/search-context";
@@ -190,19 +190,66 @@ export default function SoulsWonPage() {
     const headers = ["Logged By", "First Name", "Last Name", "Email", "Phone", "Church", "Location Won", "Date Won", "Source", "Status"];
     const body = filteredSouls.map(soul => {
         const locationWonString = soul.locationWon ? [soul.locationWon.city, soul.locationWon.state, soul.locationWon.country].filter(Boolean).join(', ') : '';
-        return [user?.displayName || '', soul.firstName, soul.lastName, soul.email || '', soul.phone || '', soul.church || '', locationWonString, soul.wonAt?.toDate ? format(soul.wonAt.toDate(), "yyyy-MM-dd") : '', soul.source, soul.status];
+        const wonAtDate = soul.wonAt?.toDate ? soul.wonAt.toDate() : null;
+        return [user?.displayName || '', soul.firstName, soul.lastName, soul.email || '', soul.phone || '', soul.church || '', locationWonString, wonAtDate ? format(wonAtDate, "yyyy-MM-dd") : '', soul.source, soul.status];
     });
 
     if (formatType === 'pdf') {
         const doc = new jsPDF({ orientation: 'landscape' });
         autoTable(doc, { head: [headers], body: body, startY: 20 });
-        doc.save(`souls-won-${new Date().toISOString().slice(0,10)}.pdf`);
+        doc.save(`souls-won-${format(new Date(), 'yyyy-MM-dd')}.pdf`);
     } else {
         const csvContent = "data:text/csv;charset=utf-8," + headers.join(",") + "\n" + body.map(e => e.join(",")).join("\n");
         const encodedUri = encodeURI(csvContent);
         const link = document.createElement("a");
         link.setAttribute("href", encodedUri);
-        link.setAttribute("download", `souls-won-${new Date().toISOString().slice(0,10)}.csv`);
+        link.setAttribute("download", `souls-won-${format(new Date(), 'yyyy-MM-dd')}.csv`);
+        document.body.appendChild(link);
+        link.click();
+    }
+    toast({ title: "Export Started" });
+  };
+
+  const handleExportSingleSoul = (soul: Soul, formatType: 'csv' | 'pdf') => {
+    const headers = ["Field", "Value"];
+    const locationWonString = soul.locationWon ? [soul.locationWon.city, soul.locationWon.state, soul.locationWon.country].filter(Boolean).join(', ') : '';
+    const wonAtDate = soul.wonAt?.toDate ? soul.wonAt.toDate() : null;
+    
+    const body = [
+        ["First Name", soul.firstName],
+        ["Last Name", soul.lastName],
+        ["Email", soul.email || 'N/A'],
+        ["Phone", soul.phone || 'N/A'],
+        ["Church", soul.church || 'N/A'],
+        ["Location Won", locationWonString || 'N/A'],
+        ["Date Won", wonAtDate ? format(wonAtDate, "PPP") : 'N/A'],
+        ["Source", soul.source],
+        ["Status", soul.status],
+        ["Fellowship", soul.fellowshipName || 'None']
+    ];
+
+    if (formatType === 'pdf') {
+        const doc = new jsPDF();
+        doc.setFontSize(18);
+        doc.text(`Soul Record: ${soul.firstName} ${soul.lastName}`, 14, 15);
+        autoTable(doc, { body: body, startY: 25 });
+        
+        if (soul.followUpLog && soul.followUpLog.length > 0) {
+            doc.text("Follow-up History", 14, (doc as any).lastAutoTable.finalY + 15);
+            const historyHeaders = ["Date", "Member", "Notes"];
+            const historyBody = soul.followUpLog.map(log => {
+                const d = log.date?.toDate ? log.date.toDate() : null;
+                return [d ? format(d, 'yyyy-MM-dd') : 'N/A', log.memberName || 'N/A', log.note || 'No notes'];
+            });
+            autoTable(doc, { head: [historyHeaders], body: historyBody, startY: (doc as any).lastAutoTable.finalY + 20 });
+        }
+
+        doc.save(`soul-${soul.firstName}-${soul.lastName}.pdf`);
+    } else {
+        const csvContent = "data:text/csv;charset=utf-8," + body.map(e => e.join(",")).join("\n");
+        const link = document.createElement("a");
+        link.setAttribute("href", encodeURI(csvContent));
+        link.setAttribute("download", `soul-${soul.firstName}-${soul.lastName}.csv`);
         document.body.appendChild(link);
         link.click();
     }
@@ -229,7 +276,7 @@ export default function SoulsWonPage() {
             <DropdownMenuTrigger asChild>
               <Button variant="outline">
                 <Download className="mr-2 h-4 w-4" />
-                <span className="hidden md:inline">Export</span>
+                <span className="hidden md:inline">Export All</span>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
@@ -276,7 +323,7 @@ export default function SoulsWonPage() {
         onEdit={setSoulToEdit}
         onFollowUp={setSoulForFollowUp}
         onViewHistory={setSoulForHistory}
-        onExportSingle={(soul, fmt) => {}}
+        onExportSingle={handleExportSingleSoul}
         onOpenAssignDialog={setSoulToAssign}
       />
 
