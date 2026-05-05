@@ -104,12 +104,11 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
     
     setIsLoading(true);
 
-    // Update targeting the convert's original owner subcollection
     const soulRef = doc(firestore, `users/${soul.userId}/souls`, soul.id);
     const globalSoulRef = doc(firestore, 'souls', soul.id);
 
     const newLogEntry = {
-        date: new Date(), // Use client date for arrayUnion consistency
+        date: new Date(), 
         note: values.note || '',
         actions: values.actions || [],
         memberId: user.uid,
