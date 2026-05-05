@@ -89,7 +89,7 @@ export function ViewHistoryDialog({ soul, isOpen, onOpenChange }: ViewHistoryDia
           {soul && (
             <>
               <div className="p-6 border-b flex-shrink-0">
-                <SheetHeader className="text-left flex-shrink-0">
+                <SheetHeader className="text-left">
                   <SheetTitle>Follow-up History: {soul.firstName}</SheetTitle>
                   <SheetDescription>A complete log of all follow-up interactions.</SheetDescription>
                 </SheetHeader>

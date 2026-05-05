@@ -104,12 +104,12 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
     
     setIsLoading(true);
 
-    // CRITICAL: Correct pathing to convert's original owner
+    // Update targeting the convert's original owner subcollection
     const soulRef = doc(firestore, `users/${soul.userId}/souls`, soul.id);
     const globalSoulRef = doc(firestore, 'souls', soul.id);
 
     const newLogEntry = {
-        date: new Date(), 
+        date: new Date(), // Use client date for arrayUnion consistency
         note: values.note || '',
         actions: values.actions || [],
         memberId: user.uid,
@@ -287,7 +287,7 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
           {soul && (
             <>
               <div className="p-6 border-b flex-shrink-0">
-                <SheetHeader className="text-left flex-shrink-0">
+                <SheetHeader className="text-left">
                     <SheetTitle>Log Follow-up: {soul.firstName}</SheetTitle>
                     <SheetDescription>Track their spiritual journey.</SheetDescription>
                 </SheetHeader>
