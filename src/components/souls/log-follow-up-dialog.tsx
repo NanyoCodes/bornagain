@@ -104,15 +104,13 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
     
     setIsLoading(true);
 
-    // Fellowship members log follow-ups on the soul record in the original winner's subcollection
     const soulRef = doc(firestore, `users/${soul.userId}/souls`, soul.id);
     const globalSoulRef = doc(firestore, 'souls', soul.id);
 
-    // Identify the member performing the follow-up for the history log
     const memberName = `${userProfile?.firstName || ''} ${userProfile?.lastName || ''}`.trim() || user.displayName || 'Member';
 
     const newLogEntry = {
-        date: new Date(), // Use client-side date for arrayUnion
+        date: new Date(), 
         note: values.note || '',
         actions: values.actions || [],
         memberId: user.uid,
@@ -140,20 +138,12 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
         onFollowUpLogged();
     } catch (err: any) {
         console.error("Failed to log follow-up:", err);
-        if (err.code === 'permission-denied') {
-            const permissionError = new FirestorePermissionError({
-                path: soulRef.path,
-                operation: 'update',
-                requestResourceData: updatePayload,
-            }, user);
-            errorEmitter.emit('permission-error', permissionError);
-        } else {
-            toast({
-                variant: "destructive",
-                title: "Error",
-                description: "Could not save interaction. Please try again."
-            });
-        }
+        const permissionError = new FirestorePermissionError({
+            path: soulRef.path,
+            operation: 'update',
+            requestResourceData: updatePayload,
+        }, user);
+        errorEmitter.emit('permission-error', permissionError);
     } finally {
         setIsLoading(false);
     }

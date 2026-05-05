@@ -248,9 +248,9 @@ export default function SoulsWonPage() {
                     <SheetDescription>Record details of the person ministered to.</SheetDescription>
                     </SheetHeader>
                 </div>
-                <div className="flex-grow overflow-y-auto p-6 pt-2">
+                <div className="flex-grow overflow-y-auto p-6 pt-2 pb-12">
                   {formContent}
-                  <Button variant="ghost" className="w-full mt-4" onClick={() => setIsLogDialogOpen(false)}>Close</Button>
+                  <Button variant="ghost" className="w-full mt-6" onClick={() => setIsLogDialogOpen(false)}>Close</Button>
                 </div>
               </SheetContent>
             </Sheet>
