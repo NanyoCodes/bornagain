@@ -521,7 +521,7 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                 </TooltipProvider>
             </div>
 
-            <div className="shrink-0 border-t p-4 bg-background pb-4">
+            <div className="shrink-0 border-t p-4 bg-background pb-safe pb-4">
                 {isChatFrozen ? (
                     <div className="p-3 text-center text-sm text-muted-foreground bg-muted/50">
                         This group chat has been frozen as the campaign ended more than 24 hours ago.
