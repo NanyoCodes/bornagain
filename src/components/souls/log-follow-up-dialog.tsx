@@ -109,7 +109,7 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
 
     // Track member identity in the history log
     const newLogEntry = {
-        date: new Date(), // Use client Date for arrayUnion compatibility
+        date: new Date(), 
         note: values.note || '',
         actions: values.actions || [],
         memberId: user.uid,

@@ -100,7 +100,6 @@ export default function SoulsWonPage() {
   
   const fellowships = useMemo(() => {
     if (!allFellowships) return [];
-    // Corrected circular reference to fellowships
     return allFellowships.filter(f => f.status !== 'deleted');
   }, [allFellowships]);
 
@@ -263,7 +262,7 @@ export default function SoulsWonPage() {
                   <SheetDescription>Record details of the person ministered to.</SheetDescription>
                 </SheetHeader>
                 <div className="max-h-[80vh] overflow-y-auto p-1 mt-4">
-                  <LogSoulForm onSoulLogged={handleSoulLogged} fellowships={fellowships} campaigns={activeCampaigns} />
+                  {formContent}
                 </div>
               </SheetContent>
             </Sheet>
@@ -275,7 +274,7 @@ export default function SoulsWonPage() {
                   <DialogTitle>Log a New Soul</DialogTitle>
                 </DialogHeader>
                 <div className="max-h-[70vh] overflow-y-auto pr-2">
-                  <LogSoulForm onSoulLogged={handleSoulLogged} fellowships={fellowships} campaigns={activeCampaigns} />
+                  {formContent}
                 </div>
               </DialogContent>
             </Dialog>
