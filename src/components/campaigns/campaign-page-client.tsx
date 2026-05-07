@@ -99,15 +99,6 @@ function CampaignMap({ campaign }: { campaign: Campaign }) {
             <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center">
                 <MapIcon className="h-8 w-8 text-primary opacity-50" />
             </div>
-            {!campaign.latitude && <p className="text-sm text-muted-foreground">No coordinates provided for this campaign.</p>}
-            {!isValidKey(GOOGLE_MAPS_API_KEY) && (
-                <>
-                    <p className="text-xs text-muted-foreground px-12">Interactive map requires a valid Google Maps API Key.</p>
-                    <Button asChild variant="link" className="h-auto p-0 text-xs">
-                        <Link href="/docs/google-maps-setup-guide.md">Setup Guide</Link>
-                    </Button>
-                </>
-            )}
         </div>
     );
 

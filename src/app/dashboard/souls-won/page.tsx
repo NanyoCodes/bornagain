@@ -262,7 +262,7 @@ export default function SoulsWonPage() {
         link.click();
     }
     toast({ title: "Export Started" });
-  }, [user?.displayName, toast]);
+  }, [toast]);
 
   const triggerButton = (
     <Button disabled={!user}>
