@@ -316,7 +316,7 @@ export default function SettingsPage() {
   const { data: userProfile, loading } = useDoc<UserProfile>(userDocRef);
   
   return (
-    <div className="space-y-8 max-w-3xl mx-auto">
+    <div className="space-y-8 max-w-3xl auto">
       <div className="space-y-2">
         <h1 className="text-3xl font-bold tracking-tight font-headline">Settings</h1>
         <p className="text-muted-foreground">Manage your account settings and preferences.</p>

@@ -1,10 +1,11 @@
 'use client';
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { BookOpen, Flame, Heart, MessageSquare, Quote, Zap, Target, Users, BookMarked, MessageCircle } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import { BookOpen, Flame, Heart, Zap, Target, BookMarked, Quote, ChevronRight } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { cn } from '@/lib/utils';
 
 /**
  * @fileOverview Spiritual Resources page for daily equipping.
@@ -116,7 +117,7 @@ export default function ResourcesPage() {
               <Accordion type="single" collapsible className="w-full">
                 {res.subsections.map((sub, idx) => (
                   <AccordionItem value={`item-${idx}`} key={idx} className="border-none">
-                    <AccordionTrigger className="text-sm font-semibold hover:no-underline py-2">
+                    <AccordionTrigger className="text-sm font-semibold hover:no-underline py-2 text-left">
                       {sub.subtitle}
                     </AccordionTrigger>
                     <AccordionContent className="text-sm text-muted-foreground leading-relaxed">

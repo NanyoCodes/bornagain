@@ -1,16 +1,15 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useJsApiLoader, GoogleMap, MarkerF, CircleF, Autocomplete } from '@react-google-maps/api';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
-import { Loader2, LocateFixed, Map as MapIcon, AlertTriangle } from 'lucide-center';
+import { Loader2, LocateFixed, Map as MapIcon, AlertTriangle } from 'lucide-react';
 import { type UseFormReturn } from 'react-hook-form';
 import { useToast } from '@/hooks/use-toast';
 import { Input } from '@/components/ui/input';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Button } from '../ui/button';
-import Link from 'next/link';
 
 
 const libraries: ('places')[] = ['places'];
@@ -56,7 +55,6 @@ function LocationMapPickerInner({
     const [map, setMap] = useState<google.maps.Map | null>(null);
     const [autocomplete, setAutocomplete] = useState<google.maps.places.Autocomplete | null>(null);
     const searchBoxRef = useRef<HTMLDivElement>(null);
-    const [geocodingError, setGeocodingError] = useState<string | null>(null);
     const isMobile = useIsMobile();
     const geocoderRef = useRef<google.maps.Geocoder>(null);
     const hasFetchedLocation = useRef(false);
@@ -71,20 +69,18 @@ function LocationMapPickerInner({
         if (!geocoderRef.current) return;
         const newPos = { lat: latLng.lat(), lng: latLng.lng() };
         
-        setCenter(prev => prev.lat === newPos.lat && prev.lng === newPos.lng ? prev : newPos);
-        setMarkerPosition(prev => prev?.lat === newPos.lat && prev?.lng === newPos.lng ? prev : newPos);
+        setCenter(newPos);
+        setMarkerPosition(newPos);
         
         form.setValue('latitude', newPos.lat, { shouldDirty: true });
         form.setValue('longitude', newPos.lng, { shouldDirty: true });
 
         geocoderRef.current.geocode({ location: newPos }, (results, status) => {
             if (status === 'OK' && results && results[0]) {
-                setGeocodingError(null);
                 const address = results[0].formatted_address;
                 form.setValue('location', address, { shouldDirty: true, shouldValidate: true });
                 setInputValue(address);
             } else {
-                setGeocodingError(`Geocoding error: ${status}`);
                 const pinnedLocation = `Pinned Location (${newPos.lat.toFixed(4)}, ${newPos.lng.toFixed(4)})`;
                 form.setValue('location', pinnedLocation, { shouldDirty: true, shouldValidate: true });
                 setInputValue(pinnedLocation);
@@ -157,7 +153,6 @@ function LocationMapPickerInner({
         if (autocomplete !== null) {
             const place = autocomplete.getPlace();
             if (place.geometry?.location) {
-                setGeocodingError(null);
                 const newPos = { lat: place.geometry.location.lat(), lng: place.geometry.location.lng() };
                 const address = place.formatted_address || place.name || '';
                 
@@ -189,7 +184,7 @@ function LocationMapPickerInner({
                     }}
                 />
                 <div className="h-60 w-full rounded-md bg-muted/50 flex flex-col items-center justify-center p-6 border-2 border-dashed">
-                    <AlertTriangle className="h-8 w-8 text-destructive opacity-50 mb-2" />
+                    <MapIcon className="h-8 w-8 text-muted-foreground opacity-50" />
                 </div>
             </div>
         );
@@ -199,7 +194,6 @@ function LocationMapPickerInner({
         return (
             <div className="flex items-center justify-center h-80 w-full rounded-md border bg-muted animate-pulse">
                 <Loader2 className="mr-2 h-6 w-6 animate-spin text-primary" />
-                <span className="text-sm font-medium">Loading Interactive Map...</span>
             </div>
         );
     }
