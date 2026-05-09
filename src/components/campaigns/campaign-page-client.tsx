@@ -446,7 +446,6 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                             <CardContent>
                                 <Link href={`/dashboard/profile/${campaign.organizerId}`} className="flex items-center gap-3 group">
                                     <Avatar>
-                                        <AvatarImage src={organizerProfile?.photoURL ?? undefined} />
                                         <AvatarFallback>{campaign.organizerFirstName?.charAt(0)}{campaign.organizerLastName?.charAt(0)}</AvatarFallback>
                                     </Avatar>
                                     <span className="font-semibold group-hover:underline">{campaign.organizerFirstName} {campaign.organizerLastName}</span>
