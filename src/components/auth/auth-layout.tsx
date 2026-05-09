@@ -14,7 +14,7 @@ import React, { useMemo } from 'react';
 import { useCollection, useFirestore } from '@/firebase';
 import { collection, query, orderBy, limit } from 'firebase/firestore';
 import type { Testimony } from '@/lib/types';
-import { Card, CardContent, CardHeader } from '../ui/card';
+import { Card, CardContent } from '../ui/card';
 import { Quote } from 'lucide-react';
 
 const scriptures = [
@@ -37,7 +37,7 @@ function PublicTestimonyFeed() {
 
     return (
         <div className="mt-12 space-y-4">
-            <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground/60 text-center">Community Testimonies</h3>
+            <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground/60 text-center">GLOBAL TESTIMONIES</h3>
             <div className="grid gap-4">
                 {testimonies.map((t) => (
                     <Card key={t.id} className="bg-muted/30 border-none shadow-none">
@@ -77,7 +77,6 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
             </div>
             {children}
             
-            {/* Added for SEO Advantage and AdSense visibility */}
             <PublicTestimonyFeed />
         </div>
          <footer className="text-center text-sm text-muted-foreground mt-12 pb-8">
