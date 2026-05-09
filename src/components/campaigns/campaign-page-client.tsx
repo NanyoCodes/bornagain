@@ -62,7 +62,6 @@ function CampaignMapInner({ campaign }: { campaign: Campaign }) {
         return (
             <div className="h-80 w-full rounded-md bg-muted/50 border-2 border-dashed flex flex-col items-center justify-center text-center p-6 space-y-4">
                 <AlertTriangle className="h-8 w-8 text-destructive opacity-50" />
-                <p className="text-sm text-muted-foreground">Error loading Google Maps</p>
             </div>
         );
     }
@@ -453,7 +452,6 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                                     <span className="font-semibold group-hover:underline">{campaign.organizerFirstName} {campaign.organizerLastName}</span>
                                 </Link>
                             </CardContent>
-                        </Card>
 
                         <Card>
                             <CardHeader>

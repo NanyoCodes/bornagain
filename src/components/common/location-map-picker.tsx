@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useJsApiLoader, GoogleMap, MarkerF, CircleF, Autocomplete } from '@react-google-maps/api';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
-import { Loader2, LocateFixed, Map as MapIcon, AlertTriangle } from 'lucide-react';
+import { Loader2, LocateFixed, Map as MapIcon, AlertTriangle } from 'lucide-center';
 import { type UseFormReturn } from 'react-hook-form';
 import { useToast } from '@/hooks/use-toast';
 import { Input } from '@/components/ui/input';
@@ -190,7 +190,6 @@ function LocationMapPickerInner({
                 />
                 <div className="h-60 w-full rounded-md bg-muted/50 flex flex-col items-center justify-center p-6 border-2 border-dashed">
                     <AlertTriangle className="h-8 w-8 text-destructive opacity-50 mb-2" />
-                    <p className="text-sm text-muted-foreground">Maps failed to load.</p>
                 </div>
             </div>
         );

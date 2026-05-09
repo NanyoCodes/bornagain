@@ -1,4 +1,3 @@
-
 'use client';
 
 import Image from 'next/image';
@@ -11,7 +10,12 @@ import {
   CarouselItem,
 } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay"
-import React from 'react';
+import React, { useMemo } from 'react';
+import { useCollection, useFirestore } from '@/firebase';
+import { collection, query, orderBy, limit } from 'firebase/firestore';
+import type { Testimony } from '@/lib/types';
+import { Card, CardContent, CardHeader } from '../ui/card';
+import { Quote } from 'lucide-react';
 
 const scriptures = [
   {
@@ -24,6 +28,33 @@ const scriptures = [
   }
 ];
 
+function PublicTestimonyFeed() {
+    const firestore = useFirestore();
+    const testimoniesQuery = useMemo(() => query(collection(firestore, 'testimonies'), orderBy('createdAt', 'desc'), limit(3)), [firestore]);
+    const { data: testimonies, loading } = useCollection<Testimony>(testimoniesQuery);
+
+    if (loading || !testimonies || testimonies.length === 0) return null;
+
+    return (
+        <div className="mt-12 space-y-4">
+            <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground/60 text-center">Community Testimonies</h3>
+            <div className="grid gap-4">
+                {testimonies.map((t) => (
+                    <Card key={t.id} className="bg-muted/30 border-none shadow-none">
+                        <CardContent className="p-4 flex gap-4">
+                            <Quote className="h-5 w-5 text-primary shrink-0 opacity-50" />
+                            <div className="space-y-1">
+                                <p className="text-sm text-muted-foreground line-clamp-3 italic">"{t.content}"</p>
+                                <p className="text-xs font-semibold">— {t.authorFirstName} {t.authorLastName?.charAt(0)}.</p>
+                            </div>
+                        </CardContent>
+                    </Card>
+                ))}
+            </div>
+        </div>
+    );
+}
+
 export function AuthLayout({ children }: { children: React.ReactNode }) {
   const logo = PlaceHolderImages.find((img) => img.id === 'logo');
   const authBackground = PlaceHolderImages.find((img) => img.id === 'auth-background');
@@ -34,9 +65,8 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="w-full lg:grid lg:grid-cols-2 min-h-screen">
-      <div className="flex flex-col items-center justify-center p-8 sm:p-12">
+      <div className="flex flex-col items-center justify-center p-8 sm:p-12 overflow-y-auto">
         <div className="mx-auto grid w-full max-w-xs gap-6">
-            {/* Logo container - ensure it stays left aligned as requested */}
             <div className="flex flex-col items-start justify-start w-full mb-4">
                 {logo && (
                     <Avatar className="h-20 w-20 mb-4 border-2 border-primary/20 shadow-sm">
@@ -46,8 +76,11 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
                 )}
             </div>
             {children}
+            
+            {/* Added for SEO Advantage and AdSense visibility */}
+            <PublicTestimonyFeed />
         </div>
-         <footer className="text-center text-sm text-muted-foreground mt-8">
+         <footer className="text-center text-sm text-muted-foreground mt-12 pb-8">
             <div className="flex justify-center gap-4">
               <Link href="/terms-of-service" className="hover:underline">
                 Terms of Service
