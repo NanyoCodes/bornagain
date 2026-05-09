@@ -226,12 +226,6 @@ function AppHeader({ unreadChatCount }: { unreadChatCount: number }) {
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
-                <Link href="/dashboard/resources">
-                <BookMarked className="mr-2 h-4 w-4" />
-                <span>Spiritual Resources</span>
-                </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
               <Link href="/dashboard/settings">
                 <Settings className="mr-2 h-4 w-4" />
                 <span>Settings</span>
@@ -241,6 +235,12 @@ function AppHeader({ unreadChatCount }: { unreadChatCount: number }) {
                 <Link href="/dashboard/guide">
                 <BookOpen className="mr-2 h-4 w-4" />
                 <span>App Guide</span>
+                </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+                <Link href="/dashboard/resources">
+                <BookMarked className="mr-2 h-4 w-4" />
+                <span>Spiritual Resources</span>
                 </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
