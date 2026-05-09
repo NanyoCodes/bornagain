@@ -1,4 +1,3 @@
-
 'use client';
 
 import Image from "next/image";
@@ -20,6 +19,7 @@ import {
   Loader2,
   HeartHandshake,
   TrendingUp,
+  BookMarked,
 } from "lucide-react";
 
 import {
@@ -51,7 +51,7 @@ import { PageTransition } from "../page-transition";
 const navItems = [
   { href: "/dashboard", label: "Progress", icon: TrendingUp, color: "text-chart-1" },
   { href: "/dashboard/souls-won", label: "Souls Won", icon: UserPlus, color: "text-chart-2" },
-  { href: "/dashboard/testimonies", label: "Testimonies", icon: Newspaper, color: "text-chart-3" },
+  { href: "/dashboard/testimonies", label: "Testimonies", icon: Newspaper, labelShort: "Story", iconShort: Newspaper, color: "text-chart-3" },
   { href: "/dashboard/campaigns", label: "Campaigns", icon: Target, color: "text-chart-4" },
   { href: "/dashboard/fellowship", label: "Fellowship", icon: HeartHandshake, color: "text-primary" },
 ];
@@ -67,7 +67,7 @@ function AppHeader({ unreadChatCount }: { unreadChatCount: number }) {
   const [showMobileSearch, setShowMobileSearch] = useState(false);
 
   // Query for other notifications (for the bell icon badge)
-  const otherNotificationTypes = ['campaign_join', 'accountability_nudge', 'accountability_request', 'request_accepted', 'request_declined', 'accountability_partner_removed'];
+  const otherNotificationTypes = ['campaign_join', 'accountability_nudge', 'accountability_request', 'request_accepted', 'request_declined', 'accountability_partner_removed', 'new_soul_in_fellowship'];
   const otherNotificationsQuery = useMemo(() => {
     if (!user?.uid || !firestore) return null;
     return query(
@@ -226,6 +226,12 @@ function AppHeader({ unreadChatCount }: { unreadChatCount: number }) {
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
+                <Link href="/dashboard/resources">
+                <BookMarked className="mr-2 h-4 w-4" />
+                <span>Spiritual Resources</span>
+                </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
               <Link href="/dashboard/settings">
                 <Settings className="mr-2 h-4 w-4" />
                 <span>Settings</span>
@@ -376,6 +382,7 @@ export default function DashboardClientLayout({
     if (path.startsWith('/dashboard/settings')) return 'Loading settings...';
     if (path.startsWith('/dashboard/notifications')) return 'Loading notifications...';
     if (path.startsWith('/dashboard/fellowship')) return 'Loading fellowships...';
+    if (path.startsWith('/dashboard/resources')) return 'Loading spiritual resources...';
     return 'Loading your dashboard...';
   };
 
