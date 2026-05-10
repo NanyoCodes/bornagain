@@ -315,6 +315,7 @@ export default function SoulsWonPage() {
               <DialogContent className="sm:max-w-lg">
                 <DialogHeader>
                   <DialogTitle>Log a New Soul</DialogTitle>
+                  <DialogDescription>Record details of the person ministered to.</DialogDescription>
                 </DialogHeader>
                 <div className="max-h-[70vh] overflow-y-auto pr-2">
                   {formContent}
@@ -337,7 +338,10 @@ export default function SoulsWonPage() {
 
       <Dialog open={!!soulToEdit} onOpenChange={(open) => !open && setSoulToEdit(null)}>
           <DialogContent className="sm:max-w-lg">
-              <DialogHeader><DialogTitle>Edit Soul Details</DialogTitle></DialogHeader>
+              <DialogHeader>
+                <DialogTitle>Edit Soul Details</DialogTitle>
+                <DialogDescription>Update record details.</DialogDescription>
+              </DialogHeader>
               <div className="max-h-[70vh] overflow-y-auto pr-2">
                   {soulToEdit && <EditSoulForm soul={soulToEdit} onSoulUpdated={handleSoulUpdated} fellowships={activeFellowships} campaigns={activeCampaigns} />}
               </div>
