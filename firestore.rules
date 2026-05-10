@@ -6,12 +6,8 @@ service cloud.firestore {
       return request.auth != null && request.auth.uid == userId;
     }
     
-    function arePartners(user1, user2) {
-      let user1Data = get(/databases/$(database)/documents/users/$(user1)).data;
-      let user2Data = get(/databases/$(database)/documents/users/$(user2)).data;
-      
-      return user1Data != null && 'partnerIds' in user1Data && user1Data.partnerIds is list && user2 in user1Data.partnerIds &&
-             user2Data != null && 'partnerIds' in user2Data && user2Data.partnerIds is list && user1 in user2Data.partnerIds;
+    function getRequestId(id1, id2) {
+      return id1 < id2 ? id1 + '_' + id2 : id2 + '_' + id1;
     }
 
     function isFellowshipMember(fellowshipId) {
@@ -30,10 +26,15 @@ service cloud.firestore {
 
       allow update: if request.auth != null && (
         (isOwner(userId) && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['accountabilityPartners', 'partnerIds'])) ||
-        (isOwner(userId) && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['accountabilityPartners', 'partnerIds']) && request.resource.data.accountabilityPartners.size() == (('accountabilityPartners' in resource.data) ? resource.data.accountabilityPartners.size() : 0) - 1) ||
-        (isOwner(userId) && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['accountabilityPartners', 'partnerIds']) && request.resource.data.accountabilityPartners.size() == (('accountabilityPartners' in resource.data) ? resource.data.accountabilityPartners.size() : 0) + 1) ||
-        (!isOwner(userId) && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['accountabilityPartners', 'partnerIds']) && request.resource.data.accountabilityPartners.size() == (('accountabilityPartners' in resource.data) ? resource.data.accountabilityPartners.size() : 0) + 1 && ( (exists(/databases/$(database)/documents/accountabilityRequests/$(userId + '_' + request.auth.uid)) && get(/databases/$(database)/documents/accountabilityRequests/$(userId + '_' + request.auth.uid)).data.status == 'pending' && get(/databases/$(database)/documents/accountabilityRequests/$(userId + '_' + request.auth.uid)).data.toUserId == request.auth.uid) || (exists(/databases/$(database)/documents/accountabilityRequests/$(request.auth.uid + '_' + userId)) && get(/databases/$(database)/documents/accountabilityRequests/$(request.auth.uid + '_' + userId)).data.status == 'pending' && get(/databases/$(database)/documents/accountabilityRequests/$(request.auth.uid + '_' + userId)).data.toUserId == request.auth.uid) )) ||
-        (!isOwner(userId) && (('partnerIds' in resource.data && request.auth.uid in resource.data.partnerIds) || ('accountabilityPartners' in resource.data && exists(/databases/$(database)/documents/accountabilityRequests/$(userId + '_' + request.auth.uid)))) && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['accountabilityPartners', 'partnerIds']) && request.resource.data.accountabilityPartners.size() == (('accountabilityPartners' in resource.data) ? resource.data.accountabilityPartners.size() : 0) - 1)
+        (isOwner(userId) && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['accountabilityPartners', 'partnerIds'])) ||
+        (!isOwner(userId) && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['accountabilityPartners', 'partnerIds']) && (
+          // Addition: must have an accepted or pending request
+          (request.resource.data.accountabilityPartners.size() == (('accountabilityPartners' in resource.data) ? resource.data.accountabilityPartners.size() : 0) + 1 && 
+           exists(/databases/$(database)/documents/accountabilityRequests/$(getRequestId(userId, request.auth.uid)))) ||
+          // Removal: must have been a partner
+          (request.resource.data.accountabilityPartners.size() == (('accountabilityPartners' in resource.data) ? resource.data.accountabilityPartners.size() : 0) - 1 && 
+           'partnerIds' in resource.data && request.auth.uid in resource.data.partnerIds)
+        ))
       );
 
       match /souls/{soulId} {
@@ -116,7 +117,7 @@ service cloud.firestore {
 
     match /accountabilityRequests/{requestId} {
       allow read: if request.auth != null && request.auth.uid in resource.data.participantIds;
-      allow create: if request.auth != null && request.auth.uid == request.resource.data.fromUserId && request.resource.data.fromUserId in request.resource.data.participantIds && request.resource.data.toUserId in request.resource.data.participantIds && request.resource.data.participantIds.size() == 2 && requestId == request.resource.data.participantIds.join('_');
+      allow create: if request.auth != null && request.auth.uid == request.resource.data.fromUserId && request.resource.data.fromUserId in request.resource.data.participantIds && request.resource.data.toUserId in request.resource.data.participantIds && request.resource.data.participantIds.size() == 2 && requestId == getRequestId(request.resource.data.fromUserId, request.resource.data.toUserId);
       allow update: if request.auth != null && request.auth.uid == resource.data.toUserId && request.resource.data.status in ['accepted', 'declined'] && resource.data.status == 'pending';
       allow delete: if request.auth != null && ( (request.auth.uid == resource.data.fromUserId && resource.data.status == 'pending') || (resource.data.status in ['accepted', 'declined'] && request.auth.uid in resource.data.participantIds) );
     }
