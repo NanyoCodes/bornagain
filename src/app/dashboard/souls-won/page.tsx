@@ -21,7 +21,7 @@ import {
 import { PlusCircle, Download, Loader2 } from "lucide-react";
 import { SoulsWonTable } from "@/components/souls/souls-won-table";
 import { LogSoulForm } from "@/components/souls/log-soul-form";
-import type { Soul, Campaign, Fellowship, UserProfile } from "@/lib/types";
+import type { Soul, Campaign, Fellowship } from "@/lib/types";
 import { useCollection, useFirestore, useUser } from "@/firebase";
 import { collection, query, orderBy, doc, serverTimestamp, increment, runTransaction, addDoc, deleteField } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";

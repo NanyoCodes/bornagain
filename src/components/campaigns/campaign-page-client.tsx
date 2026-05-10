@@ -534,12 +534,14 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
             
             {mounted && isMobile ? (
               <Sheet open={isManageOpen} onOpenChange={setIsManageOpen}>
-                <SheetContent side="bottom">
-                  <SheetHeader>
-                    <SheetTitle>Manage Campaign</SheetTitle>
-                    <SheetDescription>Update the details of your campaign.</SheetDescription>
-                  </SheetHeader>
-                  <div className="max-h-[80vh] overflow-y-auto p-1 mt-4">
+                <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0">
+                  <div className="p-6 border-b flex-shrink-0">
+                    <SheetHeader className="text-left">
+                      <SheetTitle>Manage Campaign</SheetTitle>
+                      <SheetDescription>Update the details of your campaign.</SheetDescription>
+                    </SheetHeader>
+                  </div>
+                  <div className="flex-grow overflow-y-auto p-6 pt-2">
                     <ManageCampaignForm
                       key={(campaign.lastUpdatedAt?.seconds ?? campaign.createdAt.seconds).toString()}
                       campaign={campaign}

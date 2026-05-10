@@ -33,7 +33,7 @@ service cloud.firestore {
         (isOwner(userId) && 'accountabilityPartners' in resource.data && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['accountabilityPartners', 'partnerIds']) && request.resource.data.accountabilityPartners.size() == resource.data.accountabilityPartners.size() - 1) ||
         (isOwner(userId) && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['accountabilityPartners', 'partnerIds']) && request.resource.data.accountabilityPartners.size() == ('accountabilityPartners' in resource.data ? resource.data.accountabilityPartners.size() : 0) + 1) ||
         (!isOwner(userId) && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['accountabilityPartners', 'partnerIds']) && request.resource.data.accountabilityPartners.size() == ('accountabilityPartners' in resource.data ? resource.data.accountabilityPartners.size() : 0) + 1 && ( (exists(/databases/$(database)/documents/accountabilityRequests/$(userId + '_' + request.auth.uid)) && get(/databases/$(database)/documents/accountabilityRequests/$(userId + '_' + request.auth.uid)).data.status == 'pending' && get(/databases/$(database)/documents/accountabilityRequests/$(userId + '_' + request.auth.uid)).data.toUserId == request.auth.uid) || (exists(/databases/$(database)/documents/accountabilityRequests/$(request.auth.uid + '_' + userId)) && get(/databases/$(database)/documents/accountabilityRequests/$(request.auth.uid + '_' + userId)).data.status == 'pending' && get(/databases/$(database)/documents/accountabilityRequests/$(request.auth.uid + '_' + userId)).data.toUserId == request.auth.uid) )) ||
-        (!isOwner(userId) && arePartners(request.auth.uid, userId) && 'accountabilityPartners' in resource.data && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['accountabilityPartners', 'partnerIds']) && request.resource.data.accountabilityPartners.size() == resource.data.accountabilityPartners.size() - 1)
+        (!isOwner(userId) && 'partnerIds' in resource.data && request.auth.uid in resource.data.partnerIds && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['accountabilityPartners', 'partnerIds']) && request.resource.data.accountabilityPartners.size() == resource.data.accountabilityPartners.size() - 1)
       );
 
       match /souls/{soulId} {
@@ -85,7 +85,7 @@ service cloud.firestore {
     match /prayerRequests/{requestId} {
       allow get, list: if true;
       allow create: if request.auth != null && request.auth.uid == request.resource.data.authorId;
-      allow delete: if request.auth != null && resource.data.authorId == request.authorId; // Fixed author check
+      allow delete: if request.auth != null && resource.data.authorId == request.authorId;
       allow update: if request.auth != null && ( (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['usersWhoPrayed']) && request.resource.data.usersWhoPrayed.size() == ('usersWhoPrayed' in resource.data ? request.resource.data.usersWhoPrayed.size() : 0) + 1 && request.auth.uid in request.resource.data.usersWhoPrayed) || (resource.data.authorId == request.auth.uid && resource.data.status == 'pending' && request.resource.data.status == 'answered' && request.resource.data.diff(resource.data).affectedKeys().hasAll(['status', 'answeredTestimonyId'])) || (resource.data.authorId == request.auth.uid && resource.data.status == 'answered' && request.resource.data.status == 'pending' && request.resource.data.diff(resource.data).affectedKeys().hasAll(['status', 'answeredTestimonyId'])) );
     }
 
@@ -118,7 +118,7 @@ service cloud.firestore {
       allow read: if request.auth != null && request.auth.uid in resource.data.participantIds;
       allow create: if request.auth != null && request.auth.uid == request.resource.data.fromUserId && request.resource.data.fromUserId in request.resource.data.participantIds && request.resource.data.toUserId in request.resource.data.participantIds && request.resource.data.participantIds.size() == 2 && requestId == request.resource.data.participantIds.join('_');
       allow update: if request.auth != null && request.auth.uid == resource.data.toUserId && request.resource.data.status in ['accepted', 'declined'] && resource.data.status == 'pending';
-      allow delete: if request.auth != null && ( (request.auth.uid == resource.data.fromUserId && resource.data.status == 'pending') || (resource.data.status in ['accepted', 'declined'] && request.auth.uid in request.resource.data.participantIds) );
+      allow delete: if request.auth != null && ( (request.auth.uid == resource.data.fromUserId && resource.data.status == 'pending') || (resource.data.status in ['accepted', 'declined'] && request.auth.uid in resource.data.participantIds) );
     }
     
     match /fellowships/{fellowshipId} {
