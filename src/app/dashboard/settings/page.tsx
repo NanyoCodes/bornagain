@@ -45,7 +45,7 @@ import { ThemeToggle } from '@/components/theme-toggle';
 import { ChurchSettingsCard } from '@/components/settings/church-settings-card';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
-import { PasswordSettingsCard } from '@/components/settings/password-settings-card';
+import { PasswordSettingsCard } from '@/settings/password-settings-card';
 
 // --- Validation Schemas ---
 const notificationFormSchema = z.object({
@@ -115,7 +115,7 @@ function NotificationSettingsForm({ userProfile, userId }: { userProfile: UserPr
       newCampaignsInArea: userProfile.notificationSettings?.newCampaignsInArea ?? false,
       weeklyDigest: userProfile.notificationSettings?.weeklyDigest ?? false,
     });
-  }, [userProfile, form.reset]);
+  }, [userProfile, form]);
 
   async function onSubmit(values: z.infer<typeof notificationFormSchema>) {
     setIsSubmitting(true);
