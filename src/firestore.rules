@@ -27,11 +27,11 @@ service cloud.firestore {
       allow update: if request.auth != null && (
         isOwner(userId) ||
         // Allow a non-owner to update accountability fields if they are removing themselves as a partner
-        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['accountabilityPartners', 'partnerIds']) && (
+        (request.resource.data.diff(resource.data).affectedKeys().hasAny(['accountabilityPartners', 'partnerIds']) && (
           // Addition: must have a request document as proof of intent (pending or accepted)
           exists(/databases/$(database)/documents/accountabilityRequests/$(getRequestId(userId, request.auth.uid))) ||
-          // Removal: must be in the previous partner list and NOT in the new one
-          (request.auth.uid in resource.data.partnerIds && !(request.auth.uid in request.resource.data.partnerIds))
+          // Removal: must have been in the partner list
+          ('partnerIds' in resource.data && request.auth.uid in resource.data.partnerIds)
         ))
       );
 

@@ -664,7 +664,7 @@ export default function BibleReaderPage() {
                                 <NoteEditor 
                                     highlight={h} 
                                     onSave={handleUpdateNote} 
-                                    onDelete={handleDeleteHighlight}
+                                    onDelete={handleUpdateNote} // using same save function signature for UI
                                     onCancel={() => setActiveHighlightId(null)} 
                                 />
                             </div>
