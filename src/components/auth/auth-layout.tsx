@@ -79,6 +79,7 @@ function PhotoCollage() {
                         fill
                         className="object-cover"
                         priority
+                        data-ai-hint="jesus cross"
                     />
                 </div>
             ))}
@@ -137,7 +138,7 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
             <p className="text-zinc-300 max-w-md text-lg leading-relaxed">
                 A global platform for believers to share testimonies, organize soul-winning campaigns, and track evangelism progress.
             </p>
-             <p className="text-zinc-500 font-medium tracking-wide">GLORIFYING GOD, ALL PHOTOS MUST BE CHRISTIAN</p>
+             <p className="text-zinc-500 font-medium tracking-wide uppercase">GLORIFYING GOD</p>
         </div>
 
         <Carousel

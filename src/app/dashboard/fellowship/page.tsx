@@ -348,12 +348,8 @@ export default function FellowshipPage() {
         );
     }, [activeFellowships, searchTerm]);
 
-    const loading = userLoading || profileLoading || fellowshipsLoading;
-
-    // Defined before usage in variable assignments
     const handleCreateFellowship = async (values: z.infer<typeof formSchema>) => {
         if (!user || !userProfile || !firestore) return;
-        
         setIsSubmitting(true);
 
         const newFellowshipRef = doc(collection(firestore, "fellowships"));
@@ -390,7 +386,7 @@ export default function FellowshipPage() {
                     joinedAt: serverTimestamp()
                 });
             });
-            toast({ title: "Fellowship Created!", description: "Your new fellowship group is now live." });
+            toast({ title: "Fellowship Created!" });
             setIsCreateOpen(false);
         } catch (e) {
             const permissionError = new FirestorePermissionError({ path: 'fellowships', operation: 'create' }, user);
@@ -428,13 +424,10 @@ export default function FellowshipPage() {
         if (!fellowshipToDelete || !user || !firestore) return;
         setIsDeleting(true);
         const fellowshipRef = doc(firestore, 'fellowships', fellowshipToDelete.id);
-        const deleteData = {
-            status: 'deleted' as const,
-        };
         
         try {
-            await updateDoc(fellowshipRef, deleteData);
-            toast({ title: 'Fellowship Deleted', description: 'The fellowship group has been deleted.' });
+            await updateDoc(fellowshipRef, { status: 'deleted' });
+            toast({ title: 'Fellowship Deleted' });
             setFellowshipToDelete(null);
         } catch (e) {
             const permissionError = new FirestorePermissionError({ path: fellowshipRef.path, operation: 'update' }, user);
@@ -447,6 +440,8 @@ export default function FellowshipPage() {
     const handleCardClick = (fellowshipId: string) => {
         router.push(`/dashboard/fellowship/${fellowshipId}`);
     };
+
+    const loading = userLoading || profileLoading || fellowshipsLoading;
 
     const triggerButton = (
         <Button disabled={loading} size={isMobile ? 'icon' : 'default'}>

@@ -372,7 +372,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                     </div>
                 </div>
             </div>
-             <Dialog open={isLogSoulOpen} onOpenChange={setIsLogSoulOpen}><DialogContent className="sm:max-w-lg"><DialogHeader><DialogTitle>Log a Soul Won</DialogTitle></DialogHeader><LogSoulForm onSoulLogged={() => setIsLogSoulOpen(false)} defaultCampaign={campaign} fellowships={[]} campaigns={[]} /></DialogContent></Dialog>
+             <Dialog open={isLogSoulOpen} onOpenChange={setIsLogSoulOpen}><DialogContent className="sm:max-w-lg"><DialogHeader><DialogTitle>Log a Soul Won</DialogTitle></DialogHeader><LogSoulForm onSoulLogged={() => setIsLogSoulOpen(false)} fellowships={[]} campaigns={[]} /></DialogContent></Dialog>
             <Dialog open={isTestimonyDialogOpen} onOpenChange={setIsTestimonyDialogOpen}><DialogContent className="sm:max-w-lg"><DialogHeader><DialogTitle>Share Testimony</DialogTitle></DialogHeader>{userProfile && <CreateTestimonyForm userProfile={userProfile} onTestimonyCreated={() => setIsTestimonyDialogOpen(false)} campaign={campaign} />}</DialogContent></Dialog>
             {mounted && isMobile ? (
               <Sheet open={isManageOpen} onOpenChange={setIsManageOpen}><SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0"><div className="p-6 border-b flex-shrink-0"><SheetHeader className="text-left"><SheetTitle>Manage Campaign</SheetTitle></SheetHeader></div><div className="flex-grow overflow-y-auto p-6 pt-2"><ManageCampaignForm campaign={campaign} onCampaignUpdated={handleFormClose} onDelete={() => { setCampaignToDelete(campaign); setIsManageOpen(false); }} /></div></SheetContent></Sheet>

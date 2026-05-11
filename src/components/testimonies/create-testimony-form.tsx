@@ -120,7 +120,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
 
       toast({
           title: "Testimony Submitted!",
-          description: "Thank you for sharing. Your testimony is now live.",
+          description: "Thank you for sharing.",
       });
       
       onTestimonyCreated();
@@ -185,7 +185,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select a category for your testimony" />
+                        <SelectValue placeholder="Select a category" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -194,11 +194,6 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
                       ))}
                     </SelectContent>
                   </Select>
-                  {prayerRequest && (
-                      <FormDescription>
-                          Category inherited from the original prayer request.
-                      </FormDescription>
-                  )}
                 <FormMessage />
               </FormItem>
             )}
