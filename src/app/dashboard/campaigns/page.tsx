@@ -137,7 +137,6 @@ export default function CampaignsPage() {
   useEffect(() => {
     setMounted(true);
     setNow(new Date());
-    // Update the 'now' state every minute to re-evaluate campaign statuses
     const interval = setInterval(() => {
       setNow(new Date());
     }, 60000);
@@ -295,22 +294,19 @@ export default function CampaignsPage() {
         if (isAOwner && !isBOwner) return -1;
         if (!isAOwner && isBOwner) return 1;
 
-        // Status is primary sort key: Ongoing (1) < Upcoming (2) < Past (3)
         if (a._status !== b._status) {
             return a._status - b._status;
         }
         
-        // For Ongoing and Upcoming, sort by distance, then by start date
         if (a._status === 1 || a._status === 2) {
             if (a._distance != null && b._distance != null) {
                 if (a._distance !== b._distance) return a._distance - b._distance;
             } else if (a._distance != null) {
-                return -1; // a has distance, b doesn't
+                return -1;
             } else if (b._distance != null) {
-                return 1;  // b has distance, a doesn't
+                return 1;
             }
 
-            // Fallback for items with same or no distance: sort by start date
             const fullStartDateA = a._fullStartDate;
             const fullStartDateB = b._fullStartDate;
 
@@ -322,7 +318,6 @@ export default function CampaignsPage() {
             if (fullStartDateB) return 1;
         }
 
-        // For Past, sort by end date descending (most recently ended first)
         if (a._status === 3) {
             const fullEndDateA = a._fullEndDate;
             const fullEndDateB = b._fullEndDate;
@@ -335,7 +330,6 @@ export default function CampaignsPage() {
             if (fullEndDateB) return 1;
         }
 
-        // Fallback sort
         const createdAtA = safeToDate(a.createdAt)?.getTime() ?? 0;
         const createdAtB = safeToDate(b.createdAt)?.getTime() ?? 0;
         return createdAtB - createdAtA;
@@ -343,7 +337,7 @@ export default function CampaignsPage() {
 
   }, [processedCampaigns, searchTerm, mounted, filter, user?.uid, statusFilter, joinedCampaignIds]);
   
-  const activeCampaigns = useMemo(() => {
+  const activeCampaignsList = useMemo(() => {
     if (!campaigns) return [];
     return campaigns.filter(c => c.status !== 'deleted');
   }, [campaigns]);
@@ -482,7 +476,7 @@ export default function CampaignsPage() {
               <div className="max-h-[70vh] overflow-y-auto pr-2">
                 <ManageCampaignForm 
                   campaign={campaignToManage} 
-                  onCampaignUpdated={() => { setCampaignToManage(null); }}
+                  onCampaignUpdated={() => { setCampaignToManage(null); }} 
                   onDelete={() => {
                     setCampaignToDelete(campaignToManage);
                     setCampaignToManage(null);
@@ -549,7 +543,7 @@ export default function CampaignsPage() {
                         onSoulLogged={handleSoulLogged}
                         defaultCampaign={campaignForSoul}
                         fellowships={fellowships || []}
-                        campaigns={activeCampaigns || []}
+                        campaigns={activeCampaignsList || []}
                     />
                 </div>
             </DialogContent>

@@ -135,7 +135,6 @@ function NoteEditor({ highlight, onSave, onDelete, onCancel }: { highlight: Bibl
   const handleDelete = async () => {
     setIsDeleting(true);
     await onDelete(highlight.id);
-    // This component will unmount, so no need to set loading to false
   }
 
   return (
@@ -239,7 +238,6 @@ export default function BibleReaderPage() {
   useEffect(() => {
     if (userProfile && !hasInitializedSelection.current) {
       if (userProfile.readingHistory && userProfile.readingHistory.length > 0) {
-        // Sort history to find the most recent entry
         const sortedHistory = [...userProfile.readingHistory].sort((a, b) => {
           const timeA = safeToDate(a.readAt)?.getTime() ?? 0;
           const timeB = safeToDate(b.readAt)?.getTime() ?? 0;
@@ -254,7 +252,6 @@ export default function BibleReaderPage() {
           setSelectedChapterNumber(lastRead.chapter);
         }
       } else {
-        // If no history, default to Genesis 1
         setSelectedBookName(bibleData[0].name);
         setSelectedChapterNumber(1);
       }
@@ -263,7 +260,6 @@ export default function BibleReaderPage() {
   }, [userProfile]);
 
   useEffect(() => {
-    // Only reset chapter to 1 if the book name changed AND it's not the initial load from history
     if (hasInitializedSelection.current && selectedBookName !== lastBookRef.current) {
       setSelectedChapterNumber(1);
       setActiveHighlightId(null);
@@ -370,7 +366,6 @@ export default function BibleReaderPage() {
     try {
         const userRef = doc(firestore, 'users', user.uid);
         
-        // --- Update Reading History ---
         const historyUpdatePayload = {
           readingHistory: arrayUnion({
             book: chapterContent.book,
@@ -380,7 +375,6 @@ export default function BibleReaderPage() {
         };
         await updateDoc(userRef, historyUpdatePayload);
         
-        // --- Update Daily Discipline ---
         const lastUpdatedDate = userProfile.dailyDiscipline?.lastUpdated?.toDate();
         const alreadyCompletedToday = lastUpdatedDate && isToday(lastUpdatedDate) && userProfile.dailyDiscipline?.completed?.includes('read_bible');
 
@@ -410,7 +404,6 @@ export default function BibleReaderPage() {
 
         toast({ title: 'Chapter Marked as Read', description: `${chapterContent.book} ${chapterContent.chapter} has been added to your history.`});
         
-        // --- Navigate to next chapter ---
         const currentBookIndex = bibleData.findIndex(b => b.name === chapterContent.book);
         const currentBook = bibleData[currentBookIndex];
         if (!currentBook) return;
@@ -760,7 +753,6 @@ export default function BibleReaderPage() {
                             })}
                         </div>
                         
-                        {/* Floating Highlight Toolbar */}
                         {selectedVerses.length > 0 && !unfinishedHighlight && toolbarPos && (
                             <div 
                                 className="absolute z-30 transition-all pointer-events-none"
@@ -956,14 +948,11 @@ export default function BibleReaderPage() {
                 )}
               </div>
             
-             {/* Mobile / Desktop Layout switch */}
             {!mounted || !isMobile ? (
                 <div className="flex flex-col md:flex-row gap-6 flex-grow min-h-0">
-                    {/* Reader Column */}
                     <div className="flex flex-col md:w-2/3 min-h-0">
                         {ReaderContent}
                     </div>
-                    {/* Notes Column */}
                     <div className="hidden md:flex md:w-1/3 flex-col">
                         <Accordion type="single" collapsible defaultValue='item-1' className="w-full flex-grow flex flex-col">
                             <AccordionItem value="item-1" className="border rounded-md bg-muted/30 flex-grow flex flex-col">

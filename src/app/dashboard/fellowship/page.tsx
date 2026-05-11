@@ -176,7 +176,22 @@ function FellowshipForm({ userProfile, onFormSubmit, isSubmitting }: { userProfi
     );
 }
 
-const manageFormSchema = formSchema;
+const manageFormSchema = z.object({
+  name: z.string().min(3, "Name must be at least 3 characters.").max(100),
+  description: z.string().min(10, "Description must be at least 10 characters.").max(500),
+  schedule: z.string().min(3, "Schedule is required.").max(100),
+  streamUrl: z.string().url({ message: "Please enter a valid URL." }).optional().or(z.literal('')),
+  locationType: z.enum(['Physical', 'Virtual', 'Physical and Virtual'], { required_error: "Please select a location type." }),
+  location: z.string().max(100).optional(),
+}).refine((data) => {
+    if (data.locationType === 'Physical' || data.locationType === 'Physical and Virtual') {
+        return !!data.location && data.location.trim().length > 2;
+    }
+    return true;
+}, {
+    message: "Location is required for physical or 'Physical and Virtual' meetings.",
+    path: ["location"],
+});
 
 function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting }: { fellowship: Fellowship, onFormSubmit: (values: z.infer<typeof manageFormSchema>) => void, isSubmitting: boolean }) {
   const form = useForm<z.infer<typeof manageFormSchema>>({
@@ -288,7 +303,7 @@ function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting }: { fell
 
 
 export default function FellowshipPage() {
-  const router = useRouter();
+    const router = useRouter();
     const { user, loading: userLoading } = useUser();
     const firestore = useFirestore();
     const { toast } = useToast();
@@ -335,6 +350,15 @@ export default function FellowshipPage() {
     }, [activeFellowships, searchTerm]);
 
     const loading = userLoading || profileLoading || fellowshipsLoading;
+
+    const triggerButton = (
+        <Button disabled={loading} size={isMobile ? 'icon' : 'default'}>
+            <PlusCircle className="h-4 w-4 md:mr-2" />
+            <span className="hidden md:inline">Create Fellowship</span>
+        </Button>
+    );
+
+    const formContent = <FellowshipForm userProfile={userProfile ?? null} onFormSubmit={handleCreateFellowship} isSubmitting={isSubmitting} />;
 
     const handleCardClick = (fellowshipId: string) => {
         router.push(`/dashboard/fellowship/${fellowshipId}`);
@@ -432,15 +456,6 @@ export default function FellowshipPage() {
             setIsSubmitting(false);
         }
     };
-    
-    const triggerButton = (
-        <Button disabled={loading} size={isMobile ? 'icon' : 'default'}>
-            <PlusCircle className="h-4 w-4 md:mr-2" />
-            <span className="hidden md:inline">Create Fellowship</span>
-        </Button>
-    );
-
-    const formContent = <FellowshipForm userProfile={userProfile ?? null} onFormSubmit={handleCreateFellowship} isSubmitting={isSubmitting} />;
 
     return (
         <div className="space-y-8">
