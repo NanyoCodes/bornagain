@@ -324,21 +324,6 @@ export default function BibleReaderPage() {
     fetchChapter();
   }, [selectedBookName, selectedChapterNumber, selectedVersion]);
 
-  useLayoutEffect(() => {
-    const viewport = scrollAreaRef.current?.querySelector('div[data-radix-scroll-area-viewport]');
-    if (!viewport) return;
-    viewport.scrollTop = 0;
-    const checkScrollable = () => {
-        if (!isLoadingChapter && chapterContent) {
-            if (viewport.scrollHeight <= viewport.clientHeight) {
-                setIsScrolledToEnd(true);
-            }
-        }
-    };
-    const timeoutId = setTimeout(checkScrollable, 100);
-    return () => clearTimeout(timeoutId);
-  }, [isLoadingChapter, chapterContent]);
-
   const handleMarkAsRead = async () => {
     if (!user || !firestore || !chapterContent || !userProfile) return;
     setIsSubmitting(true);
@@ -510,6 +495,21 @@ export default function BibleReaderPage() {
       }
     };
 
+    useLayoutEffect(() => {
+      const viewport = scrollAreaRef.current?.querySelector('div[data-radix-scroll-area-viewport]');
+      if (!viewport) return;
+      viewport.scrollTop = 0;
+      const checkScrollable = () => {
+          if (!isLoadingChapter && chapterContent) {
+              if (viewport.scrollHeight <= viewport.clientHeight) {
+                  setIsScrolledToEnd(true);
+              }
+          }
+      };
+      const timeoutId = setTimeout(checkScrollable, 100);
+      return () => clearTimeout(timeoutId);
+    }, [isLoadingChapter, chapterContent]);
+
     useEffect(() => { setMounted(true); }, []);
 
     const filteredBibleData = useMemo(() => {
@@ -529,6 +529,30 @@ export default function BibleReaderPage() {
         const currentIndex = fontSizes.indexOf(fontSize);
         if (currentIndex > 0) setFontSize(fontSizes[currentIndex - 1]);
     };
+
+    const readingHistory = userProfile?.readingHistory || [];
+
+    const historyGroups = useMemo(() => {
+        if (readingHistory.length === 0) return [];
+        const groups: { date: Date; items: ReadingHistoryItem[] }[] = [];
+        readingHistory.forEach(item => {
+        if (!item.readAt) return;
+        const itemDate = item.readAt.toDate();
+        const lastGroup = groups[groups.length - 1];
+        if (lastGroup && isSameDay(lastGroup.date, itemDate)) {
+            lastGroup.items.push(item);
+        } else {
+            groups.push({ date: itemDate, items: [item] });
+        }
+        });
+        return groups.reverse();
+    }, [readingHistory]);
+
+    const filteredHistoryGroups = useMemo(() => {
+        if (!historyGroups) return [];
+        if (!filterDate) return historyGroups;
+        return historyGroups.filter(group => isSameDay(group.date, filterDate));
+    }, [historyGroups, filterDate]);
 
     const NotesList = (
         <div className="space-y-2 p-1">
@@ -626,9 +650,45 @@ export default function BibleReaderPage() {
                             </div>
                         ) : (
                             <div className="grid grid-cols-3 gap-2">
-                                <Sheet open={isBookSheetOpen} onOpenChange={setIsBookSheetOpen}><SheetTrigger asChild><Button variant="outline" className="truncate justify-between"><span className="truncate">{selectedBookName}</span><ChevronRight className="h-4 w-4 shrink-0 opacity-50" /></Button></SheetTrigger><SheetContent side="bottom" className="h-[90vh] flex flex-col"><SheetHeader><SheetTitle>Select Book</SheetTitle></SheetHeader><Input placeholder="Search..." value={bookSearchTerm} onChange={(e) => setBookSearchTerm(e.target.value)} /><ScrollArea className="flex-grow">{filteredBibleData.map(book => (<Button key={book.name} variant="ghost" size="lg" className="w-full justify-start" onClick={() => handleSelectBook(book.name)}>{book.name}</Button>))}</ScrollArea></SheetContent></Sheet>
-                                <Sheet open={isChapterSheetOpen} onOpenChange={setIsChapterSheetOpen}><SheetTrigger asChild><Button variant="outline" className="truncate justify-between"><span className="truncate">Chapter {selectedChapterNumber}</span><ChevronRight className="h-4 w-4 shrink-0 opacity-50" /></Button></SheetTrigger><SheetContent side="bottom" className="h-[90vh] flex flex-col"><SheetHeader><SheetTitle>{selectedBookName}</SheetTitle></SheetHeader><ScrollArea className="flex-grow"><div className="grid grid-cols-5 gap-2 p-4">{selectedBook?.chapters.map(chapter => (<Button key={chapter.chapter} variant={chapter.chapter === selectedChapterNumber ? 'default' : 'outline'} size="icon" onClick={() => handleSelectChapter(chapter.chapter)}>{chapter.chapter}</Button>))}</div></ScrollArea></SheetContent></Sheet>
-                                <Sheet open={isVersionSheetOpen} onOpenChange={setIsVersionSheetOpen}><SheetTrigger asChild><Button variant="outline" className="truncate justify-between"><span className="truncate">{selectedVersion.toUpperCase()}</span><ChevronRight className="h-4 w-4 shrink-0 opacity-50" /></Button></SheetTrigger><SheetContent side="bottom"><SheetHeader><SheetTitle>Select Version</SheetTitle></SheetHeader><div className="grid gap-2 py-4">{bibleVersions.map(v => (<Button key={v.id} variant={v.id === selectedVersion ? 'default' : 'ghost'} size="lg" className="w-full justify-start" onClick={() => handleSelectVersion(v.id)}>{v.name}</Button>))}</div></SheetContent></Sheet>
+                                <Sheet open={isBookSheetOpen} onOpenChange={setIsBookSheetOpen}>
+                                    <SheetTrigger asChild>
+                                        <Button variant="outline" className="truncate justify-between">
+                                            <span className="truncate">{selectedBookName}</span>
+                                            <ChevronRight className="h-4 w-4 shrink-0 opacity-50" />
+                                        </Button>
+                                    </SheetTrigger>
+                                    <SheetContent side="bottom" className="h-[90vh] flex flex-col">
+                                        <SheetHeader><SheetTitle>Select Book</SheetTitle></SheetHeader>
+                                        <Input placeholder="Search..." value={bookSearchTerm} onChange={(e) => setBookSearchTerm(e.target.value)} />
+                                        <ScrollArea className="flex-grow">{filteredBibleData.map(book => (<Button key={book.name} variant="ghost" size="lg" className="w-full justify-start" onClick={() => handleSelectBook(book.name)}>{book.name}</Button>))}</ScrollArea>
+                                    </SheetContent>
+                                </Sheet>
+                                <Sheet open={isChapterSheetOpen} onOpenChange={setIsChapterSheetOpen}>
+                                    <SheetTrigger asChild>
+                                        <Button variant="outline" className="truncate justify-between">
+                                            <span className="truncate">Chapter {selectedChapterNumber}</span>
+                                            <ChevronRight className="h-4 w-4 shrink-0 opacity-50" />
+                                        </Button>
+                                    </SheetTrigger>
+                                    <SheetContent side="bottom" className="h-[90vh] flex flex-col">
+                                        <SheetHeader><SheetTitle>{selectedBookName}</SheetTitle></SheetHeader>
+                                        <ScrollArea className="flex-grow">
+                                            <div className="grid grid-cols-5 gap-2 p-4">{selectedBook?.chapters.map(chapter => (<Button key={chapter.chapter} variant={chapter.chapter === selectedChapterNumber ? 'default' : 'outline'} size="icon" onClick={() => handleSelectChapter(chapter.chapter)}>{chapter.chapter}</Button>))}</div>
+                                        </ScrollArea>
+                                    </SheetContent>
+                                </Sheet>
+                                <Sheet open={isVersionSheetOpen} onOpenChange={setIsVersionSheetOpen}>
+                                    <SheetTrigger asChild>
+                                        <Button variant="outline" className="truncate justify-between">
+                                            <span className="truncate">{selectedVersion.toUpperCase()}</span>
+                                            <ChevronRight className="h-4 w-4 shrink-0 opacity-50" />
+                                        </Button>
+                                    </SheetTrigger>
+                                    <SheetContent side="bottom">
+                                        <SheetHeader><SheetTitle>Select Version</SheetTitle></SheetHeader>
+                                        <div className="grid gap-2 py-4">{bibleVersions.map(v => (<Button key={v.id} variant={v.id === selectedVersion ? 'default' : 'ghost'} size="lg" className="w-full justify-start" onClick={() => handleSelectVersion(v.id)}>{v.name}</Button>))}</div>
+                                    </SheetContent>
+                                </Sheet>
                             </div>
                         )}
                     </div>
