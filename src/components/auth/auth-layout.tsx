@@ -28,27 +28,34 @@ const scriptures = [
   }
 ];
 
+const collageImages = [
+    "https://images.unsplash.com/photo-1510915361894-db8b60106cb1?q=80&w=1000&auto=format&fit=crop", // Worship
+    "https://images.unsplash.com/photo-1438232992991-995b7058bbb3?q=80&w=1000&auto=format&fit=crop", // People
+    "https://images.unsplash.com/photo-1507679799987-c73779587ccf?q=80&w=1000&auto=format&fit=crop", // Prayer
+    "https://images.unsplash.com/photo-1504052434569-70ad58ebb952?q=80&w=1000&auto=format&fit=crop", // Bible
+];
+
 function PublicTestimonyFeed() {
     const firestore = useFirestore();
     const testimoniesQuery = useMemo(() => query(collection(firestore, 'testimonies'), orderBy('createdAt', 'desc'), limit(3)), [firestore]);
     const { data: testimonies, loading } = useCollection<Testimony>(testimoniesQuery);
 
     return (
-        <div className="mt-12 space-y-4 w-full">
-            <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground/50 text-center">GLOBAL TESTIMONIES</h3>
-            <div className="grid gap-4">
+        <div className="mt-8 space-y-4 w-full">
+            <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/50 text-center">GLOBAL TESTIMONIES</h3>
+            <div className="grid gap-3">
                 {loading ? (
-                    <div className="flex justify-center py-8">
-                        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground/20" />
+                    <div className="flex justify-center py-6">
+                        <Loader2 className="h-5 w-5 animate-spin text-muted-foreground/20" />
                     </div>
                 ) : testimonies && testimonies.length > 0 ? (
                     testimonies.map((t) => (
-                        <Card key={t.id} className="bg-muted/20 border-none shadow-none transition-opacity duration-500 animate-in fade-in">
-                            <CardContent className="p-4 flex gap-4">
-                                <Quote className="h-4 w-4 text-primary shrink-0 opacity-40 mt-1" />
-                                <div className="space-y-1 overflow-hidden">
-                                    <p className="text-sm text-muted-foreground line-clamp-3 italic leading-relaxed">"{t.content}"</p>
-                                    <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60">— {t.authorFirstName} {t.authorLastName?.charAt(0)}.</p>
+                        <Card key={t.id} className="bg-muted/10 border-none shadow-none transition-opacity duration-500 animate-in fade-in">
+                            <CardContent className="p-3 flex gap-3">
+                                <Quote className="h-3 w-3 text-primary shrink-0 opacity-40 mt-1" />
+                                <div className="space-y-0.5 overflow-hidden">
+                                    <p className="text-xs text-muted-foreground line-clamp-2 italic leading-relaxed">"{t.content}"</p>
+                                    <p className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground/60">— {t.authorFirstName} {t.authorLastName?.charAt(0)}.</p>
                                 </div>
                             </CardContent>
                         </Card>
@@ -61,22 +68,39 @@ function PublicTestimonyFeed() {
     );
 }
 
+function PhotoCollage() {
+    return (
+        <div className="absolute inset-0 grid grid-cols-2 grid-rows-2 gap-2 p-2 opacity-40">
+            {collageImages.map((src, idx) => (
+                <div key={idx} className="relative w-full h-full overflow-hidden rounded-xl border border-white/5 shadow-2xl">
+                    <Image
+                        src={src}
+                        alt={`Ministry collage ${idx + 1}`}
+                        fill
+                        className="object-cover"
+                        priority
+                    />
+                </div>
+            ))}
+        </div>
+    );
+}
+
 export function AuthLayout({ children }: { children: React.ReactNode }) {
   const logo = PlaceHolderImages.find((img) => img.id === 'logo');
-  const authBackground = PlaceHolderImages.find((img) => img.id === 'auth-background');
   
   const plugin = React.useRef(
-    Autoplay({ delay: 8000, stopOnInteraction: true })
+    Autoplay({ delay: 6000, stopOnInteraction: true })
   )
 
   return (
     <div className="w-full lg:grid lg:grid-cols-2 min-h-screen bg-background">
       <div className="flex flex-col items-center justify-center p-6 sm:p-12 overflow-y-auto">
-        <div className="mx-auto grid w-full max-w-[320px] gap-6 py-12">
+        <div className="mx-auto grid w-full max-w-[320px] gap-6 py-8">
             <div className="flex flex-col items-center sm:items-start justify-start w-full mb-2">
                 {logo && (
                     <Link href="/">
-                        <Avatar className="h-16 w-16 mb-6 border-2 border-primary/10 shadow-sm transition-transform hover:scale-105 active:scale-95">
+                        <Avatar className="h-14 w-14 mb-6 border-2 border-primary/10 shadow-sm transition-transform hover:scale-105 active:scale-95">
                             <AvatarImage src={logo.imageUrl} alt="Testify" />
                             <AvatarFallback>T</AvatarFallback>
                         </Avatar>
@@ -90,7 +114,7 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
             
             <PublicTestimonyFeed />
 
-            <footer className="text-center text-[10px] uppercase tracking-widest text-muted-foreground/40 mt-12 space-y-4">
+            <footer className="text-center text-[9px] uppercase tracking-widest text-muted-foreground/40 mt-8 space-y-4">
                 <div className="flex justify-center gap-6">
                     <Link href="/terms-of-service" className="hover:text-primary transition-colors">
                         Terms
@@ -105,17 +129,8 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
       </div>
       
       <div className="hidden lg:flex flex-col items-start justify-center p-12 md:p-24 text-white relative overflow-hidden bg-zinc-950">
-        {authBackground && (
-            <Image
-                src={authBackground.imageUrl}
-                alt={authBackground.description}
-                fill
-                priority
-                className="object-cover opacity-40 scale-105"
-                data-ai-hint={authBackground.imageHint}
-            />
-        )}
-        <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-transparent z-0" />
+        <PhotoCollage />
+        <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/20 to-transparent z-0" />
         
         <div className="space-y-4 mb-12 z-10 animate-in fade-in slide-in-from-left-8 duration-1000">
             <h1 className="text-5xl font-bold tracking-tight font-headline">Welcome to Testify</h1>
