@@ -1050,7 +1050,7 @@ export default function BibleReaderPage() {
                                                     <div className="relative flex items-start space-x-3">
                                                         <div>
                                                             <span className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center ring-8 ring-background">
-                                                                <BookOpen className="h-5 w-5 text-primary" />
+                                                                < BookOpen className="h-5 w-5 text-primary" />
                                                             </span>
                                                         </div>
                                                         <div className="flex min-w-0 flex-1 justify-between space-x-4 pt-1.5">

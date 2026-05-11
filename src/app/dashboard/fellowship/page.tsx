@@ -67,6 +67,22 @@ const formSchema = z.object({
     path: ["location"],
 });
 
+const manageFormSchema = z.object({
+  name: z.string().min(3, "Name must be at least 3 characters.").max(100),
+  description: z.string().min(10, "Description must be at least 10 characters.").max(500),
+  schedule: z.string().min(3, "Schedule is required.").max(100),
+  streamUrl: z.string().url({ message: "Please enter a valid URL." }).optional().or(z.literal('')),
+  locationType: z.enum(['Physical', 'Virtual', 'Physical and Virtual'], { required_error: "Please select a location type." }),
+  location: z.string().max(100).optional(),
+}).refine((data) => {
+    if (data.locationType === 'Physical' || data.locationType === 'Physical and Virtual') {
+        return !!data.location && data.location.trim().length > 2;
+    }
+    return true;
+}, {
+    message: "Location is required for physical or 'Physical and Virtual' meetings.",
+    path: ["location"],
+});
 
 function FellowshipForm({ userProfile, onFormSubmit, isSubmitting }: { userProfile: UserProfile | null, onFormSubmit: (values: z.infer<typeof formSchema>) => void, isSubmitting: boolean }) {
     const form = useForm<z.infer<typeof formSchema>>({
@@ -176,23 +192,6 @@ function FellowshipForm({ userProfile, onFormSubmit, isSubmitting }: { userProfi
     );
 }
 
-const manageFormSchema = z.object({
-  name: z.string().min(3, "Name must be at least 3 characters.").max(100),
-  description: z.string().min(10, "Description must be at least 10 characters.").max(500),
-  schedule: z.string().min(3, "Schedule is required.").max(100),
-  streamUrl: z.string().url({ message: "Please enter a valid URL." }).optional().or(z.literal('')),
-  locationType: z.enum(['Physical', 'Virtual', 'Physical and Virtual'], { required_error: "Please select a location type." }),
-  location: z.string().max(100).optional(),
-}).refine((data) => {
-    if (data.locationType === 'Physical' || data.locationType === 'Physical and Virtual') {
-        return !!data.location && data.location.trim().length > 2;
-    }
-    return true;
-}, {
-    message: "Location is required for physical or 'Physical and Virtual' meetings.",
-    path: ["location"],
-});
-
 function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting }: { fellowship: Fellowship, onFormSubmit: (values: z.infer<typeof manageFormSchema>) => void, isSubmitting: boolean }) {
   const form = useForm<z.infer<typeof manageFormSchema>>({
     resolver: zodResolver(manageFormSchema),
@@ -244,7 +243,7 @@ function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting }: { fell
                     <RadioGroup
                     onValueChange={field.onChange}
                     defaultValue={field.value}
-                    className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4"
+                    className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 space-x-4"
                     >
                     <FormItem className="flex items-center space-x-2 space-y-0">
                         <FormControl>
@@ -301,7 +300,6 @@ function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting }: { fell
   );
 }
 
-
 export default function FellowshipPage() {
     const router = useRouter();
     const { user, loading: userLoading } = useUser();
@@ -350,39 +348,6 @@ export default function FellowshipPage() {
     }, [activeFellowships, searchTerm]);
 
     const loading = userLoading || profileLoading || fellowshipsLoading;
-
-    const triggerButton = (
-        <Button disabled={loading} size={isMobile ? 'icon' : 'default'}>
-            <PlusCircle className="h-4 w-4 md:mr-2" />
-            <span className="hidden md:inline">Create Fellowship</span>
-        </Button>
-    );
-
-    const formContent = <FellowshipForm userProfile={userProfile ?? null} onFormSubmit={handleCreateFellowship} isSubmitting={isSubmitting} />;
-
-    const handleCardClick = (fellowshipId: string) => {
-        router.push(`/dashboard/fellowship/${fellowshipId}`);
-    };
-
-    const handleDeleteFellowship = async () => {
-        if (!fellowshipToDelete || !user || !firestore) return;
-        setIsDeleting(true);
-        const fellowshipRef = doc(firestore, 'fellowships', fellowshipToDelete.id);
-        const deleteData = {
-            status: 'deleted' as const,
-        };
-        
-        try {
-            await updateDoc(fellowshipRef, deleteData);
-            toast({ title: 'Fellowship Deleted', description: 'The fellowship group has been deleted.' });
-            setFellowshipToDelete(null);
-        } catch (e) {
-            const permissionError = new FirestorePermissionError({ path: fellowshipRef.path, operation: 'update' }, user);
-            errorEmitter.emit('permission-error', permissionError);
-        } finally {
-            setIsDeleting(false);
-        }
-    };
 
     const handleCreateFellowship = async (values: z.infer<typeof formSchema>) => {
         if (!user || !userProfile || !firestore) return;
@@ -454,6 +419,39 @@ export default function FellowshipPage() {
             errorEmitter.emit('permission-error', permissionError);
         } finally {
             setIsSubmitting(false);
+        }
+    };
+
+    const triggerButton = (
+        <Button disabled={loading} size={isMobile ? 'icon' : 'default'}>
+            <PlusCircle className="h-4 w-4 md:mr-2" />
+            <span className="hidden md:inline">Create Fellowship</span>
+        </Button>
+    );
+
+    const formContent = <FellowshipForm userProfile={userProfile ?? null} onFormSubmit={handleCreateFellowship} isSubmitting={isSubmitting} />;
+
+    const handleCardClick = (fellowshipId: string) => {
+        router.push(`/dashboard/fellowship/${fellowshipId}`);
+    };
+
+    const handleDeleteFellowship = async () => {
+        if (!fellowshipToDelete || !user || !firestore) return;
+        setIsDeleting(true);
+        const fellowshipRef = doc(firestore, 'fellowships', fellowshipToDelete.id);
+        const deleteData = {
+            status: 'deleted' as const,
+        };
+        
+        try {
+            await updateDoc(fellowshipRef, deleteData);
+            toast({ title: 'Fellowship Deleted', description: 'The fellowship group has been deleted.' });
+            setFellowshipToDelete(null);
+        } catch (e) {
+            const permissionError = new FirestorePermissionError({ path: fellowshipRef.path, operation: 'update' }, user);
+            errorEmitter.emit('permission-error', permissionError);
+        } finally {
+            setIsDeleting(false);
         }
     };
 
