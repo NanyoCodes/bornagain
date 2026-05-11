@@ -39,7 +39,6 @@ import { LogFollowUpDialog } from "@/components/souls/log-follow-up-dialog";
 import { ViewHistoryDialog } from "@/components/souls/view-history-dialog";
 import { AssignFellowshipDialog } from "@/components/souls/assign-fellowship-dialog";
 
-
 export default function SoulsWonPage() {
   const { user, loading: userLoading } = useUser();
   const firestore = useFirestore();
@@ -146,22 +145,19 @@ export default function SoulsWonPage() {
     try {
         await runTransaction(firestore, async (transaction) => {
             const oldFellowshipId = soul.fellowshipId;
-            
             if (oldFellowshipId && oldFellowshipId !== fellowshipId) {
                 const oldFellowshipRef = doc(firestore, "fellowships", oldFellowshipId);
                 transaction.update(oldFellowshipRef, { memberCount: increment(-1) });
             }
-
             if (fellowshipId !== 'none' && oldFellowshipId !== fellowshipId) {
                 const newFellowshipRef = doc(firestore, "fellowships", fellowshipId);
                 transaction.update(newFellowshipRef, { memberCount: increment(1) });
             }
-            
             transaction.update(soulRef, updateData);
             transaction.update(globalSoulRef, updateData);
         });
 
-        toast({ title: "Fellowship Assigned", description: `${soul.firstName} has been assigned to ${selectedFellowship ? selectedFellowship.name : 'no fellowship'}.` });
+        toast({ title: "Fellowship Assigned" });
         setSoulToAssign(null);
 
         const wasNewlyAssigned = fellowshipId !== 'none' && fellowshipId !== soul.fellowshipId;
@@ -181,7 +177,6 @@ export default function SoulsWonPage() {
         const permissionError = new FirestorePermissionError({
             path: `TRANSACTION:ASSIGN_FELLOWSHIP:${soul.id}`,
             operation: 'update',
-            requestResourceData: updateData,
         }, user);
         errorEmitter.emit('permission-error', permissionError);
     } finally {
@@ -191,7 +186,7 @@ export default function SoulsWonPage() {
 
   const handleExport = (formatType: 'csv' | 'pdf') => {
     if (!filteredSouls || filteredSouls.length === 0) {
-      toast({ variant: "destructive", title: "No Data", description: "No records found to export." });
+      toast({ variant: "destructive", title: "No Data" });
       return;
     }
     const headers = ["Logged By", "First Name", "Last Name", "Email", "Phone", "Church", "Location Won", "Date Won", "Source", "Status"];
@@ -221,18 +216,8 @@ export default function SoulsWonPage() {
     const headers = ["Field", "Value"];
     const locationWonString = soul.locationWon ? [soul.locationWon.city, soul.locationWon.state, soul.locationWon.country].filter(Boolean).join(', ') : '';
     const wonAtDate = soul.wonAt?.toDate ? soul.wonAt.toDate() : null;
-    
     const body = [
-        ["First Name", soul.firstName],
-        ["Last Name", soul.lastName],
-        ["Email", soul.email || 'N/A'],
-        ["Phone", soul.phone || 'N/A'],
-        ["Church", soul.church || 'N/A'],
-        ["Location Won", locationWonString || 'N/A'],
-        ["Date Won", wonAtDate ? format(wonAtDate, "PPP") : 'N/A'],
-        ["Source", soul.source],
-        ["Status", soul.status],
-        ["Fellowship", soul.fellowshipName || 'None']
+        ["First Name", soul.firstName], ["Last Name", soul.lastName], ["Email", soul.email || 'N/A'], ["Phone", soul.phone || 'N/A'], ["Church", soul.church || 'N/A'], ["Location Won", locationWonString || 'N/A'], ["Date Won", wonAtDate ? format(wonAtDate, "PPP") : 'N/A'], ["Source", soul.source], ["Status", soul.status], ["Fellowship", soul.fellowshipName || 'None']
     ];
 
     if (formatType === 'pdf') {
@@ -240,17 +225,6 @@ export default function SoulsWonPage() {
         doc.setFontSize(18);
         doc.text(`Soul Record: ${soul.firstName} ${soul.lastName}`, 14, 15);
         autoTable(doc, { body: body, startY: 25 });
-        
-        if (soul.followUpLog && soul.followUpLog.length > 0) {
-            doc.text("Follow-up History", 14, (doc as any).lastAutoTable.finalY + 15);
-            const historyHeaders = ["Date", "Member", "Notes"];
-            const historyBody = soul.followUpLog.map(log => {
-                const d = log.date?.toDate ? log.date.toDate() : null;
-                return [d ? format(d, 'yyyy-MM-dd') : 'N/A', log.memberName || 'N/A', log.note || 'No notes'];
-            });
-            autoTable(doc, { head: [historyHeaders], body: historyBody, startY: (doc as any).lastAutoTable.finalY + 20 });
-        }
-
         doc.save(`soul-${soul.firstName}-${soul.lastName}.pdf`);
     } else {
         const csvRows = body.map(row => row.join(",")).join("\n");
@@ -348,27 +322,9 @@ export default function SoulsWonPage() {
           </DialogContent>
       </Dialog>
 
-      <LogFollowUpDialog
-          soul={soulForFollowUp}
-          isOpen={!!soulForFollowUp}
-          onOpenChange={(isOpen) => { if (!isOpen) setSoulForFollowUp(null); }}
-          onFollowUpLogged={handleFollowUpLogged}
-      />
-
-      <ViewHistoryDialog
-          soul={soulForHistory}
-          isOpen={!!soulForHistory}
-          onOpenChange={(isOpen) => { if (!isOpen) setSoulForHistory(null); }}
-      />
-
-      <AssignFellowshipDialog
-          soul={soulToAssign}
-          fellowships={activeFellowships}
-          isOpen={!!soulToAssign}
-          onOpenChange={() => setSoulToAssign(null)}
-          onAssignFellowship={handleAssignFellowship}
-          isAssigning={isAssigning}
-      />
+      <LogFollowUpDialog soul={soulForFollowUp} isOpen={!!soulForFollowUp} onOpenChange={(isOpen) => { if (!isOpen) setSoulForFollowUp(null); }} onFollowUpLogged={handleFollowUpLogged} />
+      <ViewHistoryDialog soul={soulForHistory} isOpen={!!soulForHistory} onOpenChange={(isOpen) => { if (!isOpen) setSoulForHistory(null); }} />
+      <AssignFellowshipDialog soul={soulToAssign} fellowships={activeFellowships} isOpen={!!soulToAssign} onOpenChange={() => setSoulToAssign(null)} onAssignFellowship={handleAssignFellowship} isAssigning={isAssigning} />
     </div>
   );
 }

@@ -29,10 +29,10 @@ const scriptures = [
 ];
 
 const collageImages = [
-    "https://images.unsplash.com/photo-1543269865-cbf427effbad?q=80&w=1000&auto=format&fit=crop", // Happy group
-    "https://images.unsplash.com/photo-1511632765486-a01980e01a18?q=80&w=1000&auto=format&fit=crop", // Smiling friends
-    "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=1000&auto=format&fit=crop", // Joyful group
-    "https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=1000&auto=format&fit=crop", // Laughing people
+    "https://images.unsplash.com/photo-1438232992991-995b7058bbb3?q=80&w=1000&auto=format&fit=crop", // Calvary Cross
+    "https://images.unsplash.com/photo-1510531704581-5b2870972060?q=80&w=1000&auto=format&fit=crop", // Worship Hands
+    "https://images.unsplash.com/photo-1504052434569-70ad5836ab65?q=80&w=1000&auto=format&fit=crop", // Open Bible
+    "https://images.unsplash.com/photo-1470770903676-69b98201ea1c?q=80&w=1000&auto=format&fit=crop", // Spiritual Light
 ];
 
 function PublicTestimonyFeed() {
@@ -70,12 +70,12 @@ function PublicTestimonyFeed() {
 
 function PhotoCollage() {
     return (
-        <div className="absolute inset-0 grid grid-cols-2 grid-rows-2 gap-2 p-2 opacity-40">
+        <div className="absolute inset-0 grid grid-cols-2 grid-rows-2 gap-2 p-2 opacity-30">
             {collageImages.map((src, idx) => (
                 <div key={idx} className="relative w-full h-full overflow-hidden rounded-xl border border-white/5 shadow-2xl">
                     <Image
                         src={src}
-                        alt={`Happy community members ${idx + 1}`}
+                        alt={`Christ centered imagery ${idx + 1}`}
                         fill
                         className="object-cover"
                         priority
@@ -130,14 +130,14 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
       
       <div className="hidden lg:flex flex-col items-start justify-center p-12 md:p-24 text-white relative overflow-hidden bg-zinc-950">
         <PhotoCollage />
-        <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/20 to-transparent z-0" />
+        <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-transparent z-0" />
         
         <div className="space-y-4 mb-12 z-10 animate-in fade-in slide-in-from-left-8 duration-1000">
             <h1 className="text-5xl font-bold tracking-tight font-headline">Welcome to Testify</h1>
             <p className="text-zinc-300 max-w-md text-lg leading-relaxed">
                 A global platform for believers to share testimonies, organize soul-winning campaigns, and track evangelism progress.
             </p>
-             <p className="text-zinc-500 font-medium tracking-wide">JOIN THE DIGITAL REVIVAL</p>
+             <p className="text-zinc-500 font-medium tracking-wide">GLORIFYING GOD THROUGH TECHNOLOGY</p>
         </div>
 
         <Carousel
