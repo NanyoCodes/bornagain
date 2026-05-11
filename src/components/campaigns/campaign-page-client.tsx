@@ -451,7 +451,6 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                                     <span className="font-semibold group-hover:underline">{campaign.organizerFirstName} {campaign.organizerLastName}</span>
                                 </Link>
                             </CardContent>
-                        </Card>
 
                         <Card>
                             <CardHeader>
