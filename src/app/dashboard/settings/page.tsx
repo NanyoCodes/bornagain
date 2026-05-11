@@ -45,7 +45,7 @@ import { ThemeToggle } from '@/components/theme-toggle';
 import { ChurchSettingsCard } from '@/components/settings/church-settings-card';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
-import { PasswordSettingsCard } from '@/settings/password-settings-card';
+import { PasswordSettingsCard } from '@/components/settings/password-settings-card';
 
 // --- Validation Schemas ---
 const notificationFormSchema = z.object({

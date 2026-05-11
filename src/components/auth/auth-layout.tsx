@@ -29,10 +29,10 @@ const scriptures = [
 ];
 
 const collageImages = [
-    "https://images.unsplash.com/photo-1510915361894-db8b60106cb1?q=80&w=1000&auto=format&fit=crop", // Worship
-    "https://images.unsplash.com/photo-1438232992991-995b7058bbb3?q=80&w=1000&auto=format&fit=crop", // People
-    "https://images.unsplash.com/photo-1507679799987-c73779587ccf?q=80&w=1000&auto=format&fit=crop", // Prayer
-    "https://images.unsplash.com/photo-1504052434569-70ad58ebb952?q=80&w=1000&auto=format&fit=crop", // Bible
+    "https://images.unsplash.com/photo-1543269865-cbf427effbad?q=80&w=1000&auto=format&fit=crop", // Happy group
+    "https://images.unsplash.com/photo-1511632765486-a01980e01a18?q=80&w=1000&auto=format&fit=crop", // Smiling friends
+    "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=1000&auto=format&fit=crop", // Joyful group
+    "https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=1000&auto=format&fit=crop", // Laughing people
 ];
 
 function PublicTestimonyFeed() {
@@ -75,7 +75,7 @@ function PhotoCollage() {
                 <div key={idx} className="relative w-full h-full overflow-hidden rounded-xl border border-white/5 shadow-2xl">
                     <Image
                         src={src}
-                        alt={`Ministry collage ${idx + 1}`}
+                        alt={`Happy community members ${idx + 1}`}
                         fill
                         className="object-cover"
                         priority
