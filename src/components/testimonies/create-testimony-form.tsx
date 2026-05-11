@@ -1,4 +1,3 @@
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -62,13 +61,12 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
         content: ""
       });
     } else {
-      // Reset for a blank testimony
       form.reset({
         category: campaign ? 'Salvation' : undefined,
         content: ""
       });
     }
-  }, [prayerRequest, campaign, form.reset]);
+  }, [prayerRequest, campaign, form]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (!user || !firestore || !userProfile) {
@@ -109,16 +107,14 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
               const prayerDoc = await transaction.get(prayerRef);
 
               if (!prayerDoc.exists() || prayerDoc.data().status !== 'pending') {
-                throw new Error("This prayer has already been answered or does not exist.");
+                throw new Error("ALREADY_ANSWERED");
               }
-               // --- WRITES SECOND (only if prayer request exists and is pending) ---
               transaction.update(prayerRef, {
                   status: 'answered',
                   answeredTestimonyId: newTestimonyDocRef.id
               });
             }
             
-            // --- MAIN WRITE ---
             transaction.set(newTestimonyDocRef, testimonyData);
         });
 
@@ -129,11 +125,8 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
       
       onTestimonyCreated();
     } catch (error: any) {
-        console.error("Submission error:", error);
-        
-        if (error.message === "This prayer has already been answered or does not exist.") {
+        if (error.message === "ALREADY_ANSWERED") {
             toast({
-                variant: "default",
                 title: "Already Answered",
                 description: "This prayer request has already been marked as answered.",
             });
@@ -151,6 +144,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
             }, user);
             errorEmitter.emit('permission-error', permissionError);
         } else {
+             console.error("Submission error:", error);
              toast({
                 variant: "destructive",
                 title: "Submission Error",

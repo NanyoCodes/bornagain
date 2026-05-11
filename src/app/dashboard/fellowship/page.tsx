@@ -306,6 +306,7 @@ export default function FellowshipPage() {
     const firestore = useFirestore();
     const { toast } = useToast();
     const { searchTerm, setSearchPlaceholder, setIsSearchVisible, setSearchTerm } = useSearch();
+    
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [fellowshipToManage, setFellowshipToManage] = useState<Fellowship | null>(null);
@@ -349,6 +350,7 @@ export default function FellowshipPage() {
 
     const loading = userLoading || profileLoading || fellowshipsLoading;
 
+    // Defined before usage in variable assignments
     const handleCreateFellowship = async (values: z.infer<typeof formSchema>) => {
         if (!user || !userProfile || !firestore) return;
         
@@ -422,10 +424,6 @@ export default function FellowshipPage() {
         }
     };
 
-    const handleCardClick = (fellowshipId: string) => {
-        router.push(`/dashboard/fellowship/${fellowshipId}`);
-    };
-
     const handleDeleteFellowship = async () => {
         if (!fellowshipToDelete || !user || !firestore) return;
         setIsDeleting(true);
@@ -444,6 +442,10 @@ export default function FellowshipPage() {
         } finally {
             setIsDeleting(false);
         }
+    };
+
+    const handleCardClick = (fellowshipId: string) => {
+        router.push(`/dashboard/fellowship/${fellowshipId}`);
     };
 
     const triggerButton = (
