@@ -42,7 +42,7 @@ function PublicTestimonyFeed() {
 
     return (
         <div className="mt-8 space-y-4 w-full">
-            <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/50 text-center">GLOBAL TESTIMONIES</h3>
+            <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/50 text-left">GLOBAL TESTIMONIES</h3>
             <div className="grid gap-3">
                 {loading ? (
                     <div className="flex justify-center py-6">
@@ -61,7 +61,7 @@ function PublicTestimonyFeed() {
                         </Card>
                     ))
                 ) : (
-                    <p className="text-center text-[10px] text-muted-foreground/40 italic">Waiting for the Word to spread...</p>
+                    <p className="text-left text-[10px] text-muted-foreground/40 italic">Waiting for the Word to spread...</p>
                 )}
             </div>
         </div>
@@ -98,10 +98,10 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
     <div className="w-full lg:grid lg:grid-cols-2 min-h-screen bg-background">
       <div className="flex flex-col items-center justify-center p-6 sm:p-12 overflow-y-auto">
         <div className="mx-auto grid w-full max-w-[320px] gap-6 py-8">
-            <div className="flex flex-col items-center sm:items-start justify-start w-full mb-2">
+            <div className="flex flex-col items-start justify-start w-full mb-2">
                 {logo && (
                     <Link href="/">
-                        <Avatar className="h-14 w-14 mb-6 border-2 border-primary/10 shadow-sm transition-transform hover:scale-105 active:scale-95">
+                        <Avatar className="h-20 w-20 mb-6 border-2 border-primary/10 shadow-sm transition-transform hover:scale-105 active:scale-95 rounded-xl">
                             <AvatarImage src={logo.imageUrl} alt="Testify" />
                             <AvatarFallback>T</AvatarFallback>
                         </Avatar>
