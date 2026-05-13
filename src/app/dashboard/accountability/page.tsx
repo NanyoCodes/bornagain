@@ -5,12 +5,12 @@ import { useMemo, useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useUser, useFirestore, useDoc } from '@/firebase';
-import { doc, collection, addDoc, serverTimestamp, query, getDocs, where, writeBatch, arrayRemove, deleteDoc, getDoc } from 'firebase/firestore';
+import { doc, collection, addDoc, serverTimestamp, query, getDocs, where, writeBatch, arrayRemove, getDoc } from 'firebase/firestore';
 import type { UserProfile } from '@/lib/types';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Loader2, HeartHandshake, MessagesSquare, MoreVertical, UserX, User, CheckCircle2, XCircle, BellRing } from 'lucide-react';
+import { Loader2, HeartHandshake, MessagesSquare, MoreVertical, UserX, User, CheckCircle2, XCircle, BellRing, BookOpen } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import {
@@ -108,7 +108,6 @@ export default function AccountabilityPage() {
   const { searchTerm, setSearchPlaceholder, setIsSearchVisible, setSearchTerm } = useSearch();
 
   useEffect(() => {
-    // Set date on mount to ensure client-side date is used, avoiding hydration mismatches.
     setSelectedDate(new Date());
   }, []);
 
@@ -163,7 +162,6 @@ export default function AccountabilityPage() {
         });
 
     } catch (error) {
-        console.error("Error nudging partner:", error);
         const permissionError = new FirestorePermissionError({
             path: `users/${partner.userId}/notifications`,
             operation: 'create',
@@ -303,7 +301,6 @@ export default function AccountabilityPage() {
         toast({ title: 'Partner Removed', description: 'Your accountability partnership has been ended.' });
         setRemovalTarget(null);
     } catch (error) {
-        console.error("Error removing partner:", error);
         const permissionError = new FirestorePermissionError({
             path: `BATCH_WRITE:REMOVE_PARTNER:${user.uid}`,
             operation: 'write',
@@ -444,6 +441,9 @@ export default function AccountabilityPage() {
                                     <DropdownMenuItem onSelect={() => router.push(`/dashboard/profile/${partner.userId}`)}>
                                       <User className="mr-2 h-4 w-4" /> View Profile
                                     </DropdownMenuItem>
+                                    <DropdownMenuItem onSelect={() => router.push('/dashboard/bible')}>
+                                      <BookOpen className="mr-2 h-4 w-4" /> Read Bible Together
+                                    </DropdownMenuItem>
                                     <DropdownMenuSeparator />
                                     <DropdownMenuItem
                                         className="text-destructive focus:text-destructive"
@@ -525,5 +525,3 @@ export default function AccountabilityPage() {
     </div>
   );
 }
-
-    
