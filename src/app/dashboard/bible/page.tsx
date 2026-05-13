@@ -85,7 +85,7 @@ const getHighlightClass = (color?: string) => {
 };
 
 const getPartnerHighlightClass = () => {
-    return 'border-l-4 border-primary bg-primary/5';
+    return 'border-l-4 border-primary bg-primary/5 shadow-inner';
 };
 
 const getNoteCardClass = (color?: string) => {
@@ -288,11 +288,11 @@ export default function BibleReaderPage() {
                       where('chapter', '==', chapterContent.chapter)
                   );
                   const snap = await getDocs(q);
-                  snap.forEach(doc => {
-                      const data = doc.data() as BibleHighlight;
+                  snap.forEach(docSnap => {
+                      const data = docSnap.data() as BibleHighlight;
                       if (data.note && data.note.trim() !== '') {
                         partnerNotes.push({ 
-                            id: doc.id, 
+                            id: docSnap.id, 
                             ...data, 
                             partnerName: partner.firstName,
                             partnerPhoto: partner.photoURL
@@ -321,12 +321,6 @@ export default function BibleReaderPage() {
     return highlights.find(h => h.id === activeHighlightId) || null;
   }, [activeHighlightId, highlights]);
   
-  useEffect(() => {
-    if (activeHighlightId && activeNoteRef.current) {
-        activeNoteRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
-  }, [activeHighlightId]);
-
   const highlightsMap = useMemo(() => {
     const map = new Map<number, BibleHighlight>();
     if (!highlights) return map;
@@ -598,7 +592,8 @@ export default function BibleReaderPage() {
         const groups: { date: Date; items: ReadingHistoryItem[] }[] = [];
         readingHistoryList.forEach(item => {
         if (!item.readAt) return;
-        const itemDate = item.readAt.toDate();
+        const itemDate = safeToDate(item.readAt);
+        if (!itemDate) return;
         const lastGroup = groups[groups.length - 1];
         if (lastGroup && isSameDay(lastGroup.date, itemDate)) {
             lastGroup.items.push(item);
@@ -618,7 +613,7 @@ export default function BibleReaderPage() {
     const NotesList = (
         <div className="space-y-6">
             <div className="space-y-2 p-1">
-                <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2">My Notes</h3>
+                <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2">My Journal</h3>
                 {highlights && highlights
                     .sort((a, b) => (a.createdAt?.seconds ?? 0) - (b.createdAt?.seconds ?? 0))
                     .map(h => h.id === activeHighlightId ? (

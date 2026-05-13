@@ -68,7 +68,7 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
                     ) : testimonies?.map((t) => (
                         <Card key={t.id} className="bg-muted/10 border-none shadow-none">
                             <CardContent className="p-3">
-                                <p className="text-xs text-muted-foreground line-clamp-2 italic italic">"{t.content}"</p>
+                                <p className="text-xs text-muted-foreground line-clamp-2 italic">"{t.content}"</p>
                                 <p className="text-[9px] font-bold mt-1 uppercase text-muted-foreground/60">— {t.authorFirstName} {t.authorLastName?.charAt(0)}.</p>
                             </CardContent>
                         </Card>

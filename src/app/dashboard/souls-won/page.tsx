@@ -178,14 +178,14 @@ export default function SoulsWonPage() {
     const headers = ["Logged By", "First Name", "Last Name", "Email", "Phone", "Church", "Location Won", "Date Won", "Source", "Status"];
     const body = filteredSouls.map(soul => {
         const locationWonString = soul.locationWon ? [soul.locationWon.city, soul.locationWon.state, soul.locationWon.country].filter(Boolean).join(', ') : '';
-        const wonAtDate = soul.wonAt?.toDate ? soul.wonAt.toDate() : null;
+        const wonAtDate = safeToDate(soul.wonAt);
         return [user?.displayName || '', soul.firstName, soul.lastName, soul.email || '', soul.phone || '', soul.church || '', locationWonString, wonAtDate ? format(wonAtDate, "yyyy-MM-dd") : '', soul.source, soul.status];
     });
 
     if (formatType === 'pdf') {
-        const doc = new jsPDF({ orientation: 'landscape' });
-        autoTable(doc, { head: [headers], body: body, startY: 20 });
-        doc.save(`souls-won-${format(new Date(), 'yyyy-MM-dd')}.pdf`);
+        const docObj = new jsPDF({ orientation: 'landscape' });
+        autoTable(docObj, { head: [headers], body: body, startY: 20 });
+        docObj.save(`souls-won-${format(new Date(), 'yyyy-MM-dd')}.pdf`);
     } else {
         const csvContent = "data:text/csv;charset=utf-8," + headers.join(",") + "\n" + body.map(e => e.join(",")).join("\n");
         const encodedUri = encodeURI(csvContent);
@@ -204,11 +204,11 @@ export default function SoulsWonPage() {
     ];
 
     if (formatType === 'pdf') {
-        const doc = new jsPDF();
-        doc.setFontSize(18);
-        doc.text(`Soul Record: ${soul.firstName} ${soul.lastName}`, 14, 15);
-        autoTable(doc, { body: body, startY: 25 });
-        doc.save(`soul-${soul.firstName}-${soul.lastName}.pdf`);
+        const docObj = new jsPDF();
+        docObj.setFontSize(18);
+        docObj.text(`Soul Record: ${soul.firstName} ${soul.lastName}`, 14, 15);
+        autoTable(docObj, { body: body, startY: 25 });
+        docObj.save(`soul-${soul.firstName}-${soul.lastName}.pdf`);
     } else {
         const csvRows = body.map(row => row.join(",")).join("\n");
         const csvContent = "data:text/csv;charset=utf-8," + csvRows;
@@ -221,8 +221,6 @@ export default function SoulsWonPage() {
     toast({ title: "Export Started" });
   };
 
-  const loading = userLoading || soulsLoading || loadingCampaigns || loadingFellowships;
-  
   const filteredSouls = useMemo(() => {
     if (!souls) return [];
     if (!searchTerm) return souls;
@@ -244,6 +242,8 @@ export default function SoulsWonPage() {
   );
 
   const formContent = <LogSoulForm onSoulLogged={handleSoulLogged} fellowships={activeFellowships || []} campaigns={activeCampaigns || []} />;
+
+  const loading = userLoading || soulsLoading || loadingCampaigns || loadingFellowships;
 
   return (
     <div className="space-y-8">

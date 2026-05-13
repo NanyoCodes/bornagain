@@ -366,15 +366,6 @@ export default function FellowshipPage() {
         router.push(`/dashboard/fellowship/${fellowshipId}`);
     };
 
-    const triggerButton = (
-        <Button disabled={userLoading || profileLoading || fellowshipsLoading}>
-            <PlusCircle className="h-4 w-4 md:mr-2" />
-            <span className="hidden md:inline">New Fellowship</span>
-        </Button>
-    );
-
-    const formContent = <FellowshipForm userProfile={userProfile ?? null} onFormSubmit={handleCreateFellowship} isSubmitting={isSubmitting} />;
-
     const activeFellowships = useMemo(() => {
         if (!fellowships) return [];
         return fellowships.filter(f => f.status !== 'deleted');
@@ -389,6 +380,15 @@ export default function FellowshipPage() {
             f.description.toLowerCase().includes(term)
         );
     }, [activeFellowships, searchTerm]);
+
+    const triggerButton = (
+        <Button disabled={userLoading || profileLoading || fellowshipsLoading}>
+            <PlusCircle className="h-4 w-4 md:mr-2" />
+            <span className="hidden md:inline">New Fellowship</span>
+        </Button>
+    );
+
+    const formContent = <FellowshipForm userProfile={userProfile ?? null} onFormSubmit={handleCreateFellowship} isSubmitting={isSubmitting} />;
 
     const loading = userLoading || profileLoading || fellowshipsLoading;
 
