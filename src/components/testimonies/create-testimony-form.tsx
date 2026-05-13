@@ -106,8 +106,9 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
               const prayerRef = doc(firestore, 'prayerRequests', prayerRequest.id);
               const prayerDoc = await transaction.get(prayerRef);
 
+              // Gracefully handle "already answered" case without throwing a console error
               if (!prayerDoc.exists() || prayerDoc.data().status !== 'pending') {
-                throw new Error("ALREADY_ANSWERED");
+                return "ALREADY_ANSWERED";
               }
               transaction.update(prayerRef, {
                   status: 'answered',
@@ -116,24 +117,23 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
             }
             
             transaction.set(newTestimonyDocRef, testimonyData);
-        });
-
-      toast({
-          title: "Testimony Submitted!",
-          description: "Thank you for sharing.",
-      });
-      
-      onTestimonyCreated();
-    } catch (error: any) {
-        if (error.message === "ALREADY_ANSWERED") {
+        }).then((result) => {
+            if (result === "ALREADY_ANSWERED") {
+                 toast({
+                    title: "Already Answered",
+                    description: "This prayer request was already updated.",
+                });
+                onTestimonyCreated();
+                return;
+            }
             toast({
-                title: "Already Answered",
-                description: "This prayer request has already been marked as answered.",
+                title: "Testimony Submitted!",
+                description: "Thank you for sharing.",
             });
             onTestimonyCreated();
-            return;
-        }
+        });
 
+    } catch (error: any) {
         const isPermissionError = error.code === 'permission-denied';
 
         if (isPermissionError) {

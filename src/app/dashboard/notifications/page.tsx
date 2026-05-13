@@ -1,10 +1,9 @@
-
 'use client';
 
 import { useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUser, useFirestore, useCollection } from '@/firebase';
-import { collection, query, orderBy, doc, updateDoc, writeBatch, where } from 'firebase/firestore';
+import { collection, query, doc, updateDoc, writeBatch, where } from 'firebase/firestore';
 import type { Notification } from '@/lib/types';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -15,30 +14,30 @@ import { Button } from '@/components/ui/button';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 
+// Move outside component to ensure reference stability
+const OTHER_NOTIFICATION_TYPES = [
+  'campaign_join', 
+  'accountability_nudge', 
+  'accountability_request', 
+  'request_accepted', 
+  'request_declined', 
+  'accountability_partner_removed',
+  'new_soul_in_fellowship'
+];
+
 export default function NotificationsPage() {
   const { user } = useUser();
   const firestore = useFirestore();
   const router = useRouter();
 
-  // Unified notification types list to match AppHeader
-  const otherNotificationTypes = [
-    'campaign_join', 
-    'accountability_nudge', 
-    'accountability_request', 
-    'request_accepted', 
-    'request_declined', 
-    'accountability_partner_removed',
-    'new_soul_in_fellowship'
-  ];
-
   const notificationsQuery = useMemo(() => {
     if (!user?.uid || !firestore) return null;
     return query(
         collection(firestore, `users/${user.uid}/notifications`),
-        where('type', 'in', otherNotificationTypes),
+        where('type', 'in', OTHER_NOTIFICATION_TYPES),
         where('isRead', '==', false)
     );
-  }, [user?.uid, firestore, otherNotificationTypes]);
+  }, [user?.uid, firestore]);
 
   const { data: notificationsData, loading } = useCollection<Notification>(notificationsQuery);
 

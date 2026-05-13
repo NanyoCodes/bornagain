@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect, Fragment } from 'react';
@@ -421,6 +420,21 @@ export default function FellowshipPage() {
         }
     };
 
+    const handleCardClick = (fellowshipId: string) => {
+        router.push(`/dashboard/fellowship/${fellowshipId}`);
+    };
+
+    const loading = userLoading || profileLoading || fellowshipsLoading;
+
+    const triggerButton = (
+        <Button disabled={loading} size={isMobile ? 'icon' : 'default'}>
+            <PlusCircle className="h-4 w-4 md:mr-2" />
+            <span className="hidden md:inline">Create Fellowship</span>
+        </Button>
+    );
+
+    const formContent = <FellowshipForm userProfile={userProfile ?? null} onFormSubmit={handleCreateFellowship} isSubmitting={isSubmitting} />;
+
     const activeFellowships = useMemo(() => {
         if (!fellowships) return [];
         return fellowships.filter(f => f.status !== 'deleted');
@@ -437,21 +451,6 @@ export default function FellowshipPage() {
             f.organizerName.toLowerCase().includes(term)
         );
     }, [activeFellowships, searchTerm]);
-
-    const handleCardClick = (fellowshipId: string) => {
-        router.push(`/dashboard/fellowship/${fellowshipId}`);
-    };
-
-    const loading = userLoading || profileLoading || fellowshipsLoading;
-
-    const triggerButton = (
-        <Button disabled={loading} size={isMobile ? 'icon' : 'default'}>
-            <PlusCircle className="h-4 w-4 md:mr-2" />
-            <span className="hidden md:inline">Create Fellowship</span>
-        </Button>
-    );
-
-    const formContent = <FellowshipForm userProfile={userProfile ?? null} onFormSubmit={handleCreateFellowship} isSubmitting={isSubmitting} />;
 
     return (
         <div className="space-y-8">
