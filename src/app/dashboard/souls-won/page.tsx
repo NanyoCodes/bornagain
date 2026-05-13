@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { 
   Dialog, 
@@ -197,7 +197,7 @@ export default function SoulsWonPage() {
     toast({ title: "Export Started" });
   };
 
-  const handleExportSingleSoul = useCallback((soul: Soul, formatType: 'csv' | 'pdf') => {
+  const handleExportSingleSoul = (soul: Soul, formatType: 'csv' | 'pdf') => {
     const body = [
         ["First Name", soul.firstName], ["Last Name", soul.lastName], ["Email", soul.email || 'N/A'], ["Phone", soul.phone || 'N/A'], ["Church", soul.church || 'N/A'], ["Source", soul.source], ["Status", soul.status], ["Fellowship", soul.fellowshipName || 'None']
     ];
@@ -218,7 +218,7 @@ export default function SoulsWonPage() {
         link.click();
     }
     toast({ title: "Export Started" });
-  }, [toast]);
+  };
 
   const loading = userLoading || soulsLoading || loadingCampaigns || loadingFellowships;
   

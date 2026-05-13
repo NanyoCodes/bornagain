@@ -1,4 +1,3 @@
-
 'use client';
 
 import Image from 'next/image';
@@ -42,8 +41,8 @@ function PublicTestimonyFeed() {
     const { data: testimonies, loading } = useCollection<Testimony>(testimoniesQuery);
 
     return (
-        <div className="mt-8 space-y-4 w-full">
-            <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/50 text-left">GLOBAL TESTIMONIES</h3>
+        <div className="mt-8 space-y-4 w-full text-left">
+            <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/50">GLOBAL TESTIMONIES</h3>
             <div className="grid gap-3">
                 {loading ? (
                     <div className="flex justify-center py-6">

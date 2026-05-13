@@ -14,7 +14,7 @@ import { Button } from '@/components/ui/button';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 
-// Move outside component to ensure reference stability
+// Stabilize dependency by defining outside component
 const OTHER_NOTIFICATION_TYPES = [
   'campaign_join', 
   'accountability_nudge', 
