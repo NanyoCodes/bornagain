@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect, Fragment } from 'react';
@@ -243,7 +244,7 @@ function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting }: { fell
                     <RadioGroup
                     onValueChange={field.onChange}
                     defaultValue={field.value}
-                    className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 space-x-4"
+                    className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4"
                     >
                     <FormItem className="flex items-center space-x-2 space-y-0">
                         <FormControl>
@@ -331,23 +332,6 @@ export default function FellowshipPage() {
     const fellowshipsQuery = useMemo(() => query(collection(firestore, "fellowships"), orderBy("createdAt", "desc")), [firestore]);
     const { data: fellowships, loading: fellowshipsLoading } = useCollection<Fellowship>(fellowshipsQuery);
     
-    const activeFellowships = useMemo(() => {
-        if (!fellowships) return [];
-        return fellowships.filter(f => f.status !== 'deleted');
-    }, [fellowships]);
-
-    const filteredFellowships = useMemo(() => {
-        if (!activeFellowships) return [];
-        if (!searchTerm) return activeFellowships;
-        const term = searchTerm.toLowerCase();
-        return activeFellowships.filter(f => 
-            f.name.toLowerCase().includes(term) || 
-            f.description.toLowerCase().includes(term) ||
-            (f.location && f.location.toLowerCase().includes(term)) ||
-            f.organizerName.toLowerCase().includes(term)
-        );
-    }, [activeFellowships, searchTerm]);
-
     const handleCreateFellowship = async (values: z.infer<typeof formSchema>) => {
         if (!user || !userProfile || !firestore) return;
         setIsSubmitting(true);
@@ -436,6 +420,23 @@ export default function FellowshipPage() {
             setIsDeleting(false);
         }
     };
+
+    const activeFellowships = useMemo(() => {
+        if (!fellowships) return [];
+        return fellowships.filter(f => f.status !== 'deleted');
+    }, [fellowships]);
+
+    const filteredFellowships = useMemo(() => {
+        if (!activeFellowships) return [];
+        if (!searchTerm) return activeFellowships;
+        const term = searchTerm.toLowerCase();
+        return activeFellowships.filter(f => 
+            f.name.toLowerCase().includes(term) || 
+            f.description.toLowerCase().includes(term) ||
+            (f.location && f.location.toLowerCase().includes(term)) ||
+            f.organizerName.toLowerCase().includes(term)
+        );
+    }, [activeFellowships, searchTerm]);
 
     const handleCardClick = (fellowshipId: string) => {
         router.push(`/dashboard/fellowship/${fellowshipId}`);

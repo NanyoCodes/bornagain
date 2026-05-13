@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
@@ -76,11 +77,6 @@ export default function SoulsWonPage() {
   }, [user?.uid, firestore]);
   const { data: campaigns, loading: loadingCampaigns } = useCollection<Campaign>(campaignsQuery);
   
-  const activeCampaigns = useMemo(() => {
-    if (!campaigns) return [];
-    return campaigns.filter(c => c.status !== 'deleted');
-  }, [campaigns]);
-  
   const fellowshipsQuery = useMemo(() => {
     if (!firestore) return null;
     return query(collection(firestore, 'fellowships'), orderBy('name', 'asc'));
@@ -92,20 +88,10 @@ export default function SoulsWonPage() {
     return allFellowships.filter(f => f.status !== 'deleted');
   }, [allFellowships]);
 
-  const loading = userLoading || soulsLoading || loadingCampaigns || loadingFellowships;
-  
-  const filteredSouls = useMemo(() => {
-    if (!souls) return [];
-    if (!searchTerm) return souls;
-    const term = searchTerm.toLowerCase();
-    return souls.filter(soul => 
-      `${soul.firstName} ${soul.lastName}`.toLowerCase().includes(term) ||
-      (soul.phone && soul.phone.toLowerCase().includes(term)) ||
-      soul.source.toLowerCase().includes(term) ||
-      (soul.sourceDetails && soul.sourceDetails.toLowerCase().includes(term)) ||
-      (soul.church && soul.church.toLowerCase().includes(term))
-    );
-  }, [souls, searchTerm]);
+  const activeCampaigns = useMemo(() => {
+    if (!campaigns) return [];
+    return campaigns.filter(c => c.status !== 'deleted');
+  }, [campaigns]);
 
   const handleSoulLogged = () => {
     setIsLogDialogOpen(false);
@@ -213,11 +199,8 @@ export default function SoulsWonPage() {
   };
 
   const handleExportSingleSoul = useCallback((soul: Soul, formatType: 'csv' | 'pdf') => {
-    const headers = ["Field", "Value"];
-    const locationWonString = soul.locationWon ? [soul.locationWon.city, soul.locationWon.state, soul.locationWon.country].filter(Boolean).join(', ') : '';
-    const wonAtDate = soul.wonAt?.toDate ? soul.wonAt.toDate() : null;
     const body = [
-        ["First Name", soul.firstName], ["Last Name", soul.lastName], ["Email", soul.email || 'N/A'], ["Phone", soul.phone || 'N/A'], ["Church", soul.church || 'N/A'], ["Location Won", locationWonString || 'N/A'], ["Date Won", wonAtDate ? format(wonAtDate, "PPP") : 'N/A'], ["Source", soul.source], ["Status", soul.status], ["Fellowship", soul.fellowshipName || 'None']
+        ["First Name", soul.firstName], ["Last Name", soul.lastName], ["Email", soul.email || 'N/A'], ["Phone", soul.phone || 'N/A'], ["Church", soul.church || 'N/A'], ["Source", soul.source], ["Status", soul.status], ["Fellowship", soul.fellowshipName || 'None']
     ];
 
     if (formatType === 'pdf') {
@@ -237,6 +220,21 @@ export default function SoulsWonPage() {
     }
     toast({ title: "Export Started" });
   }, [toast]);
+
+  const loading = userLoading || soulsLoading || loadingCampaigns || loadingFellowships;
+  
+  const filteredSouls = useMemo(() => {
+    if (!souls) return [];
+    if (!searchTerm) return souls;
+    const term = searchTerm.toLowerCase();
+    return souls.filter(soul => 
+      `${soul.firstName} ${soul.lastName}`.toLowerCase().includes(term) ||
+      (soul.phone && soul.phone.toLowerCase().includes(term)) ||
+      soul.source.toLowerCase().includes(term) ||
+      (soul.sourceDetails && soul.sourceDetails.toLowerCase().includes(term)) ||
+      (soul.church && soul.church.toLowerCase().includes(term))
+    );
+  }, [souls, searchTerm]);
 
   const triggerButton = (
     <Button disabled={!user}>

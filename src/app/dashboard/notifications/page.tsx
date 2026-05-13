@@ -20,16 +20,25 @@ export default function NotificationsPage() {
   const firestore = useFirestore();
   const router = useRouter();
 
+  // Unified notification types list to match AppHeader
+  const otherNotificationTypes = [
+    'campaign_join', 
+    'accountability_nudge', 
+    'accountability_request', 
+    'request_accepted', 
+    'request_declined', 
+    'accountability_partner_removed',
+    'new_soul_in_fellowship'
+  ];
+
   const notificationsQuery = useMemo(() => {
     if (!user?.uid || !firestore) return null;
-    // Exclude chat notifications from this page
-    const otherNotificationTypes = ['campaign_join', 'accountability_nudge', 'accountability_request', 'request_accepted', 'request_declined', 'accountability_partner_removed'];
     return query(
         collection(firestore, `users/${user.uid}/notifications`),
-        where('type', 'in', otherNotificationTypes)
-        // orderBy('createdAt', 'desc') // This causes a composite index requirement.
+        where('type', 'in', otherNotificationTypes),
+        where('isRead', '==', false)
     );
-  }, [user?.uid, firestore]);
+  }, [user?.uid, firestore, otherNotificationTypes]);
 
   const { data: notificationsData, loading } = useCollection<Notification>(notificationsQuery);
 
@@ -54,7 +63,6 @@ export default function NotificationsPage() {
               requestResourceData: { isRead: true },
           }, user);
           errorEmitter.emit('permission-error', permissionError);
-          // Continue to navigate even if marking as read fails
       });
     }
 
