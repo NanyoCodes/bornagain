@@ -71,7 +71,6 @@ import {
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 const bibleVersions = [
     { id: 'kjv', name: 'King James Version' },
@@ -82,10 +81,6 @@ const bibleVersions = [
 const getHighlightClass = (color?: string) => {
     if (!color) return 'bg-blue-200/60 dark:bg-blue-800/50';
     return `highlight-${color}`;
-};
-
-const getPartnerHighlightClass = () => {
-    return 'border-l-4 border-primary bg-primary/5 shadow-inner';
 };
 
 const getNoteCardClass = (color?: string) => {
@@ -231,9 +226,6 @@ export default function BibleReaderPage() {
   const hasInitializedSelection = useRef(false);
   const lastBookRef = useRef(bibleData[0].name);
 
-  const [partnerHighlights, setPartnerHighlights] = useState<(BibleHighlight & { partnerName: string; partnerPhoto?: string })[]>([]);
-  const [isLoadingPartnerHighlights, setIsLoadingPartnerHighlights] = useState(false);
-
   useEffect(() => {
     if (userProfile && !hasInitializedSelection.current) {
       if (userProfile.readingHistory && userProfile.readingHistory.length > 0) {
@@ -274,43 +266,6 @@ export default function BibleReaderPage() {
 
   const { data: highlights } = useCollection<BibleHighlight>(highlightsQuery);
 
-  useEffect(() => {
-      const fetchPartnerHighlights = async () => {
-          if (!userProfile?.accountabilityPartners || !chapterContent || !firestore) return;
-          setIsLoadingPartnerHighlights(true);
-          try {
-              const partnerNotes: (BibleHighlight & { partnerName: string; partnerPhoto?: string })[] = [];
-              
-              for (const partner of userProfile.accountabilityPartners) {
-                  const q = query(
-                      collection(firestore, 'users', partner.userId, 'bibleHighlights'),
-                      where('book', '==', chapterContent.book),
-                      where('chapter', '==', chapterContent.chapter)
-                  );
-                  const snap = await getDocs(q);
-                  snap.forEach(docSnap => {
-                      const data = docSnap.data() as BibleHighlight;
-                      if (data.note && data.note.trim() !== '') {
-                        partnerNotes.push({ 
-                            id: docSnap.id, 
-                            ...data, 
-                            partnerName: partner.firstName,
-                            partnerPhoto: partner.photoURL
-                        });
-                      }
-                  });
-              }
-              setPartnerHighlights(partnerNotes);
-          } catch (e) {
-              console.error("Failed to fetch partner highlights", e);
-          } finally {
-              setIsLoadingPartnerHighlights(false);
-          }
-      };
-
-      fetchPartnerHighlights();
-  }, [userProfile?.accountabilityPartners, chapterContent, firestore]);
-  
   const unfinishedHighlight = useMemo(() => {
     if (!highlights) return null;
     return highlights.find(h => !h.note || h.note.trim() === '');
@@ -332,17 +287,6 @@ export default function BibleReaderPage() {
     });
     return map;
   }, [highlights]);
-
-  const partnerHighlightsMap = useMemo(() => {
-    const map = new Map<number, string[]>();
-    partnerHighlights.forEach(h => {
-        h.verses.forEach(v => {
-            const existing = map.get(v) || [];
-            map.set(v, [...existing, h.partnerName]);
-        });
-    });
-    return map;
-  }, [partnerHighlights]);
   
   useEffect(() => {
     if (!selectedBookName || !selectedChapterNumber) return;
@@ -628,33 +572,6 @@ export default function BibleReaderPage() {
                         </Card>
                     ))}
             </div>
-
-            {partnerHighlights.length > 0 && (
-                <div className="space-y-3 p-1 pt-4 border-t">
-                    <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2 flex items-center gap-2">
-                        <Users className="h-4 w-4" /> Partner Reflections
-                    </h3>
-                    {partnerHighlights.map(h => (
-                        <Card key={h.id} className="bg-primary/5 border-primary/20">
-                            <CardHeader className="p-3 pb-2">
-                                <div className="flex items-center gap-2 mb-1">
-                                    <Avatar className="h-5 w-5">
-                                        <AvatarImage src={h.partnerPhoto} />
-                                        <AvatarFallback className="text-[8px]">{h.partnerName.charAt(0)}</AvatarFallback>
-                                    </Avatar>
-                                    <span className="text-xs font-bold text-primary">{h.partnerName}</span>
-                                </div>
-                                <CardTitle className="text-xs font-semibold">{getVerseReference(h)}</CardTitle>
-                            </CardHeader>
-                            {h.note && (
-                                <CardContent className="p-3 pt-0">
-                                    <p className="text-xs text-muted-foreground italic leading-relaxed">&ldquo;{h.note}&rdquo;</p>
-                                </CardContent>
-                            )}
-                        </Card>
-                    ))}
-                </div>
-            )}
         </div>
     );
     
@@ -672,18 +589,10 @@ export default function BibleReaderPage() {
                         <div className={cn("space-y-1 font-serif", fontSizeClasses[fontSize])}>
                             {chapterContent.verses.map(v => (
                                 <div key={v.verse} className="relative group">
-                                    <p id={`verse-${v.verse}`} className={cn('rounded-sm transition-colors -mx-1 px-1 py-0.5 relative', highlightsMap.get(v.verse) && getHighlightClass(highlightsMap.get(v.verse)!.color), partnerHighlightsMap.has(v.verse) && getPartnerHighlightClass(), selectedVerses.includes(v.verse) && 'bg-destructive/30', activeHighlight?.verses.includes(v.verse) && 'ring-2 ring-primary ring-offset-2 ring-offset-background', 'cursor-pointer')} onClick={() => handleVerseClick(v.verse)}>
+                                    <p id={`verse-${v.verse}`} className={cn('rounded-sm transition-colors -mx-1 px-1 py-0.5 relative', highlightsMap.get(v.verse) && getHighlightClass(highlightsMap.get(v.verse)!.color), selectedVerses.includes(v.verse) && 'bg-destructive/30', activeHighlight?.verses.includes(v.verse) && 'ring-2 ring-primary ring-offset-2 ring-offset-background', 'cursor-pointer')} onClick={() => handleVerseClick(v.verse)}>
                                         <sup className={cn("font-sans text-muted-foreground mr-1 sm:mr-1.5 select-none", subFontSizeClasses[fontSize])}>{v.verse}</sup>
                                         {v.text}
-                                        {partnerHighlightsMap.has(v.verse) && (
-                                            <span className="absolute -left-1 top-0 bottom-0 w-1 bg-primary rounded-l-sm" />
-                                        )}
                                     </p>
-                                    {partnerHighlightsMap.has(v.verse) && (
-                                        <div className="absolute left-full ml-2 top-0 bg-popover border rounded px-2 py-1 text-[10px] whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity z-50 pointer-events-none">
-                                            Thoughts from {partnerHighlightsMap.get(v.verse)?.join(', ')}
-                                        </div>
-                                    )}
                                 </div>
                             ))}
                         </div>
@@ -813,7 +722,7 @@ export default function BibleReaderPage() {
                         )}
                     </div>
                     {!mounted || !isMobile ? (
-                        <div className="flex flex-col md:flex-row gap-6 flex-grow min-h-0"><div className="flex flex-col md:w-2/3 min-h-0">{ReaderContent}</div><div className="hidden md:flex md:w-1/3 flex-col"><Accordion type="single" collapsible defaultValue='item-1' className="w-full flex-grow flex flex-col"><AccordionItem value="item-1" className="border rounded-md bg-muted/30 flex-grow flex flex-col"><AccordionTrigger className="px-4 py-3 hover:no-underline flex-shrink-0"><h3 className="font-semibold tracking-tight text-base">Journal & Shared</h3></AccordionTrigger><AccordionContent className="px-2 pb-2 flex-grow min-h-0"><ScrollArea className="h-full">{NotesList}</ScrollArea></AccordionContent></AccordionItem></Accordion></div></div>
+                        <div className="flex flex-col md:flex-row gap-6 flex-grow min-h-0"><div className="flex flex-col md:w-2/3 min-h-0">{ReaderContent}</div><div className="hidden md:flex md:w-1/3 flex-col"><Accordion type="single" collapsible defaultValue='item-1' className="w-full flex-grow flex flex-col"><AccordionItem value="item-1" className="border rounded-md bg-muted/30 flex-grow flex flex-col"><AccordionTrigger className="px-4 py-3 hover:no-underline flex-shrink-0"><h3 className="font-semibold tracking-tight text-base">My Journal</h3></AccordionTrigger><AccordionContent className="px-2 pb-2 flex-grow min-h-0"><ScrollArea className="h-full">{NotesList}</ScrollArea></AccordionContent></AccordionItem></Accordion></div></div>
                     ) : (
                         <Tabs value={mobileTab} onValueChange={setMobileTab} className="flex-grow flex flex-col min-h-0"><TabsList className="grid w-full grid-cols-2 shrink-0"><TabsTrigger value="reader">Read</TabsTrigger><TabsTrigger value="notes">Journal ({highlights?.length || 0})</TabsTrigger></TabsList><TabsContent value="reader" className="flex-grow flex flex-col min-h-0 mt-2">{ReaderContent}</TabsContent><TabsContent value="notes" className="flex-grow min-h-0 mt-2"><ScrollArea className="h-full border rounded-md p-2 bg-muted/30">{NotesList}</ScrollArea></TabsContent></Tabs>
                     )}
