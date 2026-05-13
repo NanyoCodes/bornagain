@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useDoc, useFirestore, useUser } from '@/firebase';
 import type { Campaign, UserProfile } from '@/lib/types';
@@ -18,7 +18,7 @@ import { doc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Loader2, ArrowLeft, MapPin, CalendarDays, Users, Share2, Edit, MessagesSquare, UserCheck2, PlayCircle, Newspaper, Target, Map as MapIcon } from 'lucide-react';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { format, isSameDay, parse } from 'date-fns';
@@ -26,9 +26,7 @@ import { ManageCampaignForm } from './manage-campaign-form';
 import { LogSoulForm } from "@/components/souls/log-soul-form";
 import { CreateTestimonyForm } from "@/components/testimonies/create-testimony-form";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { useJsApiLoader, GoogleMap, MarkerF, CircleF } from '@react-google-maps/api';
-import { Skeleton } from '@/components/ui/skeleton';
 import Link from 'next/link';
 import { safeToDate } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -37,8 +35,6 @@ import { errorEmitter } from '@/firebase/error-emitter';
 
 const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 const libraries: ('places')[] = ['places'];
-
-const isValidKey = (key: string | undefined) => !!(key && key.startsWith('AIza') && key.length > 20);
 
 function CampaignMapInner({ campaign }: { campaign: Campaign }) {
     const { isLoaded, loadError } = useJsApiLoader({
@@ -82,16 +78,15 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
 
     const [isManageOpen, setIsManageOpen] = useState(false);
     const [isLogSoulOpen, setIsLogSoulOpen] = useState(false);
-    const [isTestimonyDialogOpen, setIsTestimonyDialogOpen] = useState(false);
     const [campaignToDelete, setCampaignToDelete] = useState<Campaign | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
 
     useEffect(() => { setMounted(true); }, []);
 
-    const campaignDocRef = useMemo(() => doc(firestore, 'campaigns', campaignId), [firestore, campaignId]);
+    const campaignDocRef = useMemo(() => (firestore ? doc(firestore, 'campaigns', campaignId) : null), [firestore, campaignId]);
     const { data: campaign, loading: campaignLoading, error: campaignError } = useDoc<Campaign>(campaignDocRef);
 
-    const userDocRef = useMemo(() => user ? doc(firestore, 'users', user.uid) : null, [user, firestore]);
+    const userDocRef = useMemo(() => (user && firestore ? doc(firestore, 'users', user.uid) : null), [user, firestore]);
     const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userDocRef);
 
     const loading = campaignLoading || profileLoading;

@@ -38,7 +38,7 @@ const collageImages = [
 export function AuthLayout({ children }: { children: React.ReactNode }) {
   const logo = PlaceHolderImages.find((img) => img.id === 'logo');
   const firestore = useFirestore();
-  const testimoniesQuery = useMemo(() => query(collection(firestore, 'testimonies'), orderBy('createdAt', 'desc'), limit(3)), [firestore]);
+  const testimoniesQuery = useMemo(() => (firestore ? query(collection(firestore, 'testimonies'), orderBy('createdAt', 'desc'), limit(3)) : null), [firestore]);
   const { data: testimonies, loading } = useCollection<Testimony>(testimoniesQuery);
   
   const plugin = React.useRef(Autoplay({ delay: 6000, stopOnInteraction: true }))

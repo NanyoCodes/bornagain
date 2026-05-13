@@ -47,7 +47,6 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { EditProfileModal } from "@/components/profile/edit-profile-modal";
 import { PageTransition } from "../page-transition";
 
-
 const navItems = [
   { href: "/dashboard", label: "Progress", icon: TrendingUp, color: "text-chart-1" },
   { href: "/dashboard/souls-won", label: "Souls Won", icon: UserPlus, color: "text-chart-2" },
@@ -55,6 +54,8 @@ const navItems = [
   { href: "/dashboard/campaigns", label: "Campaigns", icon: Target, color: "text-chart-4" },
   { href: "/dashboard/fellowship", label: "Fellowship", icon: HeartHandshake, color: "text-primary" },
 ];
+
+const OTHER_NOTIFICATION_TYPES = ['campaign_join', 'accountability_nudge', 'accountability_request', 'request_accepted', 'request_declined', 'accountability_partner_removed', 'new_soul_in_fellowship'];
 
 function AppHeader({ unreadChatCount }: { unreadChatCount: number }) {
   const { user } = useUser();
@@ -66,13 +67,11 @@ function AppHeader({ unreadChatCount }: { unreadChatCount: number }) {
   const { searchTerm, setSearchTerm, searchPlaceholder, isSearchVisible } = useSearch();
   const [showMobileSearch, setShowMobileSearch] = useState(false);
 
-  // Query for other notifications (for the bell icon badge)
-  const otherNotificationTypes = ['campaign_join', 'accountability_nudge', 'accountability_request', 'request_accepted', 'request_declined', 'accountability_partner_removed', 'new_soul_in_fellowship'];
   const otherNotificationsQuery = useMemo(() => {
     if (!user?.uid || !firestore) return null;
     return query(
       collection(firestore, `users/${user.uid}/notifications`),
-      where('type', 'in', otherNotificationTypes),
+      where('type', 'in', OTHER_NOTIFICATION_TYPES),
       where('isRead', '==', false)
     );
   }, [user?.uid, firestore]);
@@ -86,9 +85,7 @@ function AppHeader({ unreadChatCount }: { unreadChatCount: number }) {
     router.push("/login");
   };
   
-  if (!user) {
-    return null;
-  }
+  if (!user) return null;
 
   if (showMobileSearch) {
     return (
@@ -118,10 +115,7 @@ function AppHeader({ unreadChatCount }: { unreadChatCount: number }) {
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b bg-background px-4 md:px-6">
       <div className="flex items-center gap-2 md:gap-6">
-        <Link
-          href="/dashboard/testimonies"
-          className="flex items-center gap-2 text-lg font-semibold"
-        >
+        <Link href="/dashboard" className="flex items-center gap-2 text-lg font-semibold">
           {logo && (
             <Avatar className="h-11 w-11">
               <AvatarImage src={logo.imageUrl} alt={logo.description} />
@@ -130,7 +124,6 @@ function AppHeader({ unreadChatCount }: { unreadChatCount: number }) {
           )}
           <span className="sr-only">Testify</span>
         </Link>
-        {/* Desktop Navigation */}
         <nav className="hidden items-center gap-5 text-sm font-medium md:flex lg:gap-6">
             {navItems.map((item) => {
               const isActive = item.href === '/dashboard' ? pathname === item.href : pathname.startsWith(item.href);
@@ -283,24 +276,17 @@ function BottomNavBar({ unreadChatCount }: { unreadChatCount: number }) {
     );
 }
 
-
-export default function DashboardClientLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function DashboardClientLayout({ children }: { children: React.ReactNode }) {
   const { user, loading } = useUser();
   const firestore = useFirestore();
   const router = useRouter();
   const pathname = usePathname();
   const [showWelcomePopup, setShowWelcomePopup] = useState(false);
   const logo = PlaceHolderImages.find((img) => img.id === "logo");
-  const isChatPage = /^\/dashboard\/chats\/.+/.test(pathname);
-  const isNotesPage = pathname.startsWith('/dashboard/notes');
-  const isBiblePage = pathname.startsWith('/dashboard/bible');
+  const isTakeoverPage = pathname.startsWith('/dashboard/chats/') || pathname.startsWith('/dashboard/notes') || pathname.startsWith('/dashboard/bible');
   const [lastActiveUpdated, setLastActiveUpdated] = useState(false);
 
-  const userDocRef = useMemo(() => user ? doc(firestore, 'users', user.uid) : null, [user, firestore]);
+  const userDocRef = useMemo(() => (user && firestore ? doc(firestore, 'users', user.uid) : null), [user, firestore]);
   const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userDocRef);
 
   const unreadChatNotifsQuery = useMemo(() => {
@@ -315,91 +301,41 @@ export default function DashboardClientLayout({
   const unreadChatCount = unreadChatNotifications?.length ?? 0;
 
   useEffect(() => {
-    // Effect for redirection
-    if (!loading && !user) {
-      router.push('/login');
-    }
+    if (!loading && !user) router.push('/login');
   }, [loading, user, router]);
 
   useEffect(() => {
-    // Effect for updating lastActive timestamp.
     if (user && firestore && !lastActiveUpdated) {
       const userRef = doc(firestore, 'users', user.uid);
       const updatePayload = { lastActive: serverTimestamp() };
-      updateDoc(userRef, updatePayload)
-        .then(() => {
-          setLastActiveUpdated(true);
-        })
-        .catch(() => {
-        const permissionError = new FirestorePermissionError({
-          path: userRef.path,
-          operation: 'update',
-          requestResourceData: updatePayload,
-        }, user);
+      updateDoc(userRef, updatePayload).then(() => setLastActiveUpdated(true)).catch(() => {
+        const permissionError = new FirestorePermissionError({ path: userRef.path, operation: 'update', requestResourceData: updatePayload }, user);
         errorEmitter.emit('permission-error', permissionError);
       });
     }
   }, [user, firestore, lastActiveUpdated]);
 
   useEffect(() => {
-    if (loading || !user) return;
-    const isNewUserSession = sessionStorage.getItem('isNewUserSession');
-    if (isNewUserSession === null && user.metadata.creationTime && user.metadata.lastSignInTime) {
-        const creationTime = new Date(user.metadata.creationTime).getTime();
-        const lastSignInTime = new Date(user.metadata.lastSignInTime).getTime();
-        if (Math.abs(lastSignInTime - creationTime) < 5000) { // Heuristic for first login
-            sessionStorage.setItem('isNewUserSession', 'true');
-        } else {
-            sessionStorage.setItem('isNewUserSession', 'false');
-        }
-    }
-  }, [user, loading]);
-
-  useEffect(() => {
     if (profileLoading || !userProfile) return;
-
     const isNewUserSession = sessionStorage.getItem('isNewUserSession') === 'true';
     const welcomePopupShown = sessionStorage.getItem('welcomePopupShown');
     const isProfileComplete = !!(userProfile.firstName && userProfile.lastName);
-
     if (isNewUserSession && isProfileComplete && !welcomePopupShown) {
         const timer = setTimeout(() => {
             setShowWelcomePopup(true);
             sessionStorage.setItem('welcomePopupShown', 'true');
-        }, 500); // Small delay to allow profile completion dialog to animate out.
+        }, 500);
         return () => clearTimeout(timer);
     }
   }, [profileLoading, userProfile]);
 
-  const getLoadingMessage = (path: string) => {
-    if (path.startsWith('/dashboard/souls-won')) return 'Loading souls won...';
-    if (path.startsWith('/dashboard/testimonies')) return 'Loading testimonies...';
-    if (path.startsWith('/dashboard/campaigns')) return 'Loading campaigns...';
-    if (path.startsWith('/dashboard/accountability')) return 'Loading accountability...';
-    if (path.startsWith('/dashboard/progress')) return 'Loading your progress...';
-    if (path.startsWith('/dashboard/chats')) return 'Loading chats...';
-    if (path.startsWith('/dashboard/profile')) return 'Loading your profile...';
-    if (path.startsWith('/dashboard/settings')) return 'Loading settings...';
-    if (path.startsWith('/dashboard/notifications')) return 'Loading notifications...';
-    if (path.startsWith('/dashboard/fellowship')) return 'Loading fellowships...';
-    if (path.startsWith('/dashboard/resources')) return 'Loading spiritual resources...';
-    return 'Loading your dashboard...';
-  };
-
   const isProfileIncomplete = userProfile && (!userProfile.firstName || !userProfile.lastName);
-  const isTakeoverPage = isChatPage || isNotesPage || isBiblePage;
 
   if (loading || profileLoading || !user?.uid) {
     return (
       <div className="flex min-h-screen w-full flex-col items-center justify-center bg-background">
-        {logo && (
-          <Avatar className="h-16 w-16 mb-6 animate-pulse">
-            <AvatarImage src={logo.imageUrl} alt={logo.description} />
-            <AvatarFallback></AvatarFallback>
-          </Avatar>
-        )}
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        <p className="mt-4 text-muted-foreground">{getLoadingMessage(pathname)}</p>
+        <p className="mt-4 text-muted-foreground">Loading dashboard...</p>
       </div>
     );
   }
@@ -410,41 +346,18 @@ export default function DashboardClientLayout({
         {!isTakeoverPage && <AppHeader unreadChatCount={unreadChatCount} />}
         <div className="flex-1 relative min-h-0">
           <main className={cn("absolute inset-0", !isTakeoverPage && "overflow-y-auto")}>
-            <div className={cn(
-                "max-w-7xl mx-auto",
-                !isTakeoverPage && "p-4 md:p-6 pb-20 md:pb-6",
-                isTakeoverPage && "h-full"
-            )}>
+            <div className={cn("max-w-7xl mx-auto", !isTakeoverPage && "p-4 md:p-6 pb-20 md:pb-6", isTakeoverPage && "h-full")}>
               <PageTransition>{children}</PageTransition>
             </div>
           </main>
         </div>
         {!isTakeoverPage && <BottomNavBar unreadChatCount={unreadChatCount} />}
-        {!isProfileIncomplete && (
-          <WelcomePopup 
-            isOpen={showWelcomePopup}
-            onClose={() => setShowWelcomePopup(false)}
-            userName={userProfile?.firstName}
-          />
-        )}
+        {!isProfileIncomplete && <WelcomePopup isOpen={showWelcomePopup} onClose={() => setShowWelcomePopup(false)} userName={userProfile?.firstName} />}
          <Dialog open={isProfileIncomplete}>
           <DialogContent hideCloseButton className="sm:max-w-lg">
-            <DialogHeader>
-              <DialogTitle>Complete Your Profile</DialogTitle>
-              <DialogDescription>
-                Welcome! Please provide your name to continue using the app.
-              </DialogDescription>
-            </DialogHeader>
+            <DialogHeader><DialogTitle>Complete Your Profile</DialogTitle><DialogDescription>Please provide your name to continue.</DialogDescription></DialogHeader>
             <div className="max-h-[70vh] overflow-y-auto pr-2">
-              {userProfile && (
-                <EditProfileModal
-                  userProfile={userProfile}
-                  onClose={() => {
-                    // This is intentionally empty. The dialog closes automatically 
-                    // when the `isProfileIncomplete` state becomes false.
-                  }}
-                />
-              )}
+              {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
             </div>
           </DialogContent>
         </Dialog>

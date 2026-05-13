@@ -162,6 +162,7 @@ export default function SoulsWonPage() {
         const permissionError = new FirestorePermissionError({
             path: `TRANSACTION:ASSIGN_FELLOWSHIP:${soul.id}`,
             operation: 'update',
+            requestResourceData: updateData,
         }, user);
         errorEmitter.emit('permission-error', permissionError);
     } finally {

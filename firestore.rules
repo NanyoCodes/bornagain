@@ -10,6 +10,12 @@ service cloud.firestore {
       return id1 < id2 ? id1 + '_' + id2 : id2 + '_' + id1;
     }
 
+    function isAccountabilityPartner(ownerId) {
+      return request.auth != null && 
+             exists(/databases/$(database)/documents/users/$(ownerId)) &&
+             request.auth.uid in get(/databases/$(database)/documents/users/$(ownerId)).data.get('partnerIds', []);
+    }
+
     function isFellowshipMember(fellowshipId) {
       return request.auth != null && 
              fellowshipId != null && 
@@ -51,11 +57,13 @@ service cloud.firestore {
       }
 
       match /bibleHighlights/{highlightId} {
-        allow read, write: if isOwner(userId);
+        allow read: if isOwner(userId) || isAccountabilityPartner(userId);
+        allow write: if isOwner(userId);
       }
 
       match /notes/{noteId} {
-        allow read, write: if isOwner(userId);
+        allow read: if isOwner(userId) || isAccountabilityPartner(userId);
+        allow write: if isOwner(userId);
       }
 
       match /notifications/{notificationId} {
