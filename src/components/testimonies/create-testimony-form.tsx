@@ -1,4 +1,3 @@
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -84,7 +83,9 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
             if (prayerRequest) {
               const prayerRef = doc(firestore, 'prayerRequests', prayerRequest.id);
               const prayerDoc = await transaction.get(prayerRef);
-              if (!prayerDoc.exists() || prayerDoc.data().status !== 'pending') return "ALREADY_ANSWERED";
+              if (!prayerDoc.exists() || prayerDoc.data().status !== 'pending') {
+                  return "ALREADY_ANSWERED";
+              }
               transaction.update(prayerRef, { status: 'answered', answeredTestimonyId: newDocRef.id });
             }
             transaction.set(newDocRef, testimonyData);
@@ -92,7 +93,10 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
         });
 
         if (result === "ALREADY_ANSWERED") {
-            toast({ title: "Already Shared", description: "This prayer already has a testimony." });
+            toast({
+                title: "Already Answered",
+                description: "A testimony has already been shared for this prayer request.",
+            });
         } else {
             toast({ title: "Testimony Submitted!" });
         }
@@ -101,7 +105,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
         if (error.code === 'permission-denied') {
             errorEmitter.emit('permission-error', new FirestorePermissionError({ path: 'testimonies', operation: 'create' }, user));
         } else {
-             toast({ variant: "destructive", title: "Error", description: "Failed to share testimony." });
+             toast({ variant: "destructive", title: "Error", description: "Failed to share testimony. Please try again." });
         }
     } finally { setIsSubmitting(false); }
   }

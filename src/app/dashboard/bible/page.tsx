@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect, useRef, useLayoutEffect } from 'react';
@@ -28,7 +27,6 @@ import {
   collection,
   query,
   where,
-  addDoc,
   serverTimestamp,
   deleteDoc,
   setDoc,
@@ -492,7 +490,7 @@ export default function BibleReaderPage() {
 
         const newSelection = selectedVerses.includes(verseNumber)
             ? selectedVerses.filter(v => v !== verseNumber)
-            : [...selectedVerses, verseNumber].sort((a, b) => a - b);
+            : [...selectedVerses, verseNumber].sort((a, b) => { return a - b; });
 
         setSelectedVerses(newSelection);
 
@@ -593,12 +591,12 @@ export default function BibleReaderPage() {
         if (currentIndex > 0) setFontSize(fontSizes[currentIndex - 1]);
     };
 
-    const readingHistory = userProfile?.readingHistory || [];
+    const readingHistoryList = userProfile?.readingHistory || [];
 
     const historyGroups = useMemo(() => {
-        if (readingHistory.length === 0) return [];
+        if (readingHistoryList.length === 0) return [];
         const groups: { date: Date; items: ReadingHistoryItem[] }[] = [];
-        readingHistory.forEach(item => {
+        readingHistoryList.forEach(item => {
         if (!item.readAt) return;
         const itemDate = item.readAt.toDate();
         const lastGroup = groups[groups.length - 1];
@@ -609,7 +607,7 @@ export default function BibleReaderPage() {
         }
         });
         return groups.reverse();
-    }, [readingHistory]);
+    }, [readingHistoryList]);
 
     const filteredHistoryGroups = useMemo(() => {
         if (!historyGroups) return [];

@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect, Fragment } from 'react';
@@ -48,7 +47,6 @@ import { useRouter } from 'next/navigation';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { FellowshipCard } from '@/components/fellowship/fellowship-card';
 import { Card, CardHeader, CardContent } from '@/components/ui/card';
-import AdsenseAd from '@/components/common/adsense-ad';
 import { useSearch } from '@/context/search-context';
 
 const formSchema = z.object({
@@ -433,16 +431,15 @@ export default function FellowshipPage() {
                 </div>
             ) : (
                  <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                    {filteredFellowships.map((f, index) => (
-                      <Fragment key={f.id}>
+                    {filteredFellowships.map((f) => (
                         <FellowshipCard 
+                          key={f.id}
                           fellowship={f} 
                           userProfile={userProfile ?? null} 
                           onManage={() => setFellowshipToManage(f)} 
                           onDelete={() => setFellowshipToDelete(f)} 
                           onClick={() => handleCardClick(f.id)} 
                         />
-                      </Fragment>
                     ))}
                 </div>
             )}
