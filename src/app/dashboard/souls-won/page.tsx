@@ -236,7 +236,7 @@ export default function SoulsWonPage() {
   }, [souls, searchTerm]);
 
   const triggerButton = (
-    <Button disabled={!user}>
+    <Button disabled={loading}>
       <PlusCircle className="h-4 w-4 md:mr-2" />
       <span className="hidden md:inline">Log Soul Won</span>
     </Button>

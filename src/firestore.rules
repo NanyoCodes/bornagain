@@ -10,10 +10,10 @@ service cloud.firestore {
       return id1 < id2 ? id1 + '_' + id2 : id2 + '_' + id1;
     }
 
-    function isAccountabilityPartner(userId) {
+    function isAccountabilityPartner(ownerId) {
       return request.auth != null && 
-             exists(/databases/$(database)/documents/users/$(userId)) &&
-             request.auth.uid in get(/databases/$(database)/documents/users/$(userId)).data.partnerIds;
+             exists(/databases/$(database)/documents/users/$(ownerId)) &&
+             request.auth.uid in get(/databases/$(database)/documents/users/$(ownerId)).data.get('partnerIds', []);
     }
 
     function isFellowshipMember(fellowshipId) {
@@ -32,9 +32,8 @@ service cloud.firestore {
 
       allow update: if request.auth != null && (
         isOwner(userId) ||
-        // Allow a non-owner to update accountability fields if they are removing themselves as a partner
         (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['accountabilityPartners', 'partnerIds']) && (
-          // Removal: must have been in the partner list
+          exists(/databases/$(database)/documents/accountabilityRequests/$(getRequestId(userId, request.auth.uid))) ||
           (resource.data.get('partnerIds', []).size() > 0 && request.auth.uid in resource.data.partnerIds)
         ))
       );

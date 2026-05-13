@@ -67,23 +67,6 @@ const formSchema = z.object({
     path: ["location"],
 });
 
-const manageFormSchema = z.object({
-  name: z.string().min(3, "Name must be at least 3 characters.").max(100),
-  description: z.string().min(10, "Description must be at least 10 characters.").max(500),
-  schedule: z.string().min(3, "Schedule is required.").max(100),
-  streamUrl: z.string().url({ message: "Please enter a valid URL." }).optional().or(z.literal('')),
-  locationType: z.enum(['Physical', 'Virtual', 'Physical and Virtual'], { required_error: "Please select a location type." }),
-  location: z.string().max(100).optional(),
-}).refine((data) => {
-    if (data.locationType === 'Physical' || data.locationType === 'Physical and Virtual') {
-        return !!data.location && data.location.trim().length > 2;
-    }
-    return true;
-}, {
-    message: "Location is required for physical or 'Physical and Virtual' meetings.",
-    path: ["location"],
-});
-
 function FellowshipForm({ userProfile, onFormSubmit, isSubmitting }: { userProfile: UserProfile | null, onFormSubmit: (values: z.infer<typeof formSchema>) => void, isSubmitting: boolean }) {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -107,14 +90,14 @@ function FellowshipForm({ userProfile, onFormSubmit, isSubmitting }: { userProfi
                 <FormField control={form.control} name="name" render={({ field }) => (
                     <FormItem>
                         <FormLabel>Fellowship Name</FormLabel>
-                        <FormControl><Input placeholder="e.g., Downtown Morning Prayer" {...field} className="text-base" /></FormControl>
+                        <FormControl><Input placeholder="e.g., Morning Prayer" {...field} className="text-base" /></FormControl>
                         <FormMessage />
                     </FormItem>
                 )} />
                 <FormField control={form.control} name="description" render={({ field }) => (
                     <FormItem>
                         <FormLabel>Description</FormLabel>
-                        <FormControl><Textarea placeholder="What is the purpose of this fellowship?" {...field} className="text-base min-h-[100px]" /></FormControl>
+                        <FormControl><Textarea placeholder="Purpose of this group..." {...field} className="text-base min-h-[100px]" /></FormControl>
                         <FormMessage />
                     </FormItem>
                 )} />
@@ -153,7 +136,7 @@ function FellowshipForm({ userProfile, onFormSubmit, isSubmitting }: { userProfi
                                 <FormControl>
                                 <RadioGroupItem value="Physical and Virtual" />
                                 </FormControl>
-                                <FormLabel className="font-normal">Physical and Virtual</FormLabel>
+                                <FormLabel className="font-normal">Both</FormLabel>
                             </FormItem>
                             </RadioGroup>
                         </FormControl>
@@ -165,20 +148,20 @@ function FellowshipForm({ userProfile, onFormSubmit, isSubmitting }: { userProfi
                     <FormField control={form.control} name="location" render={({ field }) => (
                         <FormItem>
                             <FormLabel>Physical Location</FormLabel>
-                            <FormControl><Input placeholder="e.g., 123 Main St, Anytown" {...field} value={field.value ?? ''} className="text-base" /></FormControl>
+                            <FormControl><Input placeholder="Address or City" {...field} value={field.value ?? ''} className="text-base" /></FormControl>
                             <FormMessage />
                         </FormItem>
                     )} />
                 )}
                 <FormField control={form.control} name="streamUrl" render={({ field }) => (
                     <FormItem>
-                        <FormLabel>Meeting or Stream URL (Optional)</FormLabel>
+                        <FormLabel>Meeting URL (Optional)</FormLabel>
                         <FormControl>
                             <Input placeholder="https://..." {...field} value={field.value ?? ''} className="text-base" />
                         </FormControl>
                         <Button type="button" variant="outline" size="sm" onClick={handleCreateMeet} className="mt-1">
                           <Video className="mr-2 h-4 w-4" />
-                          Create Google Meet
+                          Google Meet
                         </Button>
                         <FormMessage />
                     </FormItem>
@@ -192,9 +175,9 @@ function FellowshipForm({ userProfile, onFormSubmit, isSubmitting }: { userProfi
     );
 }
 
-function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting }: { fellowship: Fellowship, onFormSubmit: (values: z.infer<typeof manageFormSchema>) => void, isSubmitting: boolean }) {
-  const form = useForm<z.infer<typeof manageFormSchema>>({
-    resolver: zodResolver(manageFormSchema),
+function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting }: { fellowship: Fellowship, onFormSubmit: (values: any) => void, isSubmitting: boolean }) {
+  const form = useForm({
+    resolver: zodResolver(formSchema),
     defaultValues: {
       name: fellowship.name || "",
       description: fellowship.description || "",
@@ -205,31 +188,27 @@ function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting }: { fell
     },
   });
 
-  const handleCreateMeet = () => {
-    window.open('https://meet.google.com/new', '_blank');
-  };
-
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onFormSubmit)} className="space-y-4">
         <FormField control={form.control} name="name" render={({ field }) => (
             <FormItem>
                 <FormLabel>Fellowship Name</FormLabel>
-                <FormControl><Input placeholder="e.g., Downtown Morning Prayer" {...field} className="text-base" /></FormControl>
+                <FormControl><Input {...field} className="text-base" /></FormControl>
                 <FormMessage />
             </FormItem>
         )} />
         <FormField control={form.control} name="description" render={({ field }) => (
             <FormItem>
                 <FormLabel>Description</FormLabel>
-                <FormControl><Textarea placeholder="What is the purpose of this fellowship?" {...field} className="text-base min-h-[100px]" /></FormControl>
+                <FormControl><Textarea {...field} className="text-base min-h-[100px]" /></FormControl>
                 <FormMessage />
             </FormItem>
         )} />
         <FormField control={form.control} name="schedule" render={({ field }) => (
             <FormItem>
                 <FormLabel>Schedule</FormLabel>
-                <FormControl><Input placeholder="e.g., Every Friday at 6:00 AM" {...field} className="text-base" /></FormControl>
+                <FormControl><Input {...field} className="text-base" /></FormControl>
                 <FormMessage />
             </FormItem>
         )} />
@@ -240,57 +219,25 @@ function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting }: { fell
                 <FormItem className="space-y-3">
                 <FormLabel>Location Type</FormLabel>
                 <FormControl>
-                    <RadioGroup
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                    className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4"
-                    >
-                    <FormItem className="flex items-center space-x-2 space-y-0">
-                        <FormControl>
-                        <RadioGroupItem value="Physical" />
-                        </FormControl>
-                        <FormLabel className="font-normal">Physical</FormLabel>
-                    </FormItem>
-                    <FormItem className="flex items-center space-x-2 space-y-0">
-                        <FormControl>
-                        <RadioGroupItem value="Virtual" />
-                        </FormControl>
-                        <FormLabel className="font-normal">Virtual</FormLabel>
-                    </FormItem>
-                    <FormItem className="flex items-center space-x-2 space-y-0">
-                        <FormControl>
-                        <RadioGroupItem value="Physical and Virtual" />
-                        </FormControl>
-                        <FormLabel className="font-normal">Physical and Virtual</FormLabel>
-                    </FormItem>
+                    <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="flex flex-wrap gap-4">
+                        <FormItem className="flex items-center space-x-2 space-y-0">
+                            <FormControl><RadioGroupItem value="Physical" /></FormControl>
+                            <FormLabel className="font-normal">Physical</FormLabel>
+                        </FormItem>
+                        <FormItem className="flex items-center space-x-2 space-y-0">
+                            <FormControl><RadioGroupItem value="Virtual" /></FormControl>
+                            <FormLabel className="font-normal">Virtual</FormLabel>
+                        </FormItem>
+                        <FormItem className="flex items-center space-x-2 space-y-0">
+                            <FormControl><RadioGroupItem value="Physical and Virtual" /></FormControl>
+                            <FormLabel className="font-normal">Both</FormLabel>
+                        </FormItem>
                     </RadioGroup>
                 </FormControl>
                 <FormMessage />
                 </FormItem>
             )}
-            />
-        {(form.watch('locationType') === 'Physical' || form.watch('locationType') === 'Physical and Virtual') && (
-            <FormField control={form.control} name="location" render={({ field }) => (
-                <FormItem>
-                    <FormLabel>Physical Location</FormLabel>
-                    <FormControl><Input placeholder="e.g., 123 Main St, Anytown" {...field} value={field.value ?? ''} className="text-base" /></FormControl>
-                    <FormMessage />
-                </FormItem>
-            )} />
-        )}
-        <FormField control={form.control} name="streamUrl" render={({ field }) => (
-            <FormItem>
-                <FormLabel>Meeting or Stream URL (Optional)</FormLabel>
-                <FormControl>
-                    <Input placeholder="https://..." {...field} value={field.value ?? ''} className="text-base" />
-                </FormControl>
-                <Button type="button" variant="outline" size="sm" onClick={handleCreateMeet} className="mt-1">
-                  <Video className="mr-2 h-4 w-4" />
-                  Create Google Meet
-                </Button>
-                <FormMessage />
-            </FormItem>
-        )} />
+        />
         <Button type="submit" disabled={isSubmitting} className="w-full">
             {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Save Changes
@@ -318,7 +265,7 @@ export default function FellowshipPage() {
     useEffect(() => {
         setMounted(true);
         setIsSearchVisible(true);
-        setSearchPlaceholder("Search fellowships by name, description, location...");
+        setSearchPlaceholder("Search groups...");
         return () => {
             setIsSearchVisible(false);
             setSearchTerm("");
@@ -345,7 +292,7 @@ export default function FellowshipPage() {
             schedule: values.schedule,
             streamUrl: values.streamUrl || null,
             locationType: values.locationType,
-            location: values.locationType === 'Physical' || values.locationType === 'Physical and Virtual' ? values.location : null,
+            location: values.location || null,
             latitude: userProfile.location?.latitude || null,
             longitude: userProfile.location?.longitude || null,
             organizerId: user.uid,
@@ -379,19 +326,16 @@ export default function FellowshipPage() {
         }
     };
 
-    const handleUpdateFellowship = async (values: z.infer<typeof manageFormSchema>) => {
+    const handleUpdateFellowship = async (values: any) => {
         if (!user || !fellowshipToManage) return;
         setIsSubmitting(true);
         const fellowshipRef = doc(firestore, 'fellowships', fellowshipToManage.id);
-        
         try {
             await updateDoc(fellowshipRef, {
                 name: values.name,
                 description: values.description,
                 schedule: values.schedule,
-                streamUrl: values.streamUrl || null,
                 locationType: values.locationType,
-                location: values.locationType === 'Physical' || values.locationType === 'Physical and Virtual' ? values.location : null,
             });
             toast({ title: 'Fellowship Updated' });
             setFellowshipToManage(null);
@@ -407,7 +351,6 @@ export default function FellowshipPage() {
         if (!fellowshipToDelete || !user || !firestore) return;
         setIsDeleting(true);
         const fellowshipRef = doc(firestore, 'fellowships', fellowshipToDelete.id);
-        
         try {
             await updateDoc(fellowshipRef, { status: 'deleted' });
             toast({ title: 'Fellowship Deleted' });
@@ -424,12 +367,10 @@ export default function FellowshipPage() {
         router.push(`/dashboard/fellowship/${fellowshipId}`);
     };
 
-    const loading = userLoading || profileLoading || fellowshipsLoading;
-
     const triggerButton = (
-        <Button disabled={loading} size={isMobile ? 'icon' : 'default'}>
+        <Button disabled={userLoading || profileLoading || fellowshipsLoading}>
             <PlusCircle className="h-4 w-4 md:mr-2" />
-            <span className="hidden md:inline">Create Fellowship</span>
+            <span className="hidden md:inline">New Fellowship</span>
         </Button>
     );
 
@@ -446,31 +387,27 @@ export default function FellowshipPage() {
         const term = searchTerm.toLowerCase();
         return activeFellowships.filter(f => 
             f.name.toLowerCase().includes(term) || 
-            f.description.toLowerCase().includes(term) ||
-            (f.location && f.location.toLowerCase().includes(term)) ||
-            f.organizerName.toLowerCase().includes(term)
+            f.description.toLowerCase().includes(term)
         );
     }, [activeFellowships, searchTerm]);
+
+    const loading = userLoading || profileLoading || fellowshipsLoading;
 
     return (
         <div className="space-y-8">
             <div className="flex items-center justify-between">
-                <div className="space-y-2">
-                    <h1 className="text-xl sm:text-2xl font-bold tracking-tight font-headline">Fellowship Groups</h1>
-                </div>
+                <h1 className="text-xl sm:text-2xl font-bold tracking-tight font-headline">Fellowships</h1>
                 {mounted && isMobile ? (
                     <Sheet open={isCreateOpen} onOpenChange={setIsCreateOpen}>
                         <SheetTrigger asChild>{triggerButton}</SheetTrigger>
                         <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0">
                             <div className="p-6 border-b flex-shrink-0">
                                 <SheetHeader>
-                                    <SheetTitle>Create a New Fellowship</SheetTitle>
-                                    <SheetDescription>Fill in the details to start your group.</SheetDescription>
+                                    <SheetTitle>New Fellowship</SheetTitle>
                                 </SheetHeader>
                             </div>
-                            <div className="flex-grow overflow-y-auto p-6 pt-2">
+                            <div className="flex-grow overflow-y-auto p-6">
                                 {formContent}
-                                <Button variant="ghost" className="w-full mt-4" onClick={() => setIsCreateOpen(false)}>Close</Button>
                             </div>
                         </SheetContent>
                     </Sheet>
@@ -479,12 +416,9 @@ export default function FellowshipPage() {
                         <DialogTrigger asChild>{triggerButton}</DialogTrigger>
                         <DialogContent>
                             <DialogHeader>
-                                <DialogTitle>Create a New Fellowship</DialogTitle>
-                                <DialogDescription>Fill in the details to start your group.</DialogDescription>
+                                <DialogTitle>New Fellowship</DialogTitle>
                             </DialogHeader>
-                            <div className="max-h-[70vh] overflow-y-auto pr-2">
-                                {formContent}
-                            </div>
+                            {formContent}
                         </DialogContent>
                     </Dialog>
                 )}
@@ -493,10 +427,10 @@ export default function FellowshipPage() {
             {loading ? (
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                     {[...Array(3)].map((_, i) => (
-                        <Card key={i}><CardHeader><Skeleton className="h-5 w-3/4" /></CardHeader><CardContent><Skeleton className="h-10 w-full" /></CardContent></Card>
+                        <Card key={i}><CardContent className="h-40 animate-pulse bg-muted rounded-lg" /></Card>
                     ))}
                 </div>
-            ) : filteredFellowships && filteredFellowships.length > 0 ? (
+            ) : (
                  <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                     {filteredFellowships.map((f, index) => (
                       <Fragment key={f.id}>
@@ -507,74 +441,29 @@ export default function FellowshipPage() {
                           onDelete={() => setFellowshipToDelete(f)} 
                           onClick={() => handleCardClick(f.id)} 
                         />
-                        {(index + 1) % 4 === 0 && (
-                          <AdsenseAd adSlot={`fellowships-grid-ad-${index}`} className="h-full" />
-                        )}
                       </Fragment>
                     ))}
-                </div>
-            ) : (
-                <div className="text-center py-12 flex flex-col items-center">
-                    {searchTerm ? (
-                        <Search className="h-16 w-16 text-muted-foreground opacity-20" />
-                    ) : (
-                        <HeartHandshake className="h-16 w-16 text-muted-foreground" />
-                    )}
-                    <h3 className="mt-4 text-xl font-semibold">
-                        {searchTerm ? `No results for "${searchTerm}"` : 'No Fellowships Yet'}
-                    </h3>
-                    <p className="mt-2 text-sm text-muted-foreground">
-                        {searchTerm ? 'Try a different search term.' : 'Be the first to create a fellowship group!'}
-                    </p>
-                    {searchTerm && (
-                        <Button variant="ghost" onClick={() => setSearchTerm("")} className="mt-4">Clear Search</Button>
-                    )}
                 </div>
             )}
 
             {fellowshipToManage && (
-                mounted && isMobile ? (
-                    <Sheet open={!!fellowshipToManage} onOpenChange={(open) => !open && setFellowshipToManage(null)}>
-                        <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0">
-                            <div className="p-6 border-b flex-shrink-0">
-                                <SheetHeader>
-                                    <SheetTitle>Manage Fellowship</SheetTitle>
-                                    <SheetDescription>Edit the details of your fellowship group.</SheetDescription>
-                                </SheetHeader>
-                            </div>
-                            <div className="flex-grow overflow-y-auto p-6 pt-2">
-                                <ManageFellowshipForm fellowship={fellowshipToManage} onFormSubmit={handleUpdateFellowship} isSubmitting={isSubmitting} />
-                                <Button variant="ghost" className="w-full mt-4" onClick={() => setFellowshipToManage(null)}>Close</Button>
-                            </div>
-                        </SheetContent>
-                    </Sheet>
-                ) : (
-                    <Dialog open={!!fellowshipToManage} onOpenChange={() => setFellowshipToManage(null)}>
-                        <DialogContent>
-                            <DialogHeader>
-                                <DialogTitle>Manage Fellowship</DialogTitle>
-                                <DialogDescription>Edit the details of your fellowship group.</DialogDescription>
-                            </DialogHeader>
-                            <ManageFellowshipForm fellowship={fellowshipToManage} onFormSubmit={handleUpdateFellowship} isSubmitting={isSubmitting} />
-                        </DialogContent>
-                    </Dialog>
-                )
+                <Dialog open={!!fellowshipToManage} onOpenChange={() => setFellowshipToManage(null)}>
+                    <DialogContent>
+                        <DialogHeader><DialogTitle>Manage Fellowship</DialogTitle></DialogHeader>
+                        <ManageFellowshipForm fellowship={fellowshipToManage} onFormSubmit={handleUpdateFellowship} isSubmitting={isSubmitting} />
+                    </DialogContent>
+                </Dialog>
             )}
 
             {fellowshipToDelete && (
                 <AlertDialog open={!!fellowshipToDelete} onOpenChange={() => setFellowshipToDelete(null)}>
                     <AlertDialogContent>
-                        <AlertDialogHeader>
-                            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                            <div className="text-sm text-muted-foreground">
-                                This will mark the fellowship as deleted and hide it from the list. This action cannot be undone.
-                            </div>
-                        </AlertDialogHeader>
+                        <AlertDialogHeader><AlertDialogTitle>Delete Fellowship?</AlertDialogTitle></AlertDialogHeader>
                         <AlertDialogFooter>
                             <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
-                            <AlertDialogAction onClick={handleDeleteFellowship} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90">
+                            <AlertDialogAction onClick={handleDeleteFellowship} disabled={isDeleting} className="bg-destructive">
                                 {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                Confirm Deletion
+                                Delete
                             </AlertDialogAction>
                         </AlertDialogFooter>
                     </AlertDialogContent>

@@ -14,7 +14,6 @@ import { Button } from '@/components/ui/button';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 
-// Stabilize dependency by defining outside component
 const OTHER_NOTIFICATION_TYPES = [
   'campaign_join', 
   'accountability_nudge', 
@@ -34,8 +33,7 @@ export default function NotificationsPage() {
     if (!user?.uid || !firestore) return null;
     return query(
         collection(firestore, `users/${user.uid}/notifications`),
-        where('type', 'in', OTHER_NOTIFICATION_TYPES),
-        where('isRead', '==', false)
+        where('type', 'in', OTHER_NOTIFICATION_TYPES)
     );
   }, [user?.uid, firestore]);
 
@@ -59,7 +57,6 @@ export default function NotificationsPage() {
          const permissionError = new FirestorePermissionError({
               path: notifRef.path,
               operation: 'update',
-              requestResourceData: { isRead: true },
           }, user);
           errorEmitter.emit('permission-error', permissionError);
       });
@@ -76,10 +73,8 @@ export default function NotificationsPage() {
     if (unreadNotifications.length === 0) return;
 
     const batch = writeBatch(firestore);
-    const notificationRefs: string[] = [];
     unreadNotifications.forEach(notification => {
         const notifRef = doc(firestore, `users/${user.uid}/notifications`, notification.id);
-        notificationRefs.push(notifRef.path);
         batch.update(notifRef, { isRead: true });
     });
     
@@ -87,7 +82,6 @@ export default function NotificationsPage() {
         const permissionError = new FirestorePermissionError({
             path: `users/${user.uid}/notifications`,
             operation: 'update',
-            requestResourceData: { isRead: true, updatedDocs: notificationRefs },
         }, user);
         errorEmitter.emit('permission-error', permissionError);
     });
@@ -98,11 +92,7 @@ export default function NotificationsPage() {
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
-        <div className="space-y-2">
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight font-headline">
-                Notifications
-            </h1>
-        </div>
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight font-headline">Notifications</h1>
         {!loading && notifications && notifications.length > 0 && (
              <Button onClick={handleMarkAllAsRead} disabled={loading || unreadCount === 0}>
                 Mark all as read
@@ -113,25 +103,16 @@ export default function NotificationsPage() {
       <Card>
         <CardContent className="p-0">
           {loading && (
-            <div className="divide-y">
-              {[...Array(5)].map((_, i) => (
-                <div key={i} className="flex items-start gap-4 p-4">
-                  <div className="flex-1 space-y-2">
-                    <Skeleton className="h-4 w-1/3" />
-                    <Skeleton className="h-4 w-3/4" />
-                    <Skeleton className="h-3 w-1/4" />
-                  </div>
-                </div>
+            <div className="divide-y p-4">
+              {[...Array(3)].map((_, i) => (
+                <div key={i} className="py-4"><Skeleton className="h-4 w-3/4 mb-2"/><Skeleton className="h-4 w-1/2"/></div>
               ))}
             </div>
           )}
           {!loading && (!notifications || notifications.length === 0) && (
             <div className="p-12 text-center">
-              <Bell className="mx-auto h-12 w-12 text-muted-foreground" />
+              <Bell className="mx-auto h-12 w-12 text-muted-foreground opacity-20" />
               <h3 className="mt-4 text-lg font-semibold">No Notifications</h3>
-              <p className="mt-2 text-sm text-muted-foreground">
-                You're all caught up!
-              </p>
             </div>
           )}
           <div className="divide-y">
@@ -141,21 +122,14 @@ export default function NotificationsPage() {
                     <button
                         key={notification.id} 
                         onClick={() => handleNotificationClick(notification)}
-                        disabled={!notification.link}
-                        className={cn(
-                            "block w-full text-left p-4 hover:bg-muted/50 active:bg-muted/50 transition-colors",
-                            !notification.link && "cursor-default",
-                            notification.isRead && "opacity-60"
-                        )}
+                        className={cn("w-full text-left p-4 hover:bg-muted/50 transition-colors", notification.isRead && "opacity-60")}
                     >
                         <div className="flex items-start gap-4">
-                            <div className={cn("mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full", !notification.isRead ? "bg-primary" : "bg-border")} />
+                            <div className={cn("mt-1.5 h-2.5 w-2.5 rounded-full", !notification.isRead ? "bg-primary" : "bg-border")} />
                             <div className="flex-1 space-y-1">
                                 <p className="font-semibold">{notification.title}</p>
                                 <p className="text-sm text-muted-foreground">{notification.message}</p>
-                                <p className="text-xs text-muted-foreground">
-                                    {isToday(createdAt) ? format(createdAt, 'p') : format(createdAt, 'P')}
-                                </p>
+                                <p className="text-xs text-muted-foreground">{format(createdAt, 'PPP')}</p>
                             </div>
                         </div>
                     </button>

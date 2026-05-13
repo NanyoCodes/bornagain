@@ -49,9 +49,7 @@ import {
   ChevronDown,
   ArrowLeft,
   Users,
-  MessageCircle,
 } from 'lucide-react';
-import { Skeleton } from '@/components/ui/skeleton';
 import { getBibleChapter, type BibleChapterOutput } from '@/ai/flows/get-bible-chapter-flow';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -74,7 +72,7 @@ import {
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 
 const bibleVersions = [
     { id: 'kjv', name: 'King James Version' },
@@ -87,7 +85,7 @@ const getHighlightClass = (color?: string) => {
     return `highlight-${color}`;
 };
 
-const getPartnerHighlightClass = (color?: string) => {
+const getPartnerHighlightClass = () => {
     return 'border-l-4 border-primary bg-primary/5';
 };
 
@@ -234,7 +232,6 @@ export default function BibleReaderPage() {
   const hasInitializedSelection = useRef(false);
   const lastBookRef = useRef(bibleData[0].name);
 
-  // Partners Highlights State
   const [partnerHighlights, setPartnerHighlights] = useState<(BibleHighlight & { partnerName: string })[]>([]);
   const [isLoadingPartnerHighlights, setIsLoadingPartnerHighlights] = useState(false);
 
@@ -278,7 +275,6 @@ export default function BibleReaderPage() {
 
   const { data: highlights } = useCollection<BibleHighlight>(highlightsQuery);
 
-  // Fetch Accountability Partner Highlights
   useEffect(() => {
       const fetchPartnerHighlights = async () => {
           if (!userProfile?.accountabilityPartners || !chapterContent || !firestore) return;
@@ -381,6 +377,15 @@ export default function BibleReaderPage() {
     fetchChapter();
   }, [selectedBookName, selectedChapterNumber, selectedVersion]);
 
+  const completedToday = useMemo(() => {
+    if (!userProfile?.dailyDiscipline) return [];
+    const lastUpdatedDate = userProfile.dailyDiscipline.lastUpdated?.toDate();
+    if (lastUpdatedDate && new Date().toDateString() === lastUpdatedDate.toDateString()) {
+      return userProfile.dailyDiscipline.completed || [];
+    }
+    return [];
+  }, [userProfile]);
+
   const handleMarkAsRead = async () => {
     if (!user || !firestore || !chapterContent || !userProfile) return;
     setIsSubmitting(true);
@@ -396,11 +401,7 @@ export default function BibleReaderPage() {
         };
         await updateDoc(userRef, historyUpdatePayload);
         
-        const lastUpdatedDate = userProfile.dailyDiscipline?.lastUpdated?.toDate();
-        const alreadyCompletedToday = lastUpdatedDate && isToday(lastUpdatedDate) && userProfile.dailyDiscipline?.completed?.includes('read_bible');
-
-        if (!alreadyCompletedToday) {
-            const completedToday = (lastUpdatedDate && isToday(lastUpdatedDate)) ? userProfile.dailyDiscipline?.completed || [] : [];
+        if (!completedToday.includes('read_bible')) {
             const newCompleted = [...completedToday, 'read_bible'];
             const today = new Date();
             const dateString = format(today, 'yyyy-MM-dd');
@@ -587,6 +588,8 @@ export default function BibleReaderPage() {
         if (currentIndex > 0) setFontSize(fontSizes[currentIndex - 1]);
     };
 
+    const readingHistory = userProfile?.readingHistory || [];
+
     const historyGroups = useMemo(() => {
         if (readingHistory.length === 0) return [];
         const groups: { date: Date; items: ReadingHistoryItem[] }[] = [];
@@ -739,7 +742,31 @@ export default function BibleReaderPage() {
                         {!mounted || !isMobile ? (
                             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                 <Select value={selectedBookName} onValueChange={setSelectedBookName}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{bibleData.map(book => (<SelectItem key={book.name} value={book.name}>{book.name}</SelectItem>))}</SelectContent></Select>
-                                <Popover open={isChapterPopoverOpen} onOpenChange={setIsChapterPopoverOpen}><PopoverTrigger asChild><Button variant="outline" className="w-full justify-between">Chapter {selectedChapterNumber} <ChevronDown className="h-4 w-4 opacity-50" /></Button></PopoverTrigger><PopoverContent className="w-[300px] p-0"><ScrollArea className="h-72"><div className="grid grid-cols-8 gap-1 p-2">{selectedBook?.chapters.map(chapter => (<Button key={chapter.chapter} variant={chapter.chapter === selectedChapterNumber ? "default" : "outline"} size="sm" className="h-8" onClick={() => handleSelectChapter(chapter.chapter)}>{chapter.chapter}</Button>))}</div></ScrollArea></PopoverContent></Popover>
+                                <Popover open={isChapterPopoverOpen} onOpenChange={setIsChapterPopoverOpen}>
+                                    <PopoverTrigger asChild>
+                                        <Button variant="outline" className="w-full justify-between">
+                                            Chapter {selectedChapterNumber}
+                                            <ChevronDown className="h-4 w-4 opacity-50" />
+                                        </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-[300px] p-0">
+                                        <ScrollArea className="h-72">
+                                            <div className="grid grid-cols-8 gap-1 p-2">
+                                                {selectedBook?.chapters.map(chapter => (
+                                                    <Button
+                                                        key={chapter.chapter}
+                                                        variant={chapter.chapter === selectedChapterNumber ? "default" : "outline"}
+                                                        size="sm"
+                                                        className="h-8"
+                                                        onClick={() => handleSelectChapter(chapter.chapter)}
+                                                    >
+                                                        {chapter.chapter}
+                                                    </Button>
+                                                ))}
+                                            </div>
+                                        </ScrollArea>
+                                    </PopoverContent>
+                                </Popover>
                                 <Select value={selectedVersion} onValueChange={handleSelectVersion}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{bibleVersions.map(v => (<SelectItem key={v.id} value={v.id}>{v.name}</SelectItem>))}</SelectContent></Select>
                             </div>
                         ) : (
