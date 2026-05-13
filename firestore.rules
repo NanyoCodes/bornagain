@@ -57,13 +57,13 @@ service cloud.firestore {
       }
 
       match /bibleHighlights/{highlightId} {
-        allow read: if isOwner(userId) || isAccountabilityPartner(userId);
-        allow write: if isOwner(userId);
+        // Updated: Bible highlights are now strictly private to the owner
+        allow read, write: if isOwner(userId);
       }
 
       match /notes/{noteId} {
-        allow read: if isOwner(userId) || isAccountabilityPartner(userId);
-        allow write: if isOwner(userId);
+        // Updated: Personal notes are now strictly private to the owner
+        allow read, write: if isOwner(userId);
       }
 
       match /notifications/{notificationId} {

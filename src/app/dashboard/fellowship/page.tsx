@@ -381,16 +381,16 @@ export default function FellowshipPage() {
         );
     }, [activeFellowships, searchTerm]);
 
+    const loading = userLoading || profileLoading || fellowshipsLoading;
+
     const triggerButton = (
-        <Button disabled={userLoading || profileLoading || fellowshipsLoading}>
+        <Button disabled={loading}>
             <PlusCircle className="h-4 w-4 md:mr-2" />
             <span className="hidden md:inline">New Fellowship</span>
         </Button>
     );
 
     const formContent = <FellowshipForm userProfile={userProfile ?? null} onFormSubmit={handleCreateFellowship} isSubmitting={isSubmitting} />;
-
-    const loading = userLoading || profileLoading || fellowshipsLoading;
 
     return (
         <div className="space-y-8">

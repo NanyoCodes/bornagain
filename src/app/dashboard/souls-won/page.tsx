@@ -38,6 +38,7 @@ import { EditSoulForm } from "@/components/souls/edit-soul-form";
 import { LogFollowUpDialog } from "@/components/souls/log-follow-up-dialog";
 import { ViewHistoryDialog } from "@/components/souls/view-history-dialog";
 import { AssignFellowshipDialog } from "@/components/souls/assign-fellowship-dialog";
+import { safeToDate } from "@/lib/utils";
 
 export default function SoulsWonPage() {
   const { user, loading: userLoading } = useUser();
@@ -234,6 +235,8 @@ export default function SoulsWonPage() {
     );
   }, [souls, searchTerm]);
 
+  const loading = userLoading || soulsLoading || loadingCampaigns || loadingFellowships;
+
   const triggerButton = (
     <Button disabled={loading}>
       <PlusCircle className="h-4 w-4 md:mr-2" />
@@ -242,8 +245,6 @@ export default function SoulsWonPage() {
   );
 
   const formContent = <LogSoulForm onSoulLogged={handleSoulLogged} fellowships={activeFellowships || []} campaigns={activeCampaigns || []} />;
-
-  const loading = userLoading || soulsLoading || loadingCampaigns || loadingFellowships;
 
   return (
     <div className="space-y-8">
