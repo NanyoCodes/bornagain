@@ -73,7 +73,7 @@ import {
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 const bibleVersions = [
     { id: 'kjv', name: 'King James Version' },
@@ -233,7 +233,7 @@ export default function BibleReaderPage() {
   const hasInitializedSelection = useRef(false);
   const lastBookRef = useRef(bibleData[0].name);
 
-  const [partnerHighlights, setPartnerHighlights] = useState<(BibleHighlight & { partnerName: string })[]>([]);
+  const [partnerHighlights, setPartnerHighlights] = useState<(BibleHighlight & { partnerName: string; partnerPhoto?: string })[]>([]);
   const [isLoadingPartnerHighlights, setIsLoadingPartnerHighlights] = useState(false);
 
   useEffect(() => {
@@ -281,7 +281,7 @@ export default function BibleReaderPage() {
           if (!userProfile?.accountabilityPartners || !chapterContent || !firestore) return;
           setIsLoadingPartnerHighlights(true);
           try {
-              const partnerNotes: (BibleHighlight & { partnerName: string })[] = [];
+              const partnerNotes: (BibleHighlight & { partnerName: string; partnerPhoto?: string })[] = [];
               
               for (const partner of userProfile.accountabilityPartners) {
                   const q = query(
@@ -291,11 +291,15 @@ export default function BibleReaderPage() {
                   );
                   const snap = await getDocs(q);
                   snap.forEach(doc => {
-                      partnerNotes.push({ 
-                          id: doc.id, 
-                          ...doc.data(), 
-                          partnerName: partner.firstName 
-                      } as BibleHighlight & { partnerName: string });
+                      const data = doc.data() as BibleHighlight;
+                      if (data.note && data.note.trim() !== '') {
+                        partnerNotes.push({ 
+                            id: doc.id, 
+                            ...data, 
+                            partnerName: partner.firstName,
+                            partnerPhoto: partner.photoURL
+                        });
+                      }
                   });
               }
               setPartnerHighlights(partnerNotes);
@@ -642,6 +646,7 @@ export default function BibleReaderPage() {
                             <CardHeader className="p-3 pb-2">
                                 <div className="flex items-center gap-2 mb-1">
                                     <Avatar className="h-5 w-5">
+                                        <AvatarImage src={h.partnerPhoto} />
                                         <AvatarFallback className="text-[8px]">{h.partnerName.charAt(0)}</AvatarFallback>
                                     </Avatar>
                                     <span className="text-xs font-bold text-primary">{h.partnerName}</span>

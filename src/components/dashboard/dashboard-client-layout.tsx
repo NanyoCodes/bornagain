@@ -1,3 +1,4 @@
+
 'use client';
 
 import Image from "next/image";
@@ -282,7 +283,6 @@ export default function DashboardClientLayout({ children }: { children: React.Re
   const router = useRouter();
   const pathname = usePathname();
   const [showWelcomePopup, setShowWelcomePopup] = useState(false);
-  const logo = PlaceHolderImages.find((img) => img.id === "logo");
   const isTakeoverPage = pathname.startsWith('/dashboard/chats/') || pathname.startsWith('/dashboard/notes') || pathname.startsWith('/dashboard/bible');
   const [lastActiveUpdated, setLastActiveUpdated] = useState(false);
 
