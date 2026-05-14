@@ -715,7 +715,7 @@ export default function BibleReaderPage() {
                                     </SheetTrigger>
                                     <SheetContent side="bottom">
                                         <SheetHeader><SheetTitle>Select Version</SheetTitle></SheetHeader>
-                                        <div className="grid gap-2 py-4">{bibleVersions.map(v => (<Button key={v.id} variant={v.id === selectedVersion ? 'default' : 'ghost'} size="lg" className="w-full justify-start" onClick={() => handleSelectVersion(v.id)}>{v.name}</Button>))}</div>
+                                        <div className="grid gap-2 py-4">{bibleVersions.map(v => (<Button key={v.id} variant={v.id === selectedVersion ? 'default' : 'ghost'} size="lg" className="w-full justify-start" onClick={() => handleSelectVersion(id)}>{v.name}</Button>))}</div>
                                     </SheetContent>
                                 </Sheet>
                             </div>

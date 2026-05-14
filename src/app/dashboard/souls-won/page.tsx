@@ -222,6 +222,8 @@ export default function SoulsWonPage() {
     toast({ title: "Export Started" });
   };
 
+  const loading = userLoading || soulsLoading || loadingCampaigns || loadingFellowships;
+
   const filteredSouls = useMemo(() => {
     if (!souls) return [];
     if (!searchTerm) return souls;
@@ -234,8 +236,6 @@ export default function SoulsWonPage() {
       (soul.church && soul.church.toLowerCase().includes(term))
     );
   }, [souls, searchTerm]);
-
-  const loading = userLoading || soulsLoading || loadingCampaigns || loadingFellowships;
 
   const triggerButton = (
     <Button disabled={loading}>

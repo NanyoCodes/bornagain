@@ -77,9 +77,11 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
             </div>
 
             <footer className="text-center text-[9px] uppercase tracking-widest text-muted-foreground/40 mt-8 pt-8 border-t">
-                <div className="flex justify-center gap-6 mb-4">
-                    <Link href="/terms-of-service" className="hover:text-primary">Terms</Link>
-                    <Link href="/privacy-policy" className="hover:text-primary">Privacy</Link>
+                <div className="flex justify-center gap-4 mb-4 flex-wrap">
+                    <Link href="/guide" className="hover:text-primary transition-colors">App Guide</Link>
+                    <Link href="/resources" className="hover:text-primary transition-colors">Resources</Link>
+                    <Link href="/terms-of-service" className="hover:text-primary transition-colors">Terms</Link>
+                    <Link href="/privacy-policy" className="hover:text-primary transition-colors">Privacy</Link>
                 </div>
                 <p>© {new Date().getFullYear()} TESTIFY GLOBAL</p>
             </footer>
