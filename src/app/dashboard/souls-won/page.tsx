@@ -189,12 +189,14 @@ export default function SoulsWonPage() {
                   <span className="hidden md:inline">Log Soul Won</span>
                 </Button>
               </SheetTrigger>
-              <SheetContent side="bottom">
-                <SheetHeader>
-                  <SheetTitle>Log a New Soul</SheetTitle>
-                  <SheetDescription>Record the details of the person you've ministered to.</SheetDescription>
-                </SheetHeader>
-                <div className="max-h-[80vh] overflow-y-auto p-1 mt-4">
+              <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0">
+                <div className="p-6 border-b flex-shrink-0">
+                    <SheetHeader className="text-left">
+                        <SheetTitle>Log a New Soul</SheetTitle>
+                        <SheetDescription>Record the details of the person you've ministered to.</SheetDescription>
+                    </SheetHeader>
+                </div>
+                <div className="flex-grow overflow-y-auto p-6">
                     <LogSoulForm onSoulLogged={handleSoulLogged} fellowships={activeFellowships} campaigns={activeCampaigns} />
                 </div>
               </SheetContent>

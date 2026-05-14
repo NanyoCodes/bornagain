@@ -28,7 +28,6 @@ const AvatarImage = React.forwardRef<
     return null
   }
 
-  // Destructure priority so it isn't passed down as an invalid DOM attribute to the underlying img
   return (
     <AvatarPrimitive.Image
       ref={ref}
