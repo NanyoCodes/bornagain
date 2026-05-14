@@ -28,6 +28,7 @@ const AvatarImage = React.forwardRef<
     return null
   }
 
+  // priority is destructured to prevent it being passed to the underlying DOM element
   return (
     <AvatarPrimitive.Image
       ref={ref}

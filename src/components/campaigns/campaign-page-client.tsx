@@ -235,12 +235,14 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
             </div>
 
             <Dialog open={isLogSoulOpen} onOpenChange={setIsLogSoulOpen}>
-                <DialogContent>
+                <DialogContent className="sm:max-w-lg">
                     <DialogHeader>
                         <DialogTitle>Log a Soul Won in "{campaign.title}"</DialogTitle>
                         <DialogDescription>Record the details of the person you've ministered to during this campaign.</DialogDescription>
                     </DialogHeader>
-                    <LogSoulForm onSoulLogged={() => setIsLogSoulOpen(false)} fellowships={[]} campaigns={[]} defaultCampaign={campaign} />
+                    <div className="max-h-[70vh] overflow-y-auto pr-2">
+                        <LogSoulForm onSoulLogged={() => setIsLogSoulOpen(false)} fellowships={[]} campaigns={[]} defaultCampaign={campaign} />
+                    </div>
                 </DialogContent>
             </Dialog>
 
@@ -250,11 +252,13 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                         <DialogTitle>Manage Campaign</DialogTitle>
                         <DialogDescription>Update the details or progress of your campaign.</DialogDescription>
                     </DialogHeader>
-                    <ManageCampaignForm 
-                        campaign={campaign} 
-                        onCampaignUpdated={() => setIsManageOpen(false)} 
-                        onDelete={() => { setCampaignToDelete(campaign); setIsManageOpen(false); }} 
-                    />
+                    <div className="max-h-[75vh] overflow-y-auto pr-2">
+                        <ManageCampaignForm 
+                            campaign={campaign} 
+                            onCampaignUpdated={() => setIsManageOpen(false)} 
+                            onDelete={() => { setCampaignToDelete(campaign); setIsManageOpen(false); }} 
+                        />
+                    </div>
                 </DialogContent>
             </Dialog>
 
