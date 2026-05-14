@@ -2,8 +2,8 @@
 
 import * as React from "react";
 import { format } from "date-fns";
-import { MoreHorizontal, Church, UserPlus, Edit, MapPin, Phone, ChevronDown, Trash2, Download, HeartHandshake, Check, X } from "lucide-react";
-import type { Soul, FollowUpStatus, Fellowship } from "@/lib/types";
+import { MoreHorizontal, Church, UserPlus, Edit, MapPin, Phone, ChevronDown, Download, HeartHandshake } from "lucide-react";
+import type { Soul, FollowUpStatus } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -37,20 +37,11 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { cn, safeToDate } from "@/lib/utils";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/collapsible";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { actionItems } from "@/lib/follow-up-data";
 import { SoulInsightsDialog } from "./soul-insights-dialog";
 import { Label } from "../ui/label";
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-} from "@/components/ui/dialog";
-import Image from "next/image";
 import AdsenseAd from "../common/adsense-ad";
-
 
 const getStatusClasses = (status: FollowUpStatus | undefined): string => {
     if (!status) return 'bg-secondary text-secondary-foreground border-border';
@@ -66,19 +57,17 @@ const getStatusClasses = (status: FollowUpStatus | undefined): string => {
     }
 }
 
-type SoulCardProps = { 
+// Performance: Memoize row components to prevent expensive table re-renders
+const SoulCard = React.memo(({ soul, onEdit, onFollowUp, onViewHistory, onExportSingle, onOpenAssignDialog }: { 
   soul: Soul; 
   onEdit: (soul: Soul) => void; 
   onFollowUp: (soul: Soul) => void; 
   onViewHistory: (soul: Soul) => void; 
   onExportSingle: (soul: Soul, formatType: 'csv' | 'pdf') => void;
   onOpenAssignDialog: (soul: Soul) => void;
-};
-
-function SoulCard({ soul, onEdit, onFollowUp, onViewHistory, onExportSingle, onOpenAssignDialog }: SoulCardProps) {
+}) => {
     const latestFollowUp = React.useMemo(() => {
         if (!soul.followUpLog || soul.followUpLog.length === 0) return null;
-        // Sort to get the most recent log entry
         return [...soul.followUpLog].sort((a, b) => {
             const dateB = safeToDate(b.date)?.getTime() ?? 0;
             const dateA = safeToDate(a.date)?.getTime() ?? 0;
@@ -87,12 +76,10 @@ function SoulCard({ soul, onEdit, onFollowUp, onViewHistory, onExportSingle, onO
     }, [soul.followUpLog]);
 
     const wonAt = React.useMemo(() => safeToDate(soul.wonAt) ?? new Date(), [soul.wonAt]);
-    
     const locationWonString = React.useMemo(() => {
         if (!soul.locationWon) return null;
         return [soul.locationWon.city, soul.locationWon.state, soul.locationWon.country].filter(Boolean).join(', ');
     }, [soul.locationWon]);
-    
     const latestFollowUpDate = latestFollowUp ? safeToDate(latestFollowUp.date) : null;
 
     return (
@@ -132,31 +119,21 @@ function SoulCard({ soul, onEdit, onFollowUp, onViewHistory, onExportSingle, onO
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end">
                                     <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                    <DropdownMenuItem onSelect={() => onEdit(soul)}>
-                                        <Edit className="mr-2 h-4 w-4"/>
-                                        Edit
-                                    </DropdownMenuItem>
+                                    <DropdownMenuItem onSelect={() => onEdit(soul)}><Edit className="mr-2 h-4 w-4"/>Edit</DropdownMenuItem>
                                     <DropdownMenuItem onSelect={() => onViewHistory(soul)}>View History</DropdownMenuItem>
-                                    <DropdownMenuItem onSelect={() => onOpenAssignDialog(soul)}>
-                                        <HeartHandshake className="mr-2 h-4 w-4" />
-                                        <span>Assign Fellowship</span>
-                                    </DropdownMenuItem>
+                                    <DropdownMenuItem onSelect={() => onOpenAssignDialog(soul)}><HeartHandshake className="mr-2 h-4 w-4" />Assign Fellowship</DropdownMenuItem>
                                     <DropdownMenuSub>
-                                        <DropdownMenuSubTrigger>
-                                            <Download className="mr-2 h-4 w-4" />
-                                            <span>Export</span>
-                                        </DropdownMenuSubTrigger>
+                                        <DropdownMenuSubTrigger><Download className="mr-2 h-4 w-4" />Export</DropdownMenuSubTrigger>
                                         <DropdownMenuPortal>
                                             <DropdownMenuSubContent>
-                                                <DropdownMenuItem onSelect={() => onExportSingle(soul, 'csv')}>Export as CSV</DropdownMenuItem>
-                                                <DropdownMenuItem onSelect={() => onExportSingle(soul, 'pdf')}>Export as PDF</DropdownMenuItem>
+                                                <DropdownMenuItem onSelect={() => onExportSingle(soul, 'csv')}>CSV</DropdownMenuItem>
+                                                <DropdownMenuItem onSelect={() => onExportSingle(soul, 'pdf')}>PDF</DropdownMenuItem>
                                             </DropdownMenuSubContent>
                                         </DropdownMenuPortal>
                                     </DropdownMenuSub>
                                 </DropdownMenuContent>
                             </DropdownMenu>
                         </div>
-                        
                         <div className="space-y-3 pt-4 border-t">
                             <Label>Follow-up</Label>
                             <div className="border rounded-lg p-4 space-y-4">
@@ -182,9 +159,8 @@ function SoulCard({ soul, onEdit, onFollowUp, onViewHistory, onExportSingle, onO
                                 </div>
                             </div>
                         </div>
-
                         <div className="flex justify-between text-sm text-muted-foreground pt-4">
-                            <span>{soul.source} {soul.sourceDetails ? `(${soul.sourceDetails})` : ''}</span>
+                            <span>{soul.source}</span>
                             <span>{format(wonAt, "PPP")}</span>
                         </div>
                     </div>
@@ -192,18 +168,17 @@ function SoulCard({ soul, onEdit, onFollowUp, onViewHistory, onExportSingle, onO
             </Collapsible>
         </Card>
     );
-}
+});
+SoulCard.displayName = "SoulCard";
 
-type SoulTableRowProps = { 
+const SoulTableRow = React.memo(({ soul, onEdit, onFollowUp, onViewHistory, onExportSingle, onOpenAssignDialog }: { 
   soul: Soul; 
   onEdit: (soul: Soul) => void; 
   onFollowUp: (soul: Soul) => void; 
   onViewHistory: (soul: Soul) => void;
   onExportSingle: (soul: Soul, formatType: 'csv' | 'pdf') => void;
   onOpenAssignDialog: (soul: Soul) => void;
-};
-
-function SoulTableRow({ soul, onEdit, onFollowUp, onViewHistory, onExportSingle, onOpenAssignDialog }: SoulTableRowProps) {
+}) => {
     const latestFollowUp = React.useMemo(() => {
         if (!soul.followUpLog || soul.followUpLog.length === 0) return null;
         return [...soul.followUpLog].sort((a, b) => {
@@ -225,46 +200,21 @@ function SoulTableRow({ soul, onEdit, onFollowUp, onViewHistory, onExportSingle,
                     </Avatar>
                     <div>
                         <SoulInsightsDialog soul={soul}>
-                           <div className="cursor-pointer hover:underline">{soul.firstName || 'Unknown'} {soul.lastName || ''}</div>
+                           <div className="cursor-pointer hover:underline">{soul.firstName} {soul.lastName}</div>
                         </SoulInsightsDialog>
                         {soul.church && <div className="text-xs text-muted-foreground flex items-center gap-1"><Church className="h-3 w-3" />{soul.church}</div>}
                     </div>
                 </div>
             </TableCell>
+            <TableCell>{soul.phone && <div className="text-xs text-muted-foreground">{soul.phone}</div>}</TableCell>
+            <TableCell><Badge className={cn("w-[150px] justify-center", getStatusClasses(soul.status))} variant="outline">{soul.status}</Badge></TableCell>
+            <TableCell>{soul.fellowshipName ? <div className="flex items-center gap-2 text-xs"><HeartHandshake className="h-3 w-3" />{soul.fellowshipName}</div> : <span className="text-muted-foreground text-xs">N/A</span>}</TableCell>
             <TableCell>
-                {soul.phone && <div className="text-xs text-muted-foreground">{soul.phone}</div>}
-            </TableCell>
-            <TableCell>
-                <Badge className={cn("w-[150px] justify-center", getStatusClasses(soul.status))} variant="outline">{soul.status}</Badge>
-            </TableCell>
-            <TableCell>
-                {soul.fellowshipName ? (
-                    <div className="flex items-center gap-2 text-xs">
-                        <HeartHandshake className="h-3 w-3" />
-                        {soul.fellowshipName}
-                    </div>
-                ) : (
-                    <span className="text-muted-foreground text-xs">N/A</span>
-                )}
-            </TableCell>
-            <TableCell>
-                {latestFollowUp && latestFollowUpDate ? (
+                {latestFollowUpDate ? (
                     <div className="text-xs space-y-1">
-                        <div className="text-muted-foreground font-semibold">
-                            {format(latestFollowUpDate, "PPP")}
-                        </div>
-                        {latestFollowUp.actions && latestFollowUp.actions.length > 0 && (
-                            <div className="flex flex-wrap gap-1">
-                                {latestFollowUp.actions.map(actionId => {
-                                    const action = actionItems.find(a => a.id === actionId);
-                                    return action ? <Badge key={actionId} variant="secondary" className="font-normal">{action.label}</Badge> : null
-                                })}
-                            </div>
-                        )}
+                        <div className="text-muted-foreground font-semibold">{format(latestFollowUpDate, "PPP")}</div>
                     </div>
-                ) : (
-                    <div className="text-xs text-muted-foreground">No logs</div>
-                )}
+                ) : <span className="text-muted-foreground text-xs">No logs</span>}
             </TableCell>
             <TableCell>{format(wonAt, "PPP")}</TableCell>
             <TableCell>
@@ -273,48 +223,21 @@ function SoulTableRow({ soul, onEdit, onFollowUp, onViewHistory, onExportSingle,
             </TableCell>
             <TableCell>
                 <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button
-                            aria-haspopup="true"
-                            size="icon"
-                            variant="ghost"
-                        >
-                            <MoreHorizontal className="h-4 w-4" />
-                            <span className="sr-only">Toggle menu</span>
-                        </Button>
-                    </DropdownMenuTrigger>
+                    <DropdownMenuTrigger asChild><Button size="icon" variant="ghost"><MoreHorizontal className="h-4 w-4" /></Button></DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem onSelect={() => onEdit(soul)}>
-                            <Edit className="mr-2 h-4 w-4" />
-                            Edit
-                        </DropdownMenuItem>
+                        <DropdownMenuItem onSelect={() => onEdit(soul)}><Edit className="mr-2 h-4 w-4" />Edit</DropdownMenuItem>
                         <DropdownMenuItem onSelect={() => onFollowUp(soul)}>Follow-up</DropdownMenuItem>
                         <DropdownMenuItem onSelect={() => onViewHistory(soul)}>View History</DropdownMenuItem>
-                        <DropdownMenuItem onSelect={() => onOpenAssignDialog(soul)}>
-                            <HeartHandshake className="mr-2 h-4 w-4" />
-                            <span>Assign Fellowship</span>
-                        </DropdownMenuItem>
-                        <DropdownMenuSub>
-                            <DropdownMenuSubTrigger>
-                                <Download className="mr-2 h-4 w-4" />
-                                <span>Export</span>
-                            </DropdownMenuSubTrigger>
-                            <DropdownMenuPortal>
-                                <DropdownMenuSubContent>
-                                    <DropdownMenuItem onSelect={() => onExportSingle(soul, 'csv')}>Export as CSV</DropdownMenuItem>
-                                    <DropdownMenuItem onSelect={() => onExportSingle(soul, 'pdf')}>Export as PDF</DropdownMenuItem>
-                                </DropdownMenuSubContent>
-                            </DropdownMenuPortal>
-                        </DropdownMenuSub>
+                        <DropdownMenuItem onSelect={() => onOpenAssignDialog(soul)}><HeartHandshake className="mr-2 h-4 w-4" />Assign Fellowship</DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
             </TableCell>
         </TableRow>
     );
-}
+});
+SoulTableRow.displayName = "SoulTableRow";
 
-type SoulsWonTableProps = {
+export function SoulsWonTable({ souls, loading, onEdit, onFollowUp, onViewHistory, onExportSingle, onOpenAssignDialog }: {
   souls: Soul[];
   loading: boolean;
   onEdit: (soul: Soul) => void;
@@ -322,31 +245,20 @@ type SoulsWonTableProps = {
   onViewHistory: (soul: Soul) => void;
   onExportSingle: (soul: Soul, formatType: 'csv' | 'pdf') => void;
   onOpenAssignDialog: (soul: Soul) => void;
-};
-
-export function SoulsWonTable({ souls, loading, onEdit, onFollowUp, onViewHistory, onExportSingle, onOpenAssignDialog }: SoulsWonTableProps) {
+}) {
   const isMobile = useIsMobile();
   const [mounted, setMounted] = React.useState(false);
 
-  React.useEffect(() => {
-    setMounted(true);
-  }, []);
+  React.useEffect(() => { setMounted(true); }, []);
 
   if (loading || !mounted) {
     return (
         <Card>
-            <CardHeader>
-                <Skeleton className="h-6 w-48" />
-                <Skeleton className="h-4 w-full max-w-sm" />
-            </CardHeader>
+            <CardHeader><Skeleton className="h-6 w-48" /><Skeleton className="h-4 w-full max-w-sm" /></CardHeader>
             <CardContent className="space-y-4">
                 {[...Array(3)].map((_, i) => (
                     <div key={i} className="flex items-center space-x-4 p-2">
-                        <div className="space-y-2 flex-1">
-                            <Skeleton className="h-4 w-3/4" />
-                            <Skeleton className="h-4 w-1/2" />
-                        </div>
-                        <Skeleton className="h-8 w-24" />
+                        <div className="space-y-2 flex-1"><Skeleton className="h-4 w-3/4" /><Skeleton className="h-4 w-1/2" /></div>
                         <Skeleton className="h-8 w-24" />
                     </div>
                 ))}
@@ -358,19 +270,11 @@ export function SoulsWonTable({ souls, loading, onEdit, onFollowUp, onViewHistor
   if (souls.length === 0) {
     return (
         <Card>
-            <CardHeader>
-                <CardTitle>Follow-up Dashboard</CardTitle>
-                <CardDescription>
-                A list of souls won. Keep track of their spiritual journey.
-                </CardDescription>
-            </CardHeader>
+            <CardHeader><CardTitle>Follow-up Dashboard</CardTitle><CardDescription>A list of souls won.</CardDescription></CardHeader>
             <CardContent>
                 <div className="text-center py-12 flex flex-col items-center">
                     <UserPlus className="h-12 w-12 text-muted-foreground" />
                     <h3 className="mt-4 text-lg font-semibold">No Records Found</h3>
-                    <p className="mt-2 text-sm text-muted-foreground max-w-sm">
-                        No souls match your current search. Try changing your filters or add a new soul to your list.
-                    </p>
                 </div>
             </CardContent>
         </Card>
@@ -380,20 +284,11 @@ export function SoulsWonTable({ souls, loading, onEdit, onFollowUp, onViewHistor
   if (isMobile) {
       return (
         <div className="space-y-4">
-            <Card>
-                <CardHeader>
-                    <CardTitle>Follow-up Dashboard</CardTitle>
-                    <CardDescription>
-                    A list of souls won. Keep track of their spiritual journey.
-                    </CardDescription>
-                </CardHeader>
-            </Card>
+            <Card><CardHeader><CardTitle>Follow-up Dashboard</CardTitle><CardDescription>A list of souls won.</CardDescription></CardHeader></Card>
             {souls.map((soul, index) => (
                 <React.Fragment key={soul.id}>
                     <SoulCard soul={soul} onEdit={onEdit} onFollowUp={onFollowUp} onViewHistory={onViewHistory} onExportSingle={onExportSingle} onOpenAssignDialog={onOpenAssignDialog} />
-                    {(index + 1) % 4 === 0 && (
-                        <AdsenseAd adSlot={`souls-list-ad-${index}`} className="h-full" />
-                    )}
+                    {(index + 1) % 4 === 0 && <AdsenseAd adSlot={`souls-list-ad-${index}`} className="h-full" />}
                 </React.Fragment>
             ))}
         </div>
@@ -402,26 +297,19 @@ export function SoulsWonTable({ souls, loading, onEdit, onFollowUp, onViewHistor
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>Follow-up Dashboard</CardTitle>
-        <CardDescription>
-          A list of souls won. Keep track of their spiritual journey.
-        </CardDescription>
-      </CardHeader>
+      <CardHeader><CardTitle>Follow-up Dashboard</CardTitle><CardDescription>Keep track of their spiritual journey.</CardDescription></CardHeader>
       <CardContent>
         <Table>
           <TableHeader>
             <TableRow>
               <TableHead>Name</TableHead>
-              <TableHead>Contact Info</TableHead>
+              <TableHead>Phone</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Fellowship</TableHead>
-              <TableHead>Last Follow-up</TableHead>
+              <TableHead>Last Log</TableHead>
               <TableHead>Won At</TableHead>
               <TableHead>Source</TableHead>
-              <TableHead>
-                <span className="sr-only">Actions</span>
-              </TableHead>
+              <TableHead><span className="sr-only">Actions</span></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>

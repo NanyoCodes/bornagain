@@ -1,6 +1,8 @@
 import type {NextConfig} from 'next';
 
 const nextConfig: NextConfig = {
+  compress: true,
+  reactStrictMode: true,
   async headers() {
     return [
       {
@@ -16,7 +18,6 @@ const nextConfig: NextConfig = {
   },
   async rewrites() {
     return [
-      // 1. Route specific Firebase action landing pages to our custom UI
       {
         source: '/__/auth/action',
         destination: '/auth/action',
@@ -25,8 +26,6 @@ const nextConfig: NextConfig = {
         source: '/_/auth/action',
         destination: '/auth/action',
       },
-      // 2. Proxy internal auth handler/handshake requests to the secure Firebase backend
-      // This handles both the standard (__) and alternative (_) path patterns
       {
         source: '/__/auth/:path*',
         destination: `https://studio-6220967431-56fe2.firebaseapp.com/__/auth/:path*`,
@@ -37,7 +36,6 @@ const nextConfig: NextConfig = {
       },
     ];
   },
-  /* config options here */
   typescript: {
     ignoreBuildErrors: true,
   },

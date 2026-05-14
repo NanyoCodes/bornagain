@@ -1,5 +1,6 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import {
   Card,
   CardContent,
@@ -50,21 +51,6 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  ResponsiveContainer,
-  XAxis,
-  YAxis,
-  Cell,
-  ReferenceLine,
-} from 'recharts';
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from '@/components/ui/chart';
-import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -83,16 +69,48 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Progress } from '@/components/ui/progress';
 import { WelcomeBackDialog } from '@/components/dashboard/welcome-back-dialog';
 import { safeToDate } from '@/lib/utils';
-import { actionItems, statusOptions } from '@/lib/follow-up-data';
+import { actionItems } from '@/lib/follow-up-data';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { LogSoulForm } from '@/components/souls/log-soul-form';
-import { ProgressOverview } from '@/components/dashboard/progress-overview';
 import { useRouter } from 'next/navigation';
 import { welcomeScriptures } from '@/lib/verses';
 import AdsenseAd from '@/components/common/adsense-ad';
+
+// Performance: Dynamically import heavy chart and overview components
+const ProgressOverview = dynamic(() => import('@/components/dashboard/progress-overview').then(m => m.ProgressOverview), {
+  loading: () => <Skeleton className="h-[400px] w-full" />,
+  ssr: false
+});
+
+const ChartContainer = dynamic(() => import('@/components/ui/chart').then(m => m.ChartContainer), { ssr: false });
+const ChartTooltip = dynamic(() => import('@/components/ui/chart').then(m => m.ChartTooltip), { ssr: false });
+const ChartTooltipContent = dynamic(() => import('@/components/ui/chart').then(m => m.ChartTooltipContent), { ssr: false });
+
+const RechartsBarChart = dynamic(() => import('recharts').then(m => m.BarChart), { ssr: false });
+const RechartsBar = dynamic(() => import('recharts').then(m => m.Bar), { ssr: false });
+const RechartsXAxis = dynamic(() => import('recharts').then(m => m.XAxis), { ssr: false });
+const RechartsYAxis = dynamic(() => import('recharts').then(m => m.YAxis), { ssr: false });
+const RechartsCartesianGrid = dynamic(() => import('recharts').then(m => m.CartesianGrid), { ssr: false });
+const RechartsResponsiveContainer = dynamic(() => import('recharts').then(m => m.ResponsiveContainer), { ssr: false });
+const RechartsCell = dynamic(() => import('recharts').then(m => m.Cell), { ssr: false });
+const RechartsReferenceLine = dynamic(() => import('recharts').then(m => m.ReferenceLine), { ssr: false });
+
+const chartConfig = {
+  soulsWon: {
+    label: 'Souls Won',
+    color: 'hsl(var(--primary))',
+  },
+} satisfies import('@/components/ui/chart').ChartConfig;
+
+const chartColors = [
+  'hsl(var(--chart-1))',
+  'hsl(var(--chart-2))',
+  'hsl(var(--chart-3))',
+  'hsl(var(--chart-4))',
+  'hsl(var(--chart-5))',
+];
 
 function RecentSoulsList() {
   const { user } = useUser();
@@ -223,9 +241,9 @@ function CityImpactCard({
 
   useEffect(() => {
     fetchCounts();
-    const intervalId = setInterval(fetchCounts, 15000); // Refresh every 15 seconds
+    const intervalId = setInterval(fetchCounts, 60000); 
 
-    return () => clearInterval(intervalId); // Cleanup on unmount
+    return () => clearInterval(intervalId);
   }, [fetchCounts]);
 
   return (
@@ -248,7 +266,7 @@ function CityImpactCard({
         {error ? (
           <div className="text-destructive text-sm p-3 rounded-md border border-destructive/50 bg-destructive/10 flex items-center gap-2">
             <XCircle className="h-4 w-4" />
-            <p>{error} Please try again.</p>
+            <p>{error}</p>
           </div>
         ) : (
           <div>
@@ -275,28 +293,13 @@ function CityImpactCard({
         )}
         {!location.city && !loading && (
           <p className="text-sm text-center text-muted-foreground py-4">
-            Add your location in your profile to see city stats.
+            Add your location in your profile.
           </p>
         )}
       </CardContent>
     </Card>
   );
 }
-
-const chartConfig = {
-  soulsWon: {
-    label: 'Souls Won',
-    color: 'hsl(var(--primary))',
-  },
-} satisfies import('@/components/ui/chart').ChartConfig;
-
-const chartColors = [
-  'hsl(var(--chart-1))',
-  'hsl(var(--chart-2))',
-  'hsl(var(--chart-3))',
-  'hsl(var(--chart-4))',
-  'hsl(var(--chart-5))',
-];
 
 function ActionAnalyticsCard({ souls }: { souls: Soul[] }) {
   const actionData = useMemo(() => {
@@ -358,7 +361,7 @@ function ActionAnalyticsCard({ souls }: { souls: Soul[] }) {
               )
             ))
         ) : (
-            <p className="text-sm text-center text-muted-foreground py-4">No follow-up actions logged this month.</p>
+            <p className="text-sm text-center text-muted-foreground py-4">No actions logged this month.</p>
         )}
       </CardContent>
     </Card>
@@ -395,10 +398,7 @@ export default function DashboardPage() {
   const isMobile = useIsMobile();
 
   const [showWelcomeBack, setShowWelcomeBack] = useState(false);
-  const [
-    summaryData,
-    setSummaryData,
-  ] = useState<{
+  const [summaryData, setSummaryData] = useState<{
     newTestimoniesCount: number;
     soulsWonCount: number;
     recentDisciplines: { date: string; completed: boolean }[];
@@ -411,7 +411,6 @@ export default function DashboardPage() {
 
   useEffect(() => {
     setMounted(true);
-    // This effect runs on the client after hydration.
     const randomScripture =
       welcomeScriptures[Math.floor(Math.random() * welcomeScriptures.length)];
     setWelcomeMessage(randomScripture);
@@ -425,7 +424,6 @@ export default function DashboardPage() {
     const lastActive = safeToDate(userProfile.lastActive);
     const now = new Date();
 
-    // Show summary if last active was more than 48 hours ago
     if (lastActive && differenceInHours(now, lastActive) > 48) {
       const fetchSummaryData = async () => {
         try {
@@ -504,7 +502,7 @@ export default function DashboardPage() {
     });
     return Object.values(monthlyData);
   }, [soulsWon]);
-  
+
   const followUpStatusData = useMemo(() => {
     if (!soulsWon) {
       return [
@@ -566,7 +564,7 @@ export default function DashboardPage() {
 
   const handleSoulLogged = () => {
     setIsLogSoulOpen(false);
-    toast({ title: "Soul Logged!", description: "A new soul has been added." });
+    toast({ title: "Soul Logged!" });
     router.refresh();
   };
 
@@ -588,9 +586,7 @@ export default function DashboardPage() {
               `Welcome back, ${displayName}!`}
           </h1>
           <p className="text-muted-foreground uppercase mt-2">
-            {welcomeMessage
-              ? welcomeMessage.verse
-              : ''}
+            {welcomeMessage?.verse || ''}
           </p>
         </CardContent>
       </Card>
@@ -599,7 +595,7 @@ export default function DashboardPage() {
         <div className="lg:col-span-2 space-y-8">
           <DailyDisciplineCard />
 
-          <ProgressOverview souls={soulsWon || []} userProfile={userProfile} testimonies={userTestimonies || []} />
+          {mounted && <ProgressOverview souls={soulsWon || []} userProfile={userProfile} testimonies={userTestimonies || []} />}
 
           <Card>
             <CardHeader>
@@ -607,57 +603,61 @@ export default function DashboardPage() {
               <CardDescription>Souls won in the last 3 months.</CardDescription>
             </CardHeader>
             <CardContent>
-              <ChartContainer config={chartConfig} className="h-[300px] w-full">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={progressData} accessibilityLayer>
-                    <CartesianGrid vertical={false} />
-                    <XAxis
-                      dataKey="date"
-                      tickLine={false}
-                      tickMargin={10}
-                      axisLine={false}
-                      tickFormatter={(value) => value.slice(0, 3)}
-                    />
-                    <YAxis
-                      allowDecimals={false}
-                      domain={[
-                        0,
-                        (dataMax: number) =>
-                          Math.max(
-                            dataMax || 0,
-                            userProfile?.monthlySoulsGoal || 10
-                          ) + 2,
-                      ]}
-                    />
-                    <ChartTooltip
-                      cursor={false}
-                      content={<ChartTooltipContent hideLabel />}
-                    />
-                    {userProfile?.monthlySoulsGoal &&
-                      userProfile.monthlySoulsGoal > 0 && (
-                        <ReferenceLine
-                          y={userProfile.monthlySoulsGoal}
-                          label={{
-                            value: `Goal: ${userProfile.monthlySoulsGoal}`,
-                            position: 'insideTopLeft',
-                            fill: 'hsl(var(--muted-foreground))',
-                            fontSize: 12,
-                          }}
-                          stroke="hsl(var(--muted-foreground))"
-                          strokeDasharray="3 3"
-                        />
-                      )}
-                    <Bar dataKey="soulsWon" radius={[4, 4, 0, 0]}>
-                      {progressData.map((_entry, index) => (
-                        <Cell
-                          key={`cell-${index}`}
-                          fill={chartColors[index % chartColors.length]}
-                        />
-                      ))}
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
-              </ChartContainer>
+              {mounted ? (
+                <ChartContainer config={chartConfig} className="h-[300px] w-full">
+                  <RechartsResponsiveContainer width="100%" height="100%">
+                    <RechartsBarChart data={progressData} accessibilityLayer>
+                      <RechartsCartesianGrid vertical={false} />
+                      <RechartsXAxis
+                        dataKey="date"
+                        tickLine={false}
+                        tickMargin={10}
+                        axisLine={false}
+                        tickFormatter={(value) => value.slice(0, 3)}
+                      />
+                      <RechartsYAxis
+                        allowDecimals={false}
+                        domain={[
+                          0,
+                          (dataMax: number) =>
+                            Math.max(
+                              dataMax || 0,
+                              userProfile?.monthlySoulsGoal || 10
+                            ) + 2,
+                        ]}
+                      />
+                      <ChartTooltip
+                        cursor={false}
+                        content={<ChartTooltipContent hideLabel />}
+                      />
+                      {userProfile?.monthlySoulsGoal &&
+                        userProfile.monthlySoulsGoal > 0 && (
+                          <RechartsReferenceLine
+                            y={userProfile.monthlySoulsGoal}
+                            label={{
+                              value: `Goal: ${userProfile.monthlySoulsGoal}`,
+                              position: 'insideTopLeft',
+                              fill: 'hsl(var(--muted-foreground))',
+                              fontSize: 12,
+                            }}
+                            stroke="hsl(var(--muted-foreground))"
+                            strokeDasharray="3 3"
+                          />
+                        )}
+                      <RechartsBar dataKey="soulsWon" radius={[4, 4, 0, 0]}>
+                        {progressData.map((_entry, index) => (
+                          <RechartsCell
+                            key={`cell-${index}`}
+                            fill={chartColors[index % chartColors.length]}
+                          />
+                        ))}
+                      </RechartsBar>
+                    </RechartsBarChart>
+                  </RechartsResponsiveContainer>
+                </ChartContainer>
+              ) : (
+                <Skeleton className="h-[300px] w-full" />
+              )}
             </CardContent>
           </Card>
 
@@ -737,7 +737,7 @@ export default function DashboardPage() {
                         </div>
                     ))
                 ) : (
-                    <p className="text-sm text-center text-muted-foreground py-4">Everyone has been contacted recently!</p>
+                    <p className="text-sm text-center text-muted-foreground py-4">No reminders.</p>
                 )}
             </CardContent>
           </Card>
@@ -756,7 +756,7 @@ export default function DashboardPage() {
             <CardHeader>
               <CardTitle>Share Your Story</CardTitle>
               <CardDescription className="text-primary-foreground/80">
-                Encourage the body of Christ with what God has done.
+                Encourage others with what God has done.
               </CardDescription>
             </CardHeader>
             <CardContent>
