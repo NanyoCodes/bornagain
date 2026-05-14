@@ -9,6 +9,7 @@ import {
   DialogDescription, 
   DialogHeader, 
   DialogTitle, 
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   Sheet,
@@ -173,6 +174,13 @@ export default function SoulsWonPage() {
     );
   }, [souls, searchTerm]);
 
+  const triggerButton = (
+    <Button disabled={loading}>
+      <PlusCircle className="h-4 w-4 md:mr-2" />
+      <span className="hidden md:inline">Log Soul Won</span>
+    </Button>
+  );
+
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
@@ -189,7 +197,7 @@ export default function SoulsWonPage() {
           {mounted && isMobile ? (
             <Sheet open={isLogDialogOpen} onOpenChange={setIsLogDialogOpen}>
               <SheetTrigger asChild>
-                <Button disabled={loading}><PlusCircle className="h-4 w-4 md:mr-2" />Log Soul</Button>
+                {triggerButton}
               </SheetTrigger>
               <SheetContent side="bottom">
                 <SheetHeader>
