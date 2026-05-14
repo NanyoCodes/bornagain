@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { format } from "date-fns";
-import { MoreHorizontal, Church, MapPin, Phone, ChevronDown, Download, HeartHandshake } from "lucide-react";
+import { MoreHorizontal, Church, MapPin, Phone, ChevronDown, Download, HeartHandshake, Edit } from "lucide-react";
 import type { Soul, FollowUpStatus } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import {
@@ -55,12 +55,13 @@ const getStatusClasses = (status: FollowUpStatus | undefined): string => {
     }
 }
 
-const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, onOpenAssignDialog }: { 
+const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, onOpenAssignDialog, onEdit }: { 
   soul: Soul; 
   onFollowUp: (soul: Soul) => void; 
   onViewHistory: (soul: Soul) => void; 
   onExportSingle: (soul: Soul, formatType: 'csv' | 'pdf') => void;
   onOpenAssignDialog: (soul: Soul) => void;
+  onEdit: (soul: Soul) => void;
 }) => {
     const latestFollowUp = React.useMemo(() => {
         if (!soul.followUpLog || soul.followUpLog.length === 0) return null;
@@ -115,6 +116,9 @@ const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, 
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end">
                                     <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                    <DropdownMenuItem onSelect={(e) => { e.preventDefault(); onEdit(soul); }}>
+                                        <Edit className="mr-2 h-4 w-4" /> Edit Details
+                                    </DropdownMenuItem>
                                     <DropdownMenuItem onSelect={(e) => { e.preventDefault(); onViewHistory(soul); }}>View History</DropdownMenuItem>
                                     <DropdownMenuItem onSelect={(e) => { e.preventDefault(); onOpenAssignDialog(soul); }}><HeartHandshake className="mr-2 h-4 w-4" />Assign Fellowship</DropdownMenuItem>
                                     <DropdownMenuSub>
@@ -166,12 +170,13 @@ const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, 
 });
 SoulCard.displayName = "SoulCard";
 
-const SoulTableRow = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, onOpenAssignDialog }: { 
+const SoulTableRow = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, onOpenAssignDialog, onEdit }: { 
   soul: Soul; 
   onFollowUp: (soul: Soul) => void; 
   onViewHistory: (soul: Soul) => void;
   onExportSingle: (soul: Soul, formatType: 'csv' | 'pdf') => void;
   onOpenAssignDialog: (soul: Soul) => void;
+  onEdit: (soul: Soul) => void;
 }) => {
     const latestFollowUp = React.useMemo(() => {
         if (!soul.followUpLog || soul.followUpLog.length === 0) return null;
@@ -219,6 +224,9 @@ const SoulTableRow = React.memo(({ soul, onFollowUp, onViewHistory, onExportSing
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild><Button size="icon" variant="ghost"><MoreHorizontal className="h-4 w-4" /></Button></DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
+                        <DropdownMenuItem onSelect={(e) => { e.preventDefault(); onEdit(soul); }}>
+                            <Edit className="mr-2 h-4 w-4" /> Edit Details
+                        </DropdownMenuItem>
                         <DropdownMenuItem onSelect={(e) => { e.preventDefault(); onFollowUp(soul); }}>Follow-up</DropdownMenuItem>
                         <DropdownMenuItem onSelect={(e) => { e.preventDefault(); onViewHistory(soul); }}>View History</DropdownMenuItem>
                         <DropdownMenuItem onSelect={(e) => { e.preventDefault(); onOpenAssignDialog(soul); }}><HeartHandshake className="mr-2 h-4 w-4" />Assign Fellowship</DropdownMenuItem>
@@ -230,13 +238,14 @@ const SoulTableRow = React.memo(({ soul, onFollowUp, onViewHistory, onExportSing
 });
 SoulTableRow.displayName = "SoulTableRow";
 
-export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExportSingle, onOpenAssignDialog }: {
+export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExportSingle, onOpenAssignDialog, onEdit }: {
   souls: Soul[];
   loading: boolean;
   onFollowUp: (soul: Soul) => void;
   onViewHistory: (soul: Soul) => void;
   onExportSingle: (soul: Soul, formatType: 'csv' | 'pdf') => void;
   onOpenAssignDialog: (soul: Soul) => void;
+  onEdit: (soul: Soul) => void;
 }) {
   const isMobile = useIsMobile();
   const [mounted, setMounted] = React.useState(false);
@@ -279,7 +288,7 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
         <div className="space-y-4">
             <Card><CardHeader><CardTitle>Follow-up Dashboard</CardTitle><CardDescription>A list of souls won.</CardDescription></CardHeader></Card>
             {souls.map((soul) => (
-                <SoulCard key={soul.id} soul={soul} onFollowUp={onFollowUp} onViewHistory={onViewHistory} onExportSingle={onExportSingle} onOpenAssignDialog={onOpenAssignDialog} />
+                <SoulCard key={soul.id} soul={soul} onFollowUp={onFollowUp} onViewHistory={onViewHistory} onExportSingle={onExportSingle} onOpenAssignDialog={onOpenAssignDialog} onEdit={onEdit} />
             ))}
         </div>
       )
@@ -304,7 +313,7 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
           </TableHeader>
           <TableBody>
             {souls.map((soul) => (
-              <SoulTableRow key={soul.id} soul={soul} onFollowUp={onFollowUp} onViewHistory={onViewHistory} onExportSingle={onExportSingle} onOpenAssignDialog={onOpenAssignDialog} />
+              <SoulTableRow key={soul.id} soul={soul} onFollowUp={onFollowUp} onViewHistory={onViewHistory} onExportSingle={onExportSingle} onOpenAssignDialog={onOpenAssignDialog} onEdit={onEdit} />
             ))}
           </TableBody>
         </Table>

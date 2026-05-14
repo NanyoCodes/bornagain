@@ -41,6 +41,7 @@ const LogFollowUpDialog = dynamic(() => import('@/components/souls/log-follow-up
 const ViewHistoryDialog = dynamic(() => import('@/components/souls/view-history-dialog').then(m => m.ViewHistoryDialog), { ssr: false });
 const AssignFellowshipDialog = dynamic(() => import('@/components/souls/assign-fellowship-dialog').then(m => m.AssignFellowshipDialog), { ssr: false });
 const LogSoulForm = dynamic(() => import('@/components/souls/log-soul-form').then(m => m.LogSoulForm), { ssr: false });
+const EditSoulForm = dynamic(() => import('@/components/souls/edit-soul-form').then(m => m.EditSoulForm), { ssr: false });
 
 export default function SoulsWonPage() {
   const { user, loading: userLoading } = useUser();
@@ -54,6 +55,7 @@ export default function SoulsWonPage() {
   const [soulForFollowUp, setSoulForFollowUp] = useState<Soul | null>(null);
   const [soulForHistory, setSoulForHistory] = useState<Soul | null>(null);
   const [soulToAssign, setSoulToAssign] = useState<Soul | null>(null);
+  const [soulToEdit, setSoulToEdit] = useState<Soul | null>(null);
   const [isAssigning, setIsAssigning] = useState<string | null>(null);
 
   useEffect(() => {
@@ -230,11 +232,31 @@ export default function SoulsWonPage() {
         onViewHistory={setSoulForHistory}
         onExportSingle={() => {}}
         onOpenAssignDialog={setSoulToAssign}
+        onEdit={setSoulToEdit}
       />
 
       <LogFollowUpDialog soul={soulForFollowUp} isOpen={!!soulForFollowUp} onOpenChange={(isOpen) => !isOpen && setSoulForFollowUp(null)} onFollowUpLogged={handleFollowUpLogged} />
       <ViewHistoryDialog soul={soulForHistory} isOpen={!!soulForHistory} onOpenChange={(isOpen) => !isOpen && setSoulForHistory(null)} />
       <AssignFellowshipDialog soul={soulToAssign} fellowships={activeFellowships} isOpen={!!soulToAssign} onOpenChange={() => setSoulToAssign(null)} onAssignFellowship={handleAssignFellowship} isAssigning={isAssigning} />
+      
+      <Dialog open={!!soulToEdit} onOpenChange={(open) => !open && setSoulToEdit(null)}>
+          <DialogContent className="sm:max-w-lg">
+              <DialogHeader>
+                  <DialogTitle>Edit Soul Details</DialogTitle>
+                  <DialogDescription>Update information for {soulToEdit?.firstName}.</DialogDescription>
+              </DialogHeader>
+              <div className="max-h-[70vh] overflow-y-auto pr-2">
+                  {soulToEdit && (
+                    <EditSoulForm 
+                        soul={soulToEdit} 
+                        onSoulUpdated={() => setSoulToEdit(null)} 
+                        fellowships={activeFellowships}
+                        campaigns={activeCampaigns}
+                    />
+                  )}
+              </div>
+          </DialogContent>
+      </Dialog>
     </div>
   );
 }
