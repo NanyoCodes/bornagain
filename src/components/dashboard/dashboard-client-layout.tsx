@@ -115,7 +115,7 @@ function AppHeader({ unreadChatCount }: { unreadChatCount: number }) {
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b bg-background px-4 md:px-6">
       <div className="flex items-center gap-2 md:gap-6">
-        <Link href="/dashboard" className="flex items-center gap-2 text-lg font-semibold">
+        <Link href="/dashboard/testimonies" className="flex items-center gap-2 text-lg font-semibold">
           {logo && (
             <Avatar className="h-11 w-11">
               <AvatarImage src={logo.imageUrl} alt={logo.description} />
@@ -225,13 +225,13 @@ function AppHeader({ unreadChatCount }: { unreadChatCount: number }) {
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
-                <Link href="/guide">
+                <Link href="/guide" className="cursor-pointer">
                 <BookOpen className="mr-2 h-4 w-4" />
                 <span>App Guide</span>
                 </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
-                <Link href="/resources">
+                <Link href="/resources" className="cursor-pointer">
                 <BookMarked className="mr-2 h-4 w-4" />
                 <span>Spiritual Resources</span>
                 </Link>
