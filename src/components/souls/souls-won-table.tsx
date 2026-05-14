@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { format } from "date-fns";
-import { MoreHorizontal, Church, UserPlus, Edit, MapPin, Phone, ChevronDown, Download, HeartHandshake } from "lucide-react";
+import { MoreHorizontal, Church, Edit, MapPin, Phone, ChevronDown, Download, HeartHandshake } from "lucide-react";
 import type { Soul, FollowUpStatus } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import {
@@ -41,7 +41,6 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { actionItems } from "@/lib/follow-up-data";
 import { SoulInsightsDialog } from "./soul-insights-dialog";
 import { Label } from "../ui/label";
-import AdsenseAd from "../common/adsense-ad";
 
 const getStatusClasses = (status: FollowUpStatus | undefined): string => {
     if (!status) return 'bg-secondary text-secondary-foreground border-border';
@@ -57,7 +56,6 @@ const getStatusClasses = (status: FollowUpStatus | undefined): string => {
     }
 }
 
-// Performance: Memoize row components to prevent expensive table re-renders
 const SoulCard = React.memo(({ soul, onEdit, onFollowUp, onViewHistory, onExportSingle, onOpenAssignDialog }: { 
   soul: Soul; 
   onEdit: (soul: Soul) => void; 
@@ -285,11 +283,8 @@ export function SoulsWonTable({ souls, loading, onEdit, onFollowUp, onViewHistor
       return (
         <div className="space-y-4">
             <Card><CardHeader><CardTitle>Follow-up Dashboard</CardTitle><CardDescription>A list of souls won.</CardDescription></CardHeader></Card>
-            {souls.map((soul, index) => (
-                <React.Fragment key={soul.id}>
-                    <SoulCard soul={soul} onEdit={onEdit} onFollowUp={onFollowUp} onViewHistory={onViewHistory} onExportSingle={onExportSingle} onOpenAssignDialog={onOpenAssignDialog} />
-                    {(index + 1) % 4 === 0 && <AdsenseAd adSlot={`souls-list-ad-${index}`} className="h-full" />}
-                </React.Fragment>
+            {souls.map((soul) => (
+                <SoulCard key={soul.id} soul={soul} onEdit={onEdit} onFollowUp={onFollowUp} onViewHistory={onViewHistory} onExportSingle={onExportSingle} onOpenAssignDialog={onOpenAssignDialog} />
             ))}
         </div>
       )

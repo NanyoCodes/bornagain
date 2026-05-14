@@ -32,7 +32,7 @@ import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { safeToDate } from "@/lib/utils";
 
-// Performance: Dynamically import heavy table and PDF/Export components
+// Performance: Dynamically import heavy table and dialog components
 const SoulsWonTable = dynamic(() => import('@/components/souls/souls-won-table').then(m => m.SoulsWonTable), {
   loading: () => <div className="flex justify-center p-12"><Loader2 className="h-8 w-8 animate-spin" /></div>,
   ssr: false
@@ -186,7 +186,38 @@ export default function SoulsWonPage() {
               <DropdownMenuItem onSelect={() => handleExport('pdf')}>PDF</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-          <Button onClick={() => setIsLogDialogOpen(true)} disabled={loading}><PlusCircle className="h-4 w-4 md:mr-2" />Log Soul</Button>
+          
+          {mounted && isMobile ? (
+            <Sheet open={isLogDialogOpen} onOpenChange={setIsLogDialogOpen}>
+              <SheetTrigger asChild>
+                <Button disabled={loading}><PlusCircle className="h-4 w-4 md:mr-2" />Log Soul</Button>
+              </SheetTrigger>
+              <SheetContent side="bottom">
+                <SheetHeader>
+                  <SheetTitle>Log a New Soul</SheetTitle>
+                  <SheetDescription>Record the details of the person you've ministered to.</SheetDescription>
+                </SheetHeader>
+                <div className="max-h-[80vh] overflow-y-auto p-1 mt-4">
+                    <LogSoulForm onSoulLogged={handleSoulLogged} fellowships={activeFellowships} campaigns={activeCampaigns} />
+                </div>
+              </SheetContent>
+            </Sheet>
+          ) : (
+            <Dialog open={isLogDialogOpen} onOpenChange={setIsLogDialogOpen}>
+              <DialogTrigger asChild>
+                <Button disabled={loading}><PlusCircle className="h-4 w-4 md:mr-2" />Log Soul</Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-lg">
+                <DialogHeader>
+                  <DialogTitle>Log a New Soul</DialogTitle>
+                  <DialogDescription>Record the details of the person you've ministered to.</DialogDescription>
+                </DialogHeader>
+                <div className="max-h-[70vh] overflow-y-auto pr-2">
+                    <LogSoulForm onSoulLogged={handleSoulLogged} fellowships={activeFellowships} campaigns={activeCampaigns} />
+                </div>
+              </DialogContent>
+            </Dialog>
+          )}
         </div>
       </div>
       
@@ -202,7 +233,10 @@ export default function SoulsWonPage() {
 
       <Dialog open={!!soulToEdit} onOpenChange={(open) => !open && setSoulToEdit(null)}>
           <DialogContent className="sm:max-w-lg">
-              <DialogHeader><DialogTitle>Edit Soul</DialogTitle><DialogDescription>Update details.</DialogDescription></DialogHeader>
+              <DialogHeader>
+                  <DialogTitle>Edit Soul</DialogTitle>
+                  <DialogDescription>Update details.</DialogDescription>
+              </DialogHeader>
               {soulToEdit && <EditSoulForm soul={soulToEdit} onSoulUpdated={handleSoulUpdated} fellowships={activeFellowships} campaigns={activeCampaigns} />}
           </DialogContent>
       </Dialog>
@@ -210,10 +244,6 @@ export default function SoulsWonPage() {
       <LogFollowUpDialog soul={soulForFollowUp} isOpen={!!soulForFollowUp} onOpenChange={(isOpen) => !isOpen && setSoulForFollowUp(null)} onFollowUpLogged={handleFollowUpLogged} />
       <ViewHistoryDialog soul={soulForHistory} isOpen={!!soulForHistory} onOpenChange={(isOpen) => !isOpen && setSoulForHistory(null)} />
       <AssignFellowshipDialog soul={soulToAssign} fellowships={activeFellowships} isOpen={!!soulToAssign} onOpenChange={() => setSoulToAssign(null)} onAssignFellowship={handleAssignFellowship} isAssigning={isAssigning} />
-      
-      <Dialog open={isLogDialogOpen} onOpenChange={setIsLogDialogOpen}>
-          <DialogContent><DialogHeader><DialogTitle>Log Soul</DialogTitle></DialogHeader><LogSoulForm onSoulLogged={handleSoulLogged} fellowships={activeFellowships} campaigns={activeCampaigns} /></DialogContent>
-      </Dialog>
     </div>
   );
 }

@@ -31,7 +31,6 @@ import {
   serverTimestamp,
   deleteDoc,
   setDoc,
-  writeBatch,
 } from 'firebase/firestore';
 import type { UserProfile, ReadingHistoryItem, BibleHighlight } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
@@ -41,9 +40,8 @@ import {
   XCircle,
   BookOpen,
   Trash2,
-  ChevronRight,
-  Minus,
   Plus,
+  Minus,
   Highlighter,
   ChevronDown,
   ArrowLeft,
@@ -53,9 +51,6 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { cn, safeToDate } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { FirestorePermissionError } from '@/firebase/errors';
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
 
 const bibleVersions = [
@@ -173,10 +168,7 @@ export default function BibleReaderPage() {
 
   const isMobile = useIsMobile();
   const [mounted, setMounted] = useState(false);
-  const [isBookSheetOpen, setIsBookSheetOpen] = useState(false);
   const [isChapterPopoverOpen, setIsChapterPopoverOpen] = useState(false);
-  const [isVersionSheetOpen, setIsVersionSheetOpen] = useState(false);
-  const [bookSearchTerm, setBookSearchTerm] = useState('');
   const [mobileTab, setMobileTab] = useState('reader');
   const [fontSize, setFontSize] = useState<'sm' | 'base' | 'lg' | 'xl'>('sm');
   const [goToVerse, setGoToVerse] = useState('');
@@ -377,4 +369,9 @@ export default function BibleReaderPage() {
             </Tabs>
         </div>
     );
+    
+    function handleSelectChapter(chapter: number) {
+        setSelectedChapterNumber(chapter);
+        setIsChapterPopoverOpen(false);
+    }
 }
