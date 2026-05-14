@@ -174,13 +174,6 @@ export default function SoulsWonPage() {
     );
   }, [souls, searchTerm]);
 
-  const triggerButton = (
-    <Button disabled={loading}>
-      <PlusCircle className="h-4 w-4 md:mr-2" />
-      <span className="hidden md:inline">Log Soul Won</span>
-    </Button>
-  );
-
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
@@ -197,7 +190,10 @@ export default function SoulsWonPage() {
           {mounted && isMobile ? (
             <Sheet open={isLogDialogOpen} onOpenChange={setIsLogDialogOpen}>
               <SheetTrigger asChild>
-                {triggerButton}
+                <Button disabled={loading}>
+                  <PlusCircle className="h-4 w-4 md:mr-2" />
+                  <span className="hidden md:inline">Log Soul Won</span>
+                </Button>
               </SheetTrigger>
               <SheetContent side="bottom">
                 <SheetHeader>
@@ -212,7 +208,10 @@ export default function SoulsWonPage() {
           ) : (
             <Dialog open={isLogDialogOpen} onOpenChange={setIsLogDialogOpen}>
               <DialogTrigger asChild>
-                <Button disabled={loading} onClick={() => setIsLogDialogOpen(true)}><PlusCircle className="h-4 w-4 md:mr-2" />Log Soul</Button>
+                <Button disabled={loading} onClick={() => setIsLogDialogOpen(true)}>
+                  <PlusCircle className="h-4 w-4 md:mr-2" />
+                  <span className="hidden md:inline">Log Soul Won</span>
+                </Button>
               </DialogTrigger>
               <DialogContent className="sm:max-w-lg">
                 <DialogHeader>
