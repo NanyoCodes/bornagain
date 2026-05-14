@@ -208,7 +208,7 @@ export default function SoulsWonPage() {
           ) : (
             <Dialog open={isLogDialogOpen} onOpenChange={setIsLogDialogOpen}>
               <DialogTrigger asChild>
-                <Button disabled={loading} onClick={() => setIsLogDialogOpen(true)}>
+                <Button disabled={loading}>
                   <PlusCircle className="h-4 w-4 md:mr-2" />
                   <span className="hidden md:inline">Log Soul Won</span>
                 </Button>
@@ -237,13 +237,17 @@ export default function SoulsWonPage() {
         onOpenAssignDialog={setSoulToAssign}
       />
 
-      <Dialog open={!!soulToEdit} onOpenChange={(open) => !open && setSoulToEdit(null)}>
+      <Dialog open={!!soulToEdit} onOpenChange={(open) => { if (!open) setSoulToEdit(null); }}>
           <DialogContent className="sm:max-w-lg">
               <DialogHeader>
-                  <DialogTitle>Edit Soul</DialogTitle>
-                  <DialogDescription>Update details.</DialogDescription>
+                  <DialogTitle>Edit Soul Details</DialogTitle>
+                  <DialogDescription>Update the record for {soulToEdit?.firstName} {soulToEdit?.lastName}.</DialogDescription>
               </DialogHeader>
-              {soulToEdit && <EditSoulForm soul={soulToEdit} onSoulUpdated={handleSoulUpdated} fellowships={activeFellowships} campaigns={activeCampaigns} />}
+              {soulToEdit && (
+                <div className="max-h-[70vh] overflow-y-auto pr-2">
+                  <EditSoulForm soul={soulToEdit} onSoulUpdated={handleSoulUpdated} fellowships={activeFellowships} campaigns={activeCampaigns} />
+                </div>
+              )}
           </DialogContent>
       </Dialog>
 
