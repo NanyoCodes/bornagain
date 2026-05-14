@@ -367,14 +367,16 @@ export default function CampaignsPage() {
         {mounted && isMobile ? (
           <Sheet open={isCreateOpen} onOpenChange={setIsCreateOpen}>
             <SheetTrigger asChild>{triggerButton}</SheetTrigger>
-            <SheetContent side="bottom">
-              <SheetHeader>
-                <SheetTitle>Create a New Campaign</SheetTitle>
-                <SheetDescription>
-                  Fill in the details below to create your campaign.
-                </SheetDescription>
-              </SheetHeader>
-              <div className="max-h-[80vh] overflow-y-auto p-1 mt-4">
+            <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0">
+              <div className="p-6 border-b flex-shrink-0">
+                <SheetHeader className="text-left">
+                  <SheetTitle>Create a New Campaign</SheetTitle>
+                  <SheetDescription>
+                    Fill in the details below to create your campaign.
+                  </SheetDescription>
+                </SheetHeader>
+              </div>
+              <div className="flex-grow overflow-y-auto p-6">
                 {formContent}
               </div>
             </SheetContent>
@@ -455,9 +457,14 @@ export default function CampaignsPage() {
       {campaignToManage && (
         mounted && isMobile ? (
           <Sheet open={!!campaignToManage} onOpenChange={(open) => !open && setCampaignToManage(null)}>
-            <SheetContent side="bottom">
-              <SheetHeader><SheetTitle>Manage Campaign</SheetTitle><SheetDescription>Update the progress and details of your campaign.</SheetDescription></SheetHeader>
-              <div className="max-h-[80vh] overflow-y-auto p-1 mt-4">
+            <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0">
+              <div className="p-6 border-b flex-shrink-0">
+                <SheetHeader className="text-left">
+                  <SheetTitle>Manage Campaign</SheetTitle>
+                  <SheetDescription>Update the details or progress of your campaign.</SheetDescription>
+                </SheetHeader>
+              </div>
+              <div className="flex-grow overflow-y-auto p-6">
                 <ManageCampaignForm 
                   campaign={campaignToManage} 
                   onCampaignUpdated={() => { setCampaignToManage(null); }} 
@@ -472,7 +479,7 @@ export default function CampaignsPage() {
         ) : (
           <Dialog open={!!campaignToManage} onOpenChange={(open) => !open && setCampaignToManage(null)}>
             <DialogContent className="sm:max-w-2xl">
-              <DialogHeader><DialogTitle>Manage Campaign</DialogTitle><DialogDescription>Update the progress and details of your campaign.</DialogDescription></DialogHeader>
+              <DialogHeader><DialogTitle>Manage Campaign</DialogTitle><DialogDescription>Update the details or progress of your campaign.</DialogDescription></DialogHeader>
               <div className="max-h-[70vh] overflow-y-auto pr-2">
                 <ManageCampaignForm 
                   campaign={campaignToManage} 
