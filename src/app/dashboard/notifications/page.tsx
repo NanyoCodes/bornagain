@@ -14,7 +14,7 @@ import { Button } from '@/components/ui/button';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 
-const OTHER_NOTIFICATION_TYPES = [
+const NOTIFICATION_TYPES = [
   'campaign_join', 
   'accountability_nudge', 
   'accountability_request', 
@@ -33,7 +33,7 @@ export default function NotificationsPage() {
     if (!user?.uid || !firestore) return null;
     return query(
         collection(firestore, `users/${user.uid}/notifications`),
-        where('type', 'in', OTHER_NOTIFICATION_TYPES)
+        where('type', 'in', NOTIFICATION_TYPES)
     );
   }, [user?.uid, firestore]);
 

@@ -93,6 +93,8 @@ export default function SoulsWonPage() {
     return campaigns.filter(c => c.status !== 'deleted');
   }, [campaigns]);
 
+  const loading = userLoading || soulsLoading || loadingCampaigns || loadingFellowships;
+
   const handleSoulLogged = () => {
     setIsLogDialogOpen(false);
   };
@@ -222,8 +224,6 @@ export default function SoulsWonPage() {
     toast({ title: "Export Started" });
   };
 
-  const loading = userLoading || soulsLoading || loadingCampaigns || loadingFellowships;
-
   const filteredSouls = useMemo(() => {
     if (!souls) return [];
     if (!searchTerm) return souls;
@@ -239,7 +239,7 @@ export default function SoulsWonPage() {
 
   const triggerButton = (
     <Button disabled={loading}>
-      <PlusCircle className="h-4 w-4 md:mr-2" />
+      {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <PlusCircle className="h-4 w-4 md:mr-2" />}
       <span className="hidden md:inline">Log Soul Won</span>
     </Button>
   );

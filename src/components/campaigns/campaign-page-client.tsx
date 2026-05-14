@@ -26,47 +26,11 @@ import { ManageCampaignForm } from './manage-campaign-form';
 import { LogSoulForm } from "@/components/souls/log-soul-form";
 import { CreateTestimonyForm } from "@/components/testimonies/create-testimony-form";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { useJsApiLoader, GoogleMap, MarkerF, CircleF } from '@react-google-maps/api';
 import Link from 'next/link';
 import { safeToDate } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { errorEmitter } from '@/firebase/error-emitter';
-
-const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
-const libraries: ('places')[] = ['places'];
-
-function CampaignMapInner({ campaign }: { campaign: Campaign }) {
-    const { isLoaded, loadError } = useJsApiLoader({
-        googleMapsApiKey: GOOGLE_MAPS_API_KEY || '',
-        libraries,
-    });
-
-    const center = useMemo(() => ({ 
-        lat: campaign.latitude || 0, 
-        lng: campaign.longitude || 0 
-    }), [campaign.latitude, campaign.longitude]);
-    
-    const radius = campaign.coverageRadius || 1000;
-
-    if (loadError || !isLoaded) return <div className="h-80 w-full bg-muted animate-pulse" />;
-
-    return (
-        <GoogleMap
-            mapContainerClassName="h-80 w-full rounded-md"
-            center={center}
-            zoom={12}
-            options={{ streetViewControl: false, mapTypeControl: false, fullscreenControl: false, zoomControl: false }}
-        >
-            <MarkerF position={center} />
-            <CircleF
-                center={center}
-                radius={radius}
-                options={{ strokeColor: '#f97416', strokeOpacity: 0.8, strokeWeight: 2, fillColor: '#f97416', fillOpacity: 0.2 }}
-            />
-        </GoogleMap>
-    );
-}
 
 export default function CampaignPageClient({ campaignId }: { campaignId: string }) {
     const router = useRouter();

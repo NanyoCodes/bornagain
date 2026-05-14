@@ -61,7 +61,7 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
             {children}
             
             <div className="mt-8 space-y-4">
-                <h3 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50">GLOBAL TESTIMONIES</h3>
+                <h3 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50 text-center">GLOBAL TESTIMONIES</h3>
                 <div className="space-y-3">
                     {loading ? (
                         <div className="flex justify-center"><Loader2 className="h-5 w-5 animate-spin opacity-20" /></div>
