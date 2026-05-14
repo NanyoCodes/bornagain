@@ -2,13 +2,12 @@
 
 import * as React from "react";
 import { format } from "date-fns";
-import { MoreHorizontal, Church, Edit, MapPin, Phone, ChevronDown, Download, HeartHandshake } from "lucide-react";
+import { MoreHorizontal, Church, MapPin, Phone, ChevronDown, Download, HeartHandshake } from "lucide-react";
 import type { Soul, FollowUpStatus } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -17,7 +16,6 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
   DropdownMenuSub,
   DropdownMenuSubTrigger,
@@ -56,9 +54,8 @@ const getStatusClasses = (status: FollowUpStatus | undefined): string => {
     }
 }
 
-const SoulCard = React.memo(({ soul, onEdit, onFollowUp, onViewHistory, onExportSingle, onOpenAssignDialog }: { 
+const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, onOpenAssignDialog }: { 
   soul: Soul; 
-  onEdit: (soul: Soul) => void; 
   onFollowUp: (soul: Soul) => void; 
   onViewHistory: (soul: Soul) => void; 
   onExportSingle: (soul: Soul, formatType: 'csv' | 'pdf') => void;
@@ -117,7 +114,6 @@ const SoulCard = React.memo(({ soul, onEdit, onFollowUp, onViewHistory, onExport
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end">
                                     <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                    <DropdownMenuItem onSelect={() => onEdit(soul)}><Edit className="mr-2 h-4 w-4"/>Edit</DropdownMenuItem>
                                     <DropdownMenuItem onSelect={() => onViewHistory(soul)}>View History</DropdownMenuItem>
                                     <DropdownMenuItem onSelect={() => onOpenAssignDialog(soul)}><HeartHandshake className="mr-2 h-4 w-4" />Assign Fellowship</DropdownMenuItem>
                                     <DropdownMenuSub>
@@ -169,9 +165,8 @@ const SoulCard = React.memo(({ soul, onEdit, onFollowUp, onViewHistory, onExport
 });
 SoulCard.displayName = "SoulCard";
 
-const SoulTableRow = React.memo(({ soul, onEdit, onFollowUp, onViewHistory, onExportSingle, onOpenAssignDialog }: { 
+const SoulTableRow = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, onOpenAssignDialog }: { 
   soul: Soul; 
-  onEdit: (soul: Soul) => void; 
   onFollowUp: (soul: Soul) => void; 
   onViewHistory: (soul: Soul) => void;
   onExportSingle: (soul: Soul, formatType: 'csv' | 'pdf') => void;
@@ -223,7 +218,6 @@ const SoulTableRow = React.memo(({ soul, onEdit, onFollowUp, onViewHistory, onEx
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild><Button size="icon" variant="ghost"><MoreHorizontal className="h-4 w-4" /></Button></DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                        <DropdownMenuItem onSelect={() => onEdit(soul)}><Edit className="mr-2 h-4 w-4" />Edit</DropdownMenuItem>
                         <DropdownMenuItem onSelect={() => onFollowUp(soul)}>Follow-up</DropdownMenuItem>
                         <DropdownMenuItem onSelect={() => onViewHistory(soul)}>View History</DropdownMenuItem>
                         <DropdownMenuItem onSelect={() => onOpenAssignDialog(soul)}><HeartHandshake className="mr-2 h-4 w-4" />Assign Fellowship</DropdownMenuItem>
@@ -235,10 +229,9 @@ const SoulTableRow = React.memo(({ soul, onEdit, onFollowUp, onViewHistory, onEx
 });
 SoulTableRow.displayName = "SoulTableRow";
 
-export function SoulsWonTable({ souls, loading, onEdit, onFollowUp, onViewHistory, onExportSingle, onOpenAssignDialog }: {
+export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExportSingle, onOpenAssignDialog }: {
   souls: Soul[];
   loading: boolean;
-  onEdit: (soul: Soul) => void;
   onFollowUp: (soul: Soul) => void;
   onViewHistory: (soul: Soul) => void;
   onExportSingle: (soul: Soul, formatType: 'csv' | 'pdf') => void;
@@ -271,8 +264,9 @@ export function SoulsWonTable({ souls, loading, onEdit, onFollowUp, onViewHistor
             <CardHeader><CardTitle>Follow-up Dashboard</CardTitle><CardDescription>A list of souls won.</CardDescription></CardHeader>
             <CardContent>
                 <div className="text-center py-12 flex flex-col items-center">
-                    <UserPlus className="h-12 w-12 text-muted-foreground" />
+                    <HeartHandshake className="h-12 w-12 text-muted-foreground opacity-20" />
                     <h3 className="mt-4 text-lg font-semibold">No Records Found</h3>
+                    <p className="text-sm text-muted-foreground mt-1">Souls you log will appear here for follow-up.</p>
                 </div>
             </CardContent>
         </Card>
@@ -284,7 +278,7 @@ export function SoulsWonTable({ souls, loading, onEdit, onFollowUp, onViewHistor
         <div className="space-y-4">
             <Card><CardHeader><CardTitle>Follow-up Dashboard</CardTitle><CardDescription>A list of souls won.</CardDescription></CardHeader></Card>
             {souls.map((soul) => (
-                <SoulCard key={soul.id} soul={soul} onEdit={onEdit} onFollowUp={onFollowUp} onViewHistory={onViewHistory} onExportSingle={onExportSingle} onOpenAssignDialog={onOpenAssignDialog} />
+                <SoulCard key={soul.id} soul={soul} onFollowUp={onFollowUp} onViewHistory={onViewHistory} onExportSingle={onExportSingle} onOpenAssignDialog={onOpenAssignDialog} />
             ))}
         </div>
       )
@@ -309,7 +303,7 @@ export function SoulsWonTable({ souls, loading, onEdit, onFollowUp, onViewHistor
           </TableHeader>
           <TableBody>
             {souls.map((soul) => (
-              <SoulTableRow key={soul.id} soul={soul} onEdit={onEdit} onFollowUp={onFollowUp} onViewHistory={onViewHistory} onExportSingle={onExportSingle} onOpenAssignDialog={onOpenAssignDialog} />
+              <SoulTableRow key={soul.id} soul={soul} onFollowUp={onFollowUp} onViewHistory={onViewHistory} onExportSingle={onExportSingle} onOpenAssignDialog={onOpenAssignDialog} />
             ))}
           </TableBody>
         </Table>

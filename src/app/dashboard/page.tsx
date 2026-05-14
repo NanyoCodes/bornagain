@@ -141,7 +141,7 @@ function RecentSoulsList() {
   return (
     <div className="space-y-1">
       {souls.map((soul) => {
-        const wonDate = safeToDate(soul.wonAt);
+        const wonAt = safeToDate(soul.wonAt);
         return (
           <Link
             href="/dashboard/souls-won"
@@ -156,7 +156,7 @@ function RecentSoulsList() {
                 {soul.firstName || 'Unknown'} {soul.lastName || ''}
               </p>
               <p className="text-sm text-muted-foreground">
-                Won on {wonDate ? format(wonDate, 'PPP') : 'N/A'}
+                Won on {wonAt ? format(wonAt, 'PPP') : 'N/A'}
               </p>
             </div>
             <ArrowRight className="h-4 w-4 text-muted-foreground" />

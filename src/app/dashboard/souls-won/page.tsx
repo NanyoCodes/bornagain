@@ -37,7 +37,6 @@ const SoulsWonTable = dynamic(() => import('@/components/souls/souls-won-table')
   ssr: false
 });
 
-const EditSoulForm = dynamic(() => import('@/components/souls/edit-soul-form').then(m => m.EditSoulForm), { ssr: false });
 const LogFollowUpDialog = dynamic(() => import('@/components/souls/log-follow-up-dialog').then(m => m.LogFollowUpDialog), { ssr: false });
 const ViewHistoryDialog = dynamic(() => import('@/components/souls/view-history-dialog').then(m => m.ViewHistoryDialog), { ssr: false });
 const AssignFellowshipDialog = dynamic(() => import('@/components/souls/assign-fellowship-dialog').then(m => m.AssignFellowshipDialog), { ssr: false });
@@ -52,7 +51,6 @@ export default function SoulsWonPage() {
   const isMobile = useIsMobile();
   const { searchTerm, setSearchPlaceholder, setIsSearchVisible, setSearchTerm } = useSearch();
 
-  const [soulToEdit, setSoulToEdit] = useState<Soul | null>(null);
   const [soulForFollowUp, setSoulForFollowUp] = useState<Soul | null>(null);
   const [soulForHistory, setSoulForHistory] = useState<Soul | null>(null);
   const [soulToAssign, setSoulToAssign] = useState<Soul | null>(null);
@@ -95,10 +93,6 @@ export default function SoulsWonPage() {
     setIsLogDialogOpen(false);
   }, []);
 
-  const handleSoulUpdated = useCallback(() => {
-    setSoulToEdit(null);
-  }, []);
-  
   const handleFollowUpLogged = useCallback(() => {
     setSoulForFollowUp(null);
   }, []);
@@ -230,26 +224,11 @@ export default function SoulsWonPage() {
       <SoulsWonTable 
         souls={filteredSouls || []} 
         loading={loading}
-        onEdit={setSoulToEdit}
         onFollowUp={setSoulForFollowUp}
         onViewHistory={setSoulForHistory}
         onExportSingle={() => {}}
         onOpenAssignDialog={setSoulToAssign}
       />
-
-      <Dialog open={!!soulToEdit} onOpenChange={(open) => { if (!open) setSoulToEdit(null); }}>
-          <DialogContent className="sm:max-w-lg">
-              <DialogHeader>
-                  <DialogTitle>Edit Soul Details</DialogTitle>
-                  <DialogDescription>Update the record for {soulToEdit?.firstName} {soulToEdit?.lastName}.</DialogDescription>
-              </DialogHeader>
-              {soulToEdit && (
-                <div className="max-h-[70vh] overflow-y-auto pr-2">
-                  <EditSoulForm soul={soulToEdit} onSoulUpdated={handleSoulUpdated} fellowships={activeFellowships} campaigns={activeCampaigns} />
-                </div>
-              )}
-          </DialogContent>
-      </Dialog>
 
       <LogFollowUpDialog soul={soulForFollowUp} isOpen={!!soulForFollowUp} onOpenChange={(isOpen) => !isOpen && setSoulForFollowUp(null)} onFollowUpLogged={handleFollowUpLogged} />
       <ViewHistoryDialog soul={soulForHistory} isOpen={!!soulForHistory} onOpenChange={(isOpen) => !isOpen && setSoulForHistory(null)} />
