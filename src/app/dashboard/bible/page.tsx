@@ -348,8 +348,21 @@ export default function BibleReaderPage() {
                     <div className="grid grid-cols-3 gap-2 shrink-0 mb-4">
                         <Select value={selectedBookName} onValueChange={setSelectedBookName}><SelectTrigger className="truncate"><SelectValue /></SelectTrigger><SelectContent>{bibleData.map(b => <SelectItem key={b.name} value={b.name}>{b.name}</SelectItem>)}</SelectContent></Select>
                         <Popover open={isChapterPopoverOpen} onOpenChange={setIsChapterPopoverOpen}>
-                            <PopoverTrigger asChild><Button variant="outline" className="w-full justify-between">Chapter {selectedChapterNumber}<ChevronDown className="h-4 w-4 opacity-50" /></Button></PopoverTrigger>
-                            <PopoverContent className="w-[300px] p-0"><ScrollArea className="h-72"><div className="grid grid-cols-8 gap-1 p-2">{selectedBook?.chapters.map(c => <Button key={c.chapter} variant={c.chapter === selectedChapterNumber ? "default" : "outline"} size="sm" onClick={() => handleSelectChapter(c.chapter)}>{c.chapter}</Button>)}</div></ScrollArea></PopoverContent>
+                            <PopoverTrigger asChild>
+                              <Button variant="outline" className="w-full justify-between">
+                                Chapter {selectedChapterNumber}
+                                <ChevronDown className="h-4 w-4 opacity-50" />
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-[300px] p-0">
+                              <ScrollArea className="h-72">
+                                <div className="grid grid-cols-8 gap-1 p-2">
+                                  {selectedBook?.chapters.map(c => (
+                                    <Button key={c.chapter} variant={c.chapter === selectedChapterNumber ? "default" : "outline"} size="sm" onClick={() => handleSelectChapter(c.chapter)}>{c.chapter}</Button>
+                                  ))}
+                                </div>
+                              </ScrollArea>
+                            </PopoverContent>
                         </Popover>
                         <Select value={selectedVersion} onValueChange={setSelectedVersion}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{bibleVersions.map(v => <SelectItem key={v.id} value={v.id}>{v.name}</SelectItem>)}</SelectContent></Select>
                     </div>
