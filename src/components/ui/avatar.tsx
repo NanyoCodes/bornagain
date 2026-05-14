@@ -22,8 +22,8 @@ Avatar.displayName = AvatarPrimitive.Root.displayName
 
 const AvatarImage = React.forwardRef<
   React.ElementRef<typeof AvatarPrimitive.Image>,
-  React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Image>
->(({ className, ...props }, ref) => {
+  React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Image> & { priority?: boolean }
+>(({ className, priority, ...props }, ref) => {
   if (!props.src) {
     return null
   }

@@ -203,9 +203,9 @@ export default function SoulsWonPage() {
             </Sheet>
           ) : (
             <Dialog open={isLogDialogOpen} onOpenChange={setIsLogDialogOpen}>
-              <DropdownMenuTrigger asChild>
+              <DialogTrigger asChild>
                 <Button disabled={loading} onClick={() => setIsLogDialogOpen(true)}><PlusCircle className="h-4 w-4 md:mr-2" />Log Soul</Button>
-              </DropdownMenuTrigger>
+              </DialogTrigger>
               <DialogContent className="sm:max-w-lg">
                 <DialogHeader>
                   <DialogTitle>Log a New Soul</DialogTitle>

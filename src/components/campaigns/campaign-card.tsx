@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { format, parse, isSameDay, differenceInDays } from "date-fns";
-import { CalendarDays, MapPin, Users, Share2, Edit, MoreVertical, Loader2, MessagesSquare, UserCheck2, PlayCircle, Newspaper, UserPlus, ChevronDown } from "lucide-react";
+import { CalendarDays, MapPin, Users, Share2, Edit, MoreVertical, Loader2, MessagesSquare, UserCheck, PlayCircle, Newspaper, UserPlus, ChevronDown } from "lucide-react";
 import type { Campaign, CampaignParticipant, UserProfile } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -546,7 +546,7 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
                 </ParticipantsDialog>
                 {(status === "Ongoing") && (
                     <div className="flex items-center gap-2">
-                        <UserCheck2 className="h-4 w-4" />
+                        <UserCheck className="h-4 w-4" />
                         <span>{campaign.soulsLogged || 0} soul{campaign.soulsLogged === 1 ? '' : 's'} won</span>
                     </div>
                 )}
@@ -586,7 +586,7 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
                             </Button>
                         )}
                         {isJoined && (
-                            <Badge variant="secondary" className="flex items-center gap-2 py-2 px-3"><UserCheck2 className="h-4 w-4" /> Joined</Badge>
+                            <Badge variant="secondary" className="flex items-center gap-2 py-2 px-3"><UserCheck className="h-4 w-4" /> Joined</Badge>
                         )}
                         
                         {isJoined && status === 'Ongoing' && LogSoulButton}
