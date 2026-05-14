@@ -478,7 +478,7 @@ export default function BibleReaderPage() {
         return updateDoc(highlightRef, payload).then(() => {
             toast({ title: 'Note Saved' });
         }).catch(() => {
-            const permissionError = new FirestorePermissionError({ path: highlightRef.path, operation: 'update', requestResourceData: payload }, user);
+            const permissionError = new FirestorePermissionError({ highlightRefPath: highlightRef.path, operation: 'update', requestResourceData: payload }, user);
             errorEmitter.emit('permission-error', permissionError);
         });
     };
@@ -729,7 +729,26 @@ export default function BibleReaderPage() {
                 </TabsContent>
                 <TabsContent value="history" className="flex-grow flex flex-col min-h-0 mt-4 gap-4">
                     <div className="flex items-center gap-2 shrink-0"><Input type="date" value={filterDate ? format(filterDate, "yyyy-MM-dd") : ""} onChange={(e) => { if (e.target.value) { const [year, month, day] = e.target.value.split('-').map(Number); setFilterDate(new Date(year, month - 1, day)); } else { setFilterDate(undefined); } }} className="flex-grow" />{filterDate && (<Button variant="ghost" size="icon" onClick={() => setFilterDate(undefined)}><XCircle className="h-5 w-5 text-muted-foreground" /></Button>)}</div>
-                    <ScrollArea className="flex-grow"><div className="p-4">{filteredHistoryGroups.map(group => (<div key={group.date.toISOString()}><div className="relative my-4"><div className="absolute inset-0 flex items-center"><div className="w-full border-t" /></div><div className="relative flex justify-center"><span className="bg-background px-3 text-sm font-semibold text-muted-foreground">{format(group.date, 'PPP')}</span></div></div><ul className="mt-6 space-y-4">{group.items.map((item, idx) => (<li key={idx} className="flex items-center gap-3"><BookOpen className="h-5 w-5 text-primary" /><p className="text-sm">Read <span className="font-medium">{item.book} {item.chapter}</span> at {format(item.readAt.toDate(), 'p')}</p></li>))}</ul></div>))}</div></ScrollArea>
+                    <ScrollArea className="flex-grow"><div className="p-4">{filteredHistoryGroups.map(group => (
+                        <div key={group.date.toISOString()}>
+                            <div className="relative my-4">
+                                <div className="absolute inset-0 flex items-center">
+                                    <div className="w-full border-t" />
+                                </div>
+                                <div className="relative flex justify-center">
+                                    <span className="bg-background px-3 text-sm font-semibold text-muted-foreground">{format(group.date, 'PPP')}</span>
+                                </div>
+                            </div>
+                            <ul className="mt-6 space-y-4">
+                                {group.items.map((item, idx) => (
+                                    <li key={idx} className="flex items-center gap-3">
+                                        <BookOpen className="h-5 w-5 text-primary" />
+                                        <p className="text-sm">Read <span className="font-medium">{item.book} {item.chapter}</span> at {item.readAt ? format(safeToDate(item.readAt)!, 'p') : 'N/A'}</p>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    ))}</div></ScrollArea>
                 </TabsContent>
             </Tabs>
         </div>

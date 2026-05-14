@@ -1,11 +1,10 @@
 'use client';
 
-import { useState, useMemo, useEffect, Fragment } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -21,24 +20,22 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useCollection, useFirestore, useUser, useDoc } from "@/firebase";
-import { collection, query, orderBy, addDoc, serverTimestamp, doc, runTransaction, arrayUnion, increment, updateDoc } from "firebase/firestore";
+import { collection, query, orderBy, serverTimestamp, doc, runTransaction, updateDoc } from "firebase/firestore";
 import type { UserProfile, Fellowship } from "@/lib/types";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { PlusCircle, HeartHandshake, Loader2, Trash2, Video, Search } from 'lucide-react';
+import { PlusCircle, Loader2, Video } from 'lucide-react';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { Skeleton } from '@/components/ui/skeleton';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { useIsMobile } from '@/hooks/use-mobile';
 import {
   Sheet,
   SheetContent,
-  SheetDescription,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
@@ -46,7 +43,7 @@ import {
 import { useRouter } from 'next/navigation';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { FellowshipCard } from '@/components/fellowship/fellowship-card';
-import { Card, CardHeader, CardContent } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { useSearch } from '@/context/search-context';
 
 const formSchema = z.object({
@@ -383,22 +380,18 @@ export default function FellowshipPage() {
 
     const loading = userLoading || profileLoading || fellowshipsLoading;
 
-    const triggerButton = (
-        <Button disabled={loading}>
-            <PlusCircle className="h-4 w-4 md:mr-2" />
-            <span className="hidden md:inline">New Fellowship</span>
-        </Button>
-    );
-
-    const formContent = <FellowshipForm userProfile={userProfile ?? null} onFormSubmit={handleCreateFellowship} isSubmitting={isSubmitting} />;
-
     return (
         <div className="space-y-8">
             <div className="flex items-center justify-between">
                 <h1 className="text-xl sm:text-2xl font-bold tracking-tight font-headline">Fellowships</h1>
                 {mounted && isMobile ? (
                     <Sheet open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-                        <SheetTrigger asChild>{triggerButton}</SheetTrigger>
+                        <SheetTrigger asChild>
+                            <Button disabled={loading}>
+                                <PlusCircle className="h-4 w-4 md:mr-2" />
+                                <span className="hidden md:inline">New Fellowship</span>
+                            </Button>
+                        </SheetTrigger>
                         <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0">
                             <div className="p-6 border-b flex-shrink-0">
                                 <SheetHeader>
@@ -406,18 +399,23 @@ export default function FellowshipPage() {
                                 </SheetHeader>
                             </div>
                             <div className="flex-grow overflow-y-auto p-6">
-                                {formContent}
+                                <FellowshipForm userProfile={userProfile ?? null} onFormSubmit={handleCreateFellowship} isSubmitting={isSubmitting} />
                             </div>
                         </SheetContent>
                     </Sheet>
                 ) : (
                     <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-                        <DialogTrigger asChild>{triggerButton}</DialogTrigger>
+                        <DialogTrigger asChild>
+                            <Button disabled={loading}>
+                                <PlusCircle className="h-4 w-4 md:mr-2" />
+                                <span className="hidden md:inline">New Fellowship</span>
+                            </Button>
+                        </DialogTrigger>
                         <DialogContent>
                             <DialogHeader>
                                 <DialogTitle>New Fellowship</DialogTitle>
                             </DialogHeader>
-                            {formContent}
+                            <FellowshipForm userProfile={userProfile ?? null} onFormSubmit={handleCreateFellowship} isSubmitting={isSubmitting} />
                         </DialogContent>
                     </Dialog>
                 )}

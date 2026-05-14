@@ -237,15 +237,6 @@ export default function SoulsWonPage() {
     );
   }, [souls, searchTerm]);
 
-  const triggerButton = (
-    <Button disabled={loading}>
-      {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <PlusCircle className="h-4 w-4 md:mr-2" />}
-      <span className="hidden md:inline">Log Soul Won</span>
-    </Button>
-  );
-
-  const formContent = <LogSoulForm onSoulLogged={handleSoulLogged} fellowships={activeFellowships || []} campaigns={activeCampaigns || []} />;
-
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
@@ -268,7 +259,12 @@ export default function SoulsWonPage() {
 
           {mounted && isMobile ? (
             <Sheet open={isLogDialogOpen} onOpenChange={setIsLogDialogOpen}>
-              <SheetTrigger asChild>{triggerButton}</SheetTrigger>
+              <SheetTrigger asChild>
+                <Button disabled={loading}>
+                    <PlusCircle className="h-4 w-4 md:mr-2" />
+                    <span className="hidden md:inline">Log Soul Won</span>
+                </Button>
+              </SheetTrigger>
               <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0">
                 <div className="p-6 border-b flex-shrink-0">
                     <SheetHeader className="text-left">
@@ -277,21 +273,26 @@ export default function SoulsWonPage() {
                     </SheetHeader>
                 </div>
                 <div className="flex-grow overflow-y-auto p-6 pt-2 pb-12">
-                  {formContent}
+                   <LogSoulForm onSoulLogged={handleSoulLogged} fellowships={activeFellowships || []} campaigns={activeCampaigns || []} />
                   <Button variant="ghost" className="w-full mt-6" onClick={() => setIsLogDialogOpen(false)}>Close</Button>
                 </div>
               </SheetContent>
             </Sheet>
           ) : (
             <Dialog open={isLogDialogOpen} onOpenChange={setIsLogDialogOpen}>
-              <DialogTrigger asChild>{triggerButton}</DialogTrigger>
+              <DialogTrigger asChild>
+                 <Button disabled={loading}>
+                    <PlusCircle className="h-4 w-4 md:mr-2" />
+                    <span className="hidden md:inline">Log Soul Won</span>
+                </Button>
+              </DialogTrigger>
               <DialogContent className="sm:max-w-lg">
                 <DialogHeader>
                   <DialogTitle>Log a New Soul</DialogTitle>
                   <DialogDescription>Record details of the person ministered to.</DialogDescription>
                 </DialogHeader>
                 <div className="max-h-[70vh] overflow-y-auto pr-2">
-                  {formContent}
+                   <LogSoulForm onSoulLogged={handleSoulLogged} fellowships={activeFellowships || []} campaigns={activeCampaigns || []} />
                 </div>
               </DialogContent>
             </Dialog>
