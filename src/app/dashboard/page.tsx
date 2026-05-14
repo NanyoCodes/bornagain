@@ -76,25 +76,10 @@ const ProgressOverview = dynamic(() => import('@/components/dashboard/progress-o
   ssr: false
 });
 
-const ChartContainer = dynamic(() => import('@/components/ui/chart').then(m => m.ChartContainer), { ssr: false });
-const ChartTooltip = dynamic(() => import('@/components/ui/chart').then(m => m.ChartTooltip), { ssr: false });
-const ChartTooltipContent = dynamic(() => import('@/components/ui/chart').then(m => m.ChartTooltipContent), { ssr: false });
-
-const RechartsBarChart = dynamic(() => import('recharts').then(m => m.BarChart), { ssr: false });
-const RechartsBar = dynamic(() => import('recharts').then(m => m.Bar), { ssr: false });
-const RechartsXAxis = dynamic(() => import('recharts').then(m => m.XAxis), { ssr: false });
-const RechartsYAxis = dynamic(() => import('recharts').then(m => m.YAxis), { ssr: false });
-const RechartsCartesianGrid = dynamic(() => import('recharts').then(m => m.CartesianGrid), { ssr: false });
-const RechartsResponsiveContainer = dynamic(() => import('recharts').then(m => m.ResponsiveContainer), { ssr: false });
-const RechartsCell = dynamic(() => import('recharts').then(m => m.Cell), { ssr: false });
-const RechartsReferenceLine = dynamic(() => import('recharts').then(m => m.ReferenceLine), { ssr: false });
-
-const chartConfig = {
-  soulsWon: {
-    label: 'Souls Won',
-    color: 'hsl(var(--primary))',
-  },
-} satisfies import('@/components/ui/chart').ChartConfig;
+const MonthlyStatsChart = dynamic(() => import('@/components/dashboard/monthly-stats-chart').then(m => m.MonthlyStatsChart), {
+  loading: () => <Skeleton className="h-[300px] w-full" />,
+  ssr: false
+});
 
 const chartColors = [
   'hsl(var(--chart-1))',
@@ -591,61 +576,10 @@ export default function DashboardPage() {
               <CardDescription>Souls won in the last 3 months.</CardDescription>
             </CardHeader>
             <CardContent>
-              {mounted ? (
-                <ChartContainer config={chartConfig} className="h-[300px] w-full">
-                  <RechartsResponsiveContainer width="100%" height="100%">
-                    <RechartsBarChart data={progressData} accessibilityLayer>
-                      <RechartsCartesianGrid vertical={false} />
-                      <RechartsXAxis
-                        dataKey="date"
-                        tickLine={false}
-                        tickMargin={10}
-                        axisLine={false}
-                        tickFormatter={(value) => value.slice(0, 3)}
-                      />
-                      <RechartsYAxis
-                        allowDecimals={false}
-                        domain={[
-                          0,
-                          (dataMax: number) =>
-                            Math.max(
-                              dataMax || 0,
-                              userProfile?.monthlySoulsGoal || 10
-                            ) + 2,
-                        ]}
-                      />
-                      <ChartTooltip
-                        cursor={false}
-                        content={<ChartTooltipContent hideLabel />}
-                      />
-                      {userProfile?.monthlySoulsGoal &&
-                        userProfile.monthlySoulsGoal > 0 && (
-                          <RechartsReferenceLine
-                            y={userProfile.monthlySoulsGoal}
-                            label={{
-                              value: `Goal: ${userProfile.monthlySoulsGoal}`,
-                              position: 'insideTopLeft',
-                              fill: 'hsl(var(--muted-foreground))',
-                              fontSize: 12,
-                            }}
-                            stroke="hsl(var(--muted-foreground))"
-                            strokeDasharray="3 3"
-                          />
-                        )}
-                      <RechartsBar dataKey="soulsWon" radius={[4, 4, 0, 0]}>
-                        {progressData.map((_entry, index) => (
-                          <RechartsCell
-                            key={`cell-${index}`}
-                            fill={chartColors[index % chartColors.length]}
-                          />
-                        ))}
-                      </RechartsBar>
-                    </RechartsBarChart>
-                  </RechartsResponsiveContainer>
-                </ChartContainer>
-              ) : (
-                <Skeleton className="h-[300px] w-full" />
-              )}
+              <MonthlyStatsChart 
+                data={progressData} 
+                monthlySoulsGoal={userProfile?.monthlySoulsGoal || 10} 
+              />
             </CardContent>
           </Card>
 
