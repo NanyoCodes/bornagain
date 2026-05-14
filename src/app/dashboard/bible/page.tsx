@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useMemo, useEffect, useRef, useLayoutEffect } from 'react';
-import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
 import {
   AlertDialog,
@@ -37,7 +36,6 @@ import { useToast } from '@/hooks/use-toast';
 import { format, isSameDay } from 'date-fns';
 import {
   Loader2,
-  XCircle,
   BookOpen,
   Trash2,
   Plus,
@@ -45,6 +43,7 @@ import {
   Highlighter,
   ChevronDown,
   ArrowLeft,
+  XCircle,
 } from 'lucide-react';
 import { getBibleChapter, type BibleChapterOutput } from '@/ai/flows/get-bible-chapter-flow';
 import { Input } from '@/components/ui/input';
@@ -157,10 +156,7 @@ export default function BibleReaderPage() {
   const [isLoadingChapter, setIsLoadingChapter] = useState(true);
   const [chapterError, setChapterError] = useState<string | null>(null);
 
-  const [isScrolledToEnd, setIsScrolledToEnd] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
-  const [filterDate, setFilterDate] = useState<Date | undefined>();
-
   const [selectedVerses, setSelectedVerses] = useState<number[]>([]);
   const [isProcessingHighlight, setIsProcessingHighlight] = useState(false);
   const [activeHighlightId, setActiveHighlightId] = useState<string | null>(null);
@@ -171,7 +167,6 @@ export default function BibleReaderPage() {
   const [isChapterPopoverOpen, setIsChapterPopoverOpen] = useState(false);
   const [mobileTab, setMobileTab] = useState('reader');
   const [fontSize, setFontSize] = useState<'sm' | 'base' | 'lg' | 'xl'>('sm');
-  const [goToVerse, setGoToVerse] = useState('');
 
   const fontSizeClasses = { sm: 'text-xs sm:text-sm', base: 'text-sm sm:text-base', lg: 'text-base sm:text-lg', xl: 'text-lg sm:text-xl' };
   const subFontSizeClasses = { sm: 'text-xs', base: 'text-xs', lg: 'text-sm', xl: 'text-sm' };
@@ -214,7 +209,6 @@ export default function BibleReaderPage() {
       setIsLoadingChapter(true);
       setChapterError(null);
       setChapterContent(null);
-      setIsScrolledToEnd(false);
       setSelectedVerses([]);
       setActiveHighlightId(null);
       setToolbarPos(null);
@@ -337,6 +331,11 @@ export default function BibleReaderPage() {
     
     const fontSizes = ['sm', 'base', 'lg', 'xl'];
 
+    function handleSelectChapter(chapter: number) {
+        setSelectedChapterNumber(chapter);
+        setIsChapterPopoverOpen(false);
+    }
+
     return (
         <div className="h-dvh flex flex-col p-4">
             <div className="shrink-0 flex items-center gap-4 mb-4">
@@ -369,9 +368,4 @@ export default function BibleReaderPage() {
             </Tabs>
         </div>
     );
-    
-    function handleSelectChapter(chapter: number) {
-        setSelectedChapterNumber(chapter);
-        setIsChapterPopoverOpen(false);
-    }
 }

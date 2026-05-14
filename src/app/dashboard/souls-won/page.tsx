@@ -9,7 +9,6 @@ import {
   DialogDescription, 
   DialogHeader, 
   DialogTitle, 
-  DialogTrigger 
 } from "@/components/ui/dialog";
 import {
   Sheet,
@@ -30,9 +29,8 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { format } from "date-fns";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
-import { safeToDate } from "@/lib/utils";
 
-// Performance: Dynamically import heavy table and dialog components
+// Performance: Dynamically import heavy components
 const SoulsWonTable = dynamic(() => import('@/components/souls/souls-won-table').then(m => m.SoulsWonTable), {
   loading: () => <div className="flex justify-center p-12"><Loader2 className="h-8 w-8 animate-spin" /></div>,
   ssr: false
@@ -42,6 +40,7 @@ const EditSoulForm = dynamic(() => import('@/components/souls/edit-soul-form').t
 const LogFollowUpDialog = dynamic(() => import('@/components/souls/log-follow-up-dialog').then(m => m.LogFollowUpDialog), { ssr: false });
 const ViewHistoryDialog = dynamic(() => import('@/components/souls/view-history-dialog').then(m => m.ViewHistoryDialog), { ssr: false });
 const AssignFellowshipDialog = dynamic(() => import('@/components/souls/assign-fellowship-dialog').then(m => m.AssignFellowshipDialog), { ssr: false });
+const LogSoulForm = dynamic(() => import('@/components/souls/log-soul-form').then(m => m.LogSoulForm), { ssr: false });
 
 export default function SoulsWonPage() {
   const { user, loading: userLoading } = useUser();
@@ -204,9 +203,9 @@ export default function SoulsWonPage() {
             </Sheet>
           ) : (
             <Dialog open={isLogDialogOpen} onOpenChange={setIsLogDialogOpen}>
-              <DialogTrigger asChild>
-                <Button disabled={loading}><PlusCircle className="h-4 w-4 md:mr-2" />Log Soul</Button>
-              </DialogTrigger>
+              <DropdownMenuTrigger asChild>
+                <Button disabled={loading} onClick={() => setIsLogDialogOpen(true)}><PlusCircle className="h-4 w-4 md:mr-2" />Log Soul</Button>
+              </DropdownMenuTrigger>
               <DialogContent className="sm:max-w-lg">
                 <DialogHeader>
                   <DialogTitle>Log a New Soul</DialogTitle>

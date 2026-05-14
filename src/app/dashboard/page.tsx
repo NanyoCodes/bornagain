@@ -19,21 +19,17 @@ import {
 import {
   ArrowRight,
   UserPlus,
-  Globe,
   Loader2,
   RefreshCw,
   XCircle,
-  Edit,
   Flame,
   Heart,
-  TrendingUp,
 } from 'lucide-react';
 import { useCollection, useFirestore, useUser, useDoc } from '@/firebase';
 import {
   collection,
   query,
   doc,
-  updateDoc,
   serverTimestamp,
   orderBy,
   limit,
@@ -54,10 +50,8 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog';
 import {
   Sheet,
@@ -66,8 +60,6 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { WelcomeBackDialog } from '@/components/dashboard/welcome-back-dialog';
 import { safeToDate } from '@/lib/utils';
@@ -78,7 +70,7 @@ import { useRouter } from 'next/navigation';
 import { welcomeScriptures } from '@/lib/verses';
 import AdsenseAd from '@/components/common/adsense-ad';
 
-// Performance: Dynamically import heavy chart and overview components
+// Performance: Dynamically import heavy components
 const ProgressOverview = dynamic(() => import('@/components/dashboard/progress-overview').then(m => m.ProgressOverview), {
   loading: () => <Skeleton className="h-[400px] w-full" />,
   ssr: false
@@ -241,9 +233,6 @@ function CityImpactCard({
 
   useEffect(() => {
     fetchCounts();
-    const intervalId = setInterval(fetchCounts, 60000); 
-
-    return () => clearInterval(intervalId);
   }, [fetchCounts]);
 
   return (
@@ -565,7 +554,6 @@ export default function DashboardPage() {
   const handleSoulLogged = () => {
     setIsLogSoulOpen(false);
     toast({ title: "Soul Logged!" });
-    router.refresh();
   };
 
   if (loading || !userProfile) {

@@ -23,8 +23,8 @@ const scriptures = [
     reference: "Revelation 12:11"
   },
   {
-    text: "All the believers were one in heart and mind. No one claimed that any of their possessions was their own, but they shared everything they had. With great power the apostles continued to testify to the resurrection of the Lord Jesus, and abundant grace was upon them all.",
-    reference: "Acts 4:32-33"
+    text: "All the believers were one in heart and mind. No one claimed that any of their possessions was their own, but they shared everything they had.",
+    reference: "Acts 4:32"
   }
 ];
 
@@ -51,7 +51,7 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
                 {logo && (
                     <Link href="/">
                         <Avatar className="h-20 w-20 border-2 border-primary/10 shadow-sm rounded-xl">
-                            <AvatarImage src={logo.imageUrl} alt="Testify" />
+                            <AvatarImage src={logo.imageUrl} alt="Testify" priority />
                             <AvatarFallback>T</AvatarFallback>
                         </Avatar>
                     </Link>
