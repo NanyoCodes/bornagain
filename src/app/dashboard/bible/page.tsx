@@ -12,7 +12,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+} from "@/components/ui/dialog";
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -366,7 +366,7 @@ export default function BibleReaderPage() {
                         </Popover>
                         <Select value={selectedVersion} onValueChange={setSelectedVersion}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{bibleVersions.map(v => <SelectItem key={v.id} value={v.id}>{v.name}</SelectItem>)}</SelectContent></Select>
                     </div>
-                    <div className="flex-grow flex flex-col md:flex-row gap-6 min-h-0 overflow-hidden">
+                    <div className="flex-grow flex-col md:flex-row flex gap-6 min-h-0 overflow-hidden">
                         <div className="flex-grow min-h-0">{ReaderContent}</div>
                         <div className="hidden md:flex md:w-1/3 flex-col border rounded-md bg-muted/30 p-4 min-h-0"><h3 className="font-semibold mb-2">My Journal</h3><ScrollArea className="flex-grow">{NotesList}</ScrollArea></div>
                     </div>

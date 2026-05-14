@@ -196,12 +196,12 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
             )}
           </div>
           {testimony.answeredPrayerId && testimony.answeredPrayerContent && (
-            <Card className="bg-muted/50 shadow-inner">
+            <Card className="border-amber-500/50 bg-amber-500/5 dark:bg-amber-500/10 shadow-inner">
                 <CardHeader className="p-3">
-                    <CardDescription className="text-[10px] uppercase tracking-wider">
+                    <CardDescription className="text-[10px] uppercase tracking-wider text-amber-600 dark:text-amber-400 font-bold">
                         Answer to Prayer Request:
                     </CardDescription>
-                    <blockquote className="border-l-2 pl-3 italic text-xs text-muted-foreground">
+                    <blockquote className="border-l-2 border-amber-500/50 pl-3 italic text-xs text-amber-700 dark:text-amber-300">
                         &ldquo;{testimony.answeredPrayerContent}&rdquo;
                     </blockquote>
                 </CardHeader>
