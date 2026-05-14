@@ -115,8 +115,8 @@ const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, 
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end">
                                     <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                    <DropdownMenuItem onSelect={() => onViewHistory(soul)}>View History</DropdownMenuItem>
-                                    <DropdownMenuItem onSelect={() => onOpenAssignDialog(soul)}><HeartHandshake className="mr-2 h-4 w-4" />Assign Fellowship</DropdownMenuItem>
+                                    <DropdownMenuItem onSelect={(e) => { e.preventDefault(); onViewHistory(soul); }}>View History</DropdownMenuItem>
+                                    <DropdownMenuItem onSelect={(e) => { e.preventDefault(); onOpenAssignDialog(soul); }}><HeartHandshake className="mr-2 h-4 w-4" />Assign Fellowship</DropdownMenuItem>
                                     <DropdownMenuSub>
                                         <DropdownMenuSubTrigger><Download className="mr-2 h-4 w-4" />Export</DropdownMenuSubTrigger>
                                         <DropdownMenuPortal>
@@ -219,9 +219,9 @@ const SoulTableRow = React.memo(({ soul, onFollowUp, onViewHistory, onExportSing
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild><Button size="icon" variant="ghost"><MoreHorizontal className="h-4 w-4" /></Button></DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                        <DropdownMenuItem onSelect={() => onFollowUp(soul)}>Follow-up</DropdownMenuItem>
-                        <DropdownMenuItem onSelect={() => onViewHistory(soul)}>View History</DropdownMenuItem>
-                        <DropdownMenuItem onSelect={() => onOpenAssignDialog(soul)}><HeartHandshake className="mr-2 h-4 w-4" />Assign Fellowship</DropdownMenuItem>
+                        <DropdownMenuItem onSelect={(e) => { e.preventDefault(); onFollowUp(soul); }}>Follow-up</DropdownMenuItem>
+                        <DropdownMenuItem onSelect={(e) => { e.preventDefault(); onViewHistory(soul); }}>View History</DropdownMenuItem>
+                        <DropdownMenuItem onSelect={(e) => { e.preventDefault(); onOpenAssignDialog(soul); }}><HeartHandshake className="mr-2 h-4 w-4" />Assign Fellowship</DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
             </TableCell>
