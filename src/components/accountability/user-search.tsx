@@ -13,6 +13,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { useCollection } from '@/firebase/firestore/use-collection';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
+import Link from 'next/link';
 
 export function UserSearch({ currentUserProfile }: { currentUserProfile: UserProfile }) {
     const { user } = useUser();
@@ -193,15 +194,15 @@ export function UserSearch({ currentUserProfile }: { currentUserProfile: UserPro
 
                     return (
                         <div key={foundUser.id} className="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between p-2 rounded-md hover:bg-muted/50">
-                            <div className="flex items-center gap-3 w-full">
+                            <Link href={`/dashboard/profile/${foundUser.id}`} className="flex items-center gap-3 w-full group">
                                 <Avatar>
                                     <AvatarImage src={foundUser.photoURL ?? undefined} alt={`${foundUser.firstName} ${foundUser.lastName}`} />
                                     <AvatarFallback>{foundUser.firstName?.charAt(0)}{foundUser.lastName?.charAt(0)}</AvatarFallback>
                                 </Avatar>
                                 <div className="min-w-0">
-                                    <p className="font-semibold text-sm truncate">{foundUser.firstName} {foundUser.lastName}</p>
+                                    <p className="font-semibold text-sm truncate group-hover:underline">{foundUser.firstName} {foundUser.lastName}</p>
                                 </div>
-                            </div>
+                            </Link>
                             <Button
                                 size="sm"
                                 onClick={() => handleSendRequest(foundUser)}
