@@ -142,7 +142,7 @@ export default function SoulsWonPage() {
                 const newFellowshipRef = doc(firestore, "fellowships", fellowshipId);
                 const newSnap = await transaction.get(newFellowshipRef);
                 if (newSnap.exists()) {
-                    transaction.update(newRef, { memberCount: increment(1) });
+                    transaction.update(newFellowshipRef, { memberCount: increment(1) });
                 }
             }
 
@@ -198,7 +198,7 @@ export default function SoulsWonPage() {
 
   const triggerButton = (
     <Button disabled={loading}>
-      <PlusCircle className="h-4 w-4 md:mr-2" />
+      {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <PlusCircle className="h-4 w-4 md:mr-2" />}
       <span className="hidden md:inline">Log Soul Won</span>
     </Button>
   );
