@@ -115,7 +115,7 @@ export default function SoulsWonPage() {
         updateData.fellowshipId = selectedFellowship.id;
         updateData.fellowshipName = selectedFellowship.name;
     } else {
-        toast({ variant: "destructive", title: "Error" });
+        toast({ variant: "destructive", title: "Error", description: "Selected fellowship not found." });
         setIsAssigning(null);
         return;
     }
@@ -123,19 +123,41 @@ export default function SoulsWonPage() {
     try {
         await runTransaction(firestore, async (transaction) => {
             const oldFellowshipId = soul.fellowshipId;
+            
+            // Safer update for old fellowship
             if (oldFellowshipId && oldFellowshipId !== fellowshipId) {
-                transaction.update(doc(firestore, "fellowships", oldFellowshipId), { memberCount: increment(-1) });
+                const oldRef = doc(firestore, "fellowships", oldFellowshipId);
+                const oldSnap = await transaction.get(oldRef);
+                if (oldSnap.exists()) {
+                    transaction.update(oldRef, { memberCount: increment(-1) });
+                }
             }
+            
+            // Safer update for new fellowship
             if (fellowshipId !== 'none' && oldFellowshipId !== fellowshipId) {
-                transaction.update(doc(firestore, "fellowships", fellowshipId), { memberCount: increment(1) });
+                const newRef = doc(firestore, "fellowships", fellowshipId);
+                const newSnap = await transaction.get(newRef);
+                if (newSnap.exists()) {
+                    transaction.update(newRef, { memberCount: increment(1) });
+                }
             }
+
             transaction.update(soulRef, updateData);
-            transaction.update(globalSoulRef, updateData);
+            // Use set with merge for global record to ensure it exists
+            transaction.set(globalSoulRef, updateData, { merge: true });
         });
-        toast({ title: "Assigned" });
+        toast({ title: "Assigned", description: "Fellowship assigned successfully." });
         setSoulToAssign(null);
-    } catch (error) {
-        errorEmitter.emit('permission-error', new FirestorePermissionError({ path: `souls/${soul.id}`, operation: 'update' }, user));
+    } catch (error: any) {
+        if (error.code === 'permission-denied') {
+            errorEmitter.emit('permission-error', new FirestorePermissionError({ path: `souls/${soul.id}`, operation: 'update' }, user));
+        } else {
+            toast({
+                variant: "destructive",
+                title: "Error",
+                description: error.message || "Failed to assign fellowship."
+            });
+        }
     } finally { setIsAssigning(null); }
   };
 

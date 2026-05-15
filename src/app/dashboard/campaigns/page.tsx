@@ -166,7 +166,7 @@ export default function CampaignsPage() {
 
   const joinedCampaignsQuery = useMemo(() => {
     if (!user?.uid || !firestore) return null;
-    return query(collection(firestore, 'users', user.uid, 'joinedCampaigns'));
+    return query(collection(firestore, `users/${user.uid}/joinedCampaigns`));
   }, [user?.uid, firestore]);
   const { data: joinedCampaigns, loading: joinedCampaignsLoading } = useCollection<JoinedCampaign>(joinedCampaignsQuery);
   const joinedCampaignIds = useMemo(() => new Set(joinedCampaigns?.map(c => c.id)), [joinedCampaigns]);
@@ -480,7 +480,7 @@ export default function CampaignsPage() {
           <Dialog open={!!campaignToManage} onOpenChange={(open) => !open && setCampaignToManage(null)}>
             <DialogContent className="sm:max-w-2xl">
               <DialogHeader><DialogTitle>Manage Campaign</DialogTitle><DialogDescription>Update the details or progress of your campaign.</DialogDescription></DialogHeader>
-              <div className="max-h-[70vh] overflow-y-auto pr-2">
+              <div className="max-h-[80vh] overflow-y-auto pr-2">
                 <ManageCampaignForm 
                   campaign={campaignToManage} 
                   onCampaignUpdated={() => { setCampaignToManage(null); }} 
