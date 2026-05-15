@@ -224,6 +224,7 @@ const SoulTableRow = React.memo(({ soul, onFollowUp, onViewHistory, onExportSing
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild><Button size="icon" variant="ghost"><MoreHorizontal className="h-4 w-4" /></Button></DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
+                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
                         <DropdownMenuItem onSelect={(e) => { e.preventDefault(); onEdit(soul); }}>
                             <Edit className="mr-2 h-4 w-4" /> Edit Details
                         </DropdownMenuItem>
@@ -286,7 +287,12 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
   if (isMobile) {
       return (
         <div className="space-y-4">
-            <Card><CardHeader><CardTitle>Follow-up Dashboard</CardTitle><CardDescription>A list of souls won.</CardDescription></CardHeader></Card>
+            <Card>
+                <CardHeader>
+                    <CardTitle>Follow-up Dashboard</CardTitle>
+                    <CardDescription>A list of souls won.</CardDescription>
+                </CardHeader>
+            </Card>
             {souls.map((soul) => (
                 <SoulCard key={soul.id} soul={soul} onFollowUp={onFollowUp} onViewHistory={onViewHistory} onExportSingle={onExportSingle} onOpenAssignDialog={onOpenAssignDialog} onEdit={onEdit} />
             ))}

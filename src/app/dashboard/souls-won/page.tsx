@@ -9,7 +9,6 @@ import {
   DialogDescription, 
   DialogHeader, 
   DialogTitle, 
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   Sheet,
@@ -106,7 +105,12 @@ export default function SoulsWonPage() {
     const soulRef = doc(firestore, `users/${user.uid}/souls`, soul.id);
     const globalSoulRef = doc(firestore, 'souls', soul.id);
     const selectedFellowship = activeFellowships?.find(f => f.id === fellowshipId);
-    const updateData: { [key: string]: any } = {};
+    
+    // Explicitly include userId to satisfy security rules on global record
+    const updateData: { [key: string]: any } = {
+        userId: user.uid,
+        updatedAt: serverTimestamp(),
+    };
 
     if (fellowshipId === 'none') {
         updateData.fellowshipId = deleteField();
@@ -135,15 +139,15 @@ export default function SoulsWonPage() {
             
             // Safer update for new fellowship
             if (fellowshipId !== 'none' && oldFellowshipId !== fellowshipId) {
-                const newRef = doc(firestore, "fellowships", fellowshipId);
-                const newSnap = await transaction.get(newRef);
+                const newFellowshipRef = doc(firestore, "fellowships", fellowshipId);
+                const newSnap = await transaction.get(newFellowshipRef);
                 if (newSnap.exists()) {
                     transaction.update(newRef, { memberCount: increment(1) });
                 }
             }
 
             transaction.update(soulRef, updateData);
-            // Use set with merge for global record to ensure it exists
+            // Use set with merge for global record to ensure it satisfies ownership rules
             transaction.set(globalSoulRef, updateData, { merge: true });
         });
         toast({ title: "Assigned", description: "Fellowship assigned successfully." });
@@ -192,13 +196,20 @@ export default function SoulsWonPage() {
     );
   }, [souls, searchTerm]);
 
+  const triggerButton = (
+    <Button disabled={loading}>
+      <PlusCircle className="h-4 w-4 md:mr-2" />
+      <span className="hidden md:inline">Log Soul Won</span>
+    </Button>
+  );
+
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <h1 className="text-xl sm:text-2xl font-bold font-headline">Souls Won</h1>
         <div className="flex items-center gap-2">
            <DropdownMenu>
-            <DropdownMenuTrigger asChild><Button variant="outline"><Download className="mr-2 h-4 w-4" />Export</Button></DropdownMenuTrigger>
+            <DropdownMenuTrigger asChild><Button variant="outline" disabled={loading}><Download className="mr-2 h-4 w-4" />Export</Button></DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem onSelect={() => handleExport('csv')}>CSV</DropdownMenuItem>
               <DropdownMenuItem onSelect={() => handleExport('pdf')}>PDF</DropdownMenuItem>
@@ -208,10 +219,7 @@ export default function SoulsWonPage() {
           {mounted && isMobile ? (
             <Sheet open={isLogDialogOpen} onOpenChange={setIsLogDialogOpen}>
               <SheetTrigger asChild>
-                <Button disabled={loading}>
-                  <PlusCircle className="h-4 w-4 md:mr-2" />
-                  <span className="hidden md:inline">Log Soul Won</span>
-                </Button>
+                {triggerButton}
               </SheetTrigger>
               <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0">
                 <div className="p-6 border-b flex-shrink-0">
@@ -227,17 +235,14 @@ export default function SoulsWonPage() {
             </Sheet>
           ) : (
             <Dialog open={isLogDialogOpen} onOpenChange={setIsLogDialogOpen}>
-              <DialogTrigger asChild>
-                <Button disabled={loading}>
-                  <PlusCircle className="h-4 w-4 md:mr-2" />
-                  <span className="hidden md:inline">Log Soul Won</span>
-                </Button>
-              </DialogTrigger>
+              <SheetTrigger asChild>
+                {triggerButton}
+              </SheetTrigger>
               <DialogContent className="sm:max-w-lg">
-                <DialogHeader>
-                  <DialogTitle>Log a New Soul</DialogTitle>
-                  <DialogDescription>Record the details of the person you've ministered to.</DialogDescription>
-                </DialogHeader>
+                <SheetHeader>
+                  <SheetTitle>Log a New Soul</SheetTitle>
+                  <SheetDescription>Record the details of the person you've ministered to.</SheetDescription>
+                </SheetHeader>
                 <div className="max-h-[70vh] overflow-y-auto pr-2">
                     <LogSoulForm onSoulLogged={handleSoulLogged} fellowships={activeFellowships} campaigns={activeCampaigns} />
                 </div>
@@ -263,10 +268,10 @@ export default function SoulsWonPage() {
       
       <Dialog open={!!soulToEdit} onOpenChange={(open) => !open && setSoulToEdit(null)}>
           <DialogContent className="sm:max-w-lg">
-              <DialogHeader>
-                  <DialogTitle>Edit Soul Details</DialogTitle>
-                  <DialogDescription>Update information for {soulToEdit?.firstName}.</DialogDescription>
-              </DialogHeader>
+              <SheetHeader>
+                  <SheetTitle>Edit Soul Details</SheetTitle>
+                  <SheetDescription>Update information for {soulToEdit?.firstName}.</SheetDescription>
+              </SheetHeader>
               <div className="max-h-[70vh] overflow-y-auto pr-2">
                   {soulToEdit && (
                     <EditSoulForm 

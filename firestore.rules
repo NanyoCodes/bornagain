@@ -42,9 +42,9 @@ service cloud.firestore {
       );
 
       match /souls/{soulId} {
-        allow read: if isOwner(userId) || isFellowshipMember(resource.data.fellowshipId);
+        allow read: if isOwner(userId) || isFellowshipMember(resource.data.get('fellowshipId', ''));
         allow create: if isOwner(userId);
-        allow update: if request.auth != null && (isOwner(userId) || isFellowshipMember(resource.data.fellowshipId));
+        allow update: if request.auth != null && (isOwner(userId) || isFellowshipMember(resource.data.get('fellowshipId', '')));
       }
       
       match /joinedCampaigns/{campaignId} {
@@ -57,12 +57,10 @@ service cloud.firestore {
       }
 
       match /bibleHighlights/{highlightId} {
-        // Updated: Bible highlights are now strictly private to the owner
         allow read, write: if isOwner(userId);
       }
 
       match /notes/{noteId} {
-        // Updated: Personal notes are now strictly private to the owner
         allow read, write: if isOwner(userId);
       }
 
@@ -78,8 +76,8 @@ service cloud.firestore {
     
     match /souls/{soulId} {
       allow get, list: if request.auth != null;
-      allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
-      allow update: if request.auth != null && (resource.data.userId == request.auth.uid || isFellowshipMember(resource.data.fellowshipId));
+      allow create: if request.auth != null && request.resource.data.get('userId', '') == request.auth.uid;
+      allow update: if request.auth != null && (resource.data.get('userId', '') == request.auth.uid || isFellowshipMember(resource.data.get('fellowshipId', '')));
     }
 
     match /testimonies/{testimonyId} {
