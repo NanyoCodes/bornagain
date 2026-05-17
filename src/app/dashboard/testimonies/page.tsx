@@ -45,8 +45,7 @@ import { useToast } from "@/hooks/use-toast";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { EditTestimonyForm } from "@/components/testimonies/edit-testimony-form";
-import AdsenseAd from "@/components/common/adsense-ad";
-
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export default function TestimoniesPage() {
   const [isTestimonyDialogOpen, setIsTestimonyDialogOpen] = useState(false);
@@ -88,7 +87,6 @@ export default function TestimoniesPage() {
   useEffect(() => {
     setMounted(true);
     setIsSearchVisible(true);
-    // Placeholder will be updated by active tab effect
     return () => {
       setIsSearchVisible(false);
       setSearchTerm("");
@@ -104,24 +102,14 @@ export default function TestimoniesPage() {
   }, [activeTab, setSearchPlaceholder]);
   
   useEffect(() => {
-    const handleHashChange = () => {
-      const hash = window.location.hash;
-      if (hash) {
-        const id = hash.substring(1);
-        // We need to switch to the testimonies tab to see the highlighted testimony
-        setActiveTab("testimonies");
-        setHighlightedTestimonyId(id);
-      }
-    };
-
-    handleHashChange(); // Check hash on initial load
-
-    window.addEventListener('hashchange', handleHashChange);
-
-    return () => {
-      window.removeEventListener('hashchange', handleHashChange);
-    };
-  }, []); // This effect should run only once to set up the listener.
+    const hash = window.location.hash;
+    if (hash) {
+      const id = hash.substring(1);
+      // We need to switch to the testimonies tab to see the highlighted testimony
+      setActiveTab("testimonies");
+      setHighlightedTestimonyId(id);
+    }
+  }, []);
 
   useEffect(() => {
     if (highlightedTestimonyId && activeTab === 'testimonies' && !loadingTestimonies) {
@@ -264,35 +252,50 @@ export default function TestimoniesPage() {
     }
   };
 
-  const testimonyTriggerButton = (
-    <Button onClick={() => handleOpenTestimonyDialog()} disabled={loading}>
-      {loading ? <Loader2 className="md:mr-2 h-4 w-4 animate-spin" /> : <PlusCircle className="h-4 w-4 md:mr-2" />}
-      <span className="hidden md:inline">Share Testimony</span>
-    </Button>
-  );
-
-  const prayerTriggerButton = (
-    <Button onClick={() => setIsPrayerDialogOpen(true)} disabled={loading}>
-      {loading ? <Loader2 className="md:mr-2 h-4 w-4 animate-spin" /> : <PlusCircle className="h-4 w-4 md:mr-2" />}
-      <span className="hidden md:inline">Share Prayer Request</span>
-    </Button>
-  );
-
   const testimonyFormContent = userProfile ? <CreateTestimonyForm userProfile={userProfile} onTestimonyCreated={handleCloseTestimonyDialog} prayerRequest={prayerToAnswer} /> : <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin"/></div>;
   const prayerFormContent = userProfile ? <CreatePrayerRequestForm onPrayerRequestCreated={handlePrayerRequestCreated} /> : <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin"/></div>;
 
   return (
     <div className="space-y-8">
-      <div className="flex items-center justify-between">
-        <div className="space-y-2">
-          <h1 className="text-lg sm:text-xl font-bold tracking-tight font-headline">
-            Testimonies &amp; Prayer Requests
-          </h1>
-        </div>
-        <div>
-          {activeTab === 'testimonies' ? testimonyTriggerButton : prayerTriggerButton}
-        </div>
-      </div>
+      {/* Facebook-style Status Box */}
+      <Card>
+        <CardContent className="pt-6">
+          <div className="flex items-center gap-4">
+            <Avatar className="h-10 w-10 border shadow-sm">
+              <AvatarImage src={userProfile?.photoURL} />
+              <AvatarFallback className="bg-primary/10 text-primary">{userProfile?.firstName?.charAt(0)}</AvatarFallback>
+            </Avatar>
+            <Button 
+              variant="outline" 
+              className="flex-1 justify-start text-muted-foreground font-normal rounded-full h-11 px-4 hover:bg-muted/50 transition-colors"
+              onClick={() => setIsTestimonyDialogOpen(true)}
+            >
+              What has God done today?
+            </Button>
+          </div>
+          <div className="flex items-center gap-1 sm:gap-4 mt-4 pt-4 border-t">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="flex-1 text-muted-foreground hover:text-primary transition-colors py-6 h-auto"
+                onClick={() => setIsTestimonyDialogOpen(true)}
+              >
+                <Newspaper className="mr-2 h-5 w-5 text-primary" />
+                <span className="text-xs sm:text-sm font-medium">Share Testimony</span>
+              </Button>
+              <div className="h-6 w-px bg-border shrink-0" />
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="flex-1 text-muted-foreground hover:text-primary transition-colors py-6 h-auto"
+                onClick={() => setIsPrayerDialogOpen(true)}
+              >
+                <HandHeart className="mr-2 h-5 w-5 text-primary" />
+                <span className="text-xs sm:text-sm font-medium">Share Prayer Request</span>
+              </Button>
+          </div>
+        </CardContent>
+      </Card>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-2">
@@ -306,18 +309,17 @@ export default function TestimoniesPage() {
                     <Card key={i}><CardHeader><div className="flex items-center gap-4"><Skeleton className="h-12 w-12 rounded-full" /><div className="w-full space-y-2"><Skeleton className="h-4 w-1/4" /><Skeleton className="h-4 w-1/5" /></div></div></CardHeader><CardContent className="space-y-4"><Skeleton className="h-5 w-3/4" /><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-4/5" /></CardContent><CardFooter><Skeleton className="h-8 w-24 ml-auto" /></CardFooter></Card>
                   ))
                 )}
-                {!loading && filteredTestimonies.map((testimony, index) => (
-                    <Fragment key={testimony.id}>
+                {!loading && filteredTestimonies.map((testimony) => {
+                    return (
                         <TestimonyCard 
+                            key={testimony.id} 
                             testimony={testimony} 
+                            distance={(testimony as any)._distance}
                             onDelete={() => setItemToDelete({ type: 'testimony', data: testimony })}
                             onEdit={() => setItemToEdit(testimony)}
                         />
-                        {(index + 1) % 4 === 0 && (
-                          <AdsenseAd adSlot={`testimonies-grid-ad-${index}`} className="h-full" />
-                        )}
-                    </Fragment>
-                ))}
+                    );
+                })}
                  {!loading && filteredTestimonies?.length === 0 && (
                   <div className="col-span-full text-center py-12 flex flex-col items-center">
                     <Newspaper className="h-16 w-16 text-muted-foreground" />
@@ -336,17 +338,13 @@ export default function TestimoniesPage() {
                     <Card key={i}><CardHeader><div className="flex items-center gap-4"><Skeleton className="h-12 w-12 rounded-full" /><div className="w-full space-y-2"><Skeleton className="h-4 w-1/4" /><Skeleton className="h-4 w-1/5" /></div></div></CardHeader><CardContent className="space-y-4"><Skeleton className="h-5 w-3/4" /><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-4/5" /></CardContent><CardFooter><Skeleton className="h-8 w-24 ml-auto" /></CardFooter></Card>
                   ))
                 )}
-                {!loading && filteredPrayerRequests?.map((req, index) => (
-                  <Fragment key={req.id}>
-                    <PrayerRequestCard 
-                      prayerRequest={req}
-                      onDelete={() => setItemToDelete({ type: 'prayer', data: req })}
-                      onAnswerPrayer={() => handleOpenTestimonyDialog(req)}
-                    />
-                    {(index + 1) % 4 === 0 && (
-                      <AdsenseAd adSlot={`prayers-grid-ad-${index}`} className="h-full" />
-                    )}
-                  </Fragment>
+                {!loading && filteredPrayerRequests?.map((req) => (
+                  <PrayerRequestCard 
+                    key={req.id} 
+                    prayerRequest={req}
+                    onDelete={() => setItemToDelete({ type: 'prayer', data: req })}
+                    onAnswerPrayer={() => handleOpenTestimonyDialog(req)}
+                  />
                 ))}
                 {!loading && filteredPrayerRequests?.length === 0 && (
                   <div className="col-span-full text-center py-12 flex flex-col items-center">
