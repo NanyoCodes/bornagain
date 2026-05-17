@@ -74,9 +74,6 @@ export default function AboutPage() {
             <Button asChild variant="outline">
                 <Link href="/contact">Partner With Us</Link>
             </Button>
-            <Button asChild>
-                <Link href="/login">Return to Sign In</Link>
-            </Button>
         </footer>
       </div>
     </AuthLayout>
