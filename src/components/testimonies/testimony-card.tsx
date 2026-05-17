@@ -145,7 +145,10 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
 
   return (
     <>
-      <Card id={testimony.id} className="flex flex-col h-full overflow-hidden shadow-md scroll-mt-20 border-l-4 border-l-primary/40">
+      <Card id={testimony.id} className={cn(
+        "flex flex-col h-full overflow-hidden shadow-md scroll-mt-20 border-l-4",
+        testimony.answeredPrayerId ? "border-l-amber-500 bg-amber-500/5 dark:bg-amber-500/10 shadow-lg ring-1 ring-amber-500/20" : "border-l-primary/40"
+      )}>
         <CardHeader className="flex flex-row items-start justify-between gap-4">
           <div className="flex items-center gap-3 min-w-0 flex-1">
             <Dialog>
@@ -156,7 +159,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
                 </Avatar>
               </DialogTrigger>
               {testimony.authorAvatarUrl && (
-                  <DialogContent className="p-0 bg-transparent border-0 w-auto max-w-lg" onClick={(e) => e.stopPropagation()}>
+                  <DialogContent className="p-0 bg-transparent border-0 w-auto max-w-lg" onClick={(e) => {e.stopPropagation();}}>
                     <DialogHeader className="sr-only">
                         <DialogTitle>Profile photo of {authorFullName}</DialogTitle>
                         <DialogDescription>A larger view of the user's profile photo.</DialogDescription>

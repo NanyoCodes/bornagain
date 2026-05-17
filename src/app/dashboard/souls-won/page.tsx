@@ -239,10 +239,10 @@ export default function SoulsWonPage() {
                 {triggerButton}
               </SheetTrigger>
               <DialogContent className="sm:max-w-lg">
-                <SheetHeader>
-                  <SheetTitle>Log a New Soul</SheetTitle>
-                  <SheetDescription>Record the details of the person you've ministered to.</SheetDescription>
-                </SheetHeader>
+                <DialogHeader>
+                  <DialogTitle>Log a New Soul</DialogTitle>
+                  <DialogDescription>Record the details of the person you've ministered to.</DialogDescription>
+                </DialogHeader>
                 <div className="max-h-[70vh] overflow-y-auto pr-2">
                     <LogSoulForm onSoulLogged={handleSoulLogged} fellowships={activeFellowships} campaigns={activeCampaigns} />
                 </div>
@@ -268,10 +268,10 @@ export default function SoulsWonPage() {
       
       <Dialog open={!!soulToEdit} onOpenChange={(open) => !open && setSoulToEdit(null)}>
           <DialogContent className="sm:max-w-lg">
-              <SheetHeader>
-                  <SheetTitle>Edit Soul Details</SheetTitle>
-                  <SheetDescription>Update information for {soulToEdit?.firstName}.</SheetDescription>
-              </SheetHeader>
+              <DialogHeader>
+                  <DialogTitle>Edit Soul Details</DialogTitle>
+                  <DialogDescription>Update information for {soulToEdit?.firstName}.</DialogDescription>
+              </DialogHeader>
               <div className="max-h-[70vh] overflow-y-auto pr-2">
                   {soulToEdit && (
                     <EditSoulForm 
