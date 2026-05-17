@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { ThemeProvider } from '@/components/theme-provider';
@@ -13,16 +13,50 @@ const RAW_ADSENSE_ID = process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID;
 const ADSENSE_CLIENT_ID = RAW_ADSENSE_ID?.startsWith('ca-') ? RAW_ADSENSE_ID : `ca-${RAW_ADSENSE_ID}`;
 
 export const metadata: Metadata = {
-  title: 'Testify',
+  title: {
+    default: 'Testify - Global Evangelism Platform',
+    template: '%s | Testify',
+  },
   description:
-    'A platform for believers to share testimonies, organize soul-winning campaigns, and track evangelism progress.',
+    'Encourage believers, organize soul-winning campaigns, and track global evangelism progress. Join the movement glorifying God through technology.',
   metadataBase: new URL('https://testifyglobal.com'),
+  alternates: {
+    canonical: '/',
+  },
+  openGraph: {
+    title: 'Testify - Global Evangelism Platform',
+    description: 'Share your story, join the harvest, and connect with the global Body of Christ.',
+    url: 'https://testifyglobal.com',
+    siteName: 'Testify Global',
+    images: [
+      {
+        url: testifyLogoUrl,
+        width: 800,
+        height: 800,
+        alt: 'Testify Logo',
+      },
+    ],
+    locale: 'en_US',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Testify - Global Evangelism Platform',
+    description: 'Empowering the Great Commission through technology.',
+    images: [testifyLogoUrl],
+  },
   manifest: '/manifest.webmanifest',
   icons: {
     icon: [{ url: testifyLogoUrl, type: 'image/png' }],
     shortcut: testifyLogoUrl,
     apple: [{ url: testifyLogoUrl, sizes: '180x180', type: 'image/png' }],
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: '#f97416',
+  width: 'device-width',
+  initialScale: 1,
 };
 
 export default function RootLayout({
@@ -37,7 +71,6 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://maps.googleapis.com" />
         <link rel="preconnect" href="https://pagead2.googlesyndication.com" />
-        {/* Force Favicon for various devices */}
         <link rel="icon" href={testifyLogoUrl} />
         <link rel="apple-touch-icon" href={testifyLogoUrl} />
         {RAW_ADSENSE_ID && (

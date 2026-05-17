@@ -15,6 +15,9 @@ import {
   differenceInHours,
   subDays,
   differenceInDays,
+  isToday,
+  isAfter,
+  startOfWeek,
 } from 'date-fns';
 import {
   ArrowRight,
@@ -24,6 +27,8 @@ import {
   XCircle,
   Flame,
   Heart,
+  Users,
+  CalendarCheck,
 } from 'lucide-react';
 import { useCollection, useFirestore, useUser, useDoc } from '@/firebase';
 import {
@@ -46,21 +51,6 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
-import { useToast } from '@/hooks/use-toast';
 import { WelcomeBackDialog } from '@/components/dashboard/welcome-back-dialog';
 import { safeToDate } from '@/lib/utils';
 import { actionItems } from '@/lib/follow-up-data';
@@ -69,13 +59,9 @@ import { LogSoulForm } from '@/components/souls/log-soul-form';
 import { useRouter } from 'next/navigation';
 import { welcomeScriptures } from '@/lib/verses';
 import AdsenseAd from '@/components/common/adsense-ad';
+import { ProgressOverview } from '@/components/dashboard/progress-overview';
 
 // Performance: Dynamically import heavy components
-const ProgressOverview = dynamic(() => import('@/components/dashboard/progress-overview').then(m => m.ProgressOverview), {
-  loading: () => <Skeleton className="h-[400px] w-full" />,
-  ssr: false
-});
-
 const MonthlyStatsChart = dynamic(() => import('@/components/dashboard/monthly-stats-chart').then(m => m.MonthlyStatsChart), {
   loading: () => <Skeleton className="h-[300px] w-full" />,
   ssr: false
@@ -448,6 +434,23 @@ export default function DashboardPage() {
     }
   }, [loading, userProfile, firestore, user, soulsWon]);
 
+  const soulsToday = useMemo(() => {
+    if (!soulsWon) return 0;
+    return soulsWon.filter(s => {
+      const d = safeToDate(s.wonAt);
+      return d && isToday(d);
+    }).length;
+  }, [soulsWon]);
+
+  const soulsThisWeek = useMemo(() => {
+    if (!soulsWon) return 0;
+    const start = startOfWeek(new Date(), { weekStartsOn: 0 });
+    return soulsWon.filter(s => {
+      const d = safeToDate(s.wonAt);
+      return d && isAfter(d, start);
+    }).length;
+  }, [soulsWon]);
+
   const progressData = useMemo(() => {
     if (!soulsWon) return [];
     const monthlyData: { [key: string]: { date: string; soulsWon: number } } = {};
@@ -477,63 +480,6 @@ export default function DashboardPage() {
     return Object.values(monthlyData);
   }, [soulsWon]);
 
-  const followUpStatusData = useMemo(() => {
-    if (!soulsWon) {
-      return [
-        { status: 'New', count: 0 },
-        { status: 'Contacted', count: 0 },
-        { status: 'Established', count: 0 },
-      ];
-    }
-    
-    const statusCounts: { [key in Soul['status']]: number } = {
-      New: 0,
-      Contacted: 0,
-      Established: 0,
-    };
-
-    soulsWon.forEach(soul => {
-      if (soul.status && soul.status in statusCounts) {
-        statusCounts[soul.status]++;
-      } else {
-        statusCounts['New']++;
-      }
-    });
-
-    return [
-      { status: 'New', count: statusCounts.New },
-      { status: 'Contacted', count: statusCounts.Contacted },
-      { status: 'Established', count: statusCounts.Established },
-    ];
-  }, [soulsWon]);
-
-  const prayerReminders = useMemo(() => {
-    if (!soulsWon) return [];
-    const now = new Date();
-
-    return soulsWon
-      .filter(soul => soul.status !== 'Established')
-      .map(soul => {
-        const lastFollowUp = (soul.followUpLog && soul.followUpLog.length > 0)
-          ? [...soul.followUpLog].sort((a, b) => (safeToDate(b.date)?.getTime() ?? 0) - (safeToDate(a.date)?.getTime() ?? 0))[0]
-          : null;
-        
-        const lastContactDate = lastFollowUp ? safeToDate(lastFollowUp.date) : safeToDate(soul.wonAt);
-        const daysSinceContact = lastContactDate ? differenceInDays(now, lastContactDate) : 0;
-        
-        return { ...soul, daysSinceContact };
-      })
-      .filter(soul => soul.daysSinceContact > 1)
-      .sort((a, b) => b.daysSinceContact - a.daysSinceContact)
-      .slice(0, 3);
-  }, [soulsWon]);
-
-  const followUpStatusColors: Record<Soul['status'], string> = {
-    New: 'hsl(var(--status-new))',
-    Contacted: 'hsl(var(--status-contacted))',
-    Established: 'hsl(var(--status-established))',
-  };
-
   const displayName = userProfile?.firstName || user?.displayName || 'User';
 
   const handleSoulLogged = () => {
@@ -554,15 +500,42 @@ export default function DashboardPage() {
     <div className="space-y-8">
       <Card>
         <CardContent className="p-6">
-          <h1 className="text-xl sm:text-2xl font-bold tracking-tight font-headline">
+          <h1 className="text-xl sm:text-2xl font-bold tracking-tight font-headline text-primary">
             {welcomeMessage?.text.replace('{name}', displayName) ||
               `Welcome back, ${displayName}!`}
           </h1>
-          <p className="text-muted-foreground uppercase mt-2">
+          <p className="text-muted-foreground uppercase mt-2 text-xs font-semibold tracking-widest">
             {welcomeMessage?.verse || ''}
           </p>
         </CardContent>
       </Card>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Card className="bg-primary/10 border-primary/20">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium flex items-center gap-2">
+              <Users className="h-4 w-4 text-primary" />
+              Lives Changed Today
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold">{soulsToday}</div>
+            <p className="text-xs text-muted-foreground mt-1">Glory to God for these lives!</p>
+          </CardContent>
+        </Card>
+        <Card className="bg-chart-2/10 border-chart-2/20">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium flex items-center gap-2">
+              <CalendarCheck className="h-4 w-4 text-chart-2" />
+              Souls Won This Week
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold">{soulsThisWeek}</div>
+            <p className="text-xs text-muted-foreground mt-1">The harvest is truly plenteous.</p>
+          </CardContent>
+        </Card>
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-8">
@@ -572,8 +545,8 @@ export default function DashboardPage() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Monthly Statistics</CardTitle>
-              <CardDescription>Souls won in the last 3 months.</CardDescription>
+              <CardTitle>Monthly Harvest Statistics</CardTitle>
+              <CardDescription>Tracking your progress across the last 3 months.</CardDescription>
             </CardHeader>
             <CardContent>
               <MonthlyStatsChart 
@@ -592,7 +565,7 @@ export default function DashboardPage() {
               <div className="space-y-1.5">
                 <CardTitle>Recent Souls Won</CardTitle>
                 <CardDescription>
-                  The latest additions to your follow-up list.
+                  Individuals recently led to Christ.
                 </CardDescription>
               </div>
               <div className="flex items-center gap-2">
@@ -616,16 +589,20 @@ export default function DashboardPage() {
             <CardHeader>
               <CardTitle>Follow-up Funnel</CardTitle>
               <CardDescription>
-                Current status of all souls won.
+                Progress of souls from conversion to established discipleship.
               </CardDescription>
             </CardHeader>
             <CardContent className="pt-2 space-y-2">
-                {followUpStatusData.map((item) => (
+                {[
+                  { status: 'New', count: soulsWon?.filter(s => s.status === 'New').length || 0, color: 'hsl(var(--status-new))' },
+                  { status: 'Contacted', count: soulsWon?.filter(s => s.status === 'Contacted').length || 0, color: 'hsl(var(--status-contacted))' },
+                  { status: 'Established', count: soulsWon?.filter(s => s.status === 'Established').length || 0, color: 'hsl(var(--status-established))' },
+                ].map((item) => (
                     <div key={item.status} className="flex items-center justify-between p-3 rounded-lg bg-muted/40">
                         <div className="flex items-center gap-3">
                             <span
                                 className="flex h-2.5 w-2.5 shrink-0 rounded-full"
-                                style={{ backgroundColor: followUpStatusColors[item.status as Soul['status']] }}
+                                style={{ backgroundColor: item.color }}
                             />
                             <span className="text-sm font-medium">{item.status}</span>
                         </div>
@@ -642,25 +619,21 @@ export default function DashboardPage() {
                     Prayer Reminders
                 </CardTitle>
                 <CardDescription>
-                    Follow up with these individuals.
+                    Souls needing intercession and follow-up.
                 </CardDescription>
             </CardHeader>
             <CardContent className="space-y-2">
-                {prayerReminders.length > 0 ? (
-                    prayerReminders.map(soul => (
-                        <div key={soul.id} className="flex items-center justify-between p-2 -mx-2 rounded-lg hover:bg-muted/50">
-                            <div>
-                                <p className="font-semibold text-sm">{[soul.firstName, soul.lastName].filter(Boolean).join(' ') || 'Unnamed Soul'}</p>
-                                <p className="text-xs text-muted-foreground">Last contacted {soul.daysSinceContact} days ago</p>
-                            </div>
-                            <Button asChild variant="ghost" size="sm">
-                                <Link href="/dashboard/souls-won">View</Link>
-                            </Button>
+                {soulsWon?.filter(s => s.status !== 'Established').slice(0, 3).map(soul => (
+                    <div key={soul.id} className="flex items-center justify-between p-2 -mx-2 rounded-lg hover:bg-muted/50">
+                        <div>
+                            <p className="font-semibold text-sm">{[soul.firstName, soul.lastName].filter(Boolean).join(' ') || 'Unnamed Soul'}</p>
+                            <p className="text-xs text-muted-foreground">Needs prayer</p>
                         </div>
-                    ))
-                ) : (
-                    <p className="text-sm text-center text-muted-foreground py-4">No reminders.</p>
-                )}
+                        <Button asChild variant="ghost" size="sm">
+                            <Link href="/dashboard/souls-won">View</Link>
+                        </Button>
+                    </div>
+                )) || <p className="text-sm text-center text-muted-foreground py-4">No reminders.</p>}
             </CardContent>
           </Card>
 
@@ -676,9 +649,9 @@ export default function DashboardPage() {
             onClick={() => router.push('/dashboard/testimonies')}
           >
             <CardHeader>
-              <CardTitle>Share Your Story</CardTitle>
+              <CardTitle>Share Your Glory Story</CardTitle>
               <CardDescription className="text-primary-foreground/80">
-                Encourage others with what God has done.
+                "Go home to your own people and tell them how much the Lord has done for you..."
               </CardDescription>
             </CardHeader>
             <CardContent>

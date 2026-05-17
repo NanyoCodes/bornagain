@@ -20,6 +20,8 @@ import {
   HeartHandshake,
   TrendingUp,
   BookMarked,
+  Info,
+  Phone,
 } from "lucide-react";
 
 import {
@@ -50,7 +52,7 @@ import { PageTransition } from "../page-transition";
 const navItems = [
   { href: "/dashboard", label: "Progress", icon: TrendingUp, color: "text-chart-1" },
   { href: "/dashboard/souls-won", label: "Souls Won", icon: UserPlus, color: "text-chart-2" },
-  { href: "/dashboard/testimonies", label: "Testimonies", icon: Newspaper, labelShort: "Story", iconShort: Newspaper, color: "text-chart-3" },
+  { href: "/dashboard/testimonies", label: "Testimonies", icon: Newspaper, color: "text-chart-3" },
   { href: "/dashboard/campaigns", label: "Campaigns", icon: Target, color: "text-chart-4" },
   { href: "/dashboard/fellowship", label: "Fellowship", icon: HeartHandshake, color: "text-primary" },
 ];
@@ -223,6 +225,19 @@ function AppHeader({ unreadChatCount }: { unreadChatCount: number }) {
                 <Settings className="mr-2 h-4 w-4" />
                 <span>Settings</span>
               </Link>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem asChild>
+                <Link href="/about" className="cursor-pointer">
+                <Info className="mr-2 h-4 w-4" />
+                <span>About Testify</span>
+                </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+                <Link href="/contact" className="cursor-pointer">
+                <Phone className="mr-2 h-4 w-4" />
+                <span>Contact Us</span>
+                </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
                 <Link href="/guide" className="cursor-pointer">
