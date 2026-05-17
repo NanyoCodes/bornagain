@@ -1,3 +1,4 @@
+
 'use client';
 
 import Image from "next/image";
@@ -227,18 +228,6 @@ function AppHeader({ unreadChatCount }: { unreadChatCount: number }) {
               </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem asChild>
-                <Link href="/about" className="cursor-pointer">
-                <Info className="mr-2 h-4 w-4" />
-                <span>About Testify</span>
-                </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-                <Link href="/contact" className="cursor-pointer">
-                <Phone className="mr-2 h-4 w-4" />
-                <span>Contact Us</span>
-                </Link>
-            </DropdownMenuItem>
             <DropdownMenuItem asChild>
                 <Link href="/guide" className="cursor-pointer">
                 <BookOpen className="mr-2 h-4 w-4" />
