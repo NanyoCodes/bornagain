@@ -47,16 +47,7 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
     <div className="w-full lg:grid lg:grid-cols-2 min-h-screen bg-background">
       <div className="flex flex-col p-6 sm:p-12 overflow-y-auto">
         <div className="mx-auto w-full max-w-[320px] space-y-6">
-            <div className="flex justify-start w-full mb-8">
-                {logo && (
-                    <Link href="/">
-                        <Avatar className="h-20 w-20 border-2 border-primary/10 shadow-sm rounded-xl">
-                            <AvatarImage src={logo.imageUrl} alt="Testify" priority />
-                            <AvatarFallback>T</AvatarFallback>
-                        </Avatar>
-                    </Link>
-                )}
-            </div>
+            {/* Logo removed from here as per user request */}
             
             {children}
             
