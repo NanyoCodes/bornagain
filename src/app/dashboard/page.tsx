@@ -30,6 +30,20 @@ import {
   Users,
   CalendarCheck,
 } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from '@/components/ui/sheet';
 import { useCollection, useFirestore, useUser, useDoc } from '@/firebase';
 import {
   collection,
