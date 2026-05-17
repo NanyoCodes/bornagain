@@ -66,8 +66,6 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
     return format(createdAtDate, "PPP 'at' p");
   }, [testimony.createdAt]);
   
-  const locationString = [testimony.authorLocation?.city, testimony.authorLocation?.country].filter(Boolean).join(', ');
-
   React.useEffect(() => {
     setMounted(true);
     const checkTruncation = () => {
@@ -146,14 +144,14 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
   return (
     <>
       <Card id={testimony.id} className={cn(
-        "flex flex-col h-full overflow-hidden shadow-md scroll-mt-20 border-l-4",
-        testimony.answeredPrayerId ? "border-l-amber-500 bg-amber-500/5 dark:bg-amber-500/10 shadow-lg ring-1 ring-amber-500/20" : "border-l-primary/40"
+        "flex flex-col h-full overflow-hidden shadow-sm hover:shadow-md transition-shadow scroll-mt-20 border-l-4",
+        testimony.answeredPrayerId ? "border-l-amber-500 bg-amber-500/5 dark:bg-amber-500/10" : "border-l-primary/40"
       )}>
-        <CardHeader className="flex flex-row items-start justify-between gap-4">
+        <CardHeader className="flex flex-row items-start justify-between gap-3 p-4 sm:p-6">
           <div className="flex items-center gap-3 min-w-0 flex-1">
             <Dialog>
               <DialogTrigger asChild onClick={(e) => e.stopPropagation()} disabled={!testimony.authorAvatarUrl}>
-                <Avatar className={cn(testimony.authorAvatarUrl && "cursor-pointer h-12 w-12")}>
+                <Avatar className={cn(testimony.authorAvatarUrl && "cursor-pointer h-10 w-10 sm:h-12 sm:w-12")}>
                   <AvatarImage src={testimony.authorAvatarUrl} alt={authorFullName} />
                   <AvatarFallback>{initials || 'A'}</AvatarFallback>
                 </Avatar>
@@ -170,25 +168,25 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
             </Dialog>
             <div className="min-w-0 flex-1">
                <Link href={profileLink} onClick={(e) => { e.stopPropagation(); }} className="hover:underline">
-                <CardTitle className="text-base font-semibold truncate">{authorFullName}</CardTitle>
+                <CardTitle className="text-sm sm:text-base font-semibold truncate">{authorFullName}</CardTitle>
               </Link>
-              <CardDescription className="text-[10px] mt-1 flex flex-col gap-0.5">
-                  <span className="flex items-center gap-1"><Globe className="h-3 w-3 text-primary" /> {testimony.authorLocation?.country || 'Global Community'}</span>
-                  <span>{displayDate}</span>
+              <CardDescription className="text-[10px] sm:text-xs mt-0.5 flex flex-col gap-0.5">
+                  <span className="flex items-center gap-1"><Globe className="h-3 w-3 text-primary shrink-0" /> {testimony.authorLocation?.country || 'Global Community'}</span>
+                  <span className="truncate">{displayDate}</span>
               </CardDescription>
             </div>
           </div>
-          <Badge variant="outline" className="shrink-0 text-[10px] uppercase tracking-widest">{testimony.category}</Badge>
+          <Badge variant="outline" className="shrink-0 text-[9px] sm:text-[10px] uppercase tracking-widest px-2 py-0 h-5 sm:h-6">{testimony.category}</Badge>
         </CardHeader>
-        <CardContent className="flex-grow pt-0 space-y-4">
+        <CardContent className="flex-grow pt-0 px-4 sm:px-6 space-y-4">
           <div className="text-sm text-muted-foreground whitespace-pre-wrap">
-            <p ref={contentRef} className="line-clamp-4 italic leading-relaxed">
+            <p ref={contentRef} className="line-clamp-4 italic leading-relaxed text-xs sm:text-sm">
               &ldquo;{testimony.content}&rdquo;
             </p>
             {isTruncated && (
               <Button
                 variant="link"
-                className="p-0 h-auto text-xs text-primary font-bold"
+                className="p-0 h-auto text-xs text-primary font-bold mt-1"
                 onClick={(e) => {
                   e.stopPropagation();
                   setShowFullText(true);
@@ -200,20 +198,20 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
           </div>
           {testimony.answeredPrayerId && testimony.answeredPrayerContent && (
             <Card className="border-amber-500/50 bg-amber-500/5 dark:bg-amber-500/10 shadow-inner">
-                <CardHeader className="p-3">
-                    <CardDescription className="text-[10px] uppercase tracking-wider text-amber-600 dark:text-amber-400 font-bold">
+                <CardHeader className="p-2 sm:p-3">
+                    <CardDescription className="text-[9px] sm:text-[10px] uppercase tracking-wider text-amber-600 dark:text-amber-400 font-bold">
                         Answer to Prayer Request:
                     </CardDescription>
-                    <blockquote className="border-l-2 border-amber-500/50 pl-3 italic text-xs text-muted-foreground">
+                    <blockquote className="border-l-2 border-amber-500/50 pl-2 sm:pl-3 italic text-[11px] sm:text-xs text-muted-foreground line-clamp-2">
                         &ldquo;{testimony.answeredPrayerContent}&rdquo;
                     </blockquote>
                 </CardHeader>
             </Card>
            )}
         </CardContent>
-        <CardFooter className="pt-4 flex justify-between items-center mt-auto border-t bg-muted/20">
+        <CardFooter className="pt-3 pb-3 px-4 sm:px-6 flex justify-between items-center mt-auto border-t bg-muted/20">
           {testimony.campaignTitle && testimony.campaignId && (
-              <div className="text-[10px] text-muted-foreground mr-auto truncate italic">
+              <div className="text-[9px] sm:text-[10px] text-muted-foreground mr-auto truncate italic max-w-[50%]">
                   Event: <Link href={`/dashboard/campaigns/${testimony.campaignId}`} className="font-semibold text-primary hover:underline">{testimony.campaignTitle}</Link>
               </div>
           )}
@@ -251,12 +249,14 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
 
       {mounted && isMobile ? (
         <Sheet open={showFullText} onOpenChange={setShowFullText}>
-          <SheetContent side="bottom" className="h-[80dvh] flex flex-col">
-            <SheetHeader className="text-left flex-shrink-0">
-              <SheetTitle>Testimony by {authorFullName}</SheetTitle>
-              <SheetDescription>{displayDate}</SheetDescription>
-            </SheetHeader>
-            <div className="flex-grow min-h-0 pt-6">
+          <SheetContent side="bottom" className="h-[80dvh] flex flex-col p-0">
+            <div className="p-6 border-b shrink-0">
+                <SheetHeader className="text-left">
+                <SheetTitle>Testimony by {authorFullName}</SheetTitle>
+                <SheetDescription>{displayDate}</SheetDescription>
+                </SheetHeader>
+            </div>
+            <div className="flex-grow min-h-0 p-6 overflow-y-auto">
               {fullTextContent}
             </div>
           </SheetContent>

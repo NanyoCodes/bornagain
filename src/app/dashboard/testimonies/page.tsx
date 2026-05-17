@@ -105,7 +105,6 @@ export default function TestimoniesPage() {
     const hash = window.location.hash;
     if (hash) {
       const id = hash.substring(1);
-      // We need to switch to the testimonies tab to see the highlighted testimony
       setActiveTab("testimonies");
       setHighlightedTestimonyId(id);
     }
@@ -256,18 +255,18 @@ export default function TestimoniesPage() {
   const prayerFormContent = userProfile ? <CreatePrayerRequestForm onPrayerRequestCreated={handlePrayerRequestCreated} /> : <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin"/></div>;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 md:space-y-8">
       {/* Facebook-style Status Box */}
-      <Card>
+      <Card className="border-none shadow-sm sm:border sm:shadow-md">
         <CardContent className="pt-6">
-          <div className="flex items-center gap-4">
-            <Avatar className="h-10 w-10 border shadow-sm">
+          <div className="flex items-center gap-3 sm:gap-4">
+            <Avatar className="h-10 w-10 border shadow-sm shrink-0">
               <AvatarImage src={userProfile?.photoURL} />
               <AvatarFallback className="bg-primary/10 text-primary">{userProfile?.firstName?.charAt(0)}</AvatarFallback>
             </Avatar>
             <Button 
               variant="outline" 
-              className="flex-1 justify-start text-muted-foreground font-normal rounded-full h-11 px-4 hover:bg-muted/50 transition-colors"
+              className="flex-1 justify-start text-muted-foreground font-normal rounded-full h-10 sm:h-11 px-4 hover:bg-muted/50 transition-colors text-xs sm:text-sm"
               onClick={() => setIsTestimonyDialogOpen(true)}
             >
               What has God done today?
@@ -277,21 +276,21 @@ export default function TestimoniesPage() {
               <Button 
                 variant="ghost" 
                 size="sm" 
-                className="flex-1 text-muted-foreground hover:text-primary transition-colors py-6 h-auto"
+                className="flex-1 text-muted-foreground hover:text-primary transition-colors py-4 sm:py-6 h-auto"
                 onClick={() => setIsTestimonyDialogOpen(true)}
               >
-                <Newspaper className="mr-2 h-5 w-5 text-primary" />
-                <span className="text-xs sm:text-sm font-medium">Share Testimony</span>
+                <Newspaper className="mr-2 h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+                <span className="text-[10px] sm:text-xs md:text-sm font-medium">Share Testimony</span>
               </Button>
               <div className="h-6 w-px bg-border shrink-0" />
               <Button 
                 variant="ghost" 
                 size="sm" 
-                className="flex-1 text-muted-foreground hover:text-primary transition-colors py-6 h-auto"
+                className="flex-1 text-muted-foreground hover:text-primary transition-colors py-4 sm:py-6 h-auto"
                 onClick={() => setIsPrayerDialogOpen(true)}
               >
-                <HandHeart className="mr-2 h-5 w-5 text-primary" />
-                <span className="text-xs sm:text-sm font-medium">Share Prayer Request</span>
+                <HandHeart className="mr-2 h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+                <span className="text-[10px] sm:text-xs md:text-sm font-medium">Share Request</span>
               </Button>
           </div>
         </CardContent>
@@ -302,8 +301,8 @@ export default function TestimoniesPage() {
               <TabsTrigger value="testimonies">Testimonies</TabsTrigger>
               <TabsTrigger value="prayers">Prayer Requests</TabsTrigger>
           </TabsList>
-          <TabsContent value="testimonies" className="mt-6">
-              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <TabsContent value="testimonies" className="mt-4 md:mt-6">
+              <div className="grid gap-4 md:gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {loading && (
                   [...Array(3)].map((_, i) => (
                     <Card key={i}><CardHeader><div className="flex items-center gap-4"><Skeleton className="h-12 w-12 rounded-full" /><div className="w-full space-y-2"><Skeleton className="h-4 w-1/4" /><Skeleton className="h-4 w-1/5" /></div></div></CardHeader><CardContent className="space-y-4"><Skeleton className="h-5 w-3/4" /><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-4/5" /></CardContent><CardFooter><Skeleton className="h-8 w-24 ml-auto" /></CardFooter></Card>
@@ -331,8 +330,8 @@ export default function TestimoniesPage() {
                 )}
               </div>
           </TabsContent>
-          <TabsContent value="prayers" className="mt-6">
-              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <TabsContent value="prayers" className="mt-4 md:mt-6">
+              <div className="grid gap-4 md:gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {loading && (
                   [...Array(3)].map((_, i) => (
                     <Card key={i}><CardHeader><div className="flex items-center gap-4"><Skeleton className="h-12 w-12 rounded-full" /><div className="w-full space-y-2"><Skeleton className="h-4 w-1/4" /><Skeleton className="h-4 w-1/5" /></div></div></CardHeader><CardContent className="space-y-4"><Skeleton className="h-5 w-3/4" /><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-4/5" /></CardContent><CardFooter><Skeleton className="h-8 w-24 ml-auto" /></CardFooter></Card>
@@ -361,7 +360,7 @@ export default function TestimoniesPage() {
       
       {itemToDelete && (
         <AlertDialog open={!!itemToDelete} onOpenChange={(open) => !open && setItemToDelete(null)}>
-            <AlertDialogContent>
+            <AlertDialogContent className="w-[90vw] max-w-lg rounded-lg">
             <AlertDialogHeader>
                 <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                 <AlertDialogDescription>
@@ -395,12 +394,14 @@ export default function TestimoniesPage() {
       
       {mounted && isMobile ? (
         <Sheet open={isTestimonyDialogOpen} onOpenChange={handleCloseTestimonyDialog}>
-          <SheetContent side="bottom">
-            <SheetHeader>
-              <SheetTitle>{prayerToAnswer ? 'Share Answered Prayer' : 'Share Testimony'}</SheetTitle>
-              <SheetDescription>{prayerToAnswer ? "Share how God answered this prayer to encourage others." : "Encourage others by sharing what God has done."}</SheetDescription>
-            </SheetHeader>
-            <div className="max-h-[80vh] overflow-y-auto p-1 mt-4">{testimonyFormContent}</div>
+          <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0">
+            <div className="p-6 border-b shrink-0">
+                <SheetHeader className="text-left">
+                <SheetTitle>{prayerToAnswer ? 'Share Answered Prayer' : 'Share Testimony'}</SheetTitle>
+                <SheetDescription>{prayerToAnswer ? "Share how God answered this prayer to encourage others." : "Encourage others by sharing what God has done."}</SheetDescription>
+                </SheetHeader>
+            </div>
+            <div className="max-h-[80vh] overflow-y-auto p-6">{testimonyFormContent}</div>
           </SheetContent>
         </Sheet>
       ) : (
@@ -417,12 +418,14 @@ export default function TestimoniesPage() {
       
       {mounted && isMobile ? (
         <Sheet open={isPrayerDialogOpen} onOpenChange={setIsPrayerDialogOpen}>
-          <SheetContent side="bottom">
-            <SheetHeader>
-              <SheetTitle>Share Prayer Request</SheetTitle>
-              <SheetDescription>Share your request anonymously with the community.</SheetDescription>
-            </SheetHeader>
-            <div className="max-h-[80vh] overflow-y-auto p-1 mt-4">{prayerFormContent}</div>
+          <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0">
+            <div className="p-6 border-b shrink-0">
+                <SheetHeader className="text-left">
+                <SheetTitle>Share Prayer Request</SheetTitle>
+                <SheetDescription>Share your request anonymously with the community.</SheetDescription>
+                </SheetHeader>
+            </div>
+            <div className="max-h-[80vh] overflow-y-auto p-6">{prayerFormContent}</div>
           </SheetContent>
         </Sheet>
       ) : (
