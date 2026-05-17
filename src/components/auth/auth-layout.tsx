@@ -50,7 +50,7 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
             {logo && (
               <div className="flex justify-start w-full mb-8">
                 <Link href="/">
-                  <Avatar className="h-12 w-12 border shadow-sm">
+                  <Avatar className="h-16 w-16 border shadow-sm">
                     <AvatarImage src={logo.imageUrl} alt={logo.description} />
                     <AvatarFallback>T</AvatarFallback>
                   </Avatar>
