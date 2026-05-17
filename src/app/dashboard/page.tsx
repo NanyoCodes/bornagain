@@ -60,6 +60,7 @@ import { useRouter } from 'next/navigation';
 import { welcomeScriptures } from '@/lib/verses';
 import AdsenseAd from '@/components/common/adsense-ad';
 import { ProgressOverview } from '@/components/dashboard/progress-overview';
+import { useToast } from '@/hooks/use-toast';
 
 // Performance: Dynamically import heavy components
 const MonthlyStatsChart = dynamic(() => import('@/components/dashboard/monthly-stats-chart').then(m => m.MonthlyStatsChart), {
