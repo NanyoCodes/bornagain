@@ -5,7 +5,6 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
@@ -14,7 +13,6 @@ import {
   format,
   differenceInHours,
   subDays,
-  differenceInDays,
   isToday,
   isAfter,
   startOfWeek,
@@ -25,7 +23,6 @@ import {
   Loader2,
   RefreshCw,
   XCircle,
-  Flame,
   Heart,
   Users,
   CalendarCheck,
