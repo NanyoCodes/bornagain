@@ -196,12 +196,12 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
             )}
           </div>
           {testimony.answeredPrayerId && testimony.answeredPrayerContent && (
-            <Card className="border-primary/50 bg-primary/5 dark:bg-primary/10 shadow-inner">
+            <Card className="border-amber-500/50 bg-amber-500/5 dark:bg-amber-500/10 shadow-inner">
                 <CardHeader className="p-3">
-                    <CardDescription className="text-[10px] uppercase tracking-wider text-primary font-bold">
+                    <CardDescription className="text-[10px] uppercase tracking-wider text-amber-600 dark:text-amber-400 font-bold">
                         Answer to Prayer Request:
                     </CardDescription>
-                    <blockquote className="border-l-2 border-primary/50 pl-3 italic text-xs text-muted-foreground">
+                    <blockquote className="border-l-2 border-amber-500/50 pl-3 italic text-xs text-muted-foreground">
                         &ldquo;{testimony.answeredPrayerContent}&rdquo;
                     </blockquote>
                 </CardHeader>
@@ -234,12 +234,12 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
               <DropdownMenuContent align="end">
                 <DropdownMenuLabel>Share God's Glory</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onSelect={(e) => { e.preventDefault(); handleShare('link'); }}><Share2 /><span>Copy Link</span></DropdownMenuItem>
-                <DropdownMenuItem onSelect={(e) => { e.preventDefault(); handleShare('whatsapp'); }}><MessageCircle /><span>Share WhatsApp Poster</span></DropdownMenuItem>
-                <DropdownMenuItem onSelect={(e) => { e.preventDefault(); handleShare('facebook'); }}><Icons.facebook /><span>Share on Facebook</span></DropdownMenuItem>
+                <DropdownMenuItem onSelect={(e) => { e.preventDefault(); handleShare('link'); }}><Share2 className="mr-2 h-4 w-4" /><span>Copy Link</span></DropdownMenuItem>
+                <DropdownMenuItem onSelect={(e) => { e.preventDefault(); handleShare('whatsapp'); }}><MessageCircle className="mr-2 h-4 w-4" /><span>Share WhatsApp Poster</span></DropdownMenuItem>
+                <DropdownMenuItem onSelect={(e) => { e.preventDefault(); handleShare('facebook'); }}><Icons.facebook className="mr-2 h-4 w-4" /><span>Share on Facebook</span></DropdownMenuItem>
                 {isAuthor && <DropdownMenuSeparator />}
-                {isAuthor && <DropdownMenuItem onSelect={(e) => { e.preventDefault(); onEdit(); }}><Edit /><span>Edit</span></DropdownMenuItem>}
-                {isAuthor && <DropdownMenuItem onSelect={(e) => { e.preventDefault(); onDelete(); }} className="text-destructive focus:text-destructive"><Trash2 /><span>Delete</span></DropdownMenuItem>}
+                {isAuthor && <DropdownMenuItem onSelect={(e) => { e.preventDefault(); onEdit(); }}><Edit className="mr-2 h-4 w-4" /><span>Edit</span></DropdownMenuItem>}
+                {isAuthor && <DropdownMenuItem onSelect={(e) => { e.preventDefault(); onDelete(); }} className="text-destructive focus:text-destructive"><Trash2 className="mr-2 h-4 w-4" /><span>Delete</span></DropdownMenuItem>}
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

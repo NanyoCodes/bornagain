@@ -25,7 +25,7 @@ export default function AboutPage() {
         <section className="space-y-4">
             <h2 className="text-2xl font-bold flex items-center gap-2"><Globe className="h-5 w-5 text-primary" /> Our Mission</h2>
             <p className="text-muted-foreground leading-relaxed">
-                Testify is built to serve the Great Commission (Matthew 28:19). Our mission is to equip the Body of Christ with a digital infrastructure to **Organize** evangelism efforts, **Track** the spiritual journey of converts, and **Share** the irrefutable testimonies of God's power. 
+                Testify is built for believers to share the greatness of Jesus Christ who gave his life as an offering to reconcile the world to GOD so that the kingdom of GOD will be built on Earth.
             </p>
         </section>
 
