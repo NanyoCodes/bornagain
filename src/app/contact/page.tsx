@@ -1,9 +1,9 @@
 'use client';
 
 import { AuthLayout } from '@/components/auth/auth-layout';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Mail, Phone, MessageSquare, ArrowLeft, Globe } from 'lucide-react';
+import { Mail, Phone, Globe } from 'lucide-react';
 import Link from 'next/link';
 
 export default function ContactPage() {
@@ -59,9 +59,6 @@ export default function ContactPage() {
         </div>
 
         <div className="space-y-4 pt-6">
-            <Button asChild className="w-full">
-                <Link href="/login">Return to App</Link>
-            </Button>
             <Button asChild variant="outline" className="w-full">
                 <Link href="/about">Learn About Testify</Link>
             </Button>
