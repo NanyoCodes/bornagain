@@ -11,6 +11,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
+  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
@@ -242,13 +243,19 @@ export default function BibleReaderPage() {
         if (unfinishedHighlight) { setActiveHighlightId(unfinishedHighlight.id); if (isMobile) setMobileTab('notes'); return; }
         const newSelection = selectedVerses.includes(verseNumber) ? selectedVerses.filter(v => v !== verseNumber) : [...selectedVerses, verseNumber].sort((a, b) => a - b);
         setSelectedVerses(newSelection);
-        const verseElement = document.getElementById(`verse-${verseNumber}`);
+        
+        // Use the first verse in the selection for toolbar reference to keep it stable
+        const targetVerseNum = newSelection[0] || verseNumber;
+        const verseElement = document.getElementById(`verse-${targetVerseNum}`);
         if (verseElement && newSelection.length > 0) {
             const rect = verseElement.getBoundingClientRect();
             const viewport = scrollAreaRef.current?.querySelector('div[data-radix-scroll-area-viewport]');
             if (viewport) {
                 const vRect = viewport.getBoundingClientRect();
-                setToolbarPos({ top: rect.top - vRect.top + viewport.scrollTop, left: rect.left - vRect.left + rect.width / 2 });
+                setToolbarPos({ 
+                    top: rect.top - vRect.top + viewport.scrollTop, 
+                    left: rect.left - vRect.left + rect.width / 2 
+                });
             }
         } else if (newSelection.length === 0) setToolbarPos(null);
     };
@@ -314,8 +321,8 @@ export default function BibleReaderPage() {
                             ))}
                         </div>
                         {selectedVerses.length > 0 && toolbarPos && (
-                            <div className="absolute z-30 transition-all" style={{ top: `${toolbarPos.top}px`, left: `${toolbarPos.left}px`, transform: 'translate(-50%, -120%)' }}>
-                                <Button size="sm" onClick={handleSaveHighlight} disabled={isProcessingHighlight}>{isProcessingHighlight ? <Loader2 className="h-4 w-4 animate-spin" /> : <Highlighter className="mr-2 h-4 w-4" />}Highlight & Note</Button>
+                            <div className="absolute z-30 transition-all pointer-events-none" style={{ top: `${toolbarPos.top}px`, left: `${toolbarPos.left}px`, transform: 'translate(-50%, -120%)' }}>
+                                <Button size="sm" className="pointer-events-auto shadow-xl" onClick={handleSaveHighlight} disabled={isProcessingHighlight}>{isProcessingHighlight ? <Loader2 className="h-4 w-4 animate-spin" /> : <Highlighter className="mr-2 h-4 w-4" />}Highlight & Note</Button>
                             </div>
                         )}
                         <div className="mt-8 flex flex-col sm:flex-row gap-4 items-center justify-between pb-10">

@@ -441,7 +441,7 @@ export default function CampaignsPage() {
         )}
       </div>
       
-      {/* Campaign Creation Sheet/Dialog - Keep mounted and control via open prop to ensure Radix UI cleanup runs */}
+      {/* Campaign Creation Sheet/Dialog */}
       {mounted && isMobile ? (
         <Sheet open={isCreateOpen} onOpenChange={setIsCreateOpen}>
           <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0">
@@ -474,7 +474,7 @@ export default function CampaignsPage() {
         </Dialog>
       )}
 
-      {/* Campaign Management - Controlled by open prop and stays mounted to avoid freeze */}
+      {/* Campaign Management */}
       {mounted && isMobile ? (
         <Sheet open={!!campaignToManage} onOpenChange={(open) => !open && setCampaignToManage(null)}>
           <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0">
@@ -518,7 +518,7 @@ export default function CampaignsPage() {
         </Dialog>
       )}
 
-      {/* Delete Confirmation - Stays mounted */}
+      {/* Delete Confirmation */}
       <AlertDialog open={!!campaignToDelete} onOpenChange={(open) => !open && setCampaignToDelete(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -537,7 +537,7 @@ export default function CampaignsPage() {
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Share Testimony - Stays mounted */}
+      {/* Share Testimony */}
       <Dialog open={!!campaignForTestimony} onOpenChange={(open) => !open && setCampaignForTestimony(null)}>
           <DialogContent className="sm:max-w-lg">
               <DialogHeader>
@@ -558,7 +558,7 @@ export default function CampaignsPage() {
           </DialogContent>
       </Dialog>
 
-      {/* Log Soul - Stays mounted */}
+      {/* Log Soul */}
       <Dialog open={!!campaignForSoul} onOpenChange={(open) => !open && setCampaignForSoul(null)}>
           <DialogContent className="sm:max-w-lg">
               <DialogHeader>
