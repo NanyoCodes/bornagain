@@ -169,7 +169,9 @@ export default function BibleReaderPage() {
   const [mounted, setMounted] = useState(false);
   const [isChapterPopoverOpen, setIsChapterPopoverOpen] = useState(false);
   const [view, setView] = useState<'read' | 'history'>('read');
-  const [fontSize, setFontSize] = useState<'sm' | 'base' | 'lg' | 'xl'>('sm');
+  type FontSize = 'sm' | 'base' | 'lg' | 'xl';
+  const fontSizes: FontSize[] = ['sm', 'base', 'lg', 'xl'];
+  const [fontSize, setFontSize] = useState<FontSize>('sm');
   const [historyFilterDate, setHistoryFilterDate] = useState<string>('');
 
   const fontSizeClasses = { sm: 'text-xs sm:text-sm', base: 'text-sm sm:text-base', lg: 'text-base sm:text-lg', xl: 'text-lg sm:text-xl' };

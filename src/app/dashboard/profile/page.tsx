@@ -233,7 +233,7 @@ export default function ProfilePage() {
   }, [activeJoinedCampaigns, joinedCampaignSearchTerm]);
 
   const filteredSoulsWon = useMemo(() => {
-    if (!soulsWon) return [];
+    if (! soulsWon) return [];
     return soulsWon.filter(s => {
       const search = soulSearchTerm.toLowerCase();
       const matchSearch = !search || `${s.firstName} ${s.lastName}`.toLowerCase().includes(search);
