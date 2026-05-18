@@ -371,7 +371,7 @@ export default function BibleReaderPage() {
                             <SelectTrigger className="truncate"><SelectValue /></SelectTrigger>
                             <SelectContent>{bibleData.map(b => <SelectItem key={b.name} value={b.name}>{b.name}</SelectItem>)}</SelectContent>
                         </Select>
-                        <Popover open={isChapterPopoverOpen} onOpenChange={setIsChapterPopoverOpen}>
+                        <Popover open={isChapterPopoverOpen} onValueChange={setIsChapterPopoverOpen}>
                             <PopoverTrigger asChild>
                               <Button variant="outline" className="w-full justify-between">
                                 Chapter {selectedChapterNumber}
