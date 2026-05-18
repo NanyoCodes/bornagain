@@ -28,6 +28,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import { Card, CardContent } from "@/components/ui/card";
 import { CampaignCard } from "@/components/campaigns/campaign-card";
 import type { Campaign, UserProfile, JoinedCampaign, Fellowship } from "@/lib/types";
 import { useCollection, useFirestore, useUser } from "@/firebase";
