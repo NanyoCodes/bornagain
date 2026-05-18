@@ -1,8 +1,9 @@
+
 "use client";
 
 import React, { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
-import { PlusCircle, Newspaper, HandHeart, Loader2, Award } from "lucide-react";
+import { Newspaper, HandHeart, Loader2 } from "lucide-react";
 import { CreateTestimonyForm } from "@/components/testimonies/create-testimony-form";
 import { TestimonyCard } from "@/components/testimonies/testimony-card";
 import { PrayerRequestCard } from "@/components/prayer/PrayerRequestCard";
@@ -352,25 +353,23 @@ export default function TestimoniesPage() {
           </TabsContent>
       </Tabs>
       
-      {itemToDelete && (
-        <AlertDialog open={!!itemToDelete} onOpenChange={(open) => !open && setItemToDelete(null)}>
-            <AlertDialogContent className="w-[90vw] max-w-lg rounded-lg">
-            <AlertDialogHeader>
-                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                <AlertDialogDescription>
-                This will permanently delete this {itemToDelete.type}. This action cannot be undone.
-                </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-                <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={handleConfirmDelete} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90">
-                {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Confirm Deletion
-                </AlertDialogAction>
-            </AlertDialogFooter>
-            </AlertDialogContent>
-        </AlertDialog>
-      )}
+      <AlertDialog open={!!itemToDelete} onOpenChange={(open) => !open && setItemToDelete(null)}>
+          <AlertDialogContent className="w-[90vw] max-w-lg rounded-lg">
+          <AlertDialogHeader>
+              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+              <AlertDialogDescription>
+              This will permanently delete this {itemToDelete?.type}. This action cannot be undone.
+              </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+              <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+              <AlertDialogAction onClick={handleConfirmDelete} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90">
+              {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Confirm Deletion
+              </AlertDialogAction>
+          </AlertDialogFooter>
+          </AlertDialogContent>
+      </AlertDialog>
 
       <Dialog open={!!itemToEdit} onOpenChange={(open) => !open && setItemToEdit(null)}>
         <DialogContent className="sm:max-w-lg">

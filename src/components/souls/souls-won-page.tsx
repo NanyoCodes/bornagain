@@ -58,7 +58,7 @@ export default function SoulsWonPage() {
       setIsSearchVisible(false);
       setSearchTerm("");
     };
-  }, [setMounted, setIsSearchVisible, setSearchPlaceholder, setSearchTerm]);
+  }, [setIsSearchVisible, setSearchPlaceholder, setSearchTerm]);
 
   const soulsQuery = useMemo(() => {
     if (!user?.uid || !firestore) return null;
@@ -452,21 +452,23 @@ export default function SoulsWonPage() {
           {mounted && isMobile ? (
             <Sheet open={isLogDialogOpen} onOpenChange={setIsLogDialogOpen}>
               <SheetTrigger asChild>{triggerButton}</SheetTrigger>
-              <SheetContent side="bottom">
-                <SheetHeader>
-                  <SheetTitle>Log a New Soul</SheetTitle>
-                  <SheetDescription>
-                    Record the details of the person you've ministered to.
-                  </SheetDescription>
-                </SheetHeader>
-                <div className="max-h-[80vh] overflow-y-auto p-1 mt-4">
+              <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0">
+                <div className="p-6 border-b flex-shrink-0">
+                    <SheetHeader className="text-left">
+                    <SheetTitle>Log a New Soul</SheetTitle>
+                    <SheetDescription>
+                        Record the details of the person you've ministered to.
+                    </SheetDescription>
+                    </SheetHeader>
+                </div>
+                <div className="flex-grow overflow-y-auto p-6">
                   {formContent}
                 </div>
               </SheetContent>
             </Sheet>
           ) : (
             <Dialog open={isLogDialogOpen} onOpenChange={setIsLogDialogOpen}>
-              <DialogTrigger asChild>{triggerButton}</DialogTrigger>
+              <SheetTrigger asChild>{triggerButton}</SheetTrigger>
               <DialogContent className="sm:max-w-lg">
                 <DialogHeader>
                   <DialogTitle>Log a New Soul</DialogTitle>
@@ -493,47 +495,47 @@ export default function SoulsWonPage() {
         onOpenAssignDialog={setSoulToAssign}
       />
 
-      {soulToEdit && (
-          <Dialog open={!!soulToEdit} onOpenChange={(isOpen) => !isOpen && setSoulToEdit(null)}>
-              <DialogContent className="sm:max-w-lg">
-                  <DialogHeader>
-                      <DialogTitle>Edit Soul Details</DialogTitle>
-                      <DialogDescription>Make changes to the record for {soulToEdit?.firstName} {soulToEdit?.lastName}.</DialogDescription>
-                  </DialogHeader>
-                  <div className="max-h-[70vh] overflow-y-auto pr-2">
-                      <EditSoulForm soul={soulToEdit} onSoulUpdated={handleSoulUpdated} fellowships={fellowships || []} campaigns={activeCampaigns || []} />
-                  </div>
-              </DialogContent>
-          </Dialog>
-      )}
+      {/* Fix: Control via open prop and ensure contents only render when active to avoid layout shifts or loops */}
+      <Dialog open={!!soulToEdit} onOpenChange={(isOpen) => !isOpen && setSoulToEdit(null)}>
+          <DialogContent className="sm:max-w-lg">
+              <DialogHeader>
+                  <DialogTitle>Edit Soul Details</DialogTitle>
+                  <DialogDescription>Make changes to the record for {soulToEdit?.firstName} {soulToEdit?.lastName}.</DialogDescription>
+              </DialogHeader>
+              <div className="max-h-[70vh] overflow-y-auto pr-2">
+                  {soulToEdit && (
+                    <EditSoulForm 
+                        soul={soulToEdit} 
+                        onSoulUpdated={handleSoulUpdated} 
+                        fellowships={fellowships || []} 
+                        campaigns={activeCampaigns || []} 
+                    />
+                  )}
+              </div>
+          </DialogContent>
+      </Dialog>
 
-      {soulForFollowUp && (
-        <LogFollowUpDialog
-            soul={soulForFollowUp}
-            isOpen={!!soulForFollowUp}
-            onOpenChange={(isOpen) => { if (!isOpen) setSoulForFollowUp(null); }}
-            onFollowUpLogged={handleFollowUpLogged}
-        />
-      )}
+      <LogFollowUpDialog
+          soul={soulForFollowUp}
+          isOpen={!!soulForFollowUp}
+          onOpenChange={(isOpen) => { if (!isOpen) setSoulForFollowUp(null); }}
+          onFollowUpLogged={handleFollowUpLogged}
+      />
 
-      {soulForHistory && (
-        <ViewHistoryDialog
-            soul={soulForHistory}
-            isOpen={!!soulForHistory}
-            onOpenChange={(isOpen) => { if (!isOpen) setSoulForHistory(null); }}
-        />
-      )}
+      <ViewHistoryDialog
+          soul={soulForHistory}
+          isOpen={!!soulForHistory}
+          onOpenChange={(isOpen) => { if (!isOpen) setSoulForHistory(null); }}
+      />
 
-      {soulToAssign && (
-        <AssignFellowshipDialog
-            soul={soulToAssign}
-            fellowships={fellowships || []}
-            isOpen={!!soulToAssign}
-            onOpenChange={() => setSoulToAssign(null)}
-            onAssignFellowship={handleAssignFellowship}
-            isAssigning={isAssigning ? soulToAssign.id : null}
-        />
-      )}
+      <AssignFellowshipDialog
+          soul={soulToAssign}
+          fellowships={fellowships || []}
+          isOpen={!!soulToAssign}
+          onOpenChange={() => setSoulToAssign(null)}
+          onAssignFellowship={handleAssignFellowship}
+          isAssigning={isAssigning ? soulToAssign.id : null}
+      />
     </div>
   );
 }

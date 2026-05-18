@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
@@ -16,7 +17,6 @@ import {
   SheetDescription,
   SheetHeader,
   SheetTitle,
-  SheetTrigger,
 } from "@/components/ui/sheet";
 import { PlusCircle, Download, Loader2 } from "lucide-react";
 import type { Soul, Campaign, Fellowship } from "@/lib/types";
@@ -262,9 +262,25 @@ export default function SoulsWonPage() {
         onEdit={setSoulToEdit}
       />
 
-      <LogFollowUpDialog soul={soulForFollowUp} isOpen={!!soulForFollowUp} onOpenChange={(isOpen) => !isOpen && setSoulForFollowUp(null)} onFollowUpLogged={handleFollowUpLogged} />
-      <ViewHistoryDialog soul={soulForHistory} isOpen={!!soulForHistory} onOpenChange={(isOpen) => !isOpen && setSoulForHistory(null)} />
-      <AssignFellowshipDialog soul={soulToAssign} fellowships={activeFellowships} isOpen={!!soulToAssign} onOpenChange={() => setSoulToAssign(null)} onAssignFellowship={handleAssignFellowship} isAssigning={isAssigning} />
+      <LogFollowUpDialog 
+          soul={soulForFollowUp} 
+          isOpen={!!soulForFollowUp} 
+          onOpenChange={(isOpen) => !isOpen && setSoulForFollowUp(null)} 
+          onFollowUpLogged={handleFollowUpLogged} 
+      />
+      <ViewHistoryDialog 
+          soul={soulForHistory} 
+          isOpen={!!soulForHistory} 
+          onOpenChange={(isOpen) => !isOpen && setSoulForHistory(null)} 
+      />
+      <AssignFellowshipDialog 
+          soul={soulToAssign} 
+          fellowships={activeFellowships} 
+          isOpen={!!soulToAssign} 
+          onOpenChange={() => setSoulToAssign(null)} 
+          onAssignFellowship={handleAssignFellowship} 
+          isAssigning={isAssigning} 
+      />
       
       <Dialog open={!!soulToEdit} onOpenChange={(open) => !open && setSoulToEdit(null)}>
           <DialogContent className="sm:max-w-lg">

@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useMemo, useState, useEffect, Fragment } from "react";
@@ -441,7 +442,7 @@ export default function CampaignsPage() {
         )}
       </div>
       
-      {/* Campaign Creation Sheet/Dialog */}
+      {/* Campaign Creation Sheet/Dialog - Keep mounted and control via open prop to ensure Radix UI cleanup runs */}
       {mounted && isMobile ? (
         <Sheet open={isCreateOpen} onOpenChange={setIsCreateOpen}>
           <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0">
@@ -474,17 +475,18 @@ export default function CampaignsPage() {
         </Dialog>
       )}
 
-      {campaignToManage && (
-        mounted && isMobile ? (
-          <Sheet open={!!campaignToManage} onOpenChange={(open) => !open && setCampaignToManage(null)}>
-            <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0">
-              <div className="p-6 border-b flex-shrink-0">
-                <SheetHeader className="text-left">
-                  <SheetTitle>Manage Campaign</SheetTitle>
-                  <SheetDescription>Update the details or progress of your campaign.</SheetDescription>
-                </SheetHeader>
-              </div>
-              <div className="flex-grow overflow-y-auto p-6">
+      {/* Campaign Management - Controlled by open prop and stays mounted to avoid freeze */}
+      {mounted && isMobile ? (
+        <Sheet open={!!campaignToManage} onOpenChange={(open) => !open && setCampaignToManage(null)}>
+          <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0">
+            <div className="p-6 border-b flex-shrink-0">
+              <SheetHeader className="text-left">
+                <SheetTitle>Manage Campaign</SheetTitle>
+                <SheetDescription>Update the details or progress of your campaign.</SheetDescription>
+              </SheetHeader>
+            </div>
+            <div className="flex-grow overflow-y-auto p-6">
+              {campaignToManage && (
                 <ManageCampaignForm 
                   campaign={campaignToManage} 
                   onCampaignUpdated={() => { setCampaignToManage(null); }} 
@@ -493,14 +495,16 @@ export default function CampaignsPage() {
                     setCampaignToManage(null);
                   }}
                 />
-              </div>
-            </SheetContent>
-          </Sheet>
-        ) : (
-          <Dialog open={!!campaignToManage} onOpenChange={(open) => !open && setCampaignToManage(null)}>
-            <DialogContent className="sm:max-w-2xl">
-              <DialogHeader><DialogTitle>Manage Campaign</DialogTitle><DialogDescription>Update the details or progress of your campaign.</DialogDescription></DialogHeader>
-              <div className="max-h-[80vh] overflow-y-auto pr-2">
+              )}
+            </div>
+          </SheetContent>
+        </Sheet>
+      ) : (
+        <Dialog open={!!campaignToManage} onOpenChange={(open) => !open && setCampaignToManage(null)}>
+          <DialogContent className="sm:max-w-2xl">
+            <DialogHeader><DialogTitle>Manage Campaign</DialogTitle><DialogDescription>Update the details or progress of your campaign.</DialogDescription></DialogHeader>
+            <div className="max-h-[80vh] overflow-y-auto pr-2">
+              {campaignToManage && (
                 <ManageCampaignForm 
                   campaign={campaignToManage} 
                   onCampaignUpdated={() => { setCampaignToManage(null); }} 
@@ -509,73 +513,73 @@ export default function CampaignsPage() {
                     setCampaignToManage(null);
                   }}
                 />
+              )}
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
+
+      {/* Delete Confirmation - Stays mounted */}
+      <AlertDialog open={!!campaignToDelete} onOpenChange={(open) => !open && setCampaignToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+              <AlertDialogDescription>
+                  This will mark the campaign as deleted and hide it from public view. This action cannot be undone.
+              </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+              <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+              <AlertDialogAction onClick={handleDeleteCampaign} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90">
+                  {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  Confirm Deletion
+              </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Share Testimony - Stays mounted */}
+      <Dialog open={!!campaignForTestimony} onOpenChange={(open) => !open && setCampaignForTestimony(null)}>
+          <DialogContent className="sm:max-w-lg">
+              <DialogHeader>
+                  <DialogTitle>Share Testimony for "{campaignForTestimony?.title}"</DialogTitle>
+                  <DialogDescription>
+                      Encourage others by sharing what God has done during this campaign.
+                  </DialogDescription>
+              </DialogHeader>
+              <div className="max-h-[70vh] overflow-y-auto pr-2">
+                  {campaignForTestimony && userProfile && (
+                    <CreateTestimonyForm
+                          userProfile={userProfile}
+                          onTestimonyCreated={handleTestimonyCreated}
+                          campaign={campaignForTestimony}
+                      />
+                  )}
               </div>
-            </DialogContent>
-          </Dialog>
-        )
-      )}
+          </DialogContent>
+      </Dialog>
 
-      {campaignToDelete && (
-        <AlertDialog open={!!campaignToDelete} onOpenChange={(open) => !open && setCampaignToDelete(null)}>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                <AlertDialogDescription>
-                    This will mark the campaign as deleted and hide it from public view. This action cannot be undone.
-                </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-                <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={handleDeleteCampaign} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90">
-                    {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    Confirm Deletion
-                </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-      )}
-
-      
-      {campaignForTestimony && userProfile && (
-        <Dialog open={!!campaignForTestimony} onOpenChange={(open) => !open && setCampaignForTestimony(null)}>
-            <DialogContent className="sm:max-w-lg">
-                <DialogHeader>
-                    <DialogTitle>Share Testimony for "{campaignForTestimony.title}"</DialogTitle>
-                    <DialogDescription>
-                        Encourage others by sharing what God has done during this campaign.
-                    </DialogDescription>
-                </DialogHeader>
-                <div className="max-h-[70vh] overflow-y-auto pr-2">
-                   <CreateTestimonyForm
-                        userProfile={userProfile}
-                        onTestimonyCreated={handleTestimonyCreated}
-                        campaign={campaignForTestimony}
-                    />
-                </div>
-            </DialogContent>
-        </Dialog>
-      )}
-
-      {campaignForSoul && (
-        <Dialog open={!!campaignForSoul} onOpenChange={(open) => !open && setCampaignForSoul(null)}>
-            <DialogContent className="sm:max-w-lg">
-                <DialogHeader>
-                    <DialogTitle>Log a Soul Won in "{campaignForSoul.title}"</DialogTitle>
-                    <DialogDescription>
-                        Record the details of the person you've ministered to during this campaign.
-                    </DialogDescription>
-                </DialogHeader>
-                <div className="max-h-[70vh] overflow-y-auto pr-2">
-                   <LogSoulForm
-                        onSoulLogged={handleSoulLogged}
-                        defaultCampaign={campaignForSoul}
-                        fellowships={fellowships || []}
-                        campaigns={activeCampaignsList || []}
-                    />
-                </div>
-            </DialogContent>
-        </Dialog>
-      )}
+      {/* Log Soul - Stays mounted */}
+      <Dialog open={!!campaignForSoul} onOpenChange={(open) => !open && setCampaignForSoul(null)}>
+          <DialogContent className="sm:max-w-lg">
+              <DialogHeader>
+                  <DialogTitle>Log a Soul Won in "{campaignForSoul?.title}"</DialogTitle>
+                  <DialogDescription>
+                      Record the details of the person you've ministered to during this campaign.
+                  </DialogDescription>
+              </DialogHeader>
+              <div className="max-h-[70vh] overflow-y-auto pr-2">
+                  {campaignForSoul && (
+                    <LogSoulForm
+                          onSoulLogged={handleSoulLogged}
+                          defaultCampaign={campaignForSoul}
+                          fellowships={fellowships || []}
+                          campaigns={activeCampaignsList || []}
+                      />
+                  )}
+              </div>
+          </DialogContent>
+      </Dialog>
 
     </div>
   );
