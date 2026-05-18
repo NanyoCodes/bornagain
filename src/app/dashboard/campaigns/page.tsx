@@ -22,14 +22,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
 import { Card, CardContent } from "@/components/ui/card";
 import { CampaignCard } from "@/components/campaigns/campaign-card";
 import type { Campaign, UserProfile, JoinedCampaign, Fellowship } from "@/lib/types";
@@ -354,8 +346,8 @@ export default function CampaignsPage() {
 
   return (
     <div className="space-y-8">
-      {/* Facebook-style Campaign Entry Box */}
-      <Card className="border shadow-sm sm:shadow-md mx-[-1rem] sm:mx-0">
+      {/* Centered Interaction Box */}
+      <Card className="border shadow-sm sm:shadow-md">
         <CardContent className="px-4 py-4 sm:p-6">
           <div className="flex items-center gap-2 sm:gap-4">
             <Button 
@@ -443,24 +435,8 @@ export default function CampaignsPage() {
         )}
       </div>
       
-      {/* Campaign Creation Sheet/Dialog */}
-      <Sheet open={isCreateOpen && isMobile} onOpenChange={setIsCreateOpen}>
-        <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0">
-          <div className="p-6 border-b flex-shrink-0">
-            <SheetHeader className="text-left">
-              <SheetTitle>Create a New Campaign</SheetTitle>
-              <SheetDescription>
-                Fill in the details below to create your campaign.
-              </SheetDescription>
-            </SheetHeader>
-          </div>
-          <div className="flex-grow overflow-y-auto p-6">
-            {formContent}
-          </div>
-        </SheetContent>
-      </Sheet>
-
-      <Dialog open={isCreateOpen && !isMobile} onOpenChange={setIsCreateOpen}>
+      {/* Campaign Creation - Restored Width */}
+      <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
         <DialogContent className="sm:max-w-2xl">
           <DialogHeader>
             <DialogTitle>Create a New Campaign</DialogTitle>
@@ -474,31 +450,8 @@ export default function CampaignsPage() {
         </DialogContent>
       </Dialog>
 
-      {/* Campaign Management */}
-      <Sheet open={!!campaignToManage && isMobile} onOpenChange={(open) => !open && setCampaignToManage(null)}>
-        <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0">
-          <div className="p-6 border-b flex-shrink-0">
-            <SheetHeader className="text-left">
-              <SheetTitle>Manage Campaign</SheetTitle>
-              <SheetDescription>Update the details or progress of your campaign.</SheetDescription>
-            </SheetHeader>
-          </div>
-          <div className="flex-grow overflow-y-auto p-6">
-            {campaignToManage && (
-              <ManageCampaignForm 
-                campaign={campaignToManage} 
-                onCampaignUpdated={() => { setCampaignToManage(null); }} 
-                onDelete={() => {
-                  setCampaignToDelete(campaignToManage);
-                  setCampaignToManage(null);
-                }}
-              />
-            )}
-          </div>
-        </SheetContent>
-      </Sheet>
-
-      <Dialog open={!!campaignToManage && !isMobile} onOpenChange={(open) => !open && setCampaignToManage(null)}>
+      {/* Campaign Management - Restored Width */}
+      <Dialog open={!!campaignToManage} onOpenChange={(open) => !open && setCampaignToManage(null)}>
         <DialogContent className="sm:max-w-2xl">
           <DialogHeader><DialogTitle>Manage Campaign</DialogTitle><DialogDescription>Update the details or progress of your campaign.</DialogDescription></DialogHeader>
           <div className="max-h-[80vh] overflow-y-auto pr-2">

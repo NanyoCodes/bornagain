@@ -13,6 +13,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   AlertDialog,
@@ -254,8 +255,8 @@ export default function TestimoniesPage() {
 
   return (
     <div className="space-y-6 md:space-y-8">
-      {/* Facebook-style Status Box */}
-      <Card className="border shadow-sm sm:shadow-md mx-[-1rem] sm:mx-0">
+      {/* Centered Interaction Box */}
+      <Card className="border shadow-sm sm:shadow-md">
         <CardContent className="px-4 py-4 sm:p-6">
           <div className="flex items-center gap-2 sm:gap-4">
             <Button 
@@ -307,7 +308,6 @@ export default function TestimoniesPage() {
                         <TestimonyCard 
                             key={testimony.id} 
                             testimony={testimony} 
-                            distance={(testimony as any)._distance}
                             onDelete={() => setItemToDelete({ type: 'testimony', data: testimony })}
                             onEdit={() => setItemToEdit(testimony)}
                         />
@@ -384,29 +384,30 @@ export default function TestimoniesPage() {
         </DialogContent>
       </Dialog>
       
-      <Sheet open={isTestimonyDialogOpen} onOpenChange={handleCloseTestimonyDialog}>
-        <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0">
-          <div className="p-6 border-b shrink-0">
-              <SheetHeader className="text-left">
-              <SheetTitle>{prayerToAnswer ? 'Share Answered Prayer' : 'Share Testimony'}</SheetTitle>
-              <SheetDescription>{prayerToAnswer ? "Share how God answered this prayer to encourage others." : "Encourage others by sharing what God has done."}</SheetDescription>
-              </SheetHeader>
+      {/* Restored Width Dialogs */}
+      <Dialog open={isTestimonyDialogOpen} onOpenChange={setIsTestimonyDialogOpen}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>{prayerToAnswer ? 'Share Answered Prayer' : 'Share Testimony'}</DialogTitle>
+            <DialogDescription>{prayerToAnswer ? "Share how God answered this prayer to encourage others." : "Encourage others by sharing what God has done."}</DialogDescription>
+          </DialogHeader>
+          <div className="max-h-[70vh] overflow-y-auto pr-2">
+            {testimonyFormContent}
           </div>
-          <div className="max-h-[80vh] overflow-y-auto p-6">{testimonyFormContent}</div>
-        </SheetContent>
-      </Sheet>
+        </DialogContent>
+      </Dialog>
       
-      <Sheet open={isPrayerDialogOpen} onOpenChange={setIsPrayerDialogOpen}>
-        <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0">
-          <div className="p-6 border-b shrink-0">
-              <SheetHeader className="text-left">
-              <SheetTitle>Share Prayer Request</SheetTitle>
-              <SheetDescription>Share your request anonymously with the community.</SheetDescription>
-              </SheetHeader>
+      <Dialog open={isPrayerDialogOpen} onOpenChange={setIsPrayerDialogOpen}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Share Prayer Request</DialogTitle>
+            <DialogDescription>Share your request anonymously with the community.</DialogDescription>
+          </DialogHeader>
+          <div className="max-h-[70vh] overflow-y-auto pr-2">
+            {prayerFormContent}
           </div>
-          <div className="max-h-[80vh] overflow-y-auto p-6">{prayerFormContent}</div>
-        </SheetContent>
-      </Sheet>
+        </DialogContent>
+      </Dialog>
 
     </div>
   );

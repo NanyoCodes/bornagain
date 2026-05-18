@@ -31,17 +31,9 @@ import {
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-} from '@/components/ui/sheet';
 import { useCollection, useFirestore, useUser, useDoc } from '@/firebase';
 import {
   collection,
@@ -683,22 +675,8 @@ export default function DashboardPage() {
         userProfile={userProfile!}
         summaryData={summaryData}
       />
-      <Sheet open={isLogSoulOpen} onOpenChange={setIsLogSoulOpen}>
-        <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0">
-          <div className="p-6 border-b flex-shrink-0">
-            <SheetHeader className="text-left">
-              <SheetTitle>Log a New Soul</SheetTitle>
-              <SheetDescription>
-                Record the details of the person you've ministered to.
-              </SheetDescription>
-            </SheetHeader>
-          </div>
-          <div className="flex-grow overflow-y-auto p-6">
-            <LogSoulForm onSoulLogged={handleSoulLogged} fellowships={[]} campaigns={[]} />
-          </div>
-        </SheetContent>
-      </Sheet>
-      <Dialog open={isLogSoulOpen && !isMobile} onOpenChange={setIsLogSoulOpen}>
+      
+      <Dialog open={isLogSoulOpen} onOpenChange={setIsLogSoulOpen}>
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
             <DialogTitle>Log a New Soul</DialogTitle>
