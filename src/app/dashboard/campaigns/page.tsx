@@ -46,8 +46,6 @@ import { useToast } from "@/hooks/use-toast";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import AdsenseAd from "@/components/common/adsense-ad";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Card, CardContent } from "@/components/ui/card";
 
 function CampaignSkeletons() {
   return (
@@ -357,10 +355,6 @@ export default function CampaignsPage() {
       <Card className="border-none shadow-sm sm:border sm:shadow-md mx-[-1rem] sm:mx-0">
         <CardContent className="px-4 py-4 sm:p-6">
           <div className="flex items-center gap-2 sm:gap-4">
-            <Avatar className="h-9 w-9 sm:h-10 sm:w-10 border shadow-sm shrink-0">
-              <AvatarImage src={userProfile?.photoURL} />
-              <AvatarFallback className="bg-primary/10 text-primary">{userProfile?.firstName?.charAt(0)}</AvatarFallback>
-            </Avatar>
             <Button 
               variant="outline" 
               className="flex-1 justify-start text-muted-foreground font-normal rounded-full h-9 sm:h-11 px-3 sm:px-4 hover:bg-muted/50 transition-colors text-[11px] sm:text-sm"
