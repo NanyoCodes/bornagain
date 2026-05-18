@@ -384,53 +384,29 @@ export default function TestimoniesPage() {
         </DialogContent>
       </Dialog>
       
-      {mounted && isMobile ? (
-        <Sheet open={isTestimonyDialogOpen} onOpenChange={handleCloseTestimonyDialog}>
-          <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0">
-            <div className="p-6 border-b shrink-0">
-                <SheetHeader className="text-left">
-                <SheetTitle>{prayerToAnswer ? 'Share Answered Prayer' : 'Share Testimony'}</SheetTitle>
-                <SheetDescription>{prayerToAnswer ? "Share how God answered this prayer to encourage others." : "Encourage others by sharing what God has done."}</SheetDescription>
-                </SheetHeader>
-            </div>
-            <div className="max-h-[80vh] overflow-y-auto p-6">{testimonyFormContent}</div>
-          </SheetContent>
-        </Sheet>
-      ) : (
-        <Dialog open={isTestimonyDialogOpen} onOpenChange={handleCloseTestimonyDialog}>
-          <DialogContent className="sm:max-w-lg">
-            <DialogHeader>
-              <DialogTitle>{prayerToAnswer ? 'Share Answered Prayer' : 'Share Testimony'}</DialogTitle>
-              <DialogDescription>{prayerToAnswer ? "Share how God answered this prayer to encourage others." : "Encourage others by sharing what God has done."}</DialogDescription>
-            </DialogHeader>
-            <div className="max-h-[70vh] overflow-y-auto pr-2">{testimonyFormContent}</div>
-          </DialogContent>
-        </Dialog>
-      )}
+      <Sheet open={isTestimonyDialogOpen} onOpenChange={handleCloseTestimonyDialog}>
+        <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0">
+          <div className="p-6 border-b shrink-0">
+              <SheetHeader className="text-left">
+              <SheetTitle>{prayerToAnswer ? 'Share Answered Prayer' : 'Share Testimony'}</SheetTitle>
+              <SheetDescription>{prayerToAnswer ? "Share how God answered this prayer to encourage others." : "Encourage others by sharing what God has done."}</SheetDescription>
+              </SheetHeader>
+          </div>
+          <div className="max-h-[80vh] overflow-y-auto p-6">{testimonyFormContent}</div>
+        </SheetContent>
+      </Sheet>
       
-      {mounted && isMobile ? (
-        <Sheet open={isPrayerDialogOpen} onOpenChange={setIsPrayerDialogOpen}>
-          <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0">
-            <div className="p-6 border-b shrink-0">
-                <SheetHeader className="text-left">
-                <SheetTitle>Share Prayer Request</SheetTitle>
-                <SheetDescription>Share your request anonymously with the community.</SheetDescription>
-                </SheetHeader>
-            </div>
-            <div className="max-h-[80vh] overflow-y-auto p-6">{prayerFormContent}</div>
-          </SheetContent>
-        </Sheet>
-      ) : (
-        <Dialog open={isPrayerDialogOpen} onOpenChange={setIsPrayerDialogOpen}>
-          <DialogContent className="sm:max-w-lg">
-            <DialogHeader>
-              <DialogTitle>Share Prayer Request</DialogTitle>
-              <DialogDescription>Share your request anonymously with the community.</DialogDescription>
-            </DialogHeader>
-            <div className="max-h-[70vh] overflow-y-auto pr-2">{prayerFormContent}</div>
-          </DialogContent>
-        </Dialog>
-      )}
+      <Sheet open={isPrayerDialogOpen} onOpenChange={setIsPrayerDialogOpen}>
+        <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0">
+          <div className="p-6 border-b shrink-0">
+              <SheetHeader className="text-left">
+              <SheetTitle>Share Prayer Request</SheetTitle>
+              <SheetDescription>Share your request anonymously with the community.</SheetDescription>
+              </SheetHeader>
+          </div>
+          <div className="max-h-[80vh] overflow-y-auto p-6">{prayerFormContent}</div>
+        </SheetContent>
+      </Sheet>
 
     </div>
   );

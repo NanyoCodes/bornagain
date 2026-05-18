@@ -43,7 +43,6 @@ import {
   Highlighter,
   ChevronDown,
   ArrowLeft,
-  Calendar as CalendarIcon,
   XCircle,
 } from 'lucide-react';
 import { getBibleChapter, type BibleChapterOutput } from '@/ai/flows/get-bible-chapter-flow';
@@ -52,7 +51,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { cn, safeToDate } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
-import { Calendar } from '@/components/ui/calendar';
 
 const bibleVersions = [
     { id: 'kjv', name: 'King James Version' },
@@ -391,27 +389,27 @@ export default function BibleReaderPage() {
                 </TabsContent>
                 <TabsContent value="history" className="flex-grow flex flex-col min-h-0 mt-4">
                     <div className="flex items-center gap-2 mb-4">
-                        <Popover>
-                            <PopoverTrigger asChild>
-                                <Button variant="outline" className={cn("flex-grow justify-start text-left font-normal", !historyFilterDate && "text-muted-foreground")}>
-                                    <CalendarIcon className="mr-2 h-4 w-4" />
-                                    {historyFilterDate ? format(historyFilterDate, "PPP") : <span>Filter history by date</span>}
-                                </Button>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0" align="start">
-                                <Calendar
-                                    mode="single"
-                                    selected={historyFilterDate}
-                                    onSelect={setHistoryFilterDate}
-                                    initialFocus
-                                />
-                            </PopoverContent>
-                        </Popover>
-                        {historyFilterDate && (
-                            <Button variant="ghost" size="icon" onClick={() => setHistoryFilterDate(undefined)}>
-                                <XCircle className="h-5 w-5 text-muted-foreground" />
-                            </Button>
-                        )}
+                        <div className="flex-grow flex items-center gap-2">
+                          <Input
+                              type="date"
+                              value={historyFilterDate ? format(historyFilterDate, "yyyy-MM-dd") : ""}
+                              onChange={(e) => {
+                                  const val = e.target.value;
+                                  if (val) {
+                                      const [year, month, day] = val.split('-').map(Number);
+                                      setHistoryFilterDate(new Date(year, month - 1, day));
+                                  } else {
+                                      setHistoryFilterDate(undefined);
+                                  }
+                              }}
+                              className="flex-grow"
+                          />
+                          {historyFilterDate && (
+                              <Button variant="ghost" size="icon" onClick={() => setHistoryFilterDate(undefined)}>
+                                  <XCircle className="h-5 w-5 text-muted-foreground" />
+                              </Button>
+                          )}
+                        </div>
                     </div>
                     <ScrollArea className="h-full">
                         <div className="p-4 pt-0 space-y-8">
