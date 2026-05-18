@@ -12,7 +12,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/dialog";
+} from "@/components/ui/alert-dialog";
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -346,7 +346,10 @@ export default function BibleReaderPage() {
                 <TabsList className="grid w-full grid-cols-2"><TabsTrigger value="read">Read</TabsTrigger><TabsTrigger value="history">History</TabsTrigger></TabsList>
                 <TabsContent value="read" className="flex-grow flex flex-col min-h-0 mt-4 overflow-hidden">
                     <div className="grid grid-cols-3 gap-2 shrink-0 mb-4">
-                        <Select value={selectedBookName} onValueChange={setSelectedBookName}><SelectTrigger className="truncate"><SelectValue /></SelectTrigger><SelectContent>{bibleData.map(b => <SelectItem key={b.name} value={b.name}>{b.name}</SelectItem>)}</SelectContent></Select>
+                        <Select value={selectedBookName} onValueChange={setSelectedBookName}>
+                            <SelectTrigger className="truncate"><SelectValue /></SelectTrigger>
+                            <SelectContent>{bibleData.map(b => <SelectItem key={b.name} value={b.name}>{b.name}</SelectItem>)}</SelectContent>
+                        </Select>
                         <Popover open={isChapterPopoverOpen} onOpenChange={setIsChapterPopoverOpen}>
                             <PopoverTrigger asChild>
                               <Button variant="outline" className="w-full justify-between">

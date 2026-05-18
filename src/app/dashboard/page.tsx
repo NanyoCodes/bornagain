@@ -99,7 +99,7 @@ function RecentSoulsList() {
       limit(3)
     );
   }, [user?.uid, firestore]);
-  const { data: souls, loading } = useCollection<Soul>(soulsQuery);
+  const { data: souls, loading } = useCollection<Soul>( soulsQuery);
 
   if (loading) {
     return (
@@ -510,13 +510,13 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-8">
-      <Card>
+      <Card className="bg-primary border-none shadow-lg">
         <CardContent className="p-6">
-          <h1 className="text-xl sm:text-2xl font-bold tracking-tight font-headline text-primary">
+          <h1 className="text-xl sm:text-2xl font-bold tracking-tight font-headline text-white">
             {welcomeMessage?.text.replace('{name}', displayName) ||
               `Welcome back, ${displayName}!`}
           </h1>
-          <p className="text-muted-foreground uppercase mt-2 text-xs font-semibold tracking-widest">
+          <p className="text-white/80 uppercase mt-2 text-xs font-semibold tracking-widest">
             {welcomeMessage?.verse || ''}
           </p>
         </CardContent>
@@ -676,43 +676,40 @@ export default function DashboardPage() {
           </Card>
         </div>
       </div>
-      {summaryData && userProfile && (
-        <WelcomeBackDialog
-          isOpen={showWelcomeBack}
-          onClose={() => setShowWelcomeBack(false)}
-          userProfile={userProfile}
-          summaryData={summaryData}
-        />
-      )}
-      {mounted && isMobile ? (
-        <Sheet open={isLogSoulOpen} onOpenChange={setIsLogSoulOpen}>
-          <SheetContent side="bottom">
-            <SheetHeader>
+      <WelcomeBackDialog
+        isOpen={showWelcomeBack && !!summaryData && !!userProfile}
+        onClose={() => setShowWelcomeBack(false)}
+        userProfile={userProfile!}
+        summaryData={summaryData!}
+      />
+      <Sheet open={isLogSoulOpen} onOpenChange={setIsLogSoulOpen}>
+        <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0">
+          <div className="p-6 border-b flex-shrink-0">
+            <SheetHeader className="text-left">
               <SheetTitle>Log a New Soul</SheetTitle>
               <SheetDescription>
                 Record the details of the person you've ministered to.
               </SheetDescription>
             </SheetHeader>
-            <div className="max-h-[80vh] overflow-y-auto p-1 mt-4">
-              <LogSoulForm onSoulLogged={handleSoulLogged} fellowships={[]} campaigns={[]} />
-            </div>
-          </SheetContent>
-        </Sheet>
-      ) : (
-        <Dialog open={isLogSoulOpen} onOpenChange={setIsLogSoulOpen}>
-          <DialogContent className="sm:max-w-lg">
-            <DialogHeader>
-              <DialogTitle>Log a New Soul</DialogTitle>
-              <DialogDescription>
-                  Record the details of the person you've ministered to.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="max-h-[70vh] overflow-y-auto pr-2">
-              <LogSoulForm onSoulLogged={handleSoulLogged} fellowships={[]} campaigns={[]} />
-            </div>
-          </DialogContent>
-        </Dialog>
-      )}
+          </div>
+          <div className="flex-grow overflow-y-auto p-6">
+            <LogSoulForm onSoulLogged={handleSoulLogged} fellowships={[]} campaigns={[]} />
+          </div>
+        </SheetContent>
+      </Sheet>
+      <Dialog open={isLogSoulOpen && !isMobile} onOpenChange={setIsLogSoulOpen}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Log a New Soul</DialogTitle>
+            <DialogDescription>
+                Record the details of the person you've ministered to.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="max-h-[70vh] overflow-y-auto pr-2">
+            <LogSoulForm onSoulLogged={handleSoulLogged} fellowships={[]} campaigns={[]} />
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

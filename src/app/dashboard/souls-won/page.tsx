@@ -9,12 +9,15 @@ import {
   DialogDescription, 
   DialogHeader, 
   DialogTitle, 
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   Sheet,
   SheetContent,
   SheetDescription,
   SheetHeader,
+  SheetTitle,
+  SheetTrigger,
 } from "@/components/ui/sheet";
 import { PlusCircle, Download, Loader2 } from "lucide-react";
 import type { Soul, Campaign, Fellowship } from "@/lib/types";
@@ -66,6 +69,7 @@ export default function SoulsWonPage() {
     };
   }, [setIsSearchVisible, setSearchPlaceholder, setSearchTerm]);
 
+  // Hook Order: Define data hooks before memoized derived state
   const soulsQuery = useMemo(() => {
     if (!user?.uid || !firestore) return null;
     return query(collection(firestore, `users/${user.uid}/souls`), orderBy("wonAt", "desc"));
@@ -311,41 +315,41 @@ export default function SoulsWonPage() {
             </DropdownMenuContent>
           </DropdownMenu>
           
-          {mounted && isMobile ? (
-            <Sheet open={isLogDialogOpen} onOpenChange={setIsLogDialogOpen}>
-              <Button onClick={() => setIsLogDialogOpen(true)} disabled={loading}>
-                <PlusCircle className="h-4 w-4 md:mr-2" />
-                <span className="hidden md:inline">Log Soul Won</span>
-              </Button>
-              <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0">
-                <div className="p-6 border-b flex-shrink-0">
-                    <SheetHeader className="text-left">
-                        <SheetTitle>Log a New Soul</SheetTitle>
-                        <SheetDescription>Record the details of the person you've ministered to.</SheetDescription>
-                    </SheetHeader>
+          <Sheet open={isLogDialogOpen && isMobile} onOpenChange={setIsLogDialogOpen}>
+            <SheetTrigger asChild>
+                <div className="md:hidden">
+                    {triggerButton}
                 </div>
-                <div className="flex-grow overflow-y-auto p-6">
-                    <LogSoulForm onSoulLogged={handleSoulLogged} fellowships={activeFellowships} campaigns={activeCampaigns} />
+            </SheetTrigger>
+            <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0">
+              <div className="p-6 border-b flex-shrink-0">
+                  <SheetHeader className="text-left">
+                      <SheetTitle>Log a New Soul</SheetTitle>
+                      <SheetDescription>Record the details of the person you've ministered to.</SheetDescription>
+                  </SheetHeader>
+              </div>
+              <div className="flex-grow overflow-y-auto p-6">
+                  <LogSoulForm onSoulLogged={handleSoulLogged} fellowships={activeFellowships} campaigns={activeCampaigns} />
+              </div>
+            </SheetContent>
+          </Sheet>
+
+          <Dialog open={isLogDialogOpen && !isMobile} onOpenChange={setIsLogDialogOpen}>
+            <DialogTrigger asChild>
+                <div className="hidden md:block">
+                    {triggerButton}
                 </div>
-              </SheetContent>
-            </Sheet>
-          ) : (
-            <Dialog open={isLogDialogOpen} onOpenChange={setIsLogDialogOpen}>
-              <Button onClick={() => setIsLogDialogOpen(true)} disabled={loading}>
-                <PlusCircle className="h-4 w-4 md:mr-2" />
-                <span className="hidden md:inline">Log Soul Won</span>
-              </Button>
-              <DialogContent className="sm:max-w-lg">
-                <DialogHeader>
-                  <DialogTitle>Log a New Soul</DialogTitle>
-                  <DialogDescription>Record the details of the person you've ministered to.</DialogDescription>
-                </DialogHeader>
-                <div className="max-h-[70vh] overflow-y-auto pr-2">
-                    <LogSoulForm onSoulLogged={handleSoulLogged} fellowships={activeFellowships} campaigns={activeCampaigns} />
-                </div>
-              </DialogContent>
-            </Dialog>
-          )}
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-lg">
+              <DialogHeader>
+                <DialogTitle>Log a New Soul</DialogTitle>
+                <DialogDescription>Record the details of the person you've ministered to.</DialogDescription>
+              </DialogHeader>
+              <div className="max-h-[70vh] overflow-y-auto pr-2">
+                  <LogSoulForm onSoulLogged={handleSoulLogged} fellowships={activeFellowships} campaigns={activeCampaigns} />
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
       
