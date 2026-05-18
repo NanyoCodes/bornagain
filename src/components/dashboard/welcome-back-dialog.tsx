@@ -110,41 +110,41 @@ export function WelcomeBackDialog({ isOpen, onClose, userProfile, summaryData }:
     </Button>
   );
 
-  if (isMobile) {
-    return (
-      <Sheet open={isOpen} onOpenChange={(open) => !open && onClose()}>
-        <SheetContent side="bottom" className="h-auto max-h-[90dvh] flex flex-col p-0">
-          <div className="p-6 border-b flex-shrink-0">
-            <SheetHeader className="text-left">
-              <SheetTitle className="font-headline text-2xl">Welcome Back, {userProfile.firstName}!</SheetTitle>
-              <SheetDescription>You were last here {lastActiveString}.</SheetDescription>
-            </SheetHeader>
-          </div>
-          <div className="flex-grow overflow-y-auto px-6">
-            {body}
-          </div>
-          <div className="p-6 border-t flex-shrink-0">
-            {footer}
-          </div>
-        </SheetContent>
-      </Sheet>
-    );
-  }
-
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle className="font-headline text-2xl">Welcome Back, {userProfile.firstName}!</DialogTitle>
-          <DialogDescription>
-            You were last here {lastActiveString}. Here's a quick summary.
-          </DialogDescription>
-        </DialogHeader>
-        {body}
-        <DialogFooter>
-          {footer}
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+    <>
+      {isMobile ? (
+        <Sheet open={isOpen} onOpenChange={(open) => !open && onClose()}>
+          <SheetContent side="bottom" className="h-auto max-h-[90dvh] flex flex-col p-0">
+            <div className="p-6 border-b flex-shrink-0">
+              <SheetHeader className="text-left">
+                <SheetTitle className="font-headline text-2xl">Welcome Back, {userProfile.firstName}!</SheetTitle>
+                <SheetDescription>You were last here {lastActiveString}.</SheetDescription>
+              </SheetHeader>
+            </div>
+            <div className="flex-grow overflow-y-auto px-6">
+              {body}
+            </div>
+            <div className="p-6 border-t flex-shrink-0">
+              {footer}
+            </div>
+          </SheetContent>
+        </Sheet>
+      ) : (
+        <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle className="font-headline text-2xl">Welcome Back, {userProfile.firstName}!</DialogTitle>
+              <DialogDescription>
+                You were last here {lastActiveString}. Here's a quick summary.
+              </DialogDescription>
+            </DialogHeader>
+            {body}
+            <DialogFooter>
+              {footer}
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
+    </>
   );
 }

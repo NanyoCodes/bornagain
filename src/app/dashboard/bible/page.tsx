@@ -315,8 +315,8 @@ export default function BibleReaderPage() {
     const ReaderContent = (
       <div className="flex flex-col gap-4 h-full min-h-0">
           <div className="flex items-center justify-end gap-2 shrink-0">
-                 <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => setFontSize(f => f === 'xl' ? 'xl' : fontSizes[fontSizes.indexOf(f)+1] as FontSize)}><Plus className="h-4 w-4" /></Button>
-                 <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => setFontSize(f => f === 'sm' ? 'sm' : fontSizes[fontSizes.indexOf(f)-1] as FontSize)}><Minus className="h-4 w-4" /></Button>
+                 <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => setFontSize(f => f === 'xl' ? 'xl' : fontSizes[fontSizes.indexOf(f)+1] as any)}><Plus className="h-4 w-4" /></Button>
+                 <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => setFontSize(f => f === 'sm' ? 'sm' : fontSizes[fontSizes.indexOf(f)-1] as any)}><Minus className="h-4 w-4" /></Button>
           </div>
           <ScrollArea ref={scrollAreaRef} className="flex-grow border rounded-md p-4 relative">
                   {isLoadingChapter && <div className="absolute inset-0 flex items-center justify-center bg-background/50 z-20"><Loader2 className="h-8 w-8 animate-spin" /></div>}
