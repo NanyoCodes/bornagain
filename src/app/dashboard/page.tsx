@@ -26,6 +26,7 @@ import {
   Heart,
   Users,
   CalendarCheck,
+  Target,
 } from 'lucide-react';
 import {
   Dialog,
