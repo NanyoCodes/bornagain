@@ -80,15 +80,15 @@ export default function SoulsWonPage() {
   }, [user?.uid, firestore]);
   const { data: campaigns, loading: loadingCampaigns } = useCollection<Campaign>(campaignsQuery);
   
-  const activeFellowships = useMemo(() => allFellowships?.filter(f => f.status !== 'deleted') ?? [], [allFellowships]);
-  const activeCampaigns = useMemo(() => campaigns?.filter(c => c.status !== 'deleted') ?? [], [campaigns]);
-
   const fellowshipsQuery = useMemo(() => {
     if (!firestore) return null;
     return query(collection(firestore, 'fellowships'), orderBy('name', 'asc'));
   }, [firestore]);
   const { data: allFellowships, loading: loadingFellowships } = useCollection<Fellowship>(fellowshipsQuery);
-  
+
+  const activeFellowships = useMemo(() => allFellowships?.filter(f => f.status !== 'deleted') ?? [], [allFellowships]);
+  const activeCampaigns = useMemo(() => campaigns?.filter(c => c.status !== 'deleted') ?? [], [campaigns]);
+
   const loading = userLoading || soulsLoading || loadingCampaigns || loadingFellowships;
 
   const handleSoulLogged = useCallback(() => {
