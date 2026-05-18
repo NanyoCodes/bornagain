@@ -9,7 +9,6 @@ import {
   DialogDescription, 
   DialogHeader, 
   DialogTitle, 
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   Sheet,
@@ -17,9 +16,8 @@ import {
   SheetDescription,
   SheetHeader,
   SheetTitle,
-  SheetTrigger,
 } from "@/components/ui/sheet";
-import { PlusCircle, Download, Loader2, Target } from "lucide-react";
+import { PlusCircle, Download, Loader2 } from "lucide-react";
 import type { Soul, Campaign, Fellowship } from "@/lib/types";
 import { useCollection, useFirestore, useUser } from "@/firebase";
 import { collection, query, orderBy, doc, serverTimestamp, increment, runTransaction, addDoc, deleteField } from "firebase/firestore";

@@ -73,7 +73,6 @@ export default function RootLayout({
         <link rel="preconnect" href="https://pagead2.googlesyndication.com" />
         <link rel="icon" href={testifyLogoUrl} />
         <link rel="apple-touch-icon" href={testifyLogoUrl} />
-        {/* Suppress asynchronous message channel errors from browser extensions/Studio bridge */}
         <script
           dangerouslySetInnerHTML={{
             __html: `
