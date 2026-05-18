@@ -1,4 +1,3 @@
-
 'use client';
 
 import Image from 'next/image';
@@ -103,7 +102,7 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
         
         <div className="space-y-4 mb-12 z-10 text-center">
             <h1 className="text-5xl font-bold font-headline">Testify</h1>
-            <p className="text-zinc-300 max-w-md text-lg">A global platform for believers to share God's work.</p>
+            <p className="text-zinc-300 max-w-md text-lg">A global movement for believers to share God's work daily.</p>
             <p className="text-zinc-500 font-medium tracking-wide uppercase">GLORIFYING GOD</p>
         </div>
 
