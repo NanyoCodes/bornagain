@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useEffect, Fragment } from "react";
 import { Button } from "@/components/ui/button";
-import { PlusCircle, Target, Loader2, Trash2 } from "lucide-react";
+import { Target, Loader2 } from "lucide-react";
 import { CreateCampaignForm } from "@/components/campaigns/create-campaign-form";
 import {
   Dialog,
@@ -10,7 +10,6 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   AlertDialog,
@@ -28,10 +27,9 @@ import {
   SheetDescription,
   SheetHeader,
   SheetTitle,
-  SheetTrigger,
 } from "@/components/ui/sheet";
 import { CampaignCard } from "@/components/campaigns/campaign-card";
-import type { Campaign, UserProfile, JoinedCampaign, Testimony, Fellowship } from "@/lib/types";
+import type { Campaign, UserProfile, JoinedCampaign, Fellowship } from "@/lib/types";
 import { useCollection, useFirestore, useUser } from "@/firebase";
 import { useDoc } from "@/firebase/firestore/use-doc";
 import { collection, query, orderBy, doc, updateDoc, serverTimestamp } from "firebase/firestore";
@@ -48,6 +46,8 @@ import { useToast } from "@/hooks/use-toast";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import AdsenseAd from "@/components/common/adsense-ad";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Card, CardContent } from "@/components/ui/card";
 
 function CampaignSkeletons() {
   return (
@@ -342,13 +342,6 @@ export default function CampaignsPage() {
     return campaigns.filter(c => c.status !== 'deleted');
   }, [campaigns]);
 
-  const triggerButton = (
-    <Button disabled={!user || profileLoading}>
-      {profileLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <PlusCircle className="h-4 w-4 md:mr-2" />}
-      <span className="hidden md:inline">Create Campaign</span>
-    </Button>
-  );
-
   const formContent = userProfile ? <CreateCampaignForm onCampaignCreated={handleCampaignCreated} userProfile={userProfile} /> : <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin"/></div>;
 
   let noResultsMessage = "No campaigns found.";
@@ -360,44 +353,41 @@ export default function CampaignsPage() {
 
   return (
     <div className="space-y-8">
-      <div className="flex items-center justify-between">
-        <div className="space-y-2">
-          <h1 className="text-xl sm:text-2xl font-bold tracking-tight font-headline">Campaigns</h1>
-        </div>
-        {mounted && isMobile ? (
-          <Sheet open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-            <SheetTrigger asChild>{triggerButton}</SheetTrigger>
-            <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0">
-              <div className="p-6 border-b flex-shrink-0">
-                <SheetHeader className="text-left">
-                  <SheetTitle>Create a New Campaign</SheetTitle>
-                  <SheetDescription>
-                    Fill in the details below to create your campaign.
-                  </SheetDescription>
-                </SheetHeader>
-              </div>
-              <div className="flex-grow overflow-y-auto p-6">
-                {formContent}
-              </div>
-            </SheetContent>
-          </Sheet>
-        ) : (
-          <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-            <DialogTrigger asChild>{triggerButton}</DialogTrigger>
-            <DialogContent className="sm:max-w-2xl">
-              <DialogHeader>
-                <DialogTitle>Create a New Campaign</DialogTitle>
-                <SheetDescription>
-                  Fill in the details below to create your campaign.
-                </SheetDescription>
-              </DialogHeader>
-              <div className="max-h-[70vh] overflow-y-auto pr-2">
-                {formContent}
-              </div>
-            </DialogContent>
-          </Dialog>
-        )}
-      </div>
+      {/* Facebook-style Campaign Entry Box */}
+      <Card className="border-none shadow-sm sm:border sm:shadow-md">
+        <CardContent className="pt-6">
+          <div className="flex items-center gap-3 sm:gap-4">
+            <Avatar className="h-10 w-10 border shadow-sm shrink-0">
+              <AvatarImage src={userProfile?.photoURL} />
+              <AvatarFallback className="bg-primary/10 text-primary">{userProfile?.firstName?.charAt(0)}</AvatarFallback>
+            </Avatar>
+            <Button 
+              variant="outline" 
+              className="flex-1 justify-start text-muted-foreground font-normal rounded-full h-10 sm:h-11 px-4 hover:bg-muted/50 transition-colors text-xs sm:text-sm"
+              onClick={() => setIsCreateOpen(true)}
+              disabled={!user || profileLoading}
+            >
+              {profileLoading ? "Preparing mission field..." : "Launch a new mission for the Kingdom?"}
+            </Button>
+          </div>
+          <div className="flex items-center gap-1 sm:gap-4 mt-4 pt-4 border-t">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="flex-1 text-muted-foreground hover:text-primary transition-colors py-4 sm:py-6 h-auto"
+                onClick={() => setIsCreateOpen(true)}
+                disabled={!user || profileLoading}
+              >
+                {profileLoading ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <Target className="mr-2 h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+                )}
+                <span className="text-[10px] sm:text-xs md:text-sm font-medium">Create Campaign</span>
+              </Button>
+          </div>
+        </CardContent>
+      </Card>
 
       <div className="flex flex-wrap gap-4 items-center">
         <Tabs value={filter} onValueChange={setFilter}>
@@ -454,6 +444,39 @@ export default function CampaignsPage() {
         )}
       </div>
       
+      {/* Campaign Creation Sheet/Dialog */}
+      {mounted && isMobile ? (
+        <Sheet open={isCreateOpen} onOpenChange={setIsCreateOpen}>
+          <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0">
+            <div className="p-6 border-b flex-shrink-0">
+              <SheetHeader className="text-left">
+                <SheetTitle>Create a New Campaign</SheetTitle>
+                <SheetDescription>
+                  Fill in the details below to create your campaign.
+                </SheetDescription>
+              </SheetHeader>
+            </div>
+            <div className="flex-grow overflow-y-auto p-6">
+              {formContent}
+            </div>
+          </SheetContent>
+        </Sheet>
+      ) : (
+        <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
+          <DialogContent className="sm:max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>Create a New Campaign</DialogTitle>
+              <DialogDescription>
+                Fill in the details below to create your campaign.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="max-h-[70vh] overflow-y-auto pr-2">
+              {formContent}
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
+
       {campaignToManage && (
         mounted && isMobile ? (
           <Sheet open={!!campaignToManage} onOpenChange={(open) => !open && setCampaignToManage(null)}>
@@ -542,7 +565,7 @@ export default function CampaignsPage() {
                 <DialogHeader>
                     <DialogTitle>Log a Soul Won in "{campaignForSoul.title}"</DialogTitle>
                     <DialogDescription>
-                        Record the details of the person ministered to during this campaign.
+                        Record the details of the person you've ministered to during this campaign.
                     </DialogDescription>
                 </DialogHeader>
                 <div className="max-h-[70vh] overflow-y-auto pr-2">
