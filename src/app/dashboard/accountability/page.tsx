@@ -46,8 +46,7 @@ import { format } from 'date-fns';
 import { useSearch } from '@/context/search-context';
 import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Calendar } from '@/components/ui/calendar';
+import { Input } from '@/components/ui/input';
 
 function PartnerDisciplineStatus({ partnerId, date }: { partnerId: string; date: Date }) {
     const firestore = useFirestore();
@@ -104,12 +103,14 @@ export default function AccountabilityPage() {
   const [removalTarget, setRemovalTarget] = useState<UserProfile['accountabilityPartners'][0] | null>(null);
   const [removalReason, setRemovalReason] = useState('');
 
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [filterDateStr, setFilterDateStr] = useState<string>(format(new Date(), 'yyyy-MM-dd'));
   const { searchTerm, setSearchPlaceholder, setIsSearchVisible, setSearchTerm } = useSearch();
 
-  useEffect(() => {
-    setSelectedDate(new Date());
-  }, []);
+  const selectedDate = useMemo(() => {
+    if (!filterDateStr) return null;
+    const [year, month, day] = filterDateStr.split('-').map(Number);
+    return new Date(year, month - 1, day);
+  }, [filterDateStr]);
 
   useEffect(() => {
     setIsSearchVisible(true);
@@ -347,24 +348,14 @@ export default function AccountabilityPage() {
             <p className="text-muted-foreground">Your partners in faith. Encourage them and keep each other on track.</p>
         </div>
         <div className="flex items-center gap-2">
-            <Popover>
-                <PopoverTrigger asChild>
-                    <Button variant="outline" className={cn("w-full sm:w-[240px] justify-start text-left font-normal", !selectedDate && "text-muted-foreground")}>
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {selectedDate ? format(selectedDate, "PPP") : <span>Filter by date</span>}
-                    </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="end">
-                    <Calendar
-                        mode="single"
-                        selected={selectedDate || undefined}
-                        onSelect={(date) => setSelectedDate(date || null)}
-                        initialFocus
-                    />
-                </PopoverContent>
-            </Popover>
-            {selectedDate && (
-                <Button variant="ghost" size="icon" onClick={() => setSelectedDate(null)}>
+            <Input
+                type="date"
+                value={filterDateStr}
+                onChange={(e) => setFilterDateStr(e.target.value)}
+                className="w-full sm:w-[200px]"
+            />
+            {filterDateStr && (
+                <Button variant="ghost" size="icon" onClick={() => setFilterDateStr('')}>
                     <XCircle className="h-5 w-5 text-muted-foreground" />
                 </Button>
             )}
