@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useMemo, useState, useEffect } from "react";
@@ -48,6 +47,7 @@ import { CreateTestimonyForm } from "@/components/testimonies/create-testimony-f
 import { useToast } from "@/hooks/use-toast";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
+import { Card, CardContent } from "@/components/ui/card";
 
 function CampaignSkeletons() {
   return (
@@ -350,43 +350,39 @@ export default function CampaignsPage() {
 
   return (
     <div className="space-y-8">
-      <div className="flex items-center justify-between">
-        <div className="space-y-2">
-          <h1 className="text-xl sm:text-2xl font-bold tracking-tight font-headline">Campaigns</h1>
-          <p className="text-sm text-muted-foreground">Join or create soul-winning campaigns.</p>
-        </div>
-        {mounted && isMobile ? (
-          <Sheet open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-            <SheetTrigger asChild>{triggerButton}</SheetTrigger>
-            <SheetContent side="bottom">
-              <SheetHeader>
-                <SheetTitle>Create a New Campaign</SheetTitle>
-                <SheetDescription>
-                  Fill in the details below to create your campaign.
-                </SheetDescription>
-              </SheetHeader>
-              <div className="max-h-[80vh] overflow-y-auto p-1 mt-4">
-                {formContent}
-              </div>
-            </SheetContent>
-          </Sheet>
-        ) : (
-          <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-            <DialogTrigger asChild>{triggerButton}</DialogTrigger>
-            <DialogContent className="sm:max-w-2xl">
-              <DialogHeader>
-                <DialogTitle>Create a New Campaign</DialogTitle>
-                <SheetDescription>
-                  Fill in the details below to create your campaign.
-                </SheetDescription>
-              </DialogHeader>
-              <div className="max-h-[70vh] overflow-y-auto pr-2">
-                {formContent}
-              </div>
-            </DialogContent>
-          </Dialog>
-        )}
-      </div>
+      {/* Facebook-style Campaign Entry Box */}
+      <Card className="border shadow-sm sm:shadow-md mx-[-1rem] sm:mx-0">
+        <CardContent className="px-4 py-4 sm:p-6">
+          <div className="flex items-center gap-2 sm:gap-4">
+            <Button 
+              variant="outline" 
+              className="flex-1 justify-center text-muted-foreground font-normal rounded-full h-9 sm:h-11 px-3 sm:px-4 hover:bg-muted/50 transition-colors text-[11px] sm:text-sm"
+              onClick={() => setIsCreateOpen(true)}
+              disabled={!user || profileLoading}
+            >
+              <span className="truncate">
+                {profileLoading ? "Preparing mission field..." : "Launch a new mission for the Kingdom?"}
+              </span>
+            </Button>
+          </div>
+          <div className="flex items-center justify-center mt-3 pt-3 border-t">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="flex-1 text-muted-foreground hover:text-primary transition-colors py-2 sm:py-6 h-auto"
+                onClick={() => setIsCreateOpen(true)}
+                disabled={!user || profileLoading}
+              >
+                {profileLoading ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <Target className="mr-2 h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+                )}
+                <span className="text-[11px] sm:text-xs md:text-sm font-medium">Create Campaign</span>
+              </Button>
+          </div>
+        </CardContent>
+      </Card>
 
       <div className="flex flex-wrap gap-4 items-center">
         <Tabs value={filter} onValueChange={setFilter}>
@@ -508,13 +504,15 @@ export default function CampaignsPage() {
                     <LogSoulForm
                         onSoulLogged={handleSoulLogged}
                         defaultCampaign={campaignForSoul}
+                        fellowships={[]}
+                        campaigns={[]}
                     />
                 </div>
             </DialogContent>
         </Dialog>
       )}
       
-      {campaignForTestimony && (
+      {campaignForTestimony && userProfile && (
         <Dialog open={!!campaignForTestimony} onOpenChange={(open) => !open && setCampaignForTestimony(null)}>
             <DialogContent className="sm:max-w-lg">
                 <DialogHeader>
@@ -525,6 +523,7 @@ export default function CampaignsPage() {
                 </DialogHeader>
                 <div className="max-h-[70vh] overflow-y-auto pr-2">
                    <CreateTestimonyForm
+                        userProfile={userProfile}
                         onTestimonyCreated={handleTestimonyCreated}
                         campaign={campaignForTestimony}
                     />

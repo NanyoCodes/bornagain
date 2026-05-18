@@ -260,7 +260,7 @@ export default function TestimoniesPage() {
           <div className="flex items-center gap-2 sm:gap-4">
             <Button 
               variant="outline" 
-              className="flex-1 justify-start text-muted-foreground font-normal rounded-full h-9 sm:h-11 px-3 sm:px-4 hover:bg-muted/50 transition-colors text-[11px] sm:text-sm"
+              className="flex-1 justify-center text-muted-foreground font-normal rounded-full h-9 sm:h-11 px-3 sm:px-4 hover:bg-muted/50 transition-colors text-[11px] sm:text-sm"
               onClick={() => setIsTestimonyDialogOpen(true)}
             >
               What has God done today?

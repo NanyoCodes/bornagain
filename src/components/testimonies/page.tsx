@@ -48,7 +48,7 @@ import { EditTestimonyForm } from "@/components/testimonies/edit-testimony-form"
 
 
 export default function TestimoniesPage() {
-  const [isTestimonyDialogOpen] = useState(false);
+  const [isTestimonyDialogOpen, setIsTestimonyDialogOpen] = useState(false);
   const [isPrayerDialogOpen, setIsPrayerDialogOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const isMobile = useIsMobile();
@@ -178,6 +178,7 @@ export default function TestimoniesPage() {
   }, [prayerRequests, searchTerm, activeTab]);
 
   const handleTestimonyCreated = () => {
+    setIsTestimonyDialogOpen(false);
     setPrayerToAnswer(null);
   };
   const handlePrayerRequestCreated = () => {
@@ -188,9 +189,11 @@ export default function TestimoniesPage() {
     if (prayer) {
       setPrayerToAnswer(prayer);
     }
+    setIsTestimonyDialogOpen(true);
   };
 
   const handleCloseTestimonyDialog = () => {
+    setIsTestimonyDialogOpen(false);
     setPrayerToAnswer(null);
   };
   
@@ -376,7 +379,7 @@ export default function TestimoniesPage() {
       </Dialog>
       
       {mounted && isMobile ? (
-        <Sheet open={false} onOpenChange={handleCloseTestimonyDialog}>
+        <Sheet open={isTestimonyDialogOpen} onOpenChange={handleCloseTestimonyDialog}>
           <SheetContent side="bottom">
             <SheetHeader>
               <SheetTitle>{prayerToAnswer ? 'Share Answered Prayer' : 'Share Testimony'}</SheetTitle>
@@ -386,7 +389,7 @@ export default function TestimoniesPage() {
           </SheetContent>
         </Sheet>
       ) : (
-        <Dialog open={false} onOpenChange={handleCloseTestimonyDialog}>
+        <Dialog open={isTestimonyDialogOpen} onOpenChange={handleCloseTestimonyDialog}>
           <DialogContent className="sm:max-w-lg">
             <DialogHeader>
               <DialogTitle>{prayerToAnswer ? 'Share Answered Prayer' : 'Share Testimony'}</DialogTitle>
