@@ -1,11 +1,10 @@
-
 'use client';
 
 import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Edit, Loader2, Mail, MapPin, Phone, HeartHandshake, XCircle } from "lucide-react";
+import { Edit, Loader2, Mail, MapPin, Phone, HeartHandshake, XCircle, Calendar as CalendarIcon } from "lucide-react";
 import { useCollection, useFirestore, useUser } from "@/firebase";
 import { useDoc } from "@/firebase/firestore/use-doc";
 import { collection, query, where, doc, getDocs, documentId } from "firebase/firestore";
@@ -28,6 +27,9 @@ import { format, isSameDay } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { cn } from "@/lib/utils";
 
 function FilterControls({
   searchTerm,
@@ -42,18 +44,6 @@ function FilterControls({
   setFilterDate: (date: Date | undefined) => void;
   searchPlaceholder: string;
 }) {
-  const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value;
-    if (value) {
-      const [year, month, day] = value.split('-').map(Number);
-      setFilterDate(new Date(year, month - 1, day));
-    } else {
-      setFilterDate(undefined);
-    }
-  };
-
-  const dateValue = filterDate ? format(filterDate, "yyyy-MM-dd") : "";
-
   return (
     <div className="flex flex-col sm:flex-row gap-2 mb-4">
       <Input
@@ -62,22 +52,30 @@ function FilterControls({
         onChange={(e) => setSearchTerm(e.target.value)}
         className="flex-grow"
       />
-      <div className="relative w-full sm:w-[240px]">
-        <Label htmlFor="date-filter" className="sr-only">Filter by date</Label>
-        <Input
-          id="date-filter"
-          type="date"
-          value={dateValue}
-          onChange={handleDateChange}
-          className="w-full"
-        />
+      <div className="flex items-center gap-1">
+        <Popover>
+            <PopoverTrigger asChild>
+                <Button variant="outline" className={cn("w-full sm:w-[200px] justify-start text-left font-normal", !filterDate && "text-muted-foreground")}>
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {filterDate ? format(filterDate, "PPP") : <span>Date Filter</span>}
+                </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="end">
+                <Calendar
+                    mode="single"
+                    selected={filterDate}
+                    onSelect={setFilterDate}
+                    initialFocus
+                />
+            </PopoverContent>
+        </Popover>
+        {filterDate && (
+            <Button variant="ghost" size="icon" onClick={() => setFilterDate(undefined)}>
+            <XCircle className="h-5 w-5 text-muted-foreground" />
+            <span className="sr-only">Clear date filter</span>
+            </Button>
+        )}
       </div>
-      {filterDate && (
-        <Button variant="ghost" size="icon" onClick={() => setFilterDate(undefined)}>
-          <XCircle className="h-5 w-5 text-muted-foreground" />
-          <span className="sr-only">Clear date filter</span>
-        </Button>
-      )}
     </div>
   );
 }
@@ -141,8 +139,6 @@ export default function ProfilePage() {
   
   const createdCampaignsQuery = useMemo(() => {
     if (!userId || !firestore) return null;
-    // We only filter by organizerId to avoid needing a composite index.
-    // The status filter is applied client-side.
     return query(collection(firestore, 'campaigns'), where('organizerId', '==', userId));
   }, [userId, firestore]);
   const { data: allCreatedCampaigns, loading: createdCampaignsLoading } = useCollection<Campaign>(createdCampaignsQuery);
@@ -244,8 +240,6 @@ export default function ProfilePage() {
     return activeJoinedCampaigns.filter(c => {
       const search = joinedCampaignSearchTerm.toLowerCase();
       const matchSearch = !search || c.title.toLowerCase().includes(search) || c.location.toLowerCase().includes(search);
-      // JoinedCampaigns don't have their own created date, so we can't filter by date here.
-      // This could be enhanced by fetching the `joinedAt` date from the subcollection.
       return matchSearch;
     });
   }, [activeJoinedCampaigns, joinedCampaignSearchTerm]);
@@ -299,37 +293,18 @@ export default function ProfilePage() {
                         <p className="text-muted-foreground mt-2">{bio || "You haven't set a bio yet. You can add one by editing your profile."}</p>
                     </div>
                     <div className="mt-4 sm:mt-0 sm:ml-4 shrink-0">
-                        {mounted && isMobile ? (
-                            <Sheet open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
-                            <SheetTrigger asChild>{triggerButton}</SheetTrigger>
-                            <SheetContent side="bottom">
-                                <SheetHeader>
-                                <SheetTitle>Edit Profile</SheetTitle>
-                                <SheetDescription>
-                                    Make changes to your public profile.
-                                </SheetDescription>
-                                </SheetHeader>
-                                <div className="max-h-[80vh] overflow-y-auto p-1 mt-4">
-                                {formContent}
-                                </div>
-                            </SheetContent>
-                            </Sheet>
-                        ) : (
-                            <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
+                        <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
                             <DialogTrigger asChild>{triggerButton}</DialogTrigger>
                             <DialogContent className="sm:max-w-lg">
                                 <DialogHeader>
-                                <DialogTitle>Edit Profile</DialogTitle>
-                                <DialogDesc>
-                                    Make changes to your public profile.
-                                </DialogDesc>
+                                    <DialogTitle>Edit Profile</DialogTitle>
+                                    <DialogDesc>Make changes to your public profile.</DialogDesc>
                                 </DialogHeader>
                                 <div className="max-h-[70vh] overflow-y-auto pr-2">
-                                {formContent}
+                                    {formContent}
                                 </div>
                             </DialogContent>
-                            </Dialog>
-                        )}
+                        </Dialog>
                     </div>
                 </div>
                 <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground">
@@ -430,7 +405,7 @@ export default function ProfilePage() {
                      <FilterControls 
                         searchTerm={joinedCampaignSearchTerm}
                         setSearchTerm={setJoinedCampaignSearchTerm}
-                        filterDate={undefined} // Joined campaigns don't have a date on this view.
+                        filterDate={undefined}
                         setFilterDate={() => {}}
                         searchPlaceholder="Search joined campaigns..."
                     />

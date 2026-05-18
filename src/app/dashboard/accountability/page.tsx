@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useMemo, useState, useEffect } from 'react';
@@ -10,7 +9,7 @@ import type { UserProfile } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Loader2, HeartHandshake, MessagesSquare, MoreVertical, UserX, User, CheckCircle2, XCircle, BellRing, BookOpen } from 'lucide-react';
+import { Loader2, HeartHandshake, MessagesSquare, MoreVertical, UserX, User, CheckCircle2, XCircle, BellRing, BookOpen, Calendar as CalendarIcon } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import {
@@ -44,10 +43,11 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { format } from 'date-fns';
-import { Input } from '@/components/ui/input';
 import { useSearch } from '@/context/search-context';
 import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
 
 function PartnerDisciplineStatus({ partnerId, date }: { partnerId: string; date: Date }) {
     const firestore = useFirestore();
@@ -110,17 +110,6 @@ export default function AccountabilityPage() {
   useEffect(() => {
     setSelectedDate(new Date());
   }, []);
-
-  const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.value) {
-        const [year, month, day] = event.target.value.split('-').map(Number);
-        setSelectedDate(new Date(year, month - 1, day));
-    } else {
-        setSelectedDate(null);
-    }
-  };
-
-  const dateValue = selectedDate ? format(selectedDate, 'yyyy-MM-dd') : '';
 
   useEffect(() => {
     setIsSearchVisible(true);
@@ -357,13 +346,28 @@ export default function AccountabilityPage() {
             <h1 className="text-3xl font-bold tracking-tight font-headline">Your Accountability Partners</h1>
             <p className="text-muted-foreground">Your partners in faith. Encourage them and keep each other on track.</p>
         </div>
-        <div>
-          <Input
-            type="date"
-            value={dateValue}
-            onChange={handleDateChange}
-            className="w-full sm:w-fit"
-          />
+        <div className="flex items-center gap-2">
+            <Popover>
+                <PopoverTrigger asChild>
+                    <Button variant="outline" className={cn("w-full sm:w-[240px] justify-start text-left font-normal", !selectedDate && "text-muted-foreground")}>
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {selectedDate ? format(selectedDate, "PPP") : <span>Filter by date</span>}
+                    </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="end">
+                    <Calendar
+                        mode="single"
+                        selected={selectedDate || undefined}
+                        onSelect={(date) => setSelectedDate(date || null)}
+                        initialFocus
+                    />
+                </PopoverContent>
+            </Popover>
+            {selectedDate && (
+                <Button variant="ghost" size="icon" onClick={() => setSelectedDate(null)}>
+                    <XCircle className="h-5 w-5 text-muted-foreground" />
+                </Button>
+            )}
         </div>
       </div>
         <div className="space-y-4">
@@ -470,7 +474,7 @@ export default function AccountabilityPage() {
                                     />
                                 </>
                             ) : (
-                                <div className="flex justify-around items-center h-10"><Loader2 className="h-4 w-4 animate-spin text-muted-foreground" /></div>
+                                <div className="text-center py-6 text-muted-foreground italic text-sm">Select a date above to view discipline progress.</div>
                             )}
                         </div>
                     </CardContent>

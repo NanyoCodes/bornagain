@@ -43,6 +43,7 @@ import {
   Highlighter,
   ChevronDown,
   ArrowLeft,
+  Calendar as CalendarIcon,
   XCircle,
 } from 'lucide-react';
 import { getBibleChapter, type BibleChapterOutput } from '@/ai/flows/get-bible-chapter-flow';
@@ -51,6 +52,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { cn, safeToDate } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
 
 const bibleVersions = [
     { id: 'kjv', name: 'King James Version' },
@@ -167,6 +169,7 @@ export default function BibleReaderPage() {
   const [isChapterPopoverOpen, setIsChapterPopoverOpen] = useState(false);
   const [mobileTab, setMobileTab] = useState('reader');
   const [fontSize, setFontSize] = useState<'sm' | 'base' | 'lg' | 'xl'>('sm');
+  const [historyFilterDate, setHistoryFilterDate] = useState<Date | undefined>();
 
   const fontSizeClasses = { sm: 'text-xs sm:text-sm', base: 'text-sm sm:text-base', lg: 'text-base sm:text-lg', xl: 'text-lg sm:text-xl' };
   const subFontSizeClasses = { sm: 'text-xs', base: 'text-xs', lg: 'text-sm', xl: 'text-sm' };
@@ -244,7 +247,6 @@ export default function BibleReaderPage() {
         const newSelection = selectedVerses.includes(verseNumber) ? selectedVerses.filter(v => v !== verseNumber) : [...selectedVerses, verseNumber].sort((a, b) => a - b);
         setSelectedVerses(newSelection);
         
-        // Use the first verse in the selection for toolbar reference to keep it stable
         const targetVerseNum = newSelection[0] || verseNumber;
         const verseElement = document.getElementById(`verse-${targetVerseNum}`);
         if (verseElement && newSelection.length > 0) {
@@ -281,14 +283,20 @@ export default function BibleReaderPage() {
     const historyGroups = useMemo(() => {
         const groups: { date: Date; items: ReadingHistoryItem[] }[] = [];
         readingHistoryList.forEach(item => {
-        const itemDate = safeToDate(item.readAt);
-        if (!itemDate) return;
-        const lastGroup = groups[groups.length - 1];
-        if (lastGroup && isSameDay(lastGroup.date, itemDate)) lastGroup.items.push(item);
-        else groups.push({ date: itemDate, items: [item] });
+            const itemDate = safeToDate(item.readAt);
+            if (!itemDate) return;
+            
+            // Apply history filter if set
+            if (historyFilterDate && !isSameDay(itemDate, historyFilterDate)) {
+                return;
+            }
+
+            const lastGroup = groups[groups.length - 1];
+            if (lastGroup && isSameDay(lastGroup.date, itemDate)) lastGroup.items.push(item);
+            else groups.push({ date: itemDate, items: [item] });
         });
         return groups.reverse();
-    }, [readingHistoryList]);
+    }, [readingHistoryList, historyFilterDate]);
 
     const NotesList = (
         <div className="space-y-4 p-1">
@@ -381,12 +389,45 @@ export default function BibleReaderPage() {
                     </div>
                     {isMobile && <div className={cn("md:hidden mt-4 shrink-0", mobileTab === 'notes' ? "flex-grow" : "h-12")}><Tabs value={mobileTab} onValueChange={setMobileTab} className="h-full flex flex-col"><TabsList className="grid w-full grid-cols-2"><TabsTrigger value="reader">Read</TabsTrigger><TabsTrigger value="notes">Notes ({highlights?.length || 0})</TabsTrigger></TabsList><TabsContent value="notes" className="flex-grow min-h-0 mt-2"><ScrollArea className="h-full border rounded p-2 bg-muted/30">{NotesList}</ScrollArea></TabsContent></Tabs></div>}
                 </TabsContent>
-                <TabsContent value="history" className="flex-grow min-h-0 mt-4"><ScrollArea className="h-full"><div className="p-4 space-y-8">{historyGroups.map(g => (
-                    <div key={g.date.toISOString()} className="space-y-4">
-                        <div className="relative"><div className="absolute inset-0 flex items-center"><div className="w-full border-t" /></div><div className="relative flex justify-center"><span className="bg-background px-3 text-sm font-semibold text-muted-foreground">{format(g.date, 'PPP')}</span></div></div>
-                        <ul className="space-y-4">{g.items.map((i, idx) => <li key={idx} className="flex items-center gap-3"><BookOpen className="h-4 w-4 text-primary" /><p className="text-sm">Read <span className="font-medium">{i.book} {i.chapter}</span> at {format(safeToDate(i.readAt)!, 'p')}</p></li>)}</ul>
+                <TabsContent value="history" className="flex-grow flex flex-col min-h-0 mt-4">
+                    <div className="flex items-center gap-2 mb-4">
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button variant="outline" className={cn("flex-grow justify-start text-left font-normal", !historyFilterDate && "text-muted-foreground")}>
+                                    <CalendarIcon className="mr-2 h-4 w-4" />
+                                    {historyFilterDate ? format(historyFilterDate, "PPP") : <span>Filter history by date</span>}
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0" align="start">
+                                <Calendar
+                                    mode="single"
+                                    selected={historyFilterDate}
+                                    onSelect={setHistoryFilterDate}
+                                    initialFocus
+                                />
+                            </PopoverContent>
+                        </Popover>
+                        {historyFilterDate && (
+                            <Button variant="ghost" size="icon" onClick={() => setHistoryFilterDate(undefined)}>
+                                <XCircle className="h-5 w-5 text-muted-foreground" />
+                            </Button>
+                        )}
                     </div>
-                ))}</div></ScrollArea></TabsContent>
+                    <ScrollArea className="h-full">
+                        <div className="p-4 pt-0 space-y-8">
+                            {historyGroups.length > 0 ? historyGroups.map(g => (
+                                <div key={g.date.toISOString()} className="space-y-4">
+                                    <div className="relative"><div className="absolute inset-0 flex items-center"><div className="w-full border-t" /></div><div className="relative flex justify-center"><span className="bg-background px-3 text-sm font-semibold text-muted-foreground">{format(g.date, 'PPP')}</span></div></div>
+                                    <ul className="space-y-4">{g.items.map((i, idx) => <li key={idx} className="flex items-center gap-3"><BookOpen className="h-4 w-4 text-primary" /><p className="text-sm">Read <span className="font-medium">{i.book} {i.chapter}</span> at {format(safeToDate(i.readAt)!, 'p')}</p></li>)}</ul>
+                                </div>
+                            )) : (
+                                <div className="text-center py-12 text-muted-foreground italic">
+                                    {historyFilterDate ? "No history found for this date." : "Your reading history will appear here."}
+                                </div>
+                            )}
+                        </div>
+                    </ScrollArea>
+                </TabsContent>
             </Tabs>
         </div>
     );
