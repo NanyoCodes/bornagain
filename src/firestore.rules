@@ -49,12 +49,10 @@ service cloud.firestore {
       }
 
       match /bibleHighlights/{highlightId} {
-        // Strict Privacy
         allow read, write: if isOwner(userId);
       }
 
       match /notes/{noteId} {
-        // Strict Privacy
         allow read, write: if isOwner(userId);
       }
 
@@ -85,7 +83,13 @@ service cloud.firestore {
       allow get, list: if true;
       allow create: if request.auth != null && request.auth.uid == request.resource.data.authorId;
       allow delete: if request.auth != null && resource.data.authorId == request.auth.uid;
-      allow update: if request.auth != null && ( (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['usersWhoPrayed']) && request.resource.data.usersWhoPrayed.size() == (('usersWhoPrayed' in resource.data) ? resource.data.usersWhoPrayed.size() : 0) + 1 && request.auth.uid in request.resource.data.usersWhoPrayed) || (resource.data.authorId == request.auth.uid && resource.data.status == 'pending' && request.resource.data.status == 'answered' && request.resource.data.diff(resource.data).affectedKeys().hasAll(['status', 'answeredTestimonyId'])) || (resource.data.authorId == request.auth.uid && resource.data.status == 'answered' && request.resource.data.status == 'pending' && request.resource.data.diff(resource.data).affectedKeys().hasAll(['status', 'answeredTestimonyId'])) );
+      allow update: if request.auth != null && ( 
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['usersWhoPrayed']) && 
+         request.resource.data.usersWhoPrayed.size() == (('usersWhoPrayed' in resource.data) ? resource.data.usersWhoPrayed.size() : 0) + 1 && 
+         request.auth.uid in request.resource.data.usersWhoPrayed) || 
+        (resource.data.authorId == request.auth.uid && resource.data.status == 'pending' && request.resource.data.status == 'answered' && request.resource.data.diff(resource.data).affectedKeys().hasAll(['status', 'answeredTestimonyId'])) || 
+        (resource.data.authorId == request.auth.uid && resource.data.status == 'answered' && request.resource.data.status == 'pending' && request.resource.data.diff(resource.data).affectedKeys().hasAll(['status', 'answeredTestimonyId'])) 
+      );
     }
 
     match /campaigns/{campaignId} {
@@ -120,13 +124,6 @@ service cloud.firestore {
       allow delete: if request.auth != null && request.auth.uid in resource.data.participantIds;
     }
     
-    function isFellowshipMemberInternal(fellowshipId) {
-       return request.auth != null &&
-              fellowshipId != null &&
-              exists(/databases/$(database)/documents/fellowships/$(fellowshipId)) &&
-              request.auth.uid in get(/databases/$(database)/documents/fellowships/$(fellowshipId)).data.memberIds;
-    }
-
     match /fellowships/{fellowshipId} {
       allow read: if request.auth != null;
       allow create: if request.auth != null && request.resource.data.organizerId == request.auth.uid;

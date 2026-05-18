@@ -56,7 +56,7 @@ export function WelcomeBackDialog({ isOpen, onClose, userProfile, summaryData }:
                         <Newspaper className="h-6 w-6" />
                     </div>
                     <div>
-                        <p className="font-semibold">{summaryData?.newTestimoniesCount ?? 0} New Testimonies</p>
+                        <p className="font-semibold">{summaryData.newTestimoniesCount} New Testimonies</p>
                         <p className="text-sm text-muted-foreground">From the community.</p>
                     </div>
                 </div>
@@ -69,7 +69,7 @@ export function WelcomeBackDialog({ isOpen, onClose, userProfile, summaryData }:
                         <UserPlus className="h-6 w-6" />
                     </div>
                     <div>
-                        <p className="font-semibold">{summaryData?.soulsWonCount ?? 0} Souls Won</p>
+                        <p className="font-semibold">{summaryData.soulsWonCount} Souls Won</p>
                         <p className="text-sm text-muted-foreground">Tracked by you.</p>
                     </div>
                 </div>
@@ -87,7 +87,7 @@ export function WelcomeBackDialog({ isOpen, onClose, userProfile, summaryData }:
                     </div>
                 </div>
                 <div className="space-y-2">
-                    {summaryData?.recentDisciplines && summaryData.recentDisciplines.length > 0 ? summaryData.recentDisciplines.map(item => (
+                    {summaryData.recentDisciplines && summaryData.recentDisciplines.length > 0 ? summaryData.recentDisciplines.map(item => (
                         <div key={item.date} className="flex items-center justify-between text-sm px-2">
                             <p>{item.date}</p>
                             {item.completed ? 

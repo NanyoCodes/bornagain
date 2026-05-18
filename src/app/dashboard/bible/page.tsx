@@ -11,12 +11,10 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from '@/components/ui/card';
 import { bibleData } from '@/lib/bible-data';
 import { useUser, useFirestore, useDoc, useCollection } from '@/firebase';
@@ -415,8 +413,8 @@ export default function BibleReaderPage() {
                     )}
                 </div>
             ) : (
-                <div className="flex-grow flex flex-col min-h-0 mt-4">
-                    <div className="flex items-center gap-2 mb-4 shrink-0">
+                <div className="flex-grow flex flex-col min-h-0 mt-4 overflow-hidden">
+                    <div className="flex items-center gap-2 mb-4 shrink-0 px-1">
                         <Input
                             type="date"
                             value={historyFilterDate}
