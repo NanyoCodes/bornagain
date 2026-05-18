@@ -354,27 +354,29 @@ export default function CampaignsPage() {
   return (
     <div className="space-y-8">
       {/* Facebook-style Campaign Entry Box */}
-      <Card className="border-none shadow-sm sm:border sm:shadow-md">
-        <CardContent className="pt-6">
-          <div className="flex items-center gap-3 sm:gap-4">
-            <Avatar className="h-10 w-10 border shadow-sm shrink-0">
+      <Card className="border-none shadow-sm sm:border sm:shadow-md mx-[-1rem] sm:mx-0">
+        <CardContent className="px-4 py-4 sm:p-6">
+          <div className="flex items-center gap-2 sm:gap-4">
+            <Avatar className="h-9 w-9 sm:h-10 sm:w-10 border shadow-sm shrink-0">
               <AvatarImage src={userProfile?.photoURL} />
               <AvatarFallback className="bg-primary/10 text-primary">{userProfile?.firstName?.charAt(0)}</AvatarFallback>
             </Avatar>
             <Button 
               variant="outline" 
-              className="flex-1 justify-start text-muted-foreground font-normal rounded-full h-10 sm:h-11 px-4 hover:bg-muted/50 transition-colors text-xs sm:text-sm"
+              className="flex-1 justify-start text-muted-foreground font-normal rounded-full h-9 sm:h-11 px-3 sm:px-4 hover:bg-muted/50 transition-colors text-[11px] sm:text-sm"
               onClick={() => setIsCreateOpen(true)}
               disabled={!user || profileLoading}
             >
-              {profileLoading ? "Preparing mission field..." : "Launch a new mission for the Kingdom?"}
+              <span className="truncate">
+                {profileLoading ? "Preparing mission field..." : "Launch a new mission for the Kingdom?"}
+              </span>
             </Button>
           </div>
-          <div className="flex items-center gap-1 sm:gap-4 mt-4 pt-4 border-t">
+          <div className="flex items-center justify-center mt-3 pt-3 border-t">
               <Button 
                 variant="ghost" 
                 size="sm" 
-                className="flex-1 text-muted-foreground hover:text-primary transition-colors py-4 sm:py-6 h-auto"
+                className="flex-1 text-muted-foreground hover:text-primary transition-colors py-2 sm:py-6 h-auto"
                 onClick={() => setIsCreateOpen(true)}
                 disabled={!user || profileLoading}
               >
@@ -383,7 +385,7 @@ export default function CampaignsPage() {
                 ) : (
                   <Target className="mr-2 h-4 w-4 sm:h-5 sm:w-5 text-primary" />
                 )}
-                <span className="text-[10px] sm:text-xs md:text-sm font-medium">Create Campaign</span>
+                <span className="text-[11px] sm:text-xs md:text-sm font-medium">Create Campaign</span>
               </Button>
           </div>
         </CardContent>
