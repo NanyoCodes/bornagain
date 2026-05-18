@@ -255,7 +255,7 @@ export default function TestimoniesPage() {
   return (
     <div className="space-y-6 md:space-y-8">
       {/* Facebook-style Status Box */}
-      <Card className="border-none shadow-sm sm:border sm:shadow-md mx-[-1rem] sm:mx-0">
+      <Card className="border shadow-sm sm:shadow-md mx-[-1rem] sm:mx-0">
         <CardContent className="px-4 py-4 sm:p-6">
           <div className="flex items-center gap-2 sm:gap-4">
             <Button 
