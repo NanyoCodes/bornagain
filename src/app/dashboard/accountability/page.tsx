@@ -9,7 +9,7 @@ import type { UserProfile } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Loader2, HeartHandshake, MessagesSquare, MoreVertical, UserX, User, CheckCircle2, XCircle, BellRing, BookOpen, Calendar as CalendarIcon } from 'lucide-react';
+import { Loader2, HeartHandshake, MessagesSquare, MoreVertical, UserX, User, CheckCircle2, XCircle, BellRing, BookOpen } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import {
@@ -37,9 +37,9 @@ import {
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { format } from 'date-fns';
@@ -90,6 +90,132 @@ function PartnerDisciplineStatus({ partnerId, date }: { partnerId: string; date:
     );
 }
 
+function PartnerCard({ 
+    partner, 
+    onNudge, 
+    onChat, 
+    onRemove 
+}: { 
+    partner: UserProfile['accountabilityPartners'][0], 
+    onNudge: (p: any) => void, 
+    onChat: (p: any) => void, 
+    onRemove: (p: any) => void 
+}) {
+    const router = useRouter();
+    const [dateStr, setDateStr] = useState(format(new Date(), 'yyyy-MM-dd'));
+    
+    const selectedDate = useMemo(() => {
+        const [year, month, day] = dateStr.split('-').map(Number);
+        return new Date(year, month - 1, day);
+    }, [dateStr]);
+
+    return (
+        <Card>
+            <CardHeader className="flex flex-row items-center justify-between">
+                 <div className="flex items-center gap-4">
+                    <Dialog>
+                      <DialogTrigger asChild disabled={!partner.photoURL}>
+                        <Avatar className={cn("h-12 w-12 border", partner.photoURL && "cursor-pointer")}>
+                            <AvatarImage src={partner.photoURL} />
+                            <AvatarFallback>{partner.firstName?.charAt(0)}</AvatarFallback>
+                        </Avatar>
+                      </DialogTrigger>
+                      {partner.photoURL && (
+                          <DialogContent className="p-0 bg-transparent border-0 w-auto max-w-lg">
+                              <DialogHeader className="sr-only">
+                                  <DialogTitle>Profile photo of {partner.firstName} {partner.lastName}</DialogTitle>
+                                  <DialogDescription>A larger view of the user's profile photo.</DialogDescription>
+                              </DialogHeader>
+                              <Image src={partner.photoURL} alt={`${partner.firstName} ${partner.lastName}`} width={600} height={600} className="rounded-lg object-contain"/>
+                          </DialogContent>
+                      )}
+                    </Dialog>
+                    <div>
+                        <Link href={`/dashboard/profile/${partner.userId}`}>
+                            <h2 className="text-lg sm:text-xl font-semibold hover:underline">{partner.firstName} {partner.lastName}</h2>
+                        </Link>
+                    </div>
+                </div>
+                <div className="flex items-center gap-2">
+                    <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Button
+                                    variant="outline"
+                                    size="icon"
+                                    onClick={() => onNudge(partner)}
+                                >
+                                    <BellRing className="h-4 w-4" />
+                                    <span className="sr-only">Nudge Partner</span>
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p>Nudge {partner.firstName}</p>
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
+                    <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Button
+                                    variant="outline"
+                                    size="icon"
+                                    onClick={() => onChat(partner)}
+                                >
+                                    <MessagesSquare className="h-4 w-4" />
+                                    <span className="sr-only">Chat</span>
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p>Chat with {partner.firstName}</p>
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon">
+                                <MoreVertical className="h-5 w-5" />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            <DropdownMenuItem onSelect={() => router.push(`/dashboard/profile/${partner.userId}`)}>
+                              <User className="mr-2 h-4 w-4" /> View Profile
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onSelect={() => router.push('/dashboard/bible')}>
+                              <BookOpen className="mr-2 h-4 w-4" /> Read Bible Together
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                                className="text-destructive focus:text-destructive"
+                                onSelect={() => onRemove(partner)}
+                            >
+                                <UserX className="mr-2 h-4 w-4" /> Remove Partner
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </div>
+            </CardHeader>
+            <CardContent className="px-6 pb-4">
+                <div className="mt-2 pt-4 border-t space-y-4">
+                    <div className="flex justify-between items-center flex-wrap gap-2">
+                        <h4 className="text-sm font-semibold text-muted-foreground">Discipline Status</h4>
+                        <Input 
+                            type="date" 
+                            value={dateStr} 
+                            onChange={(e) => setDateStr(e.target.value)} 
+                            className="w-[150px] h-8 text-xs"
+                        />
+                    </div>
+                    <PartnerDisciplineStatus 
+                        partnerId={partner.userId} 
+                        date={selectedDate}
+                    />
+                </div>
+            </CardContent>
+        </Card>
+    );
+}
+
 
 export default function AccountabilityPage() {
   const { user, loading: userLoading } = useUser();
@@ -103,14 +229,7 @@ export default function AccountabilityPage() {
   const [removalTarget, setRemovalTarget] = useState<UserProfile['accountabilityPartners'][0] | null>(null);
   const [removalReason, setRemovalReason] = useState('');
 
-  const [filterDateStr, setFilterDateStr] = useState<string>(format(new Date(), 'yyyy-MM-dd'));
   const { searchTerm, setSearchPlaceholder, setIsSearchVisible, setSearchTerm } = useSearch();
-
-  const selectedDate = useMemo(() => {
-    if (!filterDateStr) return null;
-    const [year, month, day] = filterDateStr.split('-').map(Number);
-    return new Date(year, month - 1, day);
-  }, [filterDateStr]);
 
   useEffect(() => {
     setIsSearchVisible(true);
@@ -347,129 +466,16 @@ export default function AccountabilityPage() {
             <h1 className="text-3xl font-bold tracking-tight font-headline">Your Accountability Partners</h1>
             <p className="text-muted-foreground">Your partners in faith. Encourage them and keep each other on track.</p>
         </div>
-        <div className="flex items-center gap-2">
-            <Input
-                type="date"
-                value={filterDateStr}
-                onChange={(e) => setFilterDateStr(e.target.value)}
-                className="w-full sm:w-[200px]"
-            />
-            {filterDateStr && (
-                <Button variant="ghost" size="icon" onClick={() => setFilterDateStr('')}>
-                    <XCircle className="h-5 w-5 text-muted-foreground" />
-                </Button>
-            )}
-        </div>
       </div>
         <div className="space-y-4">
             {filteredPartners.map(partner => (
-                <Card key={partner.userId}>
-                    <CardHeader className="flex flex-row items-center justify-between">
-                         <div className="flex items-center gap-4">
-                            <Dialog>
-                              <DialogTrigger asChild disabled={!partner.photoURL}>
-                                <Avatar className={cn("h-12 w-12 border", partner.photoURL && "cursor-pointer")}>
-                                    <AvatarImage src={partner.photoURL} />
-                                    <AvatarFallback>{partner.firstName?.charAt(0)}</AvatarFallback>
-                                </Avatar>
-                              </DialogTrigger>
-                              {partner.photoURL && (
-                                  <DialogContent className="p-0 bg-transparent border-0 w-auto max-w-lg">
-                                      <DialogHeader className="sr-only">
-                                          <DialogTitle>Profile photo of {partner.firstName} {partner.lastName}</DialogTitle>
-                                          <DialogDescription>A larger view of the user's profile photo.</DialogDescription>
-                                      </DialogHeader>
-                                      <Image src={partner.photoURL} alt={`${partner.firstName} ${partner.lastName}`} width={600} height={600} className="rounded-lg object-contain"/>
-                                  </DialogContent>
-                              )}
-                            </Dialog>
-                            <div>
-                                <Link href={`/dashboard/profile/${partner.userId}`}>
-                                    <h2 className="text-lg sm:text-xl font-semibold hover:underline">{partner.firstName} {partner.lastName}</h2>
-                                </Link>
-                            </div>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <TooltipProvider>
-                                <Tooltip>
-                                    <TooltipTrigger asChild>
-                                        <Button
-                                            variant="outline"
-                                            size="icon"
-                                            onClick={() => handleNudgePartner(partner)}
-                                            disabled={isNudging === partner.userId || isChatLoading === partner.userId}
-                                        >
-                                            {isNudging === partner.userId ? <Loader2 className="h-4 w-4 animate-spin" /> : <BellRing className="h-4 w-4" />}
-                                            <span className="sr-only">Nudge Partner</span>
-                                        </Button>
-                                    </TooltipTrigger>
-                                    <TooltipContent>
-                                        <p>Nudge {partner.firstName}</p>
-                                    </TooltipContent>
-                                </Tooltip>
-                            </TooltipProvider>
-                            <TooltipProvider>
-                                <Tooltip>
-                                    <TooltipTrigger asChild>
-                                        <Button
-                                            variant="outline"
-                                            size="icon"
-                                            onClick={() => handleInitiateChat(partner)}
-                                            disabled={isChatLoading === partner.userId || isNudging === partner.userId}
-                                        >
-                                            {isChatLoading === partner.userId ? <Loader2 className="h-4 w-4 animate-spin" /> : <MessagesSquare className="h-4 w-4" />}
-                                            <span className="sr-only">Chat</span>
-                                        </Button>
-                                    </TooltipTrigger>
-                                    <TooltipContent>
-                                        <p>Chat with {partner.firstName}</p>
-                                    </TooltipContent>
-                                </Tooltip>
-                            </TooltipProvider>
-                            <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                    <Button variant="ghost" size="icon">
-                                        <MoreVertical className="h-5 w-5" />
-                                    </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
-                                    <DropdownMenuItem onSelect={() => router.push(`/dashboard/profile/${partner.userId}`)}>
-                                      <User className="mr-2 h-4 w-4" /> View Profile
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem onSelect={() => router.push('/dashboard/bible')}>
-                                      <BookOpen className="mr-2 h-4 w-4" /> Read Bible Together
-                                    </DropdownMenuItem>
-                                    <DropdownMenuSeparator />
-                                    <DropdownMenuItem
-                                        className="text-destructive focus:text-destructive"
-                                        onSelect={() => {
-                                            setRemovalTarget(partner);
-                                        }}
-                                    >
-                                        <UserX className="mr-2 h-4 w-4" /> Remove Partner
-                                    </DropdownMenuItem>
-                                </DropdownMenuContent>
-                            </DropdownMenu>
-                        </div>
-                    </CardHeader>
-                    <CardContent className="px-6 pb-4">
-                        <div className="mt-2 pt-4 border-t space-y-4">
-                            {selectedDate ? (
-                                <>
-                                    <div className="flex justify-between items-center flex-wrap gap-2">
-                                        <h4 className="text-sm font-semibold text-muted-foreground">Discipline Status for {format(selectedDate, "PPP")}</h4>
-                                    </div>
-                                    <PartnerDisciplineStatus 
-                                        partnerId={partner.userId} 
-                                        date={selectedDate}
-                                    />
-                                </>
-                            ) : (
-                                <div className="text-center py-6 text-muted-foreground italic text-sm">Select a date above to view discipline progress.</div>
-                            )}
-                        </div>
-                    </CardContent>
-                </Card>
+                <PartnerCard 
+                    key={partner.userId}
+                    partner={partner}
+                    onNudge={handleNudgePartner}
+                    onChat={handleInitiateChat}
+                    onRemove={setRemovalTarget}
+                />
             ))}
             {partners.length > 0 && filteredPartners.length === 0 && (
                 <div className="text-center py-10 text-muted-foreground border-2 border-dashed rounded-lg">

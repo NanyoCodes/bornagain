@@ -297,12 +297,6 @@ export default function SoulsWonPage() {
     );
   }, [souls, searchTerm]);
 
-  const triggerButton = (
-    <Button variant="outline" className="flex-1 justify-center text-muted-foreground font-normal rounded-full h-9 sm:h-11 px-3 sm:px-4 hover:bg-muted/50 transition-colors text-[11px] sm:text-sm" disabled={loading}>
-        {loading ? "Preparing harvest list..." : "Who did you minister to today?"}
-    </Button>
-  );
-
   return (
     <div className="space-y-8">
       {/* Facebook-style Soul Entry Box */}
