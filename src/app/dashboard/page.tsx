@@ -511,13 +511,13 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-8">
-      <Card className="bg-primary border-none shadow-lg">
+      <Card className="bg-transparent border-none shadow-none text-center py-4">
         <CardContent className="p-6">
-          <h1 className="text-xl sm:text-2xl font-bold tracking-tight font-headline text-white">
+          <h1 className="text-2xl sm:text-4xl font-medium font-headline text-white drop-shadow-md italic leading-tight">
             {welcomeMessage?.text.replace('{name}', displayName) ||
               `Welcome back, ${displayName}!`}
           </h1>
-          <p className="text-white/80 uppercase mt-2 text-xs font-semibold tracking-widest">
+          <p className="text-white font-body mt-4 text-sm sm:text-base font-semibold tracking-wide drop-shadow-sm opacity-90 uppercase">
             {welcomeMessage?.verse || ''}
           </p>
         </CardContent>

@@ -15,6 +15,7 @@ import {
   SheetContent,
   SheetDescription,
   SheetHeader,
+  SheetTitle,
 } from "@/components/ui/sheet";
 import { PlusCircle, Download, Loader2 } from "lucide-react";
 import type { Soul, Campaign, Fellowship } from "@/lib/types";

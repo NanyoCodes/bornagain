@@ -21,7 +21,7 @@ import { Loader2 } from "lucide-react";
 import type { Soul, Campaign, Fellowship } from "@/lib/types";
 import { format } from "date-fns";
 import { useFirestore, useUser } from "@/firebase";
-import { collection, doc, serverTimestamp, runTransaction, increment } from "firebase/firestore";
+import { collection, doc, serverTimestamp, runTransaction, increment, addDoc } from "firebase/firestore";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
