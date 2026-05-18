@@ -122,7 +122,7 @@ function NoteEditor({ highlight, onSave, onDelete, onCancel }: { highlight: Bibl
             autoFocus
         />
       </CardContent>
-      <CardFooter className="p-3 pt-0 flex flex-wrap items-center justify-between gap-y-2">
+      <CardFooter className="p-3 pt-0 flex flex-wrap items-center justify-between gap-2">
           <AlertDialog>
              <AlertDialogTrigger asChild>
                 <Button variant="destructive" size="sm" disabled={isDeleting}>
