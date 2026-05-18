@@ -309,7 +309,16 @@ export default function SoulsWonPage() {
       <Card className="border shadow-sm sm:shadow-md mx-[-1rem] sm:mx-0">
         <CardContent className="px-4 py-4 sm:p-6">
           <div className="flex items-center gap-2 sm:gap-4">
-            {triggerButton}
+            <Button 
+                variant="outline" 
+                className="flex-1 justify-center text-muted-foreground font-normal rounded-full h-9 sm:h-11 px-3 sm:px-4 hover:bg-muted/50 transition-colors text-[11px] sm:text-sm"
+                onClick={() => setIsLogDialogOpen(true)}
+                disabled={loading}
+            >
+                <span className="truncate">
+                    {loading ? "Preparing harvest list..." : "Who did you minister to today?"}
+                </span>
+            </Button>
           </div>
           <div className="flex items-center justify-center mt-3 pt-3 border-t">
               <Button 
@@ -392,19 +401,17 @@ export default function SoulsWonPage() {
           </DialogContent>
       </Dialog>
 
-      <Sheet open={isLogDialogOpen} onOpenChange={setIsLogDialogOpen}>
-        <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0">
-          <div className="p-6 border-b flex-shrink-0">
-              <SheetHeader className="text-left">
-                  <SheetTitle>Log a New Soul</SheetTitle>
-                  <SheetDescription>Record the details of the person you've ministered to.</SheetDescription>
-              </SheetHeader>
+      <Dialog open={isLogDialogOpen} onOpenChange={setIsLogDialogOpen}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Log a New Soul</DialogTitle>
+            <DialogDescription>Record the details of the person you've ministered to.</DialogDescription>
+          </DialogHeader>
+          <div className="max-h-[70vh] overflow-y-auto pr-2">
+            <LogSoulForm onSoulLogged={handleSoulLogged} fellowships={activeFellowships} campaigns={activeCampaigns} />
           </div>
-          <div className="flex-grow overflow-y-auto p-6">
-              <LogSoulForm onSoulLogged={handleSoulLogged} fellowships={activeFellowships} campaigns={activeCampaigns} />
-          </div>
-        </SheetContent>
-      </Sheet>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
