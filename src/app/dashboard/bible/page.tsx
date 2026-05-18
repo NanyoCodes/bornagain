@@ -44,6 +44,7 @@ import {
   ChevronDown,
   ArrowLeft,
   XCircle,
+  History,
 } from 'lucide-react';
 import { getBibleChapter, type BibleChapterOutput } from '@/ai/flows/get-bible-chapter-flow';
 import { Input } from '@/components/ui/input';
@@ -165,9 +166,9 @@ export default function BibleReaderPage() {
   const isMobile = useIsMobile();
   const [mounted, setMounted] = useState(false);
   const [isChapterPopoverOpen, setIsChapterPopoverOpen] = useState(false);
-  const [mobileTab, setMobileTab] = useState('reader');
+  const [view, setView] = useState<'read' | 'history'>('read');
   const [fontSize, setFontSize] = useState<'sm' | 'base' | 'lg' | 'xl'>('sm');
-  const [historyFilterDate, setHistoryFilterDate] = useState<Date | undefined>();
+  const [historyFilterDate, setHistoryFilterDate] = useState<string>('');
 
   const fontSizeClasses = { sm: 'text-xs sm:text-sm', base: 'text-sm sm:text-base', lg: 'text-base sm:text-lg', xl: 'text-lg sm:text-xl' };
   const subFontSizeClasses = { sm: 'text-xs', base: 'text-xs', lg: 'text-sm', xl: 'text-sm' };
@@ -240,8 +241,9 @@ export default function BibleReaderPage() {
 
   const handleVerseClick = (verseNumber: number) => {
         const existingHighlight = highlightsMap.get(verseNumber);
-        if (existingHighlight) { setActiveHighlightId(existingHighlight.id); if (isMobile) setMobileTab('notes'); return; }
-        if (unfinishedHighlight) { setActiveHighlightId(unfinishedHighlight.id); if (isMobile) setMobileTab('notes'); return; }
+        if (existingHighlight) { setActiveHighlightId(existingHighlight.id); return; }
+        if (unfinishedHighlight) { setActiveHighlightId(unfinishedHighlight.id); return; }
+        
         const newSelection = selectedVerses.includes(verseNumber) ? selectedVerses.filter(v => v !== verseNumber) : [...selectedVerses, verseNumber].sort((a, b) => a - b);
         setSelectedVerses(newSelection);
         
@@ -268,7 +270,6 @@ export default function BibleReaderPage() {
         setSelectedVerses([]);
         setToolbarPos(null);
         setActiveHighlightId(newHighlightRef.id);
-        if (isMobile) setMobileTab('notes');
         setIsProcessingHighlight(false);
     };
     
@@ -284,9 +285,9 @@ export default function BibleReaderPage() {
             const itemDate = safeToDate(item.readAt);
             if (!itemDate) return;
             
-            // Apply history filter if set
-            if (historyFilterDate && !isSameDay(itemDate, historyFilterDate)) {
-                return;
+            if (historyFilterDate) {
+              const filterD = new Date(historyFilterDate);
+              if (!isSameDay(itemDate, filterD)) return;
             }
 
             const lastGroup = groups[groups.length - 1];
@@ -350,13 +351,19 @@ export default function BibleReaderPage() {
 
     return (
         <div className="h-dvh flex flex-col p-4">
-            <div className="shrink-0 flex items-center gap-4 mb-4">
-                <Button variant="outline" size="icon" onClick={() => router.back()}><ArrowLeft className="h-4 w-4" /></Button>
-                 <h1 className="text-xl font-bold">Bible Reader {chapterContent?.translation && <span className="text-muted-foreground text-sm font-normal">({chapterContent.translation})</span>}</h1>
+            <div className="shrink-0 flex items-center justify-between mb-4">
+                <div className="flex items-center gap-4">
+                  <Button variant="outline" size="icon" onClick={() => router.back()}><ArrowLeft className="h-4 w-4" /></Button>
+                   <h1 className="text-xl font-bold">Bible Reader</h1>
+                </div>
+                <div className="flex items-center gap-2">
+                   <Button variant={view === 'read' ? 'default' : 'ghost'} size="sm" onClick={() => setView('read')}><BookOpen className="mr-2 h-4 w-4" />Read</Button>
+                   <Button variant={view === 'history' ? 'default' : 'ghost'} size="sm" onClick={() => setView('history')}><History className="mr-2 h-4 w-4" />History</Button>
+                </div>
             </div>
-            <Tabs defaultValue="read" className="flex-grow flex flex-col min-h-0">
-                <TabsList className="grid w-full grid-cols-2"><TabsTrigger value="read">Read</TabsTrigger><TabsTrigger value="history">History</TabsTrigger></TabsList>
-                <TabsContent value="read" className="flex-grow flex flex-col min-h-0 mt-4 overflow-hidden">
+
+            {view === 'read' ? (
+                <div className="flex-grow flex flex-col min-h-0 overflow-hidden">
                     <div className="grid grid-cols-3 gap-2 shrink-0 mb-4">
                         <Select value={selectedBookName} onValueChange={setSelectedBookName}>
                             <SelectTrigger className="truncate"><SelectValue /></SelectTrigger>
@@ -385,33 +392,23 @@ export default function BibleReaderPage() {
                         <div className="flex-grow min-h-0">{ReaderContent}</div>
                         <div className="hidden md:flex md:w-1/3 flex-col border rounded-md bg-muted/30 p-4 min-h-0"><h3 className="font-semibold mb-2">My Journal</h3><ScrollArea className="flex-grow">{NotesList}</ScrollArea></div>
                     </div>
-                    {isMobile && <div className={cn("md:hidden mt-4 shrink-0", mobileTab === 'notes' ? "flex-grow" : "h-12")}><Tabs value={mobileTab} onValueChange={setMobileTab} className="h-full flex flex-col"><TabsList className="grid w-full grid-cols-2"><TabsTrigger value="reader">Read</TabsTrigger><TabsTrigger value="notes">Notes ({highlights?.length || 0})</TabsTrigger></TabsList><TabsContent value="notes" className="flex-grow min-h-0 mt-2"><ScrollArea className="h-full border rounded p-2 bg-muted/30">{NotesList}</ScrollArea></TabsContent></Tabs></div>}
-                </TabsContent>
-                <TabsContent value="history" className="flex-grow flex flex-col min-h-0 mt-4">
-                    <div className="flex items-center gap-2 mb-4">
-                        <div className="flex-grow flex items-center gap-2">
-                          <Input
-                              type="date"
-                              value={historyFilterDate ? format(historyFilterDate, "yyyy-MM-dd") : ""}
-                              onChange={(e) => {
-                                  const val = e.target.value;
-                                  if (val) {
-                                      const [year, month, day] = val.split('-').map(Number);
-                                      setHistoryFilterDate(new Date(year, month - 1, day));
-                                  } else {
-                                      setHistoryFilterDate(undefined);
-                                  }
-                              }}
-                              className="flex-grow"
-                          />
-                          {historyFilterDate && (
-                              <Button variant="ghost" size="icon" onClick={() => setHistoryFilterDate(undefined)}>
-                                  <XCircle className="h-5 w-5 text-muted-foreground" />
-                              </Button>
-                          )}
-                        </div>
+                </div>
+            ) : (
+                <div className="flex-grow flex flex-col min-h-0 mt-4">
+                    <div className="flex items-center gap-2 mb-4 shrink-0">
+                        <Input
+                            type="date"
+                            value={historyFilterDate}
+                            onChange={(e) => setHistoryFilterDate(e.target.value)}
+                            className="max-w-[200px]"
+                        />
+                        {historyFilterDate && (
+                            <Button variant="ghost" size="icon" onClick={() => setHistoryFilterDate('')}>
+                                <XCircle className="h-5 w-5 text-muted-foreground" />
+                            </Button>
+                        )}
                     </div>
-                    <ScrollArea className="h-full">
+                    <ScrollArea className="flex-grow">
                         <div className="p-4 pt-0 space-y-8">
                             {historyGroups.length > 0 ? historyGroups.map(g => (
                                 <div key={g.date.toISOString()} className="space-y-4">
@@ -425,8 +422,8 @@ export default function BibleReaderPage() {
                             )}
                         </div>
                     </ScrollArea>
-                </TabsContent>
-            </Tabs>
+                </div>
+            )}
         </div>
     );
 }

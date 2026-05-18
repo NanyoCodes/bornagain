@@ -19,7 +19,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { PlusCircle, Download, Loader2 } from "lucide-react";
+import { PlusCircle, Download, Loader2, Target } from "lucide-react";
 import type { Soul, Campaign, Fellowship } from "@/lib/types";
 import { useCollection, useFirestore, useUser } from "@/firebase";
 import { collection, query, orderBy, doc, serverTimestamp, increment, runTransaction, addDoc, deleteField } from "firebase/firestore";
@@ -31,6 +31,7 @@ import { format } from "date-fns";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { safeToDate } from "@/lib/utils";
+import { Card, CardContent } from "@/components/ui/card";
 
 // Performance: Dynamically import heavy components
 const SoulsWonTable = dynamic(() => import('@/components/souls/souls-won-table').then(m => m.SoulsWonTable), {
@@ -59,7 +60,7 @@ export default function SoulsWonPage() {
   const [soulToEdit, setSoulToEdit] = useState<Soul | null>(null);
   const [isAssigning, setIsAssigning] = useState<string | null>(null);
 
-  // Hook definition first
+  // Define data hooks first to avoid ReferenceErrors
   const soulsQuery = useMemo(() => {
     if (!user?.uid || !firestore) return null;
     return query(collection(firestore, `users/${user.uid}/souls`), orderBy("wonAt", "desc"));
@@ -78,7 +79,7 @@ export default function SoulsWonPage() {
   }, [firestore]);
   const { data: allFellowships, loading: loadingFellowships } = useCollection<Fellowship>(fellowshipsQuery);
 
-  // Memoized dependencies second
+  // Derived data based on hooks above
   const activeFellowships = useMemo(() => allFellowships?.filter(f => f.status !== 'deleted') ?? [], [allFellowships]);
   const activeCampaigns = useMemo(() => campaigns?.filter(c => c.status !== 'deleted') ?? [], [campaigns]);
 
@@ -297,14 +298,38 @@ export default function SoulsWonPage() {
   }, [souls, searchTerm]);
 
   const triggerButton = (
-    <Button disabled={loading}>
-      {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <PlusCircle className="h-4 w-4 md:mr-2" />}
-      <span className="hidden md:inline">Log Soul Won</span>
+    <Button variant="outline" className="flex-1 justify-center text-muted-foreground font-normal rounded-full h-9 sm:h-11 px-3 sm:px-4 hover:bg-muted/50 transition-colors text-[11px] sm:text-sm" disabled={loading}>
+        {loading ? "Preparing harvest list..." : "Who did you minister to today?"}
     </Button>
   );
 
   return (
     <div className="space-y-8">
+      {/* Facebook-style Soul Entry Box */}
+      <Card className="border shadow-sm sm:shadow-md mx-[-1rem] sm:mx-0">
+        <CardContent className="px-4 py-4 sm:p-6">
+          <div className="flex items-center gap-2 sm:gap-4">
+            {triggerButton}
+          </div>
+          <div className="flex items-center justify-center mt-3 pt-3 border-t">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="flex-1 text-muted-foreground hover:text-primary transition-colors py-2 sm:py-6 h-auto"
+                onClick={() => setIsLogDialogOpen(true)}
+                disabled={loading}
+              >
+                {loading ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <PlusCircle className="mr-2 h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+                )}
+                <span className="text-[11px] sm:text-xs md:text-sm font-medium">Log Soul Won</span>
+              </Button>
+          </div>
+        </CardContent>
+      </Card>
+
       <div className="flex items-center justify-between">
         <h1 className="text-xl sm:text-2xl font-bold font-headline">Souls Won</h1>
         <div className="flex items-center gap-2">
@@ -315,42 +340,6 @@ export default function SoulsWonPage() {
               <DropdownMenuItem onSelect={() => handleExport('pdf')}>PDF</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-          
-          <Sheet open={isLogDialogOpen && isMobile} onOpenChange={setIsLogDialogOpen}>
-            <SheetTrigger asChild>
-                <div className="md:hidden">
-                    {triggerButton}
-                </div>
-            </SheetTrigger>
-            <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0">
-              <div className="p-6 border-b flex-shrink-0">
-                  <SheetHeader className="text-left">
-                      <SheetTitle>Log a New Soul</SheetTitle>
-                      <SheetDescription>Record the details of the person you've ministered to.</SheetDescription>
-                  </SheetHeader>
-              </div>
-              <div className="flex-grow overflow-y-auto p-6">
-                  <LogSoulForm onSoulLogged={handleSoulLogged} fellowships={activeFellowships} campaigns={activeCampaigns} />
-              </div>
-            </SheetContent>
-          </Sheet>
-
-          <Dialog open={isLogDialogOpen && !isMobile} onOpenChange={setIsLogDialogOpen}>
-            <DialogTrigger asChild>
-                <div className="hidden md:block">
-                    {triggerButton}
-                </div>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-lg">
-              <DialogHeader>
-                <DialogTitle>Log a New Soul</DialogTitle>
-                <DialogDescription>Record the details of the person you've ministered to.</DialogDescription>
-              </DialogHeader>
-              <div className="max-h-[70vh] overflow-y-auto pr-2">
-                  <LogSoulForm onSoulLogged={handleSoulLogged} fellowships={activeFellowships} campaigns={activeCampaigns} />
-              </div>
-            </DialogContent>
-          </Dialog>
         </div>
       </div>
       
@@ -401,6 +390,32 @@ export default function SoulsWonPage() {
                   )}
               </div>
           </DialogContent>
+      </Dialog>
+
+      <Sheet open={isLogDialogOpen && isMobile} onOpenChange={setIsLogDialogOpen}>
+        <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0">
+          <div className="p-6 border-b flex-shrink-0">
+              <SheetHeader className="text-left">
+                  <SheetTitle>Log a New Soul</SheetTitle>
+                  <SheetDescription>Record the details of the person you've ministered to.</SheetDescription>
+              </SheetHeader>
+          </div>
+          <div className="flex-grow overflow-y-auto p-6">
+              <LogSoulForm onSoulLogged={handleSoulLogged} fellowships={activeFellowships} campaigns={activeCampaigns} />
+          </div>
+        </SheetContent>
+      </Sheet>
+
+      <Dialog open={isLogDialogOpen && !isMobile} onOpenChange={setIsLogDialogOpen}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Log a New Soul</DialogTitle>
+            <DialogDescription>Record the details of the person you've ministered to.</DialogDescription>
+          </DialogHeader>
+          <div className="max-h-[70vh] overflow-y-auto pr-2">
+              <LogSoulForm onSoulLogged={handleSoulLogged} fellowships={activeFellowships} campaigns={activeCampaigns} />
+          </div>
+        </DialogContent>
       </Dialog>
     </div>
   );
