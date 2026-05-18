@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import {
@@ -46,7 +46,7 @@ const formSchema = z.object({
   wonAt: z.date({
     required_error: "A date is required.",
   }),
-  fellowshipId: z.string().optional(),
+  fellowshipId: z.string().optional().nullable(),
 });
 
 type LogSoulFormProps = {
@@ -56,6 +56,12 @@ type LogSoulFormProps = {
   campaigns: Campaign[];
 };
 
+/**
+ * PRODUCTION FIXES:
+ * 1. Granular watchers: useWatch reduces entire form rerenders on every keystroke.
+ * 2. Controlled Selects: Explicit value/onValueChange via Controller for Radix UI.
+ * 3. Performance: Memoized sorting for fellowships list based on geolocation.
+ */
 export function LogSoulForm({ onSoulLogged, defaultCampaign, fellowships, campaigns }: LogSoulFormProps) {
   const { toast } = useToast();
   const { user, loading: userLoading } = useUser();
@@ -81,35 +87,34 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign, fellowships, campai
       source: defaultCampaign ? "Campaign" : "Personal",
       sourceDetails: defaultCampaign ? defaultCampaign.title : "",
       initialNote: "",
-      wonAt: undefined,
-      fellowshipId: "",
+      wonAt: new Date(),
+      fellowshipId: null,
     },
   });
 
-  const sourceValue = form.watch("source");
+  const { control, setValue } = form;
+
+  // Use granular watchers to prevent component-wide rerenders on name inputs.
+  const sourceValue = useWatch({ control, name: "source" });
+  const watchedLat = useWatch({ control, name: "locationWonLatitude" });
+  const watchedLng = useWatch({ control, name: "locationWonLongitude" });
+
   useEffect(() => {
     if (sourceValue !== 'Campaign') {
-        form.setValue('sourceDetails', '');
+        setValue('sourceDetails', '');
     }
-  }, [sourceValue, form.setValue]);
+  }, [sourceValue, setValue]);
 
-  useEffect(() => {
-    if (!form.getValues('wonAt')) {
-        form.setValue('wonAt', new Date());
-    }
-  }, [form]);
-  
-  const watchedLat = form.watch('locationWonLatitude');
-  const watchedLng = form.watch('locationWonLongitude');
-
+  // OPTIMIZATION: Memoize fellowship list sorting to prevent jank while typing.
   const sortedFellowships = useMemo(() => {
-    if (!fellowships || fellowships.length === 0) return [];
+    const list = [...(fellowships || [])];
+    if (!list.length) return [];
     
     if (typeof watchedLat !== 'number' || typeof watchedLng !== 'number') {
-        return [...fellowships].sort((a, b) => a.name.localeCompare(b.name));
+        return list.sort((a, b) => a.name.localeCompare(b.name));
     }
 
-    return [...fellowships]
+    return list
         .map(f => {
             const distance = f.latitude && f.longitude
                 ? haversineDistance({ lat: watchedLat, lng: watchedLng }, { lat: f.latitude, lng: f.longitude })
@@ -169,7 +174,7 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign, fellowships, campai
     const campaignId = values.source === 'Campaign' ? (defaultCampaign?.id || campaigns?.find(c => c.title === values.sourceDetails)?.id) : null;
     soulData.campaignId = campaignId || null;
 
-    if (values.fellowshipId && values.fellowshipId !== 'none' && values.fellowshipId !== '') {
+    if (values.fellowshipId && values.fellowshipId !== 'none') {
         const selectedFellowship = fellowships?.find(f => f.id === values.fellowshipId);
         soulData.fellowshipId = values.fellowshipId;
         soulData.fellowshipName = selectedFellowship?.name || null;
@@ -180,7 +185,6 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign, fellowships, campai
 
     try {
         await runTransaction(firestore, async (transaction) => {
-            // --- ALL READS MUST HAPPEN FIRST ---
             let currentSoulsLogged = 0;
             if (campaignId) {
                 const campaignRef = doc(firestore, 'campaigns', campaignId);
@@ -198,7 +202,6 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign, fellowships, campai
                 }
             }
 
-            // --- ALL WRITES MUST HAPPEN LAST ---
             transaction.set(newSoulRef, soulData);
             transaction.set(globalSoulRef, soulData);
 
@@ -213,12 +216,13 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign, fellowships, campai
             }
         });
 
+        // Async side effects: handled after transaction to keep UI snappy.
         if (values.fellowshipId && values.fellowshipId !== 'none' && values.fellowshipId !== '') {
             const selectedFellowship = fellowships?.find(f => f.id === values.fellowshipId);
             if (selectedFellowship && selectedFellowship.organizerId !== user.uid) {
                 const notificationRef = collection(firestore, `users/${selectedFellowship.organizerId}/notifications`);
                 const contactInfo = values.email || values.phone;
-                await addDoc(notificationRef, {
+                addDoc(notificationRef, {
                     userId: selectedFellowship.organizerId,
                     type: 'new_soul_in_fellowship',
                     title: `New Member in ${selectedFellowship.name}`,
@@ -226,7 +230,7 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign, fellowships, campai
                     link: `/dashboard/fellowship`,
                     isRead: false,
                     createdAt: serverTimestamp(),
-                });
+                }).catch(err => console.warn("Notification send failed", err));
             }
         }
 
@@ -310,7 +314,7 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign, fellowships, campai
                 <FormItem>
                 <FormLabel>First Name</FormLabel>
                 <FormControl>
-                    <Input placeholder="John" {...field} className="text-base"/>
+                    <Input placeholder="John" {...field} value={field.value || ""} className="text-base"/>
                 </FormControl>
                 <FormMessage />
                 </FormItem>
@@ -323,7 +327,7 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign, fellowships, campai
                 <FormItem>
                 <FormLabel>Last Name</FormLabel>
                 <FormControl>
-                    <Input placeholder="Doe" {...field} className="text-base"/>
+                    <Input placeholder="Doe" {...field} value={field.value || ""} className="text-base"/>
                 </FormControl>
                 <FormMessage />
                 </FormItem>
@@ -361,7 +365,7 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign, fellowships, campai
           render={({ field }) => (
             <FormItem>
               <FormLabel>Source</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value} disabled={!!defaultCampaign}>
+              <Select onValueChange={field.onChange} value={field.value || ""} disabled={!!defaultCampaign}>
                 <FormControl>
                   <SelectTrigger className="text-base">
                     <SelectValue placeholder="Select the source" />
@@ -376,14 +380,14 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign, fellowships, campai
             </FormItem>
           )}
         />
-         {form.watch("source") === "Campaign" && (
+         {sourceValue === "Campaign" && (
             <FormField
               control={form.control}
               name="sourceDetails"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Campaign Name</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value} disabled={!!defaultCampaign}>
+                  <Select onValueChange={field.onChange} value={field.value || ""} disabled={!!defaultCampaign}>
                     <FormControl>
                       <SelectTrigger className="text-base">
                         <SelectValue placeholder={!campaigns ? "Loading campaigns..." : "Select from your campaigns"} />
@@ -414,7 +418,7 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign, fellowships, campai
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Assign to Fellowship</FormLabel>
-                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <Select onValueChange={field.onChange} value={field.value || "none"}>
                                         <FormControl>
                                             <SelectTrigger className="text-base h-auto">
                                                 <SelectValue placeholder={!fellowships ? "Loading fellowships..." : "Select a fellowship group"} />
@@ -443,7 +447,7 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign, fellowships, campai
                             <FormItem>
                             <FormLabel>Email</FormLabel>
                             <FormControl>
-                                <Input placeholder="john.doe@example.com" {...field} className="text-base"/>
+                                <Input placeholder="john.doe@example.com" {...field} value={field.value || ""} className="text-base"/>
                             </FormControl>
                             <FormMessage />
                             </FormItem>
@@ -456,7 +460,7 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign, fellowships, campai
                             <FormItem>
                             <FormLabel>Phone Number</FormLabel>
                             <FormControl>
-                                <Input placeholder="+1 123 456 7890" {...field} className="text-base"/>
+                                <Input placeholder="+1 123 456 7890" {...field} value={field.value || ""} className="text-base"/>
                             </FormControl>
                             <FormMessage />
                             </FormItem>
@@ -469,7 +473,7 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign, fellowships, campai
                             <FormItem>
                             <FormLabel>Church and Address</FormLabel>
                             <FormControl>
-                                <Input placeholder="e.g., New Life Church" {...field} className="text-base"/>
+                                <Input placeholder="e.g., New Life Church" {...field} value={field.value || ""} className="text-base"/>
                             </FormControl>
                             <FormMessage />
                             </FormItem>
@@ -486,7 +490,7 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign, fellowships, campai
                             <FormItem>
                             <FormLabel>Initial Note</FormLabel>
                             <FormControl>
-                                <Textarea placeholder="e.g., Met at the park, prayed together..." {...field} className="text-base"/>
+                                <Textarea placeholder="e.g., Met at the park, prayed together..." {...field} value={field.value || ""} className="text-base"/>
                             </FormControl>
                             <FormMessage />
                             </FormItem>

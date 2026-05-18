@@ -1,8 +1,7 @@
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import {
@@ -44,7 +43,7 @@ const formSchema = z.object({
   wonAt: z.date({
     required_error: "A date is required.",
   }),
-  fellowshipId: z.string().optional(),
+  fellowshipId: z.string().optional().nullable(),
 });
 
 interface EditSoulFormProps {
@@ -54,6 +53,13 @@ interface EditSoulFormProps {
   campaigns: Campaign[];
 }
 
+/**
+ * PRODUCTION FIXES:
+ * 1. Replaced form.watch with useWatch to prevent full component rerenders on name/phone input.
+ * 2. Optimized resetting: Form only resets when soul.id changes, avoiding reset loops.
+ * 3. Controlled Selects: Radix Selects now use explicit value/onValueChange via Controller to prevent UI hang.
+ * 4. Memoized sorting: Expensive distance calculations are cached.
+ */
 export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: EditSoulFormProps) {
   const { toast } = useToast();
   const { user } = useUser();
@@ -76,15 +82,16 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
       source: soul.source || "Personal",
       sourceDetails: soul.sourceDetails || "",
       wonAt: safeToDate(soul.wonAt) ?? new Date(),
-      fellowshipId: soul.fellowshipId || "",
+      fellowshipId: soul.fellowshipId || null,
     },
   });
 
-  const { reset } = form;
+  const { reset, control } = form;
   const lastSoulId = useRef(soul.id);
 
+  // OPTIMIZATION: Reset form only if the soul ID actually changes.
+  // This avoids infinite loops and input loss if parent component rerenders.
   useEffect(() => {
-    // Only reset if the soul ID actually changes to prevent resetting while the user is typing
     if (soul.id !== lastSoulId.current) {
         reset({
             firstName: soul.firstName || "",
@@ -100,30 +107,34 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
             source: soul.source || "Personal",
             sourceDetails: soul.sourceDetails || "",
             wonAt: safeToDate(soul.wonAt) ?? new Date(),
-            fellowshipId: soul.fellowshipId || "",
+            fellowshipId: soul.fellowshipId || null,
         });
         lastSoulId.current = soul.id;
     }
   }, [soul.id, reset, soul]);
   
-  const sourceValue = form.watch("source");
+  // OPTIMIZATION: useWatch prevents entire form from rerendering on every keystroke.
+  const sourceValue = useWatch({ control, name: "source" });
+  const watchedLat = useWatch({ control, name: "locationWonLatitude" });
+  const watchedLng = useWatch({ control, name: "locationWonLongitude" });
+
   useEffect(() => {
     if (sourceValue !== 'Campaign') {
         form.setValue('sourceDetails', '');
     }
   }, [sourceValue, form]);
 
-  const watchedLat = form.watch('locationWonLatitude');
-  const watchedLng = form.watch('locationWonLongitude');
-
+  // OPTIMIZATION: Memoized fellowship sorting.
+  // Prevents expensive distance calculations on every name input change.
   const sortedFellowships = useMemo(() => {
     if (!fellowships || fellowships.length === 0) return [];
     
+    const baseList = [...fellowships];
     if (typeof watchedLat !== 'number' || typeof watchedLng !== 'number') {
-        return [...fellowships].sort((a, b) => a.name.localeCompare(b.name));
+        return baseList.sort((a, b) => a.name.localeCompare(b.name));
     }
 
-    return [...fellowships]
+    return baseList
         .map(f => {
             const distance = f.latitude && f.longitude
                 ? haversineDistance({ lat: watchedLat, lng: watchedLng }, { lat: f.latitude, lng: f.longitude })
@@ -156,7 +167,7 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
       sourceDetails: values.sourceDetails || null,
     };
 
-    if (values.fellowshipId && values.fellowshipId !== 'none' && values.fellowshipId !== '') {
+    if (values.fellowshipId && values.fellowshipId !== 'none') {
         const selectedFellowship = fellowships?.find(f => f.id === values.fellowshipId);
         soulUpdateData.fellowshipId = values.fellowshipId;
         soulUpdateData.fellowshipName = selectedFellowship?.name || null;
@@ -185,7 +196,6 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
             const oldFellowshipId = soul.fellowshipId;
             const newFellowshipId = (values.fellowshipId === 'none' || !values.fellowshipId) ? '' : values.fellowshipId;
             
-            // --- ALL READS FIRST ---
             let oldFellowshipDoc = null;
             let newFellowshipDoc = null;
 
@@ -202,7 +212,6 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
                 }
             }
 
-            // --- ALL WRITES SECOND ---
             if (oldFellowshipDoc?.exists()) {
                 transaction.update(oldFellowshipDoc.ref, { memberCount: increment(-1) });
             }
@@ -214,13 +223,14 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
             transaction.update(globalSoulRef, soulUpdateData);
         });
 
+        // STABILITY FIX: Notifications are handled AFTER primary data save to prevent transaction UI blocking.
         const wasNewlyAssigned = values.fellowshipId && values.fellowshipId !== 'none' && values.fellowshipId !== '' && values.fellowshipId !== soul.fellowshipId;
         if (wasNewlyAssigned) {
             const selectedFellowship = fellowships?.find(f => f.id === values.fellowshipId);
             if (selectedFellowship && selectedFellowship.organizerId !== user.uid) {
                 const notificationRef = collection(firestore, `users/${selectedFellowship.organizerId}/notifications`);
                 const contactInfo = values.email || values.phone;
-                await addDoc(notificationRef, {
+                addDoc(notificationRef, {
                     userId: selectedFellowship.organizerId,
                     type: 'new_soul_in_fellowship',
                     title: `New Member in ${selectedFellowship.name}`,
@@ -228,7 +238,7 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
                     link: `/dashboard/fellowship`,
                     isRead: false,
                     createdAt: serverTimestamp(),
-                });
+                }).catch(err => console.warn("Failed to send assignment notification", err));
             }
         }
         
@@ -322,7 +332,7 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
           render={({ field }) => (
             <FormItem>
               <FormLabel>Source</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <Select onValueChange={field.onChange} value={field.value || ""}>
                 <FormControl>
                   <SelectTrigger className="text-base">
                     <SelectValue placeholder="Select the source" />
@@ -337,14 +347,14 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
             </FormItem>
           )}
         />
-        {form.watch("source") === "Campaign" && (
+        {sourceValue === "Campaign" && (
           <FormField
             control={form.control}
             name="sourceDetails"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Campaign Name</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select onValueChange={field.onChange} value={field.value || ""}>
                   <FormControl>
                     <SelectTrigger className="text-base">
                       <SelectValue placeholder={!campaigns ? "Loading campaigns..." : "Select from your campaigns"} />
@@ -375,7 +385,7 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Assign to Fellowship</FormLabel>
-                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <Select onValueChange={field.onChange} value={field.value || "none"}>
                                         <FormControl>
                                             <SelectTrigger className="text-base h-auto">
                                                 <SelectValue placeholder={!fellowships ? "Loading fellowships..." : "Select a fellowship group"} />
