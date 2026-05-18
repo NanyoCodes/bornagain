@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useEffect, Fragment } from "react";
 import { Button } from "@/components/ui/button";
-import { Target, Loader2 } from "lucide-react";
+import { Target, Loader2, PlusCircle } from "lucide-react";
 import { CreateCampaignForm } from "@/components/campaigns/create-campaign-form";
 import {
   Dialog,

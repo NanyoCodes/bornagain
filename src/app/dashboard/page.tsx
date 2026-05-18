@@ -680,7 +680,7 @@ export default function DashboardPage() {
         isOpen={showWelcomeBack && !!summaryData && !!userProfile}
         onClose={() => setShowWelcomeBack(false)}
         userProfile={userProfile!}
-        summaryData={summaryData!}
+        summaryData={summaryData}
       />
       <Sheet open={isLogSoulOpen} onOpenChange={setIsLogSoulOpen}>
         <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0">

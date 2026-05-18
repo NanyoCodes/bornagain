@@ -16,7 +16,7 @@ import {
   SheetTitle,
 } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { Newspaper, UserPlus, TrendingUp, CheckCircle2, XCircle, Loader2 } from 'lucide-react';
+import { Newspaper, UserPlus, TrendingUp, CheckCircle2, XCircle } from 'lucide-react';
 import { format } from 'date-fns';
 import type { UserProfile } from '@/lib/types';
 import { Card, CardContent } from '../ui/card';
@@ -31,7 +31,7 @@ type WelcomeBackDialogProps = {
     newTestimoniesCount: number;
     soulsWonCount: number;
     recentDisciplines: { date: string; completed: boolean }[];
-  };
+  } | null;
 };
 
 export function WelcomeBackDialog({ isOpen, onClose, userProfile, summaryData }: WelcomeBackDialogProps) {
@@ -42,10 +42,12 @@ export function WelcomeBackDialog({ isOpen, onClose, userProfile, summaryData }:
     setMounted(true);
   }, []);
 
+  if (!mounted) return null;
+
   const lastActiveDate = userProfile.lastActive?.toDate();
   const lastActiveString = lastActiveDate ? `on ${format(lastActiveDate, 'PPP')}` : 'a while ago';
 
-  const body = (
+  const body = summaryData ? (
     <div className="space-y-4 py-4">
         <Card className="border-primary/20 bg-primary/5">
             <CardContent className="p-4 flex items-center justify-between">
@@ -54,7 +56,7 @@ export function WelcomeBackDialog({ isOpen, onClose, userProfile, summaryData }:
                         <Newspaper className="h-6 w-6" />
                     </div>
                     <div>
-                        <p className="font-semibold">{summaryData.newTestimoniesCount} New Testimonies</p>
+                        <p className="font-semibold">{summaryData.newTestimoniesCount ?? 0} New Testimonies</p>
                         <p className="text-sm text-muted-foreground">From the community.</p>
                     </div>
                 </div>
@@ -67,7 +69,7 @@ export function WelcomeBackDialog({ isOpen, onClose, userProfile, summaryData }:
                         <UserPlus className="h-6 w-6" />
                     </div>
                     <div>
-                        <p className="font-semibold">{summaryData.soulsWonCount} Souls Won</p>
+                        <p className="font-semibold">{summaryData.soulsWonCount ?? 0} Souls Won</p>
                         <p className="text-sm text-muted-foreground">Tracked by you.</p>
                     </div>
                 </div>
@@ -85,7 +87,7 @@ export function WelcomeBackDialog({ isOpen, onClose, userProfile, summaryData }:
                     </div>
                 </div>
                 <div className="space-y-2">
-                    {summaryData.recentDisciplines.length > 0 ? summaryData.recentDisciplines.map(item => (
+                    {summaryData.recentDisciplines && summaryData.recentDisciplines.length > 0 ? summaryData.recentDisciplines.map(item => (
                         <div key={item.date} className="flex items-center justify-between text-sm px-2">
                             <p>{item.date}</p>
                             {item.completed ? 
@@ -100,7 +102,7 @@ export function WelcomeBackDialog({ isOpen, onClose, userProfile, summaryData }:
                 </CardContent>
         </Card>
     </div>
-  );
+  ) : null;
 
   const footer = (
     <Button type="button" onClick={onClose} size="lg" className="w-full font-semibold">
@@ -108,20 +110,20 @@ export function WelcomeBackDialog({ isOpen, onClose, userProfile, summaryData }:
     </Button>
   );
 
-  if (!mounted) return null;
-
   if (isMobile) {
     return (
       <Sheet open={isOpen} onOpenChange={(open) => !open && onClose()}>
-        <SheetContent side="bottom" className="h-auto max-h-[90dvh] flex flex-col">
-          <SheetHeader className="text-left">
-            <SheetTitle className="font-headline text-2xl">Welcome Back, {userProfile.firstName}!</SheetTitle>
-            <SheetDescription>You were last here {lastActiveString}.</SheetDescription>
-          </SheetHeader>
-          <div className="flex-grow overflow-y-auto">
+        <SheetContent side="bottom" className="h-auto max-h-[90dvh] flex flex-col p-0">
+          <div className="p-6 border-b flex-shrink-0">
+            <SheetHeader className="text-left">
+              <SheetTitle className="font-headline text-2xl">Welcome Back, {userProfile.firstName}!</SheetTitle>
+              <SheetDescription>You were last here {lastActiveString}.</SheetDescription>
+            </SheetHeader>
+          </div>
+          <div className="flex-grow overflow-y-auto px-6">
             {body}
           </div>
-          <div className="py-6 border-t">
+          <div className="p-6 border-t flex-shrink-0">
             {footer}
           </div>
         </SheetContent>
