@@ -17,6 +17,7 @@ import Link from "next/link";
 import { format, isSameDay } from "date-fns";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { EditProfileModal } from "@/components/profile/edit-profile-modal";
 
 function FilterControls({
   searchTerm,
@@ -284,7 +285,7 @@ export default function ProfilePage() {
                                     <DialogDesc>Make changes to your public profile.</DialogDesc>
                                 </DialogHeader>
                                 <div className="max-h-[70vh] overflow-y-auto pr-2">
-                                  <EditProfileModal userProfile={userProfile} onClose={() => { setIsEditModalOpen(false); }} />
+                                  {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => { setIsEditModalOpen(false); }} />}
                                 </div>
                             </DialogContent>
                         </Dialog>

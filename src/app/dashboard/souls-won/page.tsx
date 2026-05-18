@@ -392,7 +392,7 @@ export default function SoulsWonPage() {
           </DialogContent>
       </Dialog>
 
-      <Sheet open={isLogDialogOpen && isMobile} onOpenChange={setIsLogDialogOpen}>
+      <Sheet open={isLogDialogOpen} onOpenChange={setIsLogDialogOpen}>
         <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0">
           <div className="p-6 border-b flex-shrink-0">
               <SheetHeader className="text-left">
@@ -405,18 +405,6 @@ export default function SoulsWonPage() {
           </div>
         </SheetContent>
       </Sheet>
-
-      <Dialog open={isLogDialogOpen && !isMobile} onOpenChange={setIsLogDialogOpen}>
-        <DialogContent className="sm:max-w-lg">
-          <DialogHeader>
-            <DialogTitle>Log a New Soul</DialogTitle>
-            <DialogDescription>Record the details of the person you've ministered to.</DialogDescription>
-          </DialogHeader>
-          <div className="max-h-[70vh] overflow-y-auto pr-2">
-              <LogSoulForm onSoulLogged={handleSoulLogged} fellowships={activeFellowships} campaigns={activeCampaigns} />
-          </div>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }
