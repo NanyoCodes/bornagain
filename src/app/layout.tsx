@@ -73,12 +73,27 @@ export default function RootLayout({
         <link rel="preconnect" href="https://pagead2.googlesyndication.com" />
         <link rel="icon" href={testifyLogoUrl} />
         <link rel="apple-touch-icon" href={testifyLogoUrl} />
+        {/* Suppress asynchronous message channel errors from browser extensions/Studio bridge */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.addEventListener('error', (e) => {
+                if (e.message && (
+                  e.message.includes('A listener indicated an asynchronous response by returning true') ||
+                  e.message.includes('Could not establish connection. Receiving end does not exist')
+                )) {
+                  e.stopImmediatePropagation();
+                }
+              }, true);
+            `,
+          }}
+        />
         {RAW_ADSENSE_ID && (
           <Script
             async
             src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT_ID}`}
             crossOrigin="anonymous"
-            strategy="afterInteractive"
+            strategy="lazyOnload"
           />
         )}
       </head>
