@@ -334,9 +334,9 @@ export default function ProfilePage() {
                 <CardContent>
                      <FilterControls 
                         searchTerm={prayerSearchTerm}
-                        setSearchTerm={setSearchTerm}
+                        setSearchTerm={setPrayerSearchTerm}
                         filterDate={prayerFilterDate}
-                        setFilterDate={setFilterDate}
+                        setFilterDate={setPrayerFilterDate}
                         searchPlaceholder="Search prayer requests..."
                     />
                     <ScrollArea className="h-48">
