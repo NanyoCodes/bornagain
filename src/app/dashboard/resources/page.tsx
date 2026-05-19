@@ -1,16 +1,11 @@
 'use client';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
-import { BookOpen, Flame, Heart, Zap, Target, BookMarked, Quote, ChevronRight } from 'lucide-react';
+import { BookOpen, Flame, Heart, Zap, Target, BookMarked, Quote, ShieldAlert, Crosshair, Users } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { cn } from '@/lib/utils';
-
-/**
- * @fileOverview Spiritual Resources page for daily equipping.
- * Designed with SEO-friendly semantic HTML and content-rich sections.
- */
 
 const resources = [
   {
@@ -84,6 +79,60 @@ const resources = [
       },
     ],
     verses: ['Matthew 28:19-20', 'Proverbs 11:30'],
+  },
+  {
+    id: 'accountability',
+    title: 'Spiritual Accountability',
+    description: 'Growing together through transparency and mutual support.',
+    icon: Users,
+    color: 'text-primary',
+    subsections: [
+      {
+        subtitle: 'The Role of a Partner',
+        content: 'An accountability partner is someone you trust to hold you to your spiritual goals. Share your wins and struggles honestly.',
+      },
+      {
+        subtitle: 'Mutual Encouragement',
+        content: 'Hebrews 10:24-25 tells us to stir up one another to love and good works. Regular check-ins prevent isolation and spiritual plateau.',
+      },
+    ],
+    verses: ['Proverbs 27:17', 'Ecclesiastes 4:9-10'],
+  },
+  {
+    id: 'fasting',
+    title: 'The Power of Fasting',
+    description: 'Abstaining to feast on the Presence of God.',
+    icon: ShieldAlert,
+    color: 'text-destructive',
+    subsections: [
+      {
+        subtitle: 'Biblical Fasting',
+        content: 'Fasting is not just about hunger; it\'s about humbling yourself and intensifying your focus on God. Pair fasting with increased prayer and Word study.',
+      },
+      {
+        subtitle: 'Breaking Strongholds',
+        content: 'Some spiritual breakthroughs require the additional discipline of fasting. It aligns your spirit, soul, and body with God\'s purposes.',
+      },
+    ],
+    verses: ['Matthew 6:16-18', 'Isaiah 58:6-7'],
+  },
+  {
+    id: 'warfare',
+    title: 'Overcoming Trials',
+    description: 'Standing firm when opposition arises.',
+    icon: Crosshair,
+    color: 'text-chart-6',
+    subsections: [
+      {
+        subtitle: 'The Armor of God',
+        content: 'Understand that your struggle is not against flesh and blood. Put on the full armor (Ephesians 6) daily to stand against spiritual attacks.',
+      },
+      {
+        subtitle: 'Victory in Christ',
+        content: 'Trials are opportunities for growth. Count it all joy (James 1:2) knowing that your faith is being refined for the Master\'s use.',
+      },
+    ],
+    verses: ['John 16:33', '1 John 5:4'],
   },
 ];
 
