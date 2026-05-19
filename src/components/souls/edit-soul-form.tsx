@@ -53,13 +53,6 @@ interface EditSoulFormProps {
   campaigns: Campaign[];
 }
 
-/**
- * PRODUCTION FIXES:
- * 1. Replaced form.watch with useWatch to prevent full component rerenders on name/phone input.
- * 2. Optimized resetting: Form only resets when soul.id changes, avoiding reset loops.
- * 3. Controlled Selects: Radix Selects now use explicit value/onValueChange via Controller to prevent UI hang.
- * 4. Memoized sorting: Expensive distance calculations are cached.
- */
 export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: EditSoulFormProps) {
   const { toast } = useToast();
   const { user } = useUser();
@@ -89,8 +82,6 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
   const { reset, control } = form;
   const lastSoulId = useRef(soul.id);
 
-  // OPTIMIZATION: Reset form only if the soul ID actually changes.
-  // This avoids infinite loops and input loss if parent component rerenders.
   useEffect(() => {
     if (soul.id !== lastSoulId.current) {
         reset({
@@ -113,7 +104,6 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
     }
   }, [soul.id, reset, soul]);
   
-  // OPTIMIZATION: useWatch prevents entire form from rerendering on every keystroke.
   const sourceValue = useWatch({ control, name: "source" });
   const watchedLat = useWatch({ control, name: "locationWonLatitude" });
   const watchedLng = useWatch({ control, name: "locationWonLongitude" });
@@ -124,8 +114,6 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
     }
   }, [sourceValue, form]);
 
-  // OPTIMIZATION: Memoized fellowship sorting.
-  // Prevents expensive distance calculations on every name input change.
   const sortedFellowships = useMemo(() => {
     if (!fellowships || fellowships.length === 0) return [];
     
@@ -223,7 +211,6 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
             transaction.update(globalSoulRef, soulUpdateData);
         });
 
-        // STABILITY FIX: Notifications are handled AFTER primary data save to prevent transaction UI blocking.
         const wasNewlyAssigned = values.fellowshipId && values.fellowshipId !== 'none' && values.fellowshipId !== '' && values.fellowshipId !== soul.fellowshipId;
         if (wasNewlyAssigned) {
             const selectedFellowship = fellowships?.find(f => f.id === values.fellowshipId);
