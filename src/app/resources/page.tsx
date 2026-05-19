@@ -1,7 +1,7 @@
 'use client';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
-import { BookOpen, Flame, Heart, Zap, Target, BookMarked, Quote, ArrowLeft, Users, ShieldAlert, Crosshair } from 'lucide-react';
+import { BookOpen, Flame, Heart, Zap, Target, BookMarked, Quote, ArrowLeft, Users, ShieldAlert, Crosshair, ShieldCheck, Sun } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
@@ -118,6 +118,42 @@ const resources = [
       },
     ],
     verses: ['Matthew 6:16-18', 'Isaiah 58:6-7'],
+  },
+  {
+    id: 'warfare',
+    title: 'Overcoming Trials',
+    description: 'Standing firm when opposition arises.',
+    icon: Crosshair,
+    color: 'text-chart-6',
+    subsections: [
+      {
+        subtitle: 'The Armor of God',
+        content: 'Understand that your struggle is not against flesh and blood. Put on the full armor (Ephesians 6) daily to stand against spiritual attacks.',
+      },
+      {
+        subtitle: 'Victory in Christ',
+        content: 'Trials are opportunities for growth. Count it all joy (James 1:2) knowing that your faith is being refined for the Master\'s use.',
+      },
+    ],
+    verses: ['John 16:33', '1 John 5:4'],
+  },
+  {
+    id: 'boldness',
+    title: 'Kingdom Boldness',
+    description: 'Empowered by the Spirit to speak the Word.',
+    icon: Sun,
+    color: 'text-orange-500',
+    subsections: [
+      {
+        subtitle: 'Authority in Christ',
+        content: 'As a child of God, you speak with authority. You are an ambassador of the King of Kings. Do not be ashamed of the Gospel.',
+      },
+      {
+        subtitle: 'Guided by the Spirit',
+        content: 'The Holy Spirit provides the words when you need them. Trust in His promptings and step out in faith.',
+      },
+    ],
+    verses: ['Acts 4:31', '2 Timothy 1:7'],
   },
 ];
 
