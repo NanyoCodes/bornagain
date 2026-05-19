@@ -29,7 +29,6 @@ import {
   serverTimestamp,
   deleteDoc,
   setDoc,
-  getDoc,
 } from 'firebase/firestore';
 import type { UserProfile, ReadingHistoryItem, BibleHighlight } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
