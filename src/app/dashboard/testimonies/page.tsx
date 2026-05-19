@@ -384,7 +384,7 @@ export default function TestimoniesPage() {
         </DialogContent>
       </Dialog>
       
-      {/* Restored Width Dialogs */}
+      {/* Centered Width Dialogs */}
       <Dialog open={isTestimonyDialogOpen} onOpenChange={setIsTestimonyDialogOpen}>
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
