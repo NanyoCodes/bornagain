@@ -41,6 +41,7 @@ service cloud.firestore {
       match /souls/{soulId} {
         allow read: if isOwner(userId) || isFellowshipMember(resource.data.get('fellowshipId', ''));
         allow create: if isOwner(userId);
+        // Robust update rule allowing name changes and other edits for owners
         allow update: if request.auth != null && (isOwner(userId) || isFellowshipMember(resource.data.get('fellowshipId', '')));
       }
       
@@ -74,6 +75,7 @@ service cloud.firestore {
     match /souls/{soulId} {
       allow get, list: if request.auth != null;
       allow create: if request.auth != null && request.resource.data.get('userId', '') == request.auth.uid;
+      // Allow name changes and edits for owners in global collection
       allow update: if request.auth != null && (resource.data.get('userId', '') == request.auth.uid || isFellowshipMember(resource.data.get('fellowshipId', '')));
     }
 
