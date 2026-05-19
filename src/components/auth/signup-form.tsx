@@ -1,4 +1,3 @@
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -13,6 +12,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
@@ -23,6 +23,8 @@ import { useAuth, useFirestore } from "@/firebase";
 import { doc, setDoc } from "firebase/firestore";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
+import { Checkbox } from "@/components/ui/checkbox";
+import Link from "next/link";
 
 const formSchema = z.object({
   firstName: z.string().min(2, {
@@ -36,6 +38,9 @@ const formSchema = z.object({
   }),
   password: z.string().min(8, {
     message: "Password must be at least 8 characters.",
+  }),
+  acceptTerms: z.boolean().refine((val) => val === true, {
+    message: "You must accept the terms and conditions to continue.",
   }),
 });
 
@@ -53,6 +58,7 @@ export function SignUpForm() {
       lastName: "",
       email: "",
       password: "",
+      acceptTerms: false,
     },
   });
 
@@ -88,10 +94,9 @@ export function SignUpForm() {
         fullName_lowercase: fullName.toLowerCase(),
         name_tokens: nameTokens,
         email: values.email,
-        photoURL: user.photoURL, // Initially null for email signup
+        photoURL: user.photoURL,
       };
 
-      // Create user profile in Firestore
       setDoc(userDocRef, userData, { merge: true }).catch((serverError) => {
         const permissionError = new FirestorePermissionError({
           path: userDocRef.path,
@@ -103,7 +108,7 @@ export function SignUpForm() {
 
       toast({
         title: "Account Created!",
-        description: "A verification email has been sent to your inbox. Please verify your account before logging in.",
+        description: "A verification email has been sent. Please verify your account before logging in.",
       });
       router.push("/login");
 
@@ -113,16 +118,13 @@ export function SignUpForm() {
 
       switch (authError.code) {
         case 'auth/email-already-in-use':
-          description = "This email address is already registered. Please try logging in instead.";
+          description = "This email is already registered. Please try signing in.";
           break;
         case 'auth/invalid-email':
-          description = "The email address you entered is not valid.";
-          break;
-        case 'auth/operation-not-allowed':
-          description = "Email and password sign-up is not currently enabled.";
+          description = "Invalid email address.";
           break;
         case 'auth/weak-password':
-          description = "The password is too weak. Please choose a stronger password.";
+          description = "Password is too weak. Please use at least 8 characters.";
           break;
         default:
           description = authError.message || description;
@@ -201,6 +203,31 @@ export function SignUpForm() {
             </FormItem>
           )}
         />
+
+        <FormField
+          control={form.control}
+          name="acceptTerms"
+          render={({ field }) => (
+            <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 bg-muted/20">
+              <FormControl>
+                <Checkbox
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              </FormControl>
+              <div className="space-y-1 leading-none">
+                <FormLabel className="text-xs leading-normal">
+                  I agree to respect all users and abide by the mission and vision of the Testify movement. I understand that causing confusion or division may lead to suspension.
+                </FormLabel>
+                <FormDescription className="text-[10px]">
+                   Read our <Link href="/terms-of-service" className="underline hover:text-primary">Terms of Service</Link> for details.
+                </FormDescription>
+                <FormMessage />
+              </div>
+            </FormItem>
+          )}
+        />
+
         <Button type="submit" variant="destructive" className="w-full" disabled={isLoading}>
           {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           Create account
