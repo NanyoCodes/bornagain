@@ -216,7 +216,7 @@ export function SignUpForm() {
                 />
               </FormControl>
               <div className="space-y-1 leading-none">
-                <FormLabel className="text-xs leading-normal">
+                <FormLabel className="text-xs leading-normal cursor-pointer">
                   I agree to respect all users and abide by the mission and vision of the Testify movement. I understand that causing confusion or division may lead to suspension.
                 </FormLabel>
                 <FormDescription className="text-[10px]">

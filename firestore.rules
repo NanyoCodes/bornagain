@@ -41,7 +41,7 @@ service cloud.firestore {
       match /souls/{soulId} {
         allow read: if isOwner(userId) || isFellowshipMember(resource.data.get('fellowshipId', ''));
         allow create: if isOwner(userId);
-        allow update: if request.auth != null && (isOwner(userId) || isFellowshipMember(resource.data.get('fellowshipId', '')));
+        allow update: if isOwner(userId) || isFellowshipMember(resource.data.get('fellowshipId', ''));
       }
       
       match /joinedCampaigns/{campaignId} {

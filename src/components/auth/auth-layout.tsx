@@ -29,10 +29,10 @@ const scriptures = [
 ];
 
 const collageImages = [
+    "https://images.unsplash.com/photo-1511632765486-a01980e01a18?q=80&w=1000&auto=format&fit=crop", // Community joy
     "https://images.unsplash.com/photo-1491438590914-bc09fcaaf77a?q=80&w=1000&auto=format&fit=crop", // Group laughing
     "https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?q=80&w=1000&auto=format&fit=crop", // Friends together
     "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?q=80&w=1000&auto=format&fit=crop", // Joyful crowd
-    "https://images.unsplash.com/photo-1511632765486-a01980e01a18?q=80&w=1000&auto=format&fit=crop", // Community gathering
 ];
 
 export function AuthLayout({ children }: { children: React.ReactNode }) {
@@ -102,7 +102,7 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
         
         <div className="space-y-4 mb-12 z-10 text-center">
             <h1 className="text-5xl font-bold font-headline">Testify</h1>
-            <p className="text-zinc-300 max-w-md text-lg">A global movement for believers to share God's work daily.</p>
+            <p className="text-zinc-300 max-w-md text-lg">Share Testimonies. Win Souls. Spread Jesus Christ.</p>
             <p className="text-zinc-500 font-medium tracking-wide uppercase">GLORIFYING GOD</p>
         </div>
 
