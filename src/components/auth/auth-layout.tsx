@@ -29,10 +29,10 @@ const scriptures = [
 ];
 
 const collageImages = [
-    "https://images.unsplash.com/photo-1438232992991-995b7058bbb3?q=80&w=1000&auto=format&fit=crop", // Calvary Cross
-    "https://images.unsplash.com/photo-1510531704581-5b2870972060?q=80&w=1000&auto=format&fit=crop", // Worship
-    "https://images.unsplash.com/photo-1504052434569-70ad5836ab65?q=80&w=1000&auto=format&fit=crop", // Bible
-    "https://images.unsplash.com/photo-1470770903676-69b98201ea1c?q=80&w=1000&auto=format&fit=crop", // Light
+    "https://images.unsplash.com/photo-1491438590914-bc09fcaaf77a?q=80&w=1000&auto=format&fit=crop", // Group laughing
+    "https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?q=80&w=1000&auto=format&fit=crop", // Friends together
+    "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?q=80&w=1000&auto=format&fit=crop", // Joyful crowd
+    "https://images.unsplash.com/photo-1511632765486-a01980e01a18?q=80&w=1000&auto=format&fit=crop", // Community gathering
 ];
 
 export function AuthLayout({ children }: { children: React.ReactNode }) {
@@ -94,7 +94,7 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
         <div className="absolute inset-0 grid grid-cols-2 grid-rows-2 gap-2 p-2 opacity-30">
             {collageImages.map((src, idx) => (
                 <div key={idx} className="relative w-full h-full overflow-hidden rounded-xl">
-                    <Image src={src} alt="Christian imagery" fill className="object-cover" priority data-ai-hint="jesus cross" />
+                    <Image src={src} alt="Happy people in community" fill className="object-cover" priority data-ai-hint="happy people" />
                 </div>
             ))}
         </div>
