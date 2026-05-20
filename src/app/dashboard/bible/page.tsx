@@ -337,7 +337,12 @@ export default function BibleReaderPage() {
     const ReaderContent = (
       <div className="flex flex-col gap-4 h-full min-h-0">
           <ScrollArea ref={scrollAreaRef} className="flex-grow border rounded-md p-4 relative">
-                  {isLoadingChapter && <div className="absolute inset-0 flex items-center justify-center bg-background/50 z-20"><Loader2 className="h-8 w-8 animate-spin" /></div>}
+                  {isLoadingChapter && (
+                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-background/50 z-20 gap-2">
+                        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                        <p className="text-sm font-medium animate-pulse">Checking the Word...</p>
+                    </div>
+                  )}
                   {!isLoadingChapter && chapterContent && (
                     <>
                         <div className={cn("space-y-2 font-serif leading-relaxed", fontSizeClasses[fontSize])}>
