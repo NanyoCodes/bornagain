@@ -1,3 +1,4 @@
+
 "use client";
 
 import * as React from "react";
@@ -14,10 +15,10 @@ import {
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Testimony, FollowUpStatus } from "@/lib/types";
+import { Testimony, TestimonyComment } from "@/lib/types";
 import { format } from "date-fns";
 import { Share2, MoreVertical, Edit, Trash2, Loader2, Globe, Sparkles, Link as LinkIcon, HandHeart, MessageCircle } from "lucide-react";
-import { useUser, useFirestore } from "@/firebase";
+import { useUser, useFirestore, useCollection } from "@/firebase";
 import { useState, useMemo } from "react";
 import {
   DropdownMenu,
@@ -30,7 +31,7 @@ import {
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { useToast } from "@/hooks/use-toast";
-import { doc, updateDoc, arrayUnion } from "firebase/firestore";
+import { doc, updateDoc, arrayUnion, collection, query } from "firebase/firestore";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { cn, safeToDate } from "@/lib/utils";
@@ -78,6 +79,13 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
     const { city, country } = testimony.authorLocation || {};
     return [city, country].filter(Boolean).join(', ') || 'Global Community';
   }, [testimony.authorLocation]);
+
+  const commentsQuery = useMemo(() => {
+    if (!firestore) return null;
+    return query(collection(firestore, 'testimonies', testimony.id, 'comments'));
+  }, [firestore, testimony.id]);
+  const { data: comments } = useCollection<TestimonyComment>(commentsQuery);
+  const commentCount = comments?.length || 0;
 
   React.useEffect(() => {
     setMounted(true);
@@ -313,7 +321,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
                 onClick={(e) => { e.stopPropagation(); setShowComments(!showComments); }}
             >
                 <MessageCircle className={cn("h-4 w-4", showComments && "fill-current")} />
-                <span>Comment</span>
+                <span>Comment{commentCount > 0 ? ` (${commentCount})` : ''}</span>
             </Button>
         </CardFooter>
       </Card>

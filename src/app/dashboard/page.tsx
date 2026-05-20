@@ -1,3 +1,4 @@
+
 'use client';
 
 import dynamic from 'next/dynamic';
@@ -59,7 +60,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { WelcomeBackDialog } from '@/components/dashboard/welcome-back-dialog';
-import { safeToDate } from '@/lib/utils';
+import { safeToDate, cn } from '@/lib/utils';
 import { actionItems } from '@/lib/follow-up-data';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { LogSoulForm } from '@/components/souls/log-soul-form';
@@ -68,7 +69,6 @@ import { welcomeScriptures } from '@/lib/verses';
 import AdsenseAd from '@/components/common/adsense-ad';
 import { ProgressOverview } from '@/components/dashboard/progress-overview';
 import { useToast } from '@/hooks/use-toast';
-import { cn } from '@/lib/utils';
 
 // Performance: Dynamically import heavy components
 const MonthlyStatsChart = dynamic(() => import('@/components/dashboard/monthly-stats-chart').then(m => m.MonthlyStatsChart), {
