@@ -168,7 +168,7 @@ export default function BibleReaderPage() {
   const [toolbarPos, setToolbarPos] = useState<{ top: number; left: number } | null>(null);
 
   const isMobile = useIsMobile();
-  const [mounted, setMounted] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
   const [isChapterPopoverOpen, setIsChapterPopoverOpen] = useState(false);
   const [view, setView] = useState<'read' | 'history'>('read');
   const [fontSize, setFontSize] = useState<FontSize>('sm');
@@ -178,15 +178,14 @@ export default function BibleReaderPage() {
   const subFontSizeClasses = { sm: 'text-xs', base: 'text-xs', lg: 'text-sm', xl: 'text-sm' };
 
   const userDocRef = useMemo(() => (user ? doc(firestore, 'users', user.uid) : null), [user, firestore]);
-  const { data: userProfile } = useDoc<UserProfile>(userDocRef);
+  const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userDocRef);
   
   const selectedBook = useMemo(() => bibleData.find(b => b.name === selectedBookName), [selectedBookName]);
 
   // Robust initialization from reading history
-  const hasInitialized = useRef(false);
   useEffect(() => {
-    if (userProfile && !hasInitialized.current) {
-      if (userProfile.readingHistory?.length) {
+    if (!profileLoading && !isInitialized) {
+      if (userProfile?.readingHistory?.length) {
         const sortedHistory = [...userProfile.readingHistory].sort((a, b) => {
            const timeA = safeToDate(a.readAt)?.getTime() ?? 0;
            const timeB = safeToDate(b.readAt)?.getTime() ?? 0;
@@ -198,18 +197,17 @@ export default function BibleReaderPage() {
           setSelectedChapterNumber(lastRead.chapter);
         }
       }
-      hasInitialized.current = true;
-      setMounted(true);
+      setIsInitialized(true);
     }
-  }, [userProfile]);
+  }, [userProfile, profileLoading, isInitialized]);
 
   // Safety guard: ensure chapter is valid when book changes
-  const lastBookRef = useRef(selectedBookName);
+  const prevBookNameRef = useRef(selectedBookName);
   useEffect(() => {
-      if (selectedBookName !== lastBookRef.current) {
-          setSelectedChapterNumber(1);
-          lastBookRef.current = selectedBookName;
-      }
+    if (selectedBookName !== prevBookNameRef.current) {
+      setSelectedChapterNumber(1);
+      prevBookNameRef.current = selectedBookName;
+    }
   }, [selectedBookName]);
 
   const highlightsQuery = useMemo(() => {
@@ -227,7 +225,8 @@ export default function BibleReaderPage() {
   }, [highlights]);
   
   useEffect(() => {
-    if (!hasInitialized.current || !selectedBookName || !selectedChapterNumber) return;
+    if (!isInitialized) return;
+    
     const fetchChapter = async () => {
       setIsLoadingChapter(true);
       setChapterError(null);
@@ -236,13 +235,20 @@ export default function BibleReaderPage() {
       setActiveHighlightId(null);
       setToolbarPos(null);
       try {
-        const content = await getBibleChapter({ book: selectedBookName, chapter: selectedChapterNumber, version: selectedVersion });
+        const content = await getBibleChapter({ 
+          book: selectedBookName, 
+          chapter: selectedChapterNumber, 
+          version: selectedVersion 
+        });
         setChapterContent(content);
-      } catch (error: any) { setChapterError(error.message || "Failed to load."); }
-      finally { setIsLoadingChapter(false); }
+      } catch (error: any) { 
+        setChapterError(error.message || "Failed to load."); 
+      } finally { 
+        setIsLoadingChapter(false); 
+      }
     };
     fetchChapter();
-  }, [selectedBookName, selectedChapterNumber, selectedVersion]);
+  }, [isInitialized, selectedBookName, selectedChapterNumber, selectedVersion]);
 
   const handleMarkAsRead = async () => {
     if (!user || !chapterContent) return;
@@ -386,8 +392,22 @@ export default function BibleReaderPage() {
                             </SelectContent>
                         </Select>
                         <div className="flex items-center gap-1 border rounded-md p-0.5 bg-background">
-                            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setFontSize(f => f === 'sm' ? 'sm' : FONT_SIZES[FONT_SIZES.indexOf(f)-1] as any)}><Minus className="h-4 w-4" /></Button>
-                            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setFontSize(f => f === 'xl' ? 'xl' : FONT_SIZES[FONT_SIZES.indexOf(f)+1] as any)}><Plus className="h-4 w-4" /></Button>
+                            <Button 
+                              variant="ghost" 
+                              size="icon" 
+                              className="h-8 w-8" 
+                              onClick={() => setFontSize(f => f === 'sm' ? 'sm' : FONT_SIZES[FONT_SIZES.indexOf(f)-1] as FontSize)}
+                            >
+                                <Minus className="h-4 w-4" />
+                            </Button>
+                            <Button 
+                              variant="ghost" 
+                              size="icon" 
+                              className="h-8 w-8" 
+                              onClick={() => setFontSize(f => f === 'xl' ? 'xl' : FONT_SIZES[FONT_SIZES.indexOf(f)+1] as FontSize)}
+                            >
+                                <Plus className="h-4 w-4" />
+                            </Button>
                         </div>
                     </div>
                   )}
