@@ -1,4 +1,3 @@
-
 "use client";
 
 import * as React from "react";
@@ -17,8 +16,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Testimony, TestimonyComment } from "@/lib/types";
 import { format } from "date-fns";
-import { Share2, MoreVertical, Edit, Trash2, Loader2, Globe, Sparkles, PartyPopper, HandHeart, MessageCircle } from "lucide-react";
-import { useUser, useAuth, useFirestore, useCollection } from "@/firebase";
+import { Share2, MoreVertical, Edit, Trash2, Loader2, Globe, Sparkles, PartyPopper, HandHeart, MessageCircle, X } from "lucide-react";
+import { useUser, useFirestore, useCollection } from "@/firebase";
 import { useState, useMemo } from "react";
 import {
   DropdownMenu,
@@ -333,61 +332,65 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
         </CardFooter>
       </Card>
 
-      {mounted && isMobile ? (
+      {mounted && (
         <>
-            <Sheet open={showFullText} onOpenChange={setShowFullText}>
-                <SheetContent side="bottom" className="h-[80dvh] flex flex-col p-0">
-                    <div className="p-6 border-b shrink-0">
-                        <SheetHeader className="text-left">
-                        <SheetTitle>Testimony by {authorFullName}</SheetTitle>
-                        <SheetDescription>{displayDate}</SheetDescription>
-                        </SheetHeader>
-                    </div>
-                    <div className="flex-grow min-h-0 p-6 overflow-y-auto">
-                    {fullTextContent}
-                    </div>
-                </SheetContent>
-            </Sheet>
+            {isMobile ? (
+                <>
+                    <Sheet open={showFullText} onOpenChange={setShowFullText}>
+                        <SheetContent side="bottom" className="h-[80dvh] flex flex-col p-0">
+                            <div className="p-6 border-b shrink-0">
+                                <SheetHeader className="text-left">
+                                <SheetTitle>Testimony by {authorFullName}</SheetTitle>
+                                <SheetDescription>{displayDate}</SheetDescription>
+                                </SheetHeader>
+                            </div>
+                            <div className="flex-grow min-h-0 p-6 overflow-y-auto">
+                            {fullTextContent}
+                            </div>
+                        </SheetContent>
+                    </Sheet>
 
-            <Sheet open={isCommentsOpen} onOpenChange={setIsCommentsOpen}>
-                <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0">
-                    <div className="p-6 border-b shrink-0">
-                        <SheetHeader className="text-left">
-                            <SheetTitle>Comments</SheetTitle>
-                            <SheetDescription>Sharing the joy of {authorFullName}'s testimony.</SheetDescription>
-                        </SheetHeader>
-                    </div>
-                    <div className="flex-grow min-h-0 p-6">
-                        <CommentSection testimonyId={testimony.id} />
-                    </div>
-                </SheetContent>
-            </Sheet>
-        </>
-      ) : (
-        <>
-            <Dialog open={showFullText} onOpenChange={setShowFullText}>
-                <DialogContent>
-                    <DialogHeader>
-                    <DialogTitle>Testimony by {authorFullName}</DialogTitle>
-                    <DialogDescription>{displayDate}</DialogDescription>
-                    </DialogHeader>
-                    {fullTextContent}
-                </DialogContent>
-            </Dialog>
+                    <Sheet open={isCommentsOpen} onOpenChange={setIsCommentsOpen}>
+                        <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0">
+                            <div className="p-6 border-b shrink-0">
+                                <SheetHeader className="text-left">
+                                    <SheetTitle>Comments</SheetTitle>
+                                    <SheetDescription>Sharing the joy of {authorFullName}'s testimony.</SheetDescription>
+                                </SheetHeader>
+                            </div>
+                            <div className="flex-grow min-h-0 p-6">
+                                <CommentSection testimonyId={testimony.id} />
+                            </div>
+                        </SheetContent>
+                    </Sheet>
+                </>
+            ) : (
+                <>
+                    <Dialog open={showFullText} onOpenChange={setShowFullText}>
+                        <DialogContent>
+                            <DialogHeader>
+                            <DialogTitle>Testimony by {authorFullName}</DialogTitle>
+                            <DialogDescription>{displayDate}</DialogDescription>
+                            </DialogHeader>
+                            {fullTextContent}
+                        </DialogContent>
+                    </Dialog>
 
-            <Dialog open={isCommentsOpen} onOpenChange={setIsCommentsOpen}>
-                <DialogContent className="sm:max-w-lg flex flex-col max-h-[85vh] p-0 overflow-hidden">
-                    <div className="p-6 border-b shrink-0">
-                        <DialogHeader>
-                            <DialogTitle>Comments</DialogTitle>
-                            <DialogDescription>Community responses to this testimony.</DialogDescription>
-                        </DialogHeader>
-                    </div>
-                    <div className="flex-grow min-h-0 p-6">
-                        <CommentSection testimonyId={testimony.id} />
-                    </div>
-                </DialogContent>
-            </Dialog>
+                    <Dialog open={isCommentsOpen} onOpenChange={setIsCommentsOpen}>
+                        <DialogContent className="sm:max-w-lg flex flex-col max-h-[85vh] p-0 overflow-hidden">
+                            <div className="p-6 border-b shrink-0">
+                                <DialogHeader>
+                                    <DialogTitle>Comments</DialogTitle>
+                                    <DialogDescription>Community responses to this testimony.</DialogDescription>
+                                </DialogHeader>
+                            </div>
+                            <div className="flex-grow min-h-0 p-6">
+                                <CommentSection testimonyId={testimony.id} />
+                            </div>
+                        </DialogContent>
+                    </Dialog>
+                </>
+            )}
         </>
       )}
     </>

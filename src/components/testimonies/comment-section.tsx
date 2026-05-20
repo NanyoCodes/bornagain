@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -78,15 +77,16 @@ function CommentItem({
         }
     };
 
+    const authorName = `${comment.authorFirstName || 'User'} ${comment.authorLastName || ''}`.trim();
     const profileLink = isAuthor ? "/dashboard/profile" : `/dashboard/profile/${comment.authorId}`;
 
     return (
-        <div className={cn("space-y-4", level > 0 && "ml-4 sm:ml-8")}>
+        <div className={cn("space-y-4", level > 0 && (isMobile ? "ml-4" : "ml-8"))}>
             <div className="flex gap-2 sm:gap-3 items-start group relative">
                 <Link href={profileLink}>
                     <Avatar className={cn("shrink-0 hover:opacity-80 transition-opacity", level > 0 ? "h-5 w-5 sm:h-6 sm:w-6" : "h-6 w-6 sm:h-7 sm:w-7")}>
                         <AvatarImage src={comment.authorAvatarUrl} />
-                        <AvatarFallback className="text-[8px] sm:text-[10px]">{comment.authorFirstName.charAt(0)}</AvatarFallback>
+                        <AvatarFallback className="text-[8px] sm:text-[10px]">{comment.authorFirstName?.charAt(0) || 'U'}</AvatarFallback>
                     </Avatar>
                 </Link>
                 <div className="flex-1 min-w-0">
@@ -95,7 +95,7 @@ function CommentItem({
                             <div className="min-w-0 flex-1">
                                 <Link href={profileLink} className="hover:underline decoration-primary/30 underline-offset-2">
                                     <p className="text-[10px] sm:text-xs font-bold truncate">
-                                        {comment.authorFirstName} {comment.authorLastName}
+                                        {authorName}
                                     </p>
                                 </Link>
                                 <p className="text-[8px] sm:text-[9px] text-muted-foreground">
@@ -123,7 +123,9 @@ function CommentItem({
                                 {supporters.length > 0 && <HandHeart className="h-2.5 w-2.5 text-primary fill-current" />}
                                 {inspiredBy.length > 0 && <Sparkles className="h-2.5 w-2.5 text-chart-3 fill-current" />}
                                 {connectedBy.length > 0 && <PartyPopper className="h-2.5 w-2.5 text-blue-500" />}
-                                <span className="text-[8px] font-bold px-0.5 leading-none">{supporters.length + inspiredBy.length + connectedBy.length}</span>
+                                <span className="text-[8px] font-bold px-0.5 leading-none">
+                                    {(supporters.length + inspiredBy.length + connectedBy.length)}
+                                </span>
                             </div>
                         )}
                     </div>
@@ -230,12 +232,15 @@ export function CommentSection({ testimonyId }: { testimonyId: string }) {
 
     const renderComment = (comment: TestimonyComment, level = 0) => {
         const children = repliesMap[comment.id] || [];
+        // Cap indentation to avoid horizontal overflow on mobile
+        const indentLevel = level > 2 ? 2 : level;
+        
         return (
             <CommentItem 
                 key={comment.id} 
                 comment={comment} 
                 testimonyId={testimonyId} 
-                level={level}
+                level={indentLevel}
                 onReply={setReplyingTo}
             >
                 {children.map(child => renderComment(child, level + 1))}
@@ -244,23 +249,25 @@ export function CommentSection({ testimonyId }: { testimonyId: string }) {
     };
 
     return (
-        <div className="flex flex-col h-full">
-            <ScrollArea className="flex-1 pr-4">
-                <div className="space-y-6 pb-4">
-                    {loading ? (
-                        <div className="flex justify-center py-8"><Loader2 className="h-6 w-6 animate-spin opacity-20" /></div>
-                    ) : topLevelComments.length > 0 ? (
-                        topLevelComments.map(comment => renderComment(comment))
-                    ) : (
-                        <div className="text-center py-12 bg-muted/20 rounded-lg border border-dashed">
-                             <p className="text-sm text-muted-foreground italic">No comments yet. Be the first to encourage!</p>
-                        </div>
-                    )}
-                </div>
-            </ScrollArea>
+        <div className="flex flex-col h-full overflow-hidden">
+            <div className="flex-1 min-h-0">
+                <ScrollArea className="h-full">
+                    <div className="space-y-6 pb-6 px-1">
+                        {loading ? (
+                            <div className="flex justify-center py-8"><Loader2 className="h-6 w-6 animate-spin opacity-20" /></div>
+                        ) : topLevelComments.length > 0 ? (
+                            topLevelComments.map(comment => renderComment(comment))
+                        ) : (
+                            <div className="text-center py-12 bg-muted/20 rounded-lg border border-dashed">
+                                 <p className="text-sm text-muted-foreground italic">No comments yet. Be the first to encourage!</p>
+                            </div>
+                        )}
+                    </div>
+                </ScrollArea>
+            </div>
 
             {user && (
-                <div className="shrink-0 pt-4 border-t mt-auto bg-background">
+                <div className="shrink-0 pt-4 border-t bg-background">
                     {replyingTo && (
                         <div className="flex items-center justify-between bg-muted/30 px-3 py-1.5 rounded-t-md text-[10px] text-muted-foreground animate-in slide-in-from-bottom-1 duration-200">
                             <p className="truncate">Replying to <strong>{replyingTo.authorFirstName}</strong></p>
