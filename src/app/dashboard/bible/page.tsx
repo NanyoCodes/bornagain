@@ -54,9 +54,9 @@ import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 
 const bibleVersions = [
-    { id: 'kjv', name: 'King James Version' },
-    { id: 'web', name: 'World English Bible' },
-    { id: 'bbe', name: 'Bible in Basic English' },
+    { id: 'kjv', name: 'KJV' },
+    { id: 'web', name: 'WEB' },
+    { id: 'bbe', name: 'BBE' },
 ];
 
 const getHighlightClass = (color?: string) => {
@@ -336,10 +336,6 @@ export default function BibleReaderPage() {
     
     const ReaderContent = (
       <div className="flex flex-col gap-4 h-full min-h-0">
-          <div className="flex items-center justify-end gap-2 shrink-0">
-                 <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => setFontSize(f => f === 'xl' ? 'xl' : FONT_SIZES[FONT_SIZES.indexOf(f)+1] as any)}><Plus className="h-4 w-4" /></Button>
-                 <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => setFontSize(f => f === 'sm' ? 'sm' : FONT_SIZES[FONT_SIZES.indexOf(f)-1] as any)}><Minus className="h-4 w-4" /></Button>
-          </div>
           <ScrollArea ref={scrollAreaRef} className="flex-grow border rounded-md p-4 relative">
                   {isLoadingChapter && <div className="absolute inset-0 flex items-center justify-center bg-background/50 z-20"><Loader2 className="h-8 w-8 animate-spin" /></div>}
                   {!isLoadingChapter && chapterContent && (
@@ -373,19 +369,33 @@ export default function BibleReaderPage() {
 
     return (
         <div className="h-dvh flex flex-col p-4">
-            <div className="shrink-0 flex items-center justify-between mb-4">
-                <div className="flex items-center gap-4">
+            <div className="shrink-0 flex items-center justify-between mb-4 gap-2">
+                <div className="flex items-center gap-2">
                   <Button variant="outline" size="icon" onClick={() => router.back()}><ArrowLeft className="h-4 w-4" /></Button>
+                  {view === 'read' && (
+                    <div className="flex items-center gap-2">
+                        <Select value={selectedVersion} onValueChange={setSelectedVersion}>
+                            <SelectTrigger className="w-[80px] h-9"><SelectValue /></SelectTrigger>
+                            <SelectContent>
+                                {bibleVersions.map(v => <SelectItem key={v.id} value={v.id}>{v.name}</SelectItem>)}
+                            </SelectContent>
+                        </Select>
+                        <div className="flex items-center gap-1 border rounded-md p-0.5 bg-background">
+                            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setFontSize(f => f === 'sm' ? 'sm' : FONT_SIZES[FONT_SIZES.indexOf(f)-1] as any)}><Minus className="h-4 w-4" /></Button>
+                            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setFontSize(f => f === 'xl' ? 'xl' : FONT_SIZES[FONT_SIZES.indexOf(f)+1] as any)}><Plus className="h-4 w-4" /></Button>
+                        </div>
+                    </div>
+                  )}
                 </div>
                 <div className="flex items-center gap-2">
-                   <Button variant={view === 'read' ? 'default' : 'ghost'} size="sm" onClick={() => setView('read')}><BookOpen className="mr-2 h-4 w-4" />Read</Button>
-                   <Button variant={view === 'history' ? 'default' : 'ghost'} size="sm" onClick={() => setView('history')}><History className="mr-2 h-4 w-4" />History</Button>
+                   <Button variant={view === 'read' ? 'default' : 'ghost'} size="sm" onClick={() => setView('read')} className="h-9"><BookOpen className="mr-2 h-4 w-4" />Read</Button>
+                   <Button variant={view === 'history' ? 'default' : 'ghost'} size="sm" onClick={() => setView('history')} className="h-9"><History className="mr-2 h-4 w-4" />History</Button>
                 </div>
             </div>
 
             {view === 'read' ? (
                 <div className="flex-grow flex flex-col min-h-0 overflow-hidden">
-                    <div className="grid grid-cols-3 gap-2 shrink-0 mb-4">
+                    <div className="grid grid-cols-2 gap-2 shrink-0 mb-4">
                         <Select value={selectedBookName} onValueChange={setSelectedBookName}>
                             <SelectTrigger className="truncate"><SelectValue /></SelectTrigger>
                             <SelectContent>{bibleData.map(b => <SelectItem key={b.name} value={b.name}>{b.name}</SelectItem>)}</SelectContent>
@@ -407,7 +417,6 @@ export default function BibleReaderPage() {
                               </ScrollArea>
                             </PopoverContent>
                         </Popover>
-                        <Select value={selectedVersion} onValueChange={setSelectedVersion}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{bibleVersions.map(v => <SelectItem key={v.id} value={v.id}>{v.name}</SelectItem>)}</SelectContent></Select>
                     </div>
                     <div className="flex-grow flex-col md:flex-row flex gap-6 min-h-0 overflow-hidden">
                         <div className="flex-grow min-h-0">{ReaderContent}</div>
