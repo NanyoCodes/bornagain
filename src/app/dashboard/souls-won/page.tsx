@@ -52,7 +52,7 @@ export default function SoulsWonPage() {
   const isMobile = useIsMobile();
   const { searchTerm, setSearchPlaceholder, setIsSearchVisible, setSearchTerm } = useSearch();
 
-  // Dialog management with transition safety
+  // Dialog management with transition safety to prevent body lock freezes
   const [soulForFollowUp, setSoulForFollowUp] = useState<Soul | null>(null);
   const [soulForHistory, setSoulForHistory] = useState<Soul | null>(null);
   const [soulToAssign, setSoulToAssign] = useState<Soul | null>(null);
@@ -106,7 +106,7 @@ export default function SoulsWonPage() {
     setIsEditOpen(false);
     setIsLogDialogOpen(false);
     
-    // Clear data after animation
+    // Clear data after animation completes
     setTimeout(() => {
         setSoulForFollowUp(null);
         setSoulForHistory(null);

@@ -70,7 +70,7 @@ export default function TestimoniesPage() {
 
   const loading = userLoading || profileLoading || loadingTestimonies || loadingPrayers;
 
-  // Pattern: Controlled visibility booleans to ensure body interaction is restored correctly
+  // Pattern: Controlled visibility booleans with transition buffers to prevent body lock freezes
   const [itemToDelete, setItemToDelete] = useState<{ type: 'testimony', data: Testimony } | { type: 'prayer', data: PrayerRequest } | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [itemToEdit, setItemToEdit] = useState<Testimony | null>(null);
@@ -83,6 +83,7 @@ export default function TestimoniesPage() {
 
   const closeEditDialog = useCallback(() => {
     setIsEditOpen(false);
+    // Allow closing animation to finish before clearing data
     setTimeout(() => setItemToEdit(null), 300);
   }, []);
 
@@ -253,7 +254,7 @@ export default function TestimoniesPage() {
 
   return (
     <div className="space-y-6 md:space-y-12">
-      {/* Centered Interaction Box */}
+      {/* Premium Interaction Box */}
       <Card className="border shadow-sm sm:shadow-md">
         <CardContent className="px-4 py-4 sm:p-6">
           <div className="flex items-center gap-2 sm:gap-4">
@@ -295,6 +296,7 @@ export default function TestimoniesPage() {
               <TabsTrigger value="prayers">Prayer Requests</TabsTrigger>
           </TabsList>
           <TabsContent value="testimonies" className="mt-8 md:mt-10">
+              {/* Enhanced spacing between cards */}
               <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-3">
                 {loading && (
                   [...Array(3)].map((_, i) => (

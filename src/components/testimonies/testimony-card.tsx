@@ -30,7 +30,7 @@ import {
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { useToast } from "@/hooks/use-toast";
-import { doc, updateDoc, arrayUnion, collection, query } from "firebase/firestore";
+import { doc, updateDoc, arrayUnion, arrayRemove, collection, query } from "firebase/firestore";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { cn, safeToDate } from "@/lib/utils";
@@ -109,13 +109,15 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
       (type === 'inspired' && hasInspired) || 
       (type === 'connect' && hasConnected);
 
-    if (hasReacted) return;
-
     setIsProcessingReaction(type);
     
     const testimonyRef = doc(firestore, 'testimonies', testimony.id);
     const field = type === 'amen' ? 'supporters' : type === 'inspired' ? 'inspiredBy' : 'connectedBy';
-    const updatePayload = { [field]: arrayUnion(user.uid) };
+    
+    // Toggle reaction: arrayUnion if not present, arrayRemove if already present
+    const updatePayload = { 
+      [field]: hasReacted ? arrayRemove(user.uid) : arrayUnion(user.uid) 
+    };
 
     updateDoc(testimonyRef, updatePayload)
         .catch(() => {
@@ -198,7 +200,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
                <Link href={profileLink} onClick={(e) => { e.stopPropagation(); }} className="hover:underline">
                 <CardTitle className="text-sm sm:text-base font-semibold truncate">{authorFullName}</CardTitle>
               </Link>
-              {/* FIX: Use div instead of CardDescription (p) to allow nested div (Badge) and fix hydration error */}
+              {/* FIX: Use div instead of p to avoid hydration errors with nested div (Badge) */}
               <div className="text-muted-foreground text-[10px] sm:text-xs mt-0.5 flex flex-col gap-1">
                   <span className="flex items-center gap-1"><Globe className="h-3 w-3 text-primary shrink-0" /> {locationString}</span>
                   <span className="truncate">{displayDate}</span>
@@ -283,7 +285,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
         <CardFooter className="py-2 px-2 sm:px-4 grid grid-cols-4 gap-1">
             <Button 
                 onClick={(e) => { e.stopPropagation(); handleReaction('amen'); }} 
-                disabled={hasAmened || isProcessingReaction !== null || !user || isAuthor} 
+                disabled={isProcessingReaction !== null || !user || isAuthor} 
                 variant="ghost" 
                 size="sm" 
                 className={cn("flex flex-col sm:flex-row h-auto py-2 gap-1 text-[10px] sm:text-xs font-semibold text-muted-foreground hover:bg-muted/50", hasAmened && "text-primary hover:text-primary")}
@@ -294,7 +296,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
 
             <Button 
                 onClick={(e) => { e.stopPropagation(); handleReaction('inspired'); }} 
-                disabled={hasInspired || isProcessingReaction !== null || !user || isAuthor} 
+                disabled={isProcessingReaction !== null || !user || isAuthor} 
                 variant="ghost" 
                 size="sm" 
                 className={cn("flex flex-col sm:flex-row h-auto py-2 gap-1 text-[10px] sm:text-xs font-semibold text-muted-foreground hover:bg-muted/50", hasInspired && "text-chart-3 hover:text-chart-3")}
@@ -305,7 +307,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
 
             <Button 
                 onClick={(e) => { e.stopPropagation(); handleReaction('connect'); }} 
-                disabled={hasConnected || isProcessingReaction !== null || !user || isAuthor} 
+                disabled={isProcessingReaction !== null || !user || isAuthor} 
                 variant="ghost" 
                 size="sm" 
                 className={cn("flex flex-col sm:flex-row h-auto py-2 gap-1 text-[10px] sm:text-xs font-semibold text-muted-foreground hover:bg-muted/50", hasConnected && "text-blue-500 hover:text-blue-500")}
