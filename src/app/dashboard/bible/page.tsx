@@ -341,7 +341,7 @@ export default function BibleReaderPage() {
                             </div>
                         )}
                         <div className="mt-8 flex flex-col sm:flex-row gap-4 items-center justify-between pb-10">
-                              {unfinishedHighlight && <Card className="border-amber-500/50 bg-amber-500/10 p-3 w-full sm:w-auto"><div className="flex items-center gap-3"><p className="text-sm font-semibold">Note Required</p><Button size="sm" onClick={() => setActiveHighlightId(unfinishedHighlight.id)}>Go to Note</Button></div></Card>}
+                              {unfinishedHighlight && <Card className="border-amber-500/50 bg-amber-500/10 p-3 w-full sm:w-auto"><div className="flex items-center justify-between gap-3"><p className="text-sm font-semibold">Note Required</p><Button size="sm" onClick={() => setActiveHighlightId(unfinishedHighlight.id)}>Go to Note</Button></div></Card>}
                               <Button onClick={handleMarkAsRead} disabled={isSubmitting} className="w-full sm:w-auto">{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Mark as Read & Next</Button>
                         </div>
                     </>

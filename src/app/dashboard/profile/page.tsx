@@ -350,7 +350,7 @@ export default function ProfilePage() {
                         searchTerm={prayerSearchTerm}
                         setSearchTerm={setPrayerSearchTerm}
                         filterDate={prayerFilterDate}
-                        setFilterDate={setFilterDate}
+                        setFilterDate={setPrayerFilterDate}
                         searchPlaceholder="Search prayer requests..."
                     />
                     <ScrollArea className="h-48">

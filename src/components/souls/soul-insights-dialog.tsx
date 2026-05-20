@@ -158,7 +158,7 @@ export function SoulInsightsDialog({ soul, children }: { soul: Soul, children: R
                         <Info className="h-3 w-3 cursor-help" />
                       </TooltipTrigger>
                       <TooltipContent className="max-w-[200px]">
-                        <p>These AI insights are provided using the Gemini Flash model. There are no additional charges for these prompts within your service limits.</p>
+                        <p>These AI insights are provided using the Gemini Flash model through the developer free-tier. There are no additional charges to you within current usage limits.</p>
                       </TooltipContent>
                     </Tooltip>
                    </TooltipProvider>

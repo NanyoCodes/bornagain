@@ -39,6 +39,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { CommentSection } from "./comment-section";
 import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible";
+import { Separator } from "../ui/separator";
 
 export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDelete, onEdit }: { testimony: Testimony, onDelete: () => void, onEdit: () => void }) {
   const { user } = useUser();
@@ -61,6 +62,8 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
   const supporters = testimony.supporters || [];
   const inspiredBy = testimony.inspiredBy || [];
   const connectedBy = testimony.connectedBy || [];
+  
+  const totalReactions = supporters.length + inspiredBy.length + connectedBy.length;
 
   const hasAmened = useMemo(() => user ? supporters.includes(user.uid) : false, [user, supporters]);
   const hasInspired = useMemo(() => user ? inspiredBy.includes(user.uid) : false, [user, inspiredBy]);
@@ -190,8 +193,29 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
               </CardDescription>
             </div>
           </div>
-          <Badge variant="outline" className="shrink-0 text-[9px] sm:text-[10px] uppercase tracking-widest px-2 py-0 h-5 sm:h-6">{testimony.category}</Badge>
+          <div className="flex items-center gap-2">
+            <Badge variant="outline" className="shrink-0 text-[9px] sm:text-[10px] uppercase tracking-widest px-2 py-0 h-5 sm:h-6">{testimony.category}</Badge>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => e.stopPropagation()}>
+                  <MoreVertical className="h-4 w-4" />
+                  <span className="sr-only">More actions</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>Share God's Glory</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onSelect={(e) => { e.preventDefault(); handleShare('link'); }}><Share2 className="mr-2 h-4 w-4" /><span>Copy Link</span></DropdownMenuItem>
+                <DropdownMenuItem onSelect={(e) => { e.preventDefault(); handleShare('whatsapp'); }}><MessageCircle className="mr-2 h-4 w-4" /><span>Share WhatsApp Poster</span></DropdownMenuItem>
+                <DropdownMenuItem onSelect={(e) => { e.preventDefault(); handleShare('facebook'); }}><Icons.facebook className="mr-2 h-4 w-4" /><span>Share on Facebook</span></DropdownMenuItem>
+                {isAuthor && <DropdownMenuSeparator />}
+                {isAuthor && <DropdownMenuItem onSelect={(e) => { e.preventDefault(); onEdit(); }}><Edit className="mr-2 h-4 w-4" /><span>Edit</span></DropdownMenuItem>}
+                {isAuthor && <DropdownMenuItem onSelect={(e) => { e.preventDefault(); onDelete(); }} className="text-destructive focus:text-destructive"><Trash2 className="mr-2 h-4 w-4" /><span>Delete</span></DropdownMenuItem>}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </CardHeader>
+        
         <CardContent className="flex-grow pt-0 px-4 sm:px-6 space-y-4">
           <div className="text-sm text-muted-foreground whitespace-pre-wrap">
             <p ref={contentRef} className="line-clamp-4 italic leading-relaxed text-xs sm:text-sm">
@@ -223,100 +247,72 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
             </Card>
            )}
 
+           {totalReactions > 0 && (
+             <div className="flex items-center justify-between pt-2">
+                <div className="flex items-center -space-x-1">
+                    {supporters.length > 0 && <div className="bg-primary rounded-full p-1 border-2 border-background z-30"><HandHeart className="h-2.5 w-2.5 text-primary-foreground fill-current" /></div>}
+                    {inspiredBy.length > 0 && <div className="bg-chart-3 rounded-full p-1 border-2 border-background z-20"><Sparkles className="h-2.5 w-2.5 text-white fill-current" /></div>}
+                    {connectedBy.length > 0 && <div className="bg-blue-500 rounded-full p-1 border-2 border-background z-10"><LinkIcon className="h-2.5 w-2.5 text-white" /></div>}
+                    <span className="text-[10px] text-muted-foreground ml-2">{totalReactions}</span>
+                </div>
+                {testimony.campaignTitle && (
+                   <span className="text-[9px] text-muted-foreground truncate italic opacity-60">Event: {testimony.campaignTitle}</span>
+                )}
+             </div>
+           )}
+
             <Collapsible open={showComments} onOpenChange={setShowComments}>
                 <CollapsibleContent>
                     <CommentSection testimonyId={testimony.id} />
                 </CollapsibleContent>
             </Collapsible>
         </CardContent>
-        <CardFooter className="pt-3 pb-3 px-4 sm:px-6 flex flex-col items-start gap-4 mt-auto border-t bg-muted/20">
-          {testimony.campaignTitle && testimony.campaignId && (
-              <div className="text-[9px] sm:text-[10px] text-muted-foreground truncate italic max-w-full">
-                  Event: <Link href={`/dashboard/campaigns/${testimony.campaignId}`} className="font-semibold text-primary hover:underline">{testimony.campaignTitle}</Link>
-              </div>
-          )}
-          <div className="w-full flex justify-between items-center">
-            <div className="flex items-center gap-1">
-                <Button 
-                    onClick={(e) => { e.stopPropagation(); handleReaction('amen'); }} 
-                    disabled={hasAmened || isProcessingReaction !== null || !user || isAuthor} 
-                    variant="ghost" 
-                    size="sm" 
-                    className="h-8 px-2 flex items-center text-muted-foreground hover:bg-transparent"
-                >
-                {isProcessingReaction === 'amen' ? (
-                    <Loader2 className="mr-1 h-3 w-3 animate-spin" />
-                ) : (
-                    <HandHeart className={cn("mr-1 h-4 w-4", hasAmened && "fill-primary text-primary")} />
-                )}
-                <span className={cn("text-[10px] font-bold uppercase", hasAmened && "text-primary")}>{hasAmened ? 'Amen!' : 'Amen'}</span>
-                {supporters.length > 0 && <span className="text-[10px] ml-1">({supporters.length})</span>}
-                </Button>
 
-                <Button 
-                    onClick={(e) => { e.stopPropagation(); handleReaction('inspired'); }} 
-                    disabled={hasInspired || isProcessingReaction !== null || !user || isAuthor} 
-                    variant="ghost" 
-                    size="sm" 
-                    className="h-8 px-2 flex items-center text-muted-foreground hover:bg-transparent"
-                >
-                {isProcessingReaction === 'inspired' ? (
-                    <Loader2 className="mr-1 h-3 w-3 animate-spin" />
-                ) : (
-                    <Sparkles className={cn("mr-1 h-4 w-4", hasInspired && "fill-primary text-primary")} />
-                )}
-                <span className={cn("text-[10px] font-bold uppercase", hasInspired && "text-primary")}>{hasInspired ? 'Inspired!' : 'Inspired'}</span>
-                {inspiredBy.length > 0 && <span className="text-[10px] ml-1">({inspiredBy.length})</span>}
-                </Button>
+        <Separator className="mx-4 sm:mx-6 w-auto" />
+        
+        <CardFooter className="py-2 px-2 sm:px-4 grid grid-cols-4 gap-1">
+            <Button 
+                onClick={(e) => { e.stopPropagation(); handleReaction('amen'); }} 
+                disabled={hasAmened || isProcessingReaction !== null || !user || isAuthor} 
+                variant="ghost" 
+                size="sm" 
+                className={cn("flex flex-col sm:flex-row h-auto py-2 gap-1 text-[10px] sm:text-xs font-semibold text-muted-foreground hover:bg-muted/50", hasAmened && "text-primary hover:text-primary")}
+            >
+                {isProcessingReaction === 'amen' ? <Loader2 className="h-4 w-4 animate-spin" /> : <HandHeart className={cn("h-4 w-4", hasAmened && "fill-current")} />}
+                <span>Amen</span>
+            </Button>
 
-                <Button 
-                    onClick={(e) => { e.stopPropagation(); handleReaction('connect'); }} 
-                    disabled={hasConnected || isProcessingReaction !== null || !user || isAuthor} 
-                    variant="ghost" 
-                    size="sm" 
-                    className="h-8 px-2 flex items-center text-muted-foreground hover:bg-transparent"
-                >
-                {isProcessingReaction === 'connect' ? (
-                    <Loader2 className="mr-1 h-3 w-3 animate-spin" />
-                ) : (
-                    <LinkIcon className={cn("mr-1 h-4 w-4", hasConnected && "text-primary")} />
-                )}
-                <span className={cn("text-[10px] font-bold uppercase", hasConnected && "text-primary")}>{hasConnected ? 'Connected!' : 'I connect'}</span>
-                {connectedBy.length > 0 && <span className="text-[10px] ml-1">({connectedBy.length})</span>}
-                </Button>
-            </div>
+            <Button 
+                onClick={(e) => { e.stopPropagation(); handleReaction('inspired'); }} 
+                disabled={hasInspired || isProcessingReaction !== null || !user || isAuthor} 
+                variant="ghost" 
+                size="sm" 
+                className={cn("flex flex-col sm:flex-row h-auto py-2 gap-1 text-[10px] sm:text-xs font-semibold text-muted-foreground hover:bg-muted/50", hasInspired && "text-chart-3 hover:text-chart-3")}
+            >
+                {isProcessingReaction === 'inspired' ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className={cn("h-4 w-4", hasInspired && "fill-current")} />}
+                <span>Inspired</span>
+            </Button>
 
-            <div className="flex items-center gap-1">
-                <Button 
-                    variant="ghost" 
-                    size="icon" 
-                    className={cn("h-8 w-8 text-muted-foreground hover:bg-transparent", showComments && "text-primary")}
-                    onClick={(e) => { e.stopPropagation(); setShowComments(!showComments); }}
-                >
-                    <MessageCircle className={cn("h-4 w-4", showComments && "fill-primary text-primary")} />
-                    <span className="sr-only">Comment</span>
-                </Button>
+            <Button 
+                onClick={(e) => { e.stopPropagation(); handleReaction('connect'); }} 
+                disabled={hasConnected || isProcessingReaction !== null || !user || isAuthor} 
+                variant="ghost" 
+                size="sm" 
+                className={cn("flex flex-col sm:flex-row h-auto py-2 gap-1 text-[10px] sm:text-xs font-semibold text-muted-foreground hover:bg-muted/50", hasConnected && "text-blue-500 hover:text-blue-500")}
+            >
+                {isProcessingReaction === 'connect' ? <Loader2 className="h-4 w-4 animate-spin" /> : <LinkIcon className="h-4 w-4" />}
+                <span>Connect</span>
+            </Button>
 
-                <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => e.stopPropagation()}>
-                    <MoreVertical className="h-4 w-4" />
-                    <span className="sr-only">More actions</span>
-                    </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                    <DropdownMenuLabel>Share God's Glory</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onSelect={(e) => { e.preventDefault(); handleShare('link'); }}><Share2 className="mr-2 h-4 w-4" /><span>Copy Link</span></DropdownMenuItem>
-                    <DropdownMenuItem onSelect={(e) => { e.preventDefault(); handleShare('whatsapp'); }}><MessageCircle className="mr-2 h-4 w-4" /><span>Share WhatsApp Poster</span></DropdownMenuItem>
-                    <DropdownMenuItem onSelect={(e) => { e.preventDefault(); handleShare('facebook'); }}><Icons.facebook className="mr-2 h-4 w-4" /><span>Share on Facebook</span></DropdownMenuItem>
-                    {isAuthor && <DropdownMenuSeparator />}
-                    {isAuthor && <DropdownMenuItem onSelect={(e) => { e.preventDefault(); onEdit(); }}><Edit className="mr-2 h-4 w-4" /><span>Edit</span></DropdownMenuItem>}
-                    {isAuthor && <DropdownMenuItem onSelect={(e) => { e.preventDefault(); onDelete(); }} className="text-destructive focus:text-destructive"><Trash2 className="mr-2 h-4 w-4" /><span>Delete</span></DropdownMenuItem>}
-                </DropdownMenuContent>
-                </DropdownMenu>
-            </div>
-          </div>
+            <Button 
+                variant="ghost" 
+                size="sm" 
+                className={cn("flex flex-col sm:flex-row h-auto py-2 gap-1 text-[10px] sm:text-xs font-semibold text-muted-foreground hover:bg-muted/50", showComments && "text-primary hover:text-primary")}
+                onClick={(e) => { e.stopPropagation(); setShowComments(!showComments); }}
+            >
+                <MessageCircle className={cn("h-4 w-4", showComments && "fill-current")} />
+                <span>Comment</span>
+            </Button>
         </CardFooter>
       </Card>
 
