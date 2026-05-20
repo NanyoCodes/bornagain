@@ -86,7 +86,7 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
     };
 
     return (
-        <Card onClick={onClick} className="cursor-pointer">
+        <Card onClick={onClick} className="cursor-pointer rounded-none sm:rounded-lg border-x-0 sm:border-x">
             <CardHeader>
                 <div className="flex justify-between items-start">
                     <CardTitle className="text-xl flex items-center">{fellowship.name}</CardTitle>

@@ -80,7 +80,7 @@ const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, 
     const latestFollowUpDate = latestFollowUp ? safeToDate(latestFollowUp.date) : null;
 
     return (
-        <Card>
+        <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x">
             <Collapsible>
                 <CollapsibleTrigger className="group w-full p-4 text-left">
                      <div className="flex items-center justify-between">
@@ -175,7 +175,7 @@ SoulCard.displayName = "SoulCard";
 const SoulTableRow = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, onOpenAssignDialog, onEdit }: { 
   soul: Soul; 
   onFollowUp: (soul: Soul) => void; 
-  onViewHistory: (soul: Soul) => void;
+  onViewHistory: (soul: Soul) => void; 
   onExportSingle: (soul: Soul, formatType: 'csv' | 'pdf') => void;
   onOpenAssignDialog: (soul: Soul) => void;
   onEdit: (soul: Soul) => void;
@@ -257,7 +257,7 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
 
   if (loading || !mounted) {
     return (
-        <Card>
+        <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x">
             <CardHeader><Skeleton className="h-8 w-48" /><Skeleton className="h-4 w-full max-w-sm" /></CardHeader>
             <CardContent className="space-y-4">
                 {[...Array(3)].map((_, i) => (
@@ -273,7 +273,7 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
   
   if (souls.length === 0) {
     return (
-        <Card>
+        <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x">
             <CardHeader><CardTitle className="text-2xl font-bold font-headline">Follow-up Dashboard</CardTitle><CardDescription>A list of souls won.</CardDescription></CardHeader>
             <CardContent>
                 <div className="text-center py-12 flex flex-col items-center">
@@ -289,7 +289,7 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
   if (isMobile) {
       return (
         <div className="space-y-4">
-            <Card>
+            <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x">
                 <CardHeader>
                     <CardTitle className="text-2xl font-bold font-headline">Follow-up Dashboard</CardTitle>
                     <CardDescription>A list of souls won.</CardDescription>
@@ -303,7 +303,7 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
   }
 
   return (
-    <Card>
+    <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x">
       <CardHeader><CardTitle className="text-2xl font-bold font-headline">Follow-up Dashboard</CardTitle><CardDescription>Keep track of their spiritual journey.</CardDescription></CardHeader>
       <CardContent>
         <Table>

@@ -255,7 +255,7 @@ export default function TestimoniesPage() {
   return (
     <div className="space-y-6 md:space-y-12">
       {/* Premium Interaction Box */}
-      <Card className="border shadow-sm sm:shadow-md">
+      <Card className="border shadow-sm sm:shadow-md rounded-none sm:rounded-lg border-x-0 sm:border-x -mx-4 sm:mx-0">
         <CardContent className="px-4 py-4 sm:p-6">
           <div className="flex items-center gap-2 sm:gap-4">
             <Button 
@@ -297,7 +297,7 @@ export default function TestimoniesPage() {
           </TabsList>
           <TabsContent value="testimonies" className="mt-8 md:mt-10">
               {/* Enhanced spacing between cards */}
-              <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-3">
+              <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-3 -mx-4 sm:mx-0">
                 {loading && (
                   [...Array(3)].map((_, i) => (
                     <Card key={i} className="flex flex-col h-full"><CardContent className="p-6 space-y-4"><Skeleton className="h-12 w-12 rounded-full" /><div className="w-full space-y-2"><Skeleton className="h-4 w-1/4" /><Skeleton className="h-4 w-1/5" /></div><Skeleton className="h-5 w-3/4" /><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-full" /></CardContent></Card>
@@ -325,7 +325,7 @@ export default function TestimoniesPage() {
               </div>
           </TabsContent>
           <TabsContent value="prayers" className="mt-8 md:mt-10">
-              <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-3">
+              <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-3 -mx-4 sm:mx-0">
                 {loading && (
                   [...Array(3)].map((_, i) => (
                     <Card key={i} className="flex flex-col h-full"><CardContent className="p-6 space-y-4"><Skeleton className="h-12 w-12 rounded-full" /><div className="w-full space-y-2"><Skeleton className="h-4 w-1/4" /><Skeleton className="h-4 w-1/5" /></div><Skeleton className="h-5 w-3/4" /><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-full" /></CardContent></Card>

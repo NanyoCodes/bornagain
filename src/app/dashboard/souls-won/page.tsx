@@ -310,7 +310,7 @@ export default function SoulsWonPage() {
   return (
     <div className="space-y-8">
       {/* Centered Interaction Box */}
-      <Card className="border shadow-sm sm:shadow-md">
+      <Card className="border shadow-sm sm:shadow-md rounded-none sm:rounded-lg border-x-0 sm:border-x -mx-4 sm:mx-0">
         <CardContent className="px-4 py-4 sm:p-6">
           <div className="flex items-center gap-2 sm:gap-4">
             <Button 
@@ -356,15 +356,17 @@ export default function SoulsWonPage() {
         </div>
       </div>
       
-      <SoulsWonTable 
-        souls={filteredSouls || []} 
-        loading={loading}
-        onFollowUp={(soul) => { setSoulForFollowUp(soul); setIsFollowUpOpen(true); }}
-        onViewHistory={(soul) => { setSoulForHistory(soul); setIsHistoryOpen(true); }}
-        onExportSingle={handleExportSingleSoul}
-        onOpenAssignDialog={(soul) => { setSoulToAssign(soul); setIsAssignOpen(true); }}
-        onEdit={(soul) => { setSoulToEdit(soul); setIsEditOpen(true); }}
-      />
+      <div className="-mx-4 sm:mx-0">
+        <SoulsWonTable 
+          souls={filteredSouls || []} 
+          loading={loading}
+          onFollowUp={(soul) => { setSoulForFollowUp(soul); setIsFollowUpOpen(true); }}
+          onViewHistory={(soul) => { setSoulForHistory(soul); setIsHistoryOpen(true); }}
+          onExportSingle={handleExportSingleSoul}
+          onOpenAssignDialog={(soul) => { setSoulToAssign(soul); setIsAssignOpen(true); }}
+          onEdit={(soul) => { setSoulToEdit(soul); setIsEditOpen(true); }}
+        />
+      </div>
 
       <LogFollowUpDialog 
           soul={soulForFollowUp} 

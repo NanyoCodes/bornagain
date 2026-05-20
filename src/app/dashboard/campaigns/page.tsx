@@ -347,7 +347,7 @@ export default function CampaignsPage() {
   return (
     <div className="space-y-8">
       {/* Centered Interaction Box */}
-      <Card className="border shadow-sm sm:shadow-md">
+      <Card className="border shadow-sm sm:shadow-md rounded-none sm:rounded-lg border-x-0 sm:border-x -mx-4 sm:mx-0">
         <CardContent className="px-4 py-4 sm:p-6">
           <div className="flex items-center gap-2 sm:gap-4">
             <Button 
@@ -402,7 +402,7 @@ export default function CampaignsPage() {
       </div>
 
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 -mx-4 sm:mx-0">
         {loading && <CampaignSkeletons />}
         {!loading && sortedAndFilteredCampaigns?.map((campaign, index) => (
           <Fragment key={campaign.id}>

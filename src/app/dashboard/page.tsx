@@ -565,7 +565,7 @@ export default function DashboardPage() {
       </Card>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Card className="bg-primary/10 border-primary/20">
+        <Card className="bg-primary/10 border-primary/20 rounded-none sm:rounded-lg border-x-0 sm:border-x -mx-4 sm:mx-0">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium flex items-center gap-2">
               <Users className="h-4 w-4 text-primary" />
@@ -577,7 +577,7 @@ export default function DashboardPage() {
             <p className="text-xs text-muted-foreground mt-1">Glory to God for these lives!</p>
           </CardContent>
         </Card>
-        <Card className="bg-chart-2/10 border-chart-2/20">
+        <Card className="bg-chart-2/10 border-chart-2/20 rounded-none sm:rounded-lg border-x-0 sm:border-x -mx-4 sm:mx-0">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium flex items-center gap-2">
               <CalendarCheck className="h-4 w-4 text-chart-2" />
@@ -593,11 +593,11 @@ export default function DashboardPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-8">
-          <DailyDisciplineCard />
+          <div className="-mx-4 sm:mx-0"><DailyDisciplineCard /></div>
 
-          {mounted && <ProgressOverview souls={soulsWon || []} userProfile={userProfile} testimonies={userTestimonies || []} />}
+          {mounted && <div className="-mx-4 sm:mx-0"><ProgressOverview souls={soulsWon || []} userProfile={userProfile} testimonies={userTestimonies || []} /></div>}
 
-          <Card>
+          <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x -mx-4 sm:mx-0">
             <CardHeader>
               <CardTitle>Monthly Harvest Statistics</CardTitle>
               <CardDescription>Tracking your progress across the last 3 months.</CardDescription>
@@ -612,9 +612,11 @@ export default function DashboardPage() {
 
           <AdsenseAd adSlot="dashboard-middle-ad" />
 
-          <ActionAnalyticsCard souls={soulsWon || []} />
+          <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x -mx-4 sm:mx-0">
+            <ActionAnalyticsCard souls={soulsWon || []} />
+          </Card>
 
-          <Card>
+          <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x -mx-4 sm:mx-0">
             <CardHeader className="flex flex-row items-center justify-between">
               <div className="space-y-1.5">
                 <CardTitle>Recent Souls Won</CardTitle>
@@ -636,7 +638,7 @@ export default function DashboardPage() {
         </div>
 
         <div className="space-y-8">
-          <Card>
+          <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x -mx-4 sm:mx-0">
             <CardHeader>
               <CardTitle>Follow-up Funnel</CardTitle>
               <CardDescription>
@@ -663,7 +665,7 @@ export default function DashboardPage() {
             </CardContent>
           </Card>
           
-          <Card>
+          <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x -mx-4 sm:mx-0">
             <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                     <Heart className="h-4 w-4" />
@@ -689,14 +691,16 @@ export default function DashboardPage() {
           </Card>
 
           {userProfile?.location && (
-            <CityImpactCard
-              location={userProfile.location}
-              userSouls={soulsWon || []}
-            />
+            <div className="-mx-4 sm:mx-0">
+              <CityImpactCard
+                location={userProfile.location}
+                userSouls={soulsWon || []}
+              />
+            </div>
           )}
 
           <Card
-            className="cursor-pointer bg-gradient-to-br from-primary to-primary/80 text-primary-foreground"
+            className="cursor-pointer bg-gradient-to-br from-primary to-primary/80 text-primary-foreground rounded-none sm:rounded-lg border-x-0 sm:border-x -mx-4 sm:mx-0"
             onClick={() => router.push('/dashboard/testimonies')}
           >
             <CardHeader>
