@@ -388,8 +388,14 @@ export default function BibleReaderPage() {
                   )}
                 </div>
                 <div className="flex items-center gap-2">
-                   <Button variant={view === 'read' ? 'default' : 'ghost'} size="sm" onClick={() => setView('read')} className="h-9"><BookOpen className="mr-2 h-4 w-4" />Read</Button>
-                   <Button variant={view === 'history' ? 'default' : 'ghost'} size="sm" onClick={() => setView('history')} className="h-9"><History className="mr-2 h-4 w-4" />History</Button>
+                   <Button variant={view === 'read' ? 'default' : 'ghost'} size="icon" onClick={() => setView('read')} className="h-9">
+                     <BookOpen className="h-4 w-4" />
+                     <span className="sr-only">Read</span>
+                   </Button>
+                   <Button variant={view === 'history' ? 'default' : 'ghost'} size="icon" onClick={() => setView('history')} className="h-9">
+                     <History className="h-4 w-4" />
+                     <span className="sr-only">History</span>
+                   </Button>
                 </div>
             </div>
 
