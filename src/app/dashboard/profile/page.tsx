@@ -299,7 +299,7 @@ export default function ProfilePage() {
                                     <DialogDescription>Make changes to your public profile.</DialogDescription>
                                 </DialogHeader>
                                 <div className="max-h-[70vh] overflow-y-auto pr-2">
-                                  <EditProfileModal userProfile={userProfile} onClose={() => { setIsEditModalOpen(false); }} />
+                                  <EditProfileModal userProfile={userProfile} onClose={() => { setTimeout(() => setIsEditModalOpen(false), 100); }} />
                                 </div>
                             </DialogContent>
                         </Dialog>

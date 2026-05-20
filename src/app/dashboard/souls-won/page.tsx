@@ -17,7 +17,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { PlusCircle, Download, Loader2 } from "lucide-material";
+import { PlusCircle, Download, Loader2 } from "lucide-react";
 import type { Soul, Campaign, Fellowship } from "@/lib/types";
 import { useCollection, useFirestore, useUser } from "@/firebase";
 import { collection, query, orderBy, doc, serverTimestamp, increment, runTransaction, addDoc, deleteField } from "firebase/firestore";
@@ -294,7 +294,7 @@ export default function SoulsWonPage() {
   return (
     <div className="space-y-8">
       {/* Centered Interaction Box */}
-      <Card className="border shadow-sm sm:shadow-md mx-[-1rem] sm:mx-0">
+      <Card className="border shadow-sm sm:shadow-md">
         <CardContent className="px-4 py-4 sm:p-6">
           <div className="flex items-center gap-2 sm:gap-4">
             <Button 
