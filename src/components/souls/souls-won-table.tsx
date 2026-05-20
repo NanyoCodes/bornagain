@@ -1,4 +1,3 @@
-
 "use client";
 
 import * as React from "react";
@@ -85,13 +84,15 @@ const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, 
             <Collapsible>
                 <CollapsibleTrigger className="group w-full p-4 text-left">
                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3 min-w-0">
-                            <Avatar>
+                        <div className="flex items-center gap-3 min-w-0 flex-1">
+                            <Avatar className="h-10 w-10">
                                 <AvatarFallback>{soul.firstName?.charAt(0)}{soul.lastName?.charAt(0)}</AvatarFallback>
                             </Avatar>
                             <div className="min-w-0">
                                 <SoulInsightsDialog soul={soul}>
-                                    <p className="font-semibold truncate cursor-pointer hover:underline">{soul.firstName || 'Unknown'} {soul.lastName || ''}</p>
+                                    <p className="font-bold font-headline truncate cursor-pointer hover:underline">
+                                      {soul.firstName || 'Unknown'} {soul.lastName || ''}
+                                    </p>
                                 </SoulInsightsDialog>
                                 <Badge className={cn("mt-1", getStatusClasses(soul.status))} variant="outline">{soul.status}</Badge>
                             </div>
@@ -200,7 +201,7 @@ const SoulTableRow = React.memo(({ soul, onFollowUp, onViewHistory, onExportSing
                     </Avatar>
                     <div>
                         <SoulInsightsDialog soul={soul}>
-                           <div className="cursor-pointer hover:underline">{soul.firstName} {soul.lastName}</div>
+                           <div className="font-bold font-headline cursor-pointer hover:underline">{soul.firstName} {soul.lastName}</div>
                         </SoulInsightsDialog>
                         {soul.church && <div className="text-xs text-muted-foreground flex items-center gap-1"><Church className="h-3 w-3" />{soul.church}</div>}
                     </div>
@@ -273,7 +274,7 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
   if (souls.length === 0) {
     return (
         <Card>
-            <CardHeader><CardTitle>Follow-up Dashboard</CardTitle><CardDescription>A list of souls won.</CardDescription></CardHeader>
+            <CardHeader><CardTitle className="text-lg font-bold font-headline">Follow-up Dashboard</CardTitle><CardDescription>A list of souls won.</CardDescription></CardHeader>
             <CardContent>
                 <div className="text-center py-12 flex flex-col items-center">
                     <HeartHandshake className="h-12 w-12 text-muted-foreground opacity-20" />
@@ -290,7 +291,7 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
         <div className="space-y-4">
             <Card>
                 <CardHeader>
-                    <CardTitle>Follow-up Dashboard</CardTitle>
+                    <CardTitle className="text-lg font-bold font-headline">Follow-up Dashboard</CardTitle>
                     <CardDescription>A list of souls won.</CardDescription>
                 </CardHeader>
             </Card>
@@ -303,7 +304,7 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
 
   return (
     <Card>
-      <CardHeader><CardTitle>Follow-up Dashboard</CardTitle><CardDescription>Keep track of their spiritual journey.</CardDescription></CardHeader>
+      <CardHeader><CardTitle className="text-lg font-bold font-headline">Follow-up Dashboard</CardTitle><CardDescription>Keep track of their spiritual journey.</CardDescription></CardHeader>
       <CardContent>
         <Table>
           <TableHeader>

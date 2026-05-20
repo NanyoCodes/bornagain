@@ -344,7 +344,7 @@ export default function SoulsWonPage() {
       </Card>
 
       <div className="flex items-center justify-between">
-        <h1 className="text-xl sm:text-2xl font-bold font-headline">Souls Won</h1>
+        <h1 className="text-lg sm:text-xl font-bold tracking-tight font-headline">Souls Won</h1>
         <div className="flex items-center gap-2">
            <DropdownMenu>
             <DropdownMenuTrigger asChild><Button variant="outline" disabled={loading}><Download className="mr-2 h-4 w-4" />Export</Button></DropdownMenuTrigger>
@@ -389,7 +389,7 @@ export default function SoulsWonPage() {
       <Dialog open={isEditOpen} onOpenChange={(open) => !open && closeAllDialogs()}>
           <DialogContent className="sm:max-w-lg">
               <DialogHeader>
-                  <DialogTitle>Edit Soul Details</DialogTitle>
+                  <DialogTitle className="font-headline">Edit Soul Details</DialogTitle>
                   <DialogDescription>Update information for {soulToEdit?.firstName}.</DialogDescription>
               </DialogHeader>
               <div className="max-h-[70vh] overflow-y-auto pr-2">
@@ -408,7 +408,7 @@ export default function SoulsWonPage() {
       <Dialog open={isLogDialogOpen} onOpenChange={(open) => !open && closeAllDialogs()}>
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle>Log a New Soul</DialogTitle>
+            <DialogTitle className="font-headline">Log a New Soul</DialogTitle>
             <DialogDescription>Record the details of the person you've ministered to.</DialogDescription>
           </DialogHeader>
           <div className="max-h-[70vh] overflow-y-auto pr-2">

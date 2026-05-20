@@ -179,7 +179,7 @@ export function SoulInsightsDialog({ soul, children }: { soul: Soul, children: R
         <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0">
           <div className="p-6 border-b flex-shrink-0">
             <SheetHeader className="text-left flex-shrink-0">
-              <SheetTitle>{titleText}</SheetTitle>
+              <SheetTitle className="font-headline text-2xl">{titleText}</SheetTitle>
               <SheetDescription>{descText}</SheetDescription>
             </SheetHeader>
           </div>
@@ -199,7 +199,7 @@ export function SoulInsightsDialog({ soul, children }: { soul: Soul, children: R
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>{titleText}</DialogTitle>
+          <DialogTitle className="font-headline text-2xl">{titleText}</DialogTitle>
           <DialogDescription>{descText}</DialogDescription>
         </DialogHeader>
         {bodyContent}
