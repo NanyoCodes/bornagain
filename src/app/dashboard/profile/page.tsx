@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -258,12 +259,25 @@ export default function ProfilePage() {
       <Card>
         <CardContent className="p-6 sm:p-8">
           <div className="flex flex-col sm:flex-row items-start gap-6">
-             <Avatar className="h-24 w-24 sm:h-32 sm:w-32 border-4 border-background shrink-0">
-                <AvatarImage src={photoURL ?? undefined} alt={displayName || 'user'} />
-                <AvatarFallback className="text-4xl sm:text-5xl">
-                    {firstName?.charAt(0) || email?.charAt(0) || 'U'}
-                </AvatarFallback>
-            </Avatar>
+            <Dialog>
+                <DialogTrigger asChild disabled={!photoURL}>
+                    <Avatar className={cn("h-24 w-24 sm:h-32 sm:w-32 border-4 border-background shrink-0", photoURL && "cursor-pointer")}>
+                        <AvatarImage src={photoURL ?? undefined} alt={displayName || 'user'} />
+                        <AvatarFallback className="text-4xl sm:text-5xl">
+                            {firstName?.charAt(0) || email?.charAt(0) || 'U'}
+                        </AvatarFallback>
+                    </Avatar>
+                </DialogTrigger>
+                {photoURL && (
+                    <DialogContent className="p-0 bg-transparent border-0 w-auto max-w-lg">
+                        <DialogHeader className="sr-only">
+                            <DialogTitle>Profile photo of {displayName}</DialogTitle>
+                            <DialogDesc>A larger view of your profile photo.</DialogDesc>
+                        </DialogHeader>
+                        <Image src={photoURL} alt={displayName} width={600} height={600} className="rounded-lg object-contain"/>
+                    </DialogContent>
+                )}
+            </Dialog>
             <div className="flex-grow">
                 <div className="flex flex-col sm:flex-row justify-between items-start">
                     <div className="flex-grow">

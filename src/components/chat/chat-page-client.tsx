@@ -30,7 +30,8 @@ import { ChatParticipantsDialog } from '@/components/chat/participants-dialog';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
-
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
+import Image from 'next/image';
 
 export default function ChatPageClient({ chatId }: { chatId: string }) {
     const { user, loading: userLoading } = useUser();
@@ -371,12 +372,25 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                     </div>
                 ) : otherParticipantInfo && otherParticipantId ? (
                    <div className="flex items-center gap-3 flex-grow">
-                        <div className="relative">
-                            <Avatar className="h-12 w-12">
-                                <AvatarImage src={otherParticipantInfo.photoURL} />
-                                <AvatarFallback>{otherParticipantInfo.firstName?.charAt(0)}</AvatarFallback>
-                            </Avatar>
-                        </div>
+                        <Dialog>
+                            <DialogTrigger asChild disabled={!otherParticipantInfo.photoURL}>
+                                <div className="relative">
+                                    <Avatar className={cn("h-12 w-12", otherParticipantInfo.photoURL && "cursor-pointer")}>
+                                        <AvatarImage src={otherParticipantInfo.photoURL} />
+                                        <AvatarFallback>{otherParticipantInfo.firstName?.charAt(0)}</AvatarFallback>
+                                    </Avatar>
+                                </div>
+                            </DialogTrigger>
+                            {otherParticipantInfo.photoURL && (
+                                <DialogContent className="p-0 bg-transparent border-0 w-auto max-w-lg">
+                                    <DialogHeader className="sr-only">
+                                        <DialogTitle>Profile photo of {otherParticipantInfo.firstName} {otherParticipantInfo.lastName}</DialogTitle>
+                                        <DialogDescription>A larger view of the user's profile photo.</DialogDescription>
+                                    </DialogHeader>
+                                    <Image src={otherParticipantInfo.photoURL} alt={`${otherParticipantInfo.firstName} ${otherParticipantInfo.lastName}`} width={600} height={600} className="rounded-lg object-contain"/>
+                                </DialogContent>
+                            )}
+                        </Dialog>
                         <div className="flex-grow">
                             <h2 className="font-semibold">
                                 {otherParticipantInfo.firstName} {otherParticipantInfo.lastName}

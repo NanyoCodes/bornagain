@@ -511,7 +511,7 @@ export default function DashboardPage() {
             {welcomeMessage?.text.replace('{name}', displayName) ||
               `Welcome back, ${displayName}!`}
           </h1>
-          <p className="text-white font-headline mt-4 text-sm sm:text-base font-semibold tracking-wide drop-shadow-sm uppercase">
+          <p className="text-white font-headline mt-4 text-sm sm:base font-semibold tracking-wide drop-shadow-sm uppercase">
             {welcomeMessage?.verse || ''}
           </p>
         </CardContent>
