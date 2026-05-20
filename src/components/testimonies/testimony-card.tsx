@@ -1,3 +1,4 @@
+
 "use client";
 
 import * as React from "react";
@@ -38,7 +39,6 @@ import { Icons } from "@/components/icons";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { CommentSection } from "./comment-section";
-import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible";
 import { Separator } from "../ui/separator";
 
 export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDelete, onEdit }: { testimony: Testimony, onDelete: () => void, onEdit: () => void }) {
@@ -52,7 +52,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
   const contentRef = React.useRef<HTMLParagraphElement>(null);
   const [isTruncated, setIsTruncated] = React.useState(false);
   const [showFullText, setShowFullText] = React.useState(false);
-  const [showComments, setShowComments] = React.useState(false);
+  const [isCommentsOpen, setIsCommentsOpen] = useState(false);
 
   const isAuthor = user?.uid === testimony.authorId;
   const authorFullName = [testimony.authorFirstName, testimony.authorLastName].filter(Boolean).join(' ').trim() || 'Anonymous';
@@ -275,12 +275,6 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
                 )}
              </div>
            )}
-
-            <Collapsible open={showComments} onOpenChange={setShowComments}>
-                <CollapsibleContent>
-                    <CommentSection testimonyId={testimony.id} />
-                </CollapsibleContent>
-            </Collapsible>
         </CardContent>
 
         <Separator className="mx-4 sm:mx-6 w-auto" />
@@ -323,11 +317,11 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
             <Button 
                 variant="ghost" 
                 size="sm" 
-                className={cn("flex flex-col sm:flex-row h-auto py-2 gap-1 text-[10px] sm:text-xs font-semibold text-muted-foreground hover:bg-muted/50", showComments && "text-primary hover:text-primary")}
-                onClick={(e) => { e.stopPropagation(); setShowComments(!showComments); }}
+                className={cn("flex flex-col sm:flex-row h-auto py-2 gap-1 text-[10px] sm:text-xs font-semibold text-muted-foreground hover:bg-muted/50", isCommentsOpen && "text-primary hover:text-primary")}
+                onClick={(e) => { e.stopPropagation(); setIsCommentsOpen(true); }}
             >
                 <div className="relative">
-                    <MessageCircle className={cn("h-4 w-4", showComments && "fill-current")} />
+                    <MessageCircle className={cn("h-4 w-4", isCommentsOpen && "fill-current")} />
                     {commentCount > 0 && (
                         <span className="absolute -top-1.5 -right-1.5 flex h-3 w-3 items-center justify-center rounded-full bg-primary text-[8px] font-bold text-primary-foreground border-background border">
                             {commentCount}
@@ -340,29 +334,61 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
       </Card>
 
       {mounted && isMobile ? (
-        <Sheet open={showFullText} onOpenChange={setShowFullText}>
-          <SheetContent side="bottom" className="h-[80dvh] flex flex-col p-0">
-            <div className="p-6 border-b shrink-0">
-                <SheetHeader className="text-left">
-                <SheetTitle>Testimony by {authorFullName}</SheetTitle>
-                <SheetDescription>{displayDate}</SheetDescription>
-                </SheetHeader>
-            </div>
-            <div className="flex-grow min-h-0 p-6 overflow-y-auto">
-              {fullTextContent}
-            </div>
-          </SheetContent>
-        </Sheet>
+        <>
+            <Sheet open={showFullText} onOpenChange={setShowFullText}>
+                <SheetContent side="bottom" className="h-[80dvh] flex flex-col p-0">
+                    <div className="p-6 border-b shrink-0">
+                        <SheetHeader className="text-left">
+                        <SheetTitle>Testimony by {authorFullName}</SheetTitle>
+                        <SheetDescription>{displayDate}</SheetDescription>
+                        </SheetHeader>
+                    </div>
+                    <div className="flex-grow min-h-0 p-6 overflow-y-auto">
+                    {fullTextContent}
+                    </div>
+                </SheetContent>
+            </Sheet>
+
+            <Sheet open={isCommentsOpen} onOpenChange={setIsCommentsOpen}>
+                <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0">
+                    <div className="p-6 border-b shrink-0">
+                        <SheetHeader className="text-left">
+                            <SheetTitle>Comments</SheetTitle>
+                            <SheetDescription>Sharing the joy of {authorFullName}'s testimony.</SheetDescription>
+                        </SheetHeader>
+                    </div>
+                    <div className="flex-grow min-h-0 p-6">
+                        <CommentSection testimonyId={testimony.id} />
+                    </div>
+                </SheetContent>
+            </Sheet>
+        </>
       ) : (
-        <Dialog open={showFullText} onOpenChange={setShowFullText}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Testimony by {authorFullName}</DialogTitle>
-              <DialogDescription>{displayDate}</DialogDescription>
-            </DialogHeader>
-            {fullTextContent}
-          </DialogContent>
-        </Dialog>
+        <>
+            <Dialog open={showFullText} onOpenChange={setShowFullText}>
+                <DialogContent>
+                    <DialogHeader>
+                    <DialogTitle>Testimony by {authorFullName}</DialogTitle>
+                    <DialogDescription>{displayDate}</DialogDescription>
+                    </DialogHeader>
+                    {fullTextContent}
+                </DialogContent>
+            </Dialog>
+
+            <Dialog open={isCommentsOpen} onOpenChange={setIsCommentsOpen}>
+                <DialogContent className="sm:max-w-lg flex flex-col max-h-[85vh] p-0 overflow-hidden">
+                    <div className="p-6 border-b shrink-0">
+                        <DialogHeader>
+                            <DialogTitle>Comments</DialogTitle>
+                            <DialogDescription>Community responses to this testimony.</DialogDescription>
+                        </DialogHeader>
+                    </div>
+                    <div className="flex-grow min-h-0 p-6">
+                        <CommentSection testimonyId={testimony.id} />
+                    </div>
+                </DialogContent>
+            </Dialog>
+        </>
       )}
     </>
   );

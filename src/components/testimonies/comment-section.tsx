@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -13,6 +14,7 @@ import { cn, safeToDate } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { useDoc } from '@/firebase/firestore/use-doc';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import Link from 'next/link';
 
 function CommentItem({ 
@@ -101,9 +103,7 @@ function CommentItem({
                                 </p>
                             </div>
                             {isAuthor && (
-                                <Button
-                                    variant="ghost"
-                                    size="icon"
+                                <button
                                     className={cn(
                                         "h-5 w-5 shrink-0 text-destructive transition-opacity",
                                         isMobile ? "opacity-100" : "opacity-0 group-hover:opacity-100"
@@ -111,14 +111,13 @@ function CommentItem({
                                     onClick={handleDelete}
                                 >
                                     <Trash2 className="h-3 w-3" />
-                                </Button>
+                                </button>
                             )}
                         </div>
                         <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap break-words">
                             {comment.text}
                         </p>
                         
-                        {/* Reaction Counts Overlay */}
                         {(supporters.length > 0 || inspiredBy.length > 0 || connectedBy.length > 0) && (
                             <div className="absolute -bottom-2 right-1 flex items-center gap-0.5 bg-background border rounded-full px-1 py-0.5 shadow-sm z-10">
                                 {supporters.length > 0 && <HandHeart className="h-2.5 w-2.5 text-primary fill-current" />}
@@ -129,7 +128,6 @@ function CommentItem({
                         )}
                     </div>
 
-                    {/* Action Row */}
                     <div className="flex items-center gap-3 mt-1 px-1">
                         <div className="flex items-center gap-3">
                             <button 
@@ -246,40 +244,42 @@ export function CommentSection({ testimonyId }: { testimonyId: string }) {
     };
 
     return (
-        <div className="space-y-4 pt-4 border-t mt-4">
-            <h4 className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-muted-foreground">Community Engagement</h4>
-            
-            <div className="space-y-6">
-                {loading ? (
-                    <div className="flex justify-center py-4"><Loader2 className="h-4 w-4 animate-spin opacity-20" /></div>
-                ) : topLevelComments.length > 0 ? (
-                    topLevelComments.map(comment => renderComment(comment))
-                ) : (
-                    <p className="text-[10px] sm:text-xs text-muted-foreground italic px-1">No comments yet. Be the first to encourage!</p>
-                )}
-            </div>
+        <div className="flex flex-col h-full">
+            <ScrollArea className="flex-1 pr-4">
+                <div className="space-y-6 pb-4">
+                    {loading ? (
+                        <div className="flex justify-center py-8"><Loader2 className="h-6 w-6 animate-spin opacity-20" /></div>
+                    ) : topLevelComments.length > 0 ? (
+                        topLevelComments.map(comment => renderComment(comment))
+                    ) : (
+                        <div className="text-center py-12 bg-muted/20 rounded-lg border border-dashed">
+                             <p className="text-sm text-muted-foreground italic">No comments yet. Be the first to encourage!</p>
+                        </div>
+                    )}
+                </div>
+            </ScrollArea>
 
             {user && (
-                <div className="space-y-2">
+                <div className="shrink-0 pt-4 border-t mt-auto bg-background">
                     {replyingTo && (
-                        <div className="flex items-center justify-between bg-muted/20 px-3 py-1 rounded-md text-[10px] text-muted-foreground animate-in slide-in-from-bottom-1 duration-200">
+                        <div className="flex items-center justify-between bg-muted/30 px-3 py-1.5 rounded-t-md text-[10px] text-muted-foreground animate-in slide-in-from-bottom-1 duration-200">
                             <p className="truncate">Replying to <strong>{replyingTo.authorFirstName}</strong></p>
-                            <button onClick={() => setReplyingTo(null)} className="hover:text-foreground">
+                            <button onClick={() => setReplyingTo(null)} className="hover:text-foreground transition-colors">
                                 <X className="h-3 w-3" />
                             </button>
                         </div>
                     )}
-                    <form onSubmit={handleSendComment} className="flex gap-2 items-center">
+                    <form onSubmit={handleSendComment} className={cn("flex gap-2 items-center", replyingTo && "border-x border-b p-2 rounded-b-md bg-muted/10")}>
                         <Input
                             placeholder={replyingTo ? "Write a reply..." : "Add a comment..."}
                             value={newComment}
                             onChange={(e) => setNewMessage(e.target.value)}
-                            className="text-xs sm:text-sm h-8 sm:h-9"
+                            className="text-sm h-10"
                             disabled={isSending}
                             autoFocus={!!replyingTo}
                         />
-                        <Button type="submit" size="icon" className="h-8 w-8 sm:h-9 sm:w-9 shrink-0" disabled={!newComment.trim() || isSending}>
-                            {isSending ? <Loader2 className="h-3 w-3 animate-spin" /> : <Send className="h-4 w-4" />}
+                        <Button type="submit" size="icon" className="h-10 w-10 shrink-0" disabled={!newComment.trim() || isSending}>
+                            {isSending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
                         </Button>
                     </form>
                 </div>
