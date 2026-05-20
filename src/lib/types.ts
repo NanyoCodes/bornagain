@@ -128,7 +128,9 @@ export type Testimony = {
     latitude?: number;
     longitude?: number;
   };
-  supporters?: string[];
+  supporters?: string[]; // Amen
+  inspiredBy?: string[];
+  connectedBy?: string[];
   answeredPrayerId?: string;
   answeredPrayerContent?: string;
 };

@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect, useMemo } from "react";
@@ -184,7 +185,7 @@ export default function TestimoniesPage() {
 
   const handleCloseTestimonyDialog = () => {
     setIsTestimonyDialogOpen(false);
-    setPrayerToAnswer(null);
+    setTimeout(() => setPrayerToAnswer(null), 300);
   };
   
   const handleConfirmDelete = async () => {
@@ -224,8 +225,9 @@ export default function TestimoniesPage() {
             title: `${type === 'testimony' ? 'Testimony' : 'Prayer Request'} Deleted`,
             description: `The item has been successfully removed.`,
         });
-        // Only clear the state and close the dialog on success
-        setItemToDelete(null);
+        
+        // Controlled state clear to prevent UI freeze
+        setTimeout(() => setItemToDelete(null), 100);
     } catch (error: any) {
         if (error.message === "This testimony has already been deleted.") {
             toast({ variant: 'destructive', title: 'Already Deleted', description: error.message });
@@ -371,7 +373,7 @@ export default function TestimoniesPage() {
             </DialogDescription>
           </DialogHeader>
           <div className="max-h-[70vh] overflow-y-auto pr-2">
-            {itemToEdit && <EditTestimonyForm testimony={itemToEdit} onTestimonyUpdated={() => {setItemToEdit(null); }} />}
+            {itemToEdit && <EditTestimonyForm testimony={itemToEdit} onTestimonyUpdated={() => { setItemToEdit(null); }} />}
           </div>
         </DialogContent>
       </Dialog>

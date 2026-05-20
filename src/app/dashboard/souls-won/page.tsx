@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
@@ -58,7 +59,16 @@ export default function SoulsWonPage() {
   const [soulToEdit, setSoulToEdit] = useState<Soul | null>(null);
   const [isAssigning, setIsAssigning] = useState<string | null>(null);
 
-  // Reordered hooks to ensure proper initialization
+  useEffect(() => {
+    setMounted(true);
+    setIsSearchVisible(true);
+    setSearchPlaceholder("Search souls...");
+    return () => {
+      setIsSearchVisible(false);
+      setSearchTerm("");
+    };
+  }, [setIsSearchVisible, setSearchPlaceholder, setSearchTerm]);
+
   const soulsQuery = useMemo(() => {
     if (!user?.uid || !firestore) return null;
     return query(collection(firestore, `users/${user.uid}/souls`), orderBy("wonAt", "desc"));
@@ -79,16 +89,6 @@ export default function SoulsWonPage() {
 
   const activeFellowships = useMemo(() => allFellowships?.filter(f => f.status !== 'deleted') ?? [], [allFellowships]);
   const activeCampaigns = useMemo(() => campaigns?.filter(c => c.status !== 'deleted') ?? [], [campaigns]);
-
-  useEffect(() => {
-    setMounted(true);
-    setIsSearchVisible(true);
-    setSearchPlaceholder("Search souls...");
-    return () => {
-      setIsSearchVisible(false);
-      setSearchTerm("");
-    };
-  }, [setIsSearchVisible, setSearchPlaceholder, setSearchTerm]);
 
   const loading = userLoading || soulsLoading || loadingCampaigns || loadingFellowships;
 
@@ -294,7 +294,7 @@ export default function SoulsWonPage() {
 
   return (
     <div className="space-y-8">
-      {/* Facebook-style Soul Entry Box */}
+      {/* Centered Interaction Box */}
       <Card className="border shadow-sm sm:shadow-md mx-[-1rem] sm:mx-0">
         <CardContent className="px-4 py-4 sm:p-6">
           <div className="flex items-center gap-2 sm:gap-4">
@@ -378,16 +378,16 @@ export default function SoulsWonPage() {
                   <DialogDescription>Update information for {soulToEdit?.firstName}.</DialogDescription>
               </DialogHeader>
               <div className="max-h-[70vh] overflow-y-auto pr-2">
-                  {soulToEdit ? (
+                  {soulToEdit && (
                     <EditSoulForm 
                         soul={soulToEdit} 
                         onSoulUpdated={() => {
-                          setSoulToEdit(null);
+                          setTimeout(() => setSoulToEdit(null), 100);
                         }} 
                         fellowships={activeFellowships}
                         campaigns={activeCampaigns}
                     />
-                  ) : <div className="h-20" />}
+                  )}
               </div>
           </DialogContent>
       </Dialog>

@@ -46,7 +46,7 @@
             "country": { "type": "string", "description": "The user's country." },
             "city_lowercase": { "type": "string", "description": "Lowercase city for searching and aggregation." },
             "state_lowercase": { "type": "string", "description": "Lowercase state for searching and aggregation." },
-            "country_lowercase": { "type": "string", "description": "Lowercase country for searching and aggregation." },
+            "country_lowercase": { "type": "string", "description": "Lowercase country for aggregation." },
             "latitude": { "type": "number", "description": "The user's private latitude for proximity calculations." },
             "longitude": { "type": "number", "description": "The user's private longitude for proximity calculations." }
           }
@@ -285,7 +285,17 @@
         },
         "supporters": {
           "type": "array",
-          "description": "A list of UIDs of users who have supported this testimony.",
+          "description": "A list of UIDs of users who have supported this testimony with an 'Amen'.",
+          "items": { "type": "string" }
+        },
+        "inspiredBy": {
+          "type": "array",
+          "description": "A list of UIDs of users who have marked this testimony as 'Inspired'.",
+          "items": { "type": "string" }
+        },
+        "connectedBy": {
+          "type": "array",
+          "description": "A list of UIDs of users who have marked this testimony as 'I connect'.",
           "items": { "type": "string" }
         },
         "answeredPrayerId": {

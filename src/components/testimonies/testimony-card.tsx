@@ -1,3 +1,4 @@
+
 "use client";
 
 import * as React from "react";
@@ -16,7 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Testimony } from "@/lib/types";
 import { format } from "date-fns";
-import { Share2, MoreVertical, Edit, Trash2, Loader2, MapPin, HandHeart, MessageCircle, Globe } from "lucide-react";
+import { Share2, MoreVertical, Edit, Trash2, Loader2, MapPin, HandHeart, MessageCircle, Globe, Sparkles, Link as LinkIcon } from "lucide-react";
 import { useUser, useFirestore } from "@/firebase";
 import { useState, useMemo } from "react";
 import {
@@ -45,7 +46,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
   const isMobile = useIsMobile();
   const [mounted, setMounted] = useState(false);
 
-  const [isSupporting, setIsSupporting] = useState(false);
+  const [isProcessingReaction, setIsProcessingReaction] = useState<string | null>(null);
   const contentRef = React.useRef<HTMLParagraphElement>(null);
   const [isTruncated, setIsTruncated] = React.useState(false);
   const [showFullText, setShowFullText] = React.useState(false);
@@ -56,7 +57,12 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
   const initials = (testimony.authorFirstName?.charAt(0) || '') + (testimony.authorLastName?.charAt(0) || '');
 
   const supporters = testimony.supporters || [];
-  const hasSupported = useMemo(() => user ? supporters.includes(user.uid) : false, [user, supporters]);
+  const inspiredBy = testimony.inspiredBy || [];
+  const connectedBy = testimony.connectedBy || [];
+
+  const hasAmened = useMemo(() => user ? supporters.includes(user.uid) : false, [user, supporters]);
+  const hasInspired = useMemo(() => user ? inspiredBy.includes(user.uid) : false, [user, inspiredBy]);
+  const hasConnected = useMemo(() => user ? connectedBy.includes(user.uid) : false, [user, connectedBy]);
   
   const displayDate = useMemo(() => {
     const createdAtDate = safeToDate(testimony.createdAt);
@@ -78,24 +84,33 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
     };
   }, [testimony.content]);
 
-  const handleSupport = () => {
-    if (!user || !firestore || hasSupported || isAuthor) return;
-    setIsSupporting(true);
+  const handleReaction = (type: 'amen' | 'inspired' | 'connect') => {
+    if (!user || !firestore || isAuthor) return;
+
+    const hasReacted = 
+      (type === 'amen' && hasAmened) || 
+      (type === 'inspired' && hasInspired) || 
+      (type === 'connect' && hasConnected);
+
+    if (hasReacted) return;
+
+    setIsProcessingReaction(type);
     
     const testimonyRef = doc(firestore, 'testimonies', testimony.id);
-    const updatePayload = { supporters: arrayUnion(user.uid) };
+    const field = type === 'amen' ? 'supporters' : type === 'inspired' ? 'inspiredBy' : 'connectedBy';
+    const updatePayload = { [field]: arrayUnion(user.uid) };
 
     updateDoc(testimonyRef, updatePayload)
         .catch(() => {
             const permissionError = new FirestorePermissionError({
               path: testimonyRef.path,
               operation: 'update',
-              requestResourceData: { supporters: `(arrayUnion: ${user.uid})` },
+              requestResourceData: updatePayload,
             }, user);
             errorEmitter.emit('permission-error', permissionError);
         })
         .finally(() => {
-            setIsSupporting(false);
+            setIsProcessingReaction(null);
         });
   }
 
@@ -206,22 +221,63 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
             </Card>
            )}
         </CardContent>
-        <CardFooter className="pt-3 pb-3 px-4 sm:px-6 flex justify-between items-center mt-auto border-t bg-muted/20">
+        <CardFooter className="pt-3 pb-3 px-4 sm:px-6 flex flex-col items-start gap-4 mt-auto border-t bg-muted/20">
           {testimony.campaignTitle && testimony.campaignId && (
-              <div className="text-[9px] sm:text-[10px] text-muted-foreground mr-auto truncate italic max-w-[50%]">
+              <div className="text-[9px] sm:text-[10px] text-muted-foreground truncate italic max-w-full">
                   Event: <Link href={`/dashboard/campaigns/${testimony.campaignId}`} className="font-semibold text-primary hover:underline">{testimony.campaignTitle}</Link>
               </div>
           )}
-          <div className="ml-auto flex items-center gap-1">
-            <Button onClick={(e) => { e.stopPropagation(); handleSupport(); }} disabled={hasSupported || isSupporting || !user || isAuthor} variant="ghost" size="sm" className="h-8 px-2 flex items-center text-muted-foreground hover:bg-transparent">
-              {isSupporting ? (
-                <Loader2 className="mr-1 h-3 w-3 animate-spin" />
-              ) : (
-                <HandHeart className={cn("mr-1 h-4 w-4", hasSupported && "fill-primary text-primary")} />
-              )}
-              <span className={cn("text-[10px] font-bold uppercase", hasSupported && "text-primary")}>{hasSupported ? 'Amen!' : 'Amen'}</span>
-              {supporters.length > 0 && <span className="text-[10px] ml-1">({supporters.length})</span>}
-            </Button>
+          <div className="w-full flex justify-between items-center">
+            <div className="flex items-center gap-1">
+                <Button 
+                    onClick={(e) => { e.stopPropagation(); handleReaction('amen'); }} 
+                    disabled={hasAmened || isProcessingReaction !== null || !user || isAuthor} 
+                    variant="ghost" 
+                    size="sm" 
+                    className="h-8 px-2 flex items-center text-muted-foreground hover:bg-transparent"
+                >
+                {isProcessingReaction === 'amen' ? (
+                    <Loader2 className="mr-1 h-3 w-3 animate-spin" />
+                ) : (
+                    <HandHeart className={cn("mr-1 h-4 w-4", hasAmened && "fill-primary text-primary")} />
+                )}
+                <span className={cn("text-[10px] font-bold uppercase", hasAmened && "text-primary")}>{hasAmened ? 'Amen!' : 'Amen'}</span>
+                {supporters.length > 0 && <span className="text-[10px] ml-1">({supporters.length})</span>}
+                </Button>
+
+                <Button 
+                    onClick={(e) => { e.stopPropagation(); handleReaction('inspired'); }} 
+                    disabled={hasInspired || isProcessingReaction !== null || !user || isAuthor} 
+                    variant="ghost" 
+                    size="sm" 
+                    className="h-8 px-2 flex items-center text-muted-foreground hover:bg-transparent"
+                >
+                {isProcessingReaction === 'inspired' ? (
+                    <Loader2 className="mr-1 h-3 w-3 animate-spin" />
+                ) : (
+                    <Sparkles className={cn("mr-1 h-4 w-4", hasInspired && "fill-primary text-primary")} />
+                )}
+                <span className={cn("text-[10px] font-bold uppercase", hasInspired && "text-primary")}>{hasInspired ? 'Inspired!' : 'Inspired'}</span>
+                {inspiredBy.length > 0 && <span className="text-[10px] ml-1">({inspiredBy.length})</span>}
+                </Button>
+
+                <Button 
+                    onClick={(e) => { e.stopPropagation(); handleReaction('connect'); }} 
+                    disabled={hasConnected || isProcessingReaction !== null || !user || isAuthor} 
+                    variant="ghost" 
+                    size="sm" 
+                    className="h-8 px-2 flex items-center text-muted-foreground hover:bg-transparent"
+                >
+                {isProcessingReaction === 'connect' ? (
+                    <Loader2 className="mr-1 h-3 w-3 animate-spin" />
+                ) : (
+                    <LinkIcon className={cn("mr-1 h-4 w-4", hasConnected && "text-primary")} />
+                )}
+                <span className={cn("text-[10px] font-bold uppercase", hasConnected && "text-primary")}>{hasConnected ? 'Connected!' : 'I connect'}</span>
+                {connectedBy.length > 0 && <span className="text-[10px] ml-1">({connectedBy.length})</span>}
+                </Button>
+            </div>
+
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => e.stopPropagation()}>
