@@ -1,3 +1,4 @@
+
 "use client";
 
 import * as React from "react";
@@ -17,7 +18,7 @@ import { Badge } from "@/components/ui/badge";
 import { Testimony, TestimonyComment } from "@/lib/types";
 import { format } from "date-fns";
 import { Share2, MoreVertical, Edit, Trash2, Loader2, Globe, Sparkles, Link as LinkIcon, HandHeart, MessageCircle } from "lucide-react";
-import { useUser, useFirestore, useCollection } from "@/firebase";
+import { useUser, useAuth, useFirestore, useCollection } from "@/firebase";
 import { useState, useMemo } from "react";
 import {
   DropdownMenu,
@@ -202,7 +203,9 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
               <div className="text-muted-foreground text-[10px] sm:text-xs mt-0.5 flex flex-col gap-1">
                   <div className="flex items-center gap-1"><Globe className="h-3 w-3 text-primary shrink-0" /> {locationString}</div>
                   <div className="truncate">{displayDate}</div>
-                  <Badge variant="outline" className="w-fit text-[8px] sm:text-[9px] uppercase tracking-widest px-1.5 py-0 h-4 sm:h-5 mt-1">{testimony.category}</Badge>
+                  <div className="mt-1">
+                    <Badge variant="outline" className="w-fit text-[8px] sm:text-[9px] uppercase tracking-widest px-1.5 py-0 h-4 sm:h-5">{testimony.category}</Badge>
+                  </div>
               </div>
             </div>
           </div>
@@ -266,7 +269,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
                         {inspiredBy.length > 0 && <div className="bg-chart-3 rounded-full p-1 border-2 border-background z-20"><Sparkles className="h-2.5 w-2.5 text-white fill-current" /></div>}
                         {connectedBy.length > 0 && <div className="bg-blue-500 rounded-full p-1 border-2 border-background z-10"><LinkIcon className="h-2.5 w-2.5 text-white" /></div>}
                     </div>
-                    <span className="text-[10px] text-muted-foreground font-medium">{totalReactions}</span>
+                    <span className="text-xs text-muted-foreground font-medium">{totalReactions}</span>
                 </div>
                 {testimony.campaignTitle && (
                    <span className="text-[9px] text-muted-foreground truncate italic opacity-60">Event: {testimony.campaignTitle}</span>
@@ -283,7 +286,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
 
         <Separator className="mx-4 sm:mx-6 w-auto" />
         
-        <CardFooter className="py-2 px-2 sm:px-4 grid grid-cols-4 gap-1">
+        <CardFooter className="py-2 px-1 sm:px-4 grid grid-cols-4 gap-0.5">
             <Button 
                 onClick={(e) => { e.stopPropagation(); handleReaction('amen'); }} 
                 disabled={isProcessingReaction !== null || !user || isAuthor} 
@@ -292,7 +295,8 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
                 className={cn("flex flex-col sm:flex-row h-auto py-2 gap-1 text-[10px] sm:text-xs font-semibold text-muted-foreground hover:bg-muted/50", hasAmened && "text-primary hover:text-primary")}
             >
                 {isProcessingReaction === 'amen' ? <Loader2 className="h-4 w-4 animate-spin" /> : <HandHeart className={cn("h-4 w-4", hasAmened && "fill-current")} />}
-                <span>Amen</span>
+                <span className="hidden xs:inline">Amen</span>
+                <span className="xs:hidden">Amen</span>
             </Button>
 
             <Button 
@@ -303,7 +307,8 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
                 className={cn("flex flex-col sm:flex-row h-auto py-2 gap-1 text-[10px] sm:text-xs font-semibold text-muted-foreground hover:bg-muted/50", hasInspired && "text-chart-3 hover:text-chart-3")}
             >
                 {isProcessingReaction === 'inspired' ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className={cn("h-4 w-4", hasInspired && "fill-current")} />}
-                <span>Inspired</span>
+                <span className="hidden xs:inline">Inspired</span>
+                <span className="xs:hidden">Inspire</span>
             </Button>
 
             <Button 
@@ -314,7 +319,8 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
                 className={cn("flex flex-col sm:flex-row h-auto py-2 gap-1 text-[10px] sm:text-xs font-semibold text-muted-foreground hover:bg-muted/50", hasConnected && "text-blue-500 hover:text-blue-500")}
             >
                 {isProcessingReaction === 'connect' ? <Loader2 className="h-4 w-4 animate-spin" /> : <LinkIcon className="h-4 w-4" />}
-                <span>Connect</span>
+                <span className="hidden xs:inline">Connect</span>
+                <span className="xs:hidden">Conn</span>
             </Button>
 
             <Button 
@@ -324,7 +330,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
                 onClick={(e) => { e.stopPropagation(); setShowComments(!showComments); }}
             >
                 <MessageCircle className={cn("h-4 w-4", showComments && "fill-current")} />
-                <span>Comment{commentCount > 0 ? ` (${commentCount})` : ''}</span>
+                <span>Msg{commentCount > 0 ? ` (${commentCount})` : ''}</span>
             </Button>
         </CardFooter>
       </Card>
