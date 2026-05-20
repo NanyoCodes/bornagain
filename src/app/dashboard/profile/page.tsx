@@ -11,13 +11,14 @@ import { useDoc } from "@/firebase/firestore/use-doc";
 import { collection, query, where, doc, getDocs, documentId } from "firebase/firestore";
 import type { Soul, Testimony, UserProfile, JoinedCampaign, Campaign, PrayerRequest } from "@/lib/types";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription as DialogDesc } from "@/components/ui/dialog";
+import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import Link from "next/link";
 import { format, isSameDay } from "date-fns";
 import { Input } from "@/components/ui/input";
 import { EditProfileModal } from "@/components/profile/edit-profile-modal";
+import { cn } from "@/lib/utils";
 
 function FilterControls({
   searchTerm,
@@ -272,7 +273,7 @@ export default function ProfilePage() {
                     <DialogContent className="p-0 bg-transparent border-0 w-auto max-w-lg">
                         <DialogHeader className="sr-only">
                             <DialogTitle>Profile photo of {displayName}</DialogTitle>
-                            <DialogDesc>A larger view of your profile photo.</DialogDesc>
+                            <DialogDescription>A larger view of your profile photo.</DialogDescription>
                         </DialogHeader>
                         <Image src={photoURL} alt={displayName} width={600} height={600} className="rounded-lg object-contain"/>
                     </DialogContent>
@@ -295,7 +296,7 @@ export default function ProfilePage() {
                             <DialogContent className="sm:max-w-lg">
                                 <DialogHeader>
                                     <DialogTitle>Edit Profile</DialogTitle>
-                                    <DialogDesc>Make changes to your public profile.</DialogDesc>
+                                    <DialogDescription>Make changes to your public profile.</DialogDescription>
                                 </DialogHeader>
                                 <div className="max-h-[70vh] overflow-y-auto pr-2">
                                   <EditProfileModal userProfile={userProfile} onClose={() => { setIsEditModalOpen(false); }} />
