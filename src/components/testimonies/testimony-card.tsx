@@ -164,9 +164,9 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
 
   const fullTextContent = (
     <ScrollArea className={cn("pr-4", isMobile ? "h-full" : "max-h-[60vh]")}>
-      <p className="text-sm text-muted-foreground whitespace-pre-wrap leading-relaxed pb-6">
+      <div className="text-sm text-muted-foreground whitespace-pre-wrap leading-relaxed pb-6">
         {testimony.content}
-      </p>
+      </div>
     </ScrollArea>
   );
 
@@ -200,8 +200,8 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
                 <CardTitle className="text-sm sm:text-base font-semibold truncate">{authorFullName}</CardTitle>
               </Link>
               <div className="text-muted-foreground text-[10px] sm:text-xs mt-0.5 flex flex-col gap-1">
-                  <span className="flex items-center gap-1"><Globe className="h-3 w-3 text-primary shrink-0" /> {locationString}</span>
-                  <span className="truncate">{displayDate}</span>
+                  <div className="flex items-center gap-1"><Globe className="h-3 w-3 text-primary shrink-0" /> {locationString}</div>
+                  <div className="truncate">{displayDate}</div>
                   <Badge variant="outline" className="w-fit text-[8px] sm:text-[9px] uppercase tracking-widest px-1.5 py-0 h-4 sm:h-5 mt-1">{testimony.category}</Badge>
               </div>
             </div>
@@ -251,9 +251,9 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
                     <CardDescription className="text-[9px] sm:text-[10px] uppercase tracking-wider text-amber-600 dark:text-amber-400 font-bold">
                         Answer to Prayer Request:
                     </CardDescription>
-                    <blockquote className="border-l-2 border-amber-500/50 pl-2 sm:pl-3 italic text-[11px] sm:text-xs text-muted-foreground line-clamp-2">
+                    <div className="border-l-2 border-amber-500/50 pl-2 sm:pl-3 italic text-[11px] sm:text-xs text-muted-foreground line-clamp-2">
                         &ldquo;{testimony.answeredPrayerContent}&rdquo;
-                    </blockquote>
+                    </div>
                 </CardHeader>
             </Card>
            )}

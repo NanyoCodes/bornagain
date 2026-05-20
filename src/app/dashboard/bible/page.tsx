@@ -181,8 +181,10 @@ export default function BibleReaderPage() {
   
   const selectedBook = useMemo(() => bibleData.find(b => b.name === selectedBookName), [selectedBookName]);
 
+  // Robust initialization from reading history
+  const hasInitialized = useRef(false);
   useEffect(() => {
-    if (userProfile && !mounted) {
+    if (userProfile && !hasInitialized.current) {
       if (userProfile.readingHistory?.length) {
         const sortedHistory = [...userProfile.readingHistory].sort((a, b) => {
            const timeA = safeToDate(a.readAt)?.getTime() ?? 0;
@@ -195,9 +197,19 @@ export default function BibleReaderPage() {
           setSelectedChapterNumber(lastRead.chapter);
         }
       }
+      hasInitialized.current = true;
       setMounted(true);
     }
-  }, [userProfile, mounted]);
+  }, [userProfile]);
+
+  // Safety guard: ensure chapter is valid when book changes
+  const lastBookRef = useRef(selectedBookName);
+  useEffect(() => {
+      if (selectedBookName !== lastBookRef.current) {
+          setSelectedChapterNumber(1);
+          lastBookRef.current = selectedBookName;
+      }
+  }, [selectedBookName]);
 
   const highlightsQuery = useMemo(() => {
     if (!user || !chapterContent) return null;
@@ -214,7 +226,7 @@ export default function BibleReaderPage() {
   }, [highlights]);
   
   useEffect(() => {
-    if (!selectedBookName || !selectedChapterNumber) return;
+    if (!hasInitialized.current || !selectedBookName || !selectedChapterNumber) return;
     const fetchChapter = async () => {
       setIsLoadingChapter(true);
       setChapterError(null);
@@ -240,7 +252,10 @@ export default function BibleReaderPage() {
         const currentBookIndex = bibleData.findIndex(b => b.name === chapterContent.book);
         const currentBook = bibleData[currentBookIndex];
         if (chapterContent.chapter >= (currentBook?.chapters.length || 0)) {
-            if (currentBookIndex < bibleData.length - 1) { setSelectedBookName(bibleData[currentBookIndex + 1].name); setSelectedChapterNumber(1); }
+            if (currentBookIndex < bibleData.length - 1) { 
+                setSelectedBookName(bibleData[currentBookIndex + 1].name); 
+                setSelectedChapterNumber(1); 
+            }
             else { toast({ title: 'Finished entire Bible!' }); router.back(); }
         } else { setSelectedChapterNumber(chapterContent.chapter + 1); }
     } catch (e) { console.error(e); }
@@ -330,9 +345,9 @@ export default function BibleReaderPage() {
                     <>
                         <div className={cn("space-y-2 font-serif leading-relaxed", fontSizeClasses[fontSize])}>
                             {chapterContent.verses.map(v => (
-                                <p key={v.verse} id={`verse-${v.verse}`} className={cn('rounded px-1 py-1 cursor-pointer transition-colors', highlightsMap.get(v.verse) && getHighlightClass(highlightsMap.get(v.verse)!.color), selectedVerses.includes(v.verse) && 'bg-primary/20', activeHighlight?.verses.includes(v.verse) && 'ring-2 ring-primary')} onClick={() => handleVerseClick(v.verse)}>
+                                <div key={v.verse} id={`verse-${v.verse}`} className={cn('rounded px-1 py-1 cursor-pointer transition-colors', highlightsMap.get(v.verse) && getHighlightClass(highlightsMap.get(v.verse)!.color), selectedVerses.includes(v.verse) && 'bg-primary/20', activeHighlight?.verses.includes(v.verse) && 'ring-2 ring-primary')} onClick={() => handleVerseClick(v.verse)}>
                                     <sup className={cn("mr-1 text-muted-foreground", subFontSizeClasses[fontSize])}>{v.verse}</sup>{v.text}
-                                </p>
+                                </div>
                             ))}
                         </div>
                         {selectedVerses.length > 0 && toolbarPos && (
@@ -437,14 +452,16 @@ export default function BibleReaderPage() {
                             {historyGroups.length > 0 ? historyGroups.map(g => (
                                 <div key={g.date.toISOString()} className="space-y-4">
                                     <div className="relative"><div className="absolute inset-0 flex items-center"><div className="w-full border-t" /></div><div className="relative flex justify-center"><span className="bg-background px-3 text-sm font-semibold text-muted-foreground">{format(g.date, 'PPP')}</span></div></div>
-                                    <ul className="space-y-4">{g.items.map((i, idx) => {
+                                    <div className="space-y-4">
+                                      {g.items.map((i, idx) => {
                                         const readAt = safeToDate(i.readAt);
                                         return (
-                                        <li key={idx} className="flex items-center gap-3">
+                                        <div key={idx} className="flex items-center gap-3">
                                             <BookOpen className="h-4 w-4 text-primary" />
-                                            <p className="text-sm">Read <span className="font-medium">{i.book} {i.chapter}</span> at {readAt ? format(readAt, 'p') : 'N/A'}</p>
-                                        </li>
-                                    )})}</ul>
+                                            <div className="text-sm">Read <span className="font-medium">{i.book} {i.chapter}</span> at {readAt ? format(readAt, 'p') : 'N/A'}</div>
+                                        </div>
+                                      )})}
+                                    </div>
                                 </div>
                             )) : (
                                 <div className="text-center py-12 text-muted-foreground italic">
