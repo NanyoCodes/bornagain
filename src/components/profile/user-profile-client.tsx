@@ -1,7 +1,6 @@
-
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useDoc, useFirestore, useUser, useCollection } from '@/firebase';
 import type { UserProfile, Testimony, Campaign } from '@/lib/types';
@@ -33,14 +32,12 @@ export default function UserProfileClient({ userId }: { userId: string }) {
 
   const testimoniesQuery = useMemo(() => {
     if (!userId || !firestore) return null;
-    // Remove orderBy to avoid needing a composite index. We'll sort client-side.
     return query(collection(firestore, 'testimonies'), where('authorId', '==', userId));
   }, [userId, firestore]);
   const { data: userTestimonies, loading: testimoniesLoading } = useCollection<Testimony>(testimoniesQuery);
 
   const testimonies = useMemo(() => {
     if (!userTestimonies) return [];
-    // Sort client-side
     return [...userTestimonies].sort((a, b) => {
         const timeA = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : 0;
         const timeB = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : 0;
@@ -50,8 +47,6 @@ export default function UserProfileClient({ userId }: { userId: string }) {
   
   const campaignsQuery = useMemo(() => {
     if (!userId || !firestore) return null;
-    // Query only by organizerId to avoid composite index.
-    // Filtering and sorting will be done client-side.
     return query(collection(firestore, 'campaigns'), where('organizerId', '==', userId));
   }, [userId, firestore]);
   const { data: allCampaigns, loading: campaignsLoading } = useCollection<Campaign>(campaignsQuery);
@@ -160,7 +155,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                   <AccordionContent className="px-6 pb-6 pt-0">
                       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                           {testimonies.map(testimony => (
-                          <TestimonyCard key={testimony.id} testimony={testimony} distance={null} onDelete={() => {}} onEdit={() => {}} />
+                          <TestimonyCard key={testimony.id} testimony={testimony} onDelete={() => {}} onEdit={() => {}} />
                           ))}
                       </div>
                   </AccordionContent>

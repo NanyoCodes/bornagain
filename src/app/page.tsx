@@ -93,7 +93,7 @@ export default function Page() {
         <div className="grid gap-2 text-left">
           <h1 className="text-2xl md:text-3xl font-bold">Create an account</h1>
           <p className="text-balance text-muted-foreground">
-            Enter your details below to create your account.
+            Enter your details below to create your account and join the mission.
           </p>
         </div>
 

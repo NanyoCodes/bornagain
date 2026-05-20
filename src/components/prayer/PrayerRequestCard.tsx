@@ -1,4 +1,3 @@
-
 "use client";
 
 import {
@@ -20,7 +19,7 @@ import { useToast } from "@/hooks/use-toast";
 import { doc, updateDoc, arrayUnion } from "firebase/firestore";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
-import { cn } from "@/lib/utils";
+import { cn, safeToDate } from "@/lib/utils";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import Link from "next/link";
 import Image from 'next/image';
@@ -41,11 +40,8 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({ prayerRequest
   const hasPrayed = useMemo(() => user ? usersWhoPrayed.includes(user.uid) : false, [user, usersWhoPrayed]);
 
   const displayDate = useMemo(() => {
-    const createdAtDate = prayerRequest.createdAt
-      ? new Date(prayerRequest.createdAt.seconds * 1000)
-      : new Date();
-    
-    return "Shared " + format(createdAtDate, "PPP 'at' p");
+    const createdAtDate = safeToDate(prayerRequest.createdAt);
+    return createdAtDate ? "Shared " + format(createdAtDate, "PPP 'at' p") : 'Shared recently';
   }, [prayerRequest.createdAt]);
 
   const authorName = prayerRequest.isAnonymous ? 'Confidential Request' : `${prayerRequest.authorFirstName || ''} ${prayerRequest.authorLastName || ''}`.trim();

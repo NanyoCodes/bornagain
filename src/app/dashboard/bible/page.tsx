@@ -184,7 +184,12 @@ export default function BibleReaderPage() {
   useEffect(() => {
     if (userProfile && !mounted) {
       if (userProfile.readingHistory?.length) {
-        const lastRead = [...userProfile.readingHistory].sort((a, b) => (safeToDate(b.readAt)?.getTime() ?? 0) - (safeToDate(a.readAt)?.getTime() ?? 0))[0];
+        const sortedHistory = [...userProfile.readingHistory].sort((a, b) => {
+           const timeA = safeToDate(a.readAt)?.getTime() ?? 0;
+           const timeB = safeToDate(b.readAt)?.getTime() ?? 0;
+           return timeB - timeA;
+        });
+        const lastRead = sortedHistory[0];
         if (lastRead) {
           setSelectedBookName(lastRead.book);
           setSelectedChapterNumber(lastRead.chapter);
@@ -370,7 +375,7 @@ export default function BibleReaderPage() {
                             <SelectTrigger className="truncate"><SelectValue /></SelectTrigger>
                             <SelectContent>{bibleData.map(b => <SelectItem key={b.name} value={b.name}>{b.name}</SelectItem>)}</SelectContent>
                         </Select>
-                        <Popover open={isChapterPopoverOpen} onValueChange={setIsChapterPopoverOpen}>
+                        <Popover open={isChapterPopoverOpen} onOpenChange={setIsChapterPopoverOpen}>
                             <PopoverTrigger asChild>
                               <Button variant="outline" className="w-full justify-between">
                                 Chapter {selectedChapterNumber}
@@ -432,7 +437,14 @@ export default function BibleReaderPage() {
                             {historyGroups.length > 0 ? historyGroups.map(g => (
                                 <div key={g.date.toISOString()} className="space-y-4">
                                     <div className="relative"><div className="absolute inset-0 flex items-center"><div className="w-full border-t" /></div><div className="relative flex justify-center"><span className="bg-background px-3 text-sm font-semibold text-muted-foreground">{format(g.date, 'PPP')}</span></div></div>
-                                    <ul className="space-y-4">{g.items.map((i, idx) => <li key={idx} className="flex items-center gap-3"><BookOpen className="h-4 w-4 text-primary" /><p className="text-sm">Read <span className="font-medium">{i.book} {i.chapter}</span> at {format(safeToDate(i.readAt)!, 'p')}</p></li>)}</ul>
+                                    <ul className="space-y-4">{g.items.map((i, idx) => {
+                                        const readAt = safeToDate(i.readAt);
+                                        return (
+                                        <li key={idx} className="flex items-center gap-3">
+                                            <BookOpen className="h-4 w-4 text-primary" />
+                                            <p className="text-sm">Read <span className="font-medium">{i.book} {i.chapter}</span> at {readAt ? format(readAt, 'p') : 'N/A'}</p>
+                                        </li>
+                                    )})}</ul>
                                 </div>
                             )) : (
                                 <div className="text-center py-12 text-muted-foreground italic">

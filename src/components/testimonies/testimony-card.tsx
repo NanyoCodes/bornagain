@@ -33,7 +33,7 @@ import { useToast } from "@/hooks/use-toast";
 import { doc, updateDoc, arrayUnion } from "firebase/firestore";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
-import { cn } from "@/lib/utils";
+import { cn, safeToDate } from "@/lib/utils";
 import { Icons } from "@/components/icons";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -59,11 +59,8 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
   const hasSupported = useMemo(() => user ? supporters.includes(user.uid) : false, [user, supporters]);
   
   const displayDate = useMemo(() => {
-    const createdAtDate = testimony.createdAt
-      ? new Date(testimony.createdAt.seconds * 1000)
-      : new Date();
-    
-    return format(createdAtDate, "PPP 'at' p");
+    const createdAtDate = safeToDate(testimony.createdAt);
+    return createdAtDate ? format(createdAtDate, "PPP 'at' p") : 'Shared recently';
   }, [testimony.createdAt]);
   
   React.useEffect(() => {
