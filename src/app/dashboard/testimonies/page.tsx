@@ -13,7 +13,6 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   AlertDialog,
@@ -25,13 +24,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
 import { Card, CardContent } from "@/components/ui/card";
 import type { Testimony, PrayerRequest, UserProfile } from "@/lib/types";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -203,8 +195,6 @@ export default function TestimoniesPage() {
     const collectionName = type === 'testimony' ? 'testimonies' : 'prayerRequests';
     const docRef = doc(firestore, collectionName, data.id);
     
-    setItemToDelete(null);
-
     try {
         if (type === 'testimony') {
             const testimonyToDelete = data as Testimony;
@@ -234,10 +224,12 @@ export default function TestimoniesPage() {
             title: `${type === 'testimony' ? 'Testimony' : 'Prayer Request'} Deleted`,
             description: `The item has been successfully removed.`,
         });
+        // Only clear the state and close the dialog on success
+        setItemToDelete(null);
     } catch (error: any) {
-        setItemToDelete({ type, data });
         if (error.message === "This testimony has already been deleted.") {
             toast({ variant: 'destructive', title: 'Already Deleted', description: error.message });
+            setItemToDelete(null);
             return;
         }
         const permissionError = new FirestorePermissionError({
@@ -352,7 +344,7 @@ export default function TestimoniesPage() {
           </TabsContent>
       </Tabs>
       
-      <AlertDialog open={!!itemToDelete} onOpenChange={(open) => !open && setItemToDelete(null)}>
+      <AlertDialog open={!!itemToDelete} onOpenChange={(open) => { if(!open) setItemToDelete(null); }}>
           <AlertDialogContent className="w-[90vw] max-w-lg rounded-lg">
           <AlertDialogHeader>
               <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
@@ -370,7 +362,7 @@ export default function TestimoniesPage() {
           </AlertDialogContent>
       </AlertDialog>
 
-      <Dialog open={!!itemToEdit} onOpenChange={(open) => !open && setItemToEdit(null)}>
+      <Dialog open={!!itemToEdit} onOpenChange={(open) => { if(!open) setItemToEdit(null); }}>
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
             <DialogTitle>Edit Testimony</DialogTitle>
@@ -384,8 +376,7 @@ export default function TestimoniesPage() {
         </DialogContent>
       </Dialog>
       
-      {/* Centered Width Dialogs */}
-      <Dialog open={isTestimonyDialogOpen} onOpenChange={setIsTestimonyDialogOpen}>
+      <Dialog open={isTestimonyDialogOpen} onOpenChange={(open) => { if(!open) handleCloseTestimonyDialog(); }}>
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
             <DialogTitle>{prayerToAnswer ? 'Share Answered Prayer' : 'Share Testimony'}</DialogTitle>
@@ -397,7 +388,7 @@ export default function TestimoniesPage() {
         </DialogContent>
       </Dialog>
       
-      <Dialog open={isPrayerDialogOpen} onOpenChange={setIsPrayerDialogOpen}>
+      <Dialog open={isPrayerDialogOpen} onOpenChange={(open) => { if(!open) setIsPrayerDialogOpen(false); }}>
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
             <DialogTitle>Share Prayer Request</DialogTitle>

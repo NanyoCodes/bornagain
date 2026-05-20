@@ -58,7 +58,7 @@ export default function SoulsWonPage() {
   const [soulToEdit, setSoulToEdit] = useState<Soul | null>(null);
   const [isAssigning, setIsAssigning] = useState<string | null>(null);
 
-  // --- HOOKS MUST BE DECLARED FIRST ---
+  // Reordered hooks to ensure proper initialization
   const soulsQuery = useMemo(() => {
     if (!user?.uid || !firestore) return null;
     return query(collection(firestore, `users/${user.uid}/souls`), orderBy("wonAt", "desc"));
@@ -77,7 +77,6 @@ export default function SoulsWonPage() {
   }, [firestore]);
   const { data: allFellowships, loading: loadingFellowships } = useCollection<Fellowship>(fellowshipsQuery);
 
-  // --- VARIABLES DERIVED FROM HOOK DATA ---
   const activeFellowships = useMemo(() => allFellowships?.filter(f => f.status !== 'deleted') ?? [], [allFellowships]);
   const activeCampaigns = useMemo(() => campaigns?.filter(c => c.status !== 'deleted') ?? [], [campaigns]);
 
@@ -130,7 +129,6 @@ export default function SoulsWonPage() {
         await runTransaction(firestore, async (transaction) => {
             const oldFellowshipId = soul.fellowshipId;
             
-            // --- ALL READS FIRST ---
             let oldFellowshipDoc = null;
             if (oldFellowshipId && oldFellowshipId !== fellowshipId) {
                 oldFellowshipDoc = await transaction.get(doc(firestore, "fellowships", oldFellowshipId));
@@ -141,7 +139,6 @@ export default function SoulsWonPage() {
                 newFellowshipDoc = await transaction.get(doc(firestore, "fellowships", fellowshipId));
             }
 
-            // --- ALL WRITES SECOND ---
             if (oldFellowshipDoc?.exists()) {
                 transaction.update(oldFellowshipDoc.ref, { memberCount: increment(-1) });
             }
@@ -357,43 +354,45 @@ export default function SoulsWonPage() {
       <LogFollowUpDialog 
           soul={soulForFollowUp} 
           isOpen={!!soulForFollowUp} 
-          onOpenChange={(isOpen) => !isOpen && setSoulForFollowUp(null)} 
+          onOpenChange={(isOpen) => { if(!isOpen) setSoulForFollowUp(null); }} 
           onFollowUpLogged={handleFollowUpLogged} 
       />
       <ViewHistoryDialog 
           soul={soulForHistory} 
           isOpen={!!soulForHistory} 
-          onOpenChange={(isOpen) => !isOpen && setSoulForHistory(null)} 
+          onOpenChange={(isOpen) => { if(!isOpen) setSoulForHistory(null); }} 
       />
       <AssignFellowshipDialog 
           soul={soulToAssign} 
           fellowships={activeFellowships} 
           isOpen={!!soulToAssign} 
-          onOpenChange={() => setSoulToAssign(null)} 
+          onOpenChange={(open) => { if(!open) setSoulToAssign(null); }} 
           onAssignFellowship={handleAssignFellowship} 
           isAssigning={isAssigning} 
       />
       
-      <Dialog open={!!soulToEdit} onOpenChange={(open) => !open && setSoulToEdit(null)}>
+      <Dialog open={!!soulToEdit} onOpenChange={(open) => { if(!open) setSoulToEdit(null); }}>
           <DialogContent className="sm:max-w-lg">
               <DialogHeader>
                   <DialogTitle>Edit Soul Details</DialogTitle>
                   <DialogDescription>Update information for {soulToEdit?.firstName}.</DialogDescription>
               </DialogHeader>
               <div className="max-h-[70vh] overflow-y-auto pr-2">
-                  {soulToEdit && (
+                  {soulToEdit ? (
                     <EditSoulForm 
                         soul={soulToEdit} 
-                        onSoulUpdated={() => setSoulToEdit(null)} 
+                        onSoulUpdated={() => {
+                          setSoulToEdit(null);
+                        }} 
                         fellowships={activeFellowships}
                         campaigns={activeCampaigns}
                     />
-                  )}
+                  ) : <div className="h-20" />}
               </div>
           </DialogContent>
       </Dialog>
 
-      <Dialog open={isLogDialogOpen} onOpenChange={setIsLogDialogOpen}>
+      <Dialog open={isLogDialogOpen} onOpenChange={(open) => { if(!open) setIsLogDialogOpen(false); }}>
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
             <DialogTitle>Log a New Soul</DialogTitle>

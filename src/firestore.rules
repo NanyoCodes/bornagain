@@ -43,7 +43,7 @@ service cloud.firestore {
         allow read: if isOwner(userId) || isFellowshipMember(resource.data.get('fellowshipId', ''));
         allow create: if isOwner(userId);
         // Robust update rule allowing owner to change any field (like names)
-        allow update: if request.auth != null && (isOwner(userId) || isFellowshipMember(resource.data.get('fellowshipId', '')));
+        allow update: if request.auth != null && (request.auth.uid == userId || isFellowshipMember(resource.data.get('fellowshipId', '')));
       }
       
       match /joinedCampaigns/{campaignId} {
