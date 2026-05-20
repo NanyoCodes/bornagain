@@ -275,7 +275,7 @@ export default function ProfilePage() {
                             <DialogTitle>Profile photo of {displayName}</DialogTitle>
                             <DialogDescription>A larger view of your profile photo.</DialogDescription>
                         </DialogHeader>
-                        <Image src={photoURL} alt={displayName} width={600} height={600} className="rounded-lg object-contain"/>
+                        <Image src={photoURL} alt={displayName} width={600} height={600} className="rounded-lg object-contain" unoptimized />
                     </DialogContent>
                 )}
             </Dialog>

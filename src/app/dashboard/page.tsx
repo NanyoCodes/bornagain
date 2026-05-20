@@ -28,6 +28,9 @@ import {
   Users,
   CalendarCheck,
   Target,
+  Check,
+  Sparkles,
+  Zap,
 } from 'lucide-react';
 import {
   Dialog,
@@ -67,6 +70,7 @@ import { welcomeScriptures } from '@/lib/verses';
 import AdsenseAd from '@/components/common/adsense-ad';
 import { ProgressOverview } from '@/components/dashboard/progress-overview';
 import { useToast } from '@/hooks/use-toast';
+import { cn } from '@/lib/utils';
 
 // Performance: Dynamically import heavy components
 const MonthlyStatsChart = dynamic(() => import('@/components/dashboard/monthly-stats-chart').then(m => m.MonthlyStatsChart), {
@@ -376,6 +380,12 @@ export default function DashboardPage() {
     verse: string;
   } | null>(null);
 
+  const [reactions, setReactions] = useState<{amen: boolean, inspired: boolean, received: boolean}>({
+    amen: false,
+    inspired: false,
+    received: false
+  });
+
   useEffect(() => {
     setMounted(true);
     const randomScripture =
@@ -494,6 +504,16 @@ export default function DashboardPage() {
     toast({ title: "Soul Logged!" });
   };
 
+  const handleReaction = (type: 'amen' | 'inspired' | 'received') => {
+    setReactions(prev => ({ ...prev, [type]: !prev[type] }));
+    if (!reactions[type]) {
+      toast({
+        title: type === 'amen' ? "Amen!" : type === 'inspired' ? "Inspiration received!" : "I receive in Jesus Name!",
+        description: "Let the Word of God dwell in you richly.",
+      });
+    }
+  };
+
   if (loading || !userProfile) {
       return (
         <div className="space-y-8">
@@ -514,6 +534,36 @@ export default function DashboardPage() {
           <p className="text-white font-headline mt-4 text-sm sm:base font-semibold tracking-wide drop-shadow-sm uppercase">
             {welcomeMessage?.verse || ''}
           </p>
+          
+          <div className="flex flex-wrap justify-center items-center gap-3 mt-8">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className={cn("bg-white/10 text-white border-white/20 hover:bg-white/20 transition-all rounded-full px-4 h-9", reactions.amen && "bg-primary text-primary-foreground border-primary")}
+                onClick={() => handleReaction('amen')}
+              >
+                <Check className={cn("mr-2 h-4 w-4", reactions.amen ? "opacity-100" : "opacity-50")} />
+                Amen
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className={cn("bg-white/10 text-white border-white/20 hover:bg-white/20 transition-all rounded-full px-4 h-9", reactions.inspired && "bg-primary text-primary-foreground border-primary")}
+                onClick={() => handleReaction('inspired')}
+              >
+                <Sparkles className={cn("mr-2 h-4 w-4", reactions.inspired ? "opacity-100" : "opacity-50")} />
+                Inspired
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className={cn("bg-white/10 text-white border-white/20 hover:bg-white/20 transition-all rounded-full px-4 h-9", reactions.received && "bg-primary text-primary-foreground border-primary")}
+                onClick={() => handleReaction('received')}
+              >
+                <Zap className={cn("mr-2 h-4 w-4", reactions.received ? "opacity-100" : "opacity-50")} />
+                I receive in Jesus Name
+              </Button>
+          </div>
         </CardContent>
       </Card>
 

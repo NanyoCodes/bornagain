@@ -23,7 +23,7 @@ service cloud.firestore {
              fellowshipId != "" && 
              fellowshipId != "none" &&
              exists(/databases/$(database)/documents/fellowships/$(fellowshipId)) &&
-             request.auth.uid in get(/databases/$(database)/documents/fellowships/$(fellowshipId)).data.memberIds;
+             request.auth.uid in get(/databases/$(database)/documents/fellowships/$(fellowshipId)).data.get('memberIds', []);
     }
 
     match /users/{userId} {
@@ -32,9 +32,10 @@ service cloud.firestore {
 
       allow update: if request.auth != null && (
         isOwner(userId) ||
-        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['accountabilityPartners', 'partnerIds']) && (
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['accountabilityPartners', 'partnerIds', 'lastActive']) && (
           exists(/databases/$(database)/documents/accountabilityRequests/$(getRequestId(userId, request.auth.uid))) ||
-          (resource.data.get('partnerIds', []).size() > 0 && request.auth.uid in resource.data.partnerIds)
+          (resource.data.get('partnerIds', []).size() > 0 && request.auth.uid in resource.data.partnerIds) ||
+          isOwner(userId)
         ))
       );
 
