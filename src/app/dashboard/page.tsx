@@ -623,9 +623,6 @@ export default function DashboardPage() {
                 </CardDescription>
               </div>
               <div className="flex items-center gap-2">
-                <Button asChild variant="outline" size="sm">
-                  <Link href="/dashboard/souls-won">View All</Link>
-                </Button>
                 <Button size="sm" onClick={() => setIsLogSoulOpen(true)}>
                     <UserPlus className="mr-2 h-4 w-4" />
                     Log Soul
