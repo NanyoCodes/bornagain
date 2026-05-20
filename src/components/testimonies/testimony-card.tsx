@@ -1,4 +1,3 @@
-
 "use client";
 
 import * as React from "react";
@@ -257,7 +256,6 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
                     {supporters.length > 0 && <div className="bg-primary rounded-full p-1 border-2 border-background z-30"><HandHeart className="h-2.5 w-2.5 text-primary-foreground fill-current" /></div>}
                     {inspiredBy.length > 0 && <div className="bg-chart-3 rounded-full p-1 border-2 border-background z-20"><Sparkles className="h-2.5 w-2.5 text-white fill-current" /></div>}
                     {connectedBy.length > 0 && <div className="bg-blue-500 rounded-full p-1 border-2 border-background z-10"><LinkIcon className="h-2.5 w-2.5 text-white" /></div>}
-                    <span className="text-[10px] text-muted-foreground ml-2">{totalReactions}</span>
                 </div>
                 {testimony.campaignTitle && (
                    <span className="text-[9px] text-muted-foreground truncate italic opacity-60">Event: {testimony.campaignTitle}</span>
