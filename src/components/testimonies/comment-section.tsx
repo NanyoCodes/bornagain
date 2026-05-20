@@ -13,7 +13,6 @@ import { cn, safeToDate } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { useDoc } from '@/firebase/firestore/use-doc';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import Link from 'next/link';
 
 function CommentItem({ 
@@ -249,21 +248,19 @@ export function CommentSection({ testimonyId }: { testimonyId: string }) {
     };
 
     return (
-        <div className="flex flex-col h-full overflow-hidden">
-            <div className="flex-1 min-h-0">
-                <ScrollArea className="h-full">
-                    <div className="space-y-6 p-4 sm:p-6">
-                        {(loading || userLoading) ? (
-                            <div className="flex justify-center py-12"><Loader2 className="h-8 w-8 animate-spin opacity-20" /></div>
-                        ) : topLevelComments.length > 0 ? (
-                            topLevelComments.map(comment => renderComment(comment))
-                        ) : (
-                            <div className="text-center py-12 bg-muted/20 rounded-lg border border-dashed mx-2">
-                                 <p className="text-sm text-muted-foreground italic">No comments yet. Be the first to encourage!</p>
-                            </div>
-                        )}
-                    </div>
-                </ScrollArea>
+        <div className="flex flex-col h-full min-h-0 overflow-hidden">
+            <div className="flex-1 min-h-0 overflow-y-auto">
+                <div className="space-y-6 p-4 sm:p-6">
+                    {(loading || userLoading) ? (
+                        <div className="flex justify-center py-12"><Loader2 className="h-8 w-8 animate-spin opacity-20" /></div>
+                    ) : topLevelComments.length > 0 ? (
+                        topLevelComments.map(comment => renderComment(comment))
+                    ) : (
+                        <div className="text-center py-12 bg-muted/20 rounded-lg border border-dashed mx-2">
+                             <p className="text-sm text-muted-foreground italic">No comments yet. Be the first to encourage!</p>
+                        </div>
+                    )}
+                </div>
             </div>
 
             {user && (
