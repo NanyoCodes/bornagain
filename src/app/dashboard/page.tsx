@@ -1,4 +1,3 @@
-
 'use client';
 
 import dynamic from 'next/dynamic';
@@ -525,11 +524,11 @@ export default function DashboardPage() {
     <div className="space-y-8">
       <Card className="bg-transparent border-none shadow-none text-center py-4">
         <CardContent className="p-6">
-          <h1 className="text-2xl sm:text-4xl font-medium font-headline text-white drop-shadow-md italic leading-tight">
+          <h1 className="text-2xl sm:text-4xl font-medium font-headline text-foreground drop-shadow-sm italic leading-tight">
             {welcomeMessage?.text.replace('{name}', displayName) ||
               `Welcome back, ${displayName}!`}
           </h1>
-          <p className="text-white font-headline mt-4 text-sm sm:base font-semibold tracking-wide drop-shadow-sm uppercase">
+          <p className="text-primary font-headline mt-4 text-sm sm:base font-semibold tracking-wide drop-shadow-sm uppercase">
             {welcomeMessage?.verse || ''}
           </p>
           
@@ -537,7 +536,7 @@ export default function DashboardPage() {
               <Button 
                 variant="outline" 
                 size="sm" 
-                className={cn("bg-white/10 text-white border-white/20 hover:bg-white/20 transition-all rounded-full px-4 h-9", reactions.amen && "bg-primary text-primary-foreground border-primary")}
+                className={cn("rounded-full px-4 h-9 bg-muted/30 border-muted-foreground/20 hover:bg-muted/50 transition-all", reactions.amen && "bg-primary text-primary-foreground border-primary hover:bg-primary/90")}
                 onClick={() => handleReaction('amen')}
               >
                 <Check className={cn("mr-2 h-4 w-4", reactions.amen ? "opacity-100" : "opacity-50")} />
@@ -546,7 +545,7 @@ export default function DashboardPage() {
               <Button 
                 variant="outline" 
                 size="sm" 
-                className={cn("bg-white/10 text-white border-white/20 hover:bg-white/20 transition-all rounded-full px-4 h-9", reactions.inspired && "bg-primary text-primary-foreground border-primary")}
+                className={cn("rounded-full px-4 h-9 bg-muted/30 border-muted-foreground/20 hover:bg-muted/50 transition-all", reactions.inspired && "bg-primary text-primary-foreground border-primary hover:bg-primary/90")}
                 onClick={() => handleReaction('inspired')}
               >
                 <Sparkles className={cn("mr-2 h-4 w-4", reactions.inspired ? "opacity-100" : "opacity-50")} />
@@ -555,7 +554,7 @@ export default function DashboardPage() {
               <Button 
                 variant="outline" 
                 size="sm" 
-                className={cn("bg-white/10 text-white border-white/20 hover:bg-white/20 transition-all rounded-full px-4 h-9", reactions.received && "bg-primary text-primary-foreground border-primary")}
+                className={cn("rounded-full px-4 h-9 bg-muted/30 border-muted-foreground/20 hover:bg-muted/50 transition-all", reactions.received && "bg-primary text-primary-foreground border-primary hover:bg-primary/90")}
                 onClick={() => handleReaction('received')}
               >
                 <Zap className={cn("mr-2 h-4 w-4", reactions.received ? "opacity-100" : "opacity-50")} />
