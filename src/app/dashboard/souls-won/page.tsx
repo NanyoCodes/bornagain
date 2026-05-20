@@ -92,10 +92,12 @@ export default function SoulsWonPage() {
   const loading = userLoading || soulsLoading || loadingCampaigns || loadingFellowships;
 
   const handleSoulLogged = useCallback(() => {
+    // Controlled closure to prevent interaction freeze
     setTimeout(() => setIsLogDialogOpen(false), 100);
   }, []);
 
   const handleFollowUpLogged = useCallback(() => {
+    // Controlled closure to prevent interaction freeze
     setTimeout(() => setSoulForFollowUp(null), 100);
   }, []);
 

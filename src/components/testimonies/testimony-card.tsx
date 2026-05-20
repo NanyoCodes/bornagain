@@ -188,7 +188,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
                 <CardTitle className="text-sm sm:text-base font-semibold truncate">{authorFullName}</CardTitle>
               </Link>
               <CardDescription className="text-[10px] sm:text-xs mt-0.5 flex flex-col gap-0.5">
-                  <span className="flex items-center gap-1"><Globe className="h-3 w-3 text-primary shrink-0" /> {testimony.authorLocation?.country || 'Global Community'}</span>
+                  <span className="flex items-center gap-1"><Globe className="h-3 w-3 text-primary shrink-0" /> {[testimony.authorLocation?.city, testimony.authorLocation?.country].filter(Boolean).join(', ') || 'Global Community'}</span>
                   <span className="truncate">{displayDate}</span>
               </CardDescription>
             </div>

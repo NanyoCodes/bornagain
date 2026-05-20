@@ -289,7 +289,7 @@ export default function TestimoniesPage() {
               <TabsTrigger value="prayers">Prayer Requests</TabsTrigger>
           </TabsList>
           <TabsContent value="testimonies" className="mt-4 md:mt-6">
-              <div className="grid gap-4 md:gap-6 md:grid-cols-2 lg:grid-cols-3">
+              <div className="grid gap-6 md:gap-10 md:grid-cols-2 lg:grid-cols-3">
                 {loading && (
                   [...Array(3)].map((_, i) => (
                     <Card key={i} className="flex flex-col h-full"><CardContent className="p-6 space-y-4"><Skeleton className="h-12 w-12 rounded-full" /><div className="w-full space-y-2"><Skeleton className="h-4 w-1/4" /><Skeleton className="h-4 w-1/5" /></div><Skeleton className="h-5 w-3/4" /><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-full" /></CardContent></Card>
@@ -317,7 +317,7 @@ export default function TestimoniesPage() {
               </div>
           </TabsContent>
           <TabsContent value="prayers" className="mt-4 md:mt-6">
-              <div className="grid gap-4 md:gap-6 md:grid-cols-2 lg:grid-cols-3">
+              <div className="grid gap-6 md:gap-10 md:grid-cols-2 lg:grid-cols-3">
                 {loading && (
                   [...Array(3)].map((_, i) => (
                     <Card key={i} className="flex flex-col h-full"><CardContent className="p-6 space-y-4"><Skeleton className="h-12 w-12 rounded-full" /><div className="w-full space-y-2"><Skeleton className="h-4 w-1/4" /><Skeleton className="h-4 w-1/5" /></div><Skeleton className="h-5 w-3/4" /><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-full" /></CardContent></Card>
