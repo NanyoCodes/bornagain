@@ -90,7 +90,7 @@ const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, 
                             </Avatar>
                             <div className="min-w-0">
                                 <SoulInsightsDialog soul={soul}>
-                                    <p className="font-bold font-headline truncate cursor-pointer hover:underline">
+                                    <p className="font-bold font-headline truncate cursor-pointer hover:underline text-base sm:text-lg">
                                       {soul.firstName || 'Unknown'} {soul.lastName || ''}
                                     </p>
                                 </SoulInsightsDialog>
@@ -201,14 +201,14 @@ const SoulTableRow = React.memo(({ soul, onFollowUp, onViewHistory, onExportSing
                     </Avatar>
                     <div>
                         <SoulInsightsDialog soul={soul}>
-                           <div className="font-bold font-headline cursor-pointer hover:underline">{soul.firstName} {soul.lastName}</div>
+                           <div className="font-bold font-headline cursor-pointer hover:underline text-base">{soul.firstName} {soul.lastName}</div>
                         </SoulInsightsDialog>
                         {soul.church && <div className="text-xs text-muted-foreground flex items-center gap-1"><Church className="h-3 w-3" />{soul.church}</div>}
                     </div>
                 </div>
             </TableCell>
             <TableCell>{soul.phone && <div className="text-xs text-muted-foreground">{soul.phone}</div>}</TableCell>
-            <TableCell><Badge className={cn("w-[150px] justify-center", getStatusClasses(soul.status))} variant="outline">{soul.status}</Badge></TableCell>
+            <TableCell><Badge className={cn("w-[130px] justify-center", getStatusClasses(soul.status))} variant="outline">{soul.status}</Badge></TableCell>
             <TableCell>{soul.fellowshipName ? <div className="flex items-center gap-2 text-xs"><HeartHandshake className="h-3 w-3" />{soul.fellowshipName}</div> : <span className="text-muted-foreground text-xs">N/A</span>}</TableCell>
             <TableCell>
                 {latestFollowUpDate ? (
@@ -219,7 +219,7 @@ const SoulTableRow = React.memo(({ soul, onFollowUp, onViewHistory, onExportSing
             </TableCell>
             <TableCell>{format(wonAt, "PPP")}</TableCell>
             <TableCell>
-                <div>{soul.source}</div>
+                <div className="text-sm">{soul.source}</div>
                 {soul.sourceDetails && <div className="text-xs text-muted-foreground">{soul.sourceDetails}</div>}
             </TableCell>
             <TableCell>
@@ -258,7 +258,7 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
   if (loading || !mounted) {
     return (
         <Card>
-            <CardHeader><Skeleton className="h-6 w-48" /><Skeleton className="h-4 w-full max-w-sm" /></CardHeader>
+            <CardHeader><Skeleton className="h-8 w-48" /><Skeleton className="h-4 w-full max-w-sm" /></CardHeader>
             <CardContent className="space-y-4">
                 {[...Array(3)].map((_, i) => (
                     <div key={i} className="flex items-center space-x-4 p-2">
@@ -274,7 +274,7 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
   if (souls.length === 0) {
     return (
         <Card>
-            <CardHeader><CardTitle className="text-lg font-bold font-headline">Follow-up Dashboard</CardTitle><CardDescription>A list of souls won.</CardDescription></CardHeader>
+            <CardHeader><CardTitle className="text-2xl font-bold font-headline">Follow-up Dashboard</CardTitle><CardDescription>A list of souls won.</CardDescription></CardHeader>
             <CardContent>
                 <div className="text-center py-12 flex flex-col items-center">
                     <HeartHandshake className="h-12 w-12 text-muted-foreground opacity-20" />
@@ -291,7 +291,7 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
         <div className="space-y-4">
             <Card>
                 <CardHeader>
-                    <CardTitle className="text-lg font-bold font-headline">Follow-up Dashboard</CardTitle>
+                    <CardTitle className="text-2xl font-bold font-headline">Follow-up Dashboard</CardTitle>
                     <CardDescription>A list of souls won.</CardDescription>
                 </CardHeader>
             </Card>
@@ -304,7 +304,7 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
 
   return (
     <Card>
-      <CardHeader><CardTitle className="text-lg font-bold font-headline">Follow-up Dashboard</CardTitle><CardDescription>Keep track of their spiritual journey.</CardDescription></CardHeader>
+      <CardHeader><CardTitle className="text-2xl font-bold font-headline">Follow-up Dashboard</CardTitle><CardDescription>Keep track of their spiritual journey.</CardDescription></CardHeader>
       <CardContent>
         <Table>
           <TableHeader>

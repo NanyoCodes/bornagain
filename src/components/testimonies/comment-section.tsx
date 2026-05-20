@@ -169,7 +169,7 @@ function CommentItem({
 }
 
 export function CommentSection({ testimonyId }: { testimonyId: string }) {
-    const { user } = useUser();
+    const { user, loading: userLoading } = useUser();
     const firestore = useFirestore();
     const { toast } = useToast();
     const [newComment, setNewMessage] = useState('');
@@ -252,13 +252,13 @@ export function CommentSection({ testimonyId }: { testimonyId: string }) {
         <div className="flex flex-col h-full overflow-hidden">
             <div className="flex-1 min-h-0">
                 <ScrollArea className="h-full">
-                    <div className="space-y-6 pb-6 px-1">
-                        {loading ? (
-                            <div className="flex justify-center py-8"><Loader2 className="h-6 w-6 animate-spin opacity-20" /></div>
+                    <div className="space-y-6 p-4 sm:p-6">
+                        {(loading || userLoading) ? (
+                            <div className="flex justify-center py-12"><Loader2 className="h-8 w-8 animate-spin opacity-20" /></div>
                         ) : topLevelComments.length > 0 ? (
                             topLevelComments.map(comment => renderComment(comment))
                         ) : (
-                            <div className="text-center py-12 bg-muted/20 rounded-lg border border-dashed">
+                            <div className="text-center py-12 bg-muted/20 rounded-lg border border-dashed mx-2">
                                  <p className="text-sm text-muted-foreground italic">No comments yet. Be the first to encourage!</p>
                             </div>
                         )}
@@ -267,9 +267,9 @@ export function CommentSection({ testimonyId }: { testimonyId: string }) {
             </div>
 
             {user && (
-                <div className="shrink-0 pt-4 border-t bg-background">
+                <div className="shrink-0 p-4 border-t bg-background shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]">
                     {replyingTo && (
-                        <div className="flex items-center justify-between bg-muted/30 px-3 py-1.5 rounded-t-md text-[10px] text-muted-foreground animate-in slide-in-from-bottom-1 duration-200">
+                        <div className="flex items-center justify-between bg-muted/50 px-3 py-1.5 rounded-t-md text-[10px] text-muted-foreground border-x border-t mb-0">
                             <p className="truncate">Replying to <strong>{replyingTo.authorFirstName}</strong></p>
                             <button onClick={() => setReplyingTo(null)} className="hover:text-foreground transition-colors">
                                 <X className="h-3 w-3" />
@@ -281,7 +281,7 @@ export function CommentSection({ testimonyId }: { testimonyId: string }) {
                             placeholder={replyingTo ? "Write a reply..." : "Add a comment..."}
                             value={newComment}
                             onChange={(e) => setNewMessage(e.target.value)}
-                            className="text-sm h-10"
+                            className="text-sm h-10 shadow-inner"
                             disabled={isSending}
                             autoFocus={!!replyingTo}
                         />

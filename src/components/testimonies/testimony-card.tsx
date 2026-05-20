@@ -358,7 +358,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
                                     <SheetDescription>Sharing the joy of {authorFullName}'s testimony.</SheetDescription>
                                 </SheetHeader>
                             </div>
-                            <div className="flex-grow min-h-0 p-6">
+                            <div className="flex-grow min-h-0">
                                 <CommentSection testimonyId={testimony.id} />
                             </div>
                         </SheetContent>
@@ -384,7 +384,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
                                     <DialogDescription>Community responses to this testimony.</DialogDescription>
                                 </DialogHeader>
                             </div>
-                            <div className="flex-grow min-h-0 p-6">
+                            <div className="flex-1 min-h-0">
                                 <CommentSection testimonyId={testimony.id} />
                             </div>
                         </DialogContent>
