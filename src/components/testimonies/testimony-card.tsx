@@ -113,7 +113,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
     setIsProcessingReaction(type);
     
     const testimonyRef = doc(firestore, 'testimonies', testimony.id);
-    const field = type === 'amen' ? 'supporters' : type === 'inspired' ? 'inspiredBy' : 'connectedBy';
+    const field = type === 'amen' ? 'supporters' : type === 'inspired' ? 'inspiredBy' : 'connect' ? 'connectedBy' : 'supporters';
     
     const updatePayload = { 
       [field]: hasReacted ? arrayRemove(user.uid) : arrayUnion(user.uid) 
@@ -295,8 +295,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
                 className={cn("flex flex-col sm:flex-row h-auto py-2 gap-1 text-[10px] sm:text-xs font-semibold text-muted-foreground hover:bg-muted/50", hasAmened && "text-primary hover:text-primary")}
             >
                 {isProcessingReaction === 'amen' ? <Loader2 className="h-4 w-4 animate-spin" /> : <HandHeart className={cn("h-4 w-4", hasAmened && "fill-current")} />}
-                <span className="hidden xs:inline">Amen</span>
-                <span className="xs:hidden">Amen</span>
+                <span>Amen</span>
             </Button>
 
             <Button 
@@ -307,8 +306,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
                 className={cn("flex flex-col sm:flex-row h-auto py-2 gap-1 text-[10px] sm:text-xs font-semibold text-muted-foreground hover:bg-muted/50", hasInspired && "text-chart-3 hover:text-chart-3")}
             >
                 {isProcessingReaction === 'inspired' ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className={cn("h-4 w-4", hasInspired && "fill-current")} />}
-                <span className="hidden xs:inline">Inspired</span>
-                <span className="xs:hidden">Inspire</span>
+                <span>Inspired</span>
             </Button>
 
             <Button 
@@ -329,8 +327,15 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
                 className={cn("flex flex-col sm:flex-row h-auto py-2 gap-1 text-[10px] sm:text-xs font-semibold text-muted-foreground hover:bg-muted/50", showComments && "text-primary hover:text-primary")}
                 onClick={(e) => { e.stopPropagation(); setShowComments(!showComments); }}
             >
-                <MessageCircle className={cn("h-4 w-4", showComments && "fill-current")} />
-                <span>Msg{commentCount > 0 ? ` (${commentCount})` : ''}</span>
+                <div className="relative">
+                    <MessageCircle className={cn("h-4 w-4", showComments && "fill-current")} />
+                    {commentCount > 0 && (
+                        <span className="absolute -top-1.5 -right-1.5 flex h-3 w-3 items-center justify-center rounded-full bg-primary text-[8px] font-bold text-primary-foreground border-background border">
+                            {commentCount}
+                        </span>
+                    )}
+                </div>
+                <span>Comment</span>
             </Button>
         </CardFooter>
       </Card>
