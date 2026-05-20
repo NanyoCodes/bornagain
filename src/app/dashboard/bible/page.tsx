@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useEffect, useRef, useLayoutEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   AlertDialog,
@@ -143,6 +143,9 @@ function NoteEditor({ highlight, onSave, onDelete, onCancel }: { highlight: Bibl
   )
 }
 
+type FontSize = 'sm' | 'base' | 'lg' | 'xl';
+const FONT_SIZES: FontSize[] = ['sm', 'base', 'lg', 'xl'];
+
 export default function BibleReaderPage() {
   const { toast } = useToast();
   const { user } = useUser();
@@ -168,8 +171,6 @@ export default function BibleReaderPage() {
   const [mounted, setMounted] = useState(false);
   const [isChapterPopoverOpen, setIsChapterPopoverOpen] = useState(false);
   const [view, setView] = useState<'read' | 'history'>('read');
-  type FontSize = 'sm' | 'base' | 'lg' | 'xl';
-  const fontSizes: FontSize[] = ['sm', 'base', 'lg', 'xl'];
   const [fontSize, setFontSize] = useState<FontSize>('sm');
   const [historyFilterDate, setHistoryFilterDate] = useState<string>('');
 
@@ -336,8 +337,8 @@ export default function BibleReaderPage() {
     const ReaderContent = (
       <div className="flex flex-col gap-4 h-full min-h-0">
           <div className="flex items-center justify-end gap-2 shrink-0">
-                 <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => setFontSize(f => f === 'xl' ? 'xl' : fontSizes[fontSizes.indexOf(f)+1] as any)}><Plus className="h-4 w-4" /></Button>
-                 <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => setFontSize(f => f === 'sm' ? 'sm' : fontSizes[fontSizes.indexOf(f)-1] as any)}><Minus className="h-4 w-4" /></Button>
+                 <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => setFontSize(f => f === 'xl' ? 'xl' : FONT_SIZES[FONT_SIZES.indexOf(f)+1] as any)}><Plus className="h-4 w-4" /></Button>
+                 <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => setFontSize(f => f === 'sm' ? 'sm' : FONT_SIZES[FONT_SIZES.indexOf(f)-1] as any)}><Minus className="h-4 w-4" /></Button>
           </div>
           <ScrollArea ref={scrollAreaRef} className="flex-grow border rounded-md p-4 relative">
                   {isLoadingChapter && <div className="absolute inset-0 flex items-center justify-center bg-background/50 z-20"><Loader2 className="h-8 w-8 animate-spin" /></div>}
@@ -375,7 +376,6 @@ export default function BibleReaderPage() {
             <div className="shrink-0 flex items-center justify-between mb-4">
                 <div className="flex items-center gap-4">
                   <Button variant="outline" size="icon" onClick={() => router.back()}><ArrowLeft className="h-4 w-4" /></Button>
-                   <h1 className="text-xl font-bold">Bible Reader</h1>
                 </div>
                 <div className="flex items-center gap-2">
                    <Button variant={view === 'read' ? 'default' : 'ghost'} size="sm" onClick={() => setView('read')}><BookOpen className="mr-2 h-4 w-4" />Read</Button>
