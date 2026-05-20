@@ -106,37 +106,46 @@ function NoteEditor({ highlight, onSave, onDelete, onCancel }: { highlight: Bibl
   }
 
   return (
-    <Card className={cn("bg-card border shadow-lg", getNoteCardClass(highlight.color))}>
-      <CardHeader className="p-3">
+    <Card className={cn("bg-card border shadow-lg w-full", getNoteCardClass(highlight.color))}>
+      <CardHeader className="p-4">
         <CardTitle className="text-base">Editing Note</CardTitle>
-        <CardDescription>{getVerseReference(highlight)}</CardDescription>
+        <CardDescription className="font-medium text-primary">{getVerseReference(highlight)}</CardDescription>
       </CardHeader>
-      <CardContent className="p-3 pt-0">
+      <CardContent className="p-4 pt-0">
         <Textarea 
             value={note}
             onChange={(e) => setNote(e.target.value)}
             placeholder="Add your meditation note..."
-            rows={4}
-            className="text-sm"
+            rows={6}
+            className="text-base min-h-[120px] focus-visible:ring-primary"
             autoFocus
         />
       </CardContent>
-      <CardFooter className="p-3 pt-0 flex flex-wrap items-center justify-between gap-2">
+      <CardFooter className="p-4 pt-0 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
           <AlertDialog>
              <AlertDialogTrigger asChild>
-                <Button variant="destructive" size="sm" disabled={isDeleting}>
-                    {isDeleting ? <Loader2 className="mr-1 h-4 w-4 animate-spin"/> : <Trash2 className="mr-1 h-4 w-4"/>}
-                    Delete
+                <Button variant="destructive" size="default" disabled={isDeleting} className="w-full sm:w-auto">
+                    {isDeleting ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Trash2 className="mr-2 h-4 w-4"/>}
+                    Delete Highlight
                 </Button>
              </AlertDialogTrigger>
-             <AlertDialogContent>
-                <AlertDialogHeader><AlertDialogTitle>Delete highlight?</AlertDialogTitle><AlertDialogDescription>This action cannot be undone.</AlertDialogDescription></AlertDialogHeader>
-                <AlertDialogFooter><AlertDialogCancel>Cancel</AlertDialogCancel><AlertDialogAction onClick={handleDelete} className="bg-destructive">Confirm</AlertDialogAction></AlertDialogFooter>
+             <AlertDialogContent className="w-[90vw] rounded-lg">
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Delete highlight?</AlertDialogTitle>
+                  <AlertDialogDescription>This action cannot be undone and will remove your note.</AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Confirm</AlertDialogAction>
+                </AlertDialogFooter>
              </AlertDialogContent>
           </AlertDialog>
-          <div className="flex gap-2">
-            <Button variant="ghost" size="sm" onClick={onCancel}>Cancel</Button>
-            <Button size="sm" onClick={handleSave} disabled={isSaving}>Save</Button>
+          <div className="flex gap-2 w-full sm:w-auto">
+            <Button variant="ghost" size="default" onClick={onCancel} className="flex-1 sm:flex-none">Cancel</Button>
+            <Button size="default" onClick={handleSave} disabled={isSaving} className="flex-1 sm:flex-none">
+              {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Save Note
+            </Button>
           </div>
       </CardFooter>
     </Card>
@@ -183,7 +192,6 @@ export default function BibleReaderPage() {
   
   const selectedBook = useMemo(() => bibleData.find(b => b.name === selectedBookName), [selectedBookName]);
 
-  // Robust initialization from reading history
   useEffect(() => {
     if (!profileLoading && !isInitialized) {
       if (userProfile?.readingHistory?.length) {
@@ -202,7 +210,6 @@ export default function BibleReaderPage() {
     }
   }, [userProfile, profileLoading, isInitialized]);
 
-  // Safety guard: ensure chapter is valid when book changes
   const prevBookNameRef = useRef(selectedBookName);
   useEffect(() => {
     if (selectedBookName !== prevBookNameRef.current) {
@@ -333,9 +340,11 @@ export default function BibleReaderPage() {
             {highlights?.sort((a, b) => (a.createdAt?.seconds ?? 0) - (b.createdAt?.seconds ?? 0)).map(h => h.id === activeHighlightId ? (
                 <NoteEditor key={h.id} highlight={h} onSave={handleUpdateNote} onDelete={(id) => deleteDoc(doc(firestore, user!.uid, 'bibleHighlights', id)).then(() => setActiveHighlightId(null))} onCancel={() => setActiveHighlightId(null)} />
             ) : (
-                <Card key={h.id} onClick={() => setActiveHighlightId(h.id)} className={cn("cursor-pointer hover:bg-muted/50", getNoteCardClass(h.color))}>
-                    <CardHeader className="p-3"><CardTitle className="text-sm">{getVerseReference(h)}</CardTitle></CardHeader>
-                    {h.note && <CardContent className="p-3 pt-0"><p className="text-xs italic line-clamp-2">{h.note}</p></CardContent>}
+                <Card key={h.id} onClick={() => setActiveHighlightId(h.id)} className={cn("cursor-pointer hover:bg-muted/50 border-l-4", getNoteCardClass(h.color), "border-l-primary")}>
+                    <CardHeader className="p-3">
+                        <CardTitle className="text-sm font-semibold">{getVerseReference(h)}</CardTitle>
+                    </CardHeader>
+                    {h.note && <CardContent className="p-3 pt-0"><p className="text-xs text-muted-foreground line-clamp-3 leading-relaxed italic">&ldquo;{h.note}&rdquo;</p></CardContent>}
                 </Card>
             ))}
         </div>
@@ -355,7 +364,7 @@ export default function BibleReaderPage() {
                         <div className={cn("space-y-2 font-serif leading-relaxed", fontSizeClasses[fontSize])}>
                             {chapterContent.verses.map(v => (
                                 <div key={v.verse} id={`verse-${v.verse}`} className={cn('rounded px-1 py-1 cursor-pointer transition-colors', highlightsMap.get(v.verse) && getHighlightClass(highlightsMap.get(v.verse)!.color), selectedVerses.includes(v.verse) && 'bg-primary/20', activeHighlight?.verses.includes(v.verse) && 'ring-2 ring-primary')} onClick={() => handleVerseClick(v.verse)}>
-                                    <sup className={cn("mr-1 text-muted-foreground", subFontSizeClasses[fontSize])}>{v.verse}</sup>{v.text}
+                                    <sup className={cn("mr-1 text-muted-foreground font-sans", subFontSizeClasses[fontSize])}>{v.verse}</sup>{v.text}
                                 </div>
                             ))}
                         </div>
@@ -467,12 +476,12 @@ export default function BibleReaderPage() {
                       <>
                         {activeHighlight && (
                           <Sheet open={!!activeHighlight} onOpenChange={(open) => !open && setActiveHighlightId(null)}>
-                            <SheetContent side="bottom" className="h-[50vh] p-0 flex flex-col">
-                              <SheetHeader className="p-6 border-b shrink-0">
-                                <SheetTitle>Journal Entry</SheetTitle>
-                                <SheetDescription>Meditation for {getVerseReference(activeHighlight)}</SheetDescription>
+                            <SheetContent side="bottom" className="h-[85dvh] p-0 flex flex-col rounded-t-2xl">
+                              <SheetHeader className="p-6 border-b shrink-0 bg-muted/20">
+                                <SheetTitle className="text-xl">Journal Entry</SheetTitle>
+                                <SheetDescription className="text-muted-foreground">Meditation for {getVerseReference(activeHighlight)}</SheetDescription>
                               </SheetHeader>
-                              <div className="flex-grow overflow-y-auto p-6">
+                              <div className="flex-grow overflow-y-auto p-4 sm:p-6">
                                 <NoteEditor 
                                   highlight={activeHighlight} 
                                   onSave={handleUpdateNote} 
@@ -485,9 +494,9 @@ export default function BibleReaderPage() {
                         )}
                         <Sheet open={isJournalSheetOpen} onOpenChange={setIsJournalSheetOpen}>
                           <SheetContent side="right" className="w-[90vw] sm:max-w-md flex flex-col p-0">
-                            <SheetHeader className="p-6 border-b shrink-0">
-                              <SheetTitle>My Journal</SheetTitle>
-                              <SheetDescription>Notes and highlights for this chapter.</SheetDescription>
+                            <SheetHeader className="p-6 border-b shrink-0 bg-muted/20">
+                              <SheetTitle className="text-xl">My Journal</SheetTitle>
+                              <SheetDescription className="text-muted-foreground">Notes and highlights for this chapter.</SheetDescription>
                             </SheetHeader>
                             <div className="flex-grow overflow-y-auto p-4">
                               {NotesList}
