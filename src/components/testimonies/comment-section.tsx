@@ -13,6 +13,7 @@ import { cn, safeToDate } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { useDoc } from '@/firebase/firestore/use-doc';
 import { useIsMobile } from '@/hooks/use-mobile';
+import Link from 'next/link';
 
 function CommentItem({ 
     comment, 
@@ -75,20 +76,26 @@ function CommentItem({
         }
     };
 
+    const profileLink = isAuthor ? "/dashboard/profile" : `/dashboard/profile/${comment.authorId}`;
+
     return (
         <div className={cn("space-y-4", level > 0 && "ml-4 sm:ml-8")}>
             <div className="flex gap-2 sm:gap-3 items-start group relative">
-                <Avatar className={cn("shrink-0", level > 0 ? "h-5 w-5 sm:h-6 sm:w-6" : "h-6 w-6 sm:h-7 sm:w-7")}>
-                    <AvatarImage src={comment.authorAvatarUrl} />
-                    <AvatarFallback className="text-[8px] sm:text-[10px]">{comment.authorFirstName.charAt(0)}</AvatarFallback>
-                </Avatar>
+                <Link href={profileLink}>
+                    <Avatar className={cn("shrink-0 hover:opacity-80 transition-opacity", level > 0 ? "h-5 w-5 sm:h-6 sm:w-6" : "h-6 w-6 sm:h-7 sm:w-7")}>
+                        <AvatarImage src={comment.authorAvatarUrl} />
+                        <AvatarFallback className="text-[8px] sm:text-[10px]">{comment.authorFirstName.charAt(0)}</AvatarFallback>
+                    </Avatar>
+                </Link>
                 <div className="flex-1 min-w-0">
                     <div className="bg-muted/30 rounded-lg p-2 sm:p-2.5 relative">
                         <div className="flex justify-between items-start mb-1 gap-2">
                             <div className="min-w-0 flex-1">
-                                <p className="text-[10px] sm:text-xs font-bold truncate">
-                                    {comment.authorFirstName} {comment.authorLastName}
-                                </p>
+                                <Link href={profileLink} className="hover:underline decoration-primary/30 underline-offset-2">
+                                    <p className="text-[10px] sm:text-xs font-bold truncate">
+                                        {comment.authorFirstName} {comment.authorLastName}
+                                    </p>
+                                </Link>
                                 <p className="text-[8px] sm:text-[9px] text-muted-foreground">
                                     {createdAt ? formatDistanceToNow(createdAt, { addSuffix: true }) : 'just now'}
                                 </p>
