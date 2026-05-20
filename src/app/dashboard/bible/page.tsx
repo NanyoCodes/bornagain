@@ -170,6 +170,7 @@ export default function BibleReaderPage() {
   const isMobile = useIsMobile();
   const [isInitialized, setIsInitialized] = useState(false);
   const [isChapterPopoverOpen, setIsChapterPopoverOpen] = useState(false);
+  const [isJournalSheetOpen, setIsJournalSheetOpen] = useState(false);
   const [view, setView] = useState<'read' | 'history'>('read');
   const [fontSize, setFontSize] = useState<FontSize>('sm');
   const [historyFilterDate, setHistoryFilterDate] = useState<string>('');
@@ -426,7 +427,7 @@ export default function BibleReaderPage() {
 
             {view === 'read' ? (
                 <div className="flex-grow flex flex-col min-h-0 overflow-hidden">
-                    <div className="grid grid-cols-2 gap-2 shrink-0 mb-4">
+                    <div className="grid grid-cols-[1fr_1fr_auto] md:grid-cols-2 gap-2 shrink-0 mb-4">
                         <Select value={selectedBookName} onValueChange={setSelectedBookName}>
                             <SelectTrigger className="truncate"><SelectValue /></SelectTrigger>
                             <SelectContent>{bibleData.map(b => <SelectItem key={b.name} value={b.name}>{b.name}</SelectItem>)}</SelectContent>
@@ -448,28 +449,52 @@ export default function BibleReaderPage() {
                               </ScrollArea>
                             </PopoverContent>
                         </Popover>
+                        <Button 
+                          variant="outline" 
+                          size="icon" 
+                          className="md:hidden" 
+                          onClick={() => setIsJournalSheetOpen(true)}
+                          title="My Journal"
+                        >
+                          <Highlighter className="h-4 w-4" />
+                        </Button>
                     </div>
                     <div className="flex-grow flex-col md:flex-row flex gap-6 min-h-0 overflow-hidden">
                         <div className="flex-grow min-h-0">{ReaderContent}</div>
                         <div className="hidden md:flex md:w-1/3 flex-col border rounded-md bg-muted/30 p-4 min-h-0"><h3 className="font-semibold mb-2">My Journal</h3><ScrollArea className="flex-grow">{NotesList}</ScrollArea></div>
                     </div>
-                    {isMobile && activeHighlight && (
-                      <Sheet open={!!activeHighlight} onOpenChange={(open) => !open && setActiveHighlightId(null)}>
-                        <SheetContent side="bottom" className="h-[50vh] p-0 flex flex-col">
-                          <SheetHeader className="p-6 border-b shrink-0">
-                            <SheetTitle>Journal Entry</SheetTitle>
-                            <SheetDescription>Meditation for {getVerseReference(activeHighlight)}</SheetDescription>
-                          </SheetHeader>
-                          <div className="flex-grow overflow-y-auto p-6">
-                            <NoteEditor 
-                              highlight={activeHighlight} 
-                              onSave={handleUpdateNote} 
-                              onDelete={(id) => deleteDoc(doc(firestore!, user!.uid, 'bibleHighlights', id)).then(() => setActiveHighlightId(null))} 
-                              onCancel={() => setActiveHighlightId(null)} 
-                            />
-                          </div>
-                        </SheetContent>
-                      </Sheet>
+                    {isMobile && (
+                      <>
+                        {activeHighlight && (
+                          <Sheet open={!!activeHighlight} onOpenChange={(open) => !open && setActiveHighlightId(null)}>
+                            <SheetContent side="bottom" className="h-[50vh] p-0 flex flex-col">
+                              <SheetHeader className="p-6 border-b shrink-0">
+                                <SheetTitle>Journal Entry</SheetTitle>
+                                <SheetDescription>Meditation for {getVerseReference(activeHighlight)}</SheetDescription>
+                              </SheetHeader>
+                              <div className="flex-grow overflow-y-auto p-6">
+                                <NoteEditor 
+                                  highlight={activeHighlight} 
+                                  onSave={handleUpdateNote} 
+                                  onDelete={(id) => deleteDoc(doc(firestore!, user!.uid, 'bibleHighlights', id)).then(() => setActiveHighlightId(null))} 
+                                  onCancel={() => setActiveHighlightId(null)} 
+                                />
+                              </div>
+                            </SheetContent>
+                          </Sheet>
+                        )}
+                        <Sheet open={isJournalSheetOpen} onOpenChange={setIsJournalSheetOpen}>
+                          <SheetContent side="right" className="w-[90vw] sm:max-w-md flex flex-col p-0">
+                            <SheetHeader className="p-6 border-b shrink-0">
+                              <SheetTitle>My Journal</SheetTitle>
+                              <SheetDescription>Notes and highlights for this chapter.</SheetDescription>
+                            </SheetHeader>
+                            <div className="flex-grow overflow-y-auto p-4">
+                              {NotesList}
+                            </div>
+                          </SheetContent>
+                        </Sheet>
+                      </>
                     )}
                 </div>
             ) : (
