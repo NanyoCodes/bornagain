@@ -1,6 +1,7 @@
+
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Newspaper, HandHeart, Loader2 } from "lucide-react";
 import { CreateTestimonyForm } from "@/components/testimonies/create-testimony-form";
@@ -70,10 +71,21 @@ export default function TestimoniesPage() {
 
   const loading = userLoading || profileLoading || loadingTestimonies || loadingPrayers;
 
+  // Pattern: Controlled visibility booleans to ensure body interaction is restored correctly
   const [itemToDelete, setItemToDelete] = useState<{ type: 'testimony', data: Testimony } | { type: 'prayer', data: PrayerRequest } | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [itemToEdit, setItemToEdit] = useState<Testimony | null>(null);
+  const [isEditOpen, setIsEditOpen] = useState(false);
   const [prayerToAnswer, setPrayerToAnswer] = useState<PrayerRequest | null>(null);
+
+  const closeDeleteDialog = useCallback(() => {
+    setItemToDelete(null);
+  }, []);
+
+  const closeEditDialog = useCallback(() => {
+    setIsEditOpen(false);
+    setTimeout(() => setItemToEdit(null), 300);
+  }, []);
 
   useEffect(() => {
     setMounted(true);
@@ -168,11 +180,11 @@ export default function TestimoniesPage() {
   }, [prayerRequests, searchTerm, activeTab]);
 
   const handleTestimonyCreated = () => {
-    setTimeout(() => setIsTestimonyDialogOpen(false), 100);
-    setPrayerToAnswer(null);
+    setIsTestimonyDialogOpen(false);
+    setTimeout(() => setPrayerToAnswer(null), 300);
   };
   const handlePrayerRequestCreated = () => {
-    setTimeout(() => setIsPrayerDialogOpen(false), 100);
+    setIsPrayerDialogOpen(false);
   };
 
   const handleOpenTestimonyDialog = (prayer?: PrayerRequest) => {
@@ -180,11 +192,6 @@ export default function TestimoniesPage() {
       setPrayerToAnswer(prayer);
     }
     setIsTestimonyDialogOpen(true);
-  };
-
-  const handleCloseTestimonyDialog = () => {
-    setIsTestimonyDialogOpen(false);
-    setTimeout(() => setPrayerToAnswer(null), 300);
   };
   
   const handleConfirmDelete = async () => {
@@ -225,11 +232,11 @@ export default function TestimoniesPage() {
             description: `The item has been successfully removed.`,
         });
         
-        setTimeout(() => setItemToDelete(null), 100);
+        closeDeleteDialog();
     } catch (error: any) {
         if (error.message === "This testimony has already been deleted.") {
             toast({ variant: 'destructive', title: 'Already Deleted', description: error.message });
-            setItemToDelete(null);
+            closeDeleteDialog();
             return;
         }
         const permissionError = new FirestorePermissionError({
@@ -242,11 +249,11 @@ export default function TestimoniesPage() {
     }
   };
 
-  const testimonyFormContent = userProfile ? <CreateTestimonyForm userProfile={userProfile} onTestimonyCreated={handleCloseTestimonyDialog} prayerRequest={prayerToAnswer} /> : <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin"/></div>;
+  const testimonyFormContent = userProfile ? <CreateTestimonyForm userProfile={userProfile} onTestimonyCreated={handleTestimonyCreated} prayerRequest={prayerToAnswer} /> : <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin"/></div>;
   const prayerFormContent = userProfile ? <CreatePrayerRequestForm onPrayerRequestCreated={handlePrayerRequestCreated} /> : <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin"/></div>;
 
   return (
-    <div className="space-y-6 md:space-y-8">
+    <div className="space-y-6 md:space-y-12">
       {/* Centered Interaction Box */}
       <Card className="border shadow-sm sm:shadow-md">
         <CardContent className="px-4 py-4 sm:p-6">
@@ -288,8 +295,8 @@ export default function TestimoniesPage() {
               <TabsTrigger value="testimonies">Testimonies</TabsTrigger>
               <TabsTrigger value="prayers">Prayer Requests</TabsTrigger>
           </TabsList>
-          <TabsContent value="testimonies" className="mt-4 md:mt-6">
-              <div className="grid gap-6 md:gap-10 md:grid-cols-2 lg:grid-cols-3">
+          <TabsContent value="testimonies" className="mt-8 md:mt-10">
+              <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-3">
                 {loading && (
                   [...Array(3)].map((_, i) => (
                     <Card key={i} className="flex flex-col h-full"><CardContent className="p-6 space-y-4"><Skeleton className="h-12 w-12 rounded-full" /><div className="w-full space-y-2"><Skeleton className="h-4 w-1/4" /><Skeleton className="h-4 w-1/5" /></div><Skeleton className="h-5 w-3/4" /><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-full" /></CardContent></Card>
@@ -301,7 +308,7 @@ export default function TestimoniesPage() {
                             key={testimony.id} 
                             testimony={testimony} 
                             onDelete={() => setItemToDelete({ type: 'testimony', data: testimony })}
-                            onEdit={() => setItemToEdit(testimony)}
+                            onEdit={() => { setItemToEdit(testimony); setIsEditOpen(true); }}
                         />
                     );
                 })}
@@ -316,8 +323,8 @@ export default function TestimoniesPage() {
                 )}
               </div>
           </TabsContent>
-          <TabsContent value="prayers" className="mt-4 md:mt-6">
-              <div className="grid gap-6 md:gap-10 md:grid-cols-2 lg:grid-cols-3">
+          <TabsContent value="prayers" className="mt-8 md:mt-10">
+              <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-3">
                 {loading && (
                   [...Array(3)].map((_, i) => (
                     <Card key={i} className="flex flex-col h-full"><CardContent className="p-6 space-y-4"><Skeleton className="h-12 w-12 rounded-full" /><div className="w-full space-y-2"><Skeleton className="h-4 w-1/4" /><Skeleton className="h-4 w-1/5" /></div><Skeleton className="h-5 w-3/4" /><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-full" /></CardContent></Card>
@@ -344,7 +351,7 @@ export default function TestimoniesPage() {
           </TabsContent>
       </Tabs>
       
-      <AlertDialog open={!!itemToDelete} onOpenChange={(open) => { if(!open) setTimeout(() => setItemToDelete(null), 100); }}>
+      <AlertDialog open={!!itemToDelete} onOpenChange={(open) => !open && closeDeleteDialog()}>
           <AlertDialogContent className="w-[90vw] max-w-lg rounded-lg">
           <AlertDialogHeader>
               <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
@@ -362,7 +369,7 @@ export default function TestimoniesPage() {
           </AlertDialogContent>
       </AlertDialog>
 
-      <Dialog open={!!itemToEdit} onOpenChange={(open) => { if(!open) setTimeout(() => setItemToEdit(null), 100); }}>
+      <Dialog open={isEditOpen} onOpenChange={(open) => !open && closeEditDialog()}>
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
             <DialogTitle>Edit Testimony</DialogTitle>
@@ -371,12 +378,12 @@ export default function TestimoniesPage() {
             </DialogDescription>
           </DialogHeader>
           <div className="max-h-[70vh] overflow-y-auto pr-2">
-            {itemToEdit && <EditTestimonyForm testimony={itemToEdit} onTestimonyUpdated={() => { setTimeout(() => setItemToEdit(null), 100); }} />}
+            {itemToEdit && <EditTestimonyForm testimony={itemToEdit} onTestimonyUpdated={closeEditDialog} />}
           </div>
         </DialogContent>
       </Dialog>
       
-      <Dialog open={isTestimonyDialogOpen} onOpenChange={(open) => { if(!open) handleCloseTestimonyDialog(); }}>
+      <Dialog open={isTestimonyDialogOpen} onOpenChange={(open) => !open && setIsTestimonyDialogOpen(false)}>
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
             <DialogTitle>{prayerToAnswer ? 'Share Answered Prayer' : 'Share Testimony'}</DialogTitle>
@@ -388,7 +395,7 @@ export default function TestimoniesPage() {
         </DialogContent>
       </Dialog>
       
-      <Dialog open={isPrayerDialogOpen} onOpenChange={(open) => { if(!open) setTimeout(() => setIsPrayerDialogOpen(false), 100); }}>
+      <Dialog open={isPrayerDialogOpen} onOpenChange={(open) => !open && setIsPrayerDialogOpen(false)}>
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
             <DialogTitle>Share Prayer Request</DialogTitle>

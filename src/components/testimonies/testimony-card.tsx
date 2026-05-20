@@ -1,3 +1,4 @@
+
 "use client";
 
 import * as React from "react";
@@ -14,7 +15,7 @@ import {
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Testimony } from "@/lib/types";
+import { Testimony, FollowUpStatus } from "@/lib/types";
 import { format } from "date-fns";
 import { Share2, MoreVertical, Edit, Trash2, Loader2, Globe, Sparkles, Link as LinkIcon, HandHeart, MessageCircle } from "lucide-react";
 import { useUser, useFirestore } from "@/firebase";
@@ -74,6 +75,11 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
     return createdAtDate ? format(createdAtDate, "PPP 'at' p") : 'Shared recently';
   }, [testimony.createdAt]);
   
+  const locationString = useMemo(() => {
+    const { city, country } = testimony.authorLocation || {};
+    return [city, country].filter(Boolean).join(', ') || 'Global Community';
+  }, [testimony.authorLocation]);
+
   React.useEffect(() => {
     setMounted(true);
     const checkTruncation = () => {
@@ -122,9 +128,8 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
   const handleShare = (platform: "link" | "facebook" | "twitter" | "whatsapp") => {
     const baseUrl = "https://testifyglobal.com";
     const url = `${baseUrl}/dashboard/testimonies#${testimony.id}`;
-    const posterHeader = "🌟 TESTIMONY POSTER 🌟\n\n";
-    const text = `Check out this powerful testimony from ${authorFullName} in ${testimony.authorLocation?.country || 'the community'}!\n\n"${testimony.content.substring(0, 150)}..."`;
-    const shareTextWithUrl = `${posterHeader}${text}\n\nRead more at: ${url}`;
+    const text = `Powerful testimony from ${authorFullName} on Testify! \n\n"${testimony.content.substring(0, 150)}..."`;
+    const shareTextWithUrl = `${text}\n\nRead more at: ${url}`;
     let shareUrl = "";
 
     switch (platform) {
@@ -144,7 +149,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
         navigator.clipboard.writeText(shareTextWithUrl);
         toast({
           title: "Link Copied!",
-          description: "Poster link copied to your clipboard.",
+          description: "Testimony link copied to your clipboard.",
         });
         break;
     }
@@ -188,7 +193,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
                 <CardTitle className="text-sm sm:text-base font-semibold truncate">{authorFullName}</CardTitle>
               </Link>
               <CardDescription className="text-[10px] sm:text-xs mt-0.5 flex flex-col gap-0.5">
-                  <span className="flex items-center gap-1"><Globe className="h-3 w-3 text-primary shrink-0" /> {[testimony.authorLocation?.city, testimony.authorLocation?.country].filter(Boolean).join(', ') || 'Global Community'}</span>
+                  <span className="flex items-center gap-1"><Globe className="h-3 w-3 text-primary shrink-0" /> {locationString}</span>
                   <span className="truncate">{displayDate}</span>
               </CardDescription>
             </div>
@@ -206,8 +211,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
                 <DropdownMenuLabel>Share God's Glory</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onSelect={(e) => { e.preventDefault(); handleShare('link'); }}><Share2 className="mr-2 h-4 w-4" /><span>Copy Link</span></DropdownMenuItem>
-                <DropdownMenuItem onSelect={(e) => { e.preventDefault(); handleShare('whatsapp'); }}><MessageCircle className="mr-2 h-4 w-4" /><span>Share WhatsApp Poster</span></DropdownMenuItem>
-                <DropdownMenuItem onSelect={(e) => { e.preventDefault(); handleShare('facebook'); }}><Icons.facebook className="mr-2 h-4 w-4" /><span>Share on Facebook</span></DropdownMenuItem>
+                <DropdownMenuItem onSelect={(e) => { e.preventDefault(); handleShare('whatsapp'); }}><Icons.google className="mr-2 h-4 w-4" /><span>WhatsApp</span></DropdownMenuItem>
                 {isAuthor && <DropdownMenuSeparator />}
                 {isAuthor && <DropdownMenuItem onSelect={(e) => { e.preventDefault(); onEdit(); }}><Edit className="mr-2 h-4 w-4" /><span>Edit</span></DropdownMenuItem>}
                 {isAuthor && <DropdownMenuItem onSelect={(e) => { e.preventDefault(); onDelete(); }} className="text-destructive focus:text-destructive"><Trash2 className="mr-2 h-4 w-4" /><span>Delete</span></DropdownMenuItem>}

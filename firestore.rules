@@ -95,6 +95,12 @@ service cloud.firestore {
          request.resource.data.connectedBy.size() == resource.data.get('connectedBy', []).size() + 1 && 
          request.auth.uid in request.resource.data.connectedBy)
       );
+
+      match /comments/{commentId} {
+          allow get, list: if true;
+          allow create: if request.auth != null && request.resource.data.authorId == request.auth.uid;
+          allow delete: if request.auth != null && resource.data.authorId == request.auth.uid;
+      }
     }
     
     match /prayerRequests/{requestId} {

@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
@@ -52,10 +53,17 @@ export default function SoulsWonPage() {
   const isMobile = useIsMobile();
   const { searchTerm, setSearchPlaceholder, setIsSearchVisible, setSearchTerm } = useSearch();
 
+  // Dialog management with transition safety
   const [soulForFollowUp, setSoulForFollowUp] = useState<Soul | null>(null);
   const [soulForHistory, setSoulForHistory] = useState<Soul | null>(null);
   const [soulToAssign, setSoulToAssign] = useState<Soul | null>(null);
   const [soulToEdit, setSoulToEdit] = useState<Soul | null>(null);
+  
+  const [isFollowUpOpen, setIsFollowUpOpen] = useState(false);
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+  const [isAssignOpen, setIsAssignOpen] = useState(false);
+  const [isEditOpen, setIsEditOpen] = useState(false);
+
   const [isAssigning, setIsAssigning] = useState<string | null>(null);
 
   useEffect(() => {
@@ -91,14 +99,21 @@ export default function SoulsWonPage() {
 
   const loading = userLoading || soulsLoading || loadingCampaigns || loadingFellowships;
 
-  const handleSoulLogged = useCallback(() => {
-    // Controlled closure to prevent interaction freeze
-    setTimeout(() => setIsLogDialogOpen(false), 100);
-  }, []);
-
-  const handleFollowUpLogged = useCallback(() => {
-    // Controlled closure to prevent interaction freeze
-    setTimeout(() => setSoulForFollowUp(null), 100);
+  // Pattern: Controlled closures to ensure Radix UI body scroll lock is removed
+  const closeAllDialogs = useCallback(() => {
+    setIsFollowUpOpen(false);
+    setIsHistoryOpen(false);
+    setIsAssignOpen(false);
+    setIsEditOpen(false);
+    setIsLogDialogOpen(false);
+    
+    // Clear data after animation
+    setTimeout(() => {
+        setSoulForFollowUp(null);
+        setSoulForHistory(null);
+        setSoulToAssign(null);
+        setSoulToEdit(null);
+    }, 300);
   }, []);
 
   const handleAssignFellowship = async (soul: Soul, fellowshipId: string) => {
@@ -153,7 +168,7 @@ export default function SoulsWonPage() {
         });
 
         toast({ title: "Assigned", description: "Fellowship assigned successfully." });
-        setTimeout(() => setSoulToAssign(null), 100);
+        closeAllDialogs();
 
         const wasNewlyAssigned = fellowshipId !== 'none' && fellowshipId !== soul.fellowshipId;
         if (wasNewlyAssigned && selectedFellowship && selectedFellowship.organizerId !== user.uid) {
@@ -345,34 +360,34 @@ export default function SoulsWonPage() {
       <SoulsWonTable 
         souls={filteredSouls || []} 
         loading={loading}
-        onFollowUp={setSoulForFollowUp}
-        onViewHistory={setSoulForHistory}
+        onFollowUp={(soul) => { setSoulForFollowUp(soul); setIsFollowUpOpen(true); }}
+        onViewHistory={(soul) => { setSoulForHistory(soul); setIsHistoryOpen(true); }}
         onExportSingle={handleExportSingleSoul}
-        onOpenAssignDialog={setSoulToAssign}
-        onEdit={setSoulToEdit}
+        onOpenAssignDialog={(soul) => { setSoulToAssign(soul); setIsAssignOpen(true); }}
+        onEdit={(soul) => { setSoulToEdit(soul); setIsEditOpen(true); }}
       />
 
       <LogFollowUpDialog 
           soul={soulForFollowUp} 
-          isOpen={!!soulForFollowUp} 
-          onOpenChange={(isOpen) => { if(!isOpen) setTimeout(() => setSoulForFollowUp(null), 100); }} 
-          onFollowUpLogged={handleFollowUpLogged} 
+          isOpen={isFollowUpOpen} 
+          onOpenChange={(isOpen) => !isOpen && closeAllDialogs()} 
+          onFollowUpLogged={closeAllDialogs} 
       />
       <ViewHistoryDialog 
           soul={soulForHistory} 
-          isOpen={!!soulForHistory} 
-          onOpenChange={(isOpen) => { if(!isOpen) setTimeout(() => setSoulForHistory(null), 100); }} 
+          isOpen={isHistoryOpen} 
+          onOpenChange={(isOpen) => !isOpen && closeAllDialogs()} 
       />
       <AssignFellowshipDialog 
           soul={soulToAssign} 
           fellowships={activeFellowships} 
-          isOpen={!!soulToAssign} 
-          onOpenChange={(open) => { if(!open) setTimeout(() => setSoulToAssign(null), 100); }} 
+          isOpen={isAssignOpen} 
+          onOpenChange={(open) => !open && closeAllDialogs()} 
           onAssignFellowship={handleAssignFellowship} 
           isAssigning={isAssigning} 
       />
       
-      <Dialog open={!!soulToEdit} onOpenChange={(open) => { if(!open) setTimeout(() => setSoulToEdit(null), 100); }}>
+      <Dialog open={isEditOpen} onOpenChange={(open) => !open && closeAllDialogs()}>
           <DialogContent className="sm:max-w-lg">
               <DialogHeader>
                   <DialogTitle>Edit Soul Details</DialogTitle>
@@ -382,7 +397,7 @@ export default function SoulsWonPage() {
                   {soulToEdit && (
                     <EditSoulForm 
                         soul={soulToEdit} 
-                        onSoulUpdated={() => { setTimeout(() => setSoulToEdit(null), 100); }} 
+                        onSoulUpdated={closeAllDialogs} 
                         fellowships={activeFellowships}
                         campaigns={activeCampaigns}
                     />
@@ -391,14 +406,14 @@ export default function SoulsWonPage() {
           </DialogContent>
       </Dialog>
 
-      <Dialog open={isLogDialogOpen} onOpenChange={(open) => { if(!open) setTimeout(() => setIsLogDialogOpen(false), 100); }}>
+      <Dialog open={isLogDialogOpen} onOpenChange={(open) => !open && closeAllDialogs()}>
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
             <DialogTitle>Log a New Soul</DialogTitle>
             <DialogDescription>Record the details of the person you've ministered to.</DialogDescription>
           </DialogHeader>
           <div className="max-h-[70vh] overflow-y-auto pr-2">
-            <LogSoulForm onSoulLogged={handleSoulLogged} fellowships={activeFellowships} campaigns={activeCampaigns} />
+            <LogSoulForm onSoulLogged={closeAllDialogs} fellowships={activeFellowships} campaigns={activeCampaigns} />
           </div>
         </DialogContent>
       </Dialog>

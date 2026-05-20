@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useMemo } from "react";
@@ -299,7 +300,7 @@ export default function ProfilePage() {
                                     <DialogDescription>Make changes to your public profile.</DialogDescription>
                                 </DialogHeader>
                                 <div className="max-h-[70vh] overflow-y-auto pr-2">
-                                  <EditProfileModal userProfile={userProfile} onClose={() => { setTimeout(() => setIsEditModalOpen(false), 100); }} />
+                                  <EditProfileModal userProfile={userProfile} onClose={() => { setIsEditModalOpen(false); }} />
                                 </div>
                             </DialogContent>
                         </Dialog>
@@ -350,7 +351,7 @@ export default function ProfilePage() {
                         searchTerm={prayerSearchTerm}
                         setSearchTerm={setPrayerSearchTerm}
                         filterDate={prayerFilterDate}
-                        setFilterDate={setPrayerFilterDate}
+                        setFilterDate={setFilterDate}
                         searchPlaceholder="Search prayer requests..."
                     />
                     <ScrollArea className="h-48">
