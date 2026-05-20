@@ -114,7 +114,6 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
     const testimonyRef = doc(firestore, 'testimonies', testimony.id);
     const field = type === 'amen' ? 'supporters' : type === 'inspired' ? 'inspiredBy' : 'connectedBy';
     
-    // Toggle reaction: arrayUnion if not present, arrayRemove if already present
     const updatePayload = { 
       [field]: hasReacted ? arrayRemove(user.uid) : arrayUnion(user.uid) 
     };
@@ -200,7 +199,6 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
                <Link href={profileLink} onClick={(e) => { e.stopPropagation(); }} className="hover:underline">
                 <CardTitle className="text-sm sm:text-base font-semibold truncate">{authorFullName}</CardTitle>
               </Link>
-              {/* FIX: Use div instead of p to avoid hydration errors with nested div (Badge) */}
               <div className="text-muted-foreground text-[10px] sm:text-xs mt-0.5 flex flex-col gap-1">
                   <span className="flex items-center gap-1"><Globe className="h-3 w-3 text-primary shrink-0" /> {locationString}</span>
                   <span className="truncate">{displayDate}</span>
@@ -262,10 +260,13 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
 
            {totalReactions > 0 && (
              <div className="flex items-center justify-between pt-2">
-                <div className="flex items-center -space-x-1">
-                    {supporters.length > 0 && <div className="bg-primary rounded-full p-1 border-2 border-background z-30"><HandHeart className="h-2.5 w-2.5 text-primary-foreground fill-current" /></div>}
-                    {inspiredBy.length > 0 && <div className="bg-chart-3 rounded-full p-1 border-2 border-background z-20"><Sparkles className="h-2.5 w-2.5 text-white fill-current" /></div>}
-                    {connectedBy.length > 0 && <div className="bg-blue-500 rounded-full p-1 border-2 border-background z-10"><LinkIcon className="h-2.5 w-2.5 text-white" /></div>}
+                <div className="flex items-center gap-1.5">
+                    <div className="flex items-center -space-x-1">
+                        {supporters.length > 0 && <div className="bg-primary rounded-full p-1 border-2 border-background z-30"><HandHeart className="h-2.5 w-2.5 text-primary-foreground fill-current" /></div>}
+                        {inspiredBy.length > 0 && <div className="bg-chart-3 rounded-full p-1 border-2 border-background z-20"><Sparkles className="h-2.5 w-2.5 text-white fill-current" /></div>}
+                        {connectedBy.length > 0 && <div className="bg-blue-500 rounded-full p-1 border-2 border-background z-10"><LinkIcon className="h-2.5 w-2.5 text-white" /></div>}
+                    </div>
+                    <span className="text-[10px] text-muted-foreground font-medium">{totalReactions}</span>
                 </div>
                 {testimony.campaignTitle && (
                    <span className="text-[9px] text-muted-foreground truncate italic opacity-60">Event: {testimony.campaignTitle}</span>
