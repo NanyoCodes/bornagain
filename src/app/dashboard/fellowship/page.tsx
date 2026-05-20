@@ -8,6 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import {
   AlertDialog,
@@ -25,7 +26,7 @@ import type { UserProfile, Fellowship } from "@/lib/types";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { PlusCircle, Loader2, Video } from 'lucide-react';
+import { PlusCircle, Loader2, Video, Users, Group } from 'lucide-react';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -39,6 +40,7 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
+  SheetDescription,
 } from "@/components/ui/sheet";
 import { useRouter } from 'next/navigation';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -334,7 +336,7 @@ export default function FellowshipPage() {
                 locationType: values.locationType,
             });
             toast({ title: 'Fellowship Updated' });
-            setFellowshipToManage(null);
+            setTimeout(() => setFellowshipToManage(null), 100);
         } catch (e) {
             const permissionError = new FirestorePermissionError({ path: `fellowships/${fellowshipToManage.id}`, operation: 'update' }, user);
             errorEmitter.emit('permission-error', permissionError);
@@ -350,7 +352,7 @@ export default function FellowshipPage() {
         try {
             await updateDoc(fellowshipRef, { status: 'deleted' });
             toast({ title: 'Fellowship Deleted' });
-            setFellowshipToDelete(null);
+            setTimeout(() => setFellowshipToDelete(null), 100);
         } catch (e) {
             const permissionError = new FirestorePermissionError({ path: fellowshipRef.path, operation: 'update' }, user);
             errorEmitter.emit('permission-error', permissionError);
@@ -382,43 +384,42 @@ export default function FellowshipPage() {
 
     return (
         <div className="space-y-8">
+            {/* Centered Interaction Box */}
+            <Card className="border shadow-sm sm:shadow-md">
+                <CardContent className="px-4 py-4 sm:p-6">
+                <div className="flex items-center gap-2 sm:gap-4">
+                    <Button 
+                    variant="outline" 
+                    className="flex-1 justify-center text-muted-foreground font-normal rounded-full h-9 sm:h-11 px-3 sm:px-4 hover:bg-muted/50 transition-colors text-[11px] sm:text-sm"
+                    onClick={() => setIsCreateOpen(true)}
+                    disabled={loading}
+                    >
+                    <span className="truncate">
+                        {loading ? "Preparing groups..." : "Start a new fellowship group?"}
+                    </span>
+                    </Button>
+                </div>
+                <div className="flex items-center justify-center mt-3 pt-3 border-t">
+                    <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="flex-1 text-muted-foreground hover:text-primary transition-colors py-2 sm:py-6 h-auto"
+                        onClick={() => setIsCreateOpen(true)}
+                        disabled={loading}
+                    >
+                        {loading ? (
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        ) : (
+                        <Users className="mr-2 h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+                        )}
+                        <span className="text-[11px] sm:text-xs md:text-sm font-medium">New Fellowship</span>
+                    </Button>
+                </div>
+                </CardContent>
+            </Card>
+
             <div className="flex items-center justify-between">
                 <h1 className="text-xl sm:text-2xl font-bold tracking-tight font-headline">Fellowships</h1>
-                {mounted && isMobile ? (
-                    <Sheet open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-                        <SheetTrigger asChild>
-                            <Button disabled={loading}>
-                                <PlusCircle className="h-4 w-4 md:mr-2" />
-                                <span className="hidden md:inline">New Fellowship</span>
-                            </Button>
-                        </SheetTrigger>
-                        <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0">
-                            <div className="p-6 border-b flex-shrink-0">
-                                <SheetHeader>
-                                    <SheetTitle>New Fellowship</SheetTitle>
-                                </SheetHeader>
-                            </div>
-                            <div className="flex-grow overflow-y-auto p-6">
-                                <FellowshipForm userProfile={userProfile ?? null} onFormSubmit={handleCreateFellowship} isSubmitting={isSubmitting} />
-                            </div>
-                        </SheetContent>
-                    </Sheet>
-                ) : (
-                    <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-                        <DialogTrigger asChild>
-                            <Button disabled={loading}>
-                                <PlusCircle className="h-4 w-4 md:mr-2" />
-                                <span className="hidden md:inline">New Fellowship</span>
-                            </Button>
-                        </DialogTrigger>
-                        <DialogContent>
-                            <DialogHeader>
-                                <DialogTitle>New Fellowship</DialogTitle>
-                            </DialogHeader>
-                            <FellowshipForm userProfile={userProfile ?? null} onFormSubmit={handleCreateFellowship} isSubmitting={isSubmitting} />
-                        </DialogContent>
-                    </Dialog>
-                )}
             </div>
 
             {loading ? (
@@ -442,9 +443,35 @@ export default function FellowshipPage() {
                 </div>
             )}
 
+            {mounted && isMobile ? (
+                <Sheet open={isCreateOpen} onOpenChange={setIsCreateOpen}>
+                    <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0">
+                        <div className="p-6 border-b flex-shrink-0">
+                            <SheetHeader>
+                                <SheetTitle>New Fellowship</SheetTitle>
+                                <SheetDescription>Create a space for community and growth.</SheetDescription>
+                            </SheetHeader>
+                        </div>
+                        <div className="flex-grow overflow-y-auto p-6">
+                            <FellowshipForm userProfile={userProfile ?? null} onFormSubmit={handleCreateFellowship} isSubmitting={isSubmitting} />
+                        </div>
+                    </SheetContent>
+                </Sheet>
+            ) : (
+                <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
+                    <DialogContent className="sm:max-w-lg">
+                        <DialogHeader>
+                            <DialogTitle>New Fellowship</DialogTitle>
+                            <DialogDescription>Create a space for community and growth.</DialogDescription>
+                        </DialogHeader>
+                        <FellowshipForm userProfile={userProfile ?? null} onFormSubmit={handleCreateFellowship} isSubmitting={isSubmitting} />
+                    </DialogContent>
+                </Dialog>
+            )}
+
             {fellowshipToManage && (
-                <Dialog open={!!fellowshipToManage} onOpenChange={() => setFellowshipToManage(null)}>
-                    <DialogContent>
+                <Dialog open={!!fellowshipToManage} onOpenChange={(open) => !open && setFellowshipToManage(null)}>
+                    <DialogContent className="sm:max-w-lg">
                         <DialogHeader><DialogTitle>Manage Fellowship</DialogTitle></DialogHeader>
                         <ManageFellowshipForm fellowship={fellowshipToManage} onFormSubmit={handleUpdateFellowship} isSubmitting={isSubmitting} />
                     </DialogContent>
@@ -452,7 +479,7 @@ export default function FellowshipPage() {
             )}
 
             {fellowshipToDelete && (
-                <AlertDialog open={!!fellowshipToDelete} onOpenChange={() => setFellowshipToDelete(null)}>
+                <AlertDialog open={!!fellowshipToDelete} onOpenChange={(open) => !open && setFellowshipToDelete(null)}>
                     <AlertDialogContent>
                         <AlertDialogHeader><AlertDialogTitle>Delete Fellowship?</AlertDialogTitle></AlertDialogHeader>
                         <AlertDialogFooter>
