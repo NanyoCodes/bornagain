@@ -26,7 +26,21 @@ import { collection, addDoc, serverTimestamp, doc } from "firebase/firestore";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 
-const testimonyCategories: TestimonyCategory[] = ['Healing', 'Financial Breakthrough', 'Salvation', 'Relationships', 'Deliverance', 'General'];
+const testimonyCategories: TestimonyCategory[] = [
+  'Healing', 
+  'Financial Breakthrough', 
+  'Salvation', 
+  'Relationships', 
+  'Deliverance', 
+  'Academic Success', 
+  'Employment', 
+  'Family', 
+  'Protection', 
+  'Mental Health', 
+  'Global Missions', 
+  'Business Growth', 
+  'General'
+];
 
 const formSchema = z.object({
   category: z.string({ required_error: "Please select a category." }),

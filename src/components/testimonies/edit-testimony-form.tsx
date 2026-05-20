@@ -24,7 +24,21 @@ import { doc, updateDoc, serverTimestamp } from "firebase/firestore";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 
-const testimonyCategories: TestimonyCategory[] = ['Healing', 'Financial Breakthrough', 'Salvation', 'Relationships', 'Deliverance', 'General'];
+const testimonyCategories: TestimonyCategory[] = [
+  'Healing', 
+  'Financial Breakthrough', 
+  'Salvation', 
+  'Relationships', 
+  'Deliverance', 
+  'Academic Success', 
+  'Employment', 
+  'Family', 
+  'Protection', 
+  'Mental Health', 
+  'Global Missions', 
+  'Business Growth', 
+  'General'
+];
 
 const formSchema = z.object({
   category: z.string({ required_error: "Please select a category." }),
@@ -62,7 +76,6 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
     }
 
     setIsSubmitting(true);
-    onTestimonyUpdated(); // Close dialog immediately
     
     const testimonyUpdate: { [key: string]: any } = {
         category: values.category,
@@ -78,6 +91,7 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
                 title: "Testimony Updated!",
                 description: "Your changes have been saved successfully.",
             });
+            onTestimonyUpdated();
         })
         .catch(() => {
             const permissionError = new FirestorePermissionError({

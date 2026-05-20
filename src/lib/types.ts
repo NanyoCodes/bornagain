@@ -108,7 +108,20 @@ export type Achievement = {
   description: string;
 };
 
-export type TestimonyCategory = 'Healing' | 'Financial Breakthrough' | 'Salvation' | 'Relationships' | 'Deliverance' | 'General';
+export type TestimonyCategory = 
+  | 'Healing' 
+  | 'Financial Breakthrough' 
+  | 'Salvation' 
+  | 'Relationships' 
+  | 'Deliverance' 
+  | 'Academic Success' 
+  | 'Employment' 
+  | 'Family' 
+  | 'Protection' 
+  | 'Mental Health' 
+  | 'Global Missions' 
+  | 'Business Growth' 
+  | 'General';
 
 export type Testimony = {
   id: string;

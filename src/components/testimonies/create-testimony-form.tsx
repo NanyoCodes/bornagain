@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -24,7 +25,21 @@ import { FirestorePermissionError } from "@/firebase/errors";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { Card, CardHeader, CardDescription } from "@/components/ui/card";
 
-const testimonyCategories: TestimonyCategory[] = ['Healing', 'Financial Breakthrough', 'Salvation', 'Relationships', 'Deliverance', 'General'];
+const testimonyCategories: TestimonyCategory[] = [
+  'Healing', 
+  'Financial Breakthrough', 
+  'Salvation', 
+  'Relationships', 
+  'Deliverance', 
+  'Academic Success', 
+  'Employment', 
+  'Family', 
+  'Protection', 
+  'Mental Health', 
+  'Global Missions', 
+  'Business Growth', 
+  'General'
+];
 
 const formSchema = z.object({
   category: z.string({ required_error: "Please select a category." }),
@@ -69,10 +84,18 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
         authorFirstName: userProfile.firstName,
         authorLastName: userProfile.lastName,
         authorAvatarUrl: userProfile.photoURL || null,
+        authorLocation: userProfile.location ? {
+          city: userProfile.location.city || null,
+          country: userProfile.location.country || null,
+          latitude: userProfile.location.latitude ?? null,
+          longitude: userProfile.location.longitude ?? null,
+        } : null,
         content: values.content,
         createdAt: serverTimestamp(),
         category: values.category as TestimonyCategory,
         supporters: [],
+        inspiredBy: [],
+        connectedBy: [],
     };
     if (campaign) { testimonyData.campaignId = campaign.id; testimonyData.campaignTitle = campaign.title; }
     if (prayerRequest) { testimonyData.answeredPrayerId = prayerRequest.id; testimonyData.answeredPrayerContent = prayerRequest.content; }
