@@ -308,7 +308,7 @@ export default function BibleReaderPage() {
     const NotesList = (
         <div className="space-y-4 p-1">
             {highlights?.sort((a, b) => (a.createdAt?.seconds ?? 0) - (b.createdAt?.seconds ?? 0)).map(h => h.id === activeHighlightId ? (
-                <NoteEditor key={h.id} highlight={h} onSave={handleUpdateNote} onDelete={(id) => deleteDoc(doc(firestore, 'users', user!.uid, 'bibleHighlights', id)).then(() => setActiveHighlightId(null))} onCancel={() => setActiveHighlightId(null)} />
+                <NoteEditor key={h.id} highlight={h} onSave={handleUpdateNote} onDelete={(id) => deleteDoc(doc(firestore, user!.uid, 'bibleHighlights', id)).then(() => setActiveHighlightId(null))} onCancel={() => setActiveHighlightId(null)} />
             ) : (
                 <Card key={h.id} onClick={() => setActiveHighlightId(h.id)} className={cn("cursor-pointer hover:bg-muted/50", getNoteCardClass(h.color))}>
                     <CardHeader className="p-3"><CardTitle className="text-sm">{getVerseReference(h)}</CardTitle></CardHeader>
@@ -409,7 +409,7 @@ export default function BibleReaderPage() {
                             <NoteEditor 
                               highlight={activeHighlight} 
                               onSave={handleUpdateNote} 
-                              onDelete={(id) => deleteDoc(doc(firestore!, 'users', user!.uid, 'bibleHighlights', id)).then(() => setActiveHighlightId(null))} 
+                              onDelete={(id) => deleteDoc(doc(firestore!, user!.uid, 'bibleHighlights', id)).then(() => setActiveHighlightId(null))} 
                               onCancel={() => setActiveHighlightId(null)} 
                             />
                           </div>

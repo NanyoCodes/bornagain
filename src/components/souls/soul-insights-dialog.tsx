@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -20,7 +19,7 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { Loader2, Lightbulb, MessageSquare, ListChecks, Clipboard, ChevronRight } from 'lucide-react';
+import { Loader2, Lightbulb, MessageSquare, ListChecks, Clipboard, ChevronRight, Info } from 'lucide-react';
 import { type Soul } from '@/lib/types';
 import { generateFollowUpInsights, type FollowUpInsightsOutput } from '@/ai/flows/generate-follow-up-insights';
 import { formatDistanceToNow } from 'date-fns';
@@ -28,6 +27,7 @@ import { useToast } from '@/hooks/use-toast';
 import { cn, safeToDate } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { ScrollArea } from '../ui/scroll-area';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip';
 
 function formatHistory(soul: Soul): string {
   const wonAtDate = safeToDate(soul.wonAt);
@@ -118,7 +118,7 @@ export function SoulInsightsDialog({ soul, children }: { soul: Soul, children: R
             <p className="mt-4 text-sm text-muted-foreground">AI is generating insights...</p>
           </div>
         ) : (
-          <div className="space-y-6 pb-6">
+          <div className="space-y-6 pb-6 px-1">
             <div className="space-y-3">
                 <h3 className="font-semibold flex items-center gap-2 text-sm uppercase tracking-wider text-primary"><Lightbulb className="h-4 w-4" /> Key Insight</h3>
                 <p className="text-muted-foreground text-sm italic border-l-4 border-primary/20 pl-4 py-2 bg-primary/5 rounded-r-lg">
@@ -151,7 +151,19 @@ export function SoulInsightsDialog({ soul, children }: { soul: Soul, children: R
                         &ldquo;{insights.suggestedMessage}&rdquo;
                     </p>
                 </div>
-                <p className="text-[10px] text-center text-muted-foreground italic">Tip: Personalize this message before sending.</p>
+                <div className="flex items-center justify-center gap-2 mt-4 text-[10px] text-muted-foreground">
+                   <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Info className="h-3 w-3 cursor-help" />
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-[200px]">
+                        <p>These AI insights are provided using the Gemini Flash model. There are no additional charges for these prompts within your service limits.</p>
+                      </TooltipContent>
+                    </Tooltip>
+                   </TooltipProvider>
+                   <span>Personalize this message before sending.</span>
+                </div>
             </div>
           </div>
         )}
@@ -173,6 +185,9 @@ export function SoulInsightsDialog({ soul, children }: { soul: Soul, children: R
           </div>
           <div className="flex-grow min-h-0 pt-6 px-6">
             {bodyContent}
+          </div>
+          <div className="p-6 border-t flex-shrink-0">
+              <Button variant="outline" className="w-full" onClick={() => setIsOpen(false)}>Close</Button>
           </div>
         </SheetContent>
       </Sheet>
