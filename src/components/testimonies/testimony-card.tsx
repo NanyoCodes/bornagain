@@ -231,7 +231,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
         
         <CardContent className="flex-grow pt-0 px-4 sm:px-6 space-y-4">
           <div className="text-sm text-muted-foreground whitespace-pre-wrap">
-            <p ref={contentRef} className="line-clamp-4 italic leading-relaxed text-xs sm:text-sm">
+            <p ref={contentRef} className="line-clamp-4 leading-relaxed text-xs sm:text-sm">
               &ldquo;{testimony.content}&rdquo;
             </p>
             {isTruncated && (
