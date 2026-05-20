@@ -155,6 +155,10 @@ export type TestimonyComment = {
     authorAvatarUrl?: string;
     text: string;
     createdAt: Timestamp;
+    parentId?: string | null;
+    supporters?: string[];
+    inspiredBy?: string[];
+    connectedBy?: string[];
 };
 
 export type PrayerRequest = {
