@@ -443,14 +443,17 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                 </Tabs>
             )}
           </TabsContent>
-          <TabsContent value="history" className="flex-grow flex flex-col min-h-0 mt-4"><ScrollArea className="h-full"><div className="p-4 space-y-6">{filteredHistoryGroups.map(group => (<div key={group.date.toISOString()}><div className="relative my-4"><div className="absolute inset-0 flex items-center"><div className="w-full border-t" /></div><div className="relative flex justify-center"><span className="bg-background px-3 text-sm font-semibold text-muted-foreground">{format(group.date, 'PPP')}</span></div></div><ul className="space-y-4">{group.items.map((item, idx) => (<li key={idx} className="flex items-center justify-between text-sm"><p>Read <span className="font-medium">{item.book} {item.chapter}</span></p><span className="text-muted-foreground">{format(item.readAt.toDate(), 'p')}</span></li>))}</ul></div>))}</div></ScrollArea></TabsContent>
+          <TabsContent value="history" className="flex-grow flex flex-col min-h-0 mt-4"><ScrollArea className="h-full"><div className="p-4 space-y-6">{(userProfile?.readingHistory || []).map((item, idx) => (<div key={idx} className="flex items-center justify-between text-sm"><p>Read <span className="font-medium">{item.book} {item.chapter}</span></p><span className="text-muted-foreground">{item.readAt ? format(safeToDate(item.readAt)!, 'p') : 'N/A'}</span></div>))}</div></ScrollArea></TabsContent>
         </Tabs>
     );
 
     return (
       <Dialog open={isOpen} onOpenChange={onOpenChange}>
         <DialogContent className="max-w-3xl md:max-w-5xl lg:max-w-7xl max-h-[90dvh] grid grid-rows-[auto_1fr] gap-4 p-4 sm:p-6">
-          <DialogHeader><DialogTitle>Bible Reader</DialogTitle></DialogHeader>
+          <DialogHeader>
+            <DialogTitle>Bible Reader</DialogTitle>
+            <DialogDescription>Read and meditate on the Word.</DialogDescription>
+          </DialogHeader>
           {DialogBody}
         </DialogContent>
       </Dialog>

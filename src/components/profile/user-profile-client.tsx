@@ -114,7 +114,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                         <DialogTitle>Profile photo of {displayName || 'user'}</DialogTitle>
                         <DialogDescription>A larger view of the user's profile photo.</DialogDescription>
                     </DialogHeader>
-                    <Image src={photoURL} alt={displayName || 'user'} width={600} height={600} className="rounded-lg object-contain"/>
+                    <Image src={photoURL} alt={displayName || 'user'} width={600} height={600} className="rounded-lg object-contain" unoptimized/>
                 </DialogContent>
               )}
             </Dialog>

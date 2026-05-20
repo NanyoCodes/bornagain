@@ -1,4 +1,3 @@
-
 "use client";
 
 import * as React from "react";
@@ -199,14 +198,14 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
                <Link href={profileLink} onClick={(e) => { e.stopPropagation(); }} className="hover:underline">
                 <CardTitle className="text-sm sm:text-base font-semibold truncate">{authorFullName}</CardTitle>
               </Link>
-              <CardDescription className="text-[10px] sm:text-xs mt-0.5 flex flex-col gap-0.5">
+              <CardDescription className="text-[10px] sm:text-xs mt-0.5 flex flex-col gap-1">
                   <span className="flex items-center gap-1"><Globe className="h-3 w-3 text-primary shrink-0" /> {locationString}</span>
                   <span className="truncate">{displayDate}</span>
+                  <Badge variant="outline" className="w-fit text-[8px] sm:text-[9px] uppercase tracking-widest px-1.5 py-0 h-4 sm:h-5 mt-1">{testimony.category}</Badge>
               </CardDescription>
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <Badge variant="outline" className="shrink-0 text-[9px] sm:text-[10px] uppercase tracking-widest px-2 py-0 h-5 sm:h-6">{testimony.category}</Badge>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => e.stopPropagation()}>

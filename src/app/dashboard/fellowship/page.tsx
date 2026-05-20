@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -26,7 +26,7 @@ import type { UserProfile, Fellowship } from "@/lib/types";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { PlusCircle, Loader2, Video, Users, Group } from 'lucide-react';
+import { PlusCircle, Loader2, Video, Users, Group, Target } from 'lucide-react';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -270,6 +270,15 @@ export default function FellowshipPage() {
         };
     }, [setIsSearchVisible, setSearchPlaceholder, setSearchTerm]);
 
+    const closeAllDialogs = useCallback(() => {
+        setIsCreateOpen(false);
+        setIsDeleting(false);
+        setTimeout(() => {
+            setFellowshipToManage(null);
+            setFellowshipToDelete(null);
+        }, 300);
+    }, []);
+
     const userDocRef = useMemo(() => (user ? doc(firestore, 'users', user.uid) : null), [user, firestore]);
     const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userDocRef);
 
@@ -315,7 +324,7 @@ export default function FellowshipPage() {
                 });
             });
             toast({ title: "Fellowship Created!" });
-            setIsCreateOpen(false);
+            closeAllDialogs();
         } catch (e) {
             const permissionError = new FirestorePermissionError({ path: 'fellowships', operation: 'create' }, user);
             errorEmitter.emit('permission-error', permissionError);
@@ -336,7 +345,7 @@ export default function FellowshipPage() {
                 locationType: values.locationType,
             });
             toast({ title: 'Fellowship Updated' });
-            setTimeout(() => setFellowshipToManage(null), 100);
+            closeAllDialogs();
         } catch (e) {
             const permissionError = new FirestorePermissionError({ path: `fellowships/${fellowshipToManage.id}`, operation: 'update' }, user);
             errorEmitter.emit('permission-error', permissionError);
@@ -352,7 +361,7 @@ export default function FellowshipPage() {
         try {
             await updateDoc(fellowshipRef, { status: 'deleted' });
             toast({ title: 'Fellowship Deleted' });
-            setTimeout(() => setFellowshipToDelete(null), 100);
+            closeAllDialogs();
         } catch (e) {
             const permissionError = new FirestorePermissionError({ path: fellowshipRef.path, operation: 'update' }, user);
             errorEmitter.emit('permission-error', permissionError);
@@ -470,7 +479,7 @@ export default function FellowshipPage() {
             )}
 
             {fellowshipToManage && (
-                <Dialog open={!!fellowshipToManage} onOpenChange={(open) => !open && setFellowshipToManage(null)}>
+                <Dialog open={!!fellowshipToManage} onOpenChange={(open) => !open && closeAllDialogs()}>
                     <DialogContent className="sm:max-w-lg">
                         <DialogHeader><DialogTitle>Manage Fellowship</DialogTitle></DialogHeader>
                         <ManageFellowshipForm fellowship={fellowshipToManage} onFormSubmit={handleUpdateFellowship} isSubmitting={isSubmitting} />
@@ -479,7 +488,7 @@ export default function FellowshipPage() {
             )}
 
             {fellowshipToDelete && (
-                <AlertDialog open={!!fellowshipToDelete} onOpenChange={(open) => !open && setFellowshipToDelete(null)}>
+                <AlertDialog open={!!fellowshipToDelete} onOpenChange={(open) => !open && closeAllDialogs()}>
                     <AlertDialogContent>
                         <AlertDialogHeader><AlertDialogTitle>Delete Fellowship?</AlertDialogTitle></AlertDialogHeader>
                         <AlertDialogFooter>

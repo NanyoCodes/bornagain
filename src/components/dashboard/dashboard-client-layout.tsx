@@ -357,7 +357,10 @@ export default function DashboardClientLayout({ children }: { children: React.Re
         {!isProfileIncomplete && <WelcomePopup isOpen={showWelcomePopup} onClose={() => setShowWelcomePopup(false)} userName={userProfile?.firstName} />}
          <Dialog open={isProfileIncomplete}>
           <DialogContent hideCloseButton className="sm:max-w-lg">
-            <DialogHeader><DialogTitle>Complete Your Profile</DialogTitle><DialogDescription>Please provide your name to continue.</DialogDescription></DialogHeader>
+            <DialogHeader>
+                <DialogTitle>Complete Your Profile</DialogTitle>
+                <DialogDescription>Please provide your name to continue.</DialogDescription>
+            </DialogHeader>
             <div className="max-h-[70vh] overflow-y-auto pr-2">
               {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
             </div>
