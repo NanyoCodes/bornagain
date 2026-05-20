@@ -337,7 +337,7 @@ export default function DashboardClientLayout({ children }: { children: React.Re
     return (
       <div className="flex min-h-screen w-full flex-col items-center justify-center bg-background">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        <p className="mt-4 text-muted-foreground">Loading dashboard...</p>
+        <p className="mt-4 text-muted-foreground animate-pulse font-headline italic">Connecting to the Kingdom network...</p>
       </div>
     );
   }

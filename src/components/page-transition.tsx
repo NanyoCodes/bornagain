@@ -5,21 +5,28 @@ import { usePathname } from 'next/navigation';
 import React, { useState, useEffect } from 'react';
 
 const variants = {
-  initial: { opacity: 0, y: 15 },
+  initial: { opacity: 0, y: 10 },
   animate: { opacity: 1, y: 0 },
-  exit: { opacity: 0, y: -15 },
+  exit: { opacity: 0, y: -10 },
 };
 
 const kingdomTaglines = [
-  "Recording the miracles of today...",
+  "Preparing your mission field...",
+  "Connecting the global Body of Christ...",
+  "Gathering the testimonies of the saints...",
+  "Mobilizing the harvest workforce...",
+  "Recording today's miracles...",
+  "Equipping the saints for every good work...",
+  "Strengthening community bonds...",
+  "Glorifying God through every soul won...",
   "The harvest is plenteous...",
-  "Equipping the saints for the harvest...",
-  "Glorifying God through technology...",
-  "Strengthening the global Body of Christ...",
-  "Sharing the goodness of Jesus...",
-  "Mobilizing the workforce for the Kingdom...",
-  "Building the Kingdom on Earth...",
   "Faith expressed through technology...",
+  "Building the Kingdom, one life at a time...",
+  "Strengthening your hands for the work...",
+  "Readying the tools for the Gospel...",
+  "Walking in the light of His Word...",
+  "The workers are being sent...",
+  "Recording the goodness of the Lord...",
 ];
 
 export function PageTransition({ children }: { children: React.ReactNode }) {
@@ -28,11 +35,12 @@ export function PageTransition({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     // Choose a random tagline on every path change
-    setTagline(kingdomTaglines[Math.floor(Math.random() * kingdomTaglines.length)]);
+    const randomIndex = Math.floor(Math.random() * kingdomTaglines.length);
+    setTagline(kingdomTaglines[randomIndex]);
   }, [pathname]);
 
   return (
-    <div className="relative h-full">
+    <div className="relative h-full w-full">
       <AnimatePresence mode="wait" initial={false}>
         <motion.div
           key={pathname}
@@ -40,17 +48,34 @@ export function PageTransition({ children }: { children: React.ReactNode }) {
           initial="initial"
           animate="animate"
           exit="exit"
-          transition={{ type: 'easeInOut', duration: 0.3 }}
+          transition={{ 
+            type: 'spring',
+            stiffness: 260,
+            damping: 30,
+            duration: 0.2
+          }}
           className="relative z-10 bg-background h-full flex flex-col"
         >
           {/* Subtle tagline overlay during transition exit */}
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 0 }}
-            exit={{ opacity: 0.8 }}
-            className="absolute inset-0 flex items-center justify-center bg-background z-50 pointer-events-none"
+            exit={{ opacity: 1 }}
+            className="absolute inset-0 flex flex-col items-center justify-center bg-background/80 backdrop-blur-sm z-50 pointer-events-none"
           >
-             <p className="text-primary font-headline text-xl italic animate-pulse px-6 text-center">{tagline}</p>
+             <div className="text-center space-y-4 px-6 max-w-sm">
+                <p className="text-primary font-headline text-2xl italic animate-pulse leading-tight">
+                    {tagline}
+                </p>
+                <div className="h-1 w-24 bg-primary/10 rounded-full mx-auto overflow-hidden">
+                    <motion.div 
+                        initial={{ x: "-100%" }}
+                        animate={{ x: "100%" }}
+                        transition={{ repeat: Infinity, duration: 1.2, ease: "easeInOut" }}
+                        className="h-full w-1/2 bg-primary rounded-full"
+                    />
+                </div>
+             </div>
           </motion.div>
           {children}
         </motion.div>
