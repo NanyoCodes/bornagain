@@ -17,7 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Testimony, TestimonyComment } from "@/lib/types";
 import { format } from "date-fns";
-import { Share2, MoreVertical, Edit, Trash2, Loader2, Globe, Sparkles, Link as LinkIcon, HandHeart, MessageCircle } from "lucide-react";
+import { Share2, MoreVertical, Edit, Trash2, Loader2, Globe, Sparkles, PartyPopper, HandHeart, MessageCircle } from "lucide-react";
 import { useUser, useAuth, useFirestore, useCollection } from "@/firebase";
 import { useState, useMemo } from "react";
 import {
@@ -267,7 +267,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
                     <div className="flex items-center -space-x-1">
                         {supporters.length > 0 && <div className="bg-primary rounded-full p-1 border-2 border-background z-30"><HandHeart className="h-2.5 w-2.5 text-primary-foreground fill-current" /></div>}
                         {inspiredBy.length > 0 && <div className="bg-chart-3 rounded-full p-1 border-2 border-background z-20"><Sparkles className="h-2.5 w-2.5 text-white fill-current" /></div>}
-                        {connectedBy.length > 0 && <div className="bg-blue-500 rounded-full p-1 border-2 border-background z-10"><LinkIcon className="h-2.5 w-2.5 text-white" /></div>}
+                        {connectedBy.length > 0 && <div className="bg-blue-500 rounded-full p-1 border-2 border-background z-10"><PartyPopper className="h-2.5 w-2.5 text-white" /></div>}
                     </div>
                     <span className="text-xs text-muted-foreground font-medium">{totalReactions}</span>
                 </div>
@@ -318,9 +318,9 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
                 size="sm" 
                 className={cn("flex flex-col sm:flex-row h-auto py-2 gap-1 text-[10px] sm:text-xs font-semibold text-muted-foreground hover:bg-muted/50", hasConnected && "text-blue-500 hover:text-blue-500")}
             >
-                {isProcessingReaction === 'connect' ? <Loader2 className="h-4 w-4 animate-spin" /> : <LinkIcon className="h-4 w-4" />}
-                <span className="hidden xs:inline">Connect</span>
-                <span className="xs:hidden">Conn</span>
+                {isProcessingReaction === 'connect' ? <Loader2 className="h-4 w-4 animate-spin" /> : <PartyPopper className="h-4 w-4" />}
+                <span className="hidden xs:inline">I Celebrate You</span>
+                <span className="xs:hidden">Celebrate</span>
             </Button>
 
             <Button 
