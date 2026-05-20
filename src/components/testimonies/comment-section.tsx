@@ -43,7 +43,7 @@ function CommentItem({
     const hasCelebrated = user ? connectedBy.includes(user.uid) : false;
 
     const handleReaction = async (type: 'amen' | 'inspired' | 'celebrate') => {
-        if (!user || !firestore || isAuthor) return;
+        if (!user || !firestore) return;
         setIsReacting(type);
 
         const commentRef = doc(firestore, 'testimonies', testimonyId, 'comments', comment.id);
@@ -124,21 +124,21 @@ function CommentItem({
                     <div className="flex items-center gap-3">
                         <button 
                             onClick={() => handleReaction('amen')}
-                            disabled={isReacting !== null || isAuthor}
+                            disabled={isReacting !== null}
                             className={cn("text-[9px] sm:text-[10px] font-bold transition-colors hover:text-primary", hasAmened ? "text-primary" : "text-muted-foreground")}
                         >
                             Amen
                         </button>
                         <button 
                             onClick={() => handleReaction('inspired')}
-                            disabled={isReacting !== null || isAuthor}
+                            disabled={isReacting !== null}
                             className={cn("text-[9px] sm:text-[10px] font-bold transition-colors hover:text-chart-3", hasInspired ? "text-chart-3" : "text-muted-foreground")}
                         >
                             Inspired
                         </button>
                         <button 
                             onClick={() => handleReaction('celebrate')}
-                            disabled={isReacting !== null || isAuthor}
+                            disabled={isReacting !== null}
                             className={cn("text-[9px] sm:text-[10px] font-bold transition-colors hover:text-blue-500", hasCelebrated ? "text-blue-500" : "text-muted-foreground")}
                         >
                             Celebrate

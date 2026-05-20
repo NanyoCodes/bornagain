@@ -1,4 +1,3 @@
-
 "use client";
 
 import * as React from "react";
@@ -103,7 +102,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
   }, [testimony.content]);
 
   const handleReaction = (type: 'amen' | 'inspired' | 'connect') => {
-    if (!user || !firestore || isAuthor) return;
+    if (!user || !firestore) return;
 
     const hasReacted = 
       (type === 'amen' && hasAmened) || 
@@ -113,7 +112,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
     setIsProcessingReaction(type);
     
     const testimonyRef = doc(firestore, 'testimonies', testimony.id);
-    const field = type === 'amen' ? 'supporters' : type === 'inspired' ? 'inspiredBy' : 'connect' ? 'connectedBy' : 'supporters';
+    const field = type === 'amen' ? 'supporters' : type === 'inspired' ? 'inspiredBy' : 'connectedBy';
     
     const updatePayload = { 
       [field]: hasReacted ? arrayRemove(user.uid) : arrayUnion(user.uid) 
@@ -289,7 +288,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
         <CardFooter className="py-2 px-1 sm:px-4 grid grid-cols-4 gap-0.5">
             <Button 
                 onClick={(e) => { e.stopPropagation(); handleReaction('amen'); }} 
-                disabled={isProcessingReaction !== null || !user || isAuthor} 
+                disabled={isProcessingReaction !== null || !user} 
                 variant="ghost" 
                 size="sm" 
                 className={cn("flex flex-col sm:flex-row h-auto py-2 gap-1 text-[10px] sm:text-xs font-semibold text-muted-foreground hover:bg-muted/50", hasAmened && "text-primary hover:text-primary")}
@@ -300,7 +299,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
 
             <Button 
                 onClick={(e) => { e.stopPropagation(); handleReaction('inspired'); }} 
-                disabled={isProcessingReaction !== null || !user || isAuthor} 
+                disabled={isProcessingReaction !== null || !user} 
                 variant="ghost" 
                 size="sm" 
                 className={cn("flex flex-col sm:flex-row h-auto py-2 gap-1 text-[10px] sm:text-xs font-semibold text-muted-foreground hover:bg-muted/50", hasInspired && "text-chart-3 hover:text-chart-3")}
@@ -311,7 +310,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
 
             <Button 
                 onClick={(e) => { e.stopPropagation(); handleReaction('connect'); }} 
-                disabled={isProcessingReaction !== null || !user || isAuthor} 
+                disabled={isProcessingReaction !== null || !user} 
                 variant="ghost" 
                 size="sm" 
                 className={cn("flex flex-col sm:flex-row h-auto py-2 gap-1 text-[10px] sm:text-xs font-semibold text-muted-foreground hover:bg-muted/50", hasConnected && "text-blue-500 hover:text-blue-500")}

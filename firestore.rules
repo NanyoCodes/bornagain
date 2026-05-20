@@ -83,7 +83,7 @@ service cloud.firestore {
       allow create: if request.auth != null && request.resource.data.authorId == request.auth.uid;
       allow delete: if request.auth != null && resource.data.authorId == request.auth.uid;
       allow update: if request.auth != null && ( 
-        (resource.data.authorId == request.auth.uid && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['supporters', 'inspiredBy', 'connectedBy'])) || 
+        (resource.data.authorId == request.auth.uid) || 
         (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters']) && 
          ( (request.resource.data.supporters.size() == resource.data.get('supporters', []).size() + 1 && request.auth.uid in request.resource.data.supporters) ||
            (request.resource.data.supporters.size() == resource.data.get('supporters', []).size() - 1 && !(request.auth.uid in request.resource.data.supporters))
@@ -102,6 +102,21 @@ service cloud.firestore {
           allow get, list: if true;
           allow create: if request.auth != null && request.resource.data.authorId == request.auth.uid;
           allow delete: if request.auth != null && resource.data.authorId == request.auth.uid;
+          allow update: if request.auth != null && (
+            (resource.data.authorId == request.auth.uid) ||
+            (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters']) && 
+             ( (request.resource.data.supporters.size() == resource.data.get('supporters', []).size() + 1 && request.auth.uid in request.resource.data.supporters) ||
+               (request.resource.data.supporters.size() == resource.data.get('supporters', []).size() - 1 && !(request.auth.uid in request.resource.data.supporters))
+             )) ||
+            (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['inspiredBy']) && 
+             ( (request.resource.data.inspiredBy.size() == resource.data.get('inspiredBy', []).size() + 1 && request.auth.uid in request.resource.data.inspiredBy) ||
+               (request.resource.data.inspiredBy.size() == resource.data.get('inspiredBy', []).size() - 1 && !(request.auth.uid in request.resource.data.inspiredBy))
+             )) ||
+            (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['connectedBy']) && 
+             ( (request.resource.data.connectedBy.size() == resource.data.get('connectedBy', []).size() + 1 && request.auth.uid in request.resource.data.connectedBy) ||
+               (request.resource.data.connectedBy.size() == resource.data.get('connectedBy', []).size() - 1 && !(request.auth.uid in request.resource.data.connectedBy))
+             ))
+          );
       }
     }
     
