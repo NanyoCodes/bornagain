@@ -17,13 +17,15 @@ import { useIsMobile } from '@/hooks/use-mobile';
 function CommentItem({ 
     comment, 
     testimonyId, 
-    isReply = false, 
-    onReply 
+    level = 0,
+    onReply,
+    children
 }: { 
     comment: TestimonyComment, 
     testimonyId: string, 
-    isReply?: boolean, 
-    onReply?: (comment: TestimonyComment) => void 
+    level?: number,
+    onReply: (comment: TestimonyComment) => void,
+    children?: React.ReactNode
 }) {
     const { user } = useUser();
     const firestore = useFirestore();
@@ -74,86 +76,87 @@ function CommentItem({
     };
 
     return (
-        <div className={cn("flex gap-2 sm:gap-3 items-start group relative", isReply && "ml-8 sm:ml-10")}>
-            <Avatar className={cn("shrink-0", isReply ? "h-5 w-5 sm:h-6 sm:w-6" : "h-6 w-6 sm:h-7 sm:w-7")}>
-                <AvatarImage src={comment.authorAvatarUrl} />
-                <AvatarFallback className="text-[8px] sm:text-[10px]">{comment.authorFirstName.charAt(0)}</AvatarFallback>
-            </Avatar>
-            <div className="flex-1 min-w-0">
-                <div className="bg-muted/30 rounded-lg p-2 sm:p-2.5 relative">
-                    <div className="flex justify-between items-start mb-1 gap-2">
-                        <div className="min-w-0 flex-1">
-                            <p className="text-[10px] sm:text-xs font-bold truncate">
-                                {comment.authorFirstName} {comment.authorLastName}
-                            </p>
-                            <p className="text-[8px] sm:text-[9px] text-muted-foreground">
-                                {createdAt ? formatDistanceToNow(createdAt, { addSuffix: true }) : 'just now'}
-                            </p>
+        <div className={cn("space-y-4", level > 0 && "ml-4 sm:ml-8")}>
+            <div className="flex gap-2 sm:gap-3 items-start group relative">
+                <Avatar className={cn("shrink-0", level > 0 ? "h-5 w-5 sm:h-6 sm:w-6" : "h-6 w-6 sm:h-7 sm:w-7")}>
+                    <AvatarImage src={comment.authorAvatarUrl} />
+                    <AvatarFallback className="text-[8px] sm:text-[10px]">{comment.authorFirstName.charAt(0)}</AvatarFallback>
+                </Avatar>
+                <div className="flex-1 min-w-0">
+                    <div className="bg-muted/30 rounded-lg p-2 sm:p-2.5 relative">
+                        <div className="flex justify-between items-start mb-1 gap-2">
+                            <div className="min-w-0 flex-1">
+                                <p className="text-[10px] sm:text-xs font-bold truncate">
+                                    {comment.authorFirstName} {comment.authorLastName}
+                                </p>
+                                <p className="text-[8px] sm:text-[9px] text-muted-foreground">
+                                    {createdAt ? formatDistanceToNow(createdAt, { addSuffix: true }) : 'just now'}
+                                </p>
+                            </div>
+                            {isAuthor && (
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className={cn(
+                                        "h-5 w-5 shrink-0 text-destructive transition-opacity",
+                                        isMobile ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+                                    )}
+                                    onClick={handleDelete}
+                                >
+                                    <Trash2 className="h-3 w-3" />
+                                </Button>
+                            )}
                         </div>
-                        {isAuthor && (
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                className={cn(
-                                    "h-5 w-5 shrink-0 text-destructive transition-opacity",
-                                    isMobile ? "opacity-100" : "opacity-0 group-hover:opacity-100"
-                                )}
-                                onClick={handleDelete}
-                            >
-                                <Trash2 className="h-3 w-3" />
-                            </Button>
+                        <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap break-words">
+                            {comment.text}
+                        </p>
+                        
+                        {/* Reaction Counts Overlay */}
+                        {(supporters.length > 0 || inspiredBy.length > 0 || connectedBy.length > 0) && (
+                            <div className="absolute -bottom-2 right-1 flex items-center gap-0.5 bg-background border rounded-full px-1 py-0.5 shadow-sm z-10">
+                                {supporters.length > 0 && <HandHeart className="h-2.5 w-2.5 text-primary fill-current" />}
+                                {inspiredBy.length > 0 && <Sparkles className="h-2.5 w-2.5 text-chart-3 fill-current" />}
+                                {connectedBy.length > 0 && <PartyPopper className="h-2.5 w-2.5 text-blue-500" />}
+                                <span className="text-[8px] font-bold px-0.5 leading-none">{supporters.length + inspiredBy.length + connectedBy.length}</span>
+                            </div>
                         )}
                     </div>
-                    <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap break-words">
-                        {comment.text}
-                    </p>
-                    
-                    {/* Reaction Counts Overlay */}
-                    {(supporters.length > 0 || inspiredBy.length > 0 || connectedBy.length > 0) && (
-                        <div className="absolute -bottom-2 right-1 flex items-center gap-0.5 bg-background border rounded-full px-1 py-0.5 shadow-sm z-10">
-                            {supporters.length > 0 && <HandHeart className="h-2.5 w-2.5 text-primary fill-current" />}
-                            {inspiredBy.length > 0 && <Sparkles className="h-2.5 w-2.5 text-chart-3 fill-current" />}
-                            {connectedBy.length > 0 && <PartyPopper className="h-2.5 w-2.5 text-blue-500" />}
-                            <span className="text-[8px] font-bold px-0.5 leading-none">{supporters.length + inspiredBy.length + connectedBy.length}</span>
-                        </div>
-                    )}
-                </div>
 
-                {/* Action Row */}
-                <div className="flex items-center gap-3 mt-1 px-1">
-                    <div className="flex items-center gap-3">
-                        <button 
-                            onClick={() => handleReaction('amen')}
-                            disabled={isReacting !== null}
-                            className={cn("text-[9px] sm:text-[10px] font-bold transition-colors hover:text-primary", hasAmened ? "text-primary" : "text-muted-foreground")}
-                        >
-                            Amen
-                        </button>
-                        <button 
-                            onClick={() => handleReaction('inspired')}
-                            disabled={isReacting !== null}
-                            className={cn("text-[9px] sm:text-[10px] font-bold transition-colors hover:text-chart-3", hasInspired ? "text-chart-3" : "text-muted-foreground")}
-                        >
-                            Inspired
-                        </button>
-                        <button 
-                            onClick={() => handleReaction('celebrate')}
-                            disabled={isReacting !== null}
-                            className={cn("text-[9px] sm:text-[10px] font-bold transition-colors hover:text-blue-500", hasCelebrated ? "text-blue-500" : "text-muted-foreground")}
-                        >
-                            Celebrate
-                        </button>
-                        {!isReply && onReply && (
+                    {/* Action Row */}
+                    <div className="flex items-center gap-3 mt-1 px-1">
+                        <div className="flex items-center gap-3">
+                            <button 
+                                onClick={() => handleReaction('amen')}
+                                disabled={isReacting !== null}
+                                className={cn("text-[9px] sm:text-[10px] font-bold transition-colors hover:text-primary", hasAmened ? "text-primary" : "text-muted-foreground")}
+                            >
+                                Amen
+                            </button>
+                            <button 
+                                onClick={() => handleReaction('inspired')}
+                                disabled={isReacting !== null}
+                                className={cn("text-[9px] sm:text-[10px] font-bold transition-colors hover:text-chart-3", hasInspired ? "text-chart-3" : "text-muted-foreground")}
+                            >
+                                Inspired
+                            </button>
+                            <button 
+                                onClick={() => handleReaction('celebrate')}
+                                disabled={isReacting !== null}
+                                className={cn("text-[9px] sm:text-[10px] font-bold transition-colors hover:text-blue-500", hasCelebrated ? "text-blue-500" : "text-muted-foreground")}
+                            >
+                                Celebrate
+                            </button>
                             <button 
                                 onClick={() => onReply(comment)}
                                 className="text-[9px] sm:text-[10px] font-bold text-muted-foreground hover:text-foreground transition-colors"
                             >
                                 Reply
                             </button>
-                        )}
+                        </div>
                     </div>
                 </div>
             </div>
+            {children}
         </div>
     );
 }
@@ -220,6 +223,21 @@ export function CommentSection({ testimonyId }: { testimonyId: string }) {
         }
     };
 
+    const renderComment = (comment: TestimonyComment, level = 0) => {
+        const children = repliesMap[comment.id] || [];
+        return (
+            <CommentItem 
+                key={comment.id} 
+                comment={comment} 
+                testimonyId={testimonyId} 
+                level={level}
+                onReply={setReplyingTo}
+            >
+                {children.map(child => renderComment(child, level + 1))}
+            </CommentItem>
+        );
+    };
+
     return (
         <div className="space-y-4 pt-4 border-t mt-4">
             <h4 className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-muted-foreground">Community Engagement</h4>
@@ -228,23 +246,7 @@ export function CommentSection({ testimonyId }: { testimonyId: string }) {
                 {loading ? (
                     <div className="flex justify-center py-4"><Loader2 className="h-4 w-4 animate-spin opacity-20" /></div>
                 ) : topLevelComments.length > 0 ? (
-                    topLevelComments.map(comment => (
-                        <div key={comment.id} className="space-y-4">
-                            <CommentItem 
-                                comment={comment} 
-                                testimonyId={testimonyId} 
-                                onReply={setReplyingTo}
-                            />
-                            {repliesMap[comment.id]?.map(reply => (
-                                <CommentItem 
-                                    key={reply.id} 
-                                    comment={reply} 
-                                    testimonyId={testimonyId} 
-                                    isReply 
-                                />
-                            ))}
-                        </div>
-                    ))
+                    topLevelComments.map(comment => renderComment(comment))
                 ) : (
                     <p className="text-[10px] sm:text-xs text-muted-foreground italic px-1">No comments yet. Be the first to encourage!</p>
                 )}
