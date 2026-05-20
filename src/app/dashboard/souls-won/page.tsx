@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
@@ -93,11 +92,11 @@ export default function SoulsWonPage() {
   const loading = userLoading || soulsLoading || loadingCampaigns || loadingFellowships;
 
   const handleSoulLogged = useCallback(() => {
-    setIsLogDialogOpen(false);
+    setTimeout(() => setIsLogDialogOpen(false), 100);
   }, []);
 
   const handleFollowUpLogged = useCallback(() => {
-    setSoulForFollowUp(null);
+    setTimeout(() => setSoulForFollowUp(null), 100);
   }, []);
 
   const handleAssignFellowship = async (soul: Soul, fellowshipId: string) => {
@@ -152,7 +151,7 @@ export default function SoulsWonPage() {
         });
 
         toast({ title: "Assigned", description: "Fellowship assigned successfully." });
-        setSoulToAssign(null);
+        setTimeout(() => setSoulToAssign(null), 100);
 
         const wasNewlyAssigned = fellowshipId !== 'none' && fellowshipId !== soul.fellowshipId;
         if (wasNewlyAssigned && selectedFellowship && selectedFellowship.organizerId !== user.uid) {
@@ -354,41 +353,24 @@ export default function SoulsWonPage() {
       <LogFollowUpDialog 
           soul={soulForFollowUp} 
           isOpen={!!soulForFollowUp} 
-          onOpenChange={(isOpen) => { 
-              if(!isOpen) {
-                  // Controlled closure to prevent interaction lock
-                  setTimeout(() => setSoulForFollowUp(null), 100);
-              }
-          }} 
+          onOpenChange={(isOpen) => { if(!isOpen) setTimeout(() => setSoulForFollowUp(null), 100); }} 
           onFollowUpLogged={handleFollowUpLogged} 
       />
       <ViewHistoryDialog 
           soul={soulForHistory} 
           isOpen={!!soulForHistory} 
-          onOpenChange={(isOpen) => {
-              if(!isOpen) {
-                  setTimeout(() => setSoulForHistory(null), 100);
-              }
-          }} 
+          onOpenChange={(isOpen) => { if(!isOpen) setTimeout(() => setSoulForHistory(null), 100); }} 
       />
       <AssignFellowshipDialog 
           soul={soulToAssign} 
           fellowships={activeFellowships} 
           isOpen={!!soulToAssign} 
-          onOpenChange={(open) => {
-              if(!open) {
-                  setTimeout(() => setSoulToAssign(null), 100);
-              }
-          }} 
+          onOpenChange={(open) => { if(!open) setTimeout(() => setSoulToAssign(null), 100); }} 
           onAssignFellowship={handleAssignFellowship} 
           isAssigning={isAssigning} 
       />
       
-      <Dialog open={!!soulToEdit} onOpenChange={(open) => { 
-          if(!open) {
-              setTimeout(() => setSoulToEdit(null), 100);
-          }
-      }}>
+      <Dialog open={!!soulToEdit} onOpenChange={(open) => { if(!open) setTimeout(() => setSoulToEdit(null), 100); }}>
           <DialogContent className="sm:max-w-lg">
               <DialogHeader>
                   <DialogTitle>Edit Soul Details</DialogTitle>
@@ -398,9 +380,7 @@ export default function SoulsWonPage() {
                   {soulToEdit && (
                     <EditSoulForm 
                         soul={soulToEdit} 
-                        onSoulUpdated={() => {
-                          setTimeout(() => setSoulToEdit(null), 100);
-                        }} 
+                        onSoulUpdated={() => { setTimeout(() => setSoulToEdit(null), 100); }} 
                         fellowships={activeFellowships}
                         campaigns={activeCampaigns}
                     />
@@ -409,11 +389,7 @@ export default function SoulsWonPage() {
           </DialogContent>
       </Dialog>
 
-      <Dialog open={isLogDialogOpen} onOpenChange={(open) => { 
-          if(!open) {
-              setTimeout(() => setIsLogDialogOpen(false), 100);
-          }
-      }}>
+      <Dialog open={isLogDialogOpen} onOpenChange={(open) => { if(!open) setTimeout(() => setIsLogDialogOpen(false), 100); }}>
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
             <DialogTitle>Log a New Soul</DialogTitle>

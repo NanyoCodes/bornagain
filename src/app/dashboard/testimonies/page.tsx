@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useEffect, useMemo } from "react";
@@ -169,11 +168,11 @@ export default function TestimoniesPage() {
   }, [prayerRequests, searchTerm, activeTab]);
 
   const handleTestimonyCreated = () => {
-    setIsTestimonyDialogOpen(false);
+    setTimeout(() => setIsTestimonyDialogOpen(false), 100);
     setPrayerToAnswer(null);
   };
   const handlePrayerRequestCreated = () => {
-    setIsPrayerDialogOpen(false);
+    setTimeout(() => setIsPrayerDialogOpen(false), 100);
   };
 
   const handleOpenTestimonyDialog = (prayer?: PrayerRequest) => {
@@ -226,7 +225,6 @@ export default function TestimoniesPage() {
             description: `The item has been successfully removed.`,
         });
         
-        // Controlled state clear to prevent UI freeze
         setTimeout(() => setItemToDelete(null), 100);
     } catch (error: any) {
         if (error.message === "This testimony has already been deleted.") {
@@ -346,7 +344,7 @@ export default function TestimoniesPage() {
           </TabsContent>
       </Tabs>
       
-      <AlertDialog open={!!itemToDelete} onOpenChange={(open) => { if(!open) setItemToDelete(null); }}>
+      <AlertDialog open={!!itemToDelete} onOpenChange={(open) => { if(!open) setTimeout(() => setItemToDelete(null), 100); }}>
           <AlertDialogContent className="w-[90vw] max-w-lg rounded-lg">
           <AlertDialogHeader>
               <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
@@ -364,11 +362,7 @@ export default function TestimoniesPage() {
           </AlertDialogContent>
       </AlertDialog>
 
-      <Dialog open={!!itemToEdit} onOpenChange={(open) => { 
-          if(!open) {
-              setTimeout(() => setItemToEdit(null), 100);
-          }
-      }}>
+      <Dialog open={!!itemToEdit} onOpenChange={(open) => { if(!open) setTimeout(() => setItemToEdit(null), 100); }}>
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
             <DialogTitle>Edit Testimony</DialogTitle>
@@ -377,9 +371,7 @@ export default function TestimoniesPage() {
             </DialogDescription>
           </DialogHeader>
           <div className="max-h-[70vh] overflow-y-auto pr-2">
-            {itemToEdit && <EditTestimonyForm testimony={itemToEdit} onTestimonyUpdated={() => { 
-                setTimeout(() => setItemToEdit(null), 100);
-            }} />}
+            {itemToEdit && <EditTestimonyForm testimony={itemToEdit} onTestimonyUpdated={() => { setTimeout(() => setItemToEdit(null), 100); }} />}
           </div>
         </DialogContent>
       </Dialog>
@@ -396,7 +388,7 @@ export default function TestimoniesPage() {
         </DialogContent>
       </Dialog>
       
-      <Dialog open={isPrayerDialogOpen} onOpenChange={(open) => { if(!open) setIsPrayerDialogOpen(false); }}>
+      <Dialog open={isPrayerDialogOpen} onOpenChange={(open) => { if(!open) setTimeout(() => setIsPrayerDialogOpen(false), 100); }}>
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
             <DialogTitle>Share Prayer Request</DialogTitle>

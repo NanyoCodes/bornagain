@@ -1,4 +1,3 @@
-
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -43,7 +42,7 @@ service cloud.firestore {
       match /souls/{soulId} {
         allow read: if isOwner(userId) || isFellowshipMember(resource.data.get('fellowshipId', ''));
         allow create: if isOwner(userId);
-        allow update: if request.auth != null && (request.auth.uid == userId || isFellowshipMember(resource.data.get('fellowshipId', '')));
+        allow update: if isOwner(userId) || (request.auth != null && isFellowshipMember(resource.data.get('fellowshipId', '')));
       }
       
       match /joinedCampaigns/{campaignId} {

@@ -1,4 +1,3 @@
-
 "use client";
 
 import * as React from "react";
@@ -39,7 +38,7 @@ import { Icons } from "@/components/icons";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { CommentSection } from "./comment-section";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible";
 
 export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDelete, onEdit }: { testimony: Testimony, onDelete: () => void, onEdit: () => void }) {
   const { user } = useUser();
@@ -290,12 +289,12 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
             <div className="flex items-center gap-1">
                 <Button 
                     variant="ghost" 
-                    size="sm" 
-                    className={cn("h-8 px-2 text-muted-foreground hover:bg-transparent", showComments && "text-primary")}
+                    size="icon" 
+                    className={cn("h-8 w-8 text-muted-foreground hover:bg-transparent", showComments && "text-primary")}
                     onClick={(e) => { e.stopPropagation(); setShowComments(!showComments); }}
                 >
-                    <MessageCircle className={cn("mr-1 h-4 w-4", showComments && "fill-primary text-primary")} />
-                    <span className="text-[10px] font-bold uppercase">Comment</span>
+                    <MessageCircle className={cn("h-4 w-4", showComments && "fill-primary text-primary")} />
+                    <span className="sr-only">Comment</span>
                 </Button>
 
                 <DropdownMenu>

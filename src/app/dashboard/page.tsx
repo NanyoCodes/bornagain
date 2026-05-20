@@ -16,7 +16,6 @@ import {
   isToday,
   isAfter,
   startOfWeek,
-  differenceInDays,
 } from 'date-fns';
 import {
   ArrowRight,
@@ -27,7 +26,6 @@ import {
   Heart,
   Users,
   CalendarCheck,
-  Target,
   Check,
   Sparkles,
   Zap,
@@ -500,7 +498,7 @@ export default function DashboardPage() {
   const displayName = userProfile?.firstName || user?.displayName || 'User';
 
   const handleSoulLogged = () => {
-    setIsLogSoulOpen(false);
+    setTimeout(() => setIsLogSoulOpen(false), 100);
     toast({ title: "Soul Logged!" });
   };
 
@@ -721,6 +719,7 @@ export default function DashboardPage() {
           </Card>
         </div>
       </div>
+      
       <WelcomeBackDialog
         isOpen={showWelcomeBack && !!summaryData && !!userProfile}
         onClose={() => setShowWelcomeBack(false)}
@@ -728,7 +727,7 @@ export default function DashboardPage() {
         summaryData={summaryData}
       />
       
-      <Dialog open={isLogSoulOpen} onOpenChange={setIsLogSoulOpen}>
+      <Dialog open={isLogSoulOpen} onOpenChange={(open) => { if(!open) setTimeout(() => setIsLogSoulOpen(false), 100); }}>
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
             <DialogTitle>Log a New Soul</DialogTitle>
