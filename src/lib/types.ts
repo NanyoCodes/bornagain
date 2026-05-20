@@ -135,6 +135,16 @@ export type Testimony = {
   answeredPrayerContent?: string;
 };
 
+export type TestimonyComment = {
+    id: string;
+    authorId: string;
+    authorFirstName: string;
+    authorLastName: string;
+    authorAvatarUrl?: string;
+    text: string;
+    createdAt: Timestamp;
+};
+
 export type PrayerRequest = {
   id: string;
   authorId: string;

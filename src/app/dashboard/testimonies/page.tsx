@@ -364,7 +364,11 @@ export default function TestimoniesPage() {
           </AlertDialogContent>
       </AlertDialog>
 
-      <Dialog open={!!itemToEdit} onOpenChange={(open) => { if(!open) setItemToEdit(null); }}>
+      <Dialog open={!!itemToEdit} onOpenChange={(open) => { 
+          if(!open) {
+              setTimeout(() => setItemToEdit(null), 100);
+          }
+      }}>
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
             <DialogTitle>Edit Testimony</DialogTitle>
@@ -373,7 +377,9 @@ export default function TestimoniesPage() {
             </DialogDescription>
           </DialogHeader>
           <div className="max-h-[70vh] overflow-y-auto pr-2">
-            {itemToEdit && <EditTestimonyForm testimony={itemToEdit} onTestimonyUpdated={() => { setItemToEdit(null); }} />}
+            {itemToEdit && <EditTestimonyForm testimony={itemToEdit} onTestimonyUpdated={() => { 
+                setTimeout(() => setItemToEdit(null), 100);
+            }} />}
           </div>
         </DialogContent>
       </Dialog>

@@ -316,6 +316,20 @@
         "createdAt"
       ]
     },
+    "TestimonyComment": {
+        "title": "Testimony Comment",
+        "description": "A community comment on a shared testimony.",
+        "type": "object",
+        "properties": {
+            "authorId": { "type": "string" },
+            "authorFirstName": { "type": "string" },
+            "authorLastName": { "type": "string" },
+            "authorAvatarUrl": { "type": "string", "format": "uri" },
+            "text": { "type": "string" },
+            "createdAt": { "type": "object" }
+        },
+        "required": ["authorId", "authorFirstName", "text", "createdAt"]
+    },
     "PrayerRequest": {
       "title": "Prayer Request",
       "description": "A user's prayer request, shared with the community.",
@@ -916,6 +930,10 @@
         "$ref": "#/entities/Testimony"
       },
       "description": "Stores user-submitted testimonies."
+    },
+    "/testimonies/{testimonyId}/comments/{commentId}": {
+        "schema": { "$ref": "#/entities/TestimonyComment" },
+        "description": "Subcollection for community engagement on testimonies."
     },
     "/prayerRequests/{requestId}": {
       "schema": {

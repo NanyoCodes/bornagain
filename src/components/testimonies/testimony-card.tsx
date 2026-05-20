@@ -17,7 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Testimony } from "@/lib/types";
 import { format } from "date-fns";
-import { Share2, MoreVertical, Edit, Trash2, Loader2, MapPin, HandHeart, MessageCircle, Globe, Sparkles, Link as LinkIcon } from "lucide-react";
+import { Share2, MoreVertical, Edit, Trash2, Loader2, Globe, Sparkles, Link as LinkIcon, HandHeart, MessageCircle } from "lucide-react";
 import { useUser, useFirestore } from "@/firebase";
 import { useState, useMemo } from "react";
 import {
@@ -38,6 +38,8 @@ import { cn, safeToDate } from "@/lib/utils";
 import { Icons } from "@/components/icons";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { CommentSection } from "./comment-section";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDelete, onEdit }: { testimony: Testimony, onDelete: () => void, onEdit: () => void }) {
   const { user } = useUser();
@@ -50,6 +52,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
   const contentRef = React.useRef<HTMLParagraphElement>(null);
   const [isTruncated, setIsTruncated] = React.useState(false);
   const [showFullText, setShowFullText] = React.useState(false);
+  const [showComments, setShowComments] = React.useState(false);
 
   const isAuthor = user?.uid === testimony.authorId;
   const authorFullName = [testimony.authorFirstName, testimony.authorLastName].filter(Boolean).join(' ').trim() || 'Anonymous';
@@ -174,7 +177,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
                         <DialogTitle>Profile photo of {authorFullName}</DialogTitle>
                         <DialogDescription>A larger view of the user's profile photo.</DialogDescription>
                     </DialogHeader>
-                    <Image src={testimony.authorAvatarUrl} alt={authorFullName} width={600} height={600} className="rounded-lg object-contain"/>
+                    <Image src={testimony.authorAvatarUrl} alt={authorFullName} width={600} height={600} className="rounded-lg object-contain" unoptimized/>
                   </DialogContent>
               )}
             </Dialog>
@@ -220,6 +223,12 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
                 </CardHeader>
             </Card>
            )}
+
+            <Collapsible open={showComments} onOpenChange={setShowComments}>
+                <CollapsibleContent>
+                    <CommentSection testimonyId={testimony.id} />
+                </CollapsibleContent>
+            </Collapsible>
         </CardContent>
         <CardFooter className="pt-3 pb-3 px-4 sm:px-6 flex flex-col items-start gap-4 mt-auto border-t bg-muted/20">
           {testimony.campaignTitle && testimony.campaignId && (
@@ -278,24 +287,36 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
                 </Button>
             </div>
 
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => e.stopPropagation()}>
-                  <MoreVertical className="h-4 w-4" />
-                  <span className="sr-only">More actions</span>
+            <div className="flex items-center gap-1">
+                <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className={cn("h-8 px-2 text-muted-foreground hover:bg-transparent", showComments && "text-primary")}
+                    onClick={(e) => { e.stopPropagation(); setShowComments(!showComments); }}
+                >
+                    <MessageCircle className={cn("mr-1 h-4 w-4", showComments && "fill-primary text-primary")} />
+                    <span className="text-[10px] font-bold uppercase">Comment</span>
                 </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuLabel>Share God's Glory</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onSelect={(e) => { e.preventDefault(); handleShare('link'); }}><Share2 className="mr-2 h-4 w-4" /><span>Copy Link</span></DropdownMenuItem>
-                <DropdownMenuItem onSelect={(e) => { e.preventDefault(); handleShare('whatsapp'); }}><MessageCircle className="mr-2 h-4 w-4" /><span>Share WhatsApp Poster</span></DropdownMenuItem>
-                <DropdownMenuItem onSelect={(e) => { e.preventDefault(); handleShare('facebook'); }}><Icons.facebook className="mr-2 h-4 w-4" /><span>Share on Facebook</span></DropdownMenuItem>
-                {isAuthor && <DropdownMenuSeparator />}
-                {isAuthor && <DropdownMenuItem onSelect={(e) => { e.preventDefault(); onEdit(); }}><Edit className="mr-2 h-4 w-4" /><span>Edit</span></DropdownMenuItem>}
-                {isAuthor && <DropdownMenuItem onSelect={(e) => { e.preventDefault(); onDelete(); }} className="text-destructive focus:text-destructive"><Trash2 className="mr-2 h-4 w-4" /><span>Delete</span></DropdownMenuItem>}
-              </DropdownMenuContent>
-            </DropdownMenu>
+
+                <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => e.stopPropagation()}>
+                    <MoreVertical className="h-4 w-4" />
+                    <span className="sr-only">More actions</span>
+                    </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                    <DropdownMenuLabel>Share God's Glory</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onSelect={(e) => { e.preventDefault(); handleShare('link'); }}><Share2 className="mr-2 h-4 w-4" /><span>Copy Link</span></DropdownMenuItem>
+                    <DropdownMenuItem onSelect={(e) => { e.preventDefault(); handleShare('whatsapp'); }}><MessageCircle className="mr-2 h-4 w-4" /><span>Share WhatsApp Poster</span></DropdownMenuItem>
+                    <DropdownMenuItem onSelect={(e) => { e.preventDefault(); handleShare('facebook'); }}><Icons.facebook className="mr-2 h-4 w-4" /><span>Share on Facebook</span></DropdownMenuItem>
+                    {isAuthor && <DropdownMenuSeparator />}
+                    {isAuthor && <DropdownMenuItem onSelect={(e) => { e.preventDefault(); onEdit(); }}><Edit className="mr-2 h-4 w-4" /><span>Edit</span></DropdownMenuItem>}
+                    {isAuthor && <DropdownMenuItem onSelect={(e) => { e.preventDefault(); onDelete(); }} className="text-destructive focus:text-destructive"><Trash2 className="mr-2 h-4 w-4" /><span>Delete</span></DropdownMenuItem>}
+                </DropdownMenuContent>
+                </DropdownMenu>
+            </div>
           </div>
         </CardFooter>
       </Card>

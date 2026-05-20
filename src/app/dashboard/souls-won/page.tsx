@@ -354,24 +354,41 @@ export default function SoulsWonPage() {
       <LogFollowUpDialog 
           soul={soulForFollowUp} 
           isOpen={!!soulForFollowUp} 
-          onOpenChange={(isOpen) => { if(!isOpen) setSoulForFollowUp(null); }} 
+          onOpenChange={(isOpen) => { 
+              if(!isOpen) {
+                  // Controlled closure to prevent interaction lock
+                  setTimeout(() => setSoulForFollowUp(null), 100);
+              }
+          }} 
           onFollowUpLogged={handleFollowUpLogged} 
       />
       <ViewHistoryDialog 
           soul={soulForHistory} 
           isOpen={!!soulForHistory} 
-          onOpenChange={(isOpen) => { if(!isOpen) setSoulForHistory(null); }} 
+          onOpenChange={(isOpen) => {
+              if(!isOpen) {
+                  setTimeout(() => setSoulForHistory(null), 100);
+              }
+          }} 
       />
       <AssignFellowshipDialog 
           soul={soulToAssign} 
           fellowships={activeFellowships} 
           isOpen={!!soulToAssign} 
-          onOpenChange={(open) => { if(!open) setSoulToAssign(null); }} 
+          onOpenChange={(open) => {
+              if(!open) {
+                  setTimeout(() => setSoulToAssign(null), 100);
+              }
+          }} 
           onAssignFellowship={handleAssignFellowship} 
           isAssigning={isAssigning} 
       />
       
-      <Dialog open={!!soulToEdit} onOpenChange={(open) => { if(!open) setSoulToEdit(null); }}>
+      <Dialog open={!!soulToEdit} onOpenChange={(open) => { 
+          if(!open) {
+              setTimeout(() => setSoulToEdit(null), 100);
+          }
+      }}>
           <DialogContent className="sm:max-w-lg">
               <DialogHeader>
                   <DialogTitle>Edit Soul Details</DialogTitle>
@@ -392,7 +409,11 @@ export default function SoulsWonPage() {
           </DialogContent>
       </Dialog>
 
-      <Dialog open={isLogDialogOpen} onOpenChange={(open) => { if(!open) setIsLogDialogOpen(false); }}>
+      <Dialog open={isLogDialogOpen} onOpenChange={(open) => { 
+          if(!open) {
+              setTimeout(() => setIsLogDialogOpen(false), 100);
+          }
+      }}>
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
             <DialogTitle>Log a New Soul</DialogTitle>
