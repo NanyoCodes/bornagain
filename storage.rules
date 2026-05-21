@@ -1,28 +1,29 @@
 rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
+    
     // Helper function for user ownership
-    function isOwner(userId) {
-      return request.auth != null && request.auth.uid == userId;
+    function isOwner(uid) {
+      return request.auth != null && request.auth.uid == uid;
     }
 
-    match /profile-pictures/{userId}/{allPaths=**} {
+    match /profile-pictures/{uid}/{allPaths=**} {
       allow read: if request.auth != null;
-      allow write: if isOwner(userId);
+      allow write: if isOwner(uid);
     }
     
-    match /testimony-images/{userId}/{allPaths=**} {
+    match /testimony-images/{uid}/{allPaths=**} {
       allow read: if true;
-      allow write: if isOwner(userId);
+      allow write: if isOwner(uid);
     }
     
-    // Explicitly handle permissions for the souls-won directory
-    match /souls-won/{userId}/{allPaths=**} {
+    // Optimized permissions for the souls-won directory
+    match /souls-won/{uid}/{allPaths=**} {
       // Allow any authenticated user to view soul photos for collaborative discipleship
       allow read: if request.auth != null;
       
-      // Allow only the original winner (owner of the directory) to upload or modify photos
-      allow create, update, delete: if request.auth != null && request.auth.uid == userId;
+      // Allow only the original soul winner to manage the images
+      allow write: if isOwner(uid);
     }
   }
 }
