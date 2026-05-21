@@ -86,7 +86,7 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
             return a.distance - b.distance;
         }
         if (a.distance !== null) return -1;
-        if (b.distance !== null) return 1;
+        if (b.distance !== null) 1;
         return a.name.localeCompare(b.name);
     });
   }, [fellowships, soul, country, state, typeFilter]);
@@ -97,7 +97,7 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
         setState('');
         setTypeFilter('all');
     }
-  }, [isOpen, soul]);
+  }, [isOpen, soul?.id]); // Reset only when a different soul is selected
 
   if (!soul) {
     return null;
