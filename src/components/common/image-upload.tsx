@@ -95,11 +95,11 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
         toast({ variant: 'destructive', title: 'Invalid File Type', description: 'Please select an image file.' });
         return;
       }
-      if (file.size > 5 * 1024 * 1024) { // Increased initial limit slightly for better user experience before crop
+      if (file.size > 5 * 1024 * 1024) {
         toast({ variant: 'destructive', title: 'File Too Large', description: 'Please select an image smaller than 5MB.' });
         return;
       }
-      setCrop(undefined); // Reset crop on new image
+      setCrop(undefined);
       const reader = new FileReader();
       reader.addEventListener('load', () => setImgSrc(reader.result?.toString() || ''));
       reader.readAsDataURL(e.target.files[0]);
@@ -124,6 +124,7 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
     if (!storage) throw new Error("Firebase Storage is not available.");
 
     const fileName = file instanceof File ? file.name : 'cropped-image.jpg';
+    // Ensure path is consistent with rules
     const fileRef = ref(storage, `${storagePath}/${user.uid}/${Date.now()}_${fileName}`);
     await uploadBytes(fileRef, file);
     return getDownloadURL(fileRef);
@@ -152,14 +153,18 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
       setImgSrc('');
 
     } catch (error: any) {
+      console.error("Storage upload error:", error);
       let title = 'Upload Failed';
       let description = error.message || "An unknown error occurred.";
-      if (error.code === 'storage/unauthorized' || error.code === 'storage/retry-limit-exceeded') {
-        title = 'Upload Failed: Configuration Required';
-        description = "This error often means your Firebase project is not on the 'Blaze' (Pay-as-you-go) plan. Please refer to `docs/storage-cors-guide.md` for instructions."
+      
+      // ERR_FAILED is a common symptom of CORS issues on modern browsers
+      if (error.code === 'storage/unauthorized' || error.code === 'storage/retry-limit-exceeded' || (error.message && error.message.includes('net::ERR_FAILED'))) {
+        title = 'Configuration Required';
+        description = "If you are already on the Blaze plan, this error is likely due to missing CORS configuration on your bucket. Please run the command in `docs/storage-cors-guide.md` (Step 3) in your terminal.";
       }
+      
       toast({ variant: 'destructive', title, description, duration: 15000 });
-      setPreviewUrl(initialImageUrl || null); // Revert on failure
+      setPreviewUrl(initialImageUrl || null);
     } finally {
       setIsLoading(false);
     }
