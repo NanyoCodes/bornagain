@@ -381,8 +381,8 @@ export default function CampaignsPage() {
       </Card>
 
       <div className="flex flex-wrap gap-4 items-center">
-        <Tabs value={filter} onValueChange={setFilter}>
-            <TabsList>
+        <Tabs value={filter} onValueChange={setFilter} className="w-full sm:w-auto">
+            <TabsList className="grid w-full grid-cols-3">
                 <TabsTrigger value="all">All Campaigns</TabsTrigger>
                 <TabsTrigger value="created">My Campaigns</TabsTrigger>
                 <TabsTrigger value="joined">Joined</TabsTrigger>
