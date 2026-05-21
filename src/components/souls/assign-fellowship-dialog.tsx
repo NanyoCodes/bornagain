@@ -1,4 +1,3 @@
-
 'use client';
 
 import * as React from 'react';
@@ -8,12 +7,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Card, CardContent } from '@/components/ui/card';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Filter } from 'lucide-react';
 import type { Soul, Fellowship } from '@/lib/types';
 import { haversineDistance } from '@/lib/utils';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface AssignFellowshipDialogProps {
   soul: Soul | null;
@@ -27,6 +27,7 @@ interface AssignFellowshipDialogProps {
 export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange, onAssignFellowship, isAssigning }: AssignFellowshipDialogProps) {
   const [country, setCountry] = React.useState<string>('');
   const [state, setState] = React.useState<string>('');
+  const [typeFilter, setTypeFilter] = React.useState<string>('all');
   const isMobile = useIsMobile();
   const [mounted, setMounted] = React.useState(false);
 
@@ -69,6 +70,9 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
     if (state) {
       filtered = filtered.filter(f => f.location && f.location.toLowerCase().includes(state.toLowerCase()));
     }
+    if (typeFilter !== 'all') {
+      filtered = filtered.filter(f => f.groupType === typeFilter);
+    }
     
     const fellowshipsWithDistance = filtered.map(f => {
       const distance = (soulLocation?.latitude && soulLocation?.longitude && f.latitude && f.longitude)
@@ -85,12 +89,13 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
         if (b.distance !== null) return 1;
         return a.name.localeCompare(b.name);
     });
-  }, [fellowships, soul, country, state]);
+  }, [fellowships, soul, country, state, typeFilter]);
 
   React.useEffect(() => {
     if (isOpen && soul) {
         setCountry(soul.locationWon?.country || '');
         setState('');
+        setTypeFilter('all');
     }
   }, [isOpen, soul]);
 
@@ -99,38 +104,55 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
   }
 
   const content = (
-    <>
-      <div className="grid grid-cols-2 gap-4 py-4">
-        <Select value={country || 'all'} onValueChange={(val) => { setCountry(val === 'all' ? '' : val); setState(''); }}>
-          <SelectTrigger><SelectValue placeholder="Select Country" /></SelectTrigger>
-          <SelectContent>
-              <SelectItem value="all">All Countries</SelectItem>
-              {countries.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
-          </SelectContent>
-        </Select>
-        <Select value={state || 'all'} onValueChange={(val) => setState(val === 'all' ? '' : val)} disabled={!country}>
-          <SelectTrigger><SelectValue placeholder="Select State/Province" /></SelectTrigger>
-          <SelectContent>
-              <SelectItem value="all">All States/Provinces</SelectItem>
-              {states.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
-          </SelectContent>
-        </Select>
+    <div className="flex flex-col h-full gap-4">
+      <div className="space-y-4 pt-4 shrink-0">
+        <Tabs value={typeFilter} onValueChange={setTypeFilter} className="w-full">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="all">All</TabsTrigger>
+            <TabsTrigger value="Fellowship">Fellowships</TabsTrigger>
+            <TabsTrigger value="Association">Associations</TabsTrigger>
+          </TabsList>
+        </Tabs>
+        
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="space-y-1.5">
+            <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground ml-1">Country</label>
+            <Select value={country || 'all'} onValueChange={(val) => { setCountry(val === 'all' ? '' : val); setState(''); }}>
+              <SelectTrigger className="h-10"><SelectValue placeholder="Select Country" /></SelectTrigger>
+              <SelectContent>
+                  <SelectItem value="all">All Countries</SelectItem>
+                  {countries.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-1.5">
+            <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground ml-1">State/Province</label>
+            <Select value={state || 'all'} onValueChange={(val) => setState(val === 'all' ? '' : val)} disabled={!country}>
+              <SelectTrigger className="h-10"><SelectValue placeholder="Select State" /></SelectTrigger>
+              <SelectContent>
+                  <SelectItem value="all">All States</SelectItem>
+                  {states.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
       </div>
-      <ScrollArea className={cn("border rounded-md", isMobile ? "h-[50vh]" : "h-72")}>
-          <div className="p-2 space-y-2">
+
+      <ScrollArea className={cn("border rounded-lg bg-muted/5 flex-grow", isMobile ? "min-h-0" : "h-72")}>
+          <div className="p-3 space-y-3">
               {filteredAndSortedFellowships.length > 0 ? (
                   filteredAndSortedFellowships.map(f => (
-                      <Card key={f.id} className={cn("transition-colors", soul.fellowshipId === f.id && "bg-muted")}>
-                          <CardContent className="p-3 flex items-center justify-between">
-                              <div className="min-w-0 pr-4">
-                                  <div className="flex items-center gap-2 mb-1">
-                                    <p className="font-semibold truncate">{f.name}</p>
-                                    <Badge variant="outline" className="text-[9px] px-1.5 h-4 uppercase font-bold tracking-tight">
+                      <Card key={f.id} className={cn("transition-colors shadow-none", soul.fellowshipId === f.id && "bg-primary/5 border-primary/20")}>
+                          <CardContent className="p-3 flex items-center justify-between gap-4">
+                              <div className="min-w-0">
+                                  <div className="flex items-center gap-2 mb-1 flex-wrap">
+                                    <p className="font-bold text-sm truncate">{f.name}</p>
+                                    <Badge variant="secondary" className="text-[9px] px-1.5 h-4 uppercase font-bold tracking-tight bg-background border">
                                         {f.groupType || 'Group'}
                                     </Badge>
                                   </div>
-                                  <p className="text-sm text-muted-foreground truncate">{f.location}</p>
-                                  {f.distance !== null ? <p className="text-xs text-primary">{f.distance.toFixed(1)} km away</p> : null}
+                                  <p className="text-[11px] text-muted-foreground truncate">{f.location}</p>
+                                  {f.distance !== null ? <p className="text-[10px] text-primary font-medium mt-1">{f.distance.toFixed(1)} km away</p> : null}
                               </div>
                               {soul.fellowshipId === f.id ? (
                                   <Button
@@ -138,44 +160,46 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
                                       variant="outline"
                                       onClick={() => onAssignFellowship(soul, 'none')}
                                       disabled={!!isAssigning}
-                                      className="shrink-0"
+                                      className="shrink-0 h-8 text-xs border-destructive/20 text-destructive hover:bg-destructive/10"
                                   >
-                                      {isAssigning === 'none' ? <Loader2 className="h-4 w-4 animate-spin"/> : 'Unassign'}
+                                      {isAssigning === 'none' ? <Loader2 className="h-3 w-3 animate-spin"/> : 'Unassign'}
                                   </Button>
                               ) : (
                                   <Button
                                       size="sm"
                                       onClick={() => onAssignFellowship(soul, f.id)}
                                       disabled={!!isAssigning}
-                                      className="shrink-0"
+                                      className="shrink-0 h-8 text-xs font-bold"
                                   >
-                                      {isAssigning === f.id ? <Loader2 className="h-4 w-4 animate-spin"/> : 'Assign'}
+                                      {isAssigning === f.id ? <Loader2 className="h-3 w-3 animate-spin"/> : 'Assign'}
                                   </Button>
                               )}
                           </CardContent>
                       </Card>
                   ))
               ) : (
-                  <div className="text-center text-muted-foreground py-10">
-                      <p>No groups match your filters.</p>
+                  <div className="text-center text-muted-foreground py-12 px-6">
+                      <Filter className="h-8 w-8 mx-auto mb-3 opacity-20" />
+                      <p className="text-sm font-medium">No groups found</p>
+                      <p className="text-xs mt-1">Try adjusting your filters.</p>
                   </div>
               )}
           </div>
       </ScrollArea>
-    </>
+    </div>
   );
 
   if (mounted && isMobile) {
     return (
       <Sheet open={isOpen} onOpenChange={onOpenChange}>
-        <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0">
-          <div className="p-6 border-b flex-shrink-0">
+        <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-2xl">
+          <div className="p-6 border-b flex-shrink-0 bg-muted/10">
             <SheetHeader className="text-left">
-                <SheetTitle>Assign Community Group: {soul.firstName}</SheetTitle>
-                <SheetDescription>Select a fellowship or association to assign this soul to.</SheetDescription>
+                <SheetTitle className="text-xl font-bold font-headline">Assign Group: {soul.firstName}</SheetTitle>
+                <SheetDescription className="text-xs">Select a fellowship or association to assign this soul to.</SheetDescription>
             </SheetHeader>
           </div>
-          <div className="flex-grow overflow-hidden px-6">
+          <div className="flex-grow overflow-hidden px-6 pb-6">
             {content}
           </div>
         </SheetContent>
@@ -185,12 +209,16 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="sm:max-w-xl max-h-[90vh] flex flex-col">
         <DialogHeader>
-          <DialogTitle>Assign Community Group: {soul?.firstName}</DialogTitle>
-          <DialogDescription>Select a fellowship or association to assign this soul to.</DialogDescription>
+          <DialogTitle className="text-2xl font-bold font-headline">Assign Group: {soul?.firstName}</DialogTitle>
+          <DialogDescription>
+            Connect this convert with a local fellowship or association.
+          </DialogDescription>
         </DialogHeader>
-        {content}
+        <div className="flex-grow min-h-0">
+          {content}
+        </div>
       </DialogContent>
     </Dialog>
   );

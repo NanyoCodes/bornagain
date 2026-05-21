@@ -1,4 +1,3 @@
-
 "use client";
 
 import * as React from "react";
@@ -83,50 +82,59 @@ const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, 
     const latestFollowUpDate = latestFollowUp ? safeToDate(latestFollowUp.date) : null;
 
     return (
-        <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b">
+        <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b shadow-none">
             <Collapsible>
-                <CollapsibleTrigger className="group w-full p-4 text-left">
-                     <div className="flex items-center justify-between">
+                <CollapsibleTrigger className="group w-full p-4 text-left hover:bg-muted/30 transition-colors">
+                     <div className="flex items-center justify-between gap-4">
                         <div className="flex items-center gap-3 min-w-0 flex-1">
-                            <Avatar className="h-10 w-10">
-                                <AvatarFallback>{soul.firstName?.charAt(0)}{soul.lastName?.charAt(0)}</AvatarFallback>
+                            <Avatar className="h-10 w-10 sm:h-11 sm:w-11 shrink-0 border">
+                                <AvatarFallback className="font-bold">{soul.firstName?.charAt(0)}{soul.lastName?.charAt(0)}</AvatarFallback>
                             </Avatar>
                             <div className="min-w-0">
-                                <SoulInsightsDialog soul={soul}>
-                                    <p className="font-bold font-headline truncate cursor-pointer hover:underline text-base sm:text-lg">
-                                      {soul.firstName || 'Unknown'} {soul.lastName || ''}
-                                    </p>
-                                </SoulInsightsDialog>
-                                <Badge className={cn("mt-1", getStatusClasses(soul.status))} variant="outline">{soul.status}</Badge>
+                                <p className="font-bold font-headline truncate text-sm sm:text-base leading-tight">
+                                  {soul.firstName || 'Unknown'} {soul.lastName || ''}
+                                </p>
+                                <Badge className={cn("mt-1.5 h-5 px-1.5 text-[10px] sm:text-xs", getStatusClasses(soul.status))} variant="outline">{soul.status}</Badge>
                             </div>
                         </div>
-                        <ChevronDown className="h-5 w-5 text-muted-foreground transition-transform duration-200 group-data-[state=open]:rotate-180" />
+                        <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform duration-200 group-data-[state=open]:rotate-180 shrink-0" />
                     </div>
                 </CollapsibleTrigger>
                 <CollapsibleContent className="px-4 pb-4">
-                    <div className="border-t pt-4 space-y-4">
-                        <div className="flex justify-between items-start">
-                            <div className="text-sm text-muted-foreground space-y-1">
-                                {soul.phone && <div className="truncate flex items-center gap-2 mt-1"><Phone className="h-4 w-4"/>{soul.phone}</div>}
-                                {soul.church && <div className="flex items-center gap-1 pt-2"><Church className="h-4 w-4" /> {soul.church}</div>}
-                                {locationWonString && <div className="flex items-center gap-1 pt-1"><MapPin className="h-4 w-4" /> {locationWonString}</div>}
-                                {soul.fellowshipName && <div className="flex items-center gap-1 pt-1"><HeartHandshake className="h-4 w-4" /> {soul.fellowshipName}</div>}
+                    <div className="border-t pt-4 space-y-5">
+                        <div className="flex justify-between items-start gap-4">
+                            <div className="text-xs sm:text-sm text-muted-foreground space-y-2.5 flex-1 min-w-0">
+                                <div className="flex items-center gap-2 font-medium">
+                                    <Badge variant="secondary" className="h-5 px-1.5 rounded uppercase tracking-wider text-[9px] font-bold">Source: {soul.source}</Badge>
+                                    {soul.sourceDetails && <span className="truncate opacity-70">• {soul.sourceDetails}</span>}
+                                </div>
+                                {soul.phone && <div className="truncate flex items-center gap-2"><Phone className="h-3.5 w-3.5 text-primary"/>{soul.phone}</div>}
+                                {soul.church && <div className="flex items-center gap-2"><Church className="h-3.5 w-3.5 text-primary" /> {soul.church}</div>}
+                                {locationWonString && <div className="flex items-start gap-2"><MapPin className="h-3.5 w-3.5 text-primary shrink-0 mt-0.5" /> <span className="line-clamp-2">{locationWonString}</span></div>}
+                                {soul.fellowshipName && <div className="flex items-center gap-2 font-semibold text-primary"><HeartHandshake className="h-3.5 w-3.5" /> {soul.fellowshipName}</div>}
                             </div>
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                    <Button aria-haspopup="true" size="icon" variant="ghost">
-                                    < MoreHorizontal className="h-4 w-4" />
+                                    <Button aria-haspopup="true" size="icon" variant="ghost" className="h-8 w-8 shrink-0">
+                                    <MoreHorizontal className="h-4 w-4" />
                                     <span className="sr-only">Toggle menu</span>
                                     </Button>
                                 </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
-                                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                <DropdownMenuContent align="end" className="w-48">
+                                    <DropdownMenuLabel className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold">Record Actions</DropdownMenuLabel>
                                     <DropdownMenuItem onSelect={() => onEdit(soul)}>
                                         <Edit className="mr-2 h-4 w-4" /> Edit Details
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem onSelect={() => onFollowUp(soul)}>Log Follow-up</DropdownMenuItem>
-                                    <DropdownMenuItem onSelect={() => onViewHistory(soul)}>View History</DropdownMenuItem>
-                                    <DropdownMenuItem onSelect={() => onOpenAssignDialog(soul)}><HeartHandshake className="mr-2 h-4 w-4" />Assign Group</DropdownMenuItem>
+                                    <DropdownMenuItem onSelect={() => onFollowUp(soul)}>
+                                        <HeartHandshake className="mr-2 h-4 w-4" /> Log Follow-up
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem onSelect={() => onViewHistory(soul)}>
+                                        <History className="mr-2 h-4 w-4" /> View History
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem onSelect={() => onOpenAssignDialog(soul)}>
+                                        <Users className="mr-2 h-4 w-4" /> Assign Group
+                                    </DropdownMenuItem>
+                                    <DropdownMenuSeparator />
                                     <DropdownMenuSub>
                                         <DropdownMenuSubTrigger><Download className="mr-2 h-4 w-4" />Export</DropdownMenuSubTrigger>
                                         <DropdownMenuPortal>
@@ -137,40 +145,48 @@ const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, 
                                         </DropdownMenuPortal>
                                     </DropdownMenuSub>
                                     <DropdownMenuSeparator />
-                                    <DropdownMenuItem className="text-destructive focus:text-destructive" onSelect={() => onDelete(soul)}>
+                                    <DropdownMenuItem className="text-destructive focus:text-destructive focus:bg-destructive/10" onSelect={() => onDelete(soul)}>
                                         <Trash2 className="mr-2 h-4 w-4" /> Delete Record
                                     </DropdownMenuItem>
                                 </DropdownMenuContent>
                             </DropdownMenu>
                         </div>
-                        <div className="space-y-3 pt-4 border-t">
-                            <Label>Follow-up</Label>
-                            <div className="border rounded-lg p-4 space-y-4">
+                        
+                        <div className="space-y-3 p-4 rounded-xl border bg-muted/20">
+                            <div className="flex items-center justify-between">
+                                <Label className="text-[10px] uppercase tracking-widest font-bold text-muted-foreground">Follow-up History</Label>
+                                <SoulInsightsDialog soul={soul}>
+                                    <Button variant="link" className="h-auto p-0 text-[10px] font-bold text-primary">Get AI Insights</Button>
+                                </SoulInsightsDialog>
+                            </div>
+                            
+                            <div className="space-y-3">
                                {latestFollowUp && latestFollowUpDate ? (
-                                    <div className="text-sm">
-                                        <p className="font-semibold text-muted-foreground">Latest Log: {format(latestFollowUpDate, "PPP")}</p>
+                                    <div className="text-xs">
+                                        <p className="font-bold text-foreground/80">Latest Interaction: {format(latestFollowUpDate, "PPP")}</p>
                                         {latestFollowUp.actions && latestFollowUp.actions.length > 0 && (
-                                            <div className="mt-2 flex flex-wrap gap-1">
+                                            <div className="mt-2 flex flex-wrap gap-1.5">
                                                 {latestFollowUp.actions.map(actionId => {
                                                     const action = actionItems.find(a => a.id === actionId);
-                                                    return action ? <Badge key={actionId} variant="secondary" className="text-xs font-normal">{action.label}</Badge> : null
+                                                    return action ? <Badge key={actionId} variant="secondary" className="text-[9px] px-1.5 h-4 font-bold uppercase tracking-tight bg-background border">{action.label}</Badge> : null
                                                 })}
                                             </div>
                                         )}
-                                        {latestFollowUp.note && <p className="italic line-clamp-2 mt-2">&ldquo;{latestFollowUp.note}&rdquo;</p>}
+                                        {latestFollowUp.note && <p className="italic text-muted-foreground line-clamp-3 mt-2 leading-relaxed">&ldquo;{latestFollowUp.note}&rdquo;</p>}
                                     </div>
                                 ) : (
-                                    <p className="text-sm text-muted-foreground">No follow-up logged yet.</p>
+                                    <p className="text-xs text-muted-foreground italic py-2">No follow-up interactions logged yet.</p>
                                 )}
-                                <div className="flex gap-2 w-full">
-                                    <Button size="sm" className="w-full" onClick={() => onFollowUp(soul)}>Follow-up</Button>
-                                    <Button size="sm" variant="outline" className="w-full" onClick={() => onViewHistory(soul)}>View History</Button>
+                                <div className="grid grid-cols-2 gap-2 pt-1">
+                                    <Button size="sm" className="h-8 text-xs font-bold" onClick={() => onFollowUp(soul)}>Log New</Button>
+                                    <Button size="sm" variant="outline" className="h-8 text-xs font-bold" onClick={() => onViewHistory(soul)}>History</Button>
                                 </div>
                             </div>
                         </div>
-                        <div className="flex justify-between text-sm text-muted-foreground pt-4">
-                            <span>{soul.source}</span>
-                            <span>{format(wonAt, "PPP")}</span>
+                        
+                        <div className="flex justify-between items-center text-[10px] text-muted-foreground pt-2 border-t border-dashed">
+                            <span>{soul.source} Outreach</span>
+                            <span>Won {format(wonAt, "PPP")}</span>
                         </div>
                     </div>
                 </CollapsibleContent>
@@ -271,7 +287,7 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
 
   if (loading || !mounted) {
     return (
-        <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x">
+        <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-sm">
             <CardHeader><Skeleton className="h-8 w-48" /><Skeleton className="h-4 w-full max-w-sm" /></CardHeader>
             <CardContent className="space-y-4">
                 {[...Array(3)].map((_, i) => (
@@ -287,13 +303,15 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
   
   if (souls.length === 0) {
     return (
-        <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x">
+        <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-sm">
             <CardHeader><CardTitle className="text-lg font-bold font-headline">Follow-up Dashboard</CardTitle><CardDescription>A list of souls won.</CardDescription></CardHeader>
             <CardContent>
-                <div className="text-center py-12 flex flex-col items-center">
-                    <HeartHandshake className="h-12 w-12 text-muted-foreground opacity-20" />
-                    <h3 className="mt-4 text-lg font-semibold">No Records Found</h3>
-                    <p className="text-sm text-muted-foreground mt-1">Souls you log will appear here for follow-up.</p>
+                <div className="text-center py-16 flex flex-col items-center">
+                    <div className="h-16 w-16 bg-muted/20 rounded-full flex items-center justify-center mb-4">
+                        <HeartHandshake className="h-8 w-8 text-muted-foreground opacity-30" />
+                    </div>
+                    <h3 className="text-lg font-semibold">No Records Found</h3>
+                    <p className="text-sm text-muted-foreground mt-1 max-w-[250px]">The harvest you log will appear here for follow-up and discipleship.</p>
                 </div>
             </CardContent>
         </Card>
@@ -303,21 +321,23 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
   if (isMobile) {
       return (
         <div className="space-y-0">
-            <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b">
-                <CardHeader>
+            <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b shadow-sm mb-4">
+                <CardHeader className="p-4">
                     <CardTitle className="text-lg font-bold font-headline">Follow-up Dashboard</CardTitle>
-                    <CardDescription>A list of souls won.</CardDescription>
+                    <CardDescription className="text-xs">Manage and nurture your converts.</CardDescription>
                 </CardHeader>
             </Card>
-            {souls.map((soul) => (
-                <SoulCard key={soul.id} soul={soul} onFollowUp={onFollowUp} onViewHistory={onViewHistory} onExportSingle={onExportSingle} onOpenAssignDialog={onOpenAssignDialog} onEdit={onEdit} onDelete={onDelete} />
-            ))}
+            <div className="space-y-px">
+                {souls.map((soul) => (
+                    <SoulCard key={soul.id} soul={soul} onFollowUp={onFollowUp} onViewHistory={onViewHistory} onExportSingle={onExportSingle} onOpenAssignDialog={onOpenAssignDialog} onEdit={onEdit} onDelete={onDelete} />
+                ))}
+            </div>
         </div>
       )
   }
 
   return (
-    <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x">
+    <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-sm">
       <CardHeader><CardTitle className="text-lg font-bold font-headline">Follow-up Dashboard</CardTitle><CardDescription>Keep track of their spiritual journey.</CardDescription></CardHeader>
       <CardContent>
         <Table>

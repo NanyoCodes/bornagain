@@ -11,16 +11,26 @@ import {
   DialogTitle, 
 } from "@/components/ui/dialog";
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
   Sheet,
   SheetContent,
   SheetDescription,
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { PlusCircle, Download, Loader2 } from "lucide-react";
+import { PlusCircle, Download, Loader2, Trash2 } from "lucide-react";
 import type { Soul, Campaign, Fellowship } from "@/lib/types";
 import { useCollection, useFirestore, useUser } from "@/firebase";
-import { collection, query, orderBy, doc, serverTimestamp, increment, runTransaction, addDoc, deleteField } from "firebase/firestore";
+import { collection, query, orderBy, doc, serverTimestamp, increment, runTransaction, addDoc, deleteField, writeBatch } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useSearch } from "@/context/search-context";
@@ -47,16 +57,21 @@ export default function SoulsWonPage() {
   const { user, loading: userLoading } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
-  const [isLogDialogOpen, setIsLogDialogOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
   const isMobile = useIsMobile();
   const { searchTerm, setSearchPlaceholder, setIsSearchVisible, setSearchTerm } = useSearch();
 
+  const [mounted, setMounted] = useState(false);
+  const [isLogDialogOpen, setIsLogDialogOpen] = useState(false);
+  
+  // Data states as source of truth for modals
   const [soulForFollowUp, setSoulForFollowUp] = useState<Soul | null>(null);
   const [soulForHistory, setSoulForHistory] = useState<Soul | null>(null);
   const [soulToAssign, setSoulToAssign] = useState<Soul | null>(null);
   const [soulToEdit, setSoulToEdit] = useState<Soul | null>(null);
+  const [soulToDelete, setSoulToDelete] = useState<Soul | null>(null);
+
   const [isAssigning, setIsAssigning] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -78,128 +93,34 @@ export default function SoulsWonPage() {
     if (!user?.uid || !firestore) return null;
     return query(collection(firestore, 'campaigns'), orderBy('createdAt', 'desc'));
   }, [user?.uid, firestore]);
-  const { data: campaigns, loading: loadingCampaigns } = useCollection<Campaign>(campaignsQuery);
+  const { data: campaigns } = useCollection<Campaign>(campaignsQuery);
   
   const fellowshipsQuery = useMemo(() => {
     if (!firestore) return null;
     return query(collection(firestore, 'fellowships'), orderBy('name', 'asc'));
   }, [firestore]);
-  const { data: allFellowships, loading: loadingFellowships } = useCollection<Fellowship>(fellowshipsQuery);
+  const { data: allFellowships } = useCollection<Fellowship>(fellowshipsQuery);
 
   const activeFellowships = useMemo(() => allFellowships?.filter(f => f.status !== 'deleted') ?? [], [allFellowships]);
   const activeCampaigns = useMemo(() => campaigns?.filter(c => c.status !== 'deleted') ?? [], [campaigns]);
 
-  const loading = userLoading || soulsLoading || loadingCampaigns || loadingFellowships;
+  const loading = userLoading || soulsLoading;
 
-  const handleSoulLogged = useCallback(() => {
-    setIsLogDialogOpen(false);
-  }, []);
+  // Memoized handlers to stabilize SoulsWonTable props
+  const handleOpenFollowUp = useCallback((soul: Soul) => setSoulForFollowUp(soul), []);
+  const handleOpenHistory = useCallback((soul: Soul) => setSoulForHistory(soul), []);
+  const handleOpenAssign = useCallback((soul: Soul) => setSoulToAssign(soul), []);
+  const handleOpenEdit = useCallback((soul: Soul) => setSoulToEdit(soul), []);
+  const handleOpenDelete = useCallback((soul: Soul) => setSoulToDelete(soul), []);
 
-  const handleFollowUpLogged = useCallback(() => {
-    setSoulForFollowUp(null);
-  }, []);
-
-  const handleAssignFellowship = async (soul: Soul, fellowshipId: string) => {
-    if (!user || !firestore || isAssigning) return;
-    setIsAssigning(fellowshipId);
-
-    const soulRef = doc(firestore, `users/${user.uid}/souls`, soul.id);
-    const globalSoulRef = doc(firestore, 'souls', soul.id);
-    const selectedFellowship = activeFellowships?.find(f => f.id === fellowshipId);
-    
-    const updateData: { [key: string]: any } = {
-        userId: user.uid,
-        updatedAt: serverTimestamp(),
-    };
-
-    if (fellowshipId === 'none') {
-        updateData.fellowshipId = deleteField();
-        updateData.fellowshipName = deleteField();
-    } else if (selectedFellowship) {
-        updateData.fellowshipId = selectedFellowship.id;
-        updateData.fellowshipName = selectedFellowship.name;
-    } else {
-        toast({ variant: "destructive", title: "Error", description: "Selected fellowship not found." });
-        setIsAssigning(null);
-        return;
-    }
-
-    try {
-        await runTransaction(firestore, async (transaction) => {
-            const oldFellowshipId = soul.fellowshipId;
-            
-            // --- ALL READS FIRST ---
-            let oldFellowshipDoc = null;
-            if (oldFellowshipId && oldFellowshipId !== fellowshipId) {
-                oldFellowshipDoc = await transaction.get(doc(firestore, "fellowships", oldFellowshipId));
-            }
-            
-            let newFellowshipDoc = null;
-            if (fellowshipId !== 'none' && oldFellowshipId !== fellowshipId) {
-                newFellowshipDoc = await transaction.get(doc(firestore, "fellowships", fellowshipId));
-            }
-
-            // --- ALL WRITES SECOND ---
-            if (oldFellowshipDoc?.exists()) {
-                transaction.update(oldFellowshipDoc.ref, { memberCount: increment(-1) });
-            }
-            
-            if (newFellowshipDoc?.exists()) {
-                transaction.update(newFellowshipDoc.ref, { memberCount: increment(1) });
-            }
-
-            transaction.update(soulRef, updateData);
-            transaction.set(globalSoulRef, updateData, { merge: true });
-        });
-
-        toast({ title: "Assigned", description: "Fellowship assigned successfully." });
-        setSoulToAssign(null);
-
-        const wasNewlyAssigned = fellowshipId !== 'none' && fellowshipId !== soul.fellowshipId;
-        if (wasNewlyAssigned && selectedFellowship && selectedFellowship.organizerId !== user.uid) {
-            const notificationRef = collection(firestore, `users/${selectedFellowship.organizerId}/notifications`);
-            const contactInfo = soul.email || soul.phone;
-            await addDoc(notificationRef, {
-                userId: selectedFellowship.organizerId,
-                type: 'new_soul_in_fellowship',
-                title: `New Member in ${selectedFellowship.name}`,
-                message: `${soul.firstName} ${soul.lastName} was assigned to your fellowship. Please reach out to them${contactInfo ? ` at ${contactInfo}` : ''}.`,
-                link: `/dashboard/fellowship/${selectedFellowship.id}`,
-                isRead: false,
-                createdAt: serverTimestamp(),
-            });
-        }
-    } catch (error: any) {
-        if (error.code === 'permission-denied') {
-            errorEmitter.emit('permission-error', new FirestorePermissionError({ path: `souls/${soul.id}`, operation: 'update' }, user));
-        } else {
-            toast({
-                variant: "destructive",
-                title: "Error",
-                description: error.message || "Failed to assign fellowship."
-            });
-        }
-    } finally { setIsAssigning(null); }
-  };
-
-  const filteredSouls = useMemo(() => {
-    if (!souls) return [];
-    if (!searchTerm) return souls;
-    const term = searchTerm.toLowerCase();
-    return souls.filter(soul => 
-      `${soul.firstName} ${soul.lastName}`.toLowerCase().includes(term) ||
-      (soul.phone && soul.phone.toLowerCase().includes(term))
-    );
-  }, [souls, searchTerm]);
-
-  const handleExport = async (formatType: 'csv' | 'pdf') => {
-    if (!filteredSouls || filteredSouls.length === 0) return;
+  const handleExportHarvest = async (formatType: 'csv' | 'pdf') => {
+    if (!souls || souls.length === 0) return;
 
     const { jsPDF } = await import('jspdf');
     const { default: autoTable } = await import('jspdf-autotable');
 
     const headers = ["First Name", "Last Name", "Email", "Phone", "Church", "Source", "Status", "Date Won"];
-    const body = filteredSouls.map(soul => [
+    const body = souls.map(soul => [
       soul.firstName, 
       soul.lastName, 
       soul.email || '', 
@@ -238,7 +159,102 @@ export default function SoulsWonPage() {
     toast({ title: "Export Started" });
   };
 
-  const handleExportSingleSoul = async (soul: Soul, formatType: 'csv' | 'pdf') => {
+
+  const handleDeleteSoul = async () => {
+    if (!soulToDelete || !user || !firestore) return;
+    setIsDeleting(true);
+
+    const soulRef = doc(firestore, `users/${user.uid}/souls`, soulToDelete.id);
+    const globalSoulRef = doc(firestore, 'souls', soulToDelete.id);
+
+    try {
+        const batch = writeBatch(firestore);
+        batch.delete(soulRef);
+        batch.delete(globalSoulRef);
+        
+        await batch.commit();
+        toast({ title: "Record Deleted", description: "The soul record has been permanently removed." });
+        setSoulToDelete(null);
+    } catch (error) {
+        const permissionError = new FirestorePermissionError({
+            path: soulRef.path,
+            operation: 'delete',
+        }, user);
+        errorEmitter.emit('permission-error', permissionError);
+    } finally {
+        setIsDeleting(false);
+    }
+  };
+
+  const handleAssignFellowship = async (soul: Soul, fellowshipId: string) => {
+    if (!user || !firestore || isAssigning) return;
+    setIsAssigning(fellowshipId);
+
+    const soulRef = doc(firestore, `users/${user.uid}/souls`, soul.id);
+    const globalSoulRef = doc(firestore, 'souls', soul.id);
+    const selectedFellowship = activeFellowships?.find(f => f.id === fellowshipId);
+    
+    const updateData: { [key: string]: any } = {
+        userId: user.uid,
+        updatedAt: serverTimestamp(),
+    };
+
+    if (fellowshipId === 'none') {
+        updateData.fellowshipId = deleteField();
+        updateData.fellowshipName = deleteField();
+    } else if (selectedFellowship) {
+        updateData.fellowshipId = selectedFellowship.id;
+        updateData.fellowshipName = selectedFellowship.name;
+    }
+
+    try {
+        await runTransaction(firestore, async (transaction) => {
+            const oldFellowshipId = soul.fellowshipId;
+            
+            let oldFellowshipDoc = null;
+            if (oldFellowshipId && oldFellowshipId !== fellowshipId) {
+                oldFellowshipDoc = await transaction.get(doc(firestore, "fellowships", oldFellowshipId));
+            }
+            
+            let newFellowshipDoc = null;
+            if (fellowshipId !== 'none' && oldFellowshipId !== fellowshipId) {
+                newFellowshipDoc = await transaction.get(doc(firestore, "fellowships", fellowshipId));
+            }
+
+            if (oldFellowshipDoc?.exists()) {
+                transaction.update(oldFellowshipDoc.ref, { memberCount: increment(-1) });
+            }
+            
+            if (newFellowshipDoc?.exists()) {
+                transaction.update(newFellowshipDoc.ref, { memberCount: increment(1) });
+            }
+
+            transaction.update(soulRef, updateData);
+            transaction.set(globalSoulRef, updateData, { merge: true });
+        });
+
+        toast({ title: "Assigned", description: "Fellowship assigned successfully." });
+        setSoulToAssign(null);
+
+        const wasNewlyAssigned = fellowshipId !== 'none' && fellowshipId !== soul.fellowshipId;
+        if (wasNewlyAssigned && selectedFellowship && selectedFellowship.organizerId !== user.uid) {
+            const notificationRef = collection(firestore, `users/${selectedFellowship.organizerId}/notifications`);
+            await addDoc(notificationRef, {
+                userId: selectedFellowship.organizerId,
+                type: 'new_soul_in_fellowship',
+                title: `New Member in ${selectedFellowship.name}`,
+                message: `${soul.firstName} ${soul.lastName} was assigned to your fellowship.`,
+                link: `/dashboard/fellowship/${selectedFellowship.id}`,
+                isRead: false,
+                createdAt: serverTimestamp(),
+            });
+        }
+    } catch (error: any) {
+        errorEmitter.emit('permission-error', new FirestorePermissionError({ path: `souls/${soul.id}`, operation: 'update' }, user));
+    } finally { setIsAssigning(null); }
+  };
+
+  const handleExportSingleSoul = useCallback(async (soul: Soul, formatType: 'csv' | 'pdf') => {
     const { jsPDF } = await import('jspdf');
     const { default: autoTable } = await import('jspdf-autotable');
 
@@ -249,39 +265,24 @@ export default function SoulsWonPage() {
       const doc = new jsPDF();
       doc.setFontSize(18);
       doc.text(`Soul Record: ${soul.firstName} ${soul.lastName}`, 14, 20);
-      
-      const data = [
-        ["First Name", soul.firstName],
-        ["Last Name", soul.lastName],
-        ["Email", soul.email || 'N/A'],
-        ["Phone", soul.phone || 'N/A'],
-        ["Church", soul.church || 'N/A'],
-        ["Source", soul.source],
-        ["Status", soul.status],
-        ["Won At", dateStr],
-      ];
-
       autoTable(doc, {
-        body: data,
+        body: [
+          ["First Name", soul.firstName],
+          ["Last Name", soul.lastName],
+          ["Email", soul.email || 'N/A'],
+          ["Phone", soul.phone || 'N/A'],
+          ["Source", soul.source],
+          ["Status", soul.status],
+          ["Won At", dateStr],
+        ],
         startY: 30,
         theme: 'striped',
         headStyles: { fillColor: [249, 116, 22] }
       });
-      
       doc.save(`soul-${soul.firstName}-${soul.lastName}.pdf`);
     } else {
       const headers = ["Field", "Value"];
-      const rows = [
-        ["First Name", soul.firstName],
-        ["Last Name", soul.lastName],
-        ["Email", soul.email || ''],
-        ["Phone", soul.phone || ''],
-        ["Church", soul.church || ''],
-        ["Source", soul.source],
-        ["Status", soul.status],
-        ["Won At", dateStr],
-      ];
-      
+      const rows = [["First Name", soul.firstName], ["Last Name", soul.lastName], ["Email", soul.email || ''], ["Phone", soul.phone || ''], ["Status", soul.status], ["Won At", dateStr]];
       const csvContent = headers.join(",") + "\n" + rows.map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(",")).join("\n");
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
       const url = URL.createObjectURL(blob);
@@ -291,10 +292,20 @@ export default function SoulsWonPage() {
       link.click();
       URL.revokeObjectURL(url);
     }
-  };
+  }, []);
+
+  const filteredSouls = useMemo(() => {
+    if (!souls) return [];
+    if (!searchTerm) return souls;
+    const term = searchTerm.toLowerCase();
+    return souls.filter(soul => 
+      `${soul.firstName} ${soul.lastName}`.toLowerCase().includes(term) ||
+      (soul.phone && soul.phone.toLowerCase().includes(term))
+    );
+  }, [souls, searchTerm]);
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 md:space-y-12">
       {/* Centered Interaction Box */}
       <Card className="border shadow-sm sm:shadow-md rounded-none sm:rounded-lg border-x-0 sm:border-x -mx-4 sm:mx-0">
         <CardContent className="px-4 py-4 sm:p-6">
@@ -339,40 +350,45 @@ export default function SoulsWonPage() {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuItem onSelect={() => handleExport('csv')}>CSV</DropdownMenuItem>
-                  <DropdownMenuItem onSelect={() => handleExport('pdf')}>PDF</DropdownMenuItem>
+                  <DropdownMenuItem onSelect={() => handleExportHarvest('csv')}>CSV</DropdownMenuItem>
+                  <DropdownMenuItem onSelect={() => handleExportHarvest('pdf')}>PDF</DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
           </div>
         </CardContent>
       </Card>
-      
-      <SoulsWonTable 
-        souls={filteredSouls || []} 
-        loading={loading}
-        onFollowUp={setSoulForFollowUp}
-        onViewHistory={setSoulForHistory}
-        onExportSingle={handleExportSingleSoul}
-        onOpenAssignDialog={setSoulToAssign}
-        onEdit={setSoulToEdit}
-      />
+
+      <div className="-mx-4 sm:mx-0">
+        <SoulsWonTable 
+          souls={filteredSouls || []} 
+          loading={loading}
+          onFollowUp={handleOpenFollowUp}
+          onViewHistory={handleOpenHistory}
+          onExportSingle={handleExportSingleSoul}
+          onOpenAssignDialog={handleOpenAssign}
+          onEdit={handleOpenEdit}
+          onDelete={handleOpenDelete}
+        />
+      </div>
 
       <LogFollowUpDialog 
           soul={soulForFollowUp} 
           isOpen={!!soulForFollowUp} 
           onOpenChange={(isOpen) => !isOpen && setSoulForFollowUp(null)} 
-          onFollowUpLogged={handleFollowUpLogged} 
+          onFollowUpLogged={() => setSoulForFollowUp(null)} 
       />
+      
       <ViewHistoryDialog 
           soul={soulForHistory} 
           isOpen={!!soulForHistory} 
           onOpenChange={(isOpen) => !isOpen && setSoulForHistory(null)} 
       />
+      
       <AssignFellowshipDialog 
           soul={soulToAssign} 
           fellowships={activeFellowships} 
           isOpen={!!soulToAssign} 
-          onOpenChange={() => setSoulToAssign(null)} 
+          onOpenChange={(open) => !open && setSoulToAssign(null)} 
           onAssignFellowship={handleAssignFellowship} 
           isAssigning={isAssigning} 
       />
@@ -380,7 +396,7 @@ export default function SoulsWonPage() {
       <Dialog open={!!soulToEdit} onOpenChange={(open) => !open && setSoulToEdit(null)}>
           <DialogContent className="sm:max-w-lg">
               <DialogHeader>
-                  <DialogTitle>Edit Soul Details</DialogTitle>
+                  <DialogTitle className="font-headline text-2xl">Edit Soul Details</DialogTitle>
                   <DialogDescription>Update information for {soulToEdit?.firstName}.</DialogDescription>
               </DialogHeader>
               <div className="max-h-[70vh] overflow-y-auto pr-2">
@@ -398,15 +414,15 @@ export default function SoulsWonPage() {
 
       {mounted && isMobile ? (
         <Sheet open={isLogDialogOpen} onOpenChange={setIsLogDialogOpen}>
-          <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0">
-            <div className="p-6 border-b flex-shrink-0">
+          <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-2xl">
+            <div className="p-6 border-b flex-shrink-0 bg-muted/10">
                 <SheetHeader className="text-left">
-                    <SheetTitle>Log a New Soul</SheetTitle>
-                    <SheetDescription>Record the details of the person you've ministered to.</SheetDescription>
+                    <SheetTitle className="text-xl font-bold font-headline">Log a New Soul</SheetTitle>
+                    <SheetDescription className="text-xs">Record the details of the person you've ministered to.</SheetDescription>
                 </SheetHeader>
             </div>
             <div className="flex-grow overflow-y-auto p-6">
-                <LogSoulForm onSoulLogged={handleSoulLogged} fellowships={activeFellowships} campaigns={activeCampaigns} />
+                <LogSoulForm onSoulLogged={() => setIsLogDialogOpen(false)} fellowships={activeFellowships} campaigns={activeCampaigns} />
             </div>
           </SheetContent>
         </Sheet>
@@ -414,15 +430,35 @@ export default function SoulsWonPage() {
         <Dialog open={isLogDialogOpen} onOpenChange={setIsLogDialogOpen}>
           <DialogContent className="sm:max-w-lg">
             <DialogHeader>
-              <DialogTitle>Log a New Soul</DialogTitle>
-              <DialogDescription>Record the details of the person you've ministered to.</DialogDescription>
+              <DialogTitle className="text-2xl font-bold font-headline">Log a New Soul</DialogTitle>
+              <DialogDescription>
+                  Record the details of the person you've ministered to.
+              </DialogDescription>
             </DialogHeader>
             <div className="max-h-[70vh] overflow-y-auto pr-2">
-                <LogSoulForm onSoulLogged={handleSoulLogged} fellowships={activeFellowships} campaigns={activeCampaigns} />
+              <LogSoulForm onSoulLogged={() => setIsLogDialogOpen(false)} fellowships={activeFellowships} campaigns={activeCampaigns} />
             </div>
           </DialogContent>
         </Dialog>
       )}
+
+      <AlertDialog open={!!soulToDelete} onOpenChange={(open) => !open && setSoulToDelete(null)}>
+        <AlertDialogContent className="w-[90vw] max-w-lg rounded-lg">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Record?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to permanently remove {soulToDelete?.firstName} {soulToDelete?.lastName} from your records? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteSoul} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90">
+              {isDeleting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Trash2 className="mr-2 h-4 w-4" />}
+              Confirm Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
