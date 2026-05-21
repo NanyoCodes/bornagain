@@ -199,11 +199,11 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
                 <CardTitle className="text-sm sm:text-base font-semibold truncate">{authorFullName}</CardTitle>
               </Link>
               <div className="text-muted-foreground text-[10px] sm:text-xs mt-0.5 flex flex-col gap-1">
-                  <div className="flex items-center gap-1"><Globe className="h-3 w-3 text-primary shrink-0" /> {locationString}</div>
                   <div className="truncate">{displayDate}</div>
                   <div className="mt-1">
                     <Badge variant="outline" className="w-fit text-[8px] sm:text-[9px] uppercase tracking-widest px-1.5 py-0 h-4 sm:h-5">{testimony.category}</Badge>
                   </div>
+                  <div className="flex items-center gap-1 mt-0.5 opacity-80"><Globe className="h-3 w-3 text-primary shrink-0" /> {locationString}</div>
               </div>
             </div>
           </div>

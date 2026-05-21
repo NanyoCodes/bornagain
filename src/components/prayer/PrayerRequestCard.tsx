@@ -104,9 +104,11 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({ prayerRequest
                     <CardDescription className="text-xs mt-1">
                         {displayDate}
                     </CardDescription>
+                    <div className="mt-2">
+                        <Badge variant="outline" className="w-fit text-[8px] sm:text-[9px] uppercase tracking-widest px-1.5 py-0 h-4 sm:h-5">{prayerRequest.category}</Badge>
+                    </div>
                 </div>
             </div>
-            <Badge variant="outline" className="shrink-0">{prayerRequest.category}</Badge>
         </CardHeader>
         <CardContent className="flex-grow py-0">
           <p className="text-sm text-muted-foreground whitespace-pre-wrap line-clamp-4">
