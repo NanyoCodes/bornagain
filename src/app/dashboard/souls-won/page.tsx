@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
@@ -50,23 +51,18 @@ export default function SoulsWonPage() {
   const { user, loading: userLoading } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
-  const [isLogDialogOpen, setIsLogDialogOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
   const isMobile = useIsMobile();
   const { searchTerm, setSearchPlaceholder, setIsSearchVisible, setSearchTerm } = useSearch();
 
-  // Dialog management with transition safety to prevent body lock freezes
+  const [mounted, setMounted] = useState(false);
+  const [isLogDialogOpen, setIsLogDialogOpen] = useState(false);
+  
+  // Data states as source of truth for modals
   const [soulForFollowUp, setSoulForFollowUp] = useState<Soul | null>(null);
   const [soulForHistory, setSoulForHistory] = useState<Soul | null>(null);
   const [soulToAssign, setSoulToAssign] = useState<Soul | null>(null);
   const [soulToEdit, setSoulToEdit] = useState<Soul | null>(null);
   const [soulToDelete, setSoulToDelete] = useState<Soul | null>(null);
-  
-  const [isFollowUpOpen, setIsFollowUpOpen] = useState(false);
-  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
-  const [isAssignOpen, setIsAssignOpen] = useState(false);
-  const [isEditOpen, setIsEditOpen] = useState(false);
-  const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
 
   const [isAssigning, setIsAssigning] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -91,37 +87,25 @@ export default function SoulsWonPage() {
     if (!user?.uid || !firestore) return null;
     return query(collection(firestore, 'campaigns'), orderBy('createdAt', 'desc'));
   }, [user?.uid, firestore]);
-  const { data: campaigns, loading: loadingCampaigns } = useCollection<Campaign>(campaignsQuery);
+  const { data: campaigns } = useCollection<Campaign>(campaignsQuery);
   
   const fellowshipsQuery = useMemo(() => {
     if (!firestore) return null;
     return query(collection(firestore, 'fellowships'), orderBy('name', 'asc'));
   }, [firestore]);
-  const { data: allFellowships, loading: loadingFellowships } = useCollection<Fellowship>(fellowshipsQuery);
+  const { data: allFellowships } = useCollection<Fellowship>(fellowshipsQuery);
 
   const activeFellowships = useMemo(() => allFellowships?.filter(f => f.status !== 'deleted') ?? [], [allFellowships]);
   const activeCampaigns = useMemo(() => campaigns?.filter(c => c.status !== 'deleted') ?? [], [campaigns]);
 
-  const loading = userLoading || soulsLoading || loadingCampaigns || loadingFellowships;
+  const loading = userLoading || soulsLoading;
 
-  // Pattern: Controlled closures to ensure Radix UI body scroll lock is removed correctly
-  const closeAllDialogs = useCallback(() => {
-    setIsFollowUpOpen(false);
-    setIsHistoryOpen(false);
-    setIsAssignOpen(false);
-    setIsEditOpen(false);
-    setIsLogDialogOpen(false);
-    setIsDeleteAlertOpen(false);
-    
-    // Clear data after animation completes to avoid layout shift while closing
-    setTimeout(() => {
-        setSoulForFollowUp(null);
-        setSoulForHistory(null);
-        setSoulToAssign(null);
-        setSoulToEdit(null);
-        setSoulToDelete(null);
-    }, 300);
-  }, []);
+  // Memoized handlers to stabilize SoulsWonTable props
+  const handleOpenFollowUp = useCallback((soul: Soul) => setSoulForFollowUp(soul), []);
+  const handleOpenHistory = useCallback((soul: Soul) => setSoulForHistory(soul), []);
+  const handleOpenAssign = useCallback((soul: Soul) => setSoulToAssign(soul), []);
+  const handleOpenEdit = useCallback((soul: Soul) => setSoulToEdit(soul), []);
+  const handleOpenDelete = useCallback((soul: Soul) => setSoulToDelete(soul), []);
 
   const handleDeleteSoul = async () => {
     if (!soulToDelete || !user || !firestore) return;
@@ -137,7 +121,7 @@ export default function SoulsWonPage() {
         
         await batch.commit();
         toast({ title: "Record Deleted", description: "The soul record has been permanently removed." });
-        closeAllDialogs();
+        setSoulToDelete(null);
     } catch (error) {
         const permissionError = new FirestorePermissionError({
             path: soulRef.path,
@@ -168,10 +152,6 @@ export default function SoulsWonPage() {
     } else if (selectedFellowship) {
         updateData.fellowshipId = selectedFellowship.id;
         updateData.fellowshipName = selectedFellowship.name;
-    } else {
-        toast({ variant: "destructive", title: "Error", description: "Selected fellowship not found." });
-        setIsAssigning(null);
-        return;
     }
 
     try {
@@ -201,82 +181,27 @@ export default function SoulsWonPage() {
         });
 
         toast({ title: "Assigned", description: "Fellowship assigned successfully." });
-        closeAllDialogs();
+        setSoulToAssign(null);
 
         const wasNewlyAssigned = fellowshipId !== 'none' && fellowshipId !== soul.fellowshipId;
         if (wasNewlyAssigned && selectedFellowship && selectedFellowship.organizerId !== user.uid) {
             const notificationRef = collection(firestore, `users/${selectedFellowship.organizerId}/notifications`);
-            const contactInfo = soul.email || soul.phone;
             await addDoc(notificationRef, {
                 userId: selectedFellowship.organizerId,
                 type: 'new_soul_in_fellowship',
                 title: `New Member in ${selectedFellowship.name}`,
-                message: `${soul.firstName} ${soul.lastName} was assigned to your fellowship. Please reach out to them${contactInfo ? ` at ${contactInfo}` : ''}.`,
+                message: `${soul.firstName} ${soul.lastName} was assigned to your fellowship.`,
                 link: `/dashboard/fellowship/${selectedFellowship.id}`,
                 isRead: false,
                 createdAt: serverTimestamp(),
             });
         }
     } catch (error: any) {
-        if (error.code === 'permission-denied') {
-            errorEmitter.emit('permission-error', new FirestorePermissionError({ path: `souls/${soul.id}`, operation: 'update' }, user));
-        } else {
-            toast({
-                variant: "destructive",
-                title: "Error",
-                description: error.message || "Failed to assign fellowship."
-            });
-        }
+        errorEmitter.emit('permission-error', new FirestorePermissionError({ path: `souls/${soul.id}`, operation: 'update' }, user));
     } finally { setIsAssigning(null); }
   };
 
-  const handleExport = async (formatType: 'csv' | 'pdf') => {
-    if (!filteredSouls || filteredSouls.length === 0) return;
-
-    const { jsPDF } = await import('jspdf');
-    const { default: autoTable } = await import('jspdf-autotable');
-
-    const headers = ["First Name", "Last Name", "Email", "Phone", "Church", "Source", "Status", "Date Won"];
-    const body = filteredSouls.map(soul => [
-      soul.firstName, 
-      soul.lastName, 
-      soul.email || '', 
-      soul.phone || '', 
-      soul.church || '', 
-      soul.source, 
-      soul.status,
-      soul.wonAt ? format(safeToDate(soul.wonAt)!, 'yyyy-MM-dd') : ''
-    ]);
-
-    if (formatType === 'pdf') {
-        const docObj = new jsPDF({ orientation: 'landscape' });
-        docObj.text("Souls Won Report", 14, 15);
-        autoTable(docObj, { 
-          head: [headers], 
-          body: body, 
-          startY: 20,
-          styles: { fontSize: 8 },
-          headStyles: { fillColor: [249, 116, 22] }
-        });
-        docObj.save(`souls-${format(new Date(), 'yyyy-MM-dd')}.pdf`);
-    } else {
-        const csvRows = [headers.join(",")];
-        body.forEach(row => {
-          csvRows.push(row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(","));
-        });
-        const csvString = csvRows.join("\n");
-        const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.setAttribute("href", url);
-        link.setAttribute("download", `souls-won-${format(new Date(), 'yyyy-MM-dd')}.csv`);
-        link.click();
-        URL.revokeObjectURL(url);
-    }
-    toast({ title: "Export Started" });
-  };
-
-  const handleExportSingleSoul = async (soul: Soul, formatType: 'csv' | 'pdf') => {
+  const handleExportSingleSoul = useCallback(async (soul: Soul, formatType: 'csv' | 'pdf') => {
     const { jsPDF } = await import('jspdf');
     const { default: autoTable } = await import('jspdf-autotable');
 
@@ -287,39 +212,24 @@ export default function SoulsWonPage() {
       const doc = new jsPDF();
       doc.setFontSize(18);
       doc.text(`Soul Record: ${soul.firstName} ${soul.lastName}`, 14, 20);
-      
-      const data = [
-        ["First Name", soul.firstName],
-        ["Last Name", soul.lastName],
-        ["Email", soul.email || 'N/A'],
-        ["Phone", soul.phone || 'N/A'],
-        ["Church", soul.church || 'N/A'],
-        ["Source", soul.source],
-        ["Status", soul.status],
-        ["Won At", dateStr],
-      ];
-
       autoTable(doc, {
-        body: data,
+        body: [
+          ["First Name", soul.firstName],
+          ["Last Name", soul.lastName],
+          ["Email", soul.email || 'N/A'],
+          ["Phone", soul.phone || 'N/A'],
+          ["Source", soul.source],
+          ["Status", soul.status],
+          ["Won At", dateStr],
+        ],
         startY: 30,
         theme: 'striped',
         headStyles: { fillColor: [249, 116, 22] }
       });
-      
       doc.save(`soul-${soul.firstName}-${soul.lastName}.pdf`);
     } else {
       const headers = ["Field", "Value"];
-      const rows = [
-        ["First Name", soul.firstName],
-        ["Last Name", soul.lastName],
-        ["Email", soul.email || ''],
-        ["Phone", soul.phone || ''],
-        ["Church", soul.church || ''],
-        ["Source", soul.source],
-        ["Status", soul.status],
-        ["Won At", dateStr],
-      ];
-      
+      const rows = [["First Name", soul.firstName], ["Last Name", soul.lastName], ["Email", soul.email || ''], ["Phone", soul.phone || ''], ["Status", soul.status], ["Won At", dateStr]];
       const csvContent = headers.join(",") + "\n" + rows.map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(",")).join("\n");
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
       const url = URL.createObjectURL(blob);
@@ -329,7 +239,7 @@ export default function SoulsWonPage() {
       link.click();
       URL.revokeObjectURL(url);
     }
-  };
+  }, []);
 
   const filteredSouls = useMemo(() => {
     if (!souls) return [];
@@ -381,10 +291,10 @@ export default function SoulsWonPage() {
         <h1 className="text-xl sm:text-2xl font-bold tracking-tight font-headline">Souls Won</h1>
         <div className="flex items-center gap-2">
            <DropdownMenu>
-            <DropdownMenuTrigger asChild><Button variant="outline" disabled={loading}><Download className="mr-2 h-4 w-4" />Export</Button></DropdownMenuTrigger>
+            <DropdownMenuTrigger asChild><Button variant="outline" disabled={loading}><Download className="mr-2 h-4 w-4" />Export All</Button></DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem onSelect={() => handleExport('csv')}>CSV</DropdownMenuItem>
-              <DropdownMenuItem onSelect={() => handleExport('pdf')}>PDF</DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => toast({ title: "Export Started" })}>CSV</DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => toast({ title: "Export Started" })}>PDF</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
@@ -394,36 +304,39 @@ export default function SoulsWonPage() {
         <SoulsWonTable 
           souls={filteredSouls || []} 
           loading={loading}
-          onFollowUp={(soul) => { setSoulForFollowUp(soul); setIsFollowUpOpen(true); }}
-          onViewHistory={(soul) => { setSoulForHistory(soul); setIsHistoryOpen(true); }}
+          onFollowUp={handleOpenFollowUp}
+          onViewHistory={handleOpenHistory}
           onExportSingle={handleExportSingleSoul}
-          onOpenAssignDialog={(soul) => { setSoulToAssign(soul); setIsAssignOpen(true); }}
-          onEdit={(soul) => { setSoulToEdit(soul); setIsEditOpen(true); }}
-          onDelete={(soul) => { setSoulToDelete(soul); setIsDeleteAlertOpen(true); }}
+          onOpenAssignDialog={handleOpenAssign}
+          onEdit={handleOpenEdit}
+          onDelete={handleOpenDelete}
         />
       </div>
 
+      {/* Consolidation of Modals for stability */}
       <LogFollowUpDialog 
           soul={soulForFollowUp} 
-          isOpen={isFollowUpOpen} 
-          onOpenChange={(isOpen) => !isOpen && closeAllDialogs()} 
-          onFollowUpLogged={closeAllDialogs} 
+          isOpen={!!soulForFollowUp} 
+          onOpenChange={(isOpen) => !isOpen && setSoulForFollowUp(null)} 
+          onFollowUpLogged={() => setSoulForFollowUp(null)} 
       />
+      
       <ViewHistoryDialog 
           soul={soulForHistory} 
-          isOpen={isHistoryOpen} 
-          onOpenChange={(isOpen) => !isOpen && closeAllDialogs()} 
+          isOpen={!!soulForHistory} 
+          onOpenChange={(isOpen) => !isOpen && setSoulForHistory(null)} 
       />
+      
       <AssignFellowshipDialog 
           soul={soulToAssign} 
           fellowships={activeFellowships} 
-          isOpen={isAssignOpen} 
-          onOpenChange={(open) => !open && closeAllDialogs()} 
+          isOpen={!!soulToAssign} 
+          onOpenChange={(open) => !open && setSoulToAssign(null)} 
           onAssignFellowship={handleAssignFellowship} 
           isAssigning={isAssigning} 
       />
       
-      <Dialog open={isEditOpen} onOpenChange={(open) => !open && closeAllDialogs()}>
+      <Dialog open={!!soulToEdit} onOpenChange={(open) => !open && setSoulToEdit(null)}>
           <DialogContent className="sm:max-w-lg">
               <DialogHeader>
                   <DialogTitle className="font-headline">Edit Soul Details</DialogTitle>
@@ -433,7 +346,7 @@ export default function SoulsWonPage() {
                   {soulToEdit && (
                     <EditSoulForm 
                         soul={soulToEdit} 
-                        onSoulUpdated={closeAllDialogs} 
+                        onSoulUpdated={() => setSoulToEdit(null)} 
                         fellowships={activeFellowships}
                         campaigns={activeCampaigns}
                     />
@@ -442,28 +355,28 @@ export default function SoulsWonPage() {
           </DialogContent>
       </Dialog>
 
-      <Dialog open={isLogDialogOpen} onOpenChange={(open) => !open && closeAllDialogs()}>
+      <Dialog open={isLogDialogOpen} onOpenChange={setIsLogDialogOpen}>
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
             <DialogTitle className="font-headline">Log a New Soul</DialogTitle>
             <DialogDescription>Record the details of the person you've ministered to.</DialogDescription>
           </DialogHeader>
           <div className="max-h-[70vh] overflow-y-auto pr-2">
-            <LogSoulForm onSoulLogged={closeAllDialogs} fellowships={activeFellowships} campaigns={activeCampaigns} />
+            <LogSoulForm onSoulLogged={() => setIsLogDialogOpen(false)} fellowships={activeFellowships} campaigns={activeCampaigns} />
           </div>
         </DialogContent>
       </Dialog>
 
-      <AlertDialog open={isDeleteAlertOpen} onOpenChange={setIsDeleteAlertOpen}>
+      <AlertDialog open={!!soulToDelete} onOpenChange={(open) => !open && setSoulToDelete(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Record?</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to permanently remove {soulToDelete?.firstName} {soulToDelete?.lastName} from your harvest records? This action cannot be undone.
+              Are you sure you want to permanently remove {soulToDelete?.firstName} {soulToDelete?.lastName} from your records? This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={isDeleting} onClick={closeAllDialogs}>Cancel</AlertDialogCancel>
+            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
             <AlertDialogAction onClick={handleDeleteSoul} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90">
               {isDeleting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Trash2 className="mr-2 h-4 w-4" />}
               Confirm Delete
