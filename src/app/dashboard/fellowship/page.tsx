@@ -301,6 +301,10 @@ function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting, onDelete
     },
   });
 
+  const handleCreateMeet = () => {
+    window.open('https://meet.google.com/new', '_blank');
+  };
+
   return (
     <div className="space-y-8">
         <Form {...form}>
@@ -412,6 +416,19 @@ function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting, onDelete
                     </div>
                 </div>
             )}
+            <FormField control={form.control} name="streamUrl" render={({ field }) => (
+                <FormItem>
+                    <FormLabel>Meeting URL (Optional)</FormLabel>
+                    <FormControl>
+                        <Input placeholder="https://..." {...field} value={field.value ?? ''} className="text-base" />
+                    </FormControl>
+                    <Button type="button" variant="outline" size="sm" onClick={handleCreateMeet} className="mt-1">
+                      <Video className="mr-2 h-4 w-4" />
+                      Google Meet
+                    </Button>
+                    <FormMessage />
+                </FormItem>
+            )} />
             <Button type="submit" disabled={isSubmitting} className="w-full h-11">
                 {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Save Changes
@@ -546,6 +563,7 @@ export default function FellowshipPage() {
                 city: values.city || null,
                 country: values.country || null,
                 location: location,
+                streamUrl: values.streamUrl || null,
             });
             toast({ title: 'Group Updated' });
             closeAllDialogs();
@@ -564,10 +582,8 @@ export default function FellowshipPage() {
         const fellowshipRef = doc(firestore, 'fellowships', fellowshipId);
         
         try {
-            // 1. Mark fellowship as deleted
             await updateDoc(fellowshipRef, { status: 'deleted' });
 
-            // 2. Automatically unassign souls from this group
             const soulsRef = collection(firestore, 'souls');
             const [fSnapshot, aSnapshot] = await Promise.all([
                 getDocs(query(soulsRef, where('fellowshipId', '==', fellowshipId))),
@@ -588,7 +604,6 @@ export default function FellowshipPage() {
                 cleanupTasks.push(updateDoc(doc(firestore, 'users', sData.userId, 'souls', sDoc.id), updates));
             });
 
-            // Perform all unassignments in parallel
             await Promise.all(cleanupTasks);
 
             toast({ title: 'Group Deleted', description: 'Associated souls have been automatically unassigned.' });
@@ -629,7 +644,6 @@ export default function FellowshipPage() {
 
     return (
         <div className="space-y-8">
-            {/* Centered Interaction Box */}
             <Card className="border shadow-sm sm:shadow-md rounded-none sm:rounded-lg border-x-0 sm:border-x -mx-4 sm:mx-0">
                 <CardContent className="px-4 py-4 sm:p-6">
                 <div className="flex items-center gap-2 sm:gap-4">
