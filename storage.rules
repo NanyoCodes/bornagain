@@ -1,3 +1,4 @@
+
 rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
@@ -14,15 +15,6 @@ service firebase.storage {
     
     match /testimony-images/{uid}/{allPaths=**} {
       allow read: if true;
-      allow write: if isOwner(uid);
-    }
-    
-    // Optimized permissions for the souls-won directory
-    match /souls-won/{uid}/{allPaths=**} {
-      // Allow any authenticated user to view soul photos for collaborative discipleship
-      allow read: if request.auth != null;
-      
-      // Allow only the original soul winner to manage the images
       allow write: if isOwner(uid);
     }
   }

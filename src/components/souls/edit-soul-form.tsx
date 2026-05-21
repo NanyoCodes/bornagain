@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -19,15 +20,13 @@ import { useState, useMemo, useEffect, useRef } from "react";
 import { Loader2 } from "lucide-react";
 import type { Soul, Campaign, Fellowship } from "@/lib/types";
 import { format } from "date-fns";
-import { useFirestore, useUser, useAuth } from "@/firebase";
-import { collection, doc, serverTimestamp, runTransaction } from "firebase/firestore";
-import { updateProfile } from "firebase/auth";
+import { useFirestore, useUser } from "@/firebase";
+import { doc, serverTimestamp, runTransaction } from "firebase/firestore";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { haversineDistance, safeToDate } from "@/lib/utils";
 import { LocationWonInput } from "./location-won-input";
-import { ImageUpload } from "../common/image-upload";
 import { Label } from "@/components/ui/label";
 
 const formSchema = z.object({
@@ -35,7 +34,6 @@ const formSchema = z.object({
   lastName: z.string().min(2, "Last name must be at least 2 characters."),
   email: z.string().email("Please enter a valid email address.").optional().or(z.literal('')),
   phone: z.string().optional(),
-  photoURL: z.string().optional(),
   church: z.string().optional(),
   locationWonCity: z.string().optional(),
   locationWonState: z.string().optional(),
@@ -70,7 +68,6 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
       lastName: soul.lastName || "",
       email: soul.email || "",
       phone: soul.phone || "",
-      photoURL: soul.photoURL || "",
       church: soul.church || "",
       locationWonCity: soul.locationWon?.city || "",
       locationWonState: soul.locationWon?.state || "",
@@ -94,7 +91,6 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
             lastName: soul.lastName || "",
             email: soul.email || "",
             phone: soul.phone || "",
-            photoURL: soul.photoURL || "",
             church: soul.church || "",
             locationWonCity: soul.locationWon?.city || "",
             locationWonState: soul.locationWon?.state || "",
@@ -157,7 +153,6 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
       updatedAt: serverTimestamp(),
       email: values.email || null,
       phone: values.phone || null,
-      photoURL: values.photoURL || null,
       church: values.church || null,
       sourceDetails: values.sourceDetails || null,
     };
@@ -223,26 +218,6 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <FormField
-            control={form.control}
-            name="photoURL"
-            render={({ field }) => (
-                <FormItem className="flex flex-col items-center">
-                    <FormLabel>Identity Photo</FormLabel>
-                    <FormControl>
-                        <ImageUpload
-                            initialImageUrl={field.value}
-                            onUploadComplete={(url) => field.onChange(url)}
-                            storagePath="souls-won"
-                            cropAspect={1}
-                            circularCrop={true}
-                        />
-                    </FormControl>
-                    <FormMessage />
-                </FormItem>
-            )}
-        />
-
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <FormField
             control={form.control}

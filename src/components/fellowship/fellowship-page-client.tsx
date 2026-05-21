@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -108,12 +109,11 @@ export default function FellowshipPageClient() {
         const batch = writeBatch(firestore);
         const chatDocRef = doc(firestore, 'chats', fellowshipId);
         
-        // We use set with merge to ensure it exists or updates
         batch.set(chatDocRef, {
             participantIds,
             participantInfo,
             fellowshipId: fellowshipId,
-            campaignTitle: fellowship.name, // using campaignTitle key for display consistency in chats list
+            campaignTitle: fellowship.name,
             lastUpdatedAt: serverTimestamp(),
             isGroupChat: true,
             hasMessages: false,
@@ -160,9 +160,9 @@ export default function FellowshipPageClient() {
     const soulDetailsContent = selectedSoul ? (
       <div className="space-y-6 pt-4 pb-12 sm:pb-6">
           <div className="flex items-center gap-4 border rounded-lg p-4 bg-muted/20">
-              <Avatar className="h-14 w-14 border-2">
-                  <AvatarFallback className="text-lg">{selectedSoul.firstName?.charAt(0)}{selectedSoul.lastName?.charAt(0)}</AvatarFallback>
-              </Avatar>
+              <div className="h-14 w-14 border-2 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                  <Heart className="h-7 w-7 text-primary fill-current" />
+              </div>
               <div className="flex-1 min-w-0">
                   <h3 className="text-xl font-bold font-headline truncate">{selectedSoul.firstName} {selectedSoul.lastName}</h3>
                   <Badge className="mt-1" variant="secondary">{selectedSoul.status}</Badge>
@@ -312,9 +312,9 @@ export default function FellowshipPageClient() {
                                             <div className="space-y-4">
                                                 {assignedSouls.map(soul => (
                                                     <div key={soul.id} className="flex items-center gap-4 p-3 rounded-lg border bg-primary/5 border-primary/10">
-                                                        <Avatar>
-                                                            <AvatarFallback><Heart className="h-4 w-4 text-primary" /></AvatarFallback>
-                                                        </Avatar>
+                                                        <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                                                            <Heart className="h-5 w-5 text-primary fill-current" />
+                                                        </div>
                                                         <div className="flex-1 min-w-0">
                                                             <p className="font-semibold truncate">{soul.firstName} {soul.lastName}</p>
                                                             <p className="text-xs text-muted-foreground">Status: <span className="font-medium text-primary">{soul.status}</span></p>

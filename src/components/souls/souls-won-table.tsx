@@ -3,7 +3,7 @@
 
 import * as React from "react";
 import { format } from "date-fns";
-import { MoreHorizontal, Church, MapPin, Phone, ChevronDown, Download, HeartHandshake, Edit, Trash2, Users, History, Group } from "lucide-react";
+import { MoreHorizontal, Church, MapPin, Phone, ChevronDown, Download, HeartHandshake, Edit, Trash2, Users, History, Group, Heart } from "lucide-react";
 import type { Soul, FollowUpStatus } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import {
@@ -38,7 +38,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { cn, safeToDate } from "@/lib/utils";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/collapsible";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { actionItems } from "@/lib/follow-up-data";
 import { Label } from "../ui/label";
 
@@ -87,10 +87,9 @@ const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, 
                 <CollapsibleTrigger className="group w-full p-4 text-left hover:bg-muted/30 transition-colors">
                      <div className="flex items-center justify-between gap-4">
                         <div className="flex items-center gap-3 min-w-0 flex-1">
-                            <Avatar className="h-10 w-10 sm:h-11 sm:w-11 shrink-0 border">
-                                <AvatarImage src={soul.photoURL} />
-                                <AvatarFallback className="font-bold">{soul.firstName?.charAt(0)}{soul.lastName?.charAt(0)}</AvatarFallback>
-                            </Avatar>
+                            <div className="h-10 w-10 sm:h-11 sm:w-11 shrink-0 border rounded-full bg-primary/10 flex items-center justify-center">
+                                <Heart className="h-5 w-5 text-primary fill-current" />
+                            </div>
                             <div className="min-w-0">
                                 <p className="font-semibold truncate text-sm sm:text-base leading-tight">
                                   {soul.firstName || 'Unknown'} {soul.lastName || ''}
@@ -224,10 +223,9 @@ const SoulTableRow = React.memo(({ soul, onFollowUp, onViewHistory, onExportSing
         <TableRow>
             <TableCell className="font-medium">
                 <div className="flex items-center gap-3">
-                    <Avatar className="hidden sm:inline-flex h-9 w-9 border">
-                        <AvatarImage src={soul.photoURL} />
-                        <AvatarFallback>{soul.firstName?.charAt(0)}{soul.lastName?.charAt(0)}</AvatarFallback>
-                    </Avatar>
+                    <div className="hidden sm:flex h-9 w-9 border rounded-full bg-primary/5 items-center justify-center">
+                        <Heart className="h-4 w-4 text-primary" />
+                    </div>
                     <div>
                         <div className="font-semibold text-base">{soul.firstName} {soul.lastName}</div>
                         {soul.church && <div className="text-xs text-muted-foreground flex items-center gap-1"><Church className="h-3 w-3" />{soul.church}</div>}

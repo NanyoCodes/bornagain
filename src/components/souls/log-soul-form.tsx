@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -11,7 +12,6 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-  FormDescription,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -28,7 +28,6 @@ import { errorEmitter } from "@/firebase/error-emitter";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { LocationWonInput } from "./location-won-input";
 import { haversineDistance } from "@/lib/utils";
-import { ImageUpload } from "../common/image-upload";
 import { Label } from "@/components/ui/label";
 
 const formSchema = z.object({
@@ -36,7 +35,6 @@ const formSchema = z.object({
   lastName: z.string().min(2, "Last name must be at least 2 characters."),
   email: z.string().email("Please enter a valid email address.").optional().or(z.literal('')),
   phone: z.string().optional(),
-  photoURL: z.string().optional(),
   church: z.string().optional(),
   locationWonCity: z.string().optional(),
   locationWonState: z.string().optional(),
@@ -75,7 +73,6 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign, fellowships, campai
       lastName: "",
       email: "",
       phone: "",
-      photoURL: "",
       church: "",
       locationWonCity: "",
       locationWonState: "",
@@ -154,7 +151,6 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign, fellowships, campai
       userLocation: processedUserLocation || null,
       email: values.email || null,
       phone: values.phone || null,
-      photoURL: values.photoURL || null,
       church: values.church || null,
       sourceDetails: values.sourceDetails || null,
     };
@@ -229,26 +225,6 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign, fellowships, campai
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <FormField
-            control={form.control}
-            name="photoURL"
-            render={({ field }) => (
-                <FormItem className="flex flex-col items-center">
-                    <FormLabel>Identity Photo</FormLabel>
-                    <FormControl>
-                        <ImageUpload
-                            initialImageUrl={field.value}
-                            onUploadComplete={(url) => field.onChange(url)}
-                            storagePath="souls-won"
-                            cropAspect={1}
-                            circularCrop={true}
-                        />
-                    </FormControl>
-                    <FormMessage />
-                </FormItem>
-            )}
-        />
-
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <FormField
             control={form.control}
