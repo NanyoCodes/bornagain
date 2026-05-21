@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from "next/link";
@@ -46,7 +45,6 @@ import { EditProfileModal } from "@/components/profile/edit-profile-modal";
 import { PageTransition } from "../page-transition";
 
 const navItems = [
-  { href: "/dashboard", label: "Home", icon: LayoutGrid, color: "text-primary" },
   { href: "/progress", label: "Progress", icon: TrendingUp, color: "text-chart-1" },
   { href: "/souls-won", label: "Souls Won", icon: UserPlus, color: "text-chart-2" },
   { href: "/testimonies", label: "Testimonies", icon: Newspaper, color: "text-chart-3" },
@@ -75,7 +73,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount }: { unreadChatCount: num
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b bg-background px-4 md:px-6">
       <div className="flex items-center gap-2 md:gap-6">
-        <Link href="/dashboard" className="flex items-center gap-2 text-lg font-semibold">
+        <Link href="/progress" className="flex items-center gap-2 text-lg font-semibold">
           {logo && (
             <Avatar className="h-11 w-11">
               <AvatarImage src={logo.imageUrl} alt={logo.description} />
@@ -86,7 +84,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount }: { unreadChatCount: num
         </Link>
         <nav className="hidden items-center gap-5 text-sm font-medium md:flex lg:gap-6">
             {navItems.map((item) => {
-              const isActive = pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href));
+              const isActive = pathname.startsWith(item.href);
               return (
                 <Link
                     key={item.href}
@@ -172,8 +170,8 @@ function BottomNavBar({ unreadChatCount }: { unreadChatCount: number }) {
     return (
       <nav className="fixed bottom-0 left-0 right-0 z-40 border-t bg-background md:hidden">
         <div className="grid h-16 grid-cols-5 items-center">
-          {navItems.slice(0, 5).map((item) => {
-            const isActive = pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href));
+          {navItems.map((item) => {
+            const isActive = pathname.startsWith(item.href);
             return (
               <Link
                 key={item.href}
