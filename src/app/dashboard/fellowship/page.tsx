@@ -643,7 +643,7 @@ export default function FellowshipPage() {
 
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                 <div className="flex items-center justify-between mb-8">
-                    <TabsList className="grid w-full sm:w-[400px] grid-cols-2">
+                    <TabsList className="grid w-full grid-cols-2">
                         <TabsTrigger value="Fellowship">Fellowships</TabsTrigger>
                         <TabsTrigger value="Association">Associations</TabsTrigger>
                     </TabsList>
