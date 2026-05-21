@@ -137,7 +137,7 @@ function PartnerCard({
                     </Dialog>
                     <div className="min-w-0">
                         <Link href={`/dashboard/profile/${partner.userId}`}>
-                            <h2 className="text-base sm:text-lg font-bold font-headline truncate hover:underline">{partner.firstName} {partner.lastName}</h2>
+                            <h2 className="text-base sm:text-lg font-bold truncate hover:underline">{partner.firstName} {partner.lastName}</h2>
                         </Link>
                     </div>
                 </div>
@@ -456,7 +456,7 @@ export default function AccountabilityPage() {
       <div className="space-y-6 max-w-3xl mx-auto -mx-4 sm:mx-auto">
         <div className="flex flex-col items-center justify-center text-center p-8 sm:p-12 bg-muted/20 rounded-none sm:rounded-lg border-y sm:border-2 border-dashed">
             <HeartHandshake className="h-16 w-16 text-muted-foreground opacity-20" />
-            <h2 className="mt-6 text-xl sm:text-2xl font-bold font-headline">Find a Partner</h2>
+            <h2 className="mt-6 text-xl sm:text-2xl font-bold">Find a Partner</h2>
             <p className="mt-2 max-w-sm text-sm text-muted-foreground">
             Connect with fellow believers to stay motivated and grow together in your spiritual walk.
             </p>
@@ -471,7 +471,7 @@ export default function AccountabilityPage() {
   return (
     <div className="space-y-8 max-w-3xl mx-auto -mx-4 sm:mx-auto">
       <div className="px-4 sm:px-0 space-y-1">
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight font-headline">Accountability</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Accountability</h1>
         <p className="text-sm text-muted-foreground">Encourage your partners and keep each other on track.</p>
       </div>
 

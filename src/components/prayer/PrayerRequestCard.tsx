@@ -99,7 +99,7 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({ prayerRequest
                 </Dialog>
                 <div className="min-w-0 flex-1">
                      <Link href={profileLink} onClick={(e) => { if (!isClickable) e.preventDefault(); e.stopPropagation(); }} className={!isClickable ? 'pointer-events-none' : ''}>
-                        <CardTitle className={cn("text-lg font-bold font-headline", isClickable && "hover:underline")}>{authorName}</CardTitle>
+                        <CardTitle className={cn("text-lg font-bold", isClickable && "hover:underline")}>{authorName}</CardTitle>
                     </Link>
                     <CardDescription className="text-sm mt-1">
                         {displayDate}

@@ -121,7 +121,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
             <div className="flex-grow">
                 <div className="flex flex-col sm:flex-row justify-between items-start">
                     <div className="flex-grow">
-                        <h1 className="text-2xl sm:text-3xl font-bold font-headline">{displayName}</h1>
+                        <h1 className="text-2xl sm:text-3xl font-bold">{displayName}</h1>
                         <p className="text-muted-foreground mt-2">{bio || "This user hasn't set a bio yet."}</p>
                     </div>
                     {isOwnProfile && (

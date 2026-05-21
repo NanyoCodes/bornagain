@@ -196,7 +196,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
             </Dialog>
             <div className="min-w-0 flex-1">
                <Link href={profileLink} onClick={(e) => { e.stopPropagation(); }} className="hover:underline">
-                <CardTitle className="text-lg font-bold font-headline truncate">{authorFullName}</CardTitle>
+                <CardTitle className="text-lg font-bold truncate">{authorFullName}</CardTitle>
               </Link>
               <div className="text-muted-foreground text-sm mt-1 flex flex-col gap-1">
                   <div className="truncate text-sm">{displayDate}</div>
@@ -339,7 +339,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
                         <SheetContent side="bottom" className="h-[80dvh] flex flex-col p-0">
                             <div className="p-6 border-b shrink-0">
                                 <SheetHeader className="text-left">
-                                <SheetTitle className="font-headline text-2xl">Testimony by {authorFullName}</SheetTitle>
+                                <SheetTitle className="text-2xl font-bold">Testimony by {authorFullName}</SheetTitle>
                                 <SheetDescription className="text-sm">{displayDate}</SheetDescription>
                                 </SheetHeader>
                             </div>
@@ -353,7 +353,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
                         <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0">
                             <div className="p-6 border-b shrink-0">
                                 <SheetHeader className="text-left">
-                                    <SheetTitle className="font-headline text-2xl">Comments</SheetTitle>
+                                    <SheetTitle className="text-2xl font-bold">Comments</SheetTitle>
                                     <SheetDescription className="text-sm">Sharing the joy of {authorFullName}'s testimony.</SheetDescription>
                                 </SheetHeader>
                             </div>
@@ -368,7 +368,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
                     <Dialog open={showFullText} onOpenChange={setShowFullText}>
                         <DialogContent className="sm:max-w-2xl">
                             <DialogHeader>
-                            <DialogTitle className="font-headline text-2xl">Testimony by {authorFullName}</DialogTitle>
+                            <DialogTitle className="text-2xl font-bold">Testimony by {authorFullName}</DialogTitle>
                             <DialogDescription className="text-sm">{displayDate}</DialogDescription>
                             </DialogHeader>
                             {fullTextContent}
@@ -379,7 +379,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
                         <DialogContent className="sm:max-w-lg flex flex-col max-h-[85vh] p-0 overflow-hidden">
                             <div className="p-6 border-b shrink-0">
                                 <DialogHeader>
-                                    <DialogTitle className="font-headline text-2xl">Comments</DialogTitle>
+                                    <DialogTitle className="text-2xl font-bold">Comments</DialogTitle>
                                     <DialogDescription className="text-sm">Community responses to this testimony.</DialogDescription>
                                 </DialogHeader>
                             </div>

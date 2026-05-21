@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect, useCallback } from 'react';
@@ -760,7 +759,7 @@ export default function FellowshipPage() {
                     <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-2xl">
                         <div className="p-6 border-b flex-shrink-0 bg-muted/10">
                             <SheetHeader className="text-left">
-                                <SheetTitle className="text-xl font-bold font-headline">New Community Group</SheetTitle>
+                                <SheetTitle className="text-xl font-bold">New Community Group</SheetTitle>
                                 <SheetDescription className="text-xs">Create a space for community and growth.</SheetDescription>
                             </SheetHeader>
                         </div>
@@ -779,7 +778,7 @@ export default function FellowshipPage() {
                     <DialogContent className="sm:max-w-lg max-h-[90vh] flex flex-col p-0">
                         <div className="p-6 border-b shrink-0">
                             <DialogHeader>
-                                <DialogTitle className="text-2xl font-bold font-headline">New Community Group</DialogTitle>
+                                <DialogTitle className="text-2xl font-bold">New Community Group</DialogTitle>
                                 <DialogDescription>Create a space for community and growth.</DialogDescription>
                             </DialogHeader>
                         </div>
@@ -803,7 +802,7 @@ export default function FellowshipPage() {
                         <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-2xl">
                             <div className="p-6 border-b flex-shrink-0 bg-muted/10">
                                 <SheetHeader className="text-left">
-                                    <SheetTitle className="text-xl font-bold font-headline">Manage Group</SheetTitle>
+                                    <SheetTitle className="text-xl font-bold">Manage Group</SheetTitle>
                                     <SheetDescription className="text-xs">Update your group's details.</SheetDescription>
                                 </SheetHeader>
                             </div>
@@ -821,7 +820,7 @@ export default function FellowshipPage() {
                     <Dialog open={!!fellowshipToManage} onOpenChange={(open) => !open && closeAllDialogs()}>
                         <DialogContent className="sm:max-w-lg max-h-[90vh] flex flex-col p-0">
                             <div className="p-6 border-b shrink-0">
-                                <DialogHeader><DialogTitle className="text-2xl font-bold font-headline">Manage Group</DialogTitle></DialogHeader>
+                                <DialogHeader><DialogTitle className="text-2xl font-bold">Manage Group</DialogTitle></DialogHeader>
                             </div>
                             <ScrollArea className="flex-grow">
                                 <div className="p-6">

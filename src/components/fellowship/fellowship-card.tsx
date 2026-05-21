@@ -101,7 +101,7 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
             <CardHeader className="p-5 sm:p-6">
                 <div className="flex justify-between items-start gap-4">
                     <div className="min-w-0 flex-1">
-                        <CardTitle className="text-lg sm:text-xl font-bold font-headline leading-tight mb-2">
+                        <CardTitle className="text-lg sm:text-xl font-bold leading-tight mb-2">
                           {fellowship.name}
                         </CardTitle>
                         <div className="space-y-2">

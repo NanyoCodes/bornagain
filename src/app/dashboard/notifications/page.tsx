@@ -92,7 +92,7 @@ export default function NotificationsPage() {
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight font-headline">Notifications</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Notifications</h1>
         {!loading && notifications && notifications.length > 0 && (
              <Button onClick={handleMarkAllAsRead} disabled={loading || unreadCount === 0}>
                 Mark all as read

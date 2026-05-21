@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -84,7 +83,7 @@ export default function FellowshipPageClient() {
         if (!firestore || !fellowshipId || !(isMember || isOrganizer)) return null;
         return query(collection(firestore, 'fellowships', fellowshipId, 'members'), orderBy('joinedAt', 'desc'));
     }, [firestore, fellowshipId, isMember, isOrganizer]);
-    const { data: members, loading: membersLoading } = useCollection<FellowshipMember>(membersQuery);
+    const { data: members, loading: loadingMembers } = useCollection<FellowshipMember>(membersQuery);
 
     const soulsQuery = useMemo(() => {
         if (!firestore || !fellowshipId || !(isMember || isOrganizer)) return null;
@@ -164,7 +163,7 @@ export default function FellowshipPageClient() {
                   <Heart className="h-7 w-7 text-primary fill-current" />
               </div>
               <div className="flex-1 min-w-0">
-                  <h3 className="text-xl font-bold font-headline truncate">{selectedSoul.firstName} {selectedSoul.lastName}</h3>
+                  <h3 className="text-xl font-bold truncate">{selectedSoul.firstName} {selectedSoul.lastName}</h3>
                   <Badge className="mt-1" variant="secondary">{selectedSoul.status}</Badge>
               </div>
               <TooltipProvider>
@@ -258,7 +257,7 @@ export default function FellowshipPageClient() {
             </Button>
 
             <header className="space-y-2">
-                <h1 className="text-3xl md:text-4xl font-bold font-headline">{fellowship.name}</h1>
+                <h1 className="text-3xl md:text-4xl font-bold">{fellowship.name}</h1>
                 <p className="text-lg text-muted-foreground">{fellowship.description}</p>
             </header>
 
@@ -279,11 +278,11 @@ export default function FellowshipPageClient() {
                            {(isMember || isOrganizer) ? (
                                <Tabs defaultValue="believers">
                                     <TabsList className="grid w-full grid-cols-2 mb-4">
-                                        <TabsTrigger value="believers">Believers ({members?.length || 0})</TabsTrigger>
-                                        <TabsTrigger value="souls">Converts ({assignedSouls?.length || 0})</TabsTrigger>
+                                        <TabsTrigger value="believers">Believers ({loadingMembers ? '...' : members?.length || 0})</TabsTrigger>
+                                        <TabsTrigger value="souls">Converts ({soulsLoading ? '...' : assignedSouls?.length || 0})</TabsTrigger>
                                     </TabsList>
                                     <TabsContent value="believers">
-                                        {membersLoading ? (
+                                        {loadingMembers ? (
                                             <div className="flex justify-center py-8"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>
                                         ) : members && members.length > 0 ? (
                                             <div className="space-y-4">
