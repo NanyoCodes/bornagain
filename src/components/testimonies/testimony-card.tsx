@@ -211,8 +211,8 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => e.stopPropagation()}>
-                  <MoreVertical className="h-4 w-4" />
-                  <span className="sr-only">More actions</span>
+                  <Share2 className="h-4 w-4" />
+                  <span className="sr-only">Share God's Glory</span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">

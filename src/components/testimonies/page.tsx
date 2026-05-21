@@ -252,33 +252,56 @@ export default function TestimoniesPage() {
     }
   };
 
-  const testimonyTriggerButton = (
-    <Button onClick={() => handleOpenTestimonyDialog()} disabled={loading}>
-      {loading ? <Loader2 className="md:mr-2 h-4 w-4 animate-spin" /> : <PlusCircle className="h-4 w-4 md:mr-2" />}
-      <span className="hidden md:inline">Share Testimony</span>
-    </Button>
-  );
-
-  const prayerTriggerButton = (
-    <Button onClick={() => setIsPrayerDialogOpen(true)} disabled={loading}>
-      {loading ? <Loader2 className="md:mr-2 h-4 w-4 animate-spin" /> : <PlusCircle className="h-4 w-4 md:mr-2" />}
-      <span className="hidden md:inline">Share Prayer Request</span>
-    </Button>
-  );
-
   const testimonyFormContent = userProfile ? <CreateTestimonyForm userProfile={userProfile} onTestimonyCreated={handleCloseTestimonyDialog} prayerRequest={prayerToAnswer} /> : <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin"/></div>;
   const prayerFormContent = userProfile ? <CreatePrayerRequestForm onPrayerRequestCreated={handlePrayerRequestCreated} /> : <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin"/></div>;
 
   return (
     <div className="space-y-8">
+      {/* Premium Interaction Box */}
+      <Card className="border shadow-sm sm:shadow-md rounded-none sm:rounded-lg border-x-0 sm:border-x -mx-4 sm:mx-0">
+        <CardContent className="px-4 py-4 sm:p-6">
+          <div className="flex items-center gap-2 sm:gap-4">
+            <Button 
+              variant="outline" 
+              className="flex-1 justify-center text-muted-foreground font-normal rounded-full h-9 sm:h-11 px-3 sm:px-4 hover:bg-muted/50 transition-colors text-[11px] sm:text-sm"
+              onClick={() => setIsTestimonyDialogOpen(true)}
+              disabled={loading}
+            >
+              What has God done today?
+            </Button>
+          </div>
+          <div className="flex items-center gap-0 sm:gap-4 mt-3 pt-3 border-t">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="flex-1 text-muted-foreground hover:text-primary transition-colors py-2 sm:py-6 h-auto"
+                onClick={() => setIsTestimonyDialogOpen(true)}
+                disabled={loading}
+              >
+                <Newspaper className="mr-1.5 h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+                <span className="text-[11px] sm:text-xs md:text-sm font-medium">Share Testimony</span>
+              </Button>
+              <div className="h-6 w-px bg-border shrink-0" />
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="flex-1 text-muted-foreground hover:text-primary transition-colors py-2 sm:py-6 h-auto"
+                onClick={() => setIsPrayerDialogOpen(true)}
+                disabled={loading}
+              >
+                <HandHeart className="mr-1.5 h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+                <span className="text-[11px] sm:text-xs md:text-sm font-medium">Share Request</span>
+              </Button>
+          </div>
+        </CardContent>
+      </Card>
+
       <div className="flex items-center justify-between">
-        <div className="space-y-2">
-          <h1 className="text-lg sm:text-xl font-bold tracking-tight font-headline">
-            Testimonies &amp; Prayer Requests
+        <div className="space-y-1">
+          <h1 className="text-xl sm:text-2xl font-bold tracking-tight font-headline">
+            The Word of Testimony
           </h1>
-        </div>
-        <div>
-          {activeTab === 'testimonies' ? testimonyTriggerButton : prayerTriggerButton}
+          <p className="text-xs sm:text-sm text-muted-foreground">Encourage one another by sharing what God is doing.</p>
         </div>
       </div>
 
@@ -287,8 +310,8 @@ export default function TestimoniesPage() {
               <TabsTrigger value="testimonies">Testimonies</TabsTrigger>
               <TabsTrigger value="prayers">Prayer Requests</TabsTrigger>
           </TabsList>
-          <TabsContent value="testimonies" className="mt-6">
-              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <TabsContent value="testimonies" className="mt-8 md:mt-10">
+              <div className="grid gap-0 md:gap-6 md:grid-cols-2 lg:grid-cols-3 -mx-4 sm:mx-0">
                 {loading && (
                   [...Array(3)].map((_, i) => (
                     <Card key={i}><CardHeader><div className="flex items-center gap-4"><Skeleton className="h-12 w-12 rounded-full" /><div className="w-full space-y-2"><Skeleton className="h-4 w-1/4" /><Skeleton className="h-4 w-1/5" /></div></div></CardHeader><CardContent className="space-y-4"><Skeleton className="h-5 w-3/4" /><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-4/5" /></CardContent><CardFooter><Skeleton className="h-8 w-24 ml-auto" /></CardFooter></Card>
@@ -299,7 +322,6 @@ export default function TestimoniesPage() {
                         <TestimonyCard 
                             key={testimony.id} 
                             testimony={testimony} 
-                            distance={(testimony as any)._distance}
                             onDelete={() => setItemToDelete({ type: 'testimony', data: testimony })}
                             onEdit={() => setItemToEdit(testimony)}
                         />
@@ -316,8 +338,8 @@ export default function TestimoniesPage() {
                 )}
               </div>
           </TabsContent>
-          <TabsContent value="prayers" className="mt-6">
-              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <TabsContent value="prayers" className="mt-8 md:mt-10">
+              <div className="grid gap-0 md:gap-6 md:grid-cols-2 lg:grid-cols-3 -mx-4 sm:mx-0">
                 {loading && (
                   [...Array(3)].map((_, i) => (
                     <Card key={i}><CardHeader><div className="flex items-center gap-4"><Skeleton className="h-12 w-12 rounded-full" /><div className="w-full space-y-2"><Skeleton className="h-4 w-1/4" /><Skeleton className="h-4 w-1/5" /></div></div></CardHeader><CardContent className="space-y-4"><Skeleton className="h-5 w-3/4" /><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-4/5" /></CardContent><CardFooter><Skeleton className="h-8 w-24 ml-auto" /></CardFooter></Card>
@@ -380,12 +402,14 @@ export default function TestimoniesPage() {
       
       {mounted && isMobile ? (
         <Sheet open={isTestimonyDialogOpen} onOpenChange={handleCloseTestimonyDialog}>
-          <SheetContent side="bottom">
-            <SheetHeader>
-              <SheetTitle>{prayerToAnswer ? 'Share Answered Prayer' : 'Share Testimony'}</SheetTitle>
-              <SheetDescription>{prayerToAnswer ? "Share how God answered this prayer to encourage others." : "Encourage others by sharing what God has done."}</SheetDescription>
-            </SheetHeader>
-            <div className="max-h-[80vh] overflow-y-auto p-1 mt-4">{testimonyFormContent}</div>
+          <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0">
+            <div className="p-6 border-b flex-shrink-0">
+              <SheetHeader className="text-left">
+                <SheetTitle>{prayerToAnswer ? 'Share Answered Prayer' : 'Share Testimony'}</SheetTitle>
+                <SheetDescription>{prayerToAnswer ? "Share how God answered this prayer to encourage others." : "Encourage others by sharing what God has done."}</SheetDescription>
+              </SheetHeader>
+            </div>
+            <div className="flex-grow overflow-y-auto p-6">{testimonyFormContent}</div>
           </SheetContent>
         </Sheet>
       ) : (
@@ -402,12 +426,14 @@ export default function TestimoniesPage() {
       
       {mounted && isMobile ? (
         <Sheet open={isPrayerDialogOpen} onOpenChange={setIsPrayerDialogOpen}>
-          <SheetContent side="bottom">
-            <SheetHeader>
-              <SheetTitle>Share Prayer Request</SheetTitle>
-              <SheetDescription>Share your request anonymously with the community.</SheetDescription>
-            </SheetHeader>
-            <div className="max-h-[80vh] overflow-y-auto p-1 mt-4">{prayerFormContent}</div>
+          <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0">
+            <div className="p-6 border-b flex-shrink-0">
+              <SheetHeader className="text-left">
+                <SheetTitle>Share Prayer Request</SheetTitle>
+                <SheetDescription>Share your request anonymously with the community.</SheetDescription>
+              </SheetHeader>
+            </div>
+            <div className="flex-grow overflow-y-auto p-6">{prayerFormContent}</div>
           </SheetContent>
         </Sheet>
       ) : (
