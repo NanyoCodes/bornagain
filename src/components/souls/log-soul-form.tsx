@@ -22,7 +22,7 @@ import type { Campaign, Soul, UserProfile, Fellowship } from "@/lib/types";
 import { Textarea } from "@/components/ui/textarea";
 import { format } from "date-fns";
 import { useFirestore, useUser, useDoc } from "@/firebase";
-import { collection, serverTimestamp, doc, runTransaction, addDoc } from "firebase/firestore";
+import { collection, serverTimestamp, doc, runTransaction } from "firebase/firestore";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
