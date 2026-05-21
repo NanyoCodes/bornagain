@@ -39,7 +39,6 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/colla
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { actionItems } from "@/lib/follow-up-data";
-import { SoulInsightsDialog } from "./soul-insights-dialog";
 import { Label } from "../ui/label";
 
 const getStatusClasses = (status: FollowUpStatus | undefined): string => {
@@ -155,9 +154,6 @@ const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, 
                         <div className="space-y-3 p-4 rounded-xl border bg-muted/20">
                             <div className="flex items-center justify-between">
                                 <Label className="text-[10px] uppercase tracking-widest font-bold text-muted-foreground">Follow-up History</Label>
-                                <SoulInsightsDialog soul={soul}>
-                                    <Button variant="link" className="h-auto p-0 text-[10px] font-bold text-primary">Get AI Insights</Button>
-                                </SoulInsightsDialog>
                             </div>
                             
                             <div className="space-y-3">
@@ -225,9 +221,7 @@ const SoulTableRow = React.memo(({ soul, onFollowUp, onViewHistory, onExportSing
                         <AvatarFallback>{soul.firstName?.charAt(0)}{soul.lastName?.charAt(0)}</AvatarFallback>
                     </Avatar>
                     <div>
-                        <SoulInsightsDialog soul={soul}>
-                           <div className="font-bold font-headline cursor-pointer hover:underline text-base">{soul.firstName} {soul.lastName}</div>
-                        </SoulInsightsDialog>
+                        <div className="font-bold font-headline text-base">{soul.firstName} {soul.lastName}</div>
                         {soul.church && <div className="text-xs text-muted-foreground flex items-center gap-1"><Church className="h-3 w-3" />{soul.church}</div>}
                     </div>
                 </div>
