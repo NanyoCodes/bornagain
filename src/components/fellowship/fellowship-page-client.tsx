@@ -4,7 +4,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useDoc, useFirestore, useUser, useCollection } from '@/firebase';
 import type { Fellowship, UserProfile, FellowshipMember, Soul } from '@/lib/types';
-import { doc, collection, query, orderBy, where } from 'firebase/firestore';
+import { doc, collection, query, orderBy, where, writeBatch, serverTimestamp } from 'firebase/firestore';
 import { Loader2, ArrowLeft, Users, Calendar, PlayCircle, MapPin, Heart, Phone, Mail, Church, History, PlusCircle, Award, MessagesSquare } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -22,6 +22,8 @@ import { LogFollowUpDialog } from '@/components/souls/log-follow-up-dialog';
 import { actionItems } from '@/lib/follow-up-data';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Skeleton } from '@/components/ui/skeleton';
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError } from '@/firebase/errors';
 
 function SoulWinnerInfo({ userId }: { userId: string }) {
     const firestore = useFirestore();
@@ -50,6 +52,7 @@ export default function FellowshipPageClient() {
     const [selectedSoul, setSelectedSoul] = useState<Soul | null>(null);
     const [isSoulDetailsOpen, setIsSoulDetailsOpen] = useState(false);
     const [isLogFollowUpOpen, setIsLogFollowUpOpen] = useState(false);
+    const [isChatLoading, setIsChatLoading] = useState(false);
 
     const fellowshipDocRef = useMemo(() => {
         if (!firestore || !fellowshipId) return null;
@@ -87,6 +90,47 @@ export default function FellowshipPageClient() {
         return query(collection(firestore, 'souls'), where('fellowshipId', '==', fellowshipId));
     }, [firestore, fellowshipId, isMember, isOrganizer]);
     const { data: assignedSouls, loading: soulsLoading } = useCollection<Soul>(soulsQuery);
+
+    const handleStartGroupChat = async () => {
+        if (!user || !firestore || !fellowship || !members) return;
+        setIsChatLoading(true);
+        
+        const participantIds = fellowship.memberIds;
+        const participantInfo: { [key: string]: any } = {};
+        members.forEach(m => {
+            participantInfo[m.userId] = {
+                firstName: m.firstName,
+                lastName: m.lastName,
+                photoURL: m.photoURL || '',
+            };
+        });
+
+        const batch = writeBatch(firestore);
+        const chatDocRef = doc(firestore, 'chats', fellowshipId);
+        
+        // We use set with merge to ensure it exists or updates
+        batch.set(chatDocRef, {
+            participantIds,
+            participantInfo,
+            fellowshipId: fellowshipId,
+            campaignTitle: fellowship.name, // using campaignTitle key for display consistency in chats list
+            lastUpdatedAt: serverTimestamp(),
+            isGroupChat: true,
+            hasMessages: false,
+        }, { merge: true });
+
+        const fellowshipRef = doc(firestore, 'fellowships', fellowshipId);
+        batch.update(fellowshipRef, { hasGroupChat: true });
+
+        try {
+            await batch.commit();
+            router.push(`/dashboard/chats/${fellowshipId}`);
+        } catch (e) {
+            errorEmitter.emit('permission-error', new FirestorePermissionError({ path: `chats/${fellowshipId}`, operation: 'create' }, user));
+        } finally {
+            setIsChatLoading(false);
+        }
+    };
 
     const loading = fellowshipLoading || organizerLoading;
 
@@ -305,6 +349,42 @@ export default function FellowshipPageClient() {
                     </Card>
                 </div>
                 <div className="space-y-6">
+                    {(isMember || isOrganizer) && (
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className="text-lg flex items-center gap-2">
+                                    <MessagesSquare className="h-5 w-5 text-primary" /> Group Chat
+                                </CardTitle>
+                                <CardDescription>Connect with other members of this group.</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                {fellowship.hasGroupChat ? (
+                                    <Button onClick={() => router.push(`/dashboard/chats/${fellowshipId}`)} className="w-full">
+                                        Open Conversation
+                                    </Button>
+                                ) : isOrganizer ? (
+                                    <Button 
+                                        onClick={handleStartGroupChat} 
+                                        disabled={isChatLoading || !members || members.length < 2} 
+                                        className="w-full"
+                                    >
+                                        {isChatLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                                        Initialize Group Chat
+                                    </Button>
+                                ) : (
+                                    <p className="text-sm text-muted-foreground italic text-center py-2">
+                                        The organizer has not started the group chat yet.
+                                    </p>
+                                )}
+                                {isOrganizer && !fellowship.hasGroupChat && (!members || members.length < 2) && (
+                                    <p className="text-[10px] text-muted-foreground mt-2 text-center">
+                                        At least 2 members required to start a chat.
+                                    </p>
+                                )}
+                            </CardContent>
+                        </Card>
+                    )}
+
                     <Card>
                         <CardHeader>
                             <CardTitle className="text-lg flex items-center gap-2"><Calendar className="h-5 w-5"/> Gathering Details</CardTitle>
@@ -338,8 +418,8 @@ export default function FellowshipPageClient() {
 
             {isMobile ? (
               <Sheet open={isSoulDetailsOpen} onOpenChange={setIsSoulDetailsOpen}>
-                  <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0">
-                      <div className="p-6 border-b flex-shrink-0">
+                  <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-2xl">
+                      <div className="p-6 border-b flex-shrink-0 bg-muted/10">
                         <SheetHeader className="text-left">
                             <SheetTitle>Convert Journey Details</SheetTitle>
                             <SheetDescription>Track growth and record collaborative follow-up.</SheetDescription>
@@ -352,8 +432,8 @@ export default function FellowshipPageClient() {
               </Sheet>
             ) : (
               <Dialog open={isSoulDetailsOpen} onOpenChange={setIsSoulDetailsOpen}>
-                  <DialogContent className="sm:max-w-md max-h-[90vh] flex flex-col p-0">
-                      <div className="p-6 border-b flex-shrink-0">
+                  <DialogContent className="sm:max-w-md max-h-[90vh] flex flex-col p-0 overflow-hidden">
+                      <div className="p-6 border-b flex-shrink-0 bg-muted/10">
                         <DialogHeader>
                             <DialogTitle>Convert Journey Details</DialogTitle>
                             <DialogDescription>Track growth and record collaborative follow-up.</DialogDescription>
