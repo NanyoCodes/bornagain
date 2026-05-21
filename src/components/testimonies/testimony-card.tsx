@@ -199,8 +199,8 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
                 <CardTitle className="text-lg font-bold font-headline truncate">{authorFullName}</CardTitle>
               </Link>
               <div className="text-muted-foreground text-sm mt-1 flex flex-col gap-1">
-                  <div className="truncate">{displayDate}</div>
-                  <div className="flex items-center gap-1 mt-0.5 opacity-80"><Globe className="h-3.5 w-3.5 text-primary shrink-0" /> {locationString}</div>
+                  <div className="truncate text-sm">{displayDate}</div>
+                  <div className="flex items-center gap-1 mt-0.5 opacity-80 text-sm"><Globe className="h-3.5 w-3.5 text-primary shrink-0" /> {locationString}</div>
                   <div className="mt-2">
                     <Badge variant="outline" className="w-fit text-xs uppercase tracking-widest px-2 py-0.5 h-auto">{testimony.category}</Badge>
                   </div>
@@ -229,8 +229,8 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
         </CardHeader>
         
         <CardContent className="flex-grow pt-0 px-4 sm:px-6 space-y-4">
-          <div className="text-sm text-muted-foreground whitespace-pre-wrap">
-            <p ref={contentRef} className="line-clamp-4 leading-relaxed text-sm">
+          <div className="text-sm text-muted-foreground whitespace-pre-wrap leading-relaxed">
+            <p ref={contentRef} className="line-clamp-4 text-sm">
               &ldquo;{testimony.content}&rdquo;
             </p>
             {isTruncated && (
@@ -309,8 +309,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
                 className={cn("flex flex-col sm:flex-row h-auto py-2 gap-1 text-xs font-semibold text-muted-foreground hover:bg-muted/50", hasConnected && "text-blue-500 hover:text-blue-500")}
             >
                 {isProcessingReaction === 'connect' ? <Loader2 className="h-4 w-4 animate-spin" /> : <PartyPopper className="h-4 w-4" />}
-                <span className="hidden xs:inline">Celebrate</span>
-                <span className="xs:hidden">Join</span>
+                <span>Celebrate</span>
             </Button>
 
             <Button 
