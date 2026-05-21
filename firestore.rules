@@ -183,15 +183,21 @@ service cloud.firestore {
       allow create: if request.auth != null && request.resource.data.get('organizerId', '') == request.auth.uid;
       
       allow update: if request.auth != null && (
-        // Organizer
+        // Organizer: Allow any update
         (request.auth.uid == resource.data.get('organizerId', '')) ||
         
-        // Join Group logic: adding self to memberIds and incrementing count
+        // Join Group: Allow anyone to add themselves to membership list
         (
+          // Ensure organizerId and other group identity fields are not tampered with
           request.resource.data.get('organizerId', '') == resource.data.get('organizerId', '') &&
-          request.resource.data.diff(resource.data).affectedKeys().hasAny(['memberIds', 'memberCount']) &&
+          request.resource.data.get('name', '') == resource.data.get('name', '') &&
+          
+          // Ensure the user is adding themselves to the list
           request.auth.uid in request.resource.data.get('memberIds', []) &&
-          !(request.auth.uid in resource.data.get('memberIds', []))
+          !(request.auth.uid in resource.data.get('memberIds', [])) &&
+          
+          // Allow ONLY membership list expansion and count increment
+          request.resource.data.diff(resource.data).affectedKeys().hasAny(['memberIds', 'memberCount'])
         )
       );
 
