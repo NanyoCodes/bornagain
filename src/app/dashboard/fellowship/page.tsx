@@ -87,6 +87,7 @@ const formSchema = z.object({
   schedule: z.string().min(3, "Schedule is required.").max(100),
   streamUrl: z.string().url({ message: "Please enter a valid URL." }).optional().or(z.literal('')),
   locationType: z.enum(['Physical', 'Virtual', 'Physical and Virtual'], { required_error: "Please select a location type." }),
+  address: z.string().max(200).optional(),
   city: z.string().max(100).optional(),
   country: z.string().optional(),
 }).refine((data) => {
@@ -119,6 +120,7 @@ function FellowshipForm({
             schedule: "",
             streamUrl: userProfile?.defaultMeetingLink || "",
             locationType: 'Physical',
+            address: "",
             city: userProfile?.location?.city || '',
             country: userProfile?.location?.country || '',
         },
@@ -223,32 +225,41 @@ function FellowshipForm({
                     )}
                     />
                 {(form.watch('locationType') === 'Physical' || form.watch('locationType') === 'Physical and Virtual') && (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <FormField control={form.control} name="city" render={({ field }) => (
+                    <div className="space-y-4">
+                        <FormField control={form.control} name="address" render={({ field }) => (
                             <FormItem>
-                                <FormLabel>City</FormLabel>
-                                <FormControl><Input placeholder="City" {...field} value={field.value ?? ''} className="text-base" /></FormControl>
+                                <FormLabel>Street Address</FormLabel>
+                                <FormControl><Input placeholder="e.g., 123 Kingdom St" {...field} value={field.value ?? ''} className="text-base" /></FormControl>
                                 <FormMessage />
                             </FormItem>
                         )} />
-                        <FormField control={form.control} name="country" render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Country</FormLabel>
-                                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                    <FormControl>
-                                        <SelectTrigger className="text-base">
-                                            <SelectValue placeholder="Select Country" />
-                                        </SelectTrigger>
-                                    </FormControl>
-                                    <SelectContent>
-                                        {countries.map(country => (
-                                            <SelectItem key={country} value={country}>{country}</SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                                <FormMessage />
-                            </FormItem>
-                        )} />
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <FormField control={form.control} name="city" render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>City</FormLabel>
+                                    <FormControl><Input placeholder="City" {...field} value={field.value ?? ''} className="text-base" /></FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )} />
+                            <FormField control={form.control} name="country" render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Country</FormLabel>
+                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                        <FormControl>
+                                            <SelectTrigger className="text-base">
+                                                <SelectValue placeholder="Select Country" />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            {countries.map(country => (
+                                                <SelectItem key={country} value={country}>{country}</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                </FormItem>
+                            )} />
+                        </div>
                     </div>
                 )}
                 <FormField control={form.control} name="streamUrl" render={({ field }) => (
@@ -294,6 +305,7 @@ function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting, onDelete
       schedule: fellowship.schedule || "",
       streamUrl: fellowship.streamUrl || "",
       locationType: fellowship.locationType || 'Physical',
+      address: fellowship.address || "",
       city: fellowship.city || "",
       country: fellowship.country || "",
     },
@@ -380,32 +392,41 @@ function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting, onDelete
                 )}
             />
             {(form.watch('locationType') === 'Physical' || form.watch('locationType') === 'Physical and Virtual') && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <FormField control={form.control} name="city" render={({ field }) => (
+                <div className="space-y-4">
+                    <FormField control={form.control} name="address" render={({ field }) => (
                         <FormItem>
-                            <FormLabel>City</FormLabel>
-                            <FormControl><Input placeholder="City" {...field} value={field.value ?? ''} className="text-base" /></FormControl>
+                            <FormLabel>Street Address</FormLabel>
+                            <FormControl><Input placeholder="Street Address" {...field} value={field.value ?? ''} className="text-base" /></FormControl>
                             <FormMessage />
                         </FormItem>
                     )} />
-                    <FormField control={form.control} name="country" render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Country</FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                <FormControl>
-                                    <SelectTrigger className="text-base">
-                                        <SelectValue placeholder="Select Country" />
-                                    </SelectTrigger>
-                                </FormControl>
-                                <SelectContent>
-                                    {countries.map(country => (
-                                        <SelectItem key={country} value={country}>{country}</SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                            <FormMessage />
-                        </FormItem>
-                    )} />
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <FormField control={form.control} name="city" render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>City</FormLabel>
+                                <FormControl><Input placeholder="City" {...field} value={field.value ?? ''} className="text-base" /></FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )} />
+                        <FormField control={form.control} name="country" render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Country</FormLabel>
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <FormControl>
+                                        <SelectTrigger className="text-base">
+                                            <SelectValue placeholder="Select Country" />
+                                        </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                        {countries.map(country => (
+                                            <SelectItem key={country} value={country}>{country}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                <FormMessage />
+                            </FormItem>
+                        )} />
+                    </div>
                 </div>
             )}
             <Button type="submit" disabled={isSubmitting} className="w-full h-11">
@@ -487,6 +508,7 @@ export default function FellowshipPage() {
             schedule: values.schedule,
             streamUrl: values.streamUrl || null,
             locationType: values.locationType,
+            address: values.address || null,
             city: values.city || null,
             country: values.country || null,
             location: values.city && values.country ? `${values.city.trim()}, ${values.country}` : values.city || values.country || null,
@@ -539,6 +561,7 @@ export default function FellowshipPage() {
                 groupType: values.groupType,
                 schedule: values.schedule,
                 locationType: values.locationType,
+                address: values.address || null,
                 city: values.city || null,
                 country: values.country || null,
                 location: location,
