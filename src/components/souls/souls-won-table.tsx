@@ -126,7 +126,7 @@ const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, 
                                     </DropdownMenuItem>
                                     <DropdownMenuItem onSelect={() => onFollowUp(soul)}>Log Follow-up</DropdownMenuItem>
                                     <DropdownMenuItem onSelect={() => onViewHistory(soul)}>View History</DropdownMenuItem>
-                                    <DropdownMenuItem onSelect={() => onOpenAssignDialog(soul)}><HeartHandshake className="mr-2 h-4 w-4" />Assign Fellowship</DropdownMenuItem>
+                                    <DropdownMenuItem onSelect={() => onOpenAssignDialog(soul)}><HeartHandshake className="mr-2 h-4 w-4" />Assign Group</DropdownMenuItem>
                                     <DropdownMenuSub>
                                         <DropdownMenuSubTrigger><Download className="mr-2 h-4 w-4" />Export</DropdownMenuSubTrigger>
                                         <DropdownMenuPortal>
@@ -241,7 +241,7 @@ const SoulTableRow = React.memo(({ soul, onFollowUp, onViewHistory, onExportSing
                         </DropdownMenuItem>
                         <DropdownMenuItem onSelect={() => onFollowUp(soul)}>Log Follow-up</DropdownMenuItem>
                         <DropdownMenuItem onSelect={() => onViewHistory(soul)}>View History</DropdownMenuItem>
-                        <DropdownMenuItem onSelect={() => onOpenAssignDialog(soul)}><HeartHandshake className="mr-2 h-4 w-4" />Assign Fellowship</DropdownMenuItem>
+                        <DropdownMenuItem onSelect={() => onOpenAssignDialog(soul)}><HeartHandshake className="mr-2 h-4 w-4" />Assign Group</DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem className="text-destructive focus:text-destructive" onSelect={() => onDelete(soul)}>
                             <Trash2 className="mr-2 h-4 w-4" /> Delete Record
@@ -326,7 +326,7 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
               <TableHead>Name</TableHead>
               <TableHead>Phone</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead>Fellowship</TableHead>
+              <TableHead>Group</TableHead>
               <TableHead>Last Log</TableHead>
               <TableHead>Won At</TableHead>
               <TableHead>Source</TableHead>

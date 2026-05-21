@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -12,6 +13,7 @@ import type { Soul, Fellowship } from '@/lib/types';
 import { haversineDistance } from '@/lib/utils';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { Badge } from '@/components/ui/badge';
 
 interface AssignFellowshipDialogProps {
   soul: Soul | null;
@@ -121,7 +123,12 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
                       <Card key={f.id} className={cn("transition-colors", soul.fellowshipId === f.id && "bg-muted")}>
                           <CardContent className="p-3 flex items-center justify-between">
                               <div className="min-w-0 pr-4">
-                                  <p className="font-semibold truncate">{f.name}</p>
+                                  <div className="flex items-center gap-2 mb-1">
+                                    <p className="font-semibold truncate">{f.name}</p>
+                                    <Badge variant="outline" className="text-[9px] px-1.5 h-4 uppercase font-bold tracking-tight">
+                                        {f.groupType || 'Group'}
+                                    </Badge>
+                                  </div>
                                   <p className="text-sm text-muted-foreground truncate">{f.location}</p>
                                   {f.distance !== null ? <p className="text-xs text-primary">{f.distance.toFixed(1)} km away</p> : null}
                               </div>
@@ -150,7 +157,7 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
                   ))
               ) : (
                   <div className="text-center text-muted-foreground py-10">
-                      <p>No fellowships match your filters.</p>
+                      <p>No groups match your filters.</p>
                   </div>
               )}
           </div>
@@ -164,8 +171,8 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
         <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0">
           <div className="p-6 border-b flex-shrink-0">
             <SheetHeader className="text-left">
-                <SheetTitle>Assign Fellowship for {soul.firstName}</SheetTitle>
-                <SheetDescription>Filter by location and select a fellowship to assign this soul to.</SheetDescription>
+                <SheetTitle>Assign Community Group: {soul.firstName}</SheetTitle>
+                <SheetDescription>Select a fellowship or association to assign this soul to.</SheetDescription>
             </SheetHeader>
           </div>
           <div className="flex-grow overflow-hidden px-6">
@@ -180,8 +187,8 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>Assign Fellowship for {soul?.firstName}</DialogTitle>
-          <DialogDescription>Filter by location and select a fellowship to assign this soul to.</DialogDescription>
+          <DialogTitle>Assign Community Group: {soul?.firstName}</DialogTitle>
+          <DialogDescription>Select a fellowship or association to assign this soul to.</DialogDescription>
         </DialogHeader>
         {content}
       </DialogContent>
