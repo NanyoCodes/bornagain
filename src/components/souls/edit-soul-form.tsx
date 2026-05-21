@@ -82,6 +82,7 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
   const { reset, control } = form;
   const lastSoulId = useRef(soul.id);
 
+  // Synchronization hook with stability ref to prevent infinite render loops
   useEffect(() => {
     if (soul.id !== lastSoulId.current) {
         reset({
@@ -102,7 +103,7 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
         });
         lastSoulId.current = soul.id;
     }
-  }, [soul.id, reset, soul]);
+  }, [soul, reset]);
   
   const sourceValue = useWatch({ control, name: "source" });
   const watchedLat = useWatch({ control, name: "locationWonLatitude" });

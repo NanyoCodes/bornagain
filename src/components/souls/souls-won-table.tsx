@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { format } from "date-fns";
-import { MoreHorizontal, Church, MapPin, Phone, ChevronDown, Download, HeartHandshake, Edit } from "lucide-react";
+import { MoreHorizontal, Church, MapPin, Phone, ChevronDown, Download, HeartHandshake, Edit, Trash2 } from "lucide-react";
 import type { Soul, FollowUpStatus } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import {
@@ -22,6 +22,7 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuPortal,
   DropdownMenuSubContent,
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import {
   Table,
@@ -55,13 +56,14 @@ const getStatusClasses = (status: FollowUpStatus | undefined): string => {
     }
 }
 
-const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, onOpenAssignDialog, onEdit }: { 
+const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, onOpenAssignDialog, onEdit, onDelete }: { 
   soul: Soul; 
   onFollowUp: (soul: Soul) => void; 
   onViewHistory: (soul: Soul) => void; 
   onExportSingle: (soul: Soul, formatType: 'csv' | 'pdf') => void;
   onOpenAssignDialog: (soul: Soul) => void;
   onEdit: (soul: Soul) => void;
+  onDelete: (soul: Soul) => void;
 }) => {
     const latestFollowUp = React.useMemo(() => {
         if (!soul.followUpLog || soul.followUpLog.length === 0) return null;
@@ -133,6 +135,10 @@ const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, 
                                             </DropdownMenuSubContent>
                                         </DropdownMenuPortal>
                                     </DropdownMenuSub>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem className="text-destructive focus:text-destructive" onSelect={(e) => { e.preventDefault(); onDelete(soul); }}>
+                                        <Trash2 className="mr-2 h-4 w-4" /> Delete Record
+                                    </DropdownMenuItem>
                                 </DropdownMenuContent>
                             </DropdownMenu>
                         </div>
@@ -173,13 +179,14 @@ const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, 
 });
 SoulCard.displayName = "SoulCard";
 
-const SoulTableRow = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, onOpenAssignDialog, onEdit }: { 
+const SoulTableRow = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, onOpenAssignDialog, onEdit, onDelete }: { 
   soul: Soul; 
   onFollowUp: (soul: Soul) => void; 
   onViewHistory: (soul: Soul) => void; 
   onExportSingle: (soul: Soul, formatType: 'csv' | 'pdf') => void;
   onOpenAssignDialog: (soul: Soul) => void;
   onEdit: (soul: Soul) => void;
+  onDelete: (soul: Soul) => void;
 }) => {
     const latestFollowUp = React.useMemo(() => {
         if (!soul.followUpLog || soul.followUpLog.length === 0) return null;
@@ -234,6 +241,10 @@ const SoulTableRow = React.memo(({ soul, onFollowUp, onViewHistory, onExportSing
                         <DropdownMenuItem onSelect={(e) => { e.preventDefault(); onFollowUp(soul); }}>Follow-up</DropdownMenuItem>
                         <DropdownMenuItem onSelect={(e) => { e.preventDefault(); onViewHistory(soul); }}>View History</DropdownMenuItem>
                         <DropdownMenuItem onSelect={(e) => { e.preventDefault(); onOpenAssignDialog(soul); }}><HeartHandshake className="mr-2 h-4 w-4" />Assign Fellowship</DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem className="text-destructive focus:text-destructive" onSelect={(e) => { e.preventDefault(); onDelete(soul); }}>
+                            <Trash2 className="mr-2 h-4 w-4" /> Delete Record
+                        </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
             </TableCell>
@@ -242,7 +253,7 @@ const SoulTableRow = React.memo(({ soul, onFollowUp, onViewHistory, onExportSing
 });
 SoulTableRow.displayName = "SoulTableRow";
 
-export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExportSingle, onOpenAssignDialog, onEdit }: {
+export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExportSingle, onOpenAssignDialog, onEdit, onDelete }: {
   souls: Soul[];
   loading: boolean;
   onFollowUp: (soul: Soul) => void;
@@ -250,6 +261,7 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
   onExportSingle: (soul: Soul, formatType: 'csv' | 'pdf') => void;
   onOpenAssignDialog: (soul: Soul) => void;
   onEdit: (soul: Soul) => void;
+  onDelete: (soul: Soul) => void;
 }) {
   const isMobile = useIsMobile();
   const [mounted, setMounted] = React.useState(false);
@@ -297,7 +309,7 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
                 </CardHeader>
             </Card>
             {souls.map((soul) => (
-                <SoulCard key={soul.id} soul={soul} onFollowUp={onFollowUp} onViewHistory={onViewHistory} onExportSingle={onExportSingle} onOpenAssignDialog={onOpenAssignDialog} onEdit={onEdit} />
+                <SoulCard key={soul.id} soul={soul} onFollowUp={onFollowUp} onViewHistory={onViewHistory} onExportSingle={onExportSingle} onOpenAssignDialog={onOpenAssignDialog} onEdit={onEdit} onDelete={onDelete} />
             ))}
         </div>
       )
@@ -322,7 +334,7 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
           </TableHeader>
           <TableBody>
             {souls.map((soul) => (
-              <SoulTableRow key={soul.id} soul={soul} onFollowUp={onFollowUp} onViewHistory={onViewHistory} onExportSingle={onExportSingle} onOpenAssignDialog={onOpenAssignDialog} onEdit={onEdit} />
+              <SoulTableRow key={soul.id} soul={soul} onFollowUp={onFollowUp} onViewHistory={onViewHistory} onExportSingle={onExportSingle} onOpenAssignDialog={onOpenAssignDialog} onEdit={onEdit} onDelete={onDelete} />
             ))}
           </TableBody>
         </Table>

@@ -11,16 +11,19 @@ import {
   DialogTitle, 
 } from "@/components/ui/dialog";
 import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
-import { PlusCircle, Download, Loader2 } from "lucide-react";
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { PlusCircle, Download, Loader2, Trash2 } from "lucide-react";
 import type { Soul, Campaign, Fellowship } from "@/lib/types";
 import { useCollection, useFirestore, useUser } from "@/firebase";
-import { collection, query, orderBy, doc, serverTimestamp, increment, runTransaction, addDoc, deleteField } from "firebase/firestore";
+import { collection, query, orderBy, doc, serverTimestamp, increment, runTransaction, addDoc, deleteField, writeBatch } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useSearch } from "@/context/search-context";
@@ -57,13 +60,16 @@ export default function SoulsWonPage() {
   const [soulForHistory, setSoulForHistory] = useState<Soul | null>(null);
   const [soulToAssign, setSoulToAssign] = useState<Soul | null>(null);
   const [soulToEdit, setSoulToEdit] = useState<Soul | null>(null);
+  const [soulToDelete, setSoulToDelete] = useState<Soul | null>(null);
   
   const [isFollowUpOpen, setIsFollowUpOpen] = useState(false);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [isAssignOpen, setIsAssignOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
 
   const [isAssigning, setIsAssigning] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -98,22 +104,50 @@ export default function SoulsWonPage() {
 
   const loading = userLoading || soulsLoading || loadingCampaigns || loadingFellowships;
 
-  // Pattern: Controlled closures to ensure Radix UI body scroll lock is removed
+  // Pattern: Controlled closures to ensure Radix UI body scroll lock is removed correctly
   const closeAllDialogs = useCallback(() => {
     setIsFollowUpOpen(false);
     setIsHistoryOpen(false);
     setIsAssignOpen(false);
     setIsEditOpen(false);
     setIsLogDialogOpen(false);
+    setIsDeleteAlertOpen(false);
     
-    // Clear data after animation completes
+    // Clear data after animation completes to avoid layout shift while closing
     setTimeout(() => {
         setSoulForFollowUp(null);
         setSoulForHistory(null);
         setSoulToAssign(null);
         setSoulToEdit(null);
+        setSoulToDelete(null);
     }, 300);
   }, []);
+
+  const handleDeleteSoul = async () => {
+    if (!soulToDelete || !user || !firestore) return;
+    setIsDeleting(true);
+
+    const soulRef = doc(firestore, `users/${user.uid}/souls`, soulToDelete.id);
+    const globalSoulRef = doc(firestore, 'souls', soulToDelete.id);
+
+    try {
+        const batch = writeBatch(firestore);
+        batch.delete(soulRef);
+        batch.delete(globalSoulRef);
+        
+        await batch.commit();
+        toast({ title: "Record Deleted", description: "The soul record has been permanently removed." });
+        closeAllDialogs();
+    } catch (error) {
+        const permissionError = new FirestorePermissionError({
+            path: soulRef.path,
+            operation: 'delete',
+        }, user);
+        errorEmitter.emit('permission-error', permissionError);
+    } finally {
+        setIsDeleting(false);
+    }
+  };
 
   const handleAssignFellowship = async (soul: Soul, fellowshipId: string) => {
     if (!user || !firestore || isAssigning) return;
@@ -365,6 +399,7 @@ export default function SoulsWonPage() {
           onExportSingle={handleExportSingleSoul}
           onOpenAssignDialog={(soul) => { setSoulToAssign(soul); setIsAssignOpen(true); }}
           onEdit={(soul) => { setSoulToEdit(soul); setIsEditOpen(true); }}
+          onDelete={(soul) => { setSoulToDelete(soul); setIsDeleteAlertOpen(true); }}
         />
       </div>
 
@@ -418,6 +453,24 @@ export default function SoulsWonPage() {
           </div>
         </DialogContent>
       </Dialog>
+
+      <AlertDialog open={isDeleteAlertOpen} onOpenChange={setIsDeleteAlertOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Record?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to permanently remove {soulToDelete?.firstName} {soulToDelete?.lastName} from your harvest records? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isDeleting} onClick={closeAllDialogs}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteSoul} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90">
+              {isDeleting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Trash2 className="mr-2 h-4 w-4" />}
+              Confirm Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
