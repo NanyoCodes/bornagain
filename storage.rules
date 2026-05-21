@@ -20,7 +20,8 @@ service firebase.storage {
       // Allow any authenticated user to read soul photos (needed for collaborative follow-up within groups)
       allow read: if request.auth != null;
       // Allow the authenticated owner to upload and manage their soul photos
-      allow write: if isOwner(userId);
+      // Using explicit checks to ensure permission is granted for creation and updates
+      allow write: if request.auth != null && request.auth.uid == userId;
     }
   }
 }
