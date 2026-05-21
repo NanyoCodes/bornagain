@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
@@ -106,6 +105,53 @@ export default function SoulsWonPage() {
   const handleOpenAssign = useCallback((soul: Soul) => setSoulToAssign(soul), []);
   const handleOpenEdit = useCallback((soul: Soul) => setSoulToEdit(soul), []);
   const handleOpenDelete = useCallback((soul: Soul) => setSoulToDelete(soul), []);
+
+  const handleExportHarvest = async (formatType: 'csv' | 'pdf') => {
+    if (!souls || souls.length === 0) return;
+
+    const { jsPDF } = await import('jspdf');
+    const { default: autoTable } = await import('jspdf-autotable');
+
+    const headers = ["First Name", "Last Name", "Email", "Phone", "Church", "Source", "Status", "Date Won"];
+    const body = souls.map(soul => [
+      soul.firstName, 
+      soul.lastName, 
+      soul.email || '', 
+      soul.phone || '', 
+      soul.church || '', 
+      soul.source, 
+      soul.status,
+      soul.wonAt ? format(safeToDate(soul.wonAt)!, 'yyyy-MM-dd') : ''
+    ]);
+
+    if (formatType === 'pdf') {
+        const docObj = new jsPDF({ orientation: 'landscape' });
+        docObj.text("Souls Won Report", 14, 15);
+        autoTable(docObj, { 
+          head: [headers], 
+          body: body, 
+          startY: 20,
+          styles: { fontSize: 8 },
+          headStyles: { fillColor: [249, 116, 22] }
+        });
+        docObj.save(`souls-${format(new Date(), 'yyyy-MM-dd')}.pdf`);
+    } else {
+        const csvRows = [headers.join(",")];
+        body.forEach(row => {
+          csvRows.push(row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(","));
+        });
+        const csvString = csvRows.join("\n");
+        const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.setAttribute("href", url);
+        link.setAttribute("download", `souls-won-${format(new Date(), 'yyyy-MM-dd')}.csv`);
+        link.click();
+        URL.revokeObjectURL(url);
+    }
+    toast({ title: "Export Started" });
+  };
+
 
   const handleDeleteSoul = async () => {
     if (!soulToDelete || !user || !firestore) return;
@@ -283,23 +329,28 @@ export default function SoulsWonPage() {
                 )}
                 <span className="text-[11px] sm:text-xs md:text-sm font-medium">Log Soul Won</span>
               </Button>
+              <div className="h-6 w-px bg-border shrink-0" />
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="flex-1 text-muted-foreground hover:text-primary transition-colors py-2 sm:py-6 h-auto"
+                    disabled={loading}
+                  >
+                    <Download className="mr-2 h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+                    <span className="text-[11px] sm:text-xs md:text-sm font-medium">Export Harvest</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onSelect={() => handleExportHarvest('csv')}>CSV</DropdownMenuItem>
+                  <DropdownMenuItem onSelect={() => handleExportHarvest('pdf')}>PDF</DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
           </div>
         </CardContent>
       </Card>
 
-      <div className="flex items-center justify-between">
-        <h1 className="text-xl sm:text-2xl font-bold tracking-tight font-headline">Souls Won</h1>
-        <div className="flex items-center gap-2">
-           <DropdownMenu>
-            <DropdownMenuTrigger asChild><Button variant="outline" disabled={loading}><Download className="mr-2 h-4 w-4" />Export All</Button></DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onSelect={() => toast({ title: "Export Started" })}>CSV</DropdownMenuItem>
-              <DropdownMenuItem onSelect={() => toast({ title: "Export Started" })}>PDF</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      </div>
-      
       <div className="-mx-4 sm:mx-0">
         <SoulsWonTable 
           souls={filteredSouls || []} 
