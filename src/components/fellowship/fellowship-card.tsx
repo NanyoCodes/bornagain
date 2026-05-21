@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
-import { useUser, useFirestore } from '@/firebase';
+import { useUser, useAuth, useFirestore } from '@/firebase';
 import type { Fellowship, UserProfile } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { doc, runTransaction, arrayUnion, increment, serverTimestamp } from 'firebase/firestore';
@@ -32,8 +32,15 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
     const { toast } = useToast();
     const [isJoining, setIsJoining] = useState(false);
     
-    const isMember = useMemo(() => user ? fellowship.memberIds.includes(user.uid) : false, [user, fellowship.memberIds]);
-    const isOrganizer = useMemo(() => user ? fellowship.organizerId === user.uid : false, [user, fellowship.organizerId]);
+    const isMember = useMemo(() => {
+        if (!user || !fellowship.memberIds) return false;
+        return fellowship.memberIds.includes(user.uid);
+    }, [user, fellowship.memberIds]);
+
+    const isOrganizer = useMemo(() => {
+        if (!user) return false;
+        return fellowship.organizerId === user.uid;
+    }, [user, fellowship.organizerId]);
 
     const distance = useMemo(() => {
         if (!userProfile?.location?.latitude || !userProfile?.location?.longitude || !fellowship.latitude || !fellowship.longitude) {
@@ -88,8 +95,12 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
             });
             toast({ title: "Successfully Joined!", description: `You are now a member of ${fellowship.name}.`});
         } catch (e: any) {
-            const permissionError = new FirestorePermissionError({ path: `fellowships/${fellowship.id}`, operation: 'update' }, user);
-            errorEmitter.emit('permission-error', permissionError);
+            if (e.code === 'permission-denied') {
+                const permissionError = new FirestorePermissionError({ path: `fellowships/${fellowship.id}`, operation: 'update' }, user);
+                errorEmitter.emit('permission-error', permissionError);
+            } else {
+                toast({ variant: 'destructive', title: 'Join Failed', description: e.message || 'An unexpected error occurred.' });
+            }
         } finally {
             setIsJoining(false);
         }
