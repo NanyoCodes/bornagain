@@ -194,7 +194,7 @@ export function DailyDisciplineCard() {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Daily Discipline</CardTitle>
+          <CardTitle className="text-lg">Daily Discipline</CardTitle>
           <CardDescription>Your spiritual checklist for today.</CardDescription>
         </CardHeader>
         <CardContent className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -212,7 +212,7 @@ export function DailyDisciplineCard() {
         <CardHeader>
           <div className="flex flex-col items-start gap-2 sm:flex-row sm:justify-between">
             <div className="space-y-1">
-              <CardTitle>Daily Discipline</CardTitle>
+              <CardTitle className="text-lg">Daily Discipline</CardTitle>
               <CardDescription>Your spiritual checklist for today.</CardDescription>
             </div>
             <div className="text-sm font-medium text-muted-foreground sm:pt-1">

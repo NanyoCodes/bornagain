@@ -218,7 +218,7 @@ function CityImpactCard({
     <Card>
       <CardHeader className="flex flex-row items-start justify-between pb-4">
         <div>
-          <CardTitle>City Impact</CardTitle>
+          <CardTitle className="text-lg">City Impact</CardTitle>
           <CardDescription>Souls won in your city.</CardDescription>
         </div>
         <Button variant="ghost" size="icon" onClick={fetchCounts} disabled={loading}>
@@ -307,7 +307,7 @@ function ActionAnalyticsCard({ souls }: { souls: Soul[] }) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Follow-up Actions Tracker</CardTitle>
+        <CardTitle className="text-lg">Follow-up Actions Tracker</CardTitle>
         <CardDescription>
           Frequency of actions taken this month.
         </CardDescription>
@@ -567,7 +567,7 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Card className="bg-primary/10 border-primary/20 rounded-none sm:rounded-lg border-x-0 sm:border-x -mx-4 sm:mx-0">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium flex items-center gap-2">
+            <CardTitle className="text-xs font-medium uppercase tracking-wider flex items-center gap-2">
               <Users className="h-4 w-4 text-primary" />
               Lives Changed Today
             </CardTitle>
@@ -579,7 +579,7 @@ export default function DashboardPage() {
         </Card>
         <Card className="bg-chart-2/10 border-chart-2/20 rounded-none sm:rounded-lg border-x-0 sm:border-x -mx-4 sm:mx-0">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium flex items-center gap-2">
+            <CardTitle className="text-xs font-medium uppercase tracking-wider flex items-center gap-2">
               <CalendarCheck className="h-4 w-4 text-chart-2" />
               Souls Won This Week
             </CardTitle>
@@ -599,7 +599,7 @@ export default function DashboardPage() {
 
           <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x -mx-4 sm:mx-0">
             <CardHeader>
-              <CardTitle>Monthly Harvest Statistics</CardTitle>
+              <CardTitle className="text-lg">Monthly Harvest Statistics</CardTitle>
               <CardDescription>Tracking your progress across the last 3 months.</CardDescription>
             </CardHeader>
             <CardContent>
@@ -619,7 +619,7 @@ export default function DashboardPage() {
           <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x -mx-4 sm:mx-0">
             <CardHeader className="flex flex-row items-center justify-between">
               <div className="space-y-1.5">
-                <CardTitle>Recent Souls Won</CardTitle>
+                <CardTitle className="text-lg">Recent Souls Won</CardTitle>
                 <CardDescription>
                   Individuals recently led to Christ.
                 </CardDescription>
@@ -640,7 +640,7 @@ export default function DashboardPage() {
         <div className="space-y-8">
           <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x -mx-4 sm:mx-0">
             <CardHeader>
-              <CardTitle>Follow-up Funnel</CardTitle>
+              <CardTitle className="text-lg">Follow-up Funnel</CardTitle>
               <CardDescription>
                 Progress of souls from conversion to established discipleship.
               </CardDescription>
@@ -667,7 +667,7 @@ export default function DashboardPage() {
           
           <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x -mx-4 sm:mx-0">
             <CardHeader>
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="text-lg flex items-center gap-2">
                     <Heart className="h-4 w-4" />
                     Prayer Reminders
                 </CardTitle>
@@ -704,7 +704,7 @@ export default function DashboardPage() {
             onClick={() => router.push('/dashboard/testimonies')}
           >
             <CardHeader>
-              <CardTitle>Share Your Glory Story</CardTitle>
+              <CardTitle className="text-lg">Share Your Glory Story</CardTitle>
               <CardDescription className="text-primary-foreground/80">
                 "Go home to your own people and tell them how much the Lord has done for you..."
               </CardDescription>
