@@ -80,7 +80,7 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({ prayerRequest
             <div className="flex items-center gap-3 min-w-0 flex-1">
                 <Dialog>
                   <DialogTrigger asChild onClick={(e) => e.stopPropagation()} disabled={prayerRequest.isAnonymous || !prayerRequest.authorAvatarUrl}>
-                      <Avatar className={cn(!prayerRequest.isAnonymous && prayerRequest.authorAvatarUrl && "cursor-pointer")}>
+                      <Avatar className={cn(!prayerRequest.isAnonymous && prayerRequest.authorAvatarUrl && "cursor-pointer h-10 w-10 sm:h-12 sm:w-12")}>
                           {!prayerRequest.isAnonymous && <AvatarImage src={prayerRequest.authorAvatarUrl} />}
                           <AvatarFallback>
                               {prayerRequest.isAnonymous ? <User className="h-4 w-4" /> : `${prayerRequest.authorFirstName?.charAt(0) || ''}${prayerRequest.authorLastName?.charAt(0) || ''}`}
@@ -99,13 +99,13 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({ prayerRequest
                 </Dialog>
                 <div className="min-w-0 flex-1">
                      <Link href={profileLink} onClick={(e) => { if (!isClickable) e.preventDefault(); e.stopPropagation(); }} className={!isClickable ? 'pointer-events-none' : ''}>
-                        <CardTitle className={cn("text-base font-semibold", isClickable && "hover:underline")}>{authorName}</CardTitle>
+                        <CardTitle className={cn("text-lg font-bold font-headline", isClickable && "hover:underline")}>{authorName}</CardTitle>
                     </Link>
-                    <CardDescription className="text-xs mt-1">
+                    <CardDescription className="text-sm mt-1">
                         {displayDate}
                     </CardDescription>
                     <div className="mt-2">
-                        <Badge variant="outline" className="w-fit text-[8px] sm:text-[9px] uppercase tracking-widest px-1.5 py-0 h-4 sm:h-5">{prayerRequest.category}</Badge>
+                        <Badge variant="outline" className="w-fit text-xs uppercase tracking-widest px-2 py-0.5 h-auto">{prayerRequest.category}</Badge>
                     </div>
                 </div>
             </div>
@@ -125,7 +125,7 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({ prayerRequest
                 {!isAnswered ? (
                     <Button onClick={onAnswerPrayer} size="sm">
                         <Award className="mr-2 h-4 w-4" />
-                        Prayer Answered
+                        Answered
                     </Button>
                 ) : prayerRequest.answeredTestimonyId ? (
                     <Link href={`/dashboard/testimonies#${prayerRequest.answeredTestimonyId}`}>
@@ -137,7 +137,7 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({ prayerRequest
                 ) : (
                    <Button onClick={onAnswerPrayer} size="sm">
                         <Newspaper className="mr-2 h-4 w-4" />
-                        Share Testimony
+                        Testify
                     </Button>
                 )}
                 <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={onDelete}>
