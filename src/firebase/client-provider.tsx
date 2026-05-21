@@ -1,7 +1,8 @@
+
 'use client';
 
 import { createContext, useContext, useMemo } from 'react';
-import { initializeFirebase } from '.';
+import { initializeFirebase } from './init';
 import { FirebaseErrorListener } from '@/components/FirebaseErrorListener';
 import { FirebaseProvider } from './provider';
 import { useUser } from './auth/use-user';

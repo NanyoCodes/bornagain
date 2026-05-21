@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from "next/link";
@@ -111,7 +112,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount }: { unreadChatCount: num
               <Input
                 type="search"
                 placeholder={searchPlaceholder}
-                className="pl-8 sm:w-auto md:w-[200px] lg:w-[300px]"
+                className="pl-8 sm:w-auto md:w-[250px] lg:w-[300px]"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
@@ -166,7 +167,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount }: { unreadChatCount: num
   );
 }
 
-function BottomNavBar({ unreadChatCount }) {
+function BottomNavBar({ unreadChatCount }: { unreadChatCount: number }) {
     const pathname = usePathname();
     return (
       <nav className="fixed bottom-0 left-0 right-0 z-40 border-t bg-background md:hidden">
