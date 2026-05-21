@@ -5,11 +5,11 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Edit, Loader2, Mail, MapPin, Phone, HeartHandshake, XCircle } from "lucide-react";
+import { Edit, Loader2, MapPin, Phone, HeartHandshake, XCircle, Users, Group } from "lucide-react";
 import { useCollection, useFirestore, useUser } from "@/firebase";
 import { useDoc } from "@/firebase/firestore/use-doc";
 import { collection, query, where, doc, getDocs, documentId } from "firebase/firestore";
-import type { Soul, Testimony, UserProfile, JoinedCampaign, Campaign, PrayerRequest } from "@/lib/types";
+import type { Soul, Testimony, UserProfile, JoinedCampaign, Campaign, PrayerRequest, Fellowship, JoinedFellowship } from "@/lib/types";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -29,16 +29,16 @@ function FilterControls({
 }: {
   searchTerm: string;
   setSearchTerm: (term: string) => void;
-  filterDate: Date | undefined;
-  setFilterDate: (date: Date | undefined) => void;
+  filterDate?: Date | undefined;
+  setFilterDate?: (date: Date | undefined) => void;
   searchPlaceholder: string;
 }) {
   const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
-    if (value) {
+    if (value && setFilterDate) {
       const [year, month, day] = value.split('-').map(Number);
       setFilterDate(new Date(year, month - 1, day));
-    } else {
+    } else if (setFilterDate) {
       setFilterDate(undefined);
     }
   };
@@ -53,20 +53,22 @@ function FilterControls({
         onChange={(e) => setSearchTerm(e.target.value)}
         className="flex-grow"
       />
-      <div className="flex items-center gap-1">
-        <Input
-          type="date"
-          value={dateValue}
-          onChange={handleDateChange}
-          className="w-full sm:w-[200px]"
-        />
-        {filterDate && (
-          <Button variant="ghost" size="icon" onClick={() => setFilterDate(undefined)}>
-            <XCircle className="h-5 w-5 text-muted-foreground" />
-            <span className="sr-only">Clear date filter</span>
-          </Button>
-        )}
-      </div>
+      {setFilterDate && (
+        <div className="flex items-center gap-1">
+          <Input
+            type="date"
+            value={dateValue}
+            onChange={handleDateChange}
+            className="w-full sm:w-[200px]"
+          />
+          {filterDate && (
+            <Button variant="ghost" size="icon" onClick={() => setFilterDate(undefined)}>
+              <XCircle className="h-5 w-5 text-muted-foreground" />
+              <span className="sr-only">Clear date filter</span>
+            </Button>
+          )}
+        </div>
+      )}
     </div>
   );
 }
@@ -77,8 +79,12 @@ export default function ProfilePage() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const isMobile = useIsMobile();
+  
+  // Data lists state
   const [activeJoinedCampaigns, setActiveJoinedCampaigns] = useState<Campaign[]>([]);
+  const [activeJoinedGroups, setActiveJoinedGroups] = useState<Fellowship[]>([]);
   const [campaignsListLoading, setCampaignsListLoading] = useState(true);
+  const [groupsListLoading, setGroupsListLoading] = useState(true);
 
   // Filter states
   const [testimonySearchTerm, setTestimonySearchTerm] = useState('');
@@ -88,8 +94,11 @@ export default function ProfilePage() {
   const [createdCampaignSearchTerm, setCreatedCampaignSearchTerm] = useState('');
   const [createdCampaignFilterDate, setCreatedCampaignFilterDate] = useState<Date>();
   const [joinedCampaignSearchTerm, setJoinedCampaignSearchTerm] = useState('');
+  const [joinedFellowshipSearchTerm, setJoinedFellowshipSearchTerm] = useState('');
+  const [joinedAssociationSearchTerm, setJoinedAssociationSearchTerm] = useState('');
   const [soulSearchTerm, setSoulSearchTerm] = useState('');
   const [soulFilterDate, setSoulFilterDate] = useState<Date>();
+  const [partnerSearchTerm, setPartnerSearchTerm] = useState('');
 
   useEffect(() => {
     setMounted(true);
@@ -125,7 +134,7 @@ export default function ProfilePage() {
     if (!userId || !firestore) return null;
     return query(collection(firestore, `users/${userId}/joinedCampaigns`));
   }, [userId, firestore]);
-  const { data: joinedCampaigns, loading: campaignsLoading } = useCollection<JoinedCampaign>(joinedCampaignsQuery);
+  const { data: joinedCampaignsDocs, loading: campaignsLoading } = useCollection<JoinedCampaign>(joinedCampaignsQuery);
   
   const createdCampaignsQuery = useMemo(() => {
     if (!userId || !firestore) return null;
@@ -133,19 +142,26 @@ export default function ProfilePage() {
   }, [userId, firestore]);
   const { data: allCreatedCampaigns, loading: createdCampaignsLoading } = useCollection<Campaign>(createdCampaignsQuery);
 
+  const joinedFellowshipsDocsQuery = useMemo(() => {
+    if (!userId || !firestore) return null;
+    return query(collection(firestore, `users/${userId}/fellowships`));
+  }, [userId, firestore]);
+  const { data: joinedFellowshipRefs, loading: joinedGroupsRefsLoading } = useCollection<JoinedFellowship>(joinedFellowshipsDocsQuery);
+
   const createdCampaigns = useMemo(() => {
     if (!allCreatedCampaigns) return [];
     return allCreatedCampaigns.filter(c => c.status === 'active');
   }, [allCreatedCampaigns]);
 
+  // Fetching data for joined campaigns
   useEffect(() => {
-    if (!firestore || campaignsLoading || !joinedCampaigns) {
+    if (!firestore || campaignsLoading || !joinedCampaignsDocs) {
         setActiveJoinedCampaigns([]);
         setCampaignsListLoading(false);
         return;
     }
 
-    const joinedCampaignIds = joinedCampaigns.map(jc => jc.id);
+    const joinedCampaignIds = joinedCampaignsDocs.map(jc => jc.id);
 
     if (joinedCampaignIds.length === 0) {
         setActiveJoinedCampaigns([]);
@@ -190,11 +206,67 @@ export default function ProfilePage() {
     };
 
     fetchActiveCampaigns();
-  }, [joinedCampaigns, campaignsLoading, firestore, userId]);
+  }, [joinedCampaignsDocs, campaignsLoading, firestore, userId]);
 
-  const loading = profileLoading || userLoading || testimoniesLoading || soulsLoading || campaignsLoading || createdCampaignsLoading || campaignsListLoading || prayerRequestsLoading;
+  // Fetching data for joined fellowships/associations
+  useEffect(() => {
+    if (!firestore || joinedGroupsRefsLoading || !joinedFellowshipRefs) {
+        setActiveJoinedGroups([]);
+        setGroupsListLoading(false);
+        return;
+    }
 
-    const filteredTestimonies = useMemo(() => {
+    const joinedGroupIds = joinedFellowshipRefs.map(jf => jf.id);
+
+    if (joinedGroupIds.length === 0) {
+        setActiveJoinedGroups([]);
+        setGroupsListLoading(false);
+        return;
+    }
+
+    const fetchGroups = async () => {
+        setGroupsListLoading(true);
+        try {
+            const chunks: string[][] = [];
+            for (let i = 0; i < joinedGroupIds.length; i += 30) {
+                chunks.push(joinedGroupIds.slice(i, i + 30));
+            }
+
+            const groupPromises = chunks.map(chunk => {
+                const q = query(
+                    collection(firestore, 'fellowships'),
+                    where(documentId(), 'in', chunk),
+                    where('status', '==', 'active')
+                );
+                return getDocs(q);
+            });
+
+            const snapshots = await Promise.all(groupPromises);
+            const groupsData: Fellowship[] = [];
+            snapshots.forEach(snapshot => {
+                snapshot.forEach(doc => {
+                    groupsData.push({ id: doc.id, ...doc.data() } as Fellowship);
+                });
+            });
+
+            // Filter out those where I'm the organizer if we want "joined" specifically, 
+            // but usually we want to see all groups I'm a member of.
+            setActiveJoinedGroups(groupsData);
+
+        } catch (error) {
+            console.error("Error fetching joined groups:", error);
+            setActiveJoinedGroups([]);
+        } finally {
+            setGroupsListLoading(false);
+        }
+    };
+
+    fetchGroups();
+  }, [joinedFellowshipRefs, joinedGroupsRefsLoading, firestore, userId]);
+
+  const loading = profileLoading || userLoading || testimoniesLoading || soulsLoading || campaignsLoading || createdCampaignsLoading || campaignsListLoading || prayerRequestsLoading || groupsListLoading;
+
+  const filteredTestimonies = useMemo(() => {
     if (!testimonies) return [];
     return testimonies.filter(t => {
       const search = testimonySearchTerm.toLowerCase();
@@ -233,8 +305,25 @@ export default function ProfilePage() {
     });
   }, [activeJoinedCampaigns, joinedCampaignSearchTerm]);
 
+  const joinedFellowships = useMemo(() => activeJoinedGroups.filter(f => (f.groupType || 'Fellowship') === 'Fellowship'), [activeJoinedGroups]);
+  const joinedAssociations = useMemo(() => activeJoinedGroups.filter(f => f.groupType === 'Association'), [activeJoinedGroups]);
+
+  const filteredJoinedFellowships = useMemo(() => {
+    return joinedFellowships.filter(f => {
+        const search = joinedFellowshipSearchTerm.toLowerCase();
+        return !search || f.name.toLowerCase().includes(search) || f.description.toLowerCase().includes(search);
+    });
+  }, [joinedFellowships, joinedFellowshipSearchTerm]);
+
+  const filteredJoinedAssociations = useMemo(() => {
+    return joinedAssociations.filter(f => {
+        const search = joinedAssociationSearchTerm.toLowerCase();
+        return !search || f.name.toLowerCase().includes(search) || f.description.toLowerCase().includes(search);
+    });
+  }, [joinedAssociations, joinedAssociationSearchTerm]);
+
   const filteredSoulsWon = useMemo(() => {
-    if (! soulsWon) return [];
+    if (!soulsWon) return [];
     return soulsWon.filter(s => {
       const search = soulSearchTerm.toLowerCase();
       const matchSearch = !search || `${s.firstName} ${s.lastName}`.toLowerCase().includes(search);
@@ -243,15 +332,23 @@ export default function ProfilePage() {
     });
   }, [soulsWon, soulSearchTerm, soulFilterDate]);
 
+  const filteredAccountabilityPartners = useMemo(() => {
+    if (!userProfile?.accountabilityPartners) return [];
+    return userProfile.accountabilityPartners.filter(p => {
+        const search = partnerSearchTerm.toLowerCase();
+        return !search || `${p.firstName} ${p.lastName}`.toLowerCase().includes(search);
+    });
+  }, [userProfile?.accountabilityPartners, partnerSearchTerm]);
+
   if (loading) {
-    return <div className="flex items-center justify-center h-full"><Loader2 className="h-8 w-8 animate-spin" /></div>;
+    return <div className="flex items-center justify-center h-full"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
   }
   
   if (!userProfile) {
-    return <p>User profile not found.</p>
+    return <div className="text-center py-12"><p>User profile not found.</p></div>
   }
   
-  const { firstName, lastName, email, photoURL, bio, location, phone } = userProfile;
+  const { firstName, lastName, email, photoURL, bio, location, phone, accountabilityPartners } = userProfile;
   const displayName = [firstName, lastName].filter(Boolean).join(' ');
   const { city, state } = location || {};
 
@@ -316,140 +413,247 @@ export default function ProfilePage() {
 
         <div className="space-y-6">
             <h2 className="text-xl font-semibold tracking-tight">Your Activity</h2>
-            <Card>
-                <CardHeader><CardTitle>Testimonies ({testimonies?.length ?? 0})</CardTitle></CardHeader>
-                <CardContent>
-                    <FilterControls 
-                        searchTerm={testimonySearchTerm}
-                        setSearchTerm={setTestimonySearchTerm}
-                        filterDate={testimonyFilterDate}
-                        setFilterDate={setTestimonyFilterDate}
-                        searchPlaceholder="Search testimonies..."
-                    />
-                    <ScrollArea className="h-48">
-                        <div className="p-1 space-y-1">
-                            {filteredTestimonies.length > 0 ? (
-                                filteredTestimonies.map(t => (
-                                    <Link key={t.id} href="/dashboard/testimonies" className="block p-2 rounded-md hover:bg-muted">
-                                        <p className="font-medium text-sm truncate">{t.category}</p>
-                                        <p className="text-xs text-muted-foreground truncate">{t.content}</p>
-                                    </Link>
-                                ))
-                            ) : (
-                                <p className="text-sm text-center text-muted-foreground py-4">{testimonies?.length === 0 ? 'No testimonies shared yet.' : 'No results found.'}</p>
-                            )}
-                        </div>
-                    </ScrollArea>
-                </CardContent>
-            </Card>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <Card>
+                    <CardHeader><CardTitle>Testimonies ({testimonies?.length ?? 0})</CardTitle></CardHeader>
+                    <CardContent>
+                        <FilterControls 
+                            searchTerm={testimonySearchTerm}
+                            setSearchTerm={setTestimonySearchTerm}
+                            filterDate={testimonyFilterDate}
+                            setFilterDate={setTestimonyFilterDate}
+                            searchPlaceholder="Search testimonies..."
+                        />
+                        <ScrollArea className="h-48">
+                            <div className="p-1 space-y-1">
+                                {filteredTestimonies.length > 0 ? (
+                                    filteredTestimonies.map(t => (
+                                        <Link key={t.id} href="/dashboard/testimonies" className="block p-2 rounded-md hover:bg-muted">
+                                            <p className="font-medium text-sm truncate">{t.category}</p>
+                                            <p className="text-xs text-muted-foreground truncate">{t.content}</p>
+                                        </Link>
+                                    ))
+                                ) : (
+                                    <p className="text-sm text-center text-muted-foreground py-4">{testimonies?.length === 0 ? 'No testimonies shared yet.' : 'No results found.'}</p>
+                                )}
+                            </div>
+                        </ScrollArea>
+                    </CardContent>
+                </Card>
 
-            <Card>
-                <CardHeader><CardTitle>Prayer Requests ({prayerRequests?.length ?? 0})</CardTitle></CardHeader>
-                <CardContent>
-                     <FilterControls 
-                        searchTerm={prayerSearchTerm}
-                        setSearchTerm={setPrayerSearchTerm}
-                        filterDate={prayerFilterDate}
-                        setFilterDate={setPrayerFilterDate}
-                        searchPlaceholder="Search prayer requests..."
-                    />
-                    <ScrollArea className="h-48">
-                        <div className="p-1 space-y-1">
-                            {filteredPrayerRequests.length > 0 ? (
-                                filteredPrayerRequests.map(p => (
-                                    <Link key={p.id} href="/dashboard/testimonies" className="block p-2 rounded-md hover:bg-muted">
-                                        <p className="font-medium text-sm truncate">{p.category}</p>
-                                        <p className="text-xs text-muted-foreground truncate">{p.content}</p>
-                                    </Link>
-                                ))
-                            ) : (
-                                <p className="text-sm text-center text-muted-foreground py-4">{prayerRequests?.length === 0 ? 'No prayer requests submitted yet.' : 'No results found.'}</p>
-                            )}
-                        </div>
-                    </ScrollArea>
-                </CardContent>
-            </Card>
+                <Card>
+                    <CardHeader><CardTitle>Prayer Requests ({prayerRequests?.length ?? 0})</CardTitle></CardHeader>
+                    <CardContent>
+                         <FilterControls 
+                            searchTerm={prayerSearchTerm}
+                            setSearchTerm={setPrayerSearchTerm}
+                            filterDate={prayerFilterDate}
+                            setFilterDate={setPrayerFilterDate}
+                            searchPlaceholder="Search prayer requests..."
+                        />
+                        <ScrollArea className="h-48">
+                            <div className="p-1 space-y-1">
+                                {filteredPrayerRequests.length > 0 ? (
+                                    filteredPrayerRequests.map(p => (
+                                        <Link key={p.id} href="/dashboard/testimonies" className="block p-2 rounded-md hover:bg-muted">
+                                            <p className="font-medium text-sm truncate">{p.category}</p>
+                                            <p className="text-xs text-muted-foreground truncate">{p.content}</p>
+                                        </Link>
+                                    ))
+                                ) : (
+                                    <p className="text-sm text-center text-muted-foreground py-4">{prayerRequests?.length === 0 ? 'No prayer requests submitted yet.' : 'No results found.'}</p>
+                                )}
+                            </div>
+                        </ScrollArea>
+                    </CardContent>
+                </Card>
+            </div>
 
-            <Card>
-                <CardHeader><CardTitle>Campaigns Created ({createdCampaigns?.length ?? 0})</CardTitle></CardHeader>
-                <CardContent>
-                     <FilterControls 
-                        searchTerm={createdCampaignSearchTerm}
-                        setSearchTerm={setCreatedCampaignSearchTerm}
-                        filterDate={createdCampaignFilterDate}
-                        setFilterDate={setCreatedCampaignFilterDate}
-                        searchPlaceholder="Search created campaigns..."
-                    />
-                    <ScrollArea className="h-48">
-                        <div className="p-1 space-y-1">
-                            {filteredCreatedCampaigns.length > 0 ? (
-                                filteredCreatedCampaigns.map(c => (
-                                    <Link key={c.id} href={`/dashboard/campaigns/${c.id}`} className="block p-2 rounded-md hover:bg-muted">
-                                        <p className="font-medium text-sm truncate">{c.title}</p>
-                                        <p className="text-xs text-muted-foreground truncate">Created on {c.createdAt ? format(c.createdAt.toDate(), "PPP") : 'N/A'}</p>
-                                    </Link>
-                                ))
-                            ) : (
-                                <p className="text-sm text-center text-muted-foreground py-4">{createdCampaigns?.length === 0 ? 'No campaigns created yet.' : 'No results found.'}</p>
-                            )}
-                        </div>
-                    </ScrollArea>
-                </CardContent>
-            </Card>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <Card>
+                    <CardHeader><CardTitle>Campaigns Created ({createdCampaigns?.length ?? 0})</CardTitle></CardHeader>
+                    <CardContent>
+                         <FilterControls 
+                            searchTerm={createdCampaignSearchTerm}
+                            setSearchTerm={setCreatedCampaignSearchTerm}
+                            filterDate={createdCampaignFilterDate}
+                            setFilterDate={setCreatedCampaignFilterDate}
+                            searchPlaceholder="Search created campaigns..."
+                        />
+                        <ScrollArea className="h-48">
+                            <div className="p-1 space-y-1">
+                                {filteredCreatedCampaigns.length > 0 ? (
+                                    filteredCreatedCampaigns.map(c => (
+                                        <Link key={c.id} href={`/dashboard/campaigns/${c.id}`} className="block p-2 rounded-md hover:bg-muted">
+                                            <p className="font-medium text-sm truncate">{c.title}</p>
+                                            <p className="text-xs text-muted-foreground truncate">Created on {c.createdAt ? format(c.createdAt.toDate(), "PPP") : 'N/A'}</p>
+                                        </Link>
+                                    ))
+                                ) : (
+                                    <p className="text-sm text-center text-muted-foreground py-4">{createdCampaigns?.length === 0 ? 'No campaigns created yet.' : 'No results found.'}</p>
+                                )}
+                            </div>
+                        </ScrollArea>
+                    </CardContent>
+                </Card>
 
-             <Card>
-                <CardHeader><CardTitle>Campaigns Joined ({activeJoinedCampaigns.length})</CardTitle></CardHeader>
-                <CardContent>
-                     <FilterControls 
-                        searchTerm={joinedCampaignSearchTerm}
-                        setSearchTerm={setJoinedCampaignSearchTerm}
-                        filterDate={undefined}
-                        setFilterDate={() => {}}
-                        searchPlaceholder="Search joined campaigns..."
-                    />
-                    <ScrollArea className="h-48">
-                        <div className="p-1 space-y-1">
-                            {filteredJoinedCampaigns.length > 0 ? (
-                                filteredJoinedCampaigns.map(c => (
-                                    <Link key={c.id} href={`/dashboard/campaigns/${c.id}`} className="block p-2 rounded-md hover:bg-muted">
-                                        <p className="font-medium text-sm truncate">{c.title}</p>
-                                        <p className="text-xs text-muted-foreground truncate">Starts on {c.startDate ? format(c.startDate.toDate(), "PPP") : 'N/A'}</p>
-                                    </Link>
-                                ))
-                            ) : (
-                                <p className="text-sm text-center text-muted-foreground py-4">{activeJoinedCampaigns.length === 0 ? 'No other campaigns joined yet.' : 'No results found.'}</p>
-                            )}
-                        </div>
-                    </ScrollArea>
-                </CardContent>
-            </Card>
+                <Card>
+                    <CardHeader><CardTitle>Campaigns Joined ({activeJoinedCampaigns.length})</CardTitle></CardHeader>
+                    <CardContent>
+                         <FilterControls 
+                            searchTerm={joinedCampaignSearchTerm}
+                            setSearchTerm={setJoinedCampaignSearchTerm}
+                            searchPlaceholder="Search joined campaigns..."
+                        />
+                        <ScrollArea className="h-48">
+                            <div className="p-1 space-y-1">
+                                {filteredJoinedCampaigns.length > 0 ? (
+                                    filteredJoinedCampaigns.map(c => (
+                                        <Link key={c.id} href={`/dashboard/campaigns/${c.id}`} className="block p-2 rounded-md hover:bg-muted">
+                                            <p className="font-medium text-sm truncate">{c.title}</p>
+                                            <p className="text-xs text-muted-foreground truncate">Starts on {c.startDate ? format(c.startDate.toDate(), "PPP") : 'N/A'}</p>
+                                        </Link>
+                                    ))
+                                ) : (
+                                    <p className="text-sm text-center text-muted-foreground py-4">{activeJoinedCampaigns.length === 0 ? 'No other campaigns joined yet.' : 'No results found.'}</p>
+                                )}
+                            </div>
+                        </ScrollArea>
+                    </CardContent>
+                </Card>
+            </div>
 
-             <Card>
-                <CardHeader><CardTitle>Souls Won ({soulsWon?.length ?? 0})</CardTitle></CardHeader>
-                <CardContent>
-                     <FilterControls 
-                        searchTerm={soulSearchTerm}
-                        setSearchTerm={setSoulSearchTerm}
-                        filterDate={soulFilterDate}
-                        setFilterDate={setSoulFilterDate}
-                        searchPlaceholder="Search souls by name..."
-                    />
-                    <ScrollArea className="h-48">
-                        <div className="p-1 space-y-1">
-                            {filteredSoulsWon.length > 0 ? (
-                                filteredSoulsWon.map(s => (
-                                    <Link key={s.id} href="/dashboard/souls-won" className="block p-2 rounded-md hover:bg-muted">
-                                        <p className="font-medium text-sm truncate">{s.firstName} {s.lastName}</p>
-                                        <p className="text-xs text-muted-foreground truncate">Won on {s.wonAt ? format(s.wonAt.toDate(), "PPP") : 'N/A'}</p>
-                                    </Link>
-                                ))
-                            ) : (
-                                <p className="text-sm text-center text-muted-foreground py-4">{soulsWon?.length === 0 ? 'No souls won yet.' : 'No results found.'}</p>
-                            )}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                            <Users className="h-5 w-5 text-primary" />
+                            Fellowships Joined ({joinedFellowships.length})
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <FilterControls 
+                            searchTerm={joinedFellowshipSearchTerm}
+                            setSearchTerm={setJoinedFellowshipSearchTerm}
+                            searchPlaceholder="Search joined fellowships..."
+                        />
+                        <ScrollArea className="h-48">
+                            <div className="p-1 space-y-1">
+                                {filteredJoinedFellowships.length > 0 ? (
+                                    filteredJoinedFellowships.map(f => (
+                                        <Link key={f.id} href={`/dashboard/fellowship/${f.id}`} className="block p-2 rounded-md hover:bg-muted">
+                                            <p className="font-medium text-sm truncate">{f.name}</p>
+                                            <p className="text-xs text-muted-foreground truncate">{f.location || 'Global'}</p>
+                                        </Link>
+                                    ))
+                                ) : (
+                                    <p className="text-sm text-center text-muted-foreground py-4">{joinedFellowships.length === 0 ? 'No fellowships joined yet.' : 'No results found.'}</p>
+                                )}
+                            </div>
+                        </ScrollArea>
+                    </CardContent>
+                </Card>
+
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                            <Group className="h-5 w-5 text-primary" />
+                            Associations Joined ({joinedAssociations.length})
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <FilterControls 
+                            searchTerm={joinedAssociationSearchTerm}
+                            setSearchTerm={setJoinedAssociationSearchTerm}
+                            searchPlaceholder="Search joined associations..."
+                        />
+                        <ScrollArea className="h-48">
+                            <div className="p-1 space-y-1">
+                                {filteredJoinedAssociations.length > 0 ? (
+                                    filteredJoinedAssociations.map(a => (
+                                        <Link key={a.id} href={`/dashboard/fellowship/${a.id}`} className="block p-2 rounded-md hover:bg-muted">
+                                            <p className="font-medium text-sm truncate">{a.name}</p>
+                                            <p className="text-xs text-muted-foreground truncate">{a.location || 'Global'}</p>
+                                        </Link>
+                                    ))
+                                ) : (
+                                    <p className="text-sm text-center text-muted-foreground py-4">{joinedAssociations.length === 0 ? 'No associations joined yet.' : 'No results found.'}</p>
+                                )}
+                            </div>
+                        </ScrollArea>
+                    </CardContent>
+                </Card>
+            </div>
+
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <Card>
+                    <CardHeader><CardTitle>Souls Won ({soulsWon?.length ?? 0})</CardTitle></CardHeader>
+                    <CardContent>
+                         <FilterControls 
+                            searchTerm={soulSearchTerm}
+                            setSearchTerm={setSoulSearchTerm}
+                            filterDate={soulFilterDate}
+                            setFilterDate={setSoulFilterDate}
+                            searchPlaceholder="Search souls by name..."
+                        />
+                        <ScrollArea className="h-48">
+                            <div className="p-1 space-y-1">
+                                {filteredSoulsWon.length > 0 ? (
+                                    filteredSoulsWon.map(s => (
+                                        <Link key={s.id} href="/dashboard/souls-won" className="block p-2 rounded-md hover:bg-muted">
+                                            <p className="font-medium text-sm truncate">{s.firstName} {s.lastName}</p>
+                                            <p className="text-xs text-muted-foreground truncate">Won on {s.wonAt ? format(s.wonAt.toDate(), "PPP") : 'N/A'}</p>
+                                        </Link>
+                                    ))
+                                ) : (
+                                    <p className="text-sm text-center text-muted-foreground py-4">{soulsWon?.length === 0 ? 'No souls won yet.' : 'No results found.'}</p>
+                                )}
+                            </div>
+                        </ScrollArea>
+                    </CardContent>
+                </Card>
+
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                            <HeartHandshake className="h-5 w-5 text-primary" />
+                            Accountability Partners ({accountabilityPartners?.length ?? 0})
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                         <FilterControls 
+                            searchTerm={partnerSearchTerm}
+                            setSearchTerm={setPartnerSearchTerm}
+                            searchPlaceholder="Search partners..."
+                        />
+                        <ScrollArea className="h-48">
+                            <div className="p-1 space-y-1">
+                                {filteredAccountabilityPartners.length > 0 ? (
+                                    filteredAccountabilityPartners.map(p => (
+                                        <Link key={p.userId} href={`/dashboard/profile/${p.userId}`} className="flex items-center gap-3 p-2 rounded-md hover:bg-muted">
+                                            <Avatar className="h-8 w-8">
+                                                <AvatarImage src={p.photoURL} />
+                                                <AvatarFallback>{p.firstName.charAt(0)}{p.lastName.charAt(0)}</AvatarFallback>
+                                            </Avatar>
+                                            <div className="min-w-0 flex-1">
+                                                <p className="font-medium text-sm truncate">{p.firstName} {p.lastName}</p>
+                                            </div>
+                                        </Link>
+                                    ))
+                                ) : (
+                                    <p className="text-sm text-center text-muted-foreground py-4">{accountabilityPartners?.length === 0 ? 'No accountability partners yet.' : 'No results found.'}</p>
+                                )}
+                            </div>
+                        </ScrollArea>
+                        <div className="pt-4 flex justify-end">
+                            <Button asChild variant="outline" size="sm">
+                                <Link href="/dashboard/accountability">Find Partners</Link>
+                            </Button>
                         </div>
-                    </ScrollArea>
-                </CardContent>
-            </Card>
+                    </CardContent>
+                </Card>
+            </div>
         </div>
     </div>
   );
