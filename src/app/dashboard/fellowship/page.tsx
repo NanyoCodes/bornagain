@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect, useCallback } from 'react';
@@ -26,7 +27,7 @@ import type { UserProfile, Fellowship, FellowshipMember } from "@/lib/types";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { PlusCircle, Loader2, Video, Users, Group, Target, MessagesSquare, Trash2 } from 'lucide-react';
+import { PlusCircle, Loader2, Video, Users, Group, Target, MessagesSquare, Trash2, MapPin } from 'lucide-react';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -50,6 +51,34 @@ import { useSearch } from '@/context/search-context';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+
+const countries = [
+  "Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Antigua and Barbuda", "Argentina", "Armenia", "Australia", "Austria", "Azerbaijan",
+  "Bahamas", "Bahrain", "Bangladesh", "Barbados", "Belarus", "Belgium", "Belize", "Benin", "Bhutan", "Bolivia", "Bosnia and Herzegovina", "Botswana", "Brazil", "Brunei", "Bulgaria", "Burkina Faso", "Burundi",
+  "Cabo Verde", "Cambodia", "Cameroon", "Canada", "Central African Republic", "Chad", "Chile", "China", "Colombia", "Comoros", "Congo", "Costa Rica", "Croatia", "Cuba", "Cyprus", "Czech Republic",
+  "Denmark", "Djibouti", "Dominica", "Dominican Republic",
+  "Ecuador", "Egypt", "El Salvador", "Equatorial Guinea", "Eritrea", "Estonia", "Eswatini", "Ethiopia",
+  "Fiji", "Finland", "France",
+  "Gabon", "Gambia", "Georgia", "Germany", "Ghana", "Greece", "Grenada", "Guatemala", "Guinea", "Guinea-Bissau", "Guyana",
+  "Haiti", "Honduras", "Hungary",
+  "Iceland", "India", "Indonesia", "Iran", "Iraq", "Ireland", "Israel", "Italy", "Ivory Coast",
+  "Jamaica", "Japan", "Jordan",
+  "Kazakhstan", "Kenya", "Kiribati", "Kuwait", "Kyrgyzstan",
+  "Laos", "Latvia", "Lebanon", "Lesotho", "Liberia", "Libya", "Liechtenstein", "Lithuania", "Luxembourg",
+  "Madagascar", "Malawi", "Malaysia", "Maldives", "Mali", "Malta", "Marshall Islands", "Mauritania", "Mauritius", "Mexico", "Micronesia", "Moldova", "Monaco", "Mongolia", "Montenegro", "Morocco", "Mozambique", "Myanmar",
+  "Namibia", "Nauru", "Nepal", "Netherlands", "New Zealand", "Nicaragua", "Niger", "Nigeria", "North Korea", "North Macedonia", "Norway",
+  "Oman",
+  "Pakistan", "Palau", "Palestine", "Panama", "Papua New Guinea", "Paraguay", "Peru", "Philippines", "Poland", "Portugal",
+  "Qatar",
+  "Romania", "Russia", "Rwanda",
+  "Saint Kitts and Nevis", "Saint Lucia", "Saint Vincent and the Grenadines", "Samoa", "San Marino", "Sao Tome and Principe", "Saudi Arabia", "Senegal", "Serbia", "Seychelles", "Sierra Leone", "Singapore", "Slovakia", "Slovenia", "Solomon Islands", "Somalia", "South Africa", "South Korea", "South Sudan", "Spain", "Sri Lanka", "Sudan", "Suriname", "Sweden", "Switzerland", "Syria",
+  "Taiwan", "Tajikistan", "Tanzania", "Thailand", "Timor-Leste", "Togo", "Tonga", "Trinidad and Tobago", "Tunisia", "Turkey", "Turkmenistan", "Tuvalu",
+  "Uganda", "Ukraine", "United Arab Emirates", "United Kingdom", "United States", "Uruguay", "Uzbekistan",
+  "Vanuatu", "Vatican City", "Venezuela", "Vietnam",
+  "Yemen",
+  "Zambia", "Zimbabwe"
+];
 
 const formSchema = z.object({
   name: z.string().min(3, "Name must be at least 3 characters.").max(100),
@@ -58,15 +87,16 @@ const formSchema = z.object({
   schedule: z.string().min(3, "Schedule is required.").max(100),
   streamUrl: z.string().url({ message: "Please enter a valid URL." }).optional().or(z.literal('')),
   locationType: z.enum(['Physical', 'Virtual', 'Physical and Virtual'], { required_error: "Please select a location type." }),
-  location: z.string().max(100).optional(),
+  city: z.string().max(100).optional(),
+  country: z.string().optional(),
 }).refine((data) => {
     if (data.locationType === 'Physical' || data.locationType === 'Physical and Virtual') {
-        return !!data.location && data.location.trim().length > 2;
+        return !!data.city && data.city.trim().length > 1 && !!data.country;
     }
     return true;
 }, {
-    message: "Location is required for physical or 'Physical and Virtual' meetings.",
-    path: ["location"],
+    message: "City and Country are required for physical meetings.",
+    path: ["city"],
 });
 
 function FellowshipForm({ 
@@ -89,11 +119,11 @@ function FellowshipForm({
             schedule: "",
             streamUrl: userProfile?.defaultMeetingLink || "",
             locationType: 'Physical',
-            location: '',
+            city: userProfile?.location?.city || '',
+            country: userProfile?.location?.country || '',
         },
     });
 
-    // Sync default type if it changes from parent
     useEffect(() => {
         form.setValue('groupType', defaultType);
     }, [defaultType, form]);
@@ -193,13 +223,33 @@ function FellowshipForm({
                     )}
                     />
                 {(form.watch('locationType') === 'Physical' || form.watch('locationType') === 'Physical and Virtual') && (
-                    <FormField control={form.control} name="location" render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Physical Location</FormLabel>
-                            <FormControl><Input placeholder="Address or City" {...field} value={field.value ?? ''} className="text-base" /></FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )} />
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <FormField control={form.control} name="city" render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>City</FormLabel>
+                                <FormControl><Input placeholder="City" {...field} value={field.value ?? ''} className="text-base" /></FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )} />
+                        <FormField control={form.control} name="country" render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Country</FormLabel>
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <FormControl>
+                                        <SelectTrigger className="text-base">
+                                            <SelectValue placeholder="Select Country" />
+                                        </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                        {countries.map(country => (
+                                            <SelectItem key={country} value={country}>{country}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                <FormMessage />
+                            </FormItem>
+                        )} />
+                    </div>
                 )}
                 <FormField control={form.control} name="streamUrl" render={({ field }) => (
                     <FormItem>
@@ -244,7 +294,8 @@ function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting, onDelete
       schedule: fellowship.schedule || "",
       streamUrl: fellowship.streamUrl || "",
       locationType: fellowship.locationType || 'Physical',
-      location: fellowship.location || "",
+      city: fellowship.city || "",
+      country: fellowship.country || "",
     },
   });
 
@@ -319,7 +370,7 @@ function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting, onDelete
                                 <FormLabel className="font-normal">Virtual</FormLabel>
                             </FormItem>
                             <FormItem className="flex items-center space-x-2 space-y-0">
-                                <FormControl><RadioGroupItem value="Both" /></FormControl>
+                                <FormControl><RadioGroupItem value="Physical and Virtual" /></FormControl>
                                 <FormLabel className="font-normal">Both</FormLabel>
                             </FormItem>
                         </RadioGroup>
@@ -328,6 +379,35 @@ function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting, onDelete
                     </FormItem>
                 )}
             />
+            {(form.watch('locationType') === 'Physical' || form.watch('locationType') === 'Physical and Virtual') && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <FormField control={form.control} name="city" render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>City</FormLabel>
+                            <FormControl><Input placeholder="City" {...field} value={field.value ?? ''} className="text-base" /></FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )} />
+                    <FormField control={form.control} name="country" render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Country</FormLabel>
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <FormControl>
+                                    <SelectTrigger className="text-base">
+                                        <SelectValue placeholder="Select Country" />
+                                    </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                    {countries.map(country => (
+                                        <SelectItem key={country} value={country}>{country}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                            <FormMessage />
+                        </FormItem>
+                    )} />
+                </div>
+            )}
             <Button type="submit" disabled={isSubmitting} className="w-full h-11">
                 {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Save Changes
@@ -407,7 +487,9 @@ export default function FellowshipPage() {
             schedule: values.schedule,
             streamUrl: values.streamUrl || null,
             locationType: values.locationType,
-            location: values.location || null,
+            city: values.city || null,
+            country: values.country || null,
+            location: values.city && values.country ? `${values.city.trim()}, ${values.country}` : values.city || values.country || null,
             latitude: userProfile.location?.latitude || null,
             longitude: userProfile.location?.longitude || null,
             organizerId: user.uid,
@@ -447,6 +529,9 @@ export default function FellowshipPage() {
         if (!user || !fellowshipToManage) return;
         setIsSubmitting(true);
         const fellowshipRef = doc(firestore, 'fellowships', fellowshipToManage.id);
+        
+        const location = values.city && values.country ? `${values.city.trim()}, ${values.country}` : values.city || values.country || null;
+        
         try {
             await updateDoc(fellowshipRef, {
                 name: values.name,
@@ -454,6 +539,9 @@ export default function FellowshipPage() {
                 groupType: values.groupType,
                 schedule: values.schedule,
                 locationType: values.locationType,
+                city: values.city || null,
+                country: values.country || null,
+                location: location,
             });
             toast({ title: 'Group Updated' });
             closeAllDialogs();
@@ -527,7 +615,9 @@ export default function FellowshipPage() {
         const term = searchTerm.toLowerCase();
         return tabFilteredFellowships.filter(f => 
             f.name.toLowerCase().includes(term) || 
-            f.description.toLowerCase().includes(term)
+            f.description.toLowerCase().includes(term) ||
+            f.city?.toLowerCase().includes(term) ||
+            f.country?.toLowerCase().includes(term)
         );
     }, [tabFilteredFellowships, searchTerm]);
 
