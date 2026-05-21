@@ -69,19 +69,34 @@ const formSchema = z.object({
     path: ["location"],
 });
 
-function FellowshipForm({ userProfile, onFormSubmit, isSubmitting }: { userProfile: UserProfile | null, onFormSubmit: (values: z.infer<typeof formSchema>) => void, isSubmitting: boolean }) {
+function FellowshipForm({ 
+    userProfile, 
+    onFormSubmit, 
+    isSubmitting,
+    defaultType = 'Fellowship'
+}: { 
+    userProfile: UserProfile | null, 
+    onFormSubmit: (values: z.infer<typeof formSchema>) => void, 
+    isSubmitting: boolean,
+    defaultType?: 'Fellowship' | 'Association'
+}) {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
             name: "",
             description: "",
-            groupType: "Fellowship",
+            groupType: defaultType,
             schedule: "",
             streamUrl: userProfile?.defaultMeetingLink || "",
             locationType: 'Physical',
             location: '',
         },
     });
+
+    // Sync default type if it changes from parent
+    useEffect(() => {
+        form.setValue('groupType', defaultType);
+    }, [defaultType, form]);
 
     const handleCreateMeet = () => {
         window.open('https://meet.google.com/new', '_blank');
@@ -99,7 +114,7 @@ function FellowshipForm({ userProfile, onFormSubmit, isSubmitting }: { userProfi
                         <FormControl>
                             <RadioGroup
                             onValueChange={field.onChange}
-                            defaultValue={field.value}
+                            value={field.value}
                             className="flex flex-row space-x-4"
                             >
                             <FormItem className="flex items-center space-x-2 space-y-0">
@@ -420,6 +435,7 @@ export default function FellowshipPage() {
     const { searchTerm, setSearchPlaceholder, setIsSearchVisible, setSearchTerm } = useSearch();
     
     const [isCreateOpen, setIsCreateOpen] = useState(false);
+    const [createType, setCreateType] = useState<'Fellowship' | 'Association'>('Fellowship');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [fellowshipToManage, setFellowshipToManage] = useState<Fellowship | null>(null);
     const [fellowshipToDelete, setFellowshipToDelete] = useState<Fellowship | null>(null);
@@ -573,10 +589,10 @@ export default function FellowshipPage() {
                 <CardContent className="px-4 py-4 sm:p-6">
                 <div className="flex items-center gap-2 sm:gap-4">
                     <Button 
-                    variant="outline" 
-                    className="flex-1 justify-center text-muted-foreground font-normal rounded-full h-9 sm:h-11 px-3 sm:px-4 hover:bg-muted/50 transition-colors text-[11px] sm:text-sm"
-                    onClick={() => setIsCreateOpen(true)}
-                    disabled={loading}
+                        variant="outline" 
+                        className="flex-1 justify-center text-muted-foreground font-normal rounded-full h-9 sm:h-11 px-3 sm:px-4 hover:bg-muted/50 transition-colors text-[11px] sm:text-sm"
+                        onClick={() => { setCreateType('Fellowship'); setIsCreateOpen(true); }}
+                        disabled={loading}
                     >
                     <span className="truncate">
                         {loading ? "Preparing groups..." : "Start a new fellowship group or association?"}
@@ -588,7 +604,7 @@ export default function FellowshipPage() {
                         variant="ghost" 
                         size="sm" 
                         className="flex-1 text-muted-foreground hover:text-primary transition-colors py-2 sm:py-6 h-auto"
-                        onClick={() => setIsCreateOpen(true)}
+                        onClick={() => { setCreateType('Fellowship'); setIsCreateOpen(true); }}
                         disabled={loading}
                     >
                         {loading ? (
@@ -596,7 +612,22 @@ export default function FellowshipPage() {
                         ) : (
                         <Users className="mr-2 h-4 w-4 sm:h-5 sm:w-5 text-primary" />
                         )}
-                        <span className="text-[11px] sm:text-xs md:text-sm font-medium">New Group</span>
+                        <span className="text-[11px] sm:text-xs md:text-sm font-medium">New Fellowship</span>
+                    </Button>
+                    <div className="h-6 w-px bg-border shrink-0" />
+                    <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="flex-1 text-muted-foreground hover:text-primary transition-colors py-2 sm:py-6 h-auto"
+                        onClick={() => { setCreateType('Association'); setIsCreateOpen(true); }}
+                        disabled={loading}
+                    >
+                        {loading ? (
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        ) : (
+                        <Group className="mr-2 h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+                        )}
+                        <span className="text-[11px] sm:text-xs md:text-sm font-medium">New Association</span>
                     </Button>
                 </div>
                 </CardContent>
@@ -649,7 +680,12 @@ export default function FellowshipPage() {
                             </SheetHeader>
                         </div>
                         <div className="flex-grow overflow-y-auto p-6">
-                            <FellowshipForm userProfile={userProfile ?? null} onFormSubmit={handleCreateFellowship} isSubmitting={isSubmitting} />
+                            <FellowshipForm 
+                                userProfile={userProfile ?? null} 
+                                onFormSubmit={handleCreateFellowship} 
+                                isSubmitting={isSubmitting} 
+                                defaultType={createType}
+                            />
                         </div>
                     </SheetContent>
                 </Sheet>
@@ -660,7 +696,12 @@ export default function FellowshipPage() {
                             <DialogTitle>New Community Group</DialogTitle>
                             <DialogDescription>Create a space for community and growth.</DialogDescription>
                         </DialogHeader>
-                        <FellowshipForm userProfile={userProfile ?? null} onFormSubmit={handleCreateFellowship} isSubmitting={isSubmitting} />
+                        <FellowshipForm 
+                            userProfile={userProfile ?? null} 
+                            onFormSubmit={handleCreateFellowship} 
+                            isSubmitting={isSubmitting} 
+                            defaultType={createType}
+                        />
                     </DialogContent>
                 </Dialog>
             )}
