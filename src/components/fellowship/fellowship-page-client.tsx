@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -324,15 +323,6 @@ export default function FellowshipPageClient() {
                                 </div>
                             )}
                             
-                            {(isMember || isOrganizer) && fellowship.hasGroupChat && (
-                                <Button asChild className="w-full mt-2" variant="outline">
-                                    <Link href={`/dashboard/chats/${fellowship.id}`}>
-                                        <MessagesSquare className="mr-2 h-4 w-4" />
-                                        Group Chat
-                                    </Link>
-                                </Button>
-                            )}
-
                             {(isMember || isOrganizer) && fellowship.streamUrl && (
                                 <Button asChild className="w-full">
                                     <Link href={fellowship.streamUrl} target="_blank" rel="noopener noreferrer">

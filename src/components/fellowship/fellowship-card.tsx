@@ -60,14 +60,11 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
         const fellowshipRef = doc(firestore, "fellowships", fellowship.id);
         const userFellowshipRef = doc(firestore, 'users', user.uid, 'fellowships', fellowship.id);
         const fellowshipMemberRef = doc(firestore, 'fellowships', fellowship.id, 'members', user.uid);
-        const chatRef = doc(firestore, 'chats', fellowship.id);
         
         try {
             await runTransaction(firestore, async (transaction) => {
                 const fellowshipDoc = await transaction.get(fellowshipRef);
                 if (!fellowshipDoc.exists()) throw new Error("Fellowship no longer exists.");
-
-                const chatDoc = await transaction.get(chatRef);
 
                 transaction.update(fellowshipRef, {
                     memberIds: arrayUnion(user.uid),
@@ -81,17 +78,6 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
                     photoURL: userProfile.photoURL || '',
                     joinedAt: serverTimestamp()
                 });
-
-                if (chatDoc.exists()) {
-                    transaction.update(chatRef, {
-                        participantIds: arrayUnion(user.uid),
-                        [`participantInfo.${user.uid}`]: {
-                            firstName: userProfile.firstName,
-                            lastName: userProfile.lastName,
-                            photoURL: userProfile.photoURL || '',
-                        }
-                    });
-                }
             });
             toast({ title: "Successfully Joined!", description: `You are now a member of ${fellowship.name}.`});
         } catch (e: any) {

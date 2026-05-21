@@ -228,7 +228,6 @@ function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting, onDelete
   const { user } = useUser();
   const router = useRouter();
   const { toast } = useToast();
-  const [isChatLoading, setIsChatLoading] = useState(false);
 
   const membersQuery = useMemo(() => {
     if (!firestore || !fellowship.id) return null;
@@ -248,60 +247,6 @@ function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting, onDelete
       location: fellowship.location || "",
     },
   });
-
-  const handleStartGroupChat = async () => {
-    if (!user || !firestore || !members) return;
-    setIsChatLoading(true);
-
-    if (members.length <= 1) {
-        toast({
-            title: "Not Enough Members",
-            description: "A group chat requires at least one other member to start.",
-        });
-        setIsChatLoading(false);
-        return;
-    }
-
-    const participantIds = members.map(m => m.userId);
-    const participantInfo: { [key: string]: any } = {};
-    members.forEach(m => {
-        participantInfo[m.userId] = {
-            firstName: m.firstName,
-            lastName: m.lastName,
-            photoURL: m.photoURL || '',
-        };
-    });
-
-    const batch = writeBatch(firestore);
-    const chatDocRef = doc(firestore, 'chats', fellowship.id);
-    const chatData = {
-        participantIds,
-        participantInfo,
-        fellowshipId: fellowship.id,
-        campaignTitle: fellowship.name, // Reusing field for display consistency
-        lastUpdatedAt: serverTimestamp(),
-        isGroupChat: true,
-        hasMessages: false,
-    };
-    batch.set(chatDocRef, chatData, { merge: true });
-
-    const fellowshipDocRef = doc(firestore, 'fellowships', fellowship.id);
-    batch.update(fellowshipDocRef, { hasGroupChat: true });
-
-    batch.commit()
-        .then(() => {
-            toast({ title: "Group Chat Started!" });
-            router.push(`/dashboard/chats/${fellowship.id}`);
-        })
-        .catch((e) => {
-             const permissionError = new FirestorePermissionError({
-                path: `BATCH_WRITE:START_FELLOWSHIP_CHAT:${fellowship.id}`,
-                operation: 'write',
-            }, user);
-            errorEmitter.emit('permission-error', permissionError);
-        })
-        .finally(() => setIsChatLoading(false));
-  };
 
   return (
     <div className="space-y-8">
@@ -389,36 +334,6 @@ function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting, onDelete
             </Button>
         </form>
         </Form>
-
-        <Separator />
-
-        <Card>
-            <CardHeader>
-                <CardTitle>Group Communication</CardTitle>
-                <CardDescription>
-                  {fellowship.hasGroupChat 
-                    ? "View the group chat for all members." 
-                    : "Start a group chat with all active members."
-                  }
-                </CardDescription>
-            </CardHeader>
-            <CardContent>
-                {fellowship.hasGroupChat ? (
-                  <Button onClick={() => router.push(`/dashboard/chats/${fellowship.id}`)}>
-                      <MessagesSquare className="mr-2 h-4 w-4" />
-                      View Group Chat
-                  </Button>
-                ) : (
-                  <>
-                    <Button onClick={handleStartGroupChat} disabled={isChatLoading || membersLoading || !members || members.length <= 1}>
-                        {isChatLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <MessagesSquare className="mr-2 h-4 w-4" />}
-                        Start Group Chat
-                    </Button>
-                    {members && members.length <= 1 && <p className="text-xs text-muted-foreground mt-2">You need at least one other member to start a group chat.</p>}
-                  </>
-                )}
-            </CardContent>
-        </Card>
 
         <Separator />
 
