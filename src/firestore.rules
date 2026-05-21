@@ -181,14 +181,12 @@ service cloud.firestore {
         // Organizer
         (request.auth.uid == resource.data.get('organizerId', '')) ||
         
-        // Join Group
+        // Join Group logic: adding self to memberIds and incrementing count
         (
+          request.resource.data.diff(resource.data).affectedKeys().hasAny(['memberIds', 'memberCount']) &&
           request.auth.uid in request.resource.data.get('memberIds', []) &&
           !(request.auth.uid in resource.data.get('memberIds', []))
-        ) ||
-        
-        // Member count update only
-        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['memberCount']))
+        )
       );
 
       match /members/{memberId} {
