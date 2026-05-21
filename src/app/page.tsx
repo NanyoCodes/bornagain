@@ -72,7 +72,7 @@ export default function Page() {
         title: 'Success',
         description: 'You are now logged in.',
       });
-      router.push('/dashboard/testimonies');
+      router.push('/progress');
     } catch (error) {
       const authError = error as AuthError;
       if (authError.code !== 'auth/popup-closed-by-user') {
