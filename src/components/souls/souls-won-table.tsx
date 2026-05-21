@@ -3,7 +3,7 @@
 
 import * as React from "react";
 import { format } from "date-fns";
-import { MoreHorizontal, Church, MapPin, Phone, ChevronDown, Download, HeartHandshake, Edit, Trash2, Users, History } from "lucide-react";
+import { MoreHorizontal, Church, MapPin, Phone, ChevronDown, Download, HeartHandshake, Edit, Trash2, Users, History, Group } from "lucide-react";
 import type { Soul, FollowUpStatus } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import {
@@ -95,7 +95,11 @@ const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, 
                                 <p className="font-semibold truncate text-sm sm:text-base leading-tight">
                                   {soul.firstName || 'Unknown'} {soul.lastName || ''}
                                 </p>
-                                <Badge className={cn("mt-1.5 h-5 px-1.5 text-[10px] sm:text-xs", getStatusClasses(soul.status))} variant="outline">{soul.status}</Badge>
+                                <div className="flex flex-wrap gap-1 items-center mt-1.5">
+                                    <Badge className={cn("h-5 px-1.5 text-[10px] sm:text-xs", getStatusClasses(soul.status))} variant="outline">{soul.status}</Badge>
+                                    {soul.fellowshipName && <Badge variant="secondary" className="h-5 px-1.5 text-[9px] uppercase font-bold tracking-tighter">Fellowship</Badge>}
+                                    {soul.associationName && <Badge variant="outline" className="h-5 px-1.5 text-[9px] uppercase font-bold tracking-tighter border-primary text-primary">Association</Badge>}
+                                </div>
                             </div>
                         </div>
                         <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform duration-200 group-data-[state=open]:rotate-180 shrink-0" />
@@ -112,7 +116,8 @@ const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, 
                                 {soul.phone && <div className="truncate flex items-center gap-2"><Phone className="h-3.5 w-3.5 text-primary"/>{soul.phone}</div>}
                                 {soul.church && <div className="flex items-center gap-2"><Church className="h-3.5 w-3.5 text-primary" /> {soul.church}</div>}
                                 {locationWonString && <div className="flex items-start gap-2"><MapPin className="h-3.5 w-3.5 text-primary shrink-0 mt-0.5" /> <span className="line-clamp-2">{locationWonString}</span></div>}
-                                {soul.fellowshipName && <div className="flex items-center gap-2 font-semibold text-primary"><HeartHandshake className="h-3.5 w-3.5" /> {soul.fellowshipName}</div>}
+                                {soul.fellowshipName && <div className="flex items-center gap-2 font-semibold text-primary"><HeartHandshake className="h-3.5 w-3.5" /> Fellowship: {soul.fellowshipName}</div>}
+                                {soul.associationName && <div className="flex items-center gap-2 font-semibold text-blue-500"><Group className="h-3.5 w-3.5" /> Association: {soul.associationName}</div>}
                             </div>
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
@@ -231,7 +236,23 @@ const SoulTableRow = React.memo(({ soul, onFollowUp, onViewHistory, onExportSing
             </TableCell>
             <TableCell>{soul.phone && <div className="text-xs text-muted-foreground">{soul.phone}</div>}</TableCell>
             <TableCell><Badge className={cn("w-[130px] justify-center", getStatusClasses(soul.status))} variant="outline">{soul.status}</Badge></TableCell>
-            <TableCell>{soul.fellowshipName ? <div className="flex items-center gap-2 text-xs"><HeartHandshake className="h-3 w-3" />{soul.fellowshipName}</div> : <span className="text-muted-foreground text-xs">N/A</span>}</TableCell>
+            <TableCell>
+                <div className="space-y-1">
+                    {soul.fellowshipName ? (
+                        <div className="flex items-center gap-2 text-xs font-medium text-primary">
+                            <HeartHandshake className="h-3 w-3" />
+                            {soul.fellowshipName}
+                        </div>
+                    ) : null}
+                    {soul.associationName ? (
+                        <div className="flex items-center gap-2 text-xs font-medium text-blue-500">
+                            <Group className="h-3 w-3" />
+                            {soul.associationName}
+                        </div>
+                    ) : null}
+                    {!soul.fellowshipName && !soul.associationName && <span className="text-muted-foreground text-xs italic">Unassigned</span>}
+                </div>
+            </TableCell>
             <TableCell>
                 {latestFollowUpDate ? (
                     <div className="text-xs space-y-1">
@@ -335,7 +356,7 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
               <TableHead>Name</TableHead>
               <TableHead>Phone</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead>Group</TableHead>
+              <TableHead>Groups</TableHead>
               <TableHead>Last Log</TableHead>
               <TableHead>Won At</TableHead>
               <TableHead>Source</TableHead>

@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -20,11 +21,11 @@ interface AssignFellowshipDialogProps {
   fellowships: Fellowship[];
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
-  onAssignFellowship: (soul: Soul, fellowshipId: string) => void;
+  onAssignGroup: (soul: Soul, fellowshipId: string, groupType: 'Fellowship' | 'Association') => void;
   isAssigning: string | null;
 }
 
-export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange, onAssignFellowship, isAssigning }: AssignFellowshipDialogProps) {
+export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange, onAssignGroup, isAssigning }: AssignFellowshipDialogProps) {
   const [country, setCountry] = React.useState<string>('');
   const [state, setState] = React.useState<string>('');
   const [typeFilter, setTypeFilter] = React.useState<string>('all');
@@ -141,33 +142,37 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
       <ScrollArea className={cn("border rounded-lg bg-muted/5 flex-grow", isMobile ? "min-h-0" : "h-72")}>
           <div className="p-3 space-y-3">
               {filteredAndSortedFellowships.length > 0 ? (
-                  filteredAndSortedFellowships.map(f => (
-                      <Card key={f.id} className={cn("transition-colors shadow-none", soul.fellowshipId === f.id && "bg-primary/5 border-primary/20")}>
+                  filteredAndSortedFellowships.map(f => {
+                      const groupType = f.groupType || 'Fellowship';
+                      const isAssigned = groupType === 'Association' ? soul.associationId === f.id : soul.fellowshipId === f.id;
+
+                      return (
+                      <Card key={f.id} className={cn("transition-colors shadow-none", isAssigned && "bg-primary/5 border-primary/20")}>
                           <CardContent className="p-3 flex items-center justify-between gap-4">
                               <div className="min-w-0">
                                   <div className="flex items-center gap-2 mb-1 flex-wrap">
                                     <p className="font-bold text-sm truncate">{f.name}</p>
                                     <Badge variant="secondary" className="text-[9px] px-1.5 h-4 uppercase font-bold tracking-tight bg-background border">
-                                        {f.groupType || 'Fellowship'}
+                                        {groupType}
                                     </Badge>
                                   </div>
                                   <p className="text-[11px] text-muted-foreground truncate">{f.location}</p>
                                   {f.distance !== null ? <p className="text-[10px] text-primary font-medium mt-1">{f.distance.toFixed(1)} km away</p> : null}
                               </div>
-                              {soul.fellowshipId === f.id ? (
+                              {isAssigned ? (
                                   <Button
                                       size="sm"
                                       variant="outline"
-                                      onClick={() => onAssignFellowship(soul, 'none')}
+                                      onClick={() => onAssignGroup(soul, 'none', groupType)}
                                       disabled={!!isAssigning}
                                       className="shrink-0 h-8 text-xs border-destructive/20 text-destructive hover:bg-destructive/10"
                                   >
-                                      {isAssigning === 'none' ? <Loader2 className="h-3 w-3 animate-spin"/> : 'Unassign'}
+                                      {isAssigning === f.id ? <Loader2 className="h-3 w-3 animate-spin"/> : 'Unassign'}
                                   </Button>
                               ) : (
                                   <Button
                                       size="sm"
-                                      onClick={() => onAssignFellowship(soul, f.id)}
+                                      onClick={() => onAssignGroup(soul, f.id, groupType)}
                                       disabled={!!isAssigning}
                                       className="shrink-0 h-8 text-xs font-bold"
                                   >
@@ -176,7 +181,7 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
                               )}
                           </CardContent>
                       </Card>
-                  ))
+                  )})
               ) : (
                   <div className="text-center text-muted-foreground py-12 px-6">
                       <Filter className="h-8 w-8 mx-auto mb-3 opacity-20" />
@@ -196,7 +201,7 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
           <div className="p-6 border-b flex-shrink-0 bg-muted/10">
             <SheetHeader className="text-left">
                 <SheetTitle className="text-xl font-bold font-headline">Assign Group: {soul.firstName}</SheetTitle>
-                <SheetDescription className="text-xs">Select a fellowship or association to assign this soul to.</SheetDescription>
+                <SheetDescription className="text-xs">You can assign to 1 fellowship and 1 association.</SheetDescription>
             </SheetHeader>
           </div>
           <div className="flex-grow overflow-hidden px-6 pb-6">
@@ -213,7 +218,7 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold font-headline">Assign Group: {soul?.firstName}</DialogTitle>
           <DialogDescription>
-            Connect this convert with a local fellowship or association.
+            You can assign to 1 fellowship and 1 association.
           </DialogDescription>
         </DialogHeader>
         <div className="flex-grow min-h-0">

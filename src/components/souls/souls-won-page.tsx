@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
@@ -27,10 +28,10 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { PlusCircle, Download, Loader2, Trash2, HeartHandshake } from "lucide-react";
+import { PlusCircle, Download, Loader2, Trash2 } from "lucide-react";
 import type { Soul, Campaign, Fellowship } from "@/lib/types";
 import { useCollection, useFirestore, useUser } from "@/firebase";
-import { collection, query, orderBy, doc, serverTimestamp, increment, runTransaction, addDoc, deleteField, writeBatch } from "firebase/firestore";
+import { collection, query, orderBy, doc, serverTimestamp, runTransaction, addDoc, deleteField, writeBatch } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useSearch } from "@/context/search-context";
@@ -186,53 +187,58 @@ export default function SoulsWonPage() {
     }
   };
 
-  const handleAssignFellowship = async (soul: Soul, fellowshipId: string) => {
+  const handleAssignGroup = async (soul: Soul, groupId: string, groupType: 'Fellowship' | 'Association') => {
     if (!user || !firestore || isAssigning) return;
-    setIsAssigning(fellowshipId);
+    setIsAssigning(groupId);
 
     const soulRef = doc(firestore, `users/${user.uid}/souls`, soul.id);
     const globalSoulRef = doc(firestore, 'souls', soul.id);
-    const selectedFellowship = activeFellowships?.find(f => f.id === fellowshipId);
+    const selectedGroup = activeFellowships?.find(f => f.id === groupId);
     
     const updateData: { [key: string]: any } = {
         updatedAt: serverTimestamp(),
     };
 
-    if (fellowshipId === 'none') {
-        updateData.fellowshipId = deleteField();
-        updateData.fellowshipName = deleteField();
-    } else if (selectedFellowship) {
-        updateData.fellowshipId = selectedFellowship.id;
-        updateData.fellowshipName = selectedFellowship.name;
+    if (groupId === 'none') {
+        if (groupType === 'Association') {
+            updateData.associationId = deleteField();
+            updateData.associationName = deleteField();
+        } else {
+            updateData.fellowshipId = deleteField();
+            updateData.fellowshipName = deleteField();
+        }
+    } else if (selectedGroup) {
+        if (groupType === 'Association') {
+            updateData.associationId = selectedGroup.id;
+            updateData.associationName = selectedGroup.name;
+        } else {
+            updateData.fellowshipId = selectedGroup.id;
+            updateData.fellowshipName = selectedGroup.name;
+        }
     }
 
     try {
         await runTransaction(firestore, async (transaction) => {
-            // Note: We no longer update Fellowship memberCount here.
-            // Souls assigned to groups are tracked via queries, whereas 
-            // memberCount is reserved for believers who joined the group.
             transaction.update(soulRef, updateData);
             transaction.update(globalSoulRef, updateData);
         });
 
-        toast({ title: "Assigned", description: "Fellowship assigned successfully." });
-        setSoulToAssign(null);
-
-        const wasNewlyAssigned = fellowshipId !== 'none' && fellowshipId !== soul.fellowshipId;
-        if (wasNewlyAssigned && selectedFellowship && selectedFellowship.organizerId !== user.uid) {
-            const notificationRef = collection(firestore, `users/${selectedFellowship.organizerId}/notifications`);
+        toast({ title: "Assigned", description: `${groupType} assigned successfully.` });
+        
+        if (groupId !== 'none' && selectedGroup && selectedGroup.organizerId !== user.uid) {
+            const notificationRef = collection(firestore, `users/${selectedGroup.organizerId}/notifications`);
             await addDoc(notificationRef, {
-                userId: selectedFellowship.organizerId,
+                userId: selectedGroup.organizerId,
                 type: 'new_soul_in_fellowship',
-                title: `New Convert assigned to ${selectedFellowship.name}`,
+                title: `New Convert assigned to ${selectedGroup.name}`,
                 message: `${soul.firstName} ${soul.lastName} was assigned to your group for discipleship.`,
-                link: `/dashboard/fellowship/${selectedFellowship.id}`,
+                link: `/dashboard/fellowship/${selectedGroup.id}`,
                 isRead: false,
                 createdAt: serverTimestamp(),
             });
         }
     } catch (error: any) {
-        console.error("Assign fellowship error:", error);
+        console.error("Assign group error:", error);
         errorEmitter.emit('permission-error', new FirestorePermissionError({ path: `souls/${soul.id}`, operation: 'update' }, user));
     } finally { setIsAssigning(null); }
   };
@@ -372,7 +378,7 @@ export default function SoulsWonPage() {
           fellowships={activeFellowships} 
           isOpen={!!soulToAssign} 
           onOpenChange={(open) => !open && setSoulToAssign(null)} 
-          onAssignFellowship={handleAssignFellowship} 
+          onAssignGroup={handleAssignGroup} 
           isAssigning={isAssigning} 
       />
       

@@ -274,6 +274,8 @@ export type Soul = {
   inServiceDepartment?: boolean;
   fellowshipId?: string;
   fellowshipName?: string;
+  associationId?: string;
+  associationName?: string;
 };
 
 export type ChatParticipantInfo = {
