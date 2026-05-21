@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useCollection, useFirestore, useUser, useDoc } from "@/firebase";
 import { collection, query, orderBy, serverTimestamp, doc, runTransaction, updateDoc, writeBatch, where, getDocs, deleteField } from "firebase/firestore";
-import type { UserProfile, Fellowship, FellowshipMember } from "@/lib/types";
+import type { UserProfile, Fellowship, FellowshipMember, JoinedFellowship } from "@/lib/types";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -465,6 +465,7 @@ export default function FellowshipPage() {
     const [fellowshipToDelete, setFellowshipToDelete] = useState<Fellowship | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
     const [activeTab, setActiveTab] = useState("Fellowship");
+    const [membershipFilter, setMembershipFilter] = useState("all");
     const [mounted, setMounted] = useState(false);
     const isMobile = useIsMobile();
     
@@ -493,6 +494,12 @@ export default function FellowshipPage() {
     const fellowshipsQuery = useMemo(() => query(collection(firestore, "fellowships"), orderBy("createdAt", "desc")), [firestore]);
     const { data: fellowships, loading: fellowshipsLoading } = useCollection<Fellowship>(fellowshipsQuery);
     
+    const joinedGroupsRefsQuery = useMemo(() => {
+      if (!user?.uid || !firestore) return null;
+      return query(collection(firestore, `users/${user.uid}/fellowships`));
+    }, [user?.uid, firestore]);
+    const { data: joinedFellowshipRefs } = useCollection<JoinedFellowship>(joinedGroupsRefsQuery);
+
     const handleCreateFellowship = async (values: z.infer<typeof formSchema>) => {
         if (!user || !userProfile || !firestore) return;
         setIsSubmitting(true);
@@ -629,16 +636,26 @@ export default function FellowshipPage() {
         return activeFellowships.filter(f => (f.groupType || "Fellowship") === activeTab);
     }, [activeFellowships, activeTab]);
 
+    const membershipFilteredFellowships = useMemo(() => {
+      if (!user) return tabFilteredFellowships;
+      if (membershipFilter === 'owned') return tabFilteredFellowships.filter(f => f.organizerId === user.uid);
+      if (membershipFilter === 'joined') {
+          const joinedIds = new Set(joinedFellowshipRefs?.map(r => r.fellowshipId));
+          return tabFilteredFellowships.filter(f => joinedIds.has(f.id) && f.organizerId !== user.uid);
+      }
+      return tabFilteredFellowships;
+    }, [tabFilteredFellowships, membershipFilter, user, joinedFellowshipRefs]);
+
     const filteredFellowships = useMemo(() => {
-        if (!searchTerm) return tabFilteredFellowships;
+        if (!searchTerm) return membershipFilteredFellowships;
         const term = searchTerm.toLowerCase();
-        return tabFilteredFellowships.filter(f => 
+        return membershipFilteredFellowships.filter(f => 
             f.name.toLowerCase().includes(term) || 
             f.description.toLowerCase().includes(term) ||
             f.city?.toLowerCase().includes(term) ||
             f.country?.toLowerCase().includes(term)
         );
-    }, [tabFilteredFellowships, searchTerm]);
+    }, [membershipFilteredFellowships, searchTerm]);
 
     const loading = userLoading || profileLoading || fellowshipsLoading;
 
@@ -692,12 +709,21 @@ export default function FellowshipPage() {
                 </CardContent>
             </Card>
 
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                <div className="flex items-center justify-between mb-8">
-                    <TabsList className="grid w-full grid-cols-2">
-                        <TabsTrigger value="Fellowship">Fellowships</TabsTrigger>
-                        <TabsTrigger value="Association">Associations</TabsTrigger>
-                    </TabsList>
+            <div className="flex flex-col gap-6">
+                <div className="flex flex-wrap gap-4 items-center">
+                    <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full sm:w-auto">
+                        <TabsList className="grid w-full grid-cols-2">
+                            <TabsTrigger value="Fellowship">Fellowships</TabsTrigger>
+                            <TabsTrigger value="Association">Associations</TabsTrigger>
+                        </TabsList>
+                    </Tabs>
+                    <Tabs value={membershipFilter} onValueChange={setMembershipFilter} className="w-full sm:w-auto">
+                        <TabsList className="grid w-full grid-cols-3">
+                            <TabsTrigger value="all">All Groups</TabsTrigger>
+                            <TabsTrigger value="owned">My Groups</TabsTrigger>
+                            <TabsTrigger value="joined">Joined</TabsTrigger>
+                        </TabsList>
+                    </Tabs>
                 </div>
 
                 {loading ? (
@@ -722,12 +748,12 @@ export default function FellowshipPage() {
                             <div className="col-span-full text-center py-20 bg-muted/10 rounded-lg border-2 border-dashed">
                                 <Users className="h-12 w-12 text-muted-foreground/20 mx-auto mb-4" />
                                 <p className="text-muted-foreground font-medium">No {activeTab.toLowerCase()}s found.</p>
-                                <p className="text-xs text-muted-foreground mt-1">Try a different search or create a new one.</p>
+                                <p className="text-xs text-muted-foreground mt-1">Try a different filter or search.</p>
                             </div>
                         )}
                     </div>
                 )}
-            </Tabs>
+            </div>
 
             {mounted && isMobile ? (
                 <Sheet open={isCreateOpen} onOpenChange={setIsCreateOpen}>
