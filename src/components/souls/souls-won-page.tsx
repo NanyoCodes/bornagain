@@ -30,7 +30,7 @@ import {
 import { PlusCircle, Download, Loader2, Trash2 } from "lucide-react";
 import type { Soul, Campaign, Fellowship } from "@/lib/types";
 import { useCollection, useFirestore, useUser } from "@/firebase";
-import { collection, query, orderBy, doc, serverTimestamp, runTransaction, addDoc, deleteField, writeBatch } from "firebase/firestore";
+import { collection, query, orderBy, doc, serverTimestamp, updateDoc, writeBatch, addDoc, deleteField } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useSearch } from "@/context/search-context";
@@ -75,7 +75,6 @@ export default function SoulsWonPage() {
   const [soulToEdit, setSoulToEdit] = useState<Soul | null>(null);
   const [soulToDelete, setSoulToDelete] = useState<Soul | null>(null);
 
-  const [isAssigning, setIsAssigning] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
@@ -190,9 +189,8 @@ export default function SoulsWonPage() {
     }
   };
 
-  const handleAssignGroup = async (soul: Soul, groupId: string, groupType: 'Fellowship' | 'Association') => {
-    if (!user || !firestore || isAssigning) return;
-    setIsAssigning(groupId);
+  const handleAssignGroup = (soul: Soul, groupId: string, groupType: 'Fellowship' | 'Association') => {
+    if (!user || !firestore) return;
 
     const soulRef = doc(firestore, `users/${user.uid}/souls`, soul.id);
     const globalSoulRef = doc(firestore, 'souls', soul.id);
@@ -220,30 +218,30 @@ export default function SoulsWonPage() {
         }
     }
 
-    try {
-        await runTransaction(firestore, async (transaction) => {
-            transaction.update(soulRef, updateData);
-            transaction.update(globalSoulRef, updateData);
-        });
+    // Use non-blocking update for immediate response
+    updateDoc(soulRef, updateData).catch(async (serverError) => {
+        const permissionError = new FirestorePermissionError({
+            path: soulRef.path,
+            operation: 'update',
+            requestResourceData: updateData,
+        }, user);
+        errorEmitter.emit('permission-error', permissionError);
+    });
 
-        toast({ title: "Assigned", description: `${groupType} assigned successfully.` });
-        
-        if (groupId !== 'none' && selectedGroup && selectedGroup.organizerId !== user.uid) {
-            const notificationRef = collection(firestore, `users/${selectedGroup.organizerId}/notifications`);
-            await addDoc(notificationRef, {
-                userId: selectedGroup.organizerId,
-                type: 'new_soul_in_fellowship',
-                title: `New Convert assigned to ${selectedGroup.name}`,
-                message: `${soul.firstName} ${soul.lastName} was assigned to your group for discipleship.`,
-                link: `/dashboard/fellowship/${selectedGroup.id}`,
-                isRead: false,
-                createdAt: serverTimestamp(),
-            });
-        }
-    } catch (error: any) {
-        console.error("Assign group error:", error);
-        errorEmitter.emit('permission-error', new FirestorePermissionError({ path: `souls/${soul.id}`, operation: 'update' }, user));
-    } finally { setIsAssigning(null); }
+    updateDoc(globalSoulRef, updateData).catch(() => {});
+
+    if (groupId !== 'none' && selectedGroup && selectedGroup.organizerId !== user.uid) {
+        const notificationRef = collection(firestore, `users/${selectedGroup.organizerId}/notifications`);
+        addDoc(notificationRef, {
+            userId: selectedGroup.organizerId,
+            type: 'new_soul_in_fellowship',
+            title: `New Convert assigned to ${selectedGroup.name}`,
+            message: `${soul.firstName} ${soul.lastName} was assigned to your group for discipleship.`,
+            link: `/dashboard/fellowship/${selectedGroup.id}`,
+            isRead: false,
+            createdAt: serverTimestamp(),
+        }).catch(() => {});
+    }
   };
 
   const handleExportSingleSoul = useCallback(async (soul: Soul, formatType: 'csv' | 'pdf') => {
@@ -382,7 +380,6 @@ export default function SoulsWonPage() {
           isOpen={!!soulToAssign} 
           onOpenChange={(open) => !open && setSoulToAssign(null)} 
           onAssignGroup={handleAssignGroup} 
-          isAssigning={isAssigning} 
       />
       
       <Dialog open={!!soulToEdit} onOpenChange={(open) => !open && setSoulToEdit(null)}>
