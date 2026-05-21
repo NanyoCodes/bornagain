@@ -13,9 +13,7 @@ import {
   format,
   differenceInHours,
   subDays,
-  isToday,
-  isAfter,
-  startOfWeek,
+  differenceInDays,
 } from 'date-fns';
 import {
   ArrowRight,
@@ -24,25 +22,14 @@ import {
   RefreshCw,
   XCircle,
   Heart,
-  Users,
-  CalendarCheck,
-  Check,
-  Sparkles,
+  TrendingUp,
   Zap,
 } from 'lucide-react';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
 import { useCollection, useFirestore, useUser, useDoc } from '@/firebase';
 import {
   collection,
   query,
   doc,
-  serverTimestamp,
   orderBy,
   limit,
   where,
@@ -58,14 +45,10 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
-import { WelcomeBackDialog } from '@/components/dashboard/welcome-back-dialog';
 import { safeToDate, cn } from '@/lib/utils';
 import { actionItems } from '@/lib/follow-up-data';
-import { useIsMobile } from '@/hooks/use-mobile';
-import { LogSoulForm } from '@/components/souls/log-soul-form';
 import { welcomeScriptures } from '@/lib/verses';
 import { ProgressOverview } from '@/components/dashboard/progress-overview';
-import { useToast } from '@/hooks/use-toast';
 import { AppShell } from '@/components/layout/app-shell';
 
 const MonthlyStatsChart = dynamic(() => import('@/components/dashboard/monthly-stats-chart').then(m => m.MonthlyStatsChart), {
@@ -83,6 +66,62 @@ function RecentSoulsList() {
   if (loading) return <div className="space-y-4">{[...Array(3)].map((_, i) => (<div key={i} className="flex items-center gap-4"><Skeleton className="h-10 w-10 rounded-full" /><div className="space-y-1 flex-1"><Skeleton className="h-4 w-2/4" /><Skeleton className="h-3 w-1/4" /></div></div>))}</div>;
   if (!souls || souls.length === 0) return <div className="text-center py-10 border-2 border-dashed rounded-lg bg-slate-50 dark:bg-slate-900/30"><div className="mx-auto h-12 w-12 text-muted-foreground"><UserPlus strokeWidth={1.5} /></div><h3 className="mt-4 text-lg font-semibold">Log Your First Soul</h3><p className="mt-1 text-sm text-muted-foreground">Start tracking the lives you impact.</p><Button asChild size="sm" className="mt-4"><Link href="/souls-won">Get Started <ArrowRight className="ml-2 h-4 w-4" /></Link></Button></div>;
   return (<div className="space-y-1">{souls.map((soul) => { const wonAt = safeToDate(soul.wonAt); return (<Link href="/souls-won" key={soul.id} className="flex items-center gap-4 p-2 -mx-2 rounded-lg hover:bg-muted/50 transition-colors"><Avatar className="h-10 w-10 border"><AvatarFallback>{soul.firstName?.charAt(0) || 'S'}</AvatarFallback></Avatar><div className="flex-1"><p className="font-semibold leading-none">{soul.firstName} {soul.lastName}</p><p className="text-sm text-muted-foreground">Won on {wonAt ? format(wonAt, 'PPP') : 'N/A'}</p></div><ArrowRight className="h-4 w-4 text-muted-foreground" /></Link>); })}</div>);
+}
+
+function PrayerRemindersCard({ souls }: { souls: Soul[] }) {
+  const reminders = useMemo(() => {
+    if (!souls) return [];
+    const now = new Date();
+
+    return souls
+      .filter(soul => soul.status !== 'Established')
+      .map(soul => {
+        const lastFollowUp = (soul.followUpLog && soul.followUpLog.length > 0)
+          ? [...soul.followUpLog].sort((a, b) => (safeToDate(b.date)?.getTime() ?? 0) - (safeToDate(a.date)?.getTime() ?? 0))[0]
+          : null;
+        
+        const lastContactDate = lastFollowUp ? safeToDate(lastFollowUp.date) : safeToDate(soul.wonAt);
+        const daysSinceContact = lastContactDate ? differenceInDays(now, lastContactDate) : 0;
+        
+        return { ...soul, daysSinceContact };
+      })
+      .filter(soul => soul.daysSinceContact > 1)
+      .sort((a, b) => b.daysSinceContact - a.daysSinceContact)
+      .slice(0, 3);
+  }, [souls]);
+
+  if (!souls || souls.length === 0) return null;
+
+  return (
+    <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x">
+      <CardHeader>
+        <CardTitle className="text-lg flex items-center gap-2">
+          <Heart className="h-5 w-5 text-primary" />
+          Prayer Reminders
+        </CardTitle>
+        <CardDescription>
+          Reach out to these brothers and sisters today.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-2">
+        {reminders.length > 0 ? (
+          reminders.map(soul => (
+            <div key={soul.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/40 transition-colors hover:bg-muted/60 group">
+              <div className="min-w-0 flex-1">
+                <p className="font-bold text-sm truncate">{[soul.firstName, soul.lastName].filter(Boolean).join(' ')}</p>
+                <p className="text-xs text-muted-foreground">No contact for {soul.daysSinceContact} days</p>
+              </div>
+              <Button asChild variant="ghost" size="sm" className="opacity-0 group-hover:opacity-100 transition-opacity">
+                <Link href="/souls-won">Follow-up</Link>
+              </Button>
+            </div>
+          ))
+        ) : (
+          <p className="text-sm text-center text-muted-foreground py-4 italic">Everyone has been contacted recently. Keep up the good work!</p>
+        )}
+      </CardContent>
+    </Card>
+  );
 }
 
 function CityImpactCard({ location, userSouls }: { location: { city?: string; country?: string }; userSouls: Soul[]; }) {
@@ -121,8 +160,6 @@ function ActionAnalyticsCard({ souls }: { souls: Soul[] }) {
 export default function ProgressPage() {
   const { user } = useUser();
   const firestore = useFirestore();
-  const { toast } = useToast();
-  const [isLogSoulOpen, setIsLogSoulOpen] = useState(false);
   const [welcomeMessage, setWelcomeMessage] = useState(welcomeScriptures[0]);
 
   const userDocRef = useMemo(() => user?.uid ? doc(firestore, 'users', user.uid) : null, [user?.uid, firestore]);
@@ -149,19 +186,36 @@ export default function ProgressPage() {
     <AppShell>
       <div className="space-y-8">
         <header className="text-center space-y-4">
-            <h1 className="text-3xl font-bold font-headline italic">{welcomeMessage.text.replace('{name}', userProfile?.firstName || 'Soldier')}</h1>
-            <p className="text-primary font-bold uppercase text-sm tracking-widest">{welcomeMessage.verse}</p>
+            <h1 className="text-2xl sm:text-3xl font-bold italic">{welcomeMessage.text.replace('{name}', userProfile?.firstName || 'Soldier')}</h1>
+            <p className="text-primary font-bold uppercase text-xs sm:text-sm tracking-widest">{welcomeMessage.verse}</p>
         </header>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2 space-y-0">
+            <div className="lg:col-span-2 space-y-8">
                 <div className="-mx-4 sm:mx-0"><DailyDisciplineCard /></div>
                 {userProfile && <div className="-mx-4 sm:mx-0"><ProgressOverview souls={soulsWon || []} userProfile={userProfile} testimonies={userTestimonies || []} /></div>}
-                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x"><CardHeader><CardTitle className="text-lg">Monthly Harvest</CardTitle></CardHeader><CardContent><MonthlyStatsChart data={progressData} monthlySoulsGoal={userProfile?.monthlySoulsGoal || 10} /></CardContent></Card>
+                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-sm">
+                  <CardHeader>
+                    <CardTitle className="text-lg">Monthly Harvest</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <MonthlyStatsChart data={progressData} monthlySoulsGoal={userProfile?.monthlySoulsGoal || 10} />
+                  </CardContent>
+                </Card>
                 <div className="-mx-4 sm:mx-0"><ActionAnalyticsCard souls={soulsWon || []} /></div>
             </div>
-            <div className="space-y-0">
-                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x"><CardHeader><CardTitle className="text-lg">Recent Souls</CardTitle></CardHeader><CardContent><RecentSoulsList /></CardContent></Card>
+            <div className="space-y-8">
+                <div className="-mx-4 sm:mx-0">
+                  <PrayerRemindersCard souls={soulsWon || []} />
+                </div>
+                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-sm">
+                  <CardHeader>
+                    <CardTitle className="text-lg">Recent Souls</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <RecentSoulsList />
+                  </CardContent>
+                </Card>
                 {userProfile?.location && <div className="-mx-4 sm:mx-0"><CityImpactCard location={userProfile.location} userSouls={soulsWon || []} /></div>}
             </div>
         </div>
