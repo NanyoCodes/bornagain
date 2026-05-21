@@ -16,7 +16,7 @@ service firebase.storage {
       allow write: if isOwner(userId);
     }
     
-    match /soul-photos/{userId}/{allPaths=**} {
+    match /souls-won/{userId}/{allPaths=**} {
       // Allow any authenticated user to read soul photos (needed for collaborative follow-up within groups)
       allow read: if request.auth != null;
       // Allow only the owner (the user who logged the soul) to manage these photos

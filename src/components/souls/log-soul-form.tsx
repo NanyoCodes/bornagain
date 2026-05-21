@@ -1,4 +1,3 @@
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -23,14 +22,14 @@ import type { Campaign, Soul, UserProfile, Fellowship } from "@/lib/types";
 import { Textarea } from "@/components/ui/textarea";
 import { format } from "date-fns";
 import { useFirestore, useUser, useDoc } from "@/firebase";
-import { collection, serverTimestamp, doc, runTransaction, addDoc, increment } from "firebase/firestore";
+import { collection, serverTimestamp, doc, runTransaction, addDoc } from "firebase/firestore";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { LocationWonInput } from "./location-won-input";
 import { haversineDistance } from "@/lib/utils";
 import { ImageUpload } from "../common/image-upload";
+import { Label } from "@/components/ui/label";
 
 const formSchema = z.object({
   firstName: z.string().min(2, "First name must be at least 2 characters."),
@@ -199,26 +198,7 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign, fellowships, campai
                 const campaignRef = doc(firestore, 'campaigns', campaignId);
                 transaction.update(campaignRef, { soulsLogged: currentSoulsLogged + 1 });
             }
-            
-            // Note: We no longer update Fellowship memberCount here as it is reserved for believers who joined the group.
         });
-
-        if (values.fellowshipId && values.fellowshipId !== 'none' && values.fellowshipId !== '') {
-            const selectedFellowship = fellowships?.find(f => f.id === values.fellowshipId);
-            if (selectedFellowship && selectedFellowship.organizerId !== user.uid) {
-                const notificationRef = collection(firestore, `users/${selectedFellowship.organizerId}/notifications`);
-                const contactInfo = values.email || values.phone;
-                addDoc(notificationRef, {
-                    userId: selectedFellowship.organizerId,
-                    type: 'new_soul_in_fellowship',
-                    title: `New Convert assigned to ${selectedFellowship.name}`,
-                    message: `${values.firstName} ${values.lastName} was assigned to your fellowship group for follow-up.`,
-                    link: `/dashboard/fellowship/${selectedFellowship.id}`,
-                    isRead: false,
-                    createdAt: serverTimestamp(),
-                }).catch(err => console.warn("Notification send failed", err));
-            }
-        }
 
         toast({
             title: "Soul Logged",
@@ -259,15 +239,12 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign, fellowships, campai
                         <ImageUpload
                             initialImageUrl={field.value}
                             onUploadComplete={(url) => field.onChange(url)}
-                            storagePath="soul-photos"
+                            storagePath="souls-won"
                             cropAspect={1}
                             circularCrop={true}
                         />
                     </FormControl>
                     <FormMessage />
-                    <FormDescription className="text-center text-[10px]">
-                        Add a photo of at least 250kb for secure identification.
-                    </FormDescription>
                 </FormItem>
             )}
         />
@@ -446,7 +423,7 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign, fellowships, campai
                         )}
                         />
                         <div className="space-y-2">
-                            <FormLabel>Location Won</FormLabel>
+                            <Label className="text-sm font-medium">Location Won</Label>
                             <LocationWonInput form={form} />
                         </div>
                         <FormField

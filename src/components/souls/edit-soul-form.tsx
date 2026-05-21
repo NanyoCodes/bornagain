@@ -1,4 +1,3 @@
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -12,7 +11,6 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-  FormDescription,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -21,14 +19,16 @@ import { useState, useMemo, useEffect, useRef } from "react";
 import { Loader2 } from "lucide-react";
 import type { Soul, Campaign, Fellowship } from "@/lib/types";
 import { format } from "date-fns";
-import { useFirestore, useUser } from "@/firebase";
-import { collection, doc, serverTimestamp, runTransaction, increment, addDoc } from "firebase/firestore";
+import { useFirestore, useUser, useAuth } from "@/firebase";
+import { collection, doc, serverTimestamp, runTransaction } from "firebase/firestore";
+import { updateProfile } from "firebase/auth";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { haversineDistance, safeToDate } from "@/lib/utils";
 import { LocationWonInput } from "./location-won-input";
 import { ImageUpload } from "../common/image-upload";
+import { Label } from "@/components/ui/label";
 
 const formSchema = z.object({
   firstName: z.string().min(2, "First name must be at least 2 characters."),
@@ -188,7 +188,6 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
 
     try {
         await runTransaction(firestore, async (transaction) => {
-            // Note: We no longer update Fellowship memberCount here as it is reserved for believers who joined the group.
             transaction.update(soulRef, soulUpdateData);
             transaction.update(globalSoulRef, soulUpdateData);
         });
@@ -234,15 +233,12 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
                         <ImageUpload
                             initialImageUrl={field.value}
                             onUploadComplete={(url) => field.onChange(url)}
-                            storagePath="soul-photos"
+                            storagePath="souls-won"
                             cropAspect={1}
                             circularCrop={true}
                         />
                     </FormControl>
                     <FormMessage />
-                    <FormDescription className="text-center text-[10px]">
-                        At least 250kb photo recommended for identity verification.
-                    </FormDescription>
                 </FormItem>
             )}
         />
@@ -421,7 +417,7 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
                             )}
                             />
                         <div className="space-y-2">
-                            <FormLabel>Location Won</FormLabel>
+                            <Label className="text-sm font-medium">Location Won</Label>
                             <LocationWonInput form={form} />
                         </div>
                     </div>
