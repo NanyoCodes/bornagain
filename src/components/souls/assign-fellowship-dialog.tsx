@@ -86,7 +86,7 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
             return a.distance - b.distance;
         }
         if (a.distance !== null) return -1;
-        if (b.distance !== null) 1;
+        if (b.distance !== null) return 1;
         return a.name.localeCompare(b.name);
     });
   }, [fellowships, soul, country, state, typeFilter]);
@@ -97,23 +97,21 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
         setState('');
         setTypeFilter('all');
     }
-  }, [isOpen, soul?.id]); // Reset only when a different soul is selected
+  }, [isOpen, soul?.id]);
+
+  const hasAssignedFellowship = React.useMemo(() => {
+    if (!soul || !soul.fellowshipId) return false;
+    return fellowships.some(f => f.id === soul.fellowshipId && (f.groupType || 'Fellowship') === 'Fellowship');
+  }, [soul, fellowships]);
+
+  const hasAssignedAssociation = React.useMemo(() => {
+    if (!soul || !soul.associationId) return false;
+    return fellowships.some(f => f.id === soul.associationId && f.groupType === 'Association');
+  }, [soul, fellowships]);
 
   if (!soul) {
     return null;
   }
-
-  // Integrity Check: Only consider a soul assigned if the target group exists in the active fellowships list.
-  // If the group was deleted, we treat it as unassigned to allow for new placement.
-  const hasAssignedFellowship = React.useMemo(() => {
-    if (!soul.fellowshipId) return false;
-    return fellowships.some(f => f.id === soul.fellowshipId && (f.groupType || 'Fellowship') === 'Fellowship');
-  }, [soul.fellowshipId, fellowships]);
-
-  const hasAssignedAssociation = React.useMemo(() => {
-    if (!soul.associationId) return false;
-    return fellowships.some(f => f.id === soul.associationId && f.groupType === 'Association');
-  }, [soul.associationId, fellowships]);
 
   const content = (
     <div className="flex flex-col h-full gap-4">
