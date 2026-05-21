@@ -99,15 +99,17 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
     }
   }, [isOpen, soul?.id]);
 
+  // Integrity Check: Only consider a soul assigned if the target group exists in the active fellowships list.
+  // If the group was deleted, we treat it as unassigned to allow for new placement.
   const hasAssignedFellowship = React.useMemo(() => {
-    if (!soul || !soul.fellowshipId) return false;
+    if (!soul?.fellowshipId) return false;
     return fellowships.some(f => f.id === soul.fellowshipId && (f.groupType || 'Fellowship') === 'Fellowship');
-  }, [soul, fellowships]);
+  }, [soul?.fellowshipId, fellowships]);
 
   const hasAssignedAssociation = React.useMemo(() => {
-    if (!soul || !soul.associationId) return false;
+    if (!soul?.associationId) return false;
     return fellowships.some(f => f.id === soul.associationId && f.groupType === 'Association');
-  }, [soul, fellowships]);
+  }, [soul?.associationId, fellowships]);
 
   if (!soul) {
     return null;
@@ -240,13 +242,8 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
                 <SheetDescription className="text-xs">Manage community placement for this convert.</SheetDescription>
             </SheetHeader>
           </div>
-          <div className="flex-grow overflow-hidden px-6 pb-4">
+          <div className="flex-grow overflow-hidden px-6 pb-6">
             {content}
-          </div>
-          <div className="p-4 border-t shrink-0 flex justify-end">
-            <Button variant="ghost" onClick={() => onOpenChange(false)} className="text-muted-foreground text-xs uppercase font-bold tracking-widest">
-              Close
-            </Button>
           </div>
         </SheetContent>
       </Sheet>
