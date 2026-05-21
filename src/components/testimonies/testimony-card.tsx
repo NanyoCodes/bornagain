@@ -17,7 +17,7 @@ import { Badge } from "@/components/ui/badge";
 import { Testimony, TestimonyComment } from "@/lib/types";
 import { format } from "date-fns";
 import { Share2, MoreVertical, Edit, Trash2, Loader2, Globe, Sparkles, PartyPopper, HandHeart, MessageCircle, X } from "lucide-react";
-import { useUser, useFirestore, useCollection } from "@/firebase";
+import { useUser, useAuth, useFirestore, useCollection } from "@/firebase";
 import { useState, useMemo } from "react";
 import {
   DropdownMenu,
@@ -200,10 +200,10 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
               </Link>
               <div className="text-muted-foreground text-[10px] sm:text-xs mt-0.5 flex flex-col gap-1">
                   <div className="truncate">{displayDate}</div>
+                  <div className="flex items-center gap-1 mt-0.5 opacity-80"><Globe className="h-3 w-3 text-primary shrink-0" /> {locationString}</div>
                   <div className="mt-1">
                     <Badge variant="outline" className="w-fit text-[8px] sm:text-[9px] uppercase tracking-widest px-1.5 py-0 h-4 sm:h-5">{testimony.category}</Badge>
                   </div>
-                  <div className="flex items-center gap-1 mt-0.5 opacity-80"><Globe className="h-3 w-3 text-primary shrink-0" /> {locationString}</div>
               </div>
             </div>
           </div>
