@@ -178,7 +178,7 @@ const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, 
                                     <p className="text-xs text-muted-foreground italic py-2">No follow-up interactions logged yet.</p>
                                 )}
                                 <div className="grid grid-cols-2 gap-2 pt-1">
-                                    <Button size="sm" className="h-8 text-xs font-bold" onClick={() => onFollowUp(soul)}>Log New</Button>
+                                    <Button size="sm" className="h-8 text-xs font-bold" onClick={() => onFollowUp(soul)}>Follow-up</Button>
                                     <Button size="sm" variant="outline" className="h-8 text-xs font-bold" onClick={() => onViewHistory(soul)}>History</Button>
                                 </div>
                             </div>
