@@ -524,7 +524,7 @@ export default function DashboardPage() {
     <div className="space-y-8">
       <Card className="bg-transparent border-none shadow-none text-center py-4">
         <CardContent className="p-6">
-          <h1 className="text-2xl sm:text-4xl font-medium font-headline text-foreground drop-shadow-sm italic leading-tight">
+          <h1 className="text-2xl sm:text-3xl font-medium font-headline text-foreground drop-shadow-sm italic leading-tight">
             {welcomeMessage?.text.replace('{name}', displayName) ||
               `Welcome back, ${displayName}!`}
           </h1>
@@ -536,7 +536,7 @@ export default function DashboardPage() {
               <Button 
                 variant="outline" 
                 size="sm" 
-                className={cn("rounded-full px-4 h-9 bg-muted/30 border-muted-foreground/20 hover:bg-muted/50 transition-all", reactions.amen && "bg-primary text-primary-foreground border-primary hover:bg-primary/90")}
+                className={cn("rounded-full px-4 h-9 bg-background dark:bg-muted/30 border-muted-foreground/30 hover:bg-muted transition-all shadow-sm", reactions.amen && "bg-primary text-primary-foreground border-primary hover:bg-primary/90 shadow-md")}
                 onClick={() => handleReaction('amen')}
               >
                 <Check className={cn("mr-2 h-4 w-4", reactions.amen ? "opacity-100" : "opacity-50")} />
@@ -545,7 +545,7 @@ export default function DashboardPage() {
               <Button 
                 variant="outline" 
                 size="sm" 
-                className={cn("rounded-full px-4 h-9 bg-muted/30 border-muted-foreground/20 hover:bg-muted/50 transition-all", reactions.inspired && "bg-primary text-primary-foreground border-primary hover:bg-primary/90")}
+                className={cn("rounded-full px-4 h-9 bg-background dark:bg-muted/30 border-muted-foreground/30 hover:bg-muted transition-all shadow-sm", reactions.inspired && "bg-primary text-primary-foreground border-primary hover:bg-primary/90 shadow-md")}
                 onClick={() => handleReaction('inspired')}
               >
                 <Sparkles className={cn("mr-2 h-4 w-4", reactions.inspired ? "opacity-100" : "opacity-50")} />
@@ -554,7 +554,7 @@ export default function DashboardPage() {
               <Button 
                 variant="outline" 
                 size="sm" 
-                className={cn("rounded-full px-4 h-9 bg-muted/30 border-muted-foreground/20 hover:bg-muted/50 transition-all", reactions.received && "bg-primary text-primary-foreground border-primary hover:bg-primary/90")}
+                className={cn("rounded-full px-4 h-9 bg-background dark:bg-muted/30 border-muted-foreground/30 hover:bg-muted transition-all shadow-sm", reactions.received && "bg-primary text-primary-foreground border-primary hover:bg-primary/90 shadow-md")}
                 onClick={() => handleReaction('received')}
               >
                 <Zap className={cn("mr-2 h-4 w-4", reactions.received ? "opacity-100" : "opacity-50")} />
@@ -625,9 +625,9 @@ export default function DashboardPage() {
                 </CardDescription>
               </div>
               <div className="flex items-center gap-2">
-                <Button size="sm" onClick={() => setIsLogSoulOpen(true)}>
-                    <UserPlus className="mr-2 h-4 w-4" />
-                    Log Soul
+                <Button size="icon" onClick={() => setIsLogSoulOpen(true)}>
+                    <UserPlus className="h-4 w-4" />
+                    <span className="sr-only">Log Soul</span>
                 </Button>
               </div>
             </CardHeader>
