@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { format } from "date-fns";
-import { MoreHorizontal, Church, MapPin, Phone, ChevronDown, Download, HeartHandshake, Edit, Trash2 } from "lucide-react";
+import { MoreHorizontal, Church, MapPin, Phone, ChevronDown, Download, HeartHandshake, Edit, Trash2, Users, History } from "lucide-react";
 import type { Soul, FollowUpStatus } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import {
@@ -257,7 +257,7 @@ const SoulTableRow = React.memo(({ soul, onFollowUp, onViewHistory, onExportSing
                         </DropdownMenuItem>
                         <DropdownMenuItem onSelect={() => onFollowUp(soul)}>Log Follow-up</DropdownMenuItem>
                         <DropdownMenuItem onSelect={() => onViewHistory(soul)}>View History</DropdownMenuItem>
-                        <DropdownMenuItem onSelect={() => onOpenAssignDialog(soul)}><HeartHandshake className="mr-2 h-4 w-4" />Assign Group</DropdownMenuItem>
+                        <DropdownMenuItem onSelect={() => onOpenAssignDialog(soul)}><Users className="mr-2 h-4 w-4" />Assign Group</DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem className="text-destructive focus:text-destructive" onSelect={() => onDelete(soul)}>
                             <Trash2 className="mr-2 h-4 w-4" /> Delete Record
