@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useCollection, useFirestore, useUser } from '@/firebase';
@@ -26,6 +27,10 @@ function ChatListItem({ chat, currentUserId, isUnread }: { chat: Chat, currentUs
     );
 
     if (chat.isGroupChat) {
+        const relatedLink = chat.campaignId 
+            ? `/dashboard/campaigns/${chat.campaignId}` 
+            : `/dashboard/fellowship/${chat.fellowshipId}`;
+        
         return (
             <div onClick={() => router.push(`/dashboard/chats/${chat.id}`)} className={containerClasses}>
                 <div className="flex items-center gap-4 p-4">
@@ -38,7 +43,7 @@ function ChatListItem({ chat, currentUserId, isUnread }: { chat: Chat, currentUs
                     <div className="flex-1 min-w-0">
                         <div className="flex justify-between items-start">
                             <div className={cn("font-semibold truncate", isUnread && "text-primary")}>
-                                <Link href={`/dashboard/campaigns/${chat.campaignId}`} onClick={(e) => e.stopPropagation()} className="hover:underline">
+                                <Link href={relatedLink} onClick={(e) => e.stopPropagation()} className="hover:underline">
                                     {chat.campaignTitle}
                                 </Link>
                                  (Group)
@@ -86,7 +91,7 @@ function ChatListItem({ chat, currentUserId, isUnread }: { chat: Chat, currentUs
                             <DialogTitle>Profile photo of {otherParticipantInfo.firstName} {otherParticipantInfo.lastName}</DialogTitle>
                             <DialogDescription>A larger view of the user's profile photo.</DialogDescription>
                         </DialogHeader>
-                        <Image src={otherParticipantInfo.photoURL} alt={`${otherParticipantInfo.firstName} ${otherParticipantInfo.lastName}`} width={600} height={600} className="rounded-lg object-contain"/>
+                        <Image src={otherParticipantInfo.photoURL} alt={`${otherParticipantInfo.firstName} ${otherParticipantInfo.lastName}`} width={600} height={600} className="rounded-lg object-contain" unoptimized/>
                     </DialogContent>
                     )}
                 </Dialog>
@@ -102,6 +107,10 @@ function ChatListItem({ chat, currentUserId, isUnread }: { chat: Chat, currentUs
                           <>
                             Re: <Link href={`/dashboard/campaigns/${chat.campaignId}`} onClick={(e) => e.stopPropagation()} className="hover:underline">{chat.campaignTitle}</Link>
                           </>
+                        ) : chat.campaignTitle && chat.fellowshipId ? (
+                             <>
+                                Re: <Link href={`/dashboard/fellowship/${chat.fellowshipId}`} onClick={(e) => e.stopPropagation()} className="hover:underline">{chat.campaignTitle}</Link>
+                            </>
                         ) : (
                           <span>Accountability Chat</span>
                         )}

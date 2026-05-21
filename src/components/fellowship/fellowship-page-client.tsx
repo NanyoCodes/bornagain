@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -5,7 +6,7 @@ import { useRouter, useParams } from 'next/navigation';
 import { useDoc, useFirestore, useUser, useCollection } from '@/firebase';
 import type { Fellowship, UserProfile, FellowshipMember, Soul } from '@/lib/types';
 import { doc, collection, query, orderBy, where } from 'firebase/firestore';
-import { Loader2, ArrowLeft, Users, Calendar, PlayCircle, MapPin, Heart, Phone, Mail, Church, History, PlusCircle, Award } from 'lucide-react';
+import { Loader2, ArrowLeft, Users, Calendar, PlayCircle, MapPin, Heart, Phone, Mail, Church, History, PlusCircle, Award, MessagesSquare } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -322,8 +323,18 @@ export default function FellowshipPageClient() {
                                     <p className="text-muted-foreground">{fellowship.location}</p>
                                 </div>
                             )}
+                            
+                            {(isMember || isOrganizer) && fellowship.hasGroupChat && (
+                                <Button asChild className="w-full mt-2" variant="outline">
+                                    <Link href={`/dashboard/chats/${fellowship.id}`}>
+                                        <MessagesSquare className="mr-2 h-4 w-4" />
+                                        Group Chat
+                                    </Link>
+                                </Button>
+                            )}
+
                             {(isMember || isOrganizer) && fellowship.streamUrl && (
-                                <Button asChild className="w-full mt-2">
+                                <Button asChild className="w-full">
                                     <Link href={fellowship.streamUrl} target="_blank" rel="noopener noreferrer">
                                         <PlayCircle className="mr-2 h-4 w-4" />
                                         Gather Online

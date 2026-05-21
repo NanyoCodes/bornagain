@@ -22,12 +22,12 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useCollection, useFirestore, useUser, useDoc } from "@/firebase";
-import { collection, query, orderBy, serverTimestamp, doc, runTransaction, updateDoc } from "firebase/firestore";
-import type { UserProfile, Fellowship } from "@/lib/types";
+import { collection, query, orderBy, serverTimestamp, doc, runTransaction, updateDoc, writeBatch } from "firebase/firestore";
+import type { UserProfile, Fellowship, FellowshipMember } from "@/lib/types";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { PlusCircle, Loader2, Video, Users, Group, Target } from 'lucide-react';
+import { PlusCircle, Loader2, Video, Users, Group, Target, MessagesSquare, Trash2 } from 'lucide-react';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -46,9 +46,10 @@ import {
 import { useRouter } from 'next/navigation';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { FellowshipCard } from '@/components/fellowship/fellowship-card';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useSearch } from '@/context/search-context';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { Separator } from '@/components/ui/separator';
 
 const formSchema = z.object({
   name: z.string().min(3, "Name must be at least 3 characters.").max(100),
@@ -207,7 +208,19 @@ function FellowshipForm({ userProfile, onFormSubmit, isSubmitting }: { userProfi
     );
 }
 
-function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting }: { fellowship: Fellowship, onFormSubmit: (values: any) => void, isSubmitting: boolean }) {
+function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting, onDelete }: { fellowship: Fellowship, onFormSubmit: (values: any) => void, isSubmitting: boolean, onDelete: () => void }) {
+  const firestore = useFirestore();
+  const { user } = useUser();
+  const router = useRouter();
+  const { toast } = useToast();
+  const [isChatLoading, setIsChatLoading] = useState(false);
+
+  const membersQuery = useMemo(() => {
+    if (!firestore || !fellowship.id) return null;
+    return query(collection(firestore, 'fellowships', fellowship.id, 'members'), orderBy('joinedAt', 'asc'));
+  }, [firestore, fellowship.id]);
+  const { data: members, loading: membersLoading } = useCollection<FellowshipMember>(membersQuery);
+
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -221,83 +234,181 @@ function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting }: { fell
     },
   });
 
+  const handleStartGroupChat = async () => {
+    if (!user || !firestore || !members) return;
+    setIsChatLoading(true);
+
+    if (members.length <= 1) {
+        toast({
+            title: "Not Enough Members",
+            description: "A group chat requires at least one other member to start.",
+        });
+        setIsChatLoading(false);
+        return;
+    }
+
+    const participantIds = members.map(m => m.userId);
+    const participantInfo: { [key: string]: any } = {};
+    members.forEach(m => {
+        participantInfo[m.userId] = {
+            firstName: m.firstName,
+            lastName: m.lastName,
+            photoURL: m.photoURL || '',
+        };
+    });
+
+    const batch = writeBatch(firestore);
+    const chatDocRef = doc(firestore, 'chats', fellowship.id);
+    const chatData = {
+        participantIds,
+        participantInfo,
+        fellowshipId: fellowship.id,
+        campaignTitle: fellowship.name, // Reusing field for display consistency
+        lastUpdatedAt: serverTimestamp(),
+        isGroupChat: true,
+        hasMessages: false,
+    };
+    batch.set(chatDocRef, chatData, { merge: true });
+
+    const fellowshipDocRef = doc(firestore, 'fellowships', fellowship.id);
+    batch.update(fellowshipDocRef, { hasGroupChat: true });
+
+    batch.commit()
+        .then(() => {
+            toast({ title: "Group Chat Started!" });
+            router.push(`/dashboard/chats/${fellowship.id}`);
+        })
+        .catch((e) => {
+             const permissionError = new FirestorePermissionError({
+                path: `BATCH_WRITE:START_FELLOWSHIP_CHAT:${fellowship.id}`,
+                operation: 'write',
+            }, user);
+            errorEmitter.emit('permission-error', permissionError);
+        })
+        .finally(() => setIsChatLoading(false));
+  };
+
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onFormSubmit)} className="space-y-4">
-        <FormField
-            control={form.control}
-            name="groupType"
-            render={({ field }) => (
-                <FormItem className="space-y-3">
-                <FormLabel>Type</FormLabel>
-                <FormControl>
-                    <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="flex flex-row space-x-4">
-                        <FormItem className="flex items-center space-x-2 space-y-0">
-                            <FormControl><RadioGroupItem value="Fellowship" /></FormControl>
-                            <FormLabel className="font-normal">Fellowship</FormLabel>
-                        </FormItem>
-                        <FormItem className="flex items-center space-x-2 space-y-0">
-                            <FormControl><RadioGroupItem value="Association" /></FormControl>
-                            <FormLabel className="font-normal">Association</FormLabel>
-                        </FormItem>
-                    </RadioGroup>
-                </FormControl>
+    <div className="space-y-8">
+        <Form {...form}>
+        <form onSubmit={form.handleSubmit(onFormSubmit)} className="space-y-4">
+            <FormField
+                control={form.control}
+                name="groupType"
+                render={({ field }) => (
+                    <FormItem className="space-y-3">
+                    <FormLabel>Type</FormLabel>
+                    <FormControl>
+                        <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="flex flex-row space-x-4">
+                            <FormItem className="flex items-center space-x-2 space-y-0">
+                                <FormControl><RadioGroupItem value="Fellowship" /></FormControl>
+                                <FormLabel className="font-normal">Fellowship</FormLabel>
+                            </FormItem>
+                            <FormItem className="flex items-center space-x-2 space-y-0">
+                                <FormControl><RadioGroupItem value="Association" /></FormControl>
+                                <FormLabel className="font-normal">Association</FormLabel>
+                            </FormItem>
+                        </RadioGroup>
+                    </FormControl>
+                    </FormItem>
+                )}
+            />
+            <FormField control={form.control} name="name" render={({ field }) => (
+                <FormItem>
+                    <FormLabel>Name</FormLabel>
+                    <FormControl><Input {...field} className="text-base" /></FormControl>
+                    <FormMessage />
                 </FormItem>
-            )}
-        />
-        <FormField control={form.control} name="name" render={({ field }) => (
-            <FormItem>
-                <FormLabel>Name</FormLabel>
-                <FormControl><Input {...field} className="text-base" /></FormControl>
-                <FormMessage />
-            </FormItem>
-        )} />
-        <FormField control={form.control} name="description" render={({ field }) => (
-            <FormItem>
-                <FormLabel>Description</FormLabel>
-                <FormControl><Textarea {...field} className="text-base min-h-[100px]" /></FormControl>
-                <FormMessage />
-            </FormItem>
-        )} />
-        <FormField control={form.control} name="schedule" render={({ field }) => (
-            <FormItem>
-                <FormLabel>Schedule</FormLabel>
-                <FormControl><Input {...field} className="text-base" /></FormControl>
-                <FormMessage />
-            </FormItem>
-        )} />
-        <FormField
-            control={form.control}
-            name="locationType"
-            render={({ field }) => (
-                <FormItem className="space-y-3">
-                <FormLabel>Location Type</FormLabel>
-                <FormControl>
-                    <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="flex flex-wrap gap-4">
-                        <FormItem className="flex items-center space-x-2 space-y-0">
-                            <FormControl><RadioGroupItem value="Physical" /></FormControl>
-                            <FormLabel className="font-normal">Physical</FormLabel>
-                        </FormItem>
-                        <FormItem className="flex items-center space-x-2 space-y-0">
-                            <FormControl><RadioGroupItem value="Virtual" /></FormControl>
-                            <FormLabel className="font-normal">Virtual</FormLabel>
-                        </FormItem>
-                        <FormItem className="flex items-center space-x-2 space-y-0">
-                            <FormControl><RadioGroupItem value="Physical and Virtual" /></FormControl>
-                            <FormLabel className="font-normal">Both</FormLabel>
-                        </FormItem>
-                    </RadioGroup>
-                </FormControl>
-                <FormMessage />
+            )} />
+            <FormField control={form.control} name="description" render={({ field }) => (
+                <FormItem>
+                    <FormLabel>Description</FormLabel>
+                    <FormControl><Textarea {...field} className="text-base min-h-[100px]" /></FormControl>
+                    <FormMessage />
                 </FormItem>
-            )}
-        />
-        <Button type="submit" disabled={isSubmitting} className="w-full">
-            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Save Changes
-        </Button>
-      </form>
-    </Form>
+            )} />
+            <FormField control={form.control} name="schedule" render={({ field }) => (
+                <FormItem>
+                    <FormLabel>Schedule</FormLabel>
+                    <FormControl><Input {...field} className="text-base" /></FormControl>
+                    <FormMessage />
+                </FormItem>
+            )} />
+            <FormField
+                control={form.control}
+                name="locationType"
+                render={({ field }) => (
+                    <FormItem className="space-y-3">
+                    <FormLabel>Location Type</FormLabel>
+                    <FormControl>
+                        <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="flex flex-wrap gap-4">
+                            <FormItem className="flex items-center space-x-2 space-y-0">
+                                <FormControl><RadioGroupItem value="Physical" /></FormControl>
+                                <FormLabel className="font-normal">Physical</FormLabel>
+                            </FormItem>
+                            <FormItem className="flex items-center space-x-2 space-y-0">
+                                <FormControl><RadioGroupItem value="Virtual" /></FormControl>
+                                <FormLabel className="font-normal">Virtual</FormLabel>
+                            </FormItem>
+                            <FormItem className="flex items-center space-x-2 space-y-0">
+                                <FormControl><RadioGroupItem value="Physical and Virtual" /></FormControl>
+                                <FormLabel className="font-normal">Both</FormLabel>
+                            </FormItem>
+                        </RadioGroup>
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+            />
+            <Button type="submit" disabled={isSubmitting} className="w-full">
+                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Save Changes
+            </Button>
+        </form>
+        </Form>
+
+        <Separator />
+
+        <Card>
+            <CardHeader>
+                <CardTitle>Group Communication</CardTitle>
+                <CardDescription>
+                  {fellowship.hasGroupChat 
+                    ? "View the group chat for all members." 
+                    : "Start a group chat with all active members."
+                  }
+                </CardDescription>
+            </CardHeader>
+            <CardContent>
+                {fellowship.hasGroupChat ? (
+                  <Button onClick={() => router.push(`/dashboard/chats/${fellowship.id}`)}>
+                      <MessagesSquare className="mr-2 h-4 w-4" />
+                      View Group Chat
+                  </Button>
+                ) : (
+                  <>
+                    <Button onClick={handleStartGroupChat} disabled={isChatLoading || membersLoading || !members || members.length <= 1}>
+                        {isChatLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <MessagesSquare className="mr-2 h-4 w-4" />}
+                        Start Group Chat
+                    </Button>
+                    {members && members.length <= 1 && <p className="text-xs text-muted-foreground mt-2">You need at least one other member to start a group chat.</p>}
+                  </>
+                )}
+            </CardContent>
+        </Card>
+
+        <Separator />
+
+        <Card className="border-destructive">
+            <CardHeader>
+                <CardTitle className="text-destructive flex items-center gap-2"><Trash2 className="h-4 w-4" /> Delete Group</CardTitle>
+                <CardDescription>Permanently remove this {fellowship.groupType.toLowerCase()} from Testify.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <Button variant="destructive" onClick={onDelete}>Delete Permanently</Button>
+            </CardContent>
+        </Card>
+    </div>
   );
 }
 
@@ -367,6 +478,7 @@ export default function FellowshipPage() {
             memberIds: [user.uid],
             memberCount: 1,
             status: 'active' as const,
+            hasGroupChat: false,
         };
 
         try {
@@ -557,7 +669,14 @@ export default function FellowshipPage() {
                 <Dialog open={!!fellowshipToManage} onOpenChange={(open) => !open && closeAllDialogs()}>
                     <DialogContent className="sm:max-w-lg">
                         <DialogHeader><DialogTitle>Manage Group</DialogTitle></DialogHeader>
-                        <ManageFellowshipForm fellowship={fellowshipToManage} onFormSubmit={handleUpdateFellowship} isSubmitting={isSubmitting} />
+                        <div className="max-h-[75vh] overflow-y-auto pr-2">
+                             <ManageFellowshipForm 
+                                fellowship={fellowshipToManage} 
+                                onFormSubmit={handleUpdateFellowship} 
+                                isSubmitting={isSubmitting} 
+                                onDelete={() => { setFellowshipToDelete(fellowshipToManage); setFellowshipToManage(null); }}
+                            />
+                        </div>
                     </DialogContent>
                 </Dialog>
             )}

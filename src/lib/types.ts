@@ -290,6 +290,7 @@ export type Chat = {
   participantInfo: ChatParticipantInfo;
   campaignId?: string;
   campaignTitle?: string;
+  fellowshipId?: string;
   lastUpdatedAt: Timestamp;
   hasMessages?: boolean;
   isGroupChat?: boolean;
@@ -360,6 +361,7 @@ export type Fellowship = {
   memberIds: string[];
   status?: 'active' | 'deleted';
   streamUrl?: string;
+  hasGroupChat?: boolean;
 };
 
 export type FellowshipMember = {

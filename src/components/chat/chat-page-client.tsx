@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useRef, useMemo } from 'react';
@@ -15,7 +16,7 @@ import {
   where,
   getDocs,
 } from 'firebase/firestore';
-import type { Chat, ChatMessage, Campaign, UserProfile } from '@/lib/types';
+import type { Chat, ChatMessage, Campaign, UserProfile, Fellowship } from '@/lib/types';
 import { Loader2, Send, ArrowLeft, Reply, X } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn, safeToDate } from '@/lib/utils';
@@ -98,13 +99,19 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
     }, [firestore, chat?.campaignId]);
     const { data: campaign, loading: loadingCampaign } = useDoc<Campaign>(campaignDocRef);
 
+    const fellowshipDocRef = useMemo(() => {
+        if (!firestore || !chat?.fellowshipId) return null;
+        return doc(firestore, 'fellowships', chat.fellowshipId);
+    }, [firestore, chat?.fellowshipId]);
+    const { data: fellowship, loading: loadingFellowship } = useDoc<Fellowship>(fellowshipDocRef);
+
     const messagesQuery = useMemo(() => {
         if (!user?.uid || !firestore || !chatId) return null;
         return query(collection(firestore, 'chats', chatId, 'messages'), orderBy('createdAt', 'asc'));
     }, [user?.uid, firestore, chatId]);
     const { data: messages, loading: loadingMessages } = useCollection<ChatMessage>(messagesQuery);
     
-    const loading = userLoading || loadingChat || loadingMessages || loadingCampaign;
+    const loading = userLoading || loadingChat || loadingMessages || loadingCampaign || loadingFellowship;
 
     useEffect(() => {
         if (!user?.uid || !firestore || !chatId) return;
@@ -136,7 +143,7 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
 
     const isChatFrozen = useMemo(() => {
         if (!chat || !campaign) return false;
-        if (!chat.isGroupChat) return false;
+        if (!chat.isGroupChat || !chat.campaignId) return false;
 
         const endDate = safeToDate(campaign.endDate);
         if (!endDate) return false;
@@ -353,16 +360,24 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                     <ArrowLeft className="h-4 w-4" />
                     <span className="sr-only">Back</span>
                 </Button>
-                {chat.isGroupChat && campaign ? (
+                {chat.isGroupChat ? (
                     <div className="flex items-center gap-3">
                         <Avatar>
                             <AvatarFallback>{chat.participantIds.length}</AvatarFallback>
                         </Avatar>
                         <div>
                             <h2 className="font-semibold">
-                                <Link href={`/dashboard/campaigns/${chat.campaignId}`} className="hover:underline">
-                                    {chat.campaignTitle}
-                                </Link>
+                                {chat.campaignId && campaign ? (
+                                    <Link href={`/dashboard/campaigns/${chat.campaignId}`} className="hover:underline">
+                                        {chat.campaignTitle}
+                                    </Link>
+                                ) : chat.fellowshipId && fellowship ? (
+                                    <Link href={`/dashboard/fellowship/${chat.fellowshipId}`} className="hover:underline">
+                                        {chat.campaignTitle}
+                                    </Link>
+                                ) : (
+                                    <span>{chat.campaignTitle}</span>
+                                )}
                                  (Group)
                             </h2>
                             <ChatParticipantsDialog chat={chat}>
@@ -387,7 +402,7 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                                         <DialogTitle>Profile photo of {otherParticipantInfo.firstName} {otherParticipantInfo.lastName}</DialogTitle>
                                         <DialogDescription>A larger view of the user's profile photo.</DialogDescription>
                                     </DialogHeader>
-                                    <Image src={otherParticipantInfo.photoURL} alt={`${otherParticipantInfo.firstName} ${otherParticipantInfo.lastName}`} width={600} height={600} className="rounded-lg object-contain"/>
+                                    <Image src={otherParticipantInfo.photoURL} alt={`${otherParticipantInfo.firstName} ${otherParticipantInfo.lastName}`} width={600} height={600} className="rounded-lg object-contain" unoptimized/>
                                 </DialogContent>
                             )}
                         </Dialog>
@@ -398,6 +413,10 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                             {chat.campaignTitle && chat.campaignId ? (
                                 <p className="text-sm text-muted-foreground">
                                     Regarding: <Link href={`/dashboard/campaigns/${chat.campaignId}`} className="hover:underline">{chat.campaignTitle}</Link>
+                                </p>
+                            ) : chat.campaignTitle && chat.fellowshipId ? (
+                                <p className="text-sm text-muted-foreground">
+                                    Regarding: <Link href={`/dashboard/fellowship/${chat.fellowshipId}`} className="hover:underline">{chat.campaignTitle}</Link>
                                 </p>
                             ) : (
                                 <p className="text-sm text-muted-foreground">Accountability Partner</p>
