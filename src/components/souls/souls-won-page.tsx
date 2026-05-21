@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
@@ -34,7 +35,7 @@ import { collection, query, orderBy, doc, serverTimestamp, increment, runTransac
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useSearch } from "@/context/search-context";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/select"; // Using consistent import patterns
 import { format } from "date-fns";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
@@ -195,7 +196,6 @@ export default function SoulsWonPage() {
     const selectedFellowship = activeFellowships?.find(f => f.id === fellowshipId);
     
     const updateData: { [key: string]: any } = {
-        userId: user.uid,
         updatedAt: serverTimestamp(),
     };
 
@@ -209,28 +209,11 @@ export default function SoulsWonPage() {
 
     try {
         await runTransaction(firestore, async (transaction) => {
-            const oldFellowshipId = soul.fellowshipId;
-            
-            let oldFellowshipDoc = null;
-            if (oldFellowshipId && oldFellowshipId !== fellowshipId) {
-                oldFellowshipDoc = await transaction.get(doc(firestore, "fellowships", oldFellowshipId));
-            }
-            
-            let newFellowshipDoc = null;
-            if (fellowshipId !== 'none' && oldFellowshipId !== fellowshipId) {
-                newFellowshipDoc = await transaction.get(doc(firestore, "fellowships", fellowshipId));
-            }
-
-            if (oldFellowshipDoc?.exists()) {
-                transaction.update(oldFellowshipDoc.ref, { memberCount: increment(-1) });
-            }
-            
-            if (newFellowshipDoc?.exists()) {
-                transaction.update(newFellowshipDoc.ref, { memberCount: increment(1) });
-            }
-
+            // Note: We no longer update Fellowship memberCount here.
+            // Souls assigned to groups are tracked via queries, whereas 
+            // memberCount is reserved for believers who joined the group.
             transaction.update(soulRef, updateData);
-            transaction.set(globalSoulRef, updateData, { merge: true });
+            transaction.update(globalSoulRef, updateData);
         });
 
         toast({ title: "Assigned", description: "Fellowship assigned successfully." });
@@ -242,14 +225,15 @@ export default function SoulsWonPage() {
             await addDoc(notificationRef, {
                 userId: selectedFellowship.organizerId,
                 type: 'new_soul_in_fellowship',
-                title: `New Member in ${selectedFellowship.name}`,
-                message: `${soul.firstName} ${soul.lastName} was assigned to your fellowship.`,
+                title: `New Convert assigned to ${selectedFellowship.name}`,
+                message: `${soul.firstName} ${soul.lastName} was assigned to your group for discipleship.`,
                 link: `/dashboard/fellowship/${selectedFellowship.id}`,
                 isRead: false,
                 createdAt: serverTimestamp(),
             });
         }
     } catch (error: any) {
+        console.error("Assign fellowship error:", error);
         errorEmitter.emit('permission-error', new FirestorePermissionError({ path: `souls/${soul.id}`, operation: 'update' }, user));
     } finally { setIsAssigning(null); }
   };
@@ -417,7 +401,7 @@ export default function SoulsWonPage() {
           <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-2xl">
             <div className="p-6 border-b flex-shrink-0 bg-muted/10">
                 <SheetHeader className="text-left">
-                    <SheetTitle className="text-xl font-bold font-headline">Log a New Soul</SheetTitle>
+                    <SheetTitle className="font-bold font-headline text-xl">Log a New Soul</SheetTitle>
                     <SheetDescription className="text-xs">Record the details of the person you've ministered to.</SheetDescription>
                 </SheetHeader>
             </div>

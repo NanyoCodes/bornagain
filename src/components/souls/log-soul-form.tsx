@@ -12,6 +12,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -191,14 +192,6 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign, fellowships, campai
                 }
             }
 
-            if (values.fellowshipId && values.fellowshipId !== 'none' && values.fellowshipId !== '') {
-                const fellowshipRef = doc(firestore, 'fellowships', values.fellowshipId);
-                const fellowshipDoc = await transaction.get(fellowshipRef);
-                if (!fellowshipDoc.exists()) {
-                    throw new Error("Fellowship group not found.");
-                }
-            }
-
             transaction.set(newSoulRef, soulData);
             transaction.set(globalSoulRef, soulData);
 
@@ -206,11 +199,8 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign, fellowships, campai
                 const campaignRef = doc(firestore, 'campaigns', campaignId);
                 transaction.update(campaignRef, { soulsLogged: currentSoulsLogged + 1 });
             }
-
-            if (values.fellowshipId && values.fellowshipId !== 'none' && values.fellowshipId !== '') {
-                const fellowshipRef = doc(firestore, 'fellowships', values.fellowshipId);
-                transaction.update(fellowshipRef, { memberCount: increment(1) });
-            }
+            
+            // Note: We no longer update Fellowship memberCount here as it is reserved for believers who joined the group.
         });
 
         if (values.fellowshipId && values.fellowshipId !== 'none' && values.fellowshipId !== '') {
@@ -221,9 +211,9 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign, fellowships, campai
                 addDoc(notificationRef, {
                     userId: selectedFellowship.organizerId,
                     type: 'new_soul_in_fellowship',
-                    title: `New Member in ${selectedFellowship.name}`,
-                    message: `${values.firstName} ${values.lastName} was assigned to your fellowship. Please reach out to them${contactInfo ? ` at ${contactInfo}` : ''}.`,
-                    link: `/dashboard/fellowship`,
+                    title: `New Convert assigned to ${selectedFellowship.name}`,
+                    message: `${values.firstName} ${values.lastName} was assigned to your fellowship group for follow-up.`,
+                    link: `/dashboard/fellowship/${selectedFellowship.id}`,
                     isRead: false,
                     createdAt: serverTimestamp(),
                 }).catch(err => console.warn("Notification send failed", err));
@@ -232,7 +222,7 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign, fellowships, campai
 
         toast({
             title: "Soul Logged",
-            description: "A new soul has been added.",
+            description: "A new soul has been added successfully.",
         });
         onSoulLogged();
     } catch (serverError: any) {
@@ -393,11 +383,11 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign, fellowships, campai
                             name="fellowshipId"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Assign to Fellowship</FormLabel>
+                                    <FormLabel>Assign to Group</FormLabel>
                                     <Select onValueChange={field.onChange} value={field.value || "none"}>
                                         <FormControl>
                                             <SelectTrigger className="text-base h-auto">
-                                                <SelectValue placeholder={!fellowships ? "Loading fellowships..." : "Select a fellowship group"} />
+                                                <SelectValue placeholder={!fellowships ? "Loading groups..." : "Select a fellowship or association"} />
                                             </SelectTrigger>
                                         </FormControl>
                                         <SelectContent>

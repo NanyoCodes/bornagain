@@ -188,32 +188,7 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
 
     try {
         await runTransaction(firestore, async (transaction) => {
-            const oldFellowshipId = soul.fellowshipId;
-            const newFellowshipId = (values.fellowshipId === 'none' || !values.fellowshipId) ? '' : values.fellowshipId;
-            
-            let oldFellowshipDoc = null;
-            let newFellowshipDoc = null;
-
-            if (oldFellowshipId && oldFellowshipId !== 'none' && oldFellowshipId !== '' && oldFellowshipId !== newFellowshipId) {
-                const oldFellowshipRef = doc(firestore, "fellowships", oldFellowshipId);
-                oldFellowshipDoc = await transaction.get(oldFellowshipRef);
-            }
-            
-            if (newFellowshipId && newFellowshipId !== 'none' && newFellowshipId !== '' && newFellowshipId !== oldFellowshipId) {
-                const newFellowshipRef = doc(firestore, "fellowships", newFellowshipId);
-                newFellowshipDoc = await transaction.get(newFellowshipRef);
-                if (!newFellowshipDoc.exists()) {
-                    throw new Error("Target fellowship group not found.");
-                }
-            }
-
-            if (oldFellowshipDoc?.exists()) {
-                transaction.update(oldFellowshipDoc.ref, { memberCount: increment(-1) });
-            }
-            if (newFellowshipDoc?.exists()) {
-                transaction.update(newFellowshipDoc.ref, { memberCount: increment(1) });
-            }
-
+            // Note: We no longer update Fellowship memberCount here as it is reserved for believers who joined the group.
             transaction.update(soulRef, soulUpdateData);
             transaction.update(globalSoulRef, soulUpdateData);
         });
@@ -383,11 +358,11 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
                             name="fellowshipId"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Assign to Fellowship</FormLabel>
+                                    <FormLabel>Assign to Group</FormLabel>
                                     <Select onValueChange={field.onChange} value={field.value || "none"}>
                                         <FormControl>
                                             <SelectTrigger className="text-base h-auto">
-                                                <SelectValue placeholder={!fellowships ? "Loading fellowships..." : "Select a fellowship group"} />
+                                                <SelectValue placeholder={!fellowships ? "Loading groups..." : "Select a fellowship or association"} />
                                             </SelectTrigger>
                                         </FormControl>
                                         <SelectContent>
