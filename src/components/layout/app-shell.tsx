@@ -45,9 +45,9 @@ import { EditProfileModal } from "@/components/profile/edit-profile-modal";
 import { PageTransition } from "../page-transition";
 
 const navItems = [
+  { href: "/testimonies", label: "Testimonies", icon: Newspaper, color: "text-chart-3" },
   { href: "/progress", label: "Progress", icon: TrendingUp, color: "text-chart-1" },
   { href: "/souls-won", label: "Souls Won", icon: UserPlus, color: "text-chart-2" },
-  { href: "/testimonies", label: "Testimonies", icon: Newspaper, color: "text-chart-3" },
   { href: "/campaigns", label: "Campaigns", icon: Target, color: "text-chart-4" },
   { href: "/fellowships", label: "Fellowship", icon: HeartHandshake, color: "text-primary" },
 ];
@@ -73,7 +73,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount }: { unreadChatCount: num
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b bg-background px-4 md:px-6">
       <div className="flex items-center gap-2 md:gap-6">
-        <Link href="/progress" className="flex items-center gap-2 text-lg font-semibold">
+        <Link href="/testimonies" className="flex items-center gap-2 text-lg font-semibold">
           {logo && (
             <Avatar className="h-11 w-11">
               <AvatarImage src={logo.imageUrl} alt={logo.description} />

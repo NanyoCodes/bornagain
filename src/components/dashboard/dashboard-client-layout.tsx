@@ -50,9 +50,9 @@ import { EditProfileModal } from "@/components/profile/edit-profile-modal";
 import { PageTransition } from "../page-transition";
 
 const navItems = [
-  { href: "/dashboard", label: "Progress", icon: TrendingUp, color: "text-chart-1" },
-  { href: "/dashboard/souls-won", label: "Souls Won", icon: UserPlus, color: "text-chart-2" },
   { href: "/dashboard/testimonies", label: "Testimonies", icon: Newspaper, color: "text-chart-3" },
+  { href: "/progress", label: "Progress", icon: TrendingUp, color: "text-chart-1" },
+  { href: "/dashboard/souls-won", label: "Souls Won", icon: UserPlus, color: "text-chart-2" },
   { href: "/dashboard/campaigns", label: "Campaigns", icon: Target, color: "text-chart-4" },
   { href: "/dashboard/fellowship", label: "Fellowship", icon: HeartHandshake, color: "text-primary" },
 ];
@@ -128,7 +128,7 @@ function AppHeader({ unreadChatCount }: { unreadChatCount: number }) {
         </Link>
         <nav className="hidden items-center gap-5 text-sm font-medium md:flex lg:gap-6">
             {navItems.map((item) => {
-              const isActive = item.href === '/dashboard' ? pathname === item.href : pathname.startsWith(item.href);
+              const isActive = pathname.startsWith(item.href);
               return (
                 <Link
                     key={item.href}
@@ -258,7 +258,7 @@ function BottomNavBar({ unreadChatCount }: { unreadChatCount: number }) {
       <nav className="fixed bottom-0 left-0 right-0 z-40 border-t bg-background md:hidden">
         <div className="grid h-16 grid-cols-5 items-center">
           {navItems.map((item) => {
-            const isActive = item.href === '/dashboard' ? pathname === item.href : pathname.startsWith(item.href);
+            const isActive = pathname.startsWith(item.href);
             return (
               <Link
                 key={item.href}
