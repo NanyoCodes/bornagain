@@ -314,18 +314,10 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
 
   if (isMobile) {
       return (
-        <div className="space-y-0">
-            <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b shadow-sm mb-4">
-                <CardHeader className="p-4">
-                    <CardTitle className="text-lg font-bold font-headline">Follow-up Dashboard</CardTitle>
-                    <CardDescription className="text-xs">Manage and nurture your converts.</CardDescription>
-                </CardHeader>
-            </Card>
-            <div className="space-y-px">
-                {souls.map((soul) => (
-                    <SoulCard key={soul.id} soul={soul} onFollowUp={onFollowUp} onViewHistory={onViewHistory} onExportSingle={onExportSingle} onOpenAssignDialog={onOpenAssignDialog} onEdit={onEdit} onDelete={onDelete} />
-                ))}
-            </div>
+        <div className="space-y-px">
+            {souls.map((soul) => (
+                <SoulCard key={soul.id} soul={soul} onFollowUp={onFollowUp} onViewHistory={onViewHistory} onExportSingle={onExportSingle} onOpenAssignDialog={onOpenAssignDialog} onEdit={onEdit} onDelete={onDelete} />
+            ))}
         </div>
       )
   }
