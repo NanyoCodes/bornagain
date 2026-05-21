@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import React, { useEffect, useMemo, useState } from "react";
 import {
+  ArrowLeft,
   Bell,
   BookOpen,
   LogOut,
@@ -61,6 +62,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount }: { unreadChatCount: num
   const router = useRouter();
   const logo = PlaceHolderImages.find((img) => img.id === "logo");
   const { searchTerm, setSearchTerm, searchPlaceholder, isSearchVisible } = useSearch();
+  const [showMobileSearch, setShowMobileSearch] = useState(false);
 
   const handleLogout = async () => {
     if (!auth) return;
@@ -69,6 +71,31 @@ function AppHeader({ unreadChatCount, unreadNotifCount }: { unreadChatCount: num
   };
   
   if (!user) return null;
+
+  if (showMobileSearch) {
+    return (
+      <header className="sticky top-0 z-30 flex h-16 items-center border-b bg-background px-4 md:px-6">
+        <div className="flex w-full items-center gap-2">
+          <Button variant="ghost" size="icon" onClick={() => setShowMobileSearch(false)}>
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+          <form className="w-full" onSubmit={(e) => e.preventDefault()}>
+            <div className="relative">
+              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                type="search"
+                placeholder={searchPlaceholder}
+                className="w-full pl-8"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                autoFocus
+              />
+            </div>
+          </form>
+        </div>
+      </header>
+    );
+  }
 
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b bg-background px-4 md:px-6">
@@ -105,17 +132,25 @@ function AppHeader({ unreadChatCount, unreadNotifCount }: { unreadChatCount: num
       <div className="flex items-center gap-2 md:gap-3">
         {isSearchVisible && (
           <div className="hidden sm:block">
-            <div className="relative">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input
-                type="search"
-                placeholder={searchPlaceholder}
-                className="pl-8 sm:w-auto md:w-[250px] lg:w-[300px]"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
+            <form onSubmit={(e) => e.preventDefault()}>
+              <div className="relative">
+                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  type="search"
+                  placeholder={searchPlaceholder}
+                  className="pl-8 sm:w-auto md:w-[250px] lg:w-[300px]"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
+            </form>
           </div>
+        )}
+        {isSearchVisible && (
+          <Button variant="ghost" size="icon" className="sm:hidden" onClick={() => setShowMobileSearch(true)}>
+            <Search className="h-5 w-5" />
+            <span className="sr-only">Search</span>
+          </Button>
         )}
         <Link href="/chats">
             <Button variant="ghost" size="icon" className="relative">
