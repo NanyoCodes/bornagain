@@ -185,10 +185,10 @@ service cloud.firestore {
       allow create: if request.auth != null && request.resource.data.get('organizerId', '') == request.auth.uid;
       
       allow update: if request.auth != null && (
-        // Case 1: Organizer update
+        // Organizer
         (request.auth.uid == resource.data.get('organizerId', '')) ||
         
-        // Case 2: Join Group (Anyone can add themselves as a member and increment count)
+        // Join Group
         (
           request.resource.data.diff(resource.data).affectedKeys().hasOnly(['memberIds', 'memberCount']) &&
           request.auth.uid in request.resource.data.get('memberIds', []) &&
@@ -196,7 +196,7 @@ service cloud.firestore {
           request.resource.data.get('memberCount', 0) == (('memberCount' in resource.data) ? resource.data.memberCount : 0) + 1
         ) ||
         
-        // Case 3: Other authorized updates (like member count only for unassigning)
+        // Member count update only
         (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['memberCount']))
       );
 
