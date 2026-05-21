@@ -129,11 +129,9 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
                               </span>
                           </CardDescription>
                           <div className="flex gap-1.5 items-center flex-wrap">
-                            {fellowship.groupType && (
-                                <Badge variant="default" className="text-[9px] sm:text-[10px] h-5 px-1.5 w-fit uppercase tracking-wider font-bold">
-                                    {fellowship.groupType}
-                                </Badge>
-                            )}
+                            <Badge variant="default" className="text-[9px] sm:text-[10px] h-5 px-1.5 w-fit uppercase tracking-wider font-bold">
+                                {fellowship.groupType || 'Fellowship'}
+                            </Badge>
                             {fellowship.locationType && (
                                 <Badge variant="secondary" className="text-[9px] sm:text-[10px] h-5 px-1.5 w-fit uppercase tracking-wider font-bold">
                                     {fellowship.locationType}

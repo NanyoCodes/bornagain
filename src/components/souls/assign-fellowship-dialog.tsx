@@ -71,7 +71,7 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
       filtered = filtered.filter(f => f.location && f.location.toLowerCase().includes(state.toLowerCase()));
     }
     if (typeFilter !== 'all') {
-      filtered = filtered.filter(f => f.groupType === typeFilter);
+      filtered = filtered.filter(f => (f.groupType || 'Fellowship') === typeFilter);
     }
     
     const fellowshipsWithDistance = filtered.map(f => {
@@ -148,7 +148,7 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
                                   <div className="flex items-center gap-2 mb-1 flex-wrap">
                                     <p className="font-bold text-sm truncate">{f.name}</p>
                                     <Badge variant="secondary" className="text-[9px] px-1.5 h-4 uppercase font-bold tracking-tight bg-background border">
-                                        {f.groupType || 'Group'}
+                                        {f.groupType || 'Fellowship'}
                                     </Badge>
                                   </div>
                                   <p className="text-[11px] text-muted-foreground truncate">{f.location}</p>
