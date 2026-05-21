@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Card, CardContent } from '@/components/ui/card';
-import { Loader2, Filter, AlertCircle, Info, MapPin } from 'lucide-react';
+import { Filter, Info, MapPin, AlertCircle } from 'lucide-react';
 import type { Soul, Fellowship } from '@/lib/types';
 import { haversineDistance } from '@/lib/utils';
 import { cn } from '@/lib/utils';
@@ -22,10 +22,9 @@ interface AssignFellowshipDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   onAssignGroup: (soul: Soul, fellowshipId: string, groupType: 'Fellowship' | 'Association') => void;
-  isAssigning: string | null;
 }
 
-export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange, onAssignGroup, isAssigning }: AssignFellowshipDialogProps) {
+export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange, onAssignGroup }: AssignFellowshipDialogProps) {
   const [country, setCountry] = React.useState<string>('');
   const [state, setState] = React.useState<string>('');
   const [typeFilter, setTypeFilter] = React.useState<string>('all');
@@ -113,8 +112,8 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
         <div className="bg-primary/5 p-3 rounded-lg border border-primary/10 flex items-start gap-3">
           <Info className="h-4 w-4 text-primary shrink-0 mt-0.5" />
           <div className="text-[11px] sm:text-xs text-muted-foreground space-y-1">
-            <p>You can assign {soul.firstName} to one Fellowship and one Association.</p>
-            <p className="font-bold text-foreground/80">To switch groups of the same type, unassign the current one first.</p>
+            <p>Assign to one Fellowship and one Association.</p>
+            <p className="font-bold text-foreground/80">Unassign the current group before switching.</p>
           </div>
         </div>
 
@@ -138,7 +137,7 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
             </Select>
           </div>
           <div className="space-y-1.5">
-            <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground ml-1">State/Province</label>
+            <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground ml-1">State</label>
             <Select value={state || 'all'} onValueChange={(val) => setState(val === 'all' ? '' : val)} disabled={!country}>
               <SelectTrigger className="h-9 sm:h-10 text-xs sm:text-sm"><SelectValue placeholder="Select State" /></SelectTrigger>
               <SelectContent>
@@ -155,12 +154,12 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
               {filteredAndSortedFellowships.length > 0 ? (
                   filteredAndSortedFellowships.map(f => {
                       const groupType = f.groupType || 'Fellowship';
-                      const isCurrentlyAssignedToThisSpecificGroup = groupType === 'Association' ? soul.associationId === f.id : soul.fellowshipId === f.id;
+                      const isCurrentlyAssigned = groupType === 'Association' ? soul.associationId === f.id : soul.fellowshipId === f.id;
                       const typeAlreadyHasAssignment = groupType === 'Association' ? hasAssignedAssociation : hasAssignedFellowship;
-                      const isDisabledForAssignment = !isCurrentlyAssignedToThisSpecificGroup && typeAlreadyHasAssignment;
+                      const isDisabled = !isCurrentlyAssigned && typeAlreadyHasAssignment;
 
                       return (
-                      <Card key={f.id} className={cn("transition-colors shadow-none border", isCurrentlyAssignedToThisSpecificGroup ? "bg-primary/5 border-primary/30" : "bg-card")}>
+                      <Card key={f.id} className={cn("transition-colors shadow-none border", isCurrentlyAssigned ? "bg-primary/5 border-primary/30" : "bg-card")}>
                           <CardContent className="p-3 flex items-center justify-between gap-3 sm:gap-4">
                               <div className="min-w-0 flex-1">
                                   <div className="flex items-center gap-1.5 mb-0.5 flex-wrap">
@@ -175,33 +174,32 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
                                   </p>
                                   {f.distance !== null ? <p className="text-[9px] sm:text-[10px] text-primary font-bold mt-1 uppercase tracking-tighter">{f.distance.toFixed(1)} km away</p> : null}
                               </div>
-                              <div className="shrink-0 flex items-center gap-2">
-                                {isCurrentlyAssignedToThisSpecificGroup ? (
+                              <div className="shrink-0">
+                                {isCurrentlyAssigned ? (
                                     <Button
                                         size="sm"
                                         variant="outline"
                                         onClick={() => onAssignGroup(soul, 'none', groupType)}
-                                        disabled={!!isAssigning}
                                         className="h-7 sm:h-8 px-2 sm:px-3 text-[10px] sm:text-xs border-destructive/30 text-destructive hover:bg-destructive/10 font-bold"
                                     >
-                                        {isAssigning === f.id ? <Loader2 className="h-3 w-3 animate-spin"/> : 'Unassign'}
+                                        Unassign
                                     </Button>
                                 ) : (
                                     <TooltipProvider>
-                                      <Tooltip open={isDisabledForAssignment ? undefined : false}>
+                                      <Tooltip open={isDisabled ? undefined : false}>
                                         <TooltipTrigger asChild>
                                           <div className="inline-block">
                                             <Button
                                                 size="sm"
                                                 onClick={() => onAssignGroup(soul, f.id, groupType)}
-                                                disabled={!!isAssigning || isDisabledForAssignment}
+                                                disabled={isDisabled}
                                                 className="h-7 sm:h-8 px-2 sm:px-4 text-[10px] sm:text-xs font-bold"
                                             >
-                                                {isAssigning === f.id ? <Loader2 className="h-3 w-3 animate-spin"/> : 'Assign'}
+                                                Assign
                                             </Button>
                                           </div>
                                         </TooltipTrigger>
-                                        {isDisabledForAssignment && (
+                                        {isDisabled && (
                                           <TooltipContent className="max-w-[150px]">
                                             <p className="text-[10px] leading-tight">Already assigned to a {groupType}. Unassign it first.</p>
                                           </TooltipContent>
