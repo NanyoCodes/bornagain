@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
@@ -124,7 +123,6 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
     if (!storage) throw new Error("Firebase Storage is not available.");
 
     const fileName = file instanceof File ? file.name : 'cropped-image.jpg';
-    // Ensure path is consistent with rules
     const fileRef = ref(storage, `${storagePath}/${user.uid}/${Date.now()}_${fileName}`);
     await uploadBytes(fileRef, file);
     return getDownloadURL(fileRef);
@@ -138,15 +136,13 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
       const croppedImageBlob = await getCroppedImg(imgRef.current, completedCrop);
       
       if (croppedImageBlob.size > 2 * 1024 * 1024) {
-        throw new Error("The cropped image is larger than 2MB. Please select a smaller area or use a smaller original image.");
+        throw new Error("The cropped image is larger than 2MB. Please select a smaller area.");
       }
 
-      const localUrl = URL.createObjectURL(croppedImageBlob);
-      setPreviewUrl(localUrl);
-  
       const downloadURL = await handleUpload(croppedImageBlob);
       
       onUploadComplete(downloadURL);
+      setPreviewUrl(downloadURL);
       toast({ title: 'Success', description: 'Image uploaded successfully.' });
       
       setIsCropModalOpen(false);
@@ -154,22 +150,16 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
 
     } catch (error: any) {
       console.error("Storage upload error:", error);
-      let title = 'Upload Failed';
-      let description = error.message || "An unknown error occurred.";
-      
-      // ERR_FAILED is a common symptom of CORS issues on modern browsers
-      if (error.code === 'storage/unauthorized' || error.code === 'storage/retry-limit-exceeded' || (error.message && error.message.includes('net::ERR_FAILED'))) {
-        title = 'Configuration Required';
-        description = "If you are already on the Blaze plan, this error is likely due to missing CORS configuration on your bucket. Please run the command in `docs/storage-cors-guide.md` (Step 3) in your terminal.";
-      }
-      
-      toast({ variant: 'destructive', title, description, duration: 15000 });
+      toast({ 
+        variant: 'destructive', 
+        title: 'Upload Failed', 
+        description: error.message || "An unknown error occurred during upload."
+      });
       setPreviewUrl(initialImageUrl || null);
     } finally {
       setIsLoading(false);
     }
   };
-
 
   const handleRemoveImage = () => {
     setPreviewUrl(null);
@@ -188,21 +178,20 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
           ) : (
             <div className="relative w-full max-w-xs aspect-video rounded-lg border bg-muted flex items-center justify-center overflow-hidden">
               {previewUrl ? (
-                <Image src={previewUrl} alt="Preview" layout="fill" objectFit="cover" />
+                <Image src={previewUrl} alt="Preview" layout="fill" objectFit="cover" unoptimized />
               ) : (
                 <Camera className="h-10 w-10 text-muted-foreground" />
               )}
             </div>
           )}
           {previewUrl && !isLoading && (
-              <Button
-                  variant="destructive"
-                  size="icon"
-                  className="absolute -top-2 -right-2 h-6 w-6 rounded-full z-10"
+              <button
+                  className="absolute -top-2 -right-2 h-6 w-6 rounded-full z-10 bg-destructive text-destructive-foreground flex items-center justify-center shadow-md hover:bg-destructive/90 transition-colors"
                   onClick={handleRemoveImage}
+                  type="button"
               >
                   <X className="h-4 w-4" />
-              </Button>
+              </button>
           )}
         </div>
         
@@ -231,7 +220,7 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
           <DialogHeader>
             <DialogTitle>Crop Your Image</DialogTitle>
           </DialogHeader>
-          <div className="my-4">
+          <div className="my-4 overflow-hidden flex justify-center bg-black/5 rounded-lg border">
             {imgSrc && (
               <ReactCrop
                 crop={crop}
@@ -245,14 +234,14 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
                   alt="Crop me"
                   src={imgSrc}
                   onLoad={onImageLoad}
-                  style={{ maxHeight: '70vh' }}
+                  style={{ maxHeight: '60vh', width: 'auto' }}
                 />
               </ReactCrop>
             )}
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsCropModalOpen(false)} disabled={isLoading}>Cancel</Button>
-            <Button onClick={handleCrop} disabled={!completedCrop || isLoading}>
+          <DialogFooter className="flex flex-col sm:flex-row gap-2">
+            <Button variant="outline" onClick={() => setIsCropModalOpen(false)} disabled={isLoading} className="flex-1">Cancel</Button>
+            <Button onClick={handleCrop} disabled={!completedCrop || isLoading} className="flex-1">
               {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <CropIcon className="mr-2 h-4 w-4" />}
               {isLoading ? 'Processing...' : 'Crop & Save'}
             </Button>
