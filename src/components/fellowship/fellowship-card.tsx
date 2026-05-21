@@ -90,21 +90,27 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
             <CardHeader className="p-5 sm:p-6">
                 <div className="flex justify-between items-start gap-4">
                     <div className="min-w-0 flex-1">
-                        <CardTitle className="text-lg sm:text-xl font-bold font-headline truncate leading-tight">{fellowship.name}</CardTitle>
-                        <CardDescription className="flex items-center gap-2 pt-1 text-[11px] sm:text-xs">
-                            <Avatar className="h-5 w-5 border">
-                                <AvatarImage src={fellowship.organizerPhotoURL} />
-                                <AvatarFallback className="text-[8px]">{fellowship.organizerName?.charAt(0)}</AvatarFallback>
-                            </Avatar>
-                            Organized by <span className="font-semibold text-primary">{fellowship.organizerName}</span>
-                        </CardDescription>
+                        <CardTitle className="text-lg sm:text-xl font-bold font-headline leading-tight mb-2">
+                          {fellowship.name}
+                        </CardTitle>
+                        <div className="space-y-2">
+                          <CardDescription className="flex items-center gap-2 text-[11px] sm:text-xs">
+                              <Avatar className="h-5 w-5 border">
+                                  <AvatarImage src={fellowship.organizerPhotoURL} />
+                                  <AvatarFallback className="text-[8px]">{fellowship.organizerName?.charAt(0)}</AvatarFallback>
+                              </Avatar>
+                              <span className="leading-tight">
+                                Organized by <span className="font-semibold text-primary">{fellowship.organizerName}</span>
+                              </span>
+                          </CardDescription>
+                          {fellowship.locationType && (
+                              <Badge variant="secondary" className="text-[9px] sm:text-[10px] h-5 px-1.5 w-fit uppercase tracking-wider font-bold block">
+                                  {fellowship.locationType}
+                              </Badge>
+                          )}
+                        </div>
                     </div>
                     <div className="flex items-center gap-2 shrink-0" onClick={stopPropagation}>
-                        {fellowship.locationType && (
-                            <Badge variant="secondary" className="text-[9px] sm:text-[10px] h-5 px-1.5 uppercase tracking-wider font-bold">
-                                {fellowship.locationType}
-                            </Badge>
-                        )}
                         {isOrganizer && (
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
