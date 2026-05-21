@@ -86,7 +86,7 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
     };
 
     return (
-        <Card onClick={onClick} className="cursor-pointer rounded-none sm:rounded-lg border-x-0 sm:border-x transition-shadow duration-300 hover:shadow-lg border-t-2 border-t-primary/10">
+        <Card onClick={onClick} className="cursor-pointer rounded-none sm:rounded-lg border-x-0 sm:border-x transition-shadow duration-300 hover:shadow-lg border-t-2 border-t-primary/10 border-b-2 sm:border-b">
             <CardHeader className="p-5 sm:p-6">
                 <div className="flex justify-between items-start gap-4">
                     <div className="min-w-0 flex-1">

@@ -470,7 +470,7 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
       <Card
         id={campaign.id}
         className={cn(
-          "flex flex-col h-full overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 scroll-mt-20 border-t-4 cursor-pointer rounded-none sm:rounded-lg border-x-0 sm:border-x",
+          "flex flex-col h-full overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 scroll-mt-20 border-t-4 cursor-pointer rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b",
           borderColorClass
         )}
         onClick={handleCardClick}

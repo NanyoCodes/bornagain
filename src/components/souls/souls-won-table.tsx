@@ -80,7 +80,7 @@ const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, 
     const latestFollowUpDate = latestFollowUp ? safeToDate(latestFollowUp.date) : null;
 
     return (
-        <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x">
+        <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b">
             <Collapsible>
                 <CollapsibleTrigger className="group w-full p-4 text-left">
                      <div className="flex items-center justify-between">
@@ -121,6 +121,7 @@ const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, 
                                     <DropdownMenuItem onSelect={(e) => { e.preventDefault(); onEdit(soul); }}>
                                         <Edit className="mr-2 h-4 w-4" /> Edit Details
                                     </DropdownMenuItem>
+                                    <DropdownMenuItem onSelect={(e) => { e.preventDefault(); onFollowUp(soul); }}>Follow-up</DropdownMenuItem>
                                     <DropdownMenuItem onSelect={(e) => { e.preventDefault(); onViewHistory(soul); }}>View History</DropdownMenuItem>
                                     <DropdownMenuItem onSelect={(e) => { e.preventDefault(); onOpenAssignDialog(soul); }}><HeartHandshake className="mr-2 h-4 w-4" />Assign Fellowship</DropdownMenuItem>
                                     <DropdownMenuSub>
@@ -289,7 +290,7 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
   if (isMobile) {
       return (
         <div className="space-y-0">
-            <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x">
+            <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b">
                 <CardHeader>
                     <CardTitle className="text-lg font-bold font-headline">Follow-up Dashboard</CardTitle>
                     <CardDescription>A list of souls won.</CardDescription>
