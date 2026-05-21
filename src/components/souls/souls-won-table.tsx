@@ -90,7 +90,7 @@ const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, 
                                 <AvatarFallback className="font-bold">{soul.firstName?.charAt(0)}{soul.lastName?.charAt(0)}</AvatarFallback>
                             </Avatar>
                             <div className="min-w-0">
-                                <p className="font-bold font-headline truncate text-sm sm:text-base leading-tight">
+                                <p className="font-semibold truncate text-sm sm:text-base leading-tight">
                                   {soul.firstName || 'Unknown'} {soul.lastName || ''}
                                 </p>
                                 <Badge className={cn("mt-1.5 h-5 px-1.5 text-[10px] sm:text-xs", getStatusClasses(soul.status))} variant="outline">{soul.status}</Badge>
@@ -221,7 +221,7 @@ const SoulTableRow = React.memo(({ soul, onFollowUp, onViewHistory, onExportSing
                         <AvatarFallback>{soul.firstName?.charAt(0)}{soul.lastName?.charAt(0)}</AvatarFallback>
                     </Avatar>
                     <div>
-                        <div className="font-bold font-headline text-base">{soul.firstName} {soul.lastName}</div>
+                        <div className="font-semibold text-base">{soul.firstName} {soul.lastName}</div>
                         {soul.church && <div className="text-xs text-muted-foreground flex items-center gap-1"><Church className="h-3 w-3" />{soul.church}</div>}
                     </div>
                 </div>
