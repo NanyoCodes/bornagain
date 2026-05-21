@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useMemo } from 'react';
@@ -13,7 +14,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Loader2, Users, MoreVertical, PlayCircle, Edit, Trash2 } from 'lucide-react';
+import { Loader2, Users, MoreVertical, PlayCircle, Edit, Trash2, Group } from 'lucide-react';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -103,11 +104,18 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
                                 Organized by <span className="font-semibold text-primary">{fellowship.organizerName}</span>
                               </span>
                           </CardDescription>
-                          {fellowship.locationType && (
-                              <Badge variant="secondary" className="text-[9px] sm:text-[10px] h-5 px-1.5 w-fit uppercase tracking-wider font-bold block">
-                                  {fellowship.locationType}
-                              </Badge>
-                          )}
+                          <div className="flex gap-1.5 items-center flex-wrap">
+                            {fellowship.groupType && (
+                                <Badge variant="default" className="text-[9px] sm:text-[10px] h-5 px-1.5 w-fit uppercase tracking-wider font-bold">
+                                    {fellowship.groupType}
+                                </Badge>
+                            )}
+                            {fellowship.locationType && (
+                                <Badge variant="secondary" className="text-[9px] sm:text-[10px] h-5 px-1.5 w-fit uppercase tracking-wider font-bold">
+                                    {fellowship.locationType}
+                                </Badge>
+                            )}
+                          </div>
                         </div>
                     </div>
                     <div className="flex items-center gap-2 shrink-0" onClick={stopPropagation}>

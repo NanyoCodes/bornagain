@@ -1,3 +1,4 @@
+
 import type { Timestamp } from "firebase/firestore";
 
 export type ReadingHistoryItem = {
@@ -346,6 +347,7 @@ export type Fellowship = {
   id: string;
   name: string;
   description: string;
+  groupType: 'Fellowship' | 'Association';
   organizerId: string;
   organizerName: string;
   organizerPhotoURL?: string;

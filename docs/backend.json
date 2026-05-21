@@ -816,34 +816,33 @@
     },
     "Fellowship": {
       "title": "Fellowship",
-      "description": "A small group of believers who meet regularly for prayer, study, and mutual support.",
+      "description": "A small group or association of believers who meet regularly.",
       "type": "object",
       "properties": {
-        "name": { "type": "string", "description": "The name of the fellowship group." },
-        "description": { "type": "string", "description": "A short description of the fellowship's purpose and goals." },
+        "name": { "type": "string", "description": "The name of the group." },
+        "description": { "type": "string", "description": "Purpose and goals of the group." },
+        "groupType": { "type": "string", "enum": ["Fellowship", "Association"], "description": "Distinguishes between a small fellowship and a larger association." },
         "organizerId": { "type": "string" },
         "organizerName": { "type": "string" },
         "organizerPhotoURL": { "type": "string", "format": "uri" },
         "createdAt": { "type": "object" },
-        "memberIds": { "type": "array", "items": { "type": "string" }, "description": "An array of member UIDs for efficient security rule checks." },
-        "memberCount": { "type": "number", "description": "The total number of members in the fellowship." },
-        "location": { "type": "string", "description": "Where the fellowship meets for physical gatherings (e.g., '123 Main St, Anytown')." },
+        "memberIds": { "type": "array", "items": { "type": "string" }, "description": "An array of member UIDs." },
+        "memberCount": { "type": "number", "description": "Total number of members." },
+        "location": { "type": "string" },
         "locationType": {
           "type": "string",
-          "description": "Specifies if the fellowship is physical, virtual, or both.",
           "enum": ["Physical", "Virtual", "Physical and Virtual"]
         },
         "latitude": { "type": "number" },
         "longitude": { "type": "number" },
-        "schedule": { "type": "string", "description": "The meeting schedule (e.g., 'Wednesdays at 7pm')." },
-        "status": { "type": "string", "enum": ["active", "deleted"], "description": "The status of the fellowship." },
+        "schedule": { "type": "string" },
+        "status": { "type": "string", "enum": ["active", "deleted"] },
         "streamUrl": {
           "type": "string",
-          "format": "uri",
-          "description": "A URL to a live stream for the fellowship (e.g., YouTube Live, Zoom)."
+          "format": "uri"
         }
       },
-      "required": ["name", "description", "organizerId", "organizerName", "createdAt", "memberIds", "memberCount"]
+      "required": ["name", "description", "organizerId", "organizerName", "createdAt", "memberIds", "memberCount", "groupType"]
     },
     "FellowshipMember": {
         "title": "Fellowship Member",

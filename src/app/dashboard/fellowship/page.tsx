@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect, useCallback } from 'react';
@@ -47,10 +48,12 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { FellowshipCard } from '@/components/fellowship/fellowship-card';
 import { Card, CardContent } from '@/components/ui/card';
 import { useSearch } from '@/context/search-context';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 
 const formSchema = z.object({
   name: z.string().min(3, "Name must be at least 3 characters.").max(100),
   description: z.string().min(10, "Description must be at least 10 characters.").max(500),
+  groupType: z.enum(['Fellowship', 'Association']),
   schedule: z.string().min(3, "Schedule is required.").max(100),
   streamUrl: z.string().url({ message: "Please enter a valid URL." }).optional().or(z.literal('')),
   locationType: z.enum(['Physical', 'Virtual', 'Physical and Virtual'], { required_error: "Please select a location type." }),
@@ -71,6 +74,7 @@ function FellowshipForm({ userProfile, onFormSubmit, isSubmitting }: { userProfi
         defaultValues: {
             name: "",
             description: "",
+            groupType: "Fellowship",
             schedule: "",
             streamUrl: userProfile?.defaultMeetingLink || "",
             locationType: 'Physical',
@@ -85,10 +89,40 @@ function FellowshipForm({ userProfile, onFormSubmit, isSubmitting }: { userProfi
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onFormSubmit)} className="space-y-4">
+                <FormField
+                    control={form.control}
+                    name="groupType"
+                    render={({ field }) => (
+                        <FormItem className="space-y-3">
+                        <FormLabel>What are you organizing?</FormLabel>
+                        <FormControl>
+                            <RadioGroup
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                            className="flex flex-row space-x-4"
+                            >
+                            <FormItem className="flex items-center space-x-2 space-y-0">
+                                <FormControl>
+                                <RadioGroupItem value="Fellowship" />
+                                </FormControl>
+                                <FormLabel className="font-normal">Fellowship Group</FormLabel>
+                            </FormItem>
+                            <FormItem className="flex items-center space-x-2 space-y-0">
+                                <FormControl>
+                                <RadioGroupItem value="Association" />
+                                </FormControl>
+                                <FormLabel className="font-normal">Association</FormLabel>
+                            </FormItem>
+                            </RadioGroup>
+                        </FormControl>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                    />
                 <FormField control={form.control} name="name" render={({ field }) => (
                     <FormItem>
-                        <FormLabel>Fellowship Name</FormLabel>
-                        <FormControl><Input placeholder="e.g., Morning Prayer" {...field} className="text-base" /></FormControl>
+                        <FormLabel>Name</FormLabel>
+                        <FormControl><Input placeholder={form.watch('groupType') === 'Fellowship' ? "e.g., Morning Prayer" : "e.g., Youth Association"} {...field} className="text-base" /></FormControl>
                         <FormMessage />
                     </FormItem>
                 )} />
@@ -166,7 +200,7 @@ function FellowshipForm({ userProfile, onFormSubmit, isSubmitting }: { userProfi
                 )} />
                 <Button type="submit" disabled={isSubmitting} className="w-full">
                     {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    Create Fellowship
+                    Create {form.watch('groupType')}
                 </Button>
             </form>
         </Form>
@@ -179,6 +213,7 @@ function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting }: { fell
     defaultValues: {
       name: fellowship.name || "",
       description: fellowship.description || "",
+      groupType: fellowship.groupType || "Fellowship",
       schedule: fellowship.schedule || "",
       streamUrl: fellowship.streamUrl || "",
       locationType: fellowship.locationType || 'Physical',
@@ -189,9 +224,30 @@ function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting }: { fell
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onFormSubmit)} className="space-y-4">
+        <FormField
+            control={form.control}
+            name="groupType"
+            render={({ field }) => (
+                <FormItem className="space-y-3">
+                <FormLabel>Type</FormLabel>
+                <FormControl>
+                    <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="flex flex-row space-x-4">
+                        <FormItem className="flex items-center space-x-2 space-y-0">
+                            <FormControl><RadioGroupItem value="Fellowship" /></FormControl>
+                            <FormLabel className="font-normal">Fellowship</FormLabel>
+                        </FormItem>
+                        <FormItem className="flex items-center space-x-2 space-y-0">
+                            <FormControl><RadioGroupItem value="Association" /></FormControl>
+                            <FormLabel className="font-normal">Association</FormLabel>
+                        </FormItem>
+                    </RadioGroup>
+                </FormControl>
+                </FormItem>
+            )}
+        />
         <FormField control={form.control} name="name" render={({ field }) => (
             <FormItem>
-                <FormLabel>Fellowship Name</FormLabel>
+                <FormLabel>Name</FormLabel>
                 <FormControl><Input {...field} className="text-base" /></FormControl>
                 <FormMessage />
             </FormItem>
@@ -257,6 +313,7 @@ export default function FellowshipPage() {
     const [fellowshipToManage, setFellowshipToManage] = useState<Fellowship | null>(null);
     const [fellowshipToDelete, setFellowshipToDelete] = useState<Fellowship | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
+    const [activeTab, setActiveTab] = useState("Fellowship");
     const [mounted, setMounted] = useState(false);
     const isMobile = useIsMobile();
     
@@ -296,6 +353,7 @@ export default function FellowshipPage() {
         const newFellowshipData = {
             name: values.name,
             description: values.description,
+            groupType: values.groupType,
             schedule: values.schedule,
             streamUrl: values.streamUrl || null,
             locationType: values.locationType,
@@ -323,7 +381,8 @@ export default function FellowshipPage() {
                     joinedAt: serverTimestamp()
                 });
             });
-            toast({ title: "Fellowship Created!" });
+            toast({ title: `${values.groupType} Created!` });
+            setActiveTab(values.groupType);
             closeAllDialogs();
         } catch (e) {
             const permissionError = new FirestorePermissionError({ path: 'fellowships', operation: 'create' }, user);
@@ -341,10 +400,11 @@ export default function FellowshipPage() {
             await updateDoc(fellowshipRef, {
                 name: values.name,
                 description: values.description,
+                groupType: values.groupType,
                 schedule: values.schedule,
                 locationType: values.locationType,
             });
-            toast({ title: 'Fellowship Updated' });
+            toast({ title: 'Group Updated' });
             closeAllDialogs();
         } catch (e) {
             const permissionError = new FirestorePermissionError({ path: `fellowships/${fellowshipToManage.id}`, operation: 'update' }, user);
@@ -360,7 +420,7 @@ export default function FellowshipPage() {
         const fellowshipRef = doc(firestore, 'fellowships', fellowshipToDelete.id);
         try {
             await updateDoc(fellowshipRef, { status: 'deleted' });
-            toast({ title: 'Fellowship Deleted' });
+            toast({ title: 'Group Deleted' });
             closeAllDialogs();
         } catch (e) {
             const permissionError = new FirestorePermissionError({ path: fellowshipRef.path, operation: 'update' }, user);
@@ -379,15 +439,18 @@ export default function FellowshipPage() {
         return fellowships.filter(f => f.status !== 'deleted');
     }, [fellowships]);
 
+    const tabFilteredFellowships = useMemo(() => {
+        return activeFellowships.filter(f => (f.groupType || "Fellowship") === activeTab);
+    }, [activeFellowships, activeTab]);
+
     const filteredFellowships = useMemo(() => {
-        if (!activeFellowships) return [];
-        if (!searchTerm) return activeFellowships;
+        if (!searchTerm) return tabFilteredFellowships;
         const term = searchTerm.toLowerCase();
-        return activeFellowships.filter(f => 
+        return tabFilteredFellowships.filter(f => 
             f.name.toLowerCase().includes(term) || 
             f.description.toLowerCase().includes(term)
         );
-    }, [activeFellowships, searchTerm]);
+    }, [tabFilteredFellowships, searchTerm]);
 
     const loading = userLoading || profileLoading || fellowshipsLoading;
 
@@ -404,7 +467,7 @@ export default function FellowshipPage() {
                     disabled={loading}
                     >
                     <span className="truncate">
-                        {loading ? "Preparing groups..." : "Start a new fellowship group?"}
+                        {loading ? "Preparing groups..." : "Start a new fellowship group or association?"}
                     </span>
                     </Button>
                 </div>
@@ -421,43 +484,55 @@ export default function FellowshipPage() {
                         ) : (
                         <Users className="mr-2 h-4 w-4 sm:h-5 sm:w-5 text-primary" />
                         )}
-                        <span className="text-[11px] sm:text-xs md:text-sm font-medium">New Fellowship</span>
+                        <span className="text-[11px] sm:text-xs md:text-sm font-medium">New Group</span>
                     </Button>
                 </div>
                 </CardContent>
             </Card>
 
-            <div className="flex items-center justify-between">
-                <h1 className="text-xl sm:text-2xl font-bold tracking-tight font-headline">Fellowships</h1>
-            </div>
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                <div className="flex items-center justify-between mb-8">
+                    <TabsList className="grid w-full sm:w-[400px] grid-cols-2">
+                        <TabsTrigger value="Fellowship">Fellowships</TabsTrigger>
+                        <TabsTrigger value="Association">Associations</TabsTrigger>
+                    </TabsList>
+                </div>
 
-            {loading ? (
-                <div className="grid gap-0 md:gap-6 md:grid-cols-2 lg:grid-cols-3 -mx-4 sm:mx-0">
-                    {[...Array(3)].map((_, i) => (
-                        <Card key={i}><CardContent className="h-40 animate-pulse bg-muted rounded-lg" /></Card>
-                    ))}
-                </div>
-            ) : (
-                 <div className="grid gap-0 md:gap-6 md:grid-cols-2 lg:grid-cols-3 -mx-4 sm:mx-0">
-                    {filteredFellowships.map((f) => (
-                        <FellowshipCard 
-                          key={f.id}
-                          fellowship={f} 
-                          userProfile={userProfile ?? null} 
-                          onManage={() => setFellowshipToManage(f)} 
-                          onDelete={() => setFellowshipToDelete(f)} 
-                          onClick={() => handleCardClick(f.id)} 
-                        />
-                    ))}
-                </div>
-            )}
+                {loading ? (
+                    <div className="grid gap-0 md:gap-6 md:grid-cols-2 lg:grid-cols-3 -mx-4 sm:mx-0">
+                        {[...Array(3)].map((_, i) => (
+                            <Card key={i}><CardContent className="h-40 animate-pulse bg-muted rounded-lg" /></Card>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="grid gap-0 md:gap-6 md:grid-cols-2 lg:grid-cols-3 -mx-4 sm:mx-0">
+                        {filteredFellowships.map((f) => (
+                            <FellowshipCard 
+                              key={f.id}
+                              fellowship={f} 
+                              userProfile={userProfile ?? null} 
+                              onManage={() => setFellowshipToManage(f)} 
+                              onDelete={() => setFellowshipToDelete(f)} 
+                              onClick={() => handleCardClick(f.id)} 
+                            />
+                        ))}
+                        {filteredFellowships.length === 0 && (
+                            <div className="col-span-full text-center py-20 bg-muted/10 rounded-lg border-2 border-dashed">
+                                <Users className="h-12 w-12 text-muted-foreground/20 mx-auto mb-4" />
+                                <p className="text-muted-foreground font-medium">No {activeTab.toLowerCase()}s found.</p>
+                                <p className="text-xs text-muted-foreground mt-1">Try a different search or create a new one.</p>
+                            </div>
+                        )}
+                    </div>
+                )}
+            </Tabs>
 
             {mounted && isMobile ? (
                 <Sheet open={isCreateOpen} onOpenChange={setIsCreateOpen}>
                     <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0">
                         <div className="p-6 border-b flex-shrink-0">
                             <SheetHeader>
-                                <SheetTitle>New Fellowship</SheetTitle>
+                                <SheetTitle>New Community Group</SheetTitle>
                                 <SheetDescription>Create a space for community and growth.</SheetDescription>
                             </SheetHeader>
                         </div>
@@ -470,7 +545,7 @@ export default function FellowshipPage() {
                 <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
                     <DialogContent className="sm:max-w-lg">
                         <DialogHeader>
-                            <DialogTitle>New Fellowship</DialogTitle>
+                            <DialogTitle>New Community Group</DialogTitle>
                             <DialogDescription>Create a space for community and growth.</DialogDescription>
                         </DialogHeader>
                         <FellowshipForm userProfile={userProfile ?? null} onFormSubmit={handleCreateFellowship} isSubmitting={isSubmitting} />
@@ -481,7 +556,7 @@ export default function FellowshipPage() {
             {fellowshipToManage && (
                 <Dialog open={!!fellowshipToManage} onOpenChange={(open) => !open && closeAllDialogs()}>
                     <DialogContent className="sm:max-w-lg">
-                        <DialogHeader><DialogTitle>Manage Fellowship</DialogTitle></DialogHeader>
+                        <DialogHeader><DialogTitle>Manage Group</DialogTitle></DialogHeader>
                         <ManageFellowshipForm fellowship={fellowshipToManage} onFormSubmit={handleUpdateFellowship} isSubmitting={isSubmitting} />
                     </DialogContent>
                 </Dialog>
@@ -490,7 +565,7 @@ export default function FellowshipPage() {
             {fellowshipToDelete && (
                 <AlertDialog open={!!fellowshipToDelete} onOpenChange={(open) => !open && closeAllDialogs()}>
                     <AlertDialogContent>
-                        <AlertDialogHeader><AlertDialogTitle>Delete Fellowship?</AlertDialogTitle></AlertDialogHeader>
+                        <AlertDialogHeader><AlertDialogTitle>Delete this group?</AlertDialogTitle></AlertDialogHeader>
                         <AlertDialogFooter>
                             <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
                             <AlertDialogAction onClick={handleDeleteFellowship} disabled={isDeleting} className="bg-destructive">
