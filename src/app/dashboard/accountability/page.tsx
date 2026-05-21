@@ -75,15 +75,20 @@ function PartnerDisciplineStatus({ partnerId, date }: { partnerId: string; date:
     }
 
     return (
-        <div className="flex justify-around items-center h-10">
+        <div className="flex justify-around items-center h-12">
             {disciplines.map(d => (
-                <div key={d.id} className="flex flex-col items-center gap-1 text-xs text-center">
+                <div key={d.id} className="flex flex-col items-center gap-1 text-[10px] sm:text-xs text-center min-w-[60px]">
                     {completedOnDate.includes(d.id) ? (
                         <CheckCircle2 className="h-5 w-5 text-green-500" />
                     ) : (
                         <XCircle className="h-5 w-5 text-muted-foreground/50" />
                     )}
-                    <span className={completedOnDate.includes(d.id) ? 'font-semibold text-foreground' : 'text-muted-foreground'}>{d.label}</span>
+                    <span className={cn(
+                        "leading-tight",
+                        completedOnDate.includes(d.id) ? 'font-bold text-foreground' : 'text-muted-foreground'
+                    )}>
+                        {d.label}
+                    </span>
                 </div>
             ))}
         </div>
@@ -110,12 +115,12 @@ function PartnerCard({
     }, [dateStr]);
 
     return (
-        <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
-                 <div className="flex items-center gap-4">
+        <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b shadow-sm">
+            <CardHeader className="flex flex-row items-center justify-between p-4 sm:p-6 gap-4">
+                 <div className="flex items-center gap-3 min-w-0 flex-1">
                     <Dialog>
                       <DialogTrigger asChild disabled={!partner.photoURL}>
-                        <Avatar className={cn("h-12 w-12 border", partner.photoURL && "cursor-pointer")}>
+                        <Avatar className={cn("h-10 w-10 sm:h-12 sm:w-12 border shrink-0", partner.photoURL && "cursor-pointer")}>
                             <AvatarImage src={partner.photoURL} />
                             <AvatarFallback>{partner.firstName?.charAt(0)}</AvatarFallback>
                         </Avatar>
@@ -130,19 +135,20 @@ function PartnerCard({
                           </DialogContent>
                       )}
                     </Dialog>
-                    <div>
+                    <div className="min-w-0">
                         <Link href={`/dashboard/profile/${partner.userId}`}>
-                            <h2 className="text-lg sm:text-xl font-semibold hover:underline">{partner.firstName} {partner.lastName}</h2>
+                            <h2 className="text-base sm:text-lg font-bold font-headline truncate hover:underline">{partner.firstName} {partner.lastName}</h2>
                         </Link>
                     </div>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1 sm:gap-2 shrink-0">
                     <TooltipProvider>
                         <Tooltip>
                             <TooltipTrigger asChild>
                                 <Button
                                     variant="outline"
                                     size="icon"
+                                    className="h-8 w-8 sm:h-9 sm:w-9"
                                     onClick={() => onNudge(partner)}
                                 >
                                     <BellRing className="h-4 w-4" />
@@ -160,6 +166,7 @@ function PartnerCard({
                                 <Button
                                     variant="outline"
                                     size="icon"
+                                    className="h-8 w-8 sm:h-9 sm:w-9"
                                     onClick={() => onChat(partner)}
                                 >
                                     <MessagesSquare className="h-4 w-4" />
@@ -173,8 +180,8 @@ function PartnerCard({
                     </TooltipProvider>
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon">
-                                <MoreVertical className="h-5 w-5" />
+                            <Button variant="ghost" size="icon" className="h-8 w-8 sm:h-9 sm:w-9">
+                                <MoreVertical className="h-4 w-4" />
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
@@ -195,15 +202,15 @@ function PartnerCard({
                     </DropdownMenu>
                 </div>
             </CardHeader>
-            <CardContent className="px-6 pb-4">
-                <div className="mt-2 pt-4 border-t space-y-4">
+            <CardContent className="px-4 sm:px-6 pb-4">
+                <div className="pt-4 border-t space-y-4">
                     <div className="flex justify-between items-center flex-wrap gap-2">
-                        <h4 className="text-sm font-semibold text-muted-foreground">Discipline Status</h4>
+                        <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Discipline Status</h4>
                         <Input 
                             type="date" 
                             value={dateStr} 
                             onChange={(e) => setDateStr(e.target.value)} 
-                            className="w-[150px] h-8 text-xs"
+                            className="w-[130px] h-7 text-[10px] sm:h-8 sm:text-xs"
                         />
                     </div>
                     <PartnerDisciplineStatus 
@@ -439,51 +446,55 @@ export default function AccountabilityPage() {
     return (
       <div className="flex h-full w-full flex-col items-center justify-center">
         <Loader2 className="h-12 w-12 animate-spin text-primary" />
-        <p className="mt-4 text-muted-foreground">Loading accountability...</p>
+        <p className="mt-4 text-muted-foreground animate-pulse">Loading partners...</p>
       </div>
     );
   }
   
   if (partners.length === 0) {
     return (
-      <div className="space-y-8 max-w-3xl mx-auto">
-        <div className="flex h-full w-full flex-col items-center justify-center text-center rounded-lg border-2 border-dashed p-6 sm:p-12">
-            <HeartHandshake className="h-16 w-16 text-muted-foreground" />
-            <h2 className="mt-6 text-2xl font-semibold">Find an Accountability Partner</h2>
-            <p className="mt-2 max-w-md text-muted-foreground">
-            An accountability partner can help you stay on track with your spiritual goals. Send a request to get started!
+      <div className="space-y-6 max-w-3xl mx-auto -mx-4 sm:mx-auto">
+        <div className="flex flex-col items-center justify-center text-center p-8 sm:p-12 bg-muted/20 rounded-none sm:rounded-lg border-y sm:border-2 border-dashed">
+            <HeartHandshake className="h-16 w-16 text-muted-foreground opacity-20" />
+            <h2 className="mt-6 text-xl sm:text-2xl font-bold font-headline">Find a Partner</h2>
+            <p className="mt-2 max-w-sm text-sm text-muted-foreground">
+            Connect with fellow believers to stay motivated and grow together in your spiritual walk.
             </p>
         </div>
-        {userProfile && user && <AccountabilitySettingsCard userProfile={userProfile} userId={user.uid} />}
+        <div className="px-4 sm:px-0">
+            {userProfile && user && <AccountabilitySettingsCard userProfile={userProfile} userId={user.uid} />}
+        </div>
       </div>
     );
   }
   
   return (
-    <div className="space-y-8 max-w-3xl mx-auto">
-      <div className="flex flex-wrap gap-4 items-center justify-between">
-        <div className="space-y-2">
-            <h1 className="text-3xl font-bold tracking-tight font-headline">Your Accountability Partners</h1>
-            <p className="text-muted-foreground">Your partners in faith. Encourage them and keep each other on track.</p>
-        </div>
+    <div className="space-y-8 max-w-3xl mx-auto -mx-4 sm:mx-auto">
+      <div className="px-4 sm:px-0 space-y-1">
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight font-headline">Accountability</h1>
+        <p className="text-sm text-muted-foreground">Encourage your partners and keep each other on track.</p>
       </div>
-        <div className="space-y-4">
-            {filteredPartners.map(partner => (
-                <PartnerCard 
-                    key={partner.userId}
-                    partner={partner}
-                    onNudge={handleNudgePartner}
-                    onChat={handleInitiateChat}
-                    onRemove={setRemovalTarget}
-                />
-            ))}
-            {partners.length > 0 && filteredPartners.length === 0 && (
-                <div className="text-center py-10 text-muted-foreground border-2 border-dashed rounded-lg">
-                    No partners found matching "{searchTerm}".
-                </div>
-            )}
-        </div>
-      {userProfile && user && <AccountabilitySettingsCard userProfile={userProfile} userId={user.uid} />}
+
+      <div className="space-y-0">
+          {filteredPartners.map(partner => (
+              <PartnerCard 
+                  key={partner.userId}
+                  partner={partner}
+                  onNudge={handleNudgePartner}
+                  onChat={handleInitiateChat}
+                  onRemove={setRemovalTarget}
+              />
+          ))}
+          {partners.length > 0 && filteredPartners.length === 0 && (
+              <div className="text-center py-12 text-muted-foreground bg-muted/10 border-y sm:border-2 border-dashed rounded-none sm:rounded-lg">
+                  <p>No partners found matching "{searchTerm}".</p>
+              </div>
+          )}
+      </div>
+
+      <div className="px-4 sm:px-0">
+        {userProfile && user && <AccountabilitySettingsCard userProfile={userProfile} userId={user.uid} />}
+      </div>
       
       {removalTarget && (
         <AlertDialog
@@ -495,11 +506,11 @@ export default function AccountabilityPage() {
                 }
             }}
         >
-            <AlertDialogContent>
+            <AlertDialogContent className="w-[90vw] max-w-lg rounded-lg">
                 <AlertDialogHeader>
                     <AlertDialogTitle>Remove {removalTarget.firstName}?</AlertDialogTitle>
                     <AlertDialogDescription>
-                        Are you sure you want to end this accountability partnership? This action cannot be undone. Please provide a reason below.
+                        Ending this partnership will remove each other from your active partners list. Please provide a reason.
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <div className="grid gap-4 py-4">
@@ -509,7 +520,8 @@ export default function AccountabilityPage() {
                             id="removal-reason"
                             value={removalReason}
                             onChange={(e) => setRemovalReason(e.target.value)}
-                            placeholder="e.g., We've decided to find different partners."
+                            placeholder="e.g., We've finished our current program..."
+                            className="text-base"
                         />
                     </div>
                 </div>
