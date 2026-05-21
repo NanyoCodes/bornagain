@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect, useCallback } from 'react';
@@ -50,6 +49,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useSearch } from '@/context/search-context';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 const formSchema = z.object({
   name: z.string().min(3, "Name must be at least 3 characters.").max(100),
@@ -104,7 +104,7 @@ function FellowshipForm({
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onFormSubmit)} className="space-y-4">
+            <form onSubmit={form.handleSubmit(onFormSubmit)} className="space-y-6">
                 <FormField
                     control={form.control}
                     name="groupType"
@@ -113,9 +113,9 @@ function FellowshipForm({
                         <FormLabel>What are you organizing?</FormLabel>
                         <FormControl>
                             <RadioGroup
-                            onValueChange={field.onChange}
-                            value={field.value}
-                            className="flex flex-row space-x-4"
+                                onValueChange={field.onChange}
+                                value={field.value}
+                                className="flex flex-col sm:flex-row sm:space-x-4 space-y-2 sm:space-y-0"
                             >
                             <FormItem className="flex items-center space-x-2 space-y-0">
                                 <FormControl>
@@ -164,9 +164,9 @@ function FellowshipForm({
                         <FormLabel>Location Type</FormLabel>
                         <FormControl>
                             <RadioGroup
-                            onValueChange={field.onChange}
-                            defaultValue={field.value}
-                            className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4"
+                                onValueChange={field.onChange}
+                                defaultValue={field.value}
+                                className="flex flex-col sm:flex-row sm:space-x-4 space-y-2 sm:space-y-0"
                             >
                             <FormItem className="flex items-center space-x-2 space-y-0">
                                 <FormControl>
@@ -214,7 +214,7 @@ function FellowshipForm({
                         <FormMessage />
                     </FormItem>
                 )} />
-                <Button type="submit" disabled={isSubmitting} className="w-full">
+                <Button type="submit" disabled={isSubmitting} className="w-full h-11 text-lg">
                     {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                     Create {form.watch('groupType')}
                 </Button>
@@ -306,7 +306,7 @@ function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting, onDelete
   return (
     <div className="space-y-8">
         <Form {...form}>
-        <form onSubmit={form.handleSubmit(onFormSubmit)} className="space-y-4">
+        <form onSubmit={form.handleSubmit(onFormSubmit)} className="space-y-6">
             <FormField
                 control={form.control}
                 name="groupType"
@@ -314,7 +314,11 @@ function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting, onDelete
                     <FormItem className="space-y-3">
                     <FormLabel>Type</FormLabel>
                     <FormControl>
-                        <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="flex flex-row space-x-4">
+                        <RadioGroup 
+                            onValueChange={field.onChange} 
+                            defaultValue={field.value} 
+                            className="flex flex-col sm:flex-row sm:space-x-4 space-y-2 sm:space-y-0"
+                        >
                             <FormItem className="flex items-center space-x-2 space-y-0">
                                 <FormControl><RadioGroupItem value="Fellowship" /></FormControl>
                                 <FormLabel className="font-normal">Fellowship</FormLabel>
@@ -356,7 +360,11 @@ function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting, onDelete
                     <FormItem className="space-y-3">
                     <FormLabel>Location Type</FormLabel>
                     <FormControl>
-                        <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="flex flex-wrap gap-4">
+                        <RadioGroup 
+                            onValueChange={field.onChange} 
+                            defaultValue={field.value} 
+                            className="flex flex-col sm:flex-row sm:space-x-4 space-y-2 sm:space-y-0"
+                        >
                             <FormItem className="flex items-center space-x-2 space-y-0">
                                 <FormControl><RadioGroupItem value="Physical" /></FormControl>
                                 <FormLabel className="font-normal">Physical</FormLabel>
@@ -366,7 +374,7 @@ function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting, onDelete
                                 <FormLabel className="font-normal">Virtual</FormLabel>
                             </FormItem>
                             <FormItem className="flex items-center space-x-2 space-y-0">
-                                <FormControl><RadioGroupItem value="Physical and Virtual" /></FormControl>
+                                <FormControl><RadioGroupItem value="Both" /></FormControl>
                                 <FormLabel className="font-normal">Both</FormLabel>
                             </FormItem>
                         </RadioGroup>
@@ -375,7 +383,7 @@ function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting, onDelete
                     </FormItem>
                 )}
             />
-            <Button type="submit" disabled={isSubmitting} className="w-full">
+            <Button type="submit" disabled={isSubmitting} className="w-full h-11">
                 {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Save Changes
             </Button>
@@ -672,11 +680,11 @@ export default function FellowshipPage() {
 
             {mounted && isMobile ? (
                 <Sheet open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-                    <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0">
-                        <div className="p-6 border-b flex-shrink-0">
-                            <SheetHeader>
-                                <SheetTitle>New Community Group</SheetTitle>
-                                <SheetDescription>Create a space for community and growth.</SheetDescription>
+                    <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-2xl">
+                        <div className="p-6 border-b flex-shrink-0 bg-muted/10">
+                            <SheetHeader className="text-left">
+                                <SheetTitle className="text-xl font-bold font-headline">New Community Group</SheetTitle>
+                                <SheetDescription className="text-xs">Create a space for community and growth.</SheetDescription>
                             </SheetHeader>
                         </div>
                         <div className="flex-grow overflow-y-auto p-6">
@@ -691,40 +699,71 @@ export default function FellowshipPage() {
                 </Sheet>
             ) : (
                 <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-                    <DialogContent className="sm:max-w-lg">
-                        <DialogHeader>
-                            <DialogTitle>New Community Group</DialogTitle>
-                            <DialogDescription>Create a space for community and growth.</DialogDescription>
-                        </DialogHeader>
-                        <FellowshipForm 
-                            userProfile={userProfile ?? null} 
-                            onFormSubmit={handleCreateFellowship} 
-                            isSubmitting={isSubmitting} 
-                            defaultType={createType}
-                        />
+                    <DialogContent className="sm:max-w-lg max-h-[90vh] flex flex-col p-0">
+                        <div className="p-6 border-b shrink-0">
+                            <DialogHeader>
+                                <DialogTitle className="text-2xl font-bold font-headline">New Community Group</DialogTitle>
+                                <DialogDescription>Create a space for community and growth.</DialogDescription>
+                            </DialogHeader>
+                        </div>
+                        <ScrollArea className="flex-grow">
+                            <div className="p-6">
+                                <FellowshipForm 
+                                    userProfile={userProfile ?? null} 
+                                    onFormSubmit={handleCreateFellowship} 
+                                    isSubmitting={isSubmitting} 
+                                    defaultType={createType}
+                                />
+                            </div>
+                        </ScrollArea>
                     </DialogContent>
                 </Dialog>
             )}
 
             {fellowshipToManage && (
-                <Dialog open={!!fellowshipToManage} onOpenChange={(open) => !open && closeAllDialogs()}>
-                    <DialogContent className="sm:max-w-lg">
-                        <DialogHeader><DialogTitle>Manage Group</DialogTitle></DialogHeader>
-                        <div className="max-h-[75vh] overflow-y-auto pr-2">
-                             <ManageFellowshipForm 
-                                fellowship={fellowshipToManage} 
-                                onFormSubmit={handleUpdateFellowship} 
-                                isSubmitting={isSubmitting} 
-                                onDelete={() => { setFellowshipToDelete(fellowshipToManage); setFellowshipToManage(null); }}
-                            />
-                        </div>
-                    </DialogContent>
-                </Dialog>
+                mounted && isMobile ? (
+                    <Sheet open={!!fellowshipToManage} onOpenChange={(open) => !open && closeAllDialogs()}>
+                        <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-2xl">
+                            <div className="p-6 border-b flex-shrink-0 bg-muted/10">
+                                <SheetHeader className="text-left">
+                                    <SheetTitle className="text-xl font-bold font-headline">Manage Group</SheetTitle>
+                                    <SheetDescription className="text-xs">Update your group's details.</SheetDescription>
+                                </SheetHeader>
+                            </div>
+                            <div className="flex-grow overflow-y-auto p-6">
+                                <ManageFellowshipForm 
+                                    fellowship={fellowshipToManage} 
+                                    onFormSubmit={handleUpdateFellowship} 
+                                    isSubmitting={isSubmitting} 
+                                    onDelete={() => { setFellowshipToDelete(fellowshipToManage); setFellowshipToManage(null); }}
+                                />
+                            </div>
+                        </SheetContent>
+                    </Sheet>
+                ) : (
+                    <Dialog open={!!fellowshipToManage} onOpenChange={(open) => !open && closeAllDialogs()}>
+                        <DialogContent className="sm:max-w-lg max-h-[90vh] flex flex-col p-0">
+                            <div className="p-6 border-b shrink-0">
+                                <DialogHeader><DialogTitle className="text-2xl font-bold font-headline">Manage Group</DialogTitle></DialogHeader>
+                            </div>
+                            <ScrollArea className="flex-grow">
+                                <div className="p-6">
+                                     <ManageFellowshipForm 
+                                        fellowship={fellowshipToManage} 
+                                        onFormSubmit={handleUpdateFellowship} 
+                                        isSubmitting={isSubmitting} 
+                                        onDelete={() => { setFellowshipToDelete(fellowshipToManage); setFellowshipToManage(null); }}
+                                    />
+                                </div>
+                            </ScrollArea>
+                        </DialogContent>
+                    </Dialog>
+                )
             )}
 
             {fellowshipToDelete && (
                 <AlertDialog open={!!fellowshipToDelete} onOpenChange={(open) => !open && closeAllDialogs()}>
-                    <AlertDialogContent>
+                    <AlertDialogContent className="w-[90vw] max-w-lg rounded-lg">
                         <AlertDialogHeader><AlertDialogTitle>Delete this group?</AlertDialogTitle></AlertDialogHeader>
                         <AlertDialogFooter>
                             <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
