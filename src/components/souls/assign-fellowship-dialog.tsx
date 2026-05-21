@@ -8,13 +8,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Card, CardContent } from '@/components/ui/card';
-import { Loader2, Filter } from 'lucide-react';
+import { Loader2, Filter, AlertCircle, Info } from 'lucide-react';
 import type { Soul, Fellowship } from '@/lib/types';
 import { haversineDistance } from '@/lib/utils';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface AssignFellowshipDialogProps {
   soul: Soul | null;
@@ -104,9 +105,20 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
     return null;
   }
 
+  const hasAssignedFellowship = !!soul.fellowshipId;
+  const hasAssignedAssociation = !!soul.associationId;
+
   const content = (
     <div className="flex flex-col h-full gap-4">
       <div className="space-y-4 pt-4 shrink-0">
+        <div className="bg-muted/40 p-3 rounded-lg border border-dashed flex items-start gap-3">
+          <Info className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+          <div className="text-xs text-muted-foreground space-y-1">
+            <p>You can assign {soul.firstName} to one Fellowship and one Association.</p>
+            <p className="font-semibold text-foreground/80">Rule: Unassign the current group of a type before assigning a new one of that same type.</p>
+          </div>
+        </div>
+
         <Tabs value={typeFilter} onValueChange={setTypeFilter} className="w-full">
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="all">All</TabsTrigger>
@@ -144,41 +156,58 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
               {filteredAndSortedFellowships.length > 0 ? (
                   filteredAndSortedFellowships.map(f => {
                       const groupType = f.groupType || 'Fellowship';
-                      const isAssigned = groupType === 'Association' ? soul.associationId === f.id : soul.fellowshipId === f.id;
+                      const isCurrentlyAssignedToThisSpecificGroup = groupType === 'Association' ? soul.associationId === f.id : soul.fellowshipId === f.id;
+                      const typeAlreadyHasAssignment = groupType === 'Association' ? hasAssignedAssociation : hasAssignedFellowship;
+                      const isDisabledForAssignment = !isCurrentlyAssignedToThisSpecificGroup && typeAlreadyHasAssignment;
 
                       return (
-                      <Card key={f.id} className={cn("transition-colors shadow-none", isAssigned && "bg-primary/5 border-primary/20")}>
+                      <Card key={f.id} className={cn("transition-colors shadow-none", isCurrentlyAssignedToThisSpecificGroup && "bg-primary/5 border-primary/20")}>
                           <CardContent className="p-3 flex items-center justify-between gap-4">
-                              <div className="min-w-0">
+                              <div className="min-w-0 flex-1">
                                   <div className="flex items-center gap-2 mb-1 flex-wrap">
                                     <p className="font-bold text-sm truncate">{f.name}</p>
-                                    <Badge variant="secondary" className="text-[9px] px-1.5 h-4 uppercase font-bold tracking-tight bg-background border">
+                                    <Badge variant="secondary" className={cn("text-[9px] px-1.5 h-4 uppercase font-bold tracking-tight bg-background border", groupType === 'Association' ? "border-blue-500/30 text-blue-600" : "border-primary/30 text-primary")}>
                                         {groupType}
                                     </Badge>
                                   </div>
                                   <p className="text-[11px] text-muted-foreground truncate">{f.location}</p>
                                   {f.distance !== null ? <p className="text-[10px] text-primary font-medium mt-1">{f.distance.toFixed(1)} km away</p> : null}
                               </div>
-                              {isAssigned ? (
-                                  <Button
-                                      size="sm"
-                                      variant="outline"
-                                      onClick={() => onAssignGroup(soul, 'none', groupType)}
-                                      disabled={!!isAssigning}
-                                      className="shrink-0 h-8 text-xs border-destructive/20 text-destructive hover:bg-destructive/10"
-                                  >
-                                      {isAssigning === f.id ? <Loader2 className="h-3 w-3 animate-spin"/> : 'Unassign'}
-                                  </Button>
-                              ) : (
-                                  <Button
-                                      size="sm"
-                                      onClick={() => onAssignGroup(soul, f.id, groupType)}
-                                      disabled={!!isAssigning}
-                                      className="shrink-0 h-8 text-xs font-bold"
-                                  >
-                                      {isAssigning === f.id ? <Loader2 className="h-3 w-3 animate-spin"/> : 'Assign'}
-                                  </Button>
-                              )}
+                              <div className="shrink-0 flex items-center gap-2">
+                                {isCurrentlyAssignedToThisSpecificGroup ? (
+                                    <Button
+                                        size="sm"
+                                        variant="outline"
+                                        onClick={() => onAssignGroup(soul, 'none', groupType)}
+                                        disabled={!!isAssigning}
+                                        className="h-8 text-xs border-destructive/20 text-destructive hover:bg-destructive/10"
+                                    >
+                                        {isAssigning === f.id ? <Loader2 className="h-3 w-3 animate-spin"/> : 'Unassign'}
+                                    </Button>
+                                ) : (
+                                    <TooltipProvider>
+                                      <Tooltip open={isDisabledForAssignment ? undefined : false}>
+                                        <TooltipTrigger asChild>
+                                          <div className="inline-block">
+                                            <Button
+                                                size="sm"
+                                                onClick={() => onAssignGroup(soul, f.id, groupType)}
+                                                disabled={!!isAssigning || isDisabledForAssignment}
+                                                className="h-8 text-xs font-bold"
+                                            >
+                                                {isAssigning === f.id ? <Loader2 className="h-3 w-3 animate-spin"/> : 'Assign'}
+                                            </Button>
+                                          </div>
+                                        </TooltipTrigger>
+                                        {isDisabledForAssignment && (
+                                          <TooltipContent>
+                                            <p className="text-xs">Already assigned to a {groupType}. Unassign it first.</p>
+                                          </TooltipContent>
+                                        )}
+                                      </Tooltip>
+                                    </TooltipProvider>
+                                )}
+                              </div>
                           </CardContent>
                       </Card>
                   )})
@@ -197,11 +226,11 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
   if (mounted && isMobile) {
     return (
       <Sheet open={isOpen} onOpenChange={onOpenChange}>
-        <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-2xl">
+        <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-2xl">
           <div className="p-6 border-b flex-shrink-0 bg-muted/10">
             <SheetHeader className="text-left">
                 <SheetTitle className="text-xl font-bold font-headline">Assign Group: {soul.firstName}</SheetTitle>
-                <SheetDescription className="text-xs">You can assign to 1 fellowship and 1 association.</SheetDescription>
+                <SheetDescription className="text-xs">Manage Fellowship and Association placement.</SheetDescription>
             </SheetHeader>
           </div>
           <div className="flex-grow overflow-hidden px-6 pb-6">
@@ -218,7 +247,7 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold font-headline">Assign Group: {soul?.firstName}</DialogTitle>
           <DialogDescription>
-            You can assign to 1 fellowship and 1 association.
+            Manage Fellowship and Association placement for this record.
           </DialogDescription>
         </DialogHeader>
         <div className="flex-grow min-h-0">
