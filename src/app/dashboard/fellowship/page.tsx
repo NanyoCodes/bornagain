@@ -432,13 +432,13 @@ export default function FellowshipPage() {
             </div>
 
             {loading ? (
-                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 -mx-4 sm:mx-0">
+                <div className="grid gap-0 md:gap-6 md:grid-cols-2 lg:grid-cols-3 -mx-4 sm:mx-0">
                     {[...Array(3)].map((_, i) => (
                         <Card key={i}><CardContent className="h-40 animate-pulse bg-muted rounded-lg" /></Card>
                     ))}
                 </div>
             ) : (
-                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 -mx-4 sm:mx-0">
+                 <div className="grid gap-0 md:gap-6 md:grid-cols-2 lg:grid-cols-3 -mx-4 sm:mx-0">
                     {filteredFellowships.map((f) => (
                         <FellowshipCard 
                           key={f.id}

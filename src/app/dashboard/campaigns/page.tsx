@@ -402,7 +402,8 @@ export default function CampaignsPage() {
       </div>
 
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 -mx-4 sm:mx-0">
+      {/* Flush cards on mobile stack */}
+      <div className="grid gap-0 md:gap-6 md:grid-cols-2 lg:grid-cols-3 -mx-4 sm:mx-0">
         {loading && <CampaignSkeletons />}
         {!loading && sortedAndFilteredCampaigns?.map((campaign, index) => (
           <Fragment key={campaign.id}>

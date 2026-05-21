@@ -215,7 +215,7 @@ function CityImpactCard({
   }, [fetchCounts]);
 
   return (
-    <Card>
+    <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x">
       <CardHeader className="flex flex-row items-start justify-between pb-4">
         <div>
           <CardTitle className="text-lg">City Impact</CardTitle>
@@ -305,7 +305,7 @@ function ActionAnalyticsCard({ souls }: { souls: Soul[] }) {
   }
   
   return (
-    <Card>
+    <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x">
       <CardHeader>
         <CardTitle className="text-lg">Follow-up Actions Tracker</CardTitle>
         <CardDescription>
@@ -592,7 +592,7 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 space-y-8">
+        <div className="lg:col-span-2 space-y-0">
           <div className="-mx-4 sm:mx-0"><DailyDisciplineCard /></div>
 
           {mounted && <div className="-mx-4 sm:mx-0"><ProgressOverview souls={soulsWon || []} userProfile={userProfile} testimonies={userTestimonies || []} /></div>}
@@ -612,9 +612,9 @@ export default function DashboardPage() {
 
           <AdsenseAd adSlot="dashboard-middle-ad" />
 
-          <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x -mx-4 sm:mx-0">
+          <div className="-mx-4 sm:mx-0">
             <ActionAnalyticsCard souls={soulsWon || []} />
-          </Card>
+          </div>
 
           <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x -mx-4 sm:mx-0">
             <CardHeader className="flex flex-row items-center justify-between">
@@ -637,7 +637,7 @@ export default function DashboardPage() {
           </Card>
         </div>
 
-        <div className="space-y-8">
+        <div className="space-y-0">
           <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x -mx-4 sm:mx-0">
             <CardHeader>
               <CardTitle className="text-lg">Follow-up Funnel</CardTitle>

@@ -288,7 +288,7 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
 
   if (isMobile) {
       return (
-        <div className="space-y-4">
+        <div className="space-y-0">
             <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x">
                 <CardHeader>
                     <CardTitle className="text-lg font-bold font-headline">Follow-up Dashboard</CardTitle>
