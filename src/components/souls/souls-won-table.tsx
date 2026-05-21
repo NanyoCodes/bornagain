@@ -274,7 +274,7 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
   if (souls.length === 0) {
     return (
         <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x">
-            <CardHeader><CardTitle className="text-2xl font-bold font-headline">Follow-up Dashboard</CardTitle><CardDescription>A list of souls won.</CardDescription></CardHeader>
+            <CardHeader><CardTitle className="text-lg font-bold font-headline">Follow-up Dashboard</CardTitle><CardDescription>A list of souls won.</CardDescription></CardHeader>
             <CardContent>
                 <div className="text-center py-12 flex flex-col items-center">
                     <HeartHandshake className="h-12 w-12 text-muted-foreground opacity-20" />
@@ -291,7 +291,7 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
         <div className="space-y-4">
             <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x">
                 <CardHeader>
-                    <CardTitle className="text-2xl font-bold font-headline">Follow-up Dashboard</CardTitle>
+                    <CardTitle className="text-lg font-bold font-headline">Follow-up Dashboard</CardTitle>
                     <CardDescription>A list of souls won.</CardDescription>
                 </CardHeader>
             </Card>
@@ -304,7 +304,7 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
 
   return (
     <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x">
-      <CardHeader><CardTitle className="text-2xl font-bold font-headline">Follow-up Dashboard</CardTitle><CardDescription>Keep track of their spiritual journey.</CardDescription></CardHeader>
+      <CardHeader><CardTitle className="text-lg font-bold font-headline">Follow-up Dashboard</CardTitle><CardDescription>Keep track of their spiritual journey.</CardDescription></CardHeader>
       <CardContent>
         <Table>
           <TableHeader>
