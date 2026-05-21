@@ -514,6 +514,11 @@
             "type": "string",
             "description": "The soul's phone number."
         },
+        "photoURL": {
+            "type": "string",
+            "format": "uri",
+            "description": "A photo for identity purposes."
+        },
         "church": {
           "type": "string",
           "description": "The church the soul is attending."

@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -11,6 +12,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -26,12 +28,14 @@ import { errorEmitter } from "@/firebase/error-emitter";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { haversineDistance, safeToDate } from "@/lib/utils";
 import { LocationWonInput } from "./location-won-input";
+import { ImageUpload } from "../common/image-upload";
 
 const formSchema = z.object({
   firstName: z.string().min(2, "First name must be at least 2 characters."),
   lastName: z.string().min(2, "Last name must be at least 2 characters."),
   email: z.string().email("Please enter a valid email address.").optional().or(z.literal('')),
   phone: z.string().optional(),
+  photoURL: z.string().optional(),
   church: z.string().optional(),
   locationWonCity: z.string().optional(),
   locationWonState: z.string().optional(),
@@ -66,6 +70,7 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
       lastName: soul.lastName || "",
       email: soul.email || "",
       phone: soul.phone || "",
+      photoURL: soul.photoURL || "",
       church: soul.church || "",
       locationWonCity: soul.locationWon?.city || "",
       locationWonState: soul.locationWon?.state || "",
@@ -79,10 +84,9 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
     },
   });
 
-  const { reset, control } = form;
+  const { reset, control, setValue } = form;
   const lastSoulId = useRef(soul.id);
 
-  // Synchronization hook with stability ref to prevent infinite render loops
   useEffect(() => {
     if (soul.id !== lastSoulId.current) {
         reset({
@@ -90,6 +94,7 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
             lastName: soul.lastName || "",
             email: soul.email || "",
             phone: soul.phone || "",
+            photoURL: soul.photoURL || "",
             church: soul.church || "",
             locationWonCity: soul.locationWon?.city || "",
             locationWonState: soul.locationWon?.state || "",
@@ -111,19 +116,19 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
 
   useEffect(() => {
     if (sourceValue !== 'Campaign') {
-        form.setValue('sourceDetails', '');
+        setValue('sourceDetails', '');
     }
-  }, [sourceValue, form]);
+  }, [sourceValue, setValue]);
 
   const sortedFellowships = useMemo(() => {
-    if (!fellowships || fellowships.length === 0) return [];
+    const list = [...(fellowships || [])];
+    if (!list.length) return [];
     
-    const baseList = [...fellowships];
     if (typeof watchedLat !== 'number' || typeof watchedLng !== 'number') {
-        return baseList.sort((a, b) => a.name.localeCompare(b.name));
+        return list.sort((a, b) => a.name.localeCompare(b.name));
     }
 
-    return baseList
+    return list
         .map(f => {
             const distance = f.latitude && f.longitude
                 ? haversineDistance({ lat: watchedLat, lng: watchedLng }, { lat: f.latitude, lng: f.longitude })
@@ -152,6 +157,7 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
       updatedAt: serverTimestamp(),
       email: values.email || null,
       phone: values.phone || null,
+      photoURL: values.photoURL || null,
       church: values.church || null,
       sourceDetails: values.sourceDetails || null,
     };
@@ -212,24 +218,6 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
             transaction.update(globalSoulRef, soulUpdateData);
         });
 
-        const wasNewlyAssigned = values.fellowshipId && values.fellowshipId !== 'none' && values.fellowshipId !== '' && values.fellowshipId !== soul.fellowshipId;
-        if (wasNewlyAssigned) {
-            const selectedFellowship = fellowships?.find(f => f.id === values.fellowshipId);
-            if (selectedFellowship && selectedFellowship.organizerId !== user.uid) {
-                const notificationRef = collection(firestore, `users/${selectedFellowship.organizerId}/notifications`);
-                const contactInfo = values.email || values.phone;
-                addDoc(notificationRef, {
-                    userId: selectedFellowship.organizerId,
-                    type: 'new_soul_in_fellowship',
-                    title: `New Member in ${selectedFellowship.name}`,
-                    message: `${values.firstName} ${values.lastName} was assigned to your fellowship. Please reach out to them${contactInfo ? ` at ${contactInfo}` : ''}.`,
-                    link: `/dashboard/fellowship`,
-                    isRead: false,
-                    createdAt: serverTimestamp(),
-                }).catch(err => console.warn("Failed to send assignment notification", err));
-            }
-        }
-        
         toast({
             title: "Soul Updated",
             description: "Record has been updated successfully.",
@@ -260,7 +248,30 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <FormField
+            control={form.control}
+            name="photoURL"
+            render={({ field }) => (
+                <FormItem className="flex flex-col items-center">
+                    <FormLabel>Identity Photo</FormLabel>
+                    <FormControl>
+                        <ImageUpload
+                            initialImageUrl={field.value}
+                            onUploadComplete={(url) => field.onChange(url)}
+                            storagePath="soul-photos"
+                            cropAspect={1}
+                            circularCrop={true}
+                        />
+                    </FormControl>
+                    <FormMessage />
+                    <FormDescription className="text-center text-[10px]">
+                        At least 250kb photo recommended for identity verification.
+                    </FormDescription>
+                </FormItem>
+            )}
+        />
+
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <FormField
             control={form.control}

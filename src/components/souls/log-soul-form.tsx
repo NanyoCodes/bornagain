@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -28,12 +29,14 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { LocationWonInput } from "./location-won-input";
 import { haversineDistance } from "@/lib/utils";
+import { ImageUpload } from "../common/image-upload";
 
 const formSchema = z.object({
   firstName: z.string().min(2, "First name must be at least 2 characters."),
   lastName: z.string().min(2, "Last name must be at least 2 characters."),
   email: z.string().email("Please enter a valid email address.").optional().or(z.literal('')),
   phone: z.string().optional(),
+  photoURL: z.string().optional(),
   church: z.string().optional(),
   locationWonCity: z.string().optional(),
   locationWonState: z.string().optional(),
@@ -56,12 +59,6 @@ type LogSoulFormProps = {
   campaigns: Campaign[];
 };
 
-/**
- * PRODUCTION FIXES:
- * 1. Granular watchers: useWatch reduces entire form rerenders on every keystroke.
- * 2. Controlled Selects: Explicit value/onValueChange via Controller for Radix UI.
- * 3. Performance: Memoized sorting for fellowships list based on geolocation.
- */
 export function LogSoulForm({ onSoulLogged, defaultCampaign, fellowships, campaigns }: LogSoulFormProps) {
   const { toast } = useToast();
   const { user, loading: userLoading } = useUser();
@@ -78,6 +75,7 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign, fellowships, campai
       lastName: "",
       email: "",
       phone: "",
+      photoURL: "",
       church: "",
       locationWonCity: "",
       locationWonState: "",
@@ -94,7 +92,6 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign, fellowships, campai
 
   const { control, setValue } = form;
 
-  // Use granular watchers to prevent component-wide rerenders on name inputs.
   const sourceValue = useWatch({ control, name: "source" });
   const watchedLat = useWatch({ control, name: "locationWonLatitude" });
   const watchedLng = useWatch({ control, name: "locationWonLongitude" });
@@ -105,7 +102,6 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign, fellowships, campai
     }
   }, [sourceValue, setValue]);
 
-  // OPTIMIZATION: Memoize fellowship list sorting to prevent jank while typing.
   const sortedFellowships = useMemo(() => {
     const list = [...(fellowships || [])];
     if (!list.length) return [];
@@ -158,6 +154,7 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign, fellowships, campai
       userLocation: processedUserLocation || null,
       email: values.email || null,
       phone: values.phone || null,
+      photoURL: values.photoURL || null,
       church: values.church || null,
       sourceDetails: values.sourceDetails || null,
     };
@@ -216,7 +213,6 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign, fellowships, campai
             }
         });
 
-        // Async side effects: handled after transaction to keep UI snappy.
         if (values.fellowshipId && values.fellowshipId !== 'none' && values.fellowshipId !== '') {
             const selectedFellowship = fellowships?.find(f => f.id === values.fellowshipId);
             if (selectedFellowship && selectedFellowship.organizerId !== user.uid) {
@@ -232,41 +228,6 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign, fellowships, campai
                     createdAt: serverTimestamp(),
                 }).catch(err => console.warn("Notification send failed", err));
             }
-        }
-
-        if (values.email) {
-            const logo = PlaceHolderImages.find(img => img.id === 'logo');
-            const logoUrl = logo ? logo.imageUrl : '';
-            const mailCollectionRef = collection(firestore, 'mail');
-            const appUrl = window.location.origin;
-            const inviterName = user.displayName || 'A friend';
-            addDoc(mailCollectionRef, {
-                to: [values.email],
-                message: {
-                    subject: `You're invited to join Testify!`,
-                    html: `
-                        <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
-                          <div style="max-width: 600px; margin: 20px auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
-                            <div style="text-align: center; margin-bottom: 20px;">
-                              <img src="${logoUrl}" alt="Testify Logo" style="width: 80px; height: 80px; border-radius: 8px;">
-                              <h1 style="font-size: 24px; margin-top: 10px;">You're Invited to Testify</h1>
-                            </div>
-                            <p>Hi ${values.firstName},</p>
-                            <p><strong>${inviterName}</strong> has invited you to join Testify, a platform for believers to share testimonies, organize soul-winning campaigns, and track evangelism progress.</p>
-                            <p>Join the movement and start your journey today!</p>
-                            <div style="text-align: center; margin: 30px 0;">
-                              <a href="${appUrl}" style="background-color: #f97416; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-size: 16px;">Join Testify</a>
-                            </div>
-                            <p>God bless,</p>
-                            <p><strong>The Testify Team</strong></p>
-                          </div>
-                          <div style="text-align: center; font-size: 12px; color: #999; margin-top: 20px;">
-                            <p>&copy; Testify. All rights reserved.</p>
-                          </div>
-                        </div>
-                    `,
-                },
-            }).catch(err => console.error("Failed to send invitation email:", err));
         }
 
         toast({
@@ -295,18 +256,33 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign, fellowships, campai
     );
   }
 
-  if (!user || !userProfile) {
-    return (
-      <div className="text-center text-destructive p-8">
-        <p>You must be logged in to perform this action.</p>
-      </div>
-    );
-  }
-
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <div className="grid grid-cols-2 gap-4">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <FormField
+            control={form.control}
+            name="photoURL"
+            render={({ field }) => (
+                <FormItem className="flex flex-col items-center">
+                    <FormLabel>Identity Photo</FormLabel>
+                    <FormControl>
+                        <ImageUpload
+                            initialImageUrl={field.value}
+                            onUploadComplete={(url) => field.onChange(url)}
+                            storagePath="soul-photos"
+                            cropAspect={1}
+                            circularCrop={true}
+                        />
+                    </FormControl>
+                    <FormMessage />
+                    <FormDescription className="text-center text-[10px]">
+                        Add a photo of at least 250kb for secure identification.
+                    </FormDescription>
+                </FormItem>
+            )}
+        />
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <FormField
             control={form.control}
             name="firstName"

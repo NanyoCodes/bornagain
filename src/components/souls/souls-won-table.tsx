@@ -1,3 +1,4 @@
+
 "use client";
 
 import * as React from "react";
@@ -37,7 +38,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { cn, safeToDate } from "@/lib/utils";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/collapsible";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { actionItems } from "@/lib/follow-up-data";
 import { Label } from "../ui/label";
 
@@ -87,6 +88,7 @@ const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, 
                      <div className="flex items-center justify-between gap-4">
                         <div className="flex items-center gap-3 min-w-0 flex-1">
                             <Avatar className="h-10 w-10 sm:h-11 sm:w-11 shrink-0 border">
+                                <AvatarImage src={soul.photoURL} />
                                 <AvatarFallback className="font-bold">{soul.firstName?.charAt(0)}{soul.lastName?.charAt(0)}</AvatarFallback>
                             </Avatar>
                             <div className="min-w-0">
@@ -217,7 +219,8 @@ const SoulTableRow = React.memo(({ soul, onFollowUp, onViewHistory, onExportSing
         <TableRow>
             <TableCell className="font-medium">
                 <div className="flex items-center gap-3">
-                    <Avatar className="hidden sm:inline-flex h-9 w-9">
+                    <Avatar className="hidden sm:inline-flex h-9 w-9 border">
+                        <AvatarImage src={soul.photoURL} />
                         <AvatarFallback>{soul.firstName?.charAt(0)}{soul.lastName?.charAt(0)}</AvatarFallback>
                     </Avatar>
                     <div>
