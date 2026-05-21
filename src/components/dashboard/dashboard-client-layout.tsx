@@ -50,9 +50,9 @@ import { EditProfileModal } from "@/components/profile/edit-profile-modal";
 import { PageTransition } from "../page-transition";
 
 const navItems = [
-  { href: "/dashboard/testimonies", label: "Testimonies", icon: Newspaper, color: "text-chart-3" },
   { href: "/progress", label: "Progress", icon: TrendingUp, color: "text-chart-1" },
   { href: "/dashboard/souls-won", label: "Souls Won", icon: UserPlus, color: "text-chart-2" },
+  { href: "/dashboard/testimonies", label: "Testimonies", icon: Newspaper, color: "text-chart-3" },
   { href: "/dashboard/campaigns", label: "Campaigns", icon: Target, color: "text-chart-4" },
   { href: "/dashboard/fellowship", label: "Fellowship", icon: HeartHandshake, color: "text-primary" },
 ];
@@ -135,7 +135,7 @@ function AppHeader({ unreadChatCount }: { unreadChatCount: number }) {
                     href={item.href}
                     prefetch={true}
                     className={cn(
-                    "transition-colors hover:text-primary whitespace-nowrap relative flex items-center gap-2",
+                    "transition-colors hover:text-primary whitespace-nowrap flex items-center gap-2",
                     isActive ? "text-primary font-semibold" : "text-muted-foreground"
                     )}
                 >

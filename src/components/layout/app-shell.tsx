@@ -45,14 +45,14 @@ import { EditProfileModal } from "@/components/profile/edit-profile-modal";
 import { PageTransition } from "../page-transition";
 
 const navItems = [
-  { href: "/testimonies", label: "Testimonies", icon: Newspaper, color: "text-chart-3" },
   { href: "/progress", label: "Progress", icon: TrendingUp, color: "text-chart-1" },
   { href: "/souls-won", label: "Souls Won", icon: UserPlus, color: "text-chart-2" },
+  { href: "/testimonies", label: "Testimonies", icon: Newspaper, color: "text-chart-3" },
   { href: "/campaigns", label: "Campaigns", icon: Target, color: "text-chart-4" },
   { href: "/fellowships", label: "Fellowship", icon: HeartHandshake, color: "text-primary" },
 ];
 
-const NOTIFICATION_TYPES = ['campaign_join', 'accountability_nudge', 'accountability_request', 'request_accepted', 'request_declined', 'accountability_partner_removed', 'new_soul_in_fellowship'];
+const NOTIFICATION_TYPES = ['campaign_join', 'new_chat_message', 'accountability_nudge', 'accountability_request', 'request_accepted', 'request_declined', 'accountability_partner_removed', 'new_soul_in_fellowship'];
 
 function AppHeader({ unreadChatCount, unreadNotifCount }: { unreadChatCount: number, unreadNotifCount: number }) {
   const { user } = useUser();
