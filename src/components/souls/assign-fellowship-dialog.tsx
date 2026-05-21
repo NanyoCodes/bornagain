@@ -1,4 +1,3 @@
-
 'use client';
 
 import * as React from 'react';
@@ -8,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Card, CardContent } from '@/components/ui/card';
-import { Loader2, Filter, AlertCircle, Info } from 'lucide-react';
+import { Loader2, Filter, AlertCircle, Info, MapPin } from 'lucide-react';
 import type { Soul, Fellowship } from '@/lib/types';
 import { haversineDistance } from '@/lib/utils';
 import { cn } from '@/lib/utils';
@@ -110,20 +109,20 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
 
   const content = (
     <div className="flex flex-col h-full gap-4">
-      <div className="space-y-4 pt-4 shrink-0">
-        <div className="bg-muted/40 p-3 rounded-lg border border-dashed flex items-start gap-3">
+      <div className="space-y-4 pt-4 shrink-0 px-1">
+        <div className="bg-primary/5 p-3 rounded-lg border border-primary/10 flex items-start gap-3">
           <Info className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-          <div className="text-xs text-muted-foreground space-y-1">
+          <div className="text-[11px] sm:text-xs text-muted-foreground space-y-1">
             <p>You can assign {soul.firstName} to one Fellowship and one Association.</p>
-            <p className="font-semibold text-foreground/80">Rule: Unassign the current group of a type before assigning a new one of that same type.</p>
+            <p className="font-bold text-foreground/80">To switch groups of the same type, unassign the current one first.</p>
           </div>
         </div>
 
         <Tabs value={typeFilter} onValueChange={setTypeFilter} className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="all">All</TabsTrigger>
-            <TabsTrigger value="Fellowship">Fellowships</TabsTrigger>
-            <TabsTrigger value="Association">Associations</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-3 h-9 sm:h-10">
+            <TabsTrigger value="all" className="text-xs">All</TabsTrigger>
+            <TabsTrigger value="Fellowship" className="text-xs">Fellowships</TabsTrigger>
+            <TabsTrigger value="Association" className="text-xs">Associations</TabsTrigger>
           </TabsList>
         </Tabs>
         
@@ -131,7 +130,7 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
           <div className="space-y-1.5">
             <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground ml-1">Country</label>
             <Select value={country || 'all'} onValueChange={(val) => { setCountry(val === 'all' ? '' : val); setState(''); }}>
-              <SelectTrigger className="h-10"><SelectValue placeholder="Select Country" /></SelectTrigger>
+              <SelectTrigger className="h-9 sm:h-10 text-xs sm:text-sm"><SelectValue placeholder="Select Country" /></SelectTrigger>
               <SelectContent>
                   <SelectItem value="all">All Countries</SelectItem>
                   {countries.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
@@ -141,7 +140,7 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
           <div className="space-y-1.5">
             <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground ml-1">State/Province</label>
             <Select value={state || 'all'} onValueChange={(val) => setState(val === 'all' ? '' : val)} disabled={!country}>
-              <SelectTrigger className="h-10"><SelectValue placeholder="Select State" /></SelectTrigger>
+              <SelectTrigger className="h-9 sm:h-10 text-xs sm:text-sm"><SelectValue placeholder="Select State" /></SelectTrigger>
               <SelectContent>
                   <SelectItem value="all">All States</SelectItem>
                   {states.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
@@ -152,7 +151,7 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
       </div>
 
       <ScrollArea className={cn("border rounded-lg bg-muted/5 flex-grow", isMobile ? "min-h-0" : "h-72")}>
-          <div className="p-3 space-y-3">
+          <div className="p-2 sm:p-3 space-y-2 sm:space-y-3">
               {filteredAndSortedFellowships.length > 0 ? (
                   filteredAndSortedFellowships.map(f => {
                       const groupType = f.groupType || 'Fellowship';
@@ -161,17 +160,20 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
                       const isDisabledForAssignment = !isCurrentlyAssignedToThisSpecificGroup && typeAlreadyHasAssignment;
 
                       return (
-                      <Card key={f.id} className={cn("transition-colors shadow-none", isCurrentlyAssignedToThisSpecificGroup && "bg-primary/5 border-primary/20")}>
-                          <CardContent className="p-3 flex items-center justify-between gap-4">
+                      <Card key={f.id} className={cn("transition-colors shadow-none border", isCurrentlyAssignedToThisSpecificGroup ? "bg-primary/5 border-primary/30" : "bg-card")}>
+                          <CardContent className="p-3 flex items-center justify-between gap-3 sm:gap-4">
                               <div className="min-w-0 flex-1">
-                                  <div className="flex items-center gap-2 mb-1 flex-wrap">
-                                    <p className="font-bold text-sm truncate">{f.name}</p>
-                                    <Badge variant="secondary" className={cn("text-[9px] px-1.5 h-4 uppercase font-bold tracking-tight bg-background border", groupType === 'Association' ? "border-blue-500/30 text-blue-600" : "border-primary/30 text-primary")}>
+                                  <div className="flex items-center gap-1.5 mb-0.5 flex-wrap">
+                                    <p className="font-bold text-xs sm:text-sm truncate">{f.name}</p>
+                                    <Badge variant="outline" className={cn("text-[8px] sm:text-[9px] px-1 h-3.5 sm:h-4 uppercase font-bold tracking-tight bg-background/50", groupType === 'Association' ? "border-blue-500/20 text-blue-600" : "border-primary/20 text-primary")}>
                                         {groupType}
                                     </Badge>
                                   </div>
-                                  <p className="text-[11px] text-muted-foreground truncate">{f.location}</p>
-                                  {f.distance !== null ? <p className="text-[10px] text-primary font-medium mt-1">{f.distance.toFixed(1)} km away</p> : null}
+                                  <p className="text-[10px] sm:text-[11px] text-muted-foreground truncate flex items-center gap-1">
+                                    <MapPin className="h-2.5 w-2.5 shrink-0" />
+                                    {f.location}
+                                  </p>
+                                  {f.distance !== null ? <p className="text-[9px] sm:text-[10px] text-primary font-bold mt-1 uppercase tracking-tighter">{f.distance.toFixed(1)} km away</p> : null}
                               </div>
                               <div className="shrink-0 flex items-center gap-2">
                                 {isCurrentlyAssignedToThisSpecificGroup ? (
@@ -180,7 +182,7 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
                                         variant="outline"
                                         onClick={() => onAssignGroup(soul, 'none', groupType)}
                                         disabled={!!isAssigning}
-                                        className="h-8 text-xs border-destructive/20 text-destructive hover:bg-destructive/10"
+                                        className="h-7 sm:h-8 px-2 sm:px-3 text-[10px] sm:text-xs border-destructive/30 text-destructive hover:bg-destructive/10 font-bold"
                                     >
                                         {isAssigning === f.id ? <Loader2 className="h-3 w-3 animate-spin"/> : 'Unassign'}
                                     </Button>
@@ -193,15 +195,15 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
                                                 size="sm"
                                                 onClick={() => onAssignGroup(soul, f.id, groupType)}
                                                 disabled={!!isAssigning || isDisabledForAssignment}
-                                                className="h-8 text-xs font-bold"
+                                                className="h-7 sm:h-8 px-2 sm:px-4 text-[10px] sm:text-xs font-bold"
                                             >
                                                 {isAssigning === f.id ? <Loader2 className="h-3 w-3 animate-spin"/> : 'Assign'}
                                             </Button>
                                           </div>
                                         </TooltipTrigger>
                                         {isDisabledForAssignment && (
-                                          <TooltipContent>
-                                            <p className="text-xs">Already assigned to a {groupType}. Unassign it first.</p>
+                                          <TooltipContent className="max-w-[150px]">
+                                            <p className="text-[10px] leading-tight">Already assigned to a {groupType}. Unassign it first.</p>
                                           </TooltipContent>
                                         )}
                                       </Tooltip>
@@ -230,11 +232,16 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
           <div className="p-6 border-b flex-shrink-0 bg-muted/10">
             <SheetHeader className="text-left">
                 <SheetTitle className="text-xl font-bold font-headline">Assign Group: {soul.firstName}</SheetTitle>
-                <SheetDescription className="text-xs">Manage Fellowship and Association placement.</SheetDescription>
+                <SheetDescription className="text-xs">Manage community placement for this convert.</SheetDescription>
             </SheetHeader>
           </div>
-          <div className="flex-grow overflow-hidden px-6 pb-6">
+          <div className="flex-grow overflow-hidden px-6 pb-4">
             {content}
+          </div>
+          <div className="p-4 border-t shrink-0 flex justify-end">
+            <Button variant="ghost" onClick={() => onOpenChange(false)} className="text-muted-foreground text-xs uppercase font-bold tracking-widest">
+              Close
+            </Button>
           </div>
         </SheetContent>
       </Sheet>

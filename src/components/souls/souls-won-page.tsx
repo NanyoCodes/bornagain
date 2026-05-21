@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
@@ -40,11 +39,6 @@ import {
     DropdownMenuContent, 
     DropdownMenuItem, 
     DropdownMenuTrigger,
-    DropdownMenuSub,
-    DropdownMenuSubTrigger,
-    DropdownMenuPortal,
-    DropdownMenuSubContent,
-    DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { format } from "date-fns";
 import { errorEmitter } from "@/firebase/error-emitter";
@@ -117,7 +111,6 @@ export default function SoulsWonPage() {
 
   const loading = userLoading || soulsLoading;
 
-  // Memoized handlers to stabilize SoulsWonTable props
   const handleOpenFollowUp = useCallback((soul: Soul) => setSoulForFollowUp(soul), []);
   const handleOpenHistory = useCallback((soul: Soul) => setSoulForHistory(soul), []);
   const handleOpenAssign = useCallback((soul: Soul) => setSoulToAssign(soul), []);
