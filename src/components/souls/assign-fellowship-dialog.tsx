@@ -103,8 +103,17 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
     return null;
   }
 
-  const hasAssignedFellowship = !!soul.fellowshipId;
-  const hasAssignedAssociation = !!soul.associationId;
+  // Integrity Check: Only consider a soul assigned if the target group exists in the active fellowships list.
+  // If the group was deleted, we treat it as unassigned to allow for new placement.
+  const hasAssignedFellowship = React.useMemo(() => {
+    if (!soul.fellowshipId) return false;
+    return fellowships.some(f => f.id === soul.fellowshipId && (f.groupType || 'Fellowship') === 'Fellowship');
+  }, [soul.fellowshipId, fellowships]);
+
+  const hasAssignedAssociation = React.useMemo(() => {
+    if (!soul.associationId) return false;
+    return fellowships.some(f => f.id === soul.associationId && f.groupType === 'Association');
+  }, [soul.associationId, fellowships]);
 
   const content = (
     <div className="flex flex-col h-full gap-4">

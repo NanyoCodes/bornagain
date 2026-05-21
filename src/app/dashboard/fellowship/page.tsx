@@ -21,7 +21,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useCollection, useFirestore, useUser, useDoc } from "@/firebase";
-import { collection, query, orderBy, serverTimestamp, doc, runTransaction, updateDoc, writeBatch } from "firebase/firestore";
+import { collection, query, orderBy, serverTimestamp, doc, runTransaction, updateDoc, writeBatch, where, getDocs, deleteField } from "firebase/firestore";
 import type { UserProfile, Fellowship, FellowshipMember } from "@/lib/types";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -468,14 +468,42 @@ export default function FellowshipPage() {
     const handleDeleteFellowship = async () => {
         if (!fellowshipToDelete || !user || !firestore) return;
         setIsDeleting(true);
-        const fellowshipRef = doc(firestore, 'fellowships', fellowshipToDelete.id);
+        const fellowshipId = fellowshipToDelete.id;
+        const fellowshipRef = doc(firestore, 'fellowships', fellowshipId);
+        
         try {
+            // 1. Mark fellowship as deleted
             await updateDoc(fellowshipRef, { status: 'deleted' });
-            toast({ title: 'Group Deleted' });
+
+            // 2. Automatically unassign souls from this group
+            const soulsRef = collection(firestore, 'souls');
+            const [fSnapshot, aSnapshot] = await Promise.all([
+                getDocs(query(soulsRef, where('fellowshipId', '==', fellowshipId))),
+                getDocs(query(soulsRef, where('associationId', '==', fellowshipId)))
+            ]);
+
+            const cleanupTasks: Promise<any>[] = [];
+            fSnapshot.docs.forEach(sDoc => {
+                const sData = sDoc.data();
+                const updates = { fellowshipId: deleteField(), fellowshipName: deleteField() };
+                cleanupTasks.push(updateDoc(doc(firestore, 'souls', sDoc.id), updates));
+                cleanupTasks.push(updateDoc(doc(firestore, 'users', sData.userId, 'souls', sDoc.id), updates));
+            });
+            aSnapshot.docs.forEach(sDoc => {
+                const sData = sDoc.data();
+                const updates = { associationId: deleteField(), associationName: deleteField() };
+                cleanupTasks.push(updateDoc(doc(firestore, 'souls', sDoc.id), updates));
+                cleanupTasks.push(updateDoc(doc(firestore, 'users', sData.userId, 'souls', sDoc.id), updates));
+            });
+
+            // Perform all unassignments in parallel
+            await Promise.all(cleanupTasks);
+
+            toast({ title: 'Group Deleted', description: 'Associated souls have been automatically unassigned.' });
             closeAllDialogs();
         } catch (e) {
-            const permissionError = new FirestorePermissionError({ path: fellowshipRef.path, operation: 'update' }, user);
-            errorEmitter.emit('permission-error', permissionError);
+            console.error("Cleanup failed:", e);
+            errorEmitter.emit('permission-error', new FirestorePermissionError({ path: fellowshipRef.path, operation: 'update' }, user));
         } finally {
             setIsDeleting(false);
         }
