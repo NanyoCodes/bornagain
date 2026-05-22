@@ -137,7 +137,7 @@ function PartnerCard({
                     </Dialog>
                     <div className="min-w-0">
                         <Link href={`/dashboard/profile/${partner.userId}`}>
-                            <h2 className="text-sm sm:text-base font-bold truncate hover:underline">{partner.firstName} {partner.lastName}</h2>
+                            <h2 className="text-xs sm:text-sm font-bold truncate hover:underline">{partner.firstName} {partner.lastName}</h2>
                         </Link>
                     </div>
                 </div>
@@ -253,6 +253,31 @@ export default function AccountabilityPage() {
   }, [user?.uid, firestore]);
 
   const { data: userProfile, loading: loadingProfile } = useDoc<UserProfile>(userDocRef);
+
+  const partners = userProfile?.accountabilityPartners || [];
+
+  const filteredPartners = useMemo(() => {
+    // 1. Deduplicate by userId to prevent rendering errors
+    const uniqueMap = new Map();
+    partners.forEach(p => {
+        if (p.userId) {
+          // If we have multiple entries, keep the most complete one (has photoURL)
+          if (!uniqueMap.has(p.userId) || (!uniqueMap.get(p.userId).photoURL && p.photoURL)) {
+            uniqueMap.set(p.userId, p);
+          }
+        }
+    });
+    const uniquePartners = Array.from(uniqueMap.values());
+
+    // 2. Apply search filter
+    if (!searchTerm) {
+      return uniquePartners;
+    }
+    const lowercasedTerm = searchTerm.toLowerCase();
+    return uniquePartners.filter(partner => 
+      `${partner.firstName} ${partner.lastName}`.toLowerCase().includes(lowercasedTerm)
+    );
+  }, [partners, searchTerm]);
 
   const handleNudgePartner = async (partner: { userId: string, firstName: string, lastName: string }) => {
     if (!user || !firestore || !userProfile) return;
@@ -429,18 +454,6 @@ export default function AccountabilityPage() {
   };
 
   const isLoading = userLoading || loadingProfile;
-
-  const partners = userProfile?.accountabilityPartners || [];
-
-  const filteredPartners = useMemo(() => {
-    if (!searchTerm) {
-      return partners;
-    }
-    const lowercasedTerm = searchTerm.toLowerCase();
-    return partners.filter(partner => 
-      `${partner.firstName} ${partner.lastName}`.toLowerCase().includes(lowercasedTerm)
-    );
-  }, [partners, searchTerm]);
 
   if (isLoading) {
     return (
