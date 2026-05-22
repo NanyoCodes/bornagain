@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { useUser, useAuth, useFirestore, useCollection } from '@/firebase';
-import { collection, query, orderBy, addDoc, serverTimestamp, doc, deleteDoc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
+import { useUser, useFirestore, useCollection } from '@/firebase';
+import { collection, query, orderBy, addDoc, serverTimestamp, doc, deleteDoc, updateDoc, arrayUnion, arrayRemove, getDocs, where, writeBatch } from 'firebase/firestore';
 import type { TestimonyComment, UserProfile } from '@/lib/types';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -136,8 +136,8 @@ function CommentItem({
                         )}
                     </div>
 
-                    <div className="flex items-center gap-4 mt-1 px-1">
-                        <div className="flex items-center gap-3 sm:gap-4 flex-wrap">
+                    <div className="flex items-center gap-4 mt-1.5 px-1">
+                        <div className="flex items-center gap-x-4 gap-y-1 flex-wrap">
                             <button 
                                 onClick={() => handleReaction('amen')}
                                 disabled={isReacting !== null}
@@ -238,7 +238,6 @@ export function CommentSection({ testimonyId }: { testimonyId: string }) {
 
     const renderComment = (comment: TestimonyComment, level = 0) => {
         const children = repliesMap[comment.id] || [];
-        // Cap indentation to avoid horizontal overflow on small mobile screens
         const indentLevel = level > 3 ? 3 : level;
         
         return (
