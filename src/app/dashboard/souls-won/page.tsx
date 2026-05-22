@@ -20,9 +20,9 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { PlusCircle, Download, Loader2, Trash2 } from "lucide-react";
-import type { Soul, Campaign, Fellowship } from "@/lib/types";
-import { useCollection, useFirestore, useUser } from "@/firebase";
+import { PlusCircle, Download, Loader2, Trash2, HeartHandshake } from "lucide-react";
+import type { Soul, Campaign, Fellowship, UserProfile } from "@/lib/types";
+import { useCollection, useFirestore, useUser, useDoc } from "@/firebase";
 import { collection, query, orderBy, doc, serverTimestamp, updateDoc, writeBatch, deleteField, addDoc } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -294,39 +294,39 @@ export default function SoulsWonPage() {
     <div className="space-y-8 max-w-3xl mx-auto -mx-4 sm:mx-auto">
       {/* Responsive Single-Row Interaction Box */}
       <Card className="border shadow-sm sm:shadow-md rounded-none sm:rounded-lg border-x-0 sm:border-x">
-        <CardContent className="p-3 sm:p-4">
-          <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3">
+        <CardContent className="p-2 sm:p-4">
+          <div className="flex flex-row items-center gap-1.5 sm:gap-3">
             <Button 
                 variant="outline" 
-                className="w-full sm:flex-1 justify-start text-muted-foreground font-normal rounded-full h-10 sm:h-11 px-4 hover:bg-muted/50 transition-colors text-sm"
+                className="flex-1 justify-start text-muted-foreground font-normal rounded-full h-10 sm:h-11 px-3 sm:px-4 hover:bg-muted/50 transition-colors text-xs sm:text-sm min-w-0"
                 onClick={() => setIsLogDialogOpen(true)}
                 disabled={loading}
             >
                 <span className="truncate">
-                    {loading ? "Preparing harvest list..." : "Who did you minister to today?"}
+                    {loading ? "Preparing..." : "Who did you minister to today?"}
                 </span>
             </Button>
-            <div className="flex w-full sm:w-auto items-center gap-2">
+            <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
               <Button 
                 variant="secondary" 
                 size="sm" 
-                className="flex-1 sm:flex-none h-10 sm:h-11 px-4 rounded-full"
+                className="h-10 sm:h-11 px-2.5 sm:px-4 rounded-full"
                 onClick={() => setIsLogDialogOpen(true)}
                 disabled={loading}
               >
-                {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <PlusCircle className="mr-2 h-4 w-4" />}
-                <span className="text-xs sm:text-sm font-medium">Log Soul</span>
+                {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <PlusCircle className="h-4 w-4" />}
+                <span className="hidden sm:inline ml-2 text-sm font-medium">Log Soul</span>
               </Button>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button 
                     variant="outline" 
                     size="sm" 
-                    className="flex-1 sm:flex-none h-10 sm:h-11 px-4 rounded-full"
+                    className="h-10 sm:h-11 px-2.5 sm:px-4 rounded-full"
                     disabled={loading}
                   >
-                    <Download className="mr-2 h-4 w-4" />
-                    <span className="text-xs sm:text-sm font-medium">Export</span>
+                    <Download className="h-4 w-4" />
+                    <span className="hidden sm:inline ml-2 text-sm font-medium">Export</span>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
@@ -339,31 +339,19 @@ export default function SoulsWonPage() {
         </CardContent>
       </Card>
 
-      <div className="px-4 sm:px-0 space-y-1">
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Accountability</h1>
-        <p className="text-sm text-muted-foreground">Encourage your partners and keep each other on track.</p>
+      <div className="-mx-4 sm:mx-0">
+        <SoulsWonTable 
+          souls={filteredSouls || []} 
+          loading={loading}
+          onFollowUp={handleOpenFollowUp}
+          onViewHistory={handleOpenHistory}
+          onExportSingle={handleExportSingleSoul}
+          onOpenAssignDialog={handleOpenAssign}
+          onEdit={handleOpenEdit}
+          onDelete={handleOpenDelete}
+        />
       </div>
 
-      <div className="space-y-0">
-          {/* ... existing filtered partners logic if any ... */}
-          {/* Note: The original file src/app/dashboard/accountability/page.tsx had PartnerCard logic, 
-              but the User provided src/app/dashboard/souls-won/page.tsx for this specific edit request.
-              I will maintain the SoulsWonPage structure here. */}
-          <div className="-mx-4 sm:mx-0">
-            <SoulsWonTable 
-              souls={filteredSouls || []} 
-              loading={loading}
-              onFollowUp={handleOpenFollowUp}
-              onViewHistory={handleOpenHistory}
-              onExportSingle={handleExportSingleSoul}
-              onOpenAssignDialog={handleOpenAssign}
-              onEdit={handleOpenEdit}
-              onDelete={handleOpenDelete}
-            />
-          </div>
-      </div>
-
-      {/* Consolidation of Modals for stability */}
       <LogFollowUpDialog 
           soul={soulForFollowUp} 
           isOpen={!!soulForFollowUp} 
@@ -388,7 +376,7 @@ export default function SoulsWonPage() {
       <Dialog open={!!soulToEditId} onOpenChange={(open) => !open && setSoulToEditId(null)}>
           <DialogContent className="sm:max-w-lg">
               <DialogHeader>
-                  <DialogTitle className="font-headline">Edit Soul Details</DialogTitle>
+                  <DialogTitle className="font-headline text-2xl">Edit Soul Details</DialogTitle>
                   <DialogDescription>Update information for {soulToEdit?.firstName}.</DialogDescription>
               </DialogHeader>
               <div className="max-h-[70vh] overflow-y-auto pr-2">
@@ -407,7 +395,7 @@ export default function SoulsWonPage() {
       <Dialog open={isLogDialogOpen} onOpenChange={setIsLogDialogOpen}>
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle className="font-headline">Log a New Soul</DialogTitle>
+            <DialogTitle className="font-headline text-2xl">Log a New Soul</DialogTitle>
             <DialogDescription>Record the details of the person you've ministered to.</DialogDescription>
           </DialogHeader>
           <div className="max-h-[70vh] overflow-y-auto pr-2">

@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect, useCallback } from 'react';
@@ -745,38 +744,38 @@ export default function FellowshipPage() {
         <div className="space-y-8">
             {/* Responsive Single-Row Interaction Box */}
             <Card className="border shadow-sm sm:shadow-md rounded-none sm:rounded-lg border-x-0 sm:border-x -mx-4 sm:mx-0">
-                <CardContent className="p-3 sm:p-4">
-                <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3">
+                <CardContent className="p-2 sm:p-4">
+                  <div className="flex flex-row items-center gap-1.5 sm:gap-3">
                     <Button 
                         variant="outline" 
-                        className="w-full sm:flex-1 justify-start text-muted-foreground font-normal rounded-full h-10 sm:h-11 px-4 hover:bg-muted/50 transition-colors text-sm"
+                        className="flex-1 justify-start text-muted-foreground font-normal rounded-full h-10 sm:h-11 px-3 sm:px-4 hover:bg-muted/50 transition-colors text-xs sm:text-sm min-w-0"
                         onClick={() => { setCreateType('Fellowship'); setIsCreateOpen(true); }}
                         disabled={loading}
                     >
                     <span className="truncate">
-                        {loading ? "Preparing groups..." : "Start a new fellowship group?"}
+                        {loading ? "Preparing..." : "Start a new fellowship group?"}
                     </span>
                     </Button>
-                    <div className="flex w-full sm:w-auto items-center gap-2">
+                    <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
                         <Button 
                             variant="secondary" 
                             size="sm" 
-                            className="flex-1 sm:flex-none h-10 sm:h-11 px-4 rounded-full"
+                            className="h-10 sm:h-11 px-2.5 sm:px-4 rounded-full"
                             onClick={() => { setCreateType('Fellowship'); setIsCreateOpen(true); }}
                             disabled={loading}
                         >
-                            {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Users className="mr-2 h-4 w-4" />}
-                            <span className="text-xs sm:text-sm font-medium">Fellowship</span>
+                            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Users className="h-4 w-4" />}
+                            <span className="hidden sm:inline ml-2 text-sm font-medium">Fellowship</span>
                         </Button>
                         <Button 
                             variant="outline" 
                             size="sm" 
-                            className="flex-1 sm:flex-none h-10 sm:h-11 px-4 rounded-full"
+                            className="h-10 sm:h-11 px-2.5 sm:px-4 rounded-full"
                             onClick={() => { setCreateType('Association'); setIsCreateOpen(true); }}
                             disabled={loading}
                         >
-                            {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Group className="mr-2 h-4 w-4" />}
-                            <span className="text-xs sm:text-sm font-medium">Association</span>
+                            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Group className="h-4 w-4" />}
+                            <span className="hidden sm:inline ml-2 text-sm font-medium">Association</span>
                         </Button>
                     </div>
                 </div>
