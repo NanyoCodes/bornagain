@@ -171,6 +171,8 @@ export const TestimonyCard = React.memo(function TestimonyCard({
     if (!user || !firestore || !currentUserProfile || isAuthor || isPartner || hasPendingRequest) return;
     
     setIsRequestingPartner(true);
+    
+    // Sort participant IDs to create a deterministic document ID for the request
     const participantIds = [user.uid, testimony.authorId].sort();
     const requestId = participantIds.join('_');
     const requestRef = doc(firestore, 'accountabilityRequests', requestId);
