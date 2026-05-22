@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect, useMemo, useCallback } from "react";
@@ -14,6 +15,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -37,6 +45,7 @@ import { useToast } from "@/hooks/use-toast";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { EditTestimonyForm } from "@/components/testimonies/edit-testimony-form";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export default function TestimoniesPage() {
   const [isTestimonyDialogOpen, setIsTestimonyDialogOpen] = useState(false);
@@ -404,43 +413,100 @@ export default function TestimoniesPage() {
           </AlertDialogContent>
       </AlertDialog>
 
-      <Dialog open={isEditOpen} onOpenChange={(open) => !open && closeEditDialog()}>
-        <DialogContent className="sm:max-w-lg">
-          <DialogHeader>
-            <DialogTitle>Edit Testimony</DialogTitle>
-            <DialogDescription>
-              Make changes to your testimony here. Click save when you're done.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="max-h-[70vh] overflow-y-auto pr-2">
-            {itemToEdit && <EditTestimonyForm testimony={itemToEdit} onTestimonyUpdated={closeEditDialog} />}
-          </div>
-        </DialogContent>
-      </Dialog>
+      {/* Edit Testimony */}
+      {mounted && isMobile ? (
+        <Sheet open={isEditOpen} onOpenChange={(open) => !open && closeEditDialog()}>
+          <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-2xl">
+            <div className="p-6 border-b flex-shrink-0 bg-muted/10">
+              <SheetHeader className="text-left">
+                <SheetTitle className="text-xl font-bold">Edit Testimony</SheetTitle>
+                <SheetDescription className="text-xs">Update your shared story.</SheetDescription>
+              </SheetHeader>
+            </div>
+            <ScrollArea className="flex-grow">
+              <div className="p-6">
+                {itemToEdit && <EditTestimonyForm testimony={itemToEdit} onTestimonyUpdated={closeEditDialog} />}
+              </div>
+            </ScrollArea>
+          </SheetContent>
+        </Sheet>
+      ) : (
+        <Dialog open={isEditOpen} onOpenChange={(open) => !open && closeEditDialog()}>
+          <DialogContent className="sm:max-w-lg">
+            <DialogHeader>
+              <DialogTitle>Edit Testimony</DialogTitle>
+              <DialogDescription>
+                Make changes to your testimony here. Click save when you're done.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="max-h-[70vh] overflow-y-auto pr-2">
+              {itemToEdit && <EditTestimonyForm testimony={itemToEdit} onTestimonyUpdated={closeEditDialog} />}
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
       
-      <Dialog open={isTestimonyDialogOpen} onOpenChange={(open) => !open && setIsTestimonyDialogOpen(false)}>
-        <DialogContent className="sm:max-w-lg">
-          <DialogHeader>
-            <DialogTitle>{prayerToAnswer ? 'Share Answered Prayer' : 'Share Testimony'}</DialogTitle>
-            <DialogDescription>{prayerToAnswer ? "Share how God answered this prayer to encourage others." : "Encourage others by sharing what God has done."}</DialogDescription>
-          </DialogHeader>
-          <div className="max-h-[70vh] overflow-y-auto pr-2">
-            {testimonyFormContent}
-          </div>
-        </DialogContent>
-      </Dialog>
+      {/* Share Testimony */}
+      {mounted && isMobile ? (
+        <Sheet open={isTestimonyDialogOpen} onOpenChange={(open) => !open && setIsTestimonyDialogOpen(false)}>
+          <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-2xl">
+            <div className="p-6 border-b flex-shrink-0 bg-muted/10">
+              <SheetHeader className="text-left">
+                <SheetTitle className="text-xl font-bold">{prayerToAnswer ? 'Share Answered Prayer' : 'Share Testimony'}</SheetTitle>
+                <SheetDescription className="text-xs">{prayerToAnswer ? "Share how God answered this prayer." : "Encourage others by sharing what God has done."}</SheetDescription>
+              </SheetHeader>
+            </div>
+            <ScrollArea className="flex-grow">
+              <div className="p-6">
+                {testimonyFormContent}
+              </div>
+            </ScrollArea>
+          </SheetContent>
+        </Sheet>
+      ) : (
+        <Dialog open={isTestimonyDialogOpen} onOpenChange={(open) => !open && setIsTestimonyDialogOpen(false)}>
+          <DialogContent className="sm:max-w-lg">
+            <DialogHeader>
+              <DialogTitle>{prayerToAnswer ? 'Share Answered Prayer' : 'Share Testimony'}</DialogTitle>
+              <DialogDescription>{prayerToAnswer ? "Share how God answered this prayer to encourage others." : "Encourage others by sharing what God has done."}</DialogDescription>
+            </DialogHeader>
+            <div className="max-h-[70vh] overflow-y-auto pr-2">
+              {testimonyFormContent}
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
       
-      <Dialog open={isPrayerDialogOpen} onOpenChange={(open) => !open && setIsPrayerDialogOpen(false)}>
-        <DialogContent className="sm:max-w-lg">
-          <DialogHeader>
-            <DialogTitle>Share Prayer Request</DialogTitle>
-            <DialogDescription>Share your request anonymously with the community.</DialogDescription>
-          </DialogHeader>
-          <div className="max-h-[70vh] overflow-y-auto pr-2">
-            {prayerFormContent}
-          </div>
-        </DialogContent>
-      </Dialog>
+      {/* Request Prayer */}
+      {mounted && isMobile ? (
+        <Sheet open={isPrayerDialogOpen} onOpenChange={(open) => !open && setIsPrayerDialogOpen(false)}>
+          <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-2xl">
+            <div className="p-6 border-b flex-shrink-0 bg-muted/10">
+              <SheetHeader className="text-left">
+                <SheetTitle className="text-xl font-bold">Request Prayer</SheetTitle>
+                <SheetDescription className="text-xs">Share your request with the community.</SheetDescription>
+              </SheetHeader>
+            </div>
+            <ScrollArea className="flex-grow">
+              <div className="p-6">
+                {prayerFormContent}
+              </div>
+            </ScrollArea>
+          </SheetContent>
+        </Sheet>
+      ) : (
+        <Dialog open={isPrayerDialogOpen} onOpenChange={(open) => !open && setIsPrayerDialogOpen(false)}>
+          <DialogContent className="sm:max-w-lg">
+            <DialogHeader>
+              <DialogTitle>Share Prayer Request</DialogTitle>
+              <DialogDescription>Share your request anonymously with the community.</DialogDescription>
+            </DialogHeader>
+            <div className="max-h-[70vh] overflow-y-auto pr-2">
+              {prayerFormContent}
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
 
     </div>
   );

@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
@@ -45,6 +46,7 @@ import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { safeToDate } from "@/lib/utils";
 import { Card, CardContent } from "@/components/ui/card";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 // Performance: Dynamically import heavy components
 const SoulsWonTable = dynamic(() => import('@/components/souls/souls-won-table').then(m => m.SoulsWonTable), {
@@ -384,25 +386,52 @@ export default function SoulsWonPage() {
           onAssignGroup={handleAssignGroup} 
       />
       
-      <Dialog open={!!soulToEditId} onOpenChange={(open) => !open && setSoulToEditId(null)}>
-          <DialogContent className="sm:max-w-lg">
-              <DialogHeader>
-                  <DialogTitle className="font-headline text-2xl">Edit Soul Details</DialogTitle>
-                  <DialogDescription>Update information for {soulToEdit?.firstName}.</DialogDescription>
-              </DialogHeader>
-              <div className="max-h-[70vh] overflow-y-auto pr-2">
-                  {soulToEdit && (
-                    <EditSoulForm 
-                        soul={soulToEdit} 
-                        onSoulUpdated={() => setSoulToEditId(null)} 
-                        fellowships={activeFellowships}
-                        campaigns={activeCampaigns}
-                    />
-                  )}
+      {/* Edit Soul */}
+      {mounted && isMobile ? (
+        <Sheet open={!!soulToEditId} onOpenChange={(open) => !open && setSoulToEditId(null)}>
+          <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-2xl">
+            <div className="p-6 border-b flex-shrink-0 bg-muted/10">
+              <SheetHeader className="text-left">
+                <SheetTitle className="text-xl font-bold">Edit Soul Record</SheetTitle>
+                <SheetDescription className="text-xs">Update information for {soulToEdit?.firstName}.</SheetDescription>
+              </SheetHeader>
+            </div>
+            <ScrollArea className="flex-grow">
+              <div className="p-6">
+                 {soulToEdit && (
+                  <EditSoulForm 
+                      soul={soulToEdit} 
+                      onSoulUpdated={() => setSoulToEditId(null)} 
+                      fellowships={activeFellowships}
+                      campaigns={activeCampaigns}
+                  />
+                )}
               </div>
-          </DialogContent>
-      </Dialog>
+            </ScrollArea>
+          </SheetContent>
+        </Sheet>
+      ) : (
+        <Dialog open={!!soulToEditId} onOpenChange={(open) => !open && setSoulToEditId(null)}>
+            <DialogContent className="sm:max-w-lg">
+                <DialogHeader>
+                    <DialogTitle className="font-headline text-2xl">Edit Soul Details</DialogTitle>
+                    <DialogDescription>Update information for {soulToEdit?.firstName}.</DialogDescription>
+                </DialogHeader>
+                <div className="max-h-[70vh] overflow-y-auto pr-2">
+                    {soulToEdit && (
+                      <EditSoulForm 
+                          soul={soulToEdit} 
+                          onSoulUpdated={() => setSoulToEditId(null)} 
+                          fellowships={activeFellowships}
+                          campaigns={activeCampaigns}
+                      />
+                    )}
+                </div>
+            </DialogContent>
+        </Dialog>
+      )}
 
+      {/* Log Soul */}
       {mounted && isMobile ? (
         <Sheet open={isLogDialogOpen} onOpenChange={setIsLogDialogOpen}>
           <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-2xl">

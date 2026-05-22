@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from "next/link";
@@ -43,8 +44,10 @@ import { collection, query, where } from "firebase/firestore";
 import type { Notification } from "@/lib/types";
 import { WelcomePopup } from "@/components/auth/welcome-popup";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { EditProfileModal } from "@/components/profile/edit-profile-modal";
 import { PageTransition } from "../page-transition";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const navItems = [
   { href: "/progress", label: "Progress", icon: TrendingUp, color: "text-chart-1" },
@@ -261,7 +264,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const firestore = useFirestore();
   const router = useRouter();
   const pathname = usePathname();
+  const isMobile = useIsMobile();
+  const [mounted, setMounted] = useState(false);
   const [showWelcomePopup, setShowWelcomePopup] = useState(false);
+
+  useEffect(() => { setMounted(true); }, []);
 
   const unreadChatNotifsQuery = useMemo(() => {
     if (!user?.uid || !firestore) return null;
@@ -313,15 +320,31 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         
         {!isProfileIncomplete && <WelcomePopup isOpen={showWelcomePopup} onClose={() => setShowWelcomePopup(false)} userName={userProfile?.firstName} />}
         
-        <Dialog open={!!isProfileIncomplete}>
-          <DialogContent hideCloseButton className="sm:max-w-lg">
-            <DialogHeader>
-                <DialogTitle>Complete Your Profile</DialogTitle>
-                <DialogDescription>Please provide your name to join the Kingdom workforce.</DialogDescription>
-            </DialogHeader>
-            {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
-          </DialogContent>
-        </Dialog>
+        {mounted && isMobile ? (
+          <Sheet open={!!isProfileIncomplete}>
+            <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-2xl">
+              <div className="p-6 border-b flex-shrink-0 bg-muted/10">
+                <SheetHeader className="text-left">
+                  <SheetTitle className="text-xl font-bold">Complete Your Profile</SheetTitle>
+                  <SheetDescription className="text-xs">Join the global movement by introducing yourself.</SheetDescription>
+                </SheetHeader>
+              </div>
+              <div className="flex-grow overflow-y-auto p-6">
+                {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
+              </div>
+            </SheetContent>
+          </Sheet>
+        ) : (
+          <Dialog open={!!isProfileIncomplete}>
+            <DialogContent hideCloseButton className="sm:max-w-lg">
+              <DialogHeader>
+                  <DialogTitle>Complete Your Profile</DialogTitle>
+                  <DialogDescription>Please provide your name to join the Kingdom workforce.</DialogDescription>
+              </DialogHeader>
+              {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
+            </DialogContent>
+          </Dialog>
+        )}
       </div>
     </SearchProvider>
   );

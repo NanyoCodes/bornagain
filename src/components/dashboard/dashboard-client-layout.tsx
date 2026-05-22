@@ -1,3 +1,4 @@
+
 'use client';
 
 import Image from "next/image";
@@ -44,11 +45,11 @@ import { SearchProvider, useSearch } from "@/context/search-context";
 import { collection, doc, query, where, updateDoc, serverTimestamp } from "firebase/firestore";
 import type { Notification, UserProfile } from "@/lib/types";
 import { WelcomePopup } from "@/components/auth/welcome-popup";
-import { errorEmitter } from "@/firebase/error-emitter";
-import { FirestorePermissionError } from "@/firebase/errors";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { EditProfileModal } from "@/components/profile/edit-profile-modal";
 import { PageTransition } from "../page-transition";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const navItems = [
   { href: "/progress", label: "Progress", icon: TrendingUp, color: "text-chart-1" },
@@ -281,9 +282,13 @@ export default function DashboardClientLayout({ children }: { children: React.Re
   const firestore = useFirestore();
   const router = useRouter();
   const pathname = usePathname();
+  const isMobile = useIsMobile();
+  const [mounted, setMounted] = useState(false);
   const [showWelcomePopup, setShowWelcomePopup] = useState(false);
   const isTakeoverPage = pathname.startsWith('/dashboard/chats/') || pathname.startsWith('/dashboard/notes') || pathname.startsWith('/dashboard/bible');
   const [lastActiveUpdated, setLastActiveUpdated] = useState(false);
+
+  useEffect(() => { setMounted(true); }, []);
 
   const userDocRef = useMemo(() => (user && firestore ? doc(firestore, 'users', user.uid) : null), [user, firestore]);
   const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userDocRef);
@@ -352,17 +357,34 @@ export default function DashboardClientLayout({ children }: { children: React.Re
         </div>
         {!isTakeoverPage && <BottomNavBar />}
         {!isProfileIncomplete && <WelcomePopup isOpen={showWelcomePopup} onClose={() => setShowWelcomePopup(false)} userName={userProfile?.firstName} />}
-         <Dialog open={isProfileIncomplete}>
-          <DialogContent hideCloseButton className="sm:max-w-lg">
-            <DialogHeader>
-                <DialogTitle>Complete Your Profile</DialogTitle>
-                <DialogDescription>Please provide your name to continue.</DialogDescription>
-            </DialogHeader>
-            <div className="max-h-[70vh] overflow-y-auto pr-2">
-              {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
-            </div>
-          </DialogContent>
-        </Dialog>
+        
+        {mounted && isMobile ? (
+          <Sheet open={!!isProfileIncomplete}>
+            <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-2xl">
+              <div className="p-6 border-b flex-shrink-0 bg-muted/10">
+                <SheetHeader className="text-left">
+                  <SheetTitle className="text-xl font-bold">Complete Your Profile</SheetTitle>
+                  <SheetDescription className="text-xs">Join the Kingdom workforce by introducing yourself.</SheetDescription>
+                </SheetHeader>
+              </div>
+              <div className="flex-grow overflow-y-auto p-6">
+                {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
+              </div>
+            </SheetContent>
+          </Sheet>
+        ) : (
+          <Dialog open={!!isProfileIncomplete}>
+            <DialogContent hideCloseButton className="sm:max-w-lg">
+              <DialogHeader>
+                  <DialogTitle>Complete Your Profile</DialogTitle>
+                  <DialogDescription>Please provide your name to continue.</DialogDescription>
+              </DialogHeader>
+              <div className="max-h-[70vh] overflow-y-auto pr-2">
+                {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
+              </div>
+            </DialogContent>
+          </Dialog>
+        )}
       </div>
     </SearchProvider>
   );

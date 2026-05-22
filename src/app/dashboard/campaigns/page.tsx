@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useMemo, useState, useEffect, Fragment } from "react";
@@ -12,6 +13,13 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -41,6 +49,7 @@ import { useToast } from "@/hooks/use-toast";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import AdsenseAd from "@/components/common/adsense-ad";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 function CampaignSkeletons() {
   return (
@@ -436,43 +445,88 @@ export default function CampaignsPage() {
         )}
       </div>
       
-      {/* Campaign Creation - Restored Width */}
-      <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-        <DialogContent className="sm:max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>Create a New Campaign</DialogTitle>
-            <DialogDescription>
-              Fill in the details below to create your campaign.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="max-h-[70vh] overflow-y-auto pr-2">
-            {formContent}
-          </div>
-        </DialogContent>
-      </Dialog>
+      {/* Campaign Creation */}
+      {mounted && isMobile ? (
+        <Sheet open={isCreateOpen} onOpenChange={setIsCreateOpen}>
+          <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-2xl">
+            <div className="p-6 border-b flex-shrink-0 bg-muted/10">
+              <SheetHeader className="text-left">
+                <SheetTitle className="text-xl font-bold">Launch New Campaign</SheetTitle>
+                <SheetDescription className="text-xs">Fill in the details to mobilize for the Kingdom.</SheetDescription>
+              </SheetHeader>
+            </div>
+            <ScrollArea className="flex-grow">
+              <div className="p-6">
+                {formContent}
+              </div>
+            </ScrollArea>
+          </SheetContent>
+        </Sheet>
+      ) : (
+        <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
+          <DialogContent className="sm:max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>Create a New Campaign</DialogTitle>
+              <DialogDescription>
+                Fill in the details below to create your campaign.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="max-h-[70vh] overflow-y-auto pr-2">
+              {formContent}
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
 
-      {/* Campaign Management - Restored Width */}
-      <Dialog open={!!campaignToManage} onOpenChange={(open) => !open && setCampaignToManage(null)}>
-        <DialogContent className="sm:max-w-2xl">
-          <DialogHeader><DialogTitle>Manage Campaign</DialogTitle><DialogDescription>Update the details or progress of your campaign.</DialogDescription></DialogHeader>
-          <div className="max-h-[80vh] overflow-y-auto pr-2">
-            {campaignToManage && (
-              <ManageCampaignForm 
-                campaign={campaignToManage} 
-                onCampaignUpdated={() => { setCampaignToManage(null); }} 
-                onDelete={() => {
-                  setCampaignToDelete(campaignToManage);
-                  setCampaignToManage(null);
-                }}
-              />
-            )}
-          </div>
-        </DialogContent>
-      </Dialog>
+      {/* Campaign Management */}
+      {mounted && isMobile ? (
+        <Sheet open={!!campaignToManage} onOpenChange={(open) => !open && setCampaignToManage(null)}>
+          <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-2xl">
+            <div className="p-6 border-b flex-shrink-0 bg-muted/10">
+              <SheetHeader className="text-left">
+                <SheetTitle className="text-xl font-bold">Manage Campaign</SheetTitle>
+                <SheetDescription className="text-xs">Update your mission details.</SheetDescription>
+              </SheetHeader>
+            </div>
+            <ScrollArea className="flex-grow">
+              <div className="p-6">
+                {campaignToManage && (
+                  <ManageCampaignForm 
+                    campaign={campaignToManage} 
+                    onCampaignUpdated={() => { setCampaignToManage(null); }} 
+                    onDelete={() => {
+                      setCampaignToDelete(campaignToManage);
+                      setCampaignToManage(null);
+                    }}
+                  />
+                )}
+              </div>
+            </ScrollArea>
+          </SheetContent>
+        </Sheet>
+      ) : (
+        <Dialog open={!!campaignToManage} onOpenChange={(open) => !open && setCampaignToManage(null)}>
+          <DialogContent className="sm:max-w-2xl">
+            <DialogHeader><DialogTitle>Manage Campaign</DialogTitle><DialogDescription>Update the details or progress of your campaign.</DialogDescription></DialogHeader>
+            <div className="max-h-[80vh] overflow-y-auto pr-2">
+              {campaignToManage && (
+                <ManageCampaignForm 
+                  campaign={campaignToManage} 
+                  onCampaignUpdated={() => { setCampaignToManage(null); }} 
+                  onDelete={() => {
+                    setCampaignToDelete(campaignToManage);
+                    setCampaignToManage(null);
+                  }}
+                />
+              )}
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
 
       {/* Delete Confirmation */}
       <AlertDialog open={!!campaignToDelete} onOpenChange={(open) => !open && setCampaignToDelete(null)}>
-        <AlertDialogContent>
+        <AlertDialogContent className="w-[90vw] max-w-lg rounded-lg">
           <AlertDialogHeader>
               <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
               <AlertDialogDescription>
@@ -490,16 +544,18 @@ export default function CampaignsPage() {
       </AlertDialog>
 
       {/* Share Testimony */}
-      <Dialog open={!!campaignForTestimony} onOpenChange={(open) => !open && setCampaignForTestimony(null)}>
-          <DialogContent className="sm:max-w-lg">
-              <DialogHeader>
-                  <DialogTitle>Share Testimony for "{campaignForTestimony?.title}"</DialogTitle>
-                  <DialogDescription>
-                      Encourage others by sharing what God has done during this campaign.
-                  </DialogDescription>
-              </DialogHeader>
-              <div className="max-h-[70vh] overflow-y-auto pr-2">
-                  {campaignForTestimony && userProfile && (
+      {mounted && isMobile ? (
+        <Sheet open={!!campaignForTestimony} onOpenChange={(open) => !open && setCampaignForTestimony(null)}>
+          <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-2xl">
+            <div className="p-6 border-b flex-shrink-0 bg-muted/10">
+              <SheetHeader className="text-left">
+                <SheetTitle className="text-xl font-bold">Share Victory</SheetTitle>
+                <SheetDescription className="text-xs">Share what God has done during "{campaignForTestimony?.title}".</SheetDescription>
+              </SheetHeader>
+            </div>
+            <ScrollArea className="flex-grow">
+              <div className="p-6">
+                 {campaignForTestimony && userProfile && (
                     <CreateTestimonyForm
                           userProfile={userProfile}
                           onTestimonyCreated={handleTestimonyCreated}
@@ -507,30 +563,77 @@ export default function CampaignsPage() {
                       />
                   )}
               </div>
-          </DialogContent>
-      </Dialog>
+            </ScrollArea>
+          </SheetContent>
+        </Sheet>
+      ) : (
+        <Dialog open={!!campaignForTestimony} onOpenChange={(open) => !open && setCampaignForTestimony(null)}>
+            <DialogContent className="sm:max-w-lg">
+                <DialogHeader>
+                    <DialogTitle>Share Testimony for "{campaignForTestimony?.title}"</DialogTitle>
+                    <DialogDescription>
+                        Encourage others by sharing what God has done during this campaign.
+                    </DialogDescription>
+                </DialogHeader>
+                <div className="max-h-[70vh] overflow-y-auto pr-2">
+                    {campaignForTestimony && userProfile && (
+                      <CreateTestimonyForm
+                            userProfile={userProfile}
+                            onTestimonyCreated={handleTestimonyCreated}
+                            campaign={campaignForTestimony}
+                        />
+                    )}
+                </div>
+            </DialogContent>
+        </Dialog>
+      )}
 
       {/* Log Soul */}
-      <Dialog open={!!campaignForSoul} onOpenChange={(open) => !open && setCampaignForSoul(null)}>
-          <DialogContent className="sm:max-w-lg">
-              <DialogHeader>
-                  <DialogTitle>Log a Soul Won in "{campaignForSoul?.title}"</DialogTitle>
-                  <DialogDescription>
-                      Record the details of the person you've ministered to during this campaign.
-                  </DialogDescription>
-              </DialogHeader>
-              <div className="max-h-[70vh] overflow-y-auto pr-2">
-                  {campaignForSoul && (
-                    <LogSoulForm
-                          onSoulLogged={handleSoulLogged}
-                          defaultCampaign={campaignForSoul}
-                          fellowships={fellowships || []}
-                          campaigns={activeCampaignsList || []}
-                      />
-                  )}
+      {mounted && isMobile ? (
+        <Sheet open={!!campaignForSoul} onOpenChange={(open) => !open && setCampaignForSoul(null)}>
+          <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-2xl">
+            <div className="p-6 border-b flex-shrink-0 bg-muted/10">
+              <SheetHeader className="text-left">
+                <SheetTitle className="text-xl font-bold">Log Harvest</SheetTitle>
+                <SheetDescription className="text-xs">Record a soul won in "{campaignForSoul?.title}".</SheetDescription>
+              </SheetHeader>
+            </div>
+            <ScrollArea className="flex-grow">
+              <div className="p-6">
+                {campaignForSoul && (
+                  <LogSoulForm
+                        onSoulLogged={handleSoulLogged}
+                        defaultCampaign={campaignForSoul}
+                        fellowships={fellowships || []}
+                        campaigns={activeCampaignsList || []}
+                    />
+                )}
               </div>
-          </DialogContent>
-      </Dialog>
+            </ScrollArea>
+          </SheetContent>
+        </Sheet>
+      ) : (
+        <Dialog open={!!campaignForSoul} onOpenChange={(open) => !open && setCampaignForSoul(null)}>
+            <DialogContent className="sm:max-w-lg">
+                <DialogHeader>
+                    <DialogTitle>Log a Soul Won in "{campaignForSoul?.title}"</DialogTitle>
+                    <DialogDescription>
+                        Record the details of the person you've ministered to during this campaign.
+                    </DialogDescription>
+                </DialogHeader>
+                <div className="max-h-[70vh] overflow-y-auto pr-2">
+                    {campaignForSoul && (
+                      <LogSoulForm
+                            onSoulLogged={handleSoulLogged}
+                            defaultCampaign={campaignForSoul}
+                            fellowships={fellowships || []}
+                            campaigns={activeCampaignsList || []}
+                        />
+                    )}
+                </div>
+            </DialogContent>
+        </Dialog>
+      )}
 
     </div>
   );
