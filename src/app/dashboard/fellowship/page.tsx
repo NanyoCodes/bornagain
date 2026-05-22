@@ -744,11 +744,11 @@ export default function FellowshipPage() {
         <div className="space-y-8">
             {/* Responsive Single-Row Interaction Box */}
             <Card className="border shadow-sm sm:shadow-md rounded-none sm:rounded-lg border-x-0 sm:border-x -mx-4 sm:mx-0">
-                <CardContent className="p-2 sm:p-4">
-                  <div className="flex flex-row items-center gap-1.5 sm:gap-3">
+                <CardContent className="p-3 sm:p-4">
+                  <div className="flex flex-row items-center gap-2 sm:gap-3">
                     <Button 
                         variant="outline" 
-                        className="flex-1 justify-start text-muted-foreground font-normal rounded-full h-10 sm:h-11 px-3 sm:px-4 hover:bg-muted/50 transition-colors text-xs sm:text-sm min-w-0"
+                        className="flex-1 justify-start text-muted-foreground font-normal rounded-full h-10 sm:h-11 px-4 hover:bg-muted/50 transition-colors text-sm min-w-0"
                         onClick={() => { setCreateType('Fellowship'); setIsCreateOpen(true); }}
                         disabled={loading}
                     >
@@ -756,7 +756,7 @@ export default function FellowshipPage() {
                         {loading ? "Preparing..." : "Start a new fellowship group?"}
                     </span>
                     </Button>
-                    <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+                    <div className="flex items-center gap-2 shrink-0">
                         <Button 
                             variant="secondary" 
                             size="icon" 

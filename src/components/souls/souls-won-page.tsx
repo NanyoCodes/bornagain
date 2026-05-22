@@ -306,10 +306,10 @@ export default function SoulsWonPage() {
       {/* Responsive Single-Row Interaction Box */}
       <Card className="border shadow-sm sm:shadow-md rounded-none sm:rounded-lg border-x-0 sm:border-x -mx-4 sm:mx-0">
         <CardContent className="p-3 sm:p-4">
-          <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3">
+          <div className="flex flex-row items-center gap-2 sm:gap-3">
             <Button 
                 variant="outline" 
-                className="w-full sm:flex-1 justify-start text-muted-foreground font-normal rounded-full h-10 sm:h-11 px-4 hover:bg-muted/50 transition-colors text-sm"
+                className="flex-1 justify-start text-muted-foreground font-normal rounded-full h-10 sm:h-11 px-4 hover:bg-muted/50 transition-colors text-sm min-w-0"
                 onClick={() => setIsLogDialogOpen(true)}
                 disabled={loading}
             >
@@ -317,27 +317,27 @@ export default function SoulsWonPage() {
                     {loading ? "Preparing harvest list..." : "Who did you minister to today?"}
                 </span>
             </Button>
-            <div className="flex w-full sm:w-auto items-center gap-2">
+            <div className="flex items-center gap-2 shrink-0">
               <Button 
                 variant="secondary" 
-                size="sm" 
-                className="flex-1 sm:flex-none h-10 sm:h-11 px-4 rounded-full"
+                size="icon" 
+                className="h-10 sm:h-11 w-10 sm:w-11 rounded-full"
                 onClick={() => setIsLogDialogOpen(true)}
                 disabled={loading}
+                title="Log Soul"
               >
-                {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <PlusCircle className="mr-2 h-4 w-4" />}
-                <span className="text-xs sm:text-sm font-medium">Log Soul</span>
+                {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <PlusCircle className="h-4 w-4" />}
               </Button>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button 
                     variant="outline" 
-                    size="sm" 
-                    className="flex-1 sm:flex-none h-10 sm:h-11 px-4 rounded-full"
+                    size="icon" 
+                    className="h-10 sm:h-11 w-10 sm:w-11 rounded-full"
                     disabled={loading}
+                    title="Export Harvest"
                   >
-                    <Download className="mr-2 h-4 w-4" />
-                    <span className="text-xs sm:text-sm font-medium">Export</span>
+                    <Download className="h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
