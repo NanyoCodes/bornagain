@@ -1,14 +1,17 @@
-'use client';
-
+import { Metadata } from 'next';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
-import { BookOpen, Flame, Heart, Zap, Target, BookMarked, Quote, ArrowLeft, Users, ShieldAlert, Crosshair, ShieldCheck, Sun } from 'lucide-react';
+import { BookOpen, Flame, Zap, Target, BookMarked, Quote, ArrowLeft, Users, ShieldAlert, Crosshair, Sun } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+
+export const metadata: Metadata = {
+  title: 'Christian Resources - Evangelism & Growth Equipping',
+  description: 'Access practical guides for prayer life, Bible study, soul winning, and discipleship. Equipping the saints for the Great Commission.',
+};
 
 const resources = [
   {
@@ -158,14 +161,12 @@ const resources = [
 ];
 
 export default function ResourcesPage() {
-  const router = useRouter();
-
   return (
     <div className="space-y-8 max-w-4xl mx-auto p-6 pb-12">
       <header className="space-y-4">
         <div className="flex items-center gap-4">
-          <Button variant="outline" size="icon" onClick={() => router.back()}>
-            <ArrowLeft className="h-4 w-4" />
+          <Button variant="outline" size="icon" asChild>
+            <Link href="/"><ArrowLeft className="h-4 w-4" /></Link>
           </Button>
           <div className="flex items-center gap-3">
             <div className="bg-primary/10 p-2 rounded-xl">

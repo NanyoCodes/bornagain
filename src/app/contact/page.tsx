@@ -1,10 +1,14 @@
-'use client';
-
+import { Metadata } from 'next';
 import { AuthLayout } from '@/components/auth/auth-layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Mail, Phone, Globe } from 'lucide-react';
 import Link from 'next/link';
+
+export const metadata: Metadata = {
+  title: 'Contact Us - Ministry Support',
+  description: 'Reach out to the Testify Global team for partnership inquiries, technical support, or to learn more about how our platform can serve your ministry.',
+};
 
 export default function ContactPage() {
   return (

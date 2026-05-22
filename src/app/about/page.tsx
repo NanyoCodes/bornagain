@@ -1,5 +1,4 @@
-'use client';
-
+import { Metadata } from 'next';
 import { AuthLayout } from '@/components/auth/auth-layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -7,6 +6,11 @@ import { Separator } from '@/components/ui/separator';
 import { Flame, ShieldCheck, Award, HeartHandshake, Globe, Zap } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+
+export const metadata: Metadata = {
+  title: 'About Our Mission - Empowering the Harvest',
+  description: 'Learn about Testify Global, a platform built for believers to share the greatness of Jesus Christ and organize evangelism efforts through modern technology.',
+};
 
 export default function AboutPage() {
   return (
