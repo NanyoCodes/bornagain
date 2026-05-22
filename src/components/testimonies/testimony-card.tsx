@@ -234,7 +234,6 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
                 Copy Link
             </DropdownMenuItem>
             <DropdownMenuItem onSelect={() => handleShareDropdown('whatsapp')}>
-                <Icons.google className="mr-2 h-4 w-4" /> {/* Placeholder for WhatsApp Icon - using MessageCircle logic from previous turns if available */}
                 <MessageCircle className="mr-2 h-4 w-4" />
                 Share on WhatsApp
             </DropdownMenuItem>
