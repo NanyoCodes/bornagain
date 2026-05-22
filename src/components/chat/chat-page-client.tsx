@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useRef, useMemo } from 'react';
@@ -354,7 +353,7 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
     const otherParticipantInfo = otherParticipantId ? chat.participantInfo[otherParticipantId] : null;
 
     return (
-        <div className="flex flex-col w-full h-full">
+        <div className="flex flex-col w-full h-full bg-background">
             <div className="flex items-center gap-4 p-4 shrink-0 border-b">
                 <Button variant="outline" size="icon" onClick={() => router.back()}>
                     <ArrowLeft className="h-4 w-4" />
@@ -554,9 +553,9 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                 </TooltipProvider>
             </div>
 
-            <div className="shrink-0 border-t p-4 bg-background pb-safe">
+            <div className="shrink-0 border-t p-4 bg-background">
                 {isChatFrozen ? (
-                    <div className="p-3 text-center text-sm text-muted-foreground bg-muted/50">
+                    <div className="p-3 text-center text-sm text-muted-foreground bg-muted/50 rounded-lg">
                         This group chat has been frozen as the campaign ended more than 24 hours ago.
                     </div>
                 ) : (
@@ -585,9 +584,10 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                             placeholder="Type a message..."
                             disabled={isSending}
                             autoComplete="off"
+                            className="h-11 sm:h-12"
                         />
-                        <Button type="submit" size="icon" disabled={isSending || !newMessage.trim()}>
-                            {isSending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                        <Button type="submit" size="icon" className="h-11 w-11 sm:h-12 sm:w-12 shrink-0" disabled={!newMessage.trim() || isSending}>
+                            {isSending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-5 w-5" />}
                         </Button>
                     </form>
                     </>

@@ -295,6 +295,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   ];
   const isPublicRoute = publicRoutes.some(route => pathname.startsWith(route));
 
+  // Identify pages that take over the screen (like chat, bible, or notes editor)
+  const isTakeoverPage = pathname.startsWith('/dashboard/chats/') || pathname.startsWith('/dashboard/notes') || pathname.startsWith('/dashboard/bible');
+
   const unreadChatNotifsQuery = useMemo(() => {
     if (!user?.uid || !firestore) return null;
     return query(collection(firestore, `users/${user.uid}/notifications`), where('type', '==', 'new_chat_message'), where('isRead', '==', false));
@@ -337,10 +340,17 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <SearchProvider>
-      <div className="flex min-h-screen flex-col">
-        <AppHeader unreadChatCount={unreadChatNotifications?.length || 0} unreadNotifCount={unreadOtherNotifications?.length || 0} />
-        <main className="flex-1 pb-20 md:pb-6 p-4 md:p-8 max-w-7xl mx-auto w-full">
-            <PageTransition>{children}</PageTransition>
+      <div className={cn("flex w-full flex-col overflow-x-hidden", isTakeoverPage ? "h-dvh" : "min-h-screen")}>
+        {!isTakeoverPage && (
+          <AppHeader unreadChatCount={unreadChatNotifications?.length || 0} unreadNotifCount={unreadOtherNotifications?.length || 0} />
+        )}
+        <main className={cn(
+          "flex-1 w-full mx-auto relative",
+          isTakeoverPage ? "h-full overflow-hidden" : "pb-20 md:pb-6 p-4 md:p-8 max-w-7xl"
+        )}>
+            <div className={cn("h-full w-full", isTakeoverPage && "pb-16 md:pb-0")}>
+                <PageTransition>{children}</PageTransition>
+            </div>
         </main>
         {user && <BottomNavBar />}
         
