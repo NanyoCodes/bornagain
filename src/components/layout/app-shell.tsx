@@ -20,6 +20,7 @@ import {
   TrendingUp,
   BookMarked,
   LayoutGrid,
+  Users,
 } from "lucide-react";
 
 import {
@@ -50,7 +51,8 @@ const navItems = [
   { href: "/souls-won", label: "Souls Won", icon: UserPlus, color: "text-chart-2" },
   { href: "/testimonies", label: "Testimonies", icon: Newspaper, color: "text-chart-3" },
   { href: "/campaigns", label: "Campaigns", icon: Target, color: "text-chart-4" },
-  { href: "/fellowships", label: "Fellowship", icon: HeartHandshake, color: "text-primary" },
+  { href: "/fellowships", label: "Fellowship", icon: Users, color: "text-primary" },
+  { href: "/accountability", label: "Accountability", icon: HeartHandshake, color: "text-primary" },
 ];
 
 const NOTIFICATION_TYPES = ['campaign_join', 'new_chat_message', 'accountability_nudge', 'accountability_request', 'request_accepted', 'request_declined', 'accountability_partner_removed', 'new_soul_in_fellowship'];
@@ -236,7 +238,7 @@ function BottomNavBar({ unreadChatCount }: { unreadChatCount: number }) {
     const pathname = usePathname();
     return (
       <nav className="fixed bottom-0 left-0 right-0 z-40 border-t bg-background md:hidden">
-        <div className="grid h-16 grid-cols-5 items-center">
+        <div className="grid h-16 grid-cols-6 items-center">
           {navItems.map((item) => {
             const isActive = pathname.startsWith(item.href);
             return (
@@ -244,12 +246,11 @@ function BottomNavBar({ unreadChatCount }: { unreadChatCount: number }) {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "flex flex-col items-center justify-center gap-1 text-[10px]",
-                  isActive ? "text-primary font-bold" : "text-muted-foreground"
+                  "flex flex-col items-center justify-center transition-colors hover:text-primary",
+                  isActive ? "text-primary" : "text-muted-foreground"
                 )}
               >
-                <item.icon className={cn("h-5 w-5", !isActive && item.color)} />
-                <span>{item.label}</span>
+                <item.icon className={cn("h-6 w-6", !isActive && item.color)} />
               </Link>
             )
           })}

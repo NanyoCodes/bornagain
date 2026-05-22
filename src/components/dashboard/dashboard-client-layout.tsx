@@ -22,6 +22,7 @@ import {
   BookMarked,
   Info,
   Phone,
+  Users,
 } from "lucide-react";
 
 import {
@@ -54,10 +55,11 @@ const navItems = [
   { href: "/dashboard/souls-won", label: "Souls Won", icon: UserPlus, color: "text-chart-2" },
   { href: "/dashboard/testimonies", label: "Testimonies", icon: Newspaper, color: "text-chart-3" },
   { href: "/dashboard/campaigns", label: "Campaigns", icon: Target, color: "text-chart-4" },
-  { href: "/dashboard/fellowship", label: "Fellowship", icon: HeartHandshake, color: "text-primary" },
+  { href: "/dashboard/fellowship", label: "Fellowship", icon: Users, color: "text-primary" },
+  { href: "/dashboard/accountability", label: "Accountability", icon: HeartHandshake, color: "text-primary" },
 ];
 
-const OTHER_NOTIFICATION_TYPES = ['campaign_join', 'accountability_nudge', 'accountability_request', 'request_accepted', 'request_declined', 'accountability_partner_removed', 'new_soul_in_fellowship'];
+const OTHER_NOTIFICATION_TYPES = ['campaign_join', 'new_chat_message', 'accountability_nudge', 'accountability_request', 'request_accepted', 'request_declined', 'accountability_partner_removed', 'new_soul_in_fellowship'];
 
 function AppHeader({ unreadChatCount }: { unreadChatCount: number }) {
   const { user } = useUser();
@@ -229,7 +231,7 @@ function AppHeader({ unreadChatCount }: { unreadChatCount: number }) {
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
                 <Link href="/guide" className="cursor-pointer">
-                <BookOpen className="mr-2 h-4 w-4" />
+                < BookOpen className="mr-2 h-4 w-4" />
                 <span>App Guide</span>
                 </Link>
             </DropdownMenuItem>
@@ -256,7 +258,7 @@ function BottomNavBar({ unreadChatCount }: { unreadChatCount: number }) {
   
     return (
       <nav className="fixed bottom-0 left-0 right-0 z-40 border-t bg-background md:hidden">
-        <div className="grid h-16 grid-cols-5 items-center">
+        <div className="grid h-16 grid-cols-6 items-center">
           {navItems.map((item) => {
             const isActive = pathname.startsWith(item.href);
             return (
@@ -265,12 +267,11 @@ function BottomNavBar({ unreadChatCount }: { unreadChatCount: number }) {
                 href={item.href}
                 prefetch={true}
                 className={cn(
-                  "relative flex flex-col items-center justify-center gap-0.5 p-1 text-[10px] transition-colors hover:text-primary",
+                  "relative flex flex-col items-center justify-center p-1 transition-colors hover:text-primary",
                   isActive ? "text-primary" : "text-muted-foreground"
                 )}
               >
-                <item.icon className={cn("h-5 w-5", !isActive && item.color)} />
-                <span className="text-center">{item.label}</span>
+                <item.icon className={cn("h-6 w-6", !isActive && item.color)} />
               </Link>
             )
           })}
