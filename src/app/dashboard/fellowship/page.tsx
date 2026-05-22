@@ -743,50 +743,42 @@ export default function FellowshipPage() {
 
     return (
         <div className="space-y-8">
+            {/* Responsive Single-Row Interaction Box */}
             <Card className="border shadow-sm sm:shadow-md rounded-none sm:rounded-lg border-x-0 sm:border-x -mx-4 sm:mx-0">
-                <CardContent className="px-4 py-4 sm:p-6">
-                <div className="flex items-center gap-2 sm:gap-4">
+                <CardContent className="p-3 sm:p-4">
+                <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3">
                     <Button 
                         variant="outline" 
-                        className="flex-1 justify-center text-muted-foreground font-normal rounded-full h-9 sm:h-11 px-3 sm:px-4 hover:bg-muted/50 transition-colors text-[11px] sm:text-sm"
+                        className="w-full sm:flex-1 justify-start text-muted-foreground font-normal rounded-full h-10 sm:h-11 px-4 hover:bg-muted/50 transition-colors text-sm"
                         onClick={() => { setCreateType('Fellowship'); setIsCreateOpen(true); }}
                         disabled={loading}
                     >
                     <span className="truncate">
-                        {loading ? "Preparing groups..." : "Start a new fellowship group or association?"}
+                        {loading ? "Preparing groups..." : "Start a new fellowship group?"}
                     </span>
                     </Button>
-                </div>
-                <div className="flex items-center justify-center mt-3 pt-3 border-t">
-                    <Button 
-                        variant="ghost" 
-                        size="sm" 
-                        className="flex-1 text-muted-foreground hover:text-primary transition-colors py-2 sm:py-6 h-auto"
-                        onClick={() => { setCreateType('Fellowship'); setIsCreateOpen(true); }}
-                        disabled={loading}
-                    >
-                        {loading ? (
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        ) : (
-                        <Users className="mr-2 h-4 w-4 sm:h-5 sm:w-5 text-primary" />
-                        )}
-                        <span className="text-[11px] sm:text-xs md:text-sm font-medium">New Fellowship</span>
-                    </Button>
-                    <div className="h-6 w-px bg-border shrink-0" />
-                    <Button 
-                        variant="ghost" 
-                        size="sm" 
-                        className="flex-1 text-muted-foreground hover:text-primary transition-colors py-2 sm:py-6 h-auto"
-                        onClick={() => { setCreateType('Association'); setIsCreateOpen(true); }}
-                        disabled={loading}
-                    >
-                        {loading ? (
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        ) : (
-                        <Group className="mr-2 h-4 w-4 sm:h-5 sm:w-5 text-primary" />
-                        )}
-                        <span className="text-[11px] sm:text-xs md:text-sm font-medium">New Association</span>
-                    </Button>
+                    <div className="flex w-full sm:w-auto items-center gap-2">
+                        <Button 
+                            variant="secondary" 
+                            size="sm" 
+                            className="flex-1 sm:flex-none h-10 sm:h-11 px-4 rounded-full"
+                            onClick={() => { setCreateType('Fellowship'); setIsCreateOpen(true); }}
+                            disabled={loading}
+                        >
+                            {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Users className="mr-2 h-4 w-4" />}
+                            <span className="text-xs sm:text-sm font-medium">Fellowship</span>
+                        </Button>
+                        <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="flex-1 sm:flex-none h-10 sm:h-11 px-4 rounded-full"
+                            onClick={() => { setCreateType('Association'); setIsCreateOpen(true); }}
+                            disabled={loading}
+                        >
+                            {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Group className="mr-2 h-4 w-4" />}
+                            <span className="text-xs sm:text-sm font-medium">Association</span>
+                        </Button>
+                    </div>
                 </div>
                 </CardContent>
             </Card>

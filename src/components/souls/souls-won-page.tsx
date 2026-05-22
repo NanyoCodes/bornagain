@@ -303,13 +303,13 @@ export default function SoulsWonPage() {
 
   return (
     <div className="space-y-6 md:space-y-12">
-      {/* Centered Interaction Box */}
+      {/* Responsive Single-Row Interaction Box */}
       <Card className="border shadow-sm sm:shadow-md rounded-none sm:rounded-lg border-x-0 sm:border-x -mx-4 sm:mx-0">
-        <CardContent className="px-4 py-4 sm:p-6">
-          <div className="flex items-center gap-2 sm:gap-4">
+        <CardContent className="p-3 sm:p-4">
+          <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3">
             <Button 
                 variant="outline" 
-                className="flex-1 justify-center text-muted-foreground font-normal rounded-full h-9 sm:h-11 px-3 sm:px-4 hover:bg-muted/50 transition-colors text-[11px] sm:text-sm"
+                className="w-full sm:flex-1 justify-start text-muted-foreground font-normal rounded-full h-10 sm:h-11 px-4 hover:bg-muted/50 transition-colors text-sm"
                 onClick={() => setIsLogDialogOpen(true)}
                 disabled={loading}
             >
@@ -317,33 +317,27 @@ export default function SoulsWonPage() {
                     {loading ? "Preparing harvest list..." : "Who did you minister to today?"}
                 </span>
             </Button>
-          </div>
-          <div className="flex items-center justify-center mt-3 pt-3 border-t">
+            <div className="flex w-full sm:w-auto items-center gap-2">
               <Button 
-                variant="ghost" 
+                variant="secondary" 
                 size="sm" 
-                className="flex-1 text-muted-foreground hover:text-primary transition-colors py-2 sm:py-6 h-auto"
+                className="flex-1 sm:flex-none h-10 sm:h-11 px-4 rounded-full"
                 onClick={() => setIsLogDialogOpen(true)}
                 disabled={loading}
               >
-                {loading ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : (
-                  <PlusCircle className="mr-2 h-4 w-4 sm:h-5 sm:w-5 text-primary" />
-                )}
-                <span className="text-[11px] sm:text-xs md:text-sm font-medium">Log Soul Won</span>
+                {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <PlusCircle className="mr-2 h-4 w-4" />}
+                <span className="text-xs sm:text-sm font-medium">Log Soul</span>
               </Button>
-              <div className="h-6 w-px bg-border shrink-0" />
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button 
-                    variant="ghost" 
+                    variant="outline" 
                     size="sm" 
-                    className="flex-1 text-muted-foreground hover:text-primary transition-colors py-2 sm:py-6 h-auto"
+                    className="flex-1 sm:flex-none h-10 sm:h-11 px-4 rounded-full"
                     disabled={loading}
                   >
-                    <Download className="mr-2 h-4 w-4 sm:h-5 sm:w-5 text-primary" />
-                    <span className="text-[11px] sm:text-xs md:text-sm font-medium">Export Harvest</span>
+                    <Download className="mr-2 h-4 w-4" />
+                    <span className="text-xs sm:text-sm font-medium">Export</span>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
@@ -351,6 +345,7 @@ export default function SoulsWonPage() {
                   <DropdownMenuItem onSelect={() => handleExportHarvest('pdf')}>PDF</DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
+            </div>
           </div>
         </CardContent>
       </Card>
