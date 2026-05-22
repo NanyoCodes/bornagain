@@ -44,7 +44,6 @@ const formSchema = z.object({
   wonAt: z.date({
     required_error: "A date is required.",
   }),
-  fellowshipId: z.string().optional().nullable(),
 });
 
 interface EditSoulFormProps {
@@ -76,7 +75,6 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
       source: soul.source || "Personal",
       sourceDetails: soul.sourceDetails || "",
       wonAt: safeToDate(soul.wonAt) ?? new Date(),
-      fellowshipId: soul.fellowshipId || null,
     },
   });
 
@@ -99,40 +97,18 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
             source: soul.source || "Personal",
             sourceDetails: soul.sourceDetails || "",
             wonAt: safeToDate(soul.wonAt) ?? new Date(),
-            fellowshipId: soul.fellowshipId || null,
         });
         lastSoulId.current = soul.id;
     }
   }, [soul, reset]);
   
   const sourceValue = useWatch({ control, name: "source" });
-  const watchedLat = useWatch({ control, name: "locationWonLatitude" });
-  const watchedLng = useWatch({ control, name: "locationWonLongitude" });
 
   useEffect(() => {
     if (sourceValue !== 'Campaign') {
         setValue('sourceDetails', '');
     }
   }, [sourceValue, setValue]);
-
-  const sortedFellowships = useMemo(() => {
-    const list = [...(fellowships || [])];
-    if (!list.length) return [];
-    
-    if (typeof watchedLat !== 'number' || typeof watchedLng !== 'number') {
-        return list.sort((a, b) => a.name.localeCompare(b.name));
-    }
-
-    return list
-        .map(f => {
-            const distance = f.latitude && f.longitude
-                ? haversineDistance({ lat: watchedLat, lng: watchedLng }, { lat: f.latitude, lng: f.longitude })
-                : Infinity;
-            return { ...f, distance };
-        })
-        .sort((a, b) => (a.distance ?? Infinity) - (b.distance ?? Infinity));
-  }, [fellowships, watchedLat, watchedLng]);
-
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (!user || !firestore) {
@@ -156,15 +132,6 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
       sourceDetails: values.sourceDetails || null,
     };
 
-    if (values.fellowshipId && values.fellowshipId !== 'none') {
-        const selectedFellowship = fellowships?.find(f => f.id === values.fellowshipId);
-        soulUpdateData.fellowshipId = values.fellowshipId;
-        soulUpdateData.fellowshipName = selectedFellowship?.name || null;
-    } else {
-        soulUpdateData.fellowshipId = null;
-        soulUpdateData.fellowshipName = null;
-    }
-    
     soulUpdateData.locationWon = {
       city: values.locationWonCity || null,
       state: values.locationWonState || null,
@@ -328,34 +295,6 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
                           <LocationWonInput form={form} />
                         </div>
 
-                        <FormField
-                            control={form.control}
-                            name="fellowshipId"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Assign to Group</FormLabel>
-                                    <Select onValueChange={field.onChange} value={field.value || "none"}>
-                                        <FormControl>
-                                            <SelectTrigger className="text-base h-auto">
-                                                <SelectValue placeholder={!fellowships ? "Loading groups..." : "Select a fellowship or association"} />
-                                            </SelectTrigger>
-                                        </FormControl>
-                                        <SelectContent>
-                                            <SelectItem value="none">None</SelectItem>
-                                            {sortedFellowships?.map((f) => (
-                                                <SelectItem key={f.id} value={f.id}>
-                                                    <div className="flex flex-col py-1 text-left">
-                                                        <span className="font-medium">{f.name}</span>
-                                                        {f.location && <span className="text-xs text-muted-foreground">{f.location}</span>}
-                                                    </div>
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
                         <FormField
                             control={form.control}
                             name="email"

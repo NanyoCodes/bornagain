@@ -46,7 +46,6 @@ const formSchema = z.object({
   wonAt: z.date({
     required_error: "A date is required.",
   }),
-  fellowshipId: z.string().optional().nullable(),
 });
 
 type LogSoulFormProps = {
@@ -82,39 +81,18 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign, fellowships, campai
       sourceDetails: defaultCampaign ? defaultCampaign.title : "",
       initialNote: "",
       wonAt: new Date(),
-      fellowshipId: null,
     },
   });
 
   const { control, setValue } = form;
 
   const sourceValue = useWatch({ control, name: "source" });
-  const watchedLat = useWatch({ control, name: "locationWonLatitude" });
-  const watchedLng = useWatch({ control, name: "locationWonLongitude" });
 
   useEffect(() => {
     if (sourceValue !== 'Campaign') {
         setValue('sourceDetails', '');
     }
   }, [sourceValue, setValue]);
-
-  const sortedFellowships = useMemo(() => {
-    const list = [...(fellowships || [])];
-    if (!list.length) return [];
-    
-    if (typeof watchedLat !== 'number' || typeof watchedLng !== 'number') {
-        return list.sort((a, b) => a.name.localeCompare(b.name));
-    }
-
-    return list
-        .map(f => {
-            const distance = f.latitude && f.longitude
-                ? haversineDistance({ lat: watchedLat, lng: watchedLng }, { lat: f.latitude, lng: f.longitude })
-                : Infinity;
-            return { ...f, distance };
-        })
-        .sort((a, b) => (a.distance ?? Infinity) - (b.distance ?? Infinity));
-  }, [fellowships, watchedLat, watchedLng]);
 
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
@@ -165,15 +143,6 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign, fellowships, campai
 
     const campaignId = values.source === 'Campaign' ? (defaultCampaign?.id || campaigns?.find(c => c.title === values.sourceDetails)?.id) : null;
     soulData.campaignId = campaignId || null;
-
-    if (values.fellowshipId && values.fellowshipId !== 'none') {
-        const selectedFellowship = fellowships?.find(f => f.id === values.fellowshipId);
-        soulData.fellowshipId = values.fellowshipId;
-        soulData.fellowshipName = selectedFellowship?.name || null;
-    } else {
-        soulData.fellowshipId = null;
-        soulData.fellowshipName = null;
-    }
 
     try {
         await runTransaction(firestore, async (transaction) => {
@@ -335,34 +304,6 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign, fellowships, campai
                           <LocationWonInput form={form} />
                         </div>
 
-                        <FormField
-                            control={form.control}
-                            name="fellowshipId"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Assign to Group</FormLabel>
-                                    <Select onValueChange={field.onChange} value={field.value || "none"}>
-                                        <FormControl>
-                                            <SelectTrigger className="text-base h-auto">
-                                                <SelectValue placeholder={!fellowships ? "Loading groups..." : "Select a fellowship or association"} />
-                                            </SelectTrigger>
-                                        </FormControl>
-                                        <SelectContent>
-                                            <SelectItem value="none">None</SelectItem>
-                                            {sortedFellowships?.map((f) => (
-                                                <SelectItem key={f.id} value={f.id}>
-                                                    <div className="flex flex-col py-1 text-left">
-                                                        <span className="font-medium">{f.name}</span>
-                                                        {f.location && <span className="text-xs text-muted-foreground">{f.location}</span>}
-                                                    </div>
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
                         <FormField
                         control={form.control}
                         name="email"
