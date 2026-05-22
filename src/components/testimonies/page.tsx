@@ -25,11 +25,11 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Card, CardContent } from "@/components/ui/card";
-import type { Testimony, PrayerRequest, UserProfile } from "@/lib/types";
+import type { Testimony, PrayerRequest, UserProfile, AccountabilityRequest } from "@/lib/types";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCollection, useFirestore, useUser, useDoc } from "@/firebase";
-import { collection, query, orderBy, doc, deleteDoc, runTransaction, deleteField } from "firebase/firestore";
+import { collection, query, orderBy, doc, deleteDoc, runTransaction, deleteField, where } from "firebase/firestore";
 import { useSearch } from "@/context/search-context";
 import { Tabs, TabsList, TabsContent, TabsTrigger } from "@/components/ui/tabs";
 import { haversineDistance } from "@/lib/utils";
@@ -53,6 +53,27 @@ export default function TestimoniesPage() {
   
   const userDocRef = useMemo(() => user ? doc(firestore, 'users', user.uid) : null, [user, firestore]);
   const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userDocRef);
+
+  const partnerIds = useMemo(() => new Set(userProfile?.partnerIds || []), [userProfile?.partnerIds]);
+
+  const requestsQuery = useMemo(() => {
+    if (!user || !firestore) return null;
+    return query(
+      collection(firestore, 'accountabilityRequests'),
+      where('participantIds', 'array-contains', user.uid),
+      where('status', '==', 'pending')
+    );
+  }, [user, firestore]);
+  const { data: accountabilityRequests } = useCollection<AccountabilityRequest>(requestsQuery);
+
+  const pendingRequestIds = useMemo(() => {
+    if (!accountabilityRequests) return new Set<string>();
+    return new Set(
+        accountabilityRequests
+            .flatMap(r => r.participantIds)
+            .filter(id => id !== user?.uid)
+    );
+  }, [accountabilityRequests, user?.uid]);
 
   const testimoniesQuery = useMemo(() => {
     if (!firestore || !user) return null;
@@ -133,7 +154,7 @@ export default function TestimoniesPage() {
   const filteredTestimonies = useMemo(() => {
     if (!testimonies) return [];
     
-    const withDistance = testimonies.map(testimony => {
+    const withMetadata = testimonies.map(testimony => {
         const distance = userProfile?.location?.latitude &&
                         userProfile.location?.longitude &&
                         testimony.authorLocation?.latitude &&
@@ -143,16 +164,25 @@ export default function TestimoniesPage() {
                             { lat: testimony.authorLocation.latitude, lng: testimony.authorLocation.longitude }
                           )
                         : null;
-        return { ...testimony, _distance: distance };
+        
+        const isPartner = partnerIds.has(testimony.authorId);
+        
+        return { ...testimony, _distance: distance, _isPartner: isPartner };
     });
 
-    const sorted = withDistance.sort((a, b) => {
+    const sorted = withMetadata.sort((a, b) => {
+        // 1. Partner Status (Prioritize Partners)
+        if (a._isPartner && !b._isPartner) return -1;
+        if (!a._isPartner && b._isPartner) return 1;
+
+        // 2. Distance (Closer first)
         if (a._distance != null && b._distance != null) {
             if (a._distance !== b._distance) return a._distance - b._distance;
         }
         if (a._distance != null) return -1;
         if (b._distance != null) return 1;
         
+        // 3. Freshness (Newest first)
         const timeA = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : 0;
         const timeB = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : 0;
         return timeB - timeA;
@@ -166,7 +196,7 @@ export default function TestimoniesPage() {
       `${testimony.authorFirstName} ${testimony.authorLastName}`.toLowerCase().includes(term) ||
       testimony.category.toLowerCase().includes(term)
     );
-  }, [testimonies, searchTerm, activeTab, userProfile]);
+  }, [testimonies, searchTerm, activeTab, userProfile, partnerIds]);
 
   const filteredPrayerRequests = useMemo(() => {
     if (!prayerRequests) return [];
@@ -309,6 +339,9 @@ export default function TestimoniesPage() {
                         <TestimonyCard 
                             key={testimony.id} 
                             testimony={testimony} 
+                            isPartner={partnerIds.has(testimony.authorId)}
+                            hasPendingRequest={pendingRequestIds.has(testimony.authorId)}
+                            currentUserProfile={userProfile}
                             onDelete={() => setItemToDelete({ type: 'testimony', data: testimony })}
                             onEdit={() => { setItemToEdit(testimony); setIsEditOpen(true); }}
                         />

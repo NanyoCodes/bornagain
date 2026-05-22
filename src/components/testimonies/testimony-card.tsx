@@ -14,9 +14,29 @@ import {
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Testimony, TestimonyComment } from "@/lib/types";
+import { Testimony, TestimonyComment, UserProfile } from "@/lib/types";
 import { format } from "date-fns";
-import { Share2, MoreVertical, Edit, Trash2, Loader2, Globe, Sparkles, PartyPopper, HandHeart, MessageCircle, X, Facebook, Twitter, Link as LinkIcon, MessageSquare } from "lucide-react";
+import { 
+  Share2, 
+  MoreVertical, 
+  Edit, 
+  Trash2, 
+  Loader2, 
+  Globe, 
+  Sparkles, 
+  PartyPopper, 
+  HandHeart, 
+  MessageCircle, 
+  X, 
+  Facebook, 
+  Twitter, 
+  Link as LinkIcon, 
+  MessageSquare,
+  UserPlus,
+  HeartHandshake,
+  CheckCircle2,
+  Hourglass
+} from "lucide-react";
 import { useUser, useAuth, useFirestore, useCollection } from "@/firebase";
 import { useState, useMemo } from "react";
 import {
@@ -30,17 +50,31 @@ import {
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { useToast } from "@/hooks/use-toast";
-import { doc, updateDoc, arrayUnion, arrayRemove, collection, query } from "firebase/firestore";
+import { doc, updateDoc, arrayUnion, arrayRemove, collection, query, setDoc, serverTimestamp, addDoc } from "firebase/firestore";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { cn, safeToDate } from "@/lib/utils";
-import { Icons } from "@/components/icons";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { CommentSection } from "./comment-section";
 import { Separator } from "../ui/separator";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip";
 
-export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDelete, onEdit }: { testimony: Testimony, onDelete: () => void, onEdit: () => void }) {
+export const TestimonyCard = React.memo(function TestimonyCard({ 
+  testimony, 
+  onDelete, 
+  onEdit,
+  isPartner,
+  hasPendingRequest,
+  currentUserProfile
+}: { 
+  testimony: Testimony, 
+  onDelete: () => void, 
+  onEdit: () => void,
+  isPartner?: boolean,
+  hasPendingRequest?: boolean,
+  currentUserProfile?: UserProfile | null
+}) {
   const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
@@ -48,6 +82,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
   const [mounted, setMounted] = useState(false);
 
   const [isProcessingReaction, setIsProcessingReaction] = useState<string | null>(null);
+  const [isRequestingPartner, setIsRequestingPartner] = useState(false);
   const contentRef = React.useRef<HTMLParagraphElement>(null);
   const [isTruncated, setIsTruncated] = React.useState(false);
   const [showFullText, setShowFullText] = React.useState(false);
@@ -131,6 +166,55 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
         });
   }
 
+  const handleSendPartnerRequest = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!user || !firestore || !currentUserProfile || isAuthor || isPartner || hasPendingRequest) return;
+    
+    setIsRequestingPartner(true);
+    const participantIds = [user.uid, testimony.authorId].sort();
+    const requestId = participantIds.join('_');
+    const requestRef = doc(firestore, 'accountabilityRequests', requestId);
+
+    const newRequestData = {
+        fromUserId: user.uid,
+        fromUserFirstName: currentUserProfile.firstName || '',
+        fromUserLastName: currentUserProfile.lastName || '',
+        fromUserPhotoURL: currentUserProfile.photoURL || '',
+        toUserId: testimony.authorId,
+        toUserFirstName: testimony.authorFirstName || '',
+        toUserLastName: testimony.authorLastName || '',
+        toUserPhotoURL: testimony.authorAvatarUrl || '',
+        status: 'pending' as const,
+        createdAt: serverTimestamp(),
+        participantIds,
+    };
+
+    const notificationData = {
+        userId: testimony.authorId,
+        type: 'accountability_request' as const,
+        title: 'New Accountability Request',
+        message: `${currentUserProfile.firstName} ${currentUserProfile.lastName} wants to be your partner after seeing your testimony!`,
+        link: '/dashboard/accountability',
+        isRead: false,
+        createdAt: serverTimestamp(),
+    };
+
+    try {
+        await setDoc(requestRef, newRequestData);
+        await addDoc(collection(firestore, 'users', testimony.authorId, 'notifications'), notificationData);
+        toast({ title: 'Request Sent!', description: `Request sent to ${testimony.authorFirstName}.` });
+    } catch (error) {
+        const permissionError = new FirestorePermissionError({
+            path: requestRef.path,
+            operation: 'create',
+            requestResourceData: newRequestData
+        }, user);
+        errorEmitter.emit('permission-error', permissionError);
+    } finally {
+        setIsRequestingPartner(false);
+    }
+  };
+
   const handleShare = async () => {
     const baseUrl = "https://testifyglobal.com";
     const shareUrl = `${baseUrl}/dashboard/testimonies#${testimony.id}`;
@@ -142,20 +226,6 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
       text,
       url: shareUrl,
     };
-
-    // Attempt to include the author's photo for mobile share sheets
-    if (testimony.authorAvatarUrl && typeof navigator !== 'undefined' && (navigator as any).canShare) {
-        try {
-            const response = await fetch(testimony.authorAvatarUrl);
-            const blob = await response.blob();
-            const file = new File([blob], "testimony-author.jpg", { type: blob.type });
-            if ((navigator as any).canShare({ files: [file] })) {
-                shareData.files = [file];
-            }
-        } catch (e) {
-            console.warn("Could not fetch author photo for sharing", e);
-        }
-    }
 
     try {
       if (navigator.share) {
@@ -260,7 +330,8 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
     <>
       <Card id={testimony.id} className={cn(
         "flex flex-col h-full overflow-hidden shadow-sm hover:shadow-md transition-shadow scroll-mt-20 border-l-4 rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b",
-        testimony.answeredPrayerId ? "border-l-amber-500 bg-amber-500/5 dark:bg-amber-500/10" : "border-l-primary/40"
+        testimony.answeredPrayerId ? "border-l-amber-500 bg-amber-500/5 dark:bg-amber-500/10" : "border-l-primary/40",
+        isPartner && "border-l-primary ring-1 ring-primary/20 bg-primary/[0.02]"
       )}>
         <CardHeader className="flex flex-row items-start justify-between gap-3 p-4 sm:p-6">
           <div className="flex items-center gap-3 min-w-0 flex-1">
@@ -282,9 +353,45 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
               )}
             </Dialog>
             <div className="min-w-0 flex-1">
-               <Link href={profileLink} onClick={(e) => { e.stopPropagation(); }} className="hover:underline">
-                <CardTitle className="text-lg font-bold truncate">{authorFullName}</CardTitle>
-              </Link>
+               <div className="flex items-center gap-2 flex-wrap">
+                    <Link href={profileLink} onClick={(e) => { e.stopPropagation(); }} className="hover:underline">
+                        <CardTitle className="text-lg font-bold truncate">{authorFullName}</CardTitle>
+                    </Link>
+                    {isPartner && (
+                        <Badge variant="secondary" className="h-4 px-1.5 text-[9px] uppercase font-bold tracking-tighter bg-primary/10 text-primary border-primary/20">
+                            Partner
+                        </Badge>
+                    )}
+                    {!isAuthor && !isPartner && currentUserProfile && (
+                        <TooltipProvider>
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <Button 
+                                        variant="ghost" 
+                                        size="icon" 
+                                        className={cn(
+                                            "h-6 w-6 rounded-full",
+                                            hasPendingRequest ? "text-muted-foreground" : "text-primary hover:bg-primary/10"
+                                        )}
+                                        onClick={handleSendPartnerRequest}
+                                        disabled={isRequestingPartner || hasPendingRequest}
+                                    >
+                                        {isRequestingPartner ? (
+                                            <Loader2 className="h-3 w-3 animate-spin" />
+                                        ) : hasPendingRequest ? (
+                                            <Hourglass className="h-3 w-3" />
+                                        ) : (
+                                            <UserPlus className="h-3 w-3" />
+                                        )}
+                                    </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    <p>{hasPendingRequest ? "Request Pending" : "Add Accountability Partner"}</p>
+                                </TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
+                    )}
+               </div>
               <div className="text-muted-foreground text-sm mt-1 flex flex-col gap-1">
                   <div className="truncate text-sm">{displayDate}</div>
                   <div className="flex items-center gap-1 mt-0.5 opacity-80 text-sm"><Globe className="h-3.5 w-3.5 text-primary shrink-0" /> {locationString}</div>
