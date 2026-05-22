@@ -309,24 +309,24 @@ export default function SoulsWonPage() {
             <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
               <Button 
                 variant="secondary" 
-                size="sm" 
-                className="h-10 sm:h-11 px-2.5 sm:px-4 rounded-full"
+                size="icon" 
+                className="h-10 sm:h-11 w-10 sm:w-11 rounded-full"
                 onClick={() => setIsLogDialogOpen(true)}
                 disabled={loading}
+                title="Log Soul"
               >
                 {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <PlusCircle className="h-4 w-4" />}
-                <span className="hidden sm:inline ml-2 text-sm font-medium">Log Soul</span>
               </Button>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button 
                     variant="outline" 
-                    size="sm" 
-                    className="h-10 sm:h-11 px-2.5 sm:px-4 rounded-full"
+                    size="icon" 
+                    className="h-10 sm:h-11 w-10 sm:w-11 rounded-full"
                     disabled={loading}
+                    title="Export Harvest"
                   >
                     <Download className="h-4 w-4" />
-                    <span className="hidden sm:inline ml-2 text-sm font-medium">Export</span>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">

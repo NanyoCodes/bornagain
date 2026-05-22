@@ -759,23 +759,23 @@ export default function FellowshipPage() {
                     <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
                         <Button 
                             variant="secondary" 
-                            size="sm" 
-                            className="h-10 sm:h-11 px-2.5 sm:px-4 rounded-full"
+                            size="icon" 
+                            className="h-10 sm:h-11 w-10 sm:w-11 rounded-full"
                             onClick={() => { setCreateType('Fellowship'); setIsCreateOpen(true); }}
                             disabled={loading}
+                            title="New Fellowship"
                         >
                             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Users className="h-4 w-4" />}
-                            <span className="hidden sm:inline ml-2 text-sm font-medium">Fellowship</span>
                         </Button>
                         <Button 
                             variant="outline" 
-                            size="sm" 
-                            className="h-10 sm:h-11 px-2.5 sm:px-4 rounded-full"
+                            size="icon" 
+                            className="h-10 sm:h-11 w-10 sm:w-11 rounded-full"
                             onClick={() => { setCreateType('Association'); setIsCreateOpen(true); }}
                             disabled={loading}
+                            title="New Association"
                         >
                             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Group className="h-4 w-4" />}
-                            <span className="hidden sm:inline ml-2 text-sm font-medium">Association</span>
                         </Button>
                     </div>
                 </div>
