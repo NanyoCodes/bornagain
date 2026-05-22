@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { useUser, useFirestore, useCollection } from '@/firebase';
+import { useUser, useAuth, useFirestore, useCollection } from '@/firebase';
 import { collection, query, orderBy, addDoc, serverTimestamp, doc, deleteDoc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
 import type { TestimonyComment, UserProfile } from '@/lib/types';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -80,24 +80,29 @@ function CommentItem({
     const profileLink = isAuthor ? "/dashboard/profile" : `/dashboard/profile/${comment.authorId}`;
 
     return (
-        <div className={cn("space-y-4", level > 0 && (isMobile ? "ml-6" : "ml-10"))}>
-            <div className="flex gap-3 sm:gap-4 items-start group relative">
-                <Link href={profileLink}>
-                    <Avatar className={cn("shrink-0 hover:opacity-80 transition-opacity shadow-sm border", level > 0 ? "h-6 w-6 sm:h-8 sm:w-8" : "h-8 w-8 sm:h-10 sm:w-10")}>
+        <div className={cn("space-y-4", level > 0 && (isMobile ? "ml-4" : "ml-10"))}>
+            <div className="flex gap-2 sm:gap-4 items-start group relative">
+                <Link href={profileLink} className="shrink-0">
+                    <Avatar className={cn(
+                        "shrink-0 hover:opacity-80 transition-opacity shadow-sm border", 
+                        level > 0 ? (isMobile ? "h-5 w-5" : "h-7 w-7") : "h-8 w-8 sm:h-10 sm:w-10"
+                    )}>
                         <AvatarImage src={comment.authorAvatarUrl} />
-                        <AvatarFallback className="text-xs sm:text-sm font-bold">{comment.authorFirstName?.charAt(0) || 'U'}</AvatarFallback>
+                        <AvatarFallback className={cn("font-bold", level > 0 ? "text-[8px]" : "text-xs sm:text-sm")}>
+                            {comment.authorFirstName?.charAt(0) || 'U'}
+                        </AvatarFallback>
                     </Avatar>
                 </Link>
                 <div className="flex-1 min-w-0">
-                    <div className="bg-muted/30 rounded-xl p-3 sm:p-4 relative border">
-                        <div className="flex justify-between items-start mb-1.5 gap-2">
+                    <div className="bg-muted/30 rounded-2xl p-3 sm:p-4 relative border">
+                        <div className="flex justify-between items-start mb-1 gap-2">
                             <div className="min-w-0 flex-1">
                                 <Link href={profileLink} className="hover:underline decoration-primary/30 underline-offset-2">
                                     <p className="text-sm font-bold truncate leading-tight">
                                         {authorName}
                                     </p>
                                 </Link>
-                                <p className="text-xs text-muted-foreground mt-0.5">
+                                <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 opacity-70">
                                     {createdAt ? formatDistanceToNow(createdAt, { addSuffix: true }) : 'just now'}
                                 </p>
                             </div>
@@ -109,7 +114,7 @@ function CommentItem({
                                     )}
                                     onClick={handleDelete}
                                 >
-                                    <Trash2 className="h-4 w-4" />
+                                    <Trash2 className="h-3.5 w-3.5" />
                                 </button>
                             )}
                         </div>
@@ -118,8 +123,8 @@ function CommentItem({
                         </p>
                         
                         {(supporters.length > 0 || inspiredBy.length > 0 || connectedBy.length > 0) && (
-                            <div className="absolute -bottom-2 right-2 flex items-center gap-1 bg-background border rounded-full px-1.5 py-0.5 shadow-md z-10">
-                                <div className="flex items-center -space-x-0.5">
+                            <div className="absolute -bottom-2.5 right-2 flex items-center gap-1 bg-background border rounded-full px-1.5 py-0.5 shadow-sm z-10">
+                                <div className="flex items-center -space-x-1">
                                     {supporters.length > 0 && <HandHeart className="h-3 w-3 text-primary fill-current" />}
                                     {inspiredBy.length > 0 && <Sparkles className="h-3 w-3 text-chart-3 fill-current" />}
                                     {connectedBy.length > 0 && <PartyPopper className="h-3 w-3 text-blue-500" />}
@@ -131,32 +136,32 @@ function CommentItem({
                         )}
                     </div>
 
-                    <div className="flex items-center gap-4 mt-1.5 px-1">
-                        <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-4 mt-1 px-1">
+                        <div className="flex items-center gap-3 sm:gap-4 flex-wrap">
                             <button 
                                 onClick={() => handleReaction('amen')}
                                 disabled={isReacting !== null}
-                                className={cn("text-xs font-bold transition-colors hover:text-primary", hasAmened ? "text-primary" : "text-muted-foreground")}
+                                className={cn("text-xs font-bold transition-colors hover:text-primary py-1", hasAmened ? "text-primary" : "text-muted-foreground")}
                             >
                                 Amen
                             </button>
                             <button 
                                 onClick={() => handleReaction('inspired')}
                                 disabled={isReacting !== null}
-                                className={cn("text-xs font-bold transition-colors hover:text-chart-3", hasInspired ? "text-chart-3" : "text-muted-foreground")}
+                                className={cn("text-xs font-bold transition-colors hover:text-chart-3 py-1", hasInspired ? "text-chart-3" : "text-muted-foreground")}
                             >
                                 Inspired
                             </button>
                             <button 
                                 onClick={() => handleReaction('celebrate')}
                                 disabled={isReacting !== null}
-                                className={cn("text-xs font-bold transition-colors hover:text-blue-500", hasCelebrated ? "text-blue-500" : "text-muted-foreground")}
+                                className={cn("text-xs font-bold transition-colors hover:text-blue-500 py-1", hasCelebrated ? "text-blue-500" : "text-muted-foreground")}
                             >
                                 Celebrate
                             </button>
                             <button 
                                 onClick={() => onReply(comment)}
-                                className="text-xs font-bold text-muted-foreground hover:text-foreground transition-colors"
+                                className="text-xs font-bold text-muted-foreground hover:text-foreground transition-colors py-1"
                             >
                                 Reply
                             </button>
@@ -233,8 +238,8 @@ export function CommentSection({ testimonyId }: { testimonyId: string }) {
 
     const renderComment = (comment: TestimonyComment, level = 0) => {
         const children = repliesMap[comment.id] || [];
-        // Cap indentation to avoid horizontal overflow on mobile
-        const indentLevel = level > 2 ? 2 : level;
+        // Cap indentation to avoid horizontal overflow on small mobile screens
+        const indentLevel = level > 3 ? 3 : level;
         
         return (
             <CommentItem 
@@ -250,42 +255,42 @@ export function CommentSection({ testimonyId }: { testimonyId: string }) {
     };
 
     return (
-        <div className="flex flex-col h-full min-h-0 overflow-hidden">
-            <div className="flex-1 min-h-0 overflow-y-auto">
-                <div className="space-y-8 p-4 sm:p-6 pb-20">
+        <div className="flex flex-col h-full min-h-0 overflow-hidden bg-background">
+            <div className="flex-1 min-h-0 overflow-y-auto scrollbar-hide">
+                <div className="space-y-6 p-4 sm:p-6 pb-24">
                     {(loading || userLoading) ? (
                         <div className="flex justify-center py-12"><Loader2 className="h-8 w-8 animate-spin opacity-20" /></div>
                     ) : topLevelComments.length > 0 ? (
                         topLevelComments.map(comment => renderComment(comment))
                     ) : (
-                        <div className="text-center py-20 bg-muted/20 rounded-2xl border-2 border-dashed mx-2 flex flex-col items-center">
+                        <div className="text-center py-20 bg-muted/20 rounded-3xl border-2 border-dashed mx-2 flex flex-col items-center">
                              <Sparkles className="h-10 w-10 text-muted-foreground/20 mb-4" />
-                             <p className="text-sm text-muted-foreground italic">No comments yet. Be the first to encourage!</p>
+                             <p className="text-sm text-muted-foreground italic px-8 text-balance">No comments yet. Be the first to share a word of encouragement!</p>
                         </div>
                     )}
                 </div>
             </div>
 
             {user && (
-                <div className="shrink-0 p-4 border-t bg-background shadow-[0_-8px_10px_-4px_rgba(0,0,0,0.05)]">
+                <div className="shrink-0 p-3 sm:p-4 border-t bg-background/80 backdrop-blur-md shadow-[0_-10px_20px_-10px_rgba(0,0,0,0.1)]">
                     {replyingTo && (
-                        <div className="flex items-center justify-between bg-primary/5 px-4 py-2 rounded-t-xl text-xs text-muted-foreground border-x border-t mb-0 border-primary/20">
+                        <div className="flex items-center justify-between bg-primary/5 px-4 py-2 rounded-t-2xl text-[11px] text-muted-foreground border-x border-t mb-0 border-primary/20">
                             <p className="truncate">Replying to <span className="font-bold text-primary">{replyingTo.authorFirstName}</span></p>
                             <button onClick={() => setReplyingTo(null)} className="hover:text-foreground transition-colors p-1 rounded-full hover:bg-muted">
                                 <X className="h-3 w-3" />
                             </button>
                         </div>
                     )}
-                    <form onSubmit={handleSendComment} className={cn("flex gap-2 items-center", replyingTo && "border-x border-b p-2 rounded-b-xl bg-muted/10 border-primary/20")}>
+                    <form onSubmit={handleSendComment} className={cn("flex gap-2 items-center", replyingTo && "border-x border-b p-1.5 rounded-b-2xl bg-muted/5 border-primary/20")}>
                         <Input
-                            placeholder={replyingTo ? "Write your reply..." : "Write a comment of encouragement..."}
+                            placeholder={replyingTo ? "Write your reply..." : "Encourage with a comment..."}
                             value={newComment}
                             onChange={(e) => setNewMessage(e.target.value)}
-                            className="text-base h-12 shadow-sm rounded-xl focus-visible:ring-primary/30"
+                            className="text-sm sm:text-base h-11 sm:h-12 shadow-inner rounded-2xl focus-visible:ring-primary/20 border-muted-foreground/20"
                             disabled={isSending}
                             autoFocus={!!replyingTo}
                         />
-                        <Button type="submit" size="icon" className="h-12 w-12 shrink-0 rounded-xl shadow-md transition-transform active:scale-95" disabled={!newComment.trim() || isSending}>
+                        <Button type="submit" size="icon" className="h-11 w-11 sm:h-12 sm:w-12 shrink-0 rounded-2xl shadow-lg transition-transform active:scale-90" disabled={!newComment.trim() || isSending}>
                             {isSending ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
                         </Button>
                     </form>
