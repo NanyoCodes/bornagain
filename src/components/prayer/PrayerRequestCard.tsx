@@ -1,5 +1,6 @@
 "use client";
 
+import * as React from "react";
 import {
   Card,
   CardContent,
@@ -12,9 +13,9 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import type { PrayerRequest } from "@/lib/types";
 import { format } from "date-fns";
-import { HandHeart, Users, Trash2, Loader2, User, Award, Newspaper } from "lucide-react";
+import { HandHeart, Users, Trash2, Loader2, User, Award, Newspaper, Edit } from "lucide-react";
 import { useUser, useFirestore } from "@/firebase";
-import { useState, useMemo, memo } from "react";
+import { useState, useMemo, memo, useRef, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { doc, updateDoc, arrayUnion } from "firebase/firestore";
 import { errorEmitter } from "@/firebase/error-emitter";
@@ -24,14 +25,31 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import Link from "next/link";
 import Image from 'next/image';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
-
-export const PrayerRequestCard = memo(function PrayerRequestCard({ prayerRequest, onDelete, onAnswerPrayer }: { prayerRequest: PrayerRequest, onDelete: () => void, onAnswerPrayer: () => void; }) {
+export const PrayerRequestCard = memo(function PrayerRequestCard({ 
+  prayerRequest, 
+  onDelete, 
+  onAnswerPrayer,
+  onEdit 
+}: { 
+  prayerRequest: PrayerRequest, 
+  onDelete: () => void, 
+  onAnswerPrayer: () => void,
+  onEdit: () => void; 
+}) {
   const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
+  const isMobile = useIsMobile();
+  const [mounted, setMounted] = useState(false);
   
   const [isPraying, setIsPraying] = useState(false);
+  const contentRef = useRef<HTMLParagraphElement>(null);
+  const [isTruncated, setIsTruncated] = useState(false);
+  const [showFullText, setShowFullText] = useState(false);
 
   const isAuthor = user?.uid === prayerRequest.authorId;
   const isAnswered = prayerRequest.status === 'answered';
@@ -48,6 +66,20 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({ prayerRequest
   const profileLink = !prayerRequest.isAnonymous && prayerRequest.authorId ? `/dashboard/profile/${prayerRequest.authorId}` : '#';
   const isClickable = !prayerRequest.isAnonymous && prayerRequest.authorId;
 
+  useEffect(() => {
+    setMounted(true);
+    const checkTruncation = () => {
+      if (contentRef.current) {
+        setIsTruncated(contentRef.current.scrollHeight > contentRef.current.clientHeight);
+      }
+    };
+    const timeoutId = setTimeout(checkTruncation, 100);
+    window.addEventListener('resize', checkTruncation);
+    return () => {
+      clearTimeout(timeoutId);
+      window.removeEventListener('resize', checkTruncation);
+    };
+  }, [prayerRequest.content]);
 
   const handlePray = () => {
     if (!user || !firestore || hasPrayed || isAuthor) return;
@@ -71,12 +103,20 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({ prayerRequest
         .finally(() => {
             setIsPraying(false);
         });
-  }
+  };
+
+  const fullTextContent = (
+    <ScrollArea className={cn("pr-4", isMobile ? "h-full" : "max-h-[60vh]")}>
+      <div className="text-base text-muted-foreground whitespace-pre-wrap leading-relaxed pb-6">
+        {prayerRequest.content}
+      </div>
+    </ScrollArea>
+  );
 
   return (
     <>
       <Card className="flex flex-col h-full overflow-hidden shadow-md">
-        <CardHeader className="flex flex-row items-start justify-between gap-4">
+        <CardHeader className="flex flex-row items-start justify-between gap-4 p-4 sm:p-6">
             <div className="flex items-center gap-3 min-w-0 flex-1">
                 <Dialog>
                   <DialogTrigger asChild onClick={(e) => e.stopPropagation()} disabled={prayerRequest.isAnonymous || !prayerRequest.authorAvatarUrl}>
@@ -93,7 +133,7 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({ prayerRequest
                             <DialogTitle>Profile photo of {authorName}</DialogTitle>
                             <DialogDescription>A larger view of the user's profile photo.</DialogDescription>
                           </DialogHeader>
-                          <Image src={prayerRequest.authorAvatarUrl} alt={authorName} width={600} height={600} className="rounded-lg object-contain"/>
+                          <Image src={prayerRequest.authorAvatarUrl} alt={authorName} width={600} height={600} className="rounded-lg object-contain" unoptimized/>
                       </DialogContent>
                   )}
                 </Dialog>
@@ -110,12 +150,26 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({ prayerRequest
                 </div>
             </div>
         </CardHeader>
-        <CardContent className="flex-grow py-0">
-          <p className="text-sm text-muted-foreground whitespace-pre-wrap line-clamp-4">
-            {prayerRequest.content}
-          </p>
+        <CardContent className="flex-grow py-0 px-4 sm:px-6">
+          <div className="text-sm text-muted-foreground whitespace-pre-wrap">
+            <p ref={contentRef} className="line-clamp-4 text-sm leading-relaxed">
+              {prayerRequest.content}
+            </p>
+            {isTruncated && !isAuthor && (
+              <Button
+                variant="link"
+                className="p-0 h-auto text-sm text-primary font-bold mt-2"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowFullText(true);
+                }}
+              >
+                Read Full Request
+              </Button>
+            )}
+          </div>
         </CardContent>
-        <CardFooter className="pt-4 flex justify-between items-center mt-auto">
+        <CardFooter className="pt-4 flex justify-between items-center mt-auto p-4 sm:p-6">
           <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
               <Users className="h-4 w-4" />
               <span>{prayerCount}</span>
@@ -140,6 +194,10 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({ prayerRequest
                         Testify
                     </Button>
                 )}
+                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onEdit}>
+                    <Edit className="h-4 w-4" />
+                    <span className="sr-only">Edit</span>
+                </Button>
                 <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={onDelete}>
                     <Trash2 className="h-4 w-4" />
                     <span className="sr-only">Delete</span>
@@ -165,6 +223,36 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({ prayerRequest
           )}
         </CardFooter>
       </Card>
+
+      {mounted && (
+        <>
+          {isMobile ? (
+            <Sheet open={showFullText} onOpenChange={setShowFullText}>
+              <SheetContent side="bottom" className="h-[80dvh] flex flex-col p-0">
+                <div className="p-6 border-b shrink-0">
+                  <SheetHeader className="text-left">
+                    <SheetTitle className="text-2xl font-bold">Prayer Request from {authorName}</SheetTitle>
+                    <SheetDescription className="text-sm">{displayDate}</SheetDescription>
+                  </SheetHeader>
+                </div>
+                <div className="flex-grow min-h-0 p-6 overflow-y-auto">
+                  {fullTextContent}
+                </div>
+              </SheetContent>
+            </Sheet>
+          ) : (
+            <Dialog open={showFullText} onOpenChange={setShowFullText}>
+              <DialogContent className="sm:max-w-2xl">
+                <DialogHeader>
+                  <DialogTitle className="text-2xl font-bold">Prayer Request from {authorName}</DialogTitle>
+                  <DialogDescription className="text-sm">{displayDate}</DialogDescription>
+                </DialogHeader>
+                {fullTextContent}
+              </DialogContent>
+            </Dialog>
+          )}
+        </>
+      )}
     </>
   );
 });

@@ -44,6 +44,7 @@ import { useToast } from "@/hooks/use-toast";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { EditTestimonyForm } from "@/components/testimonies/edit-testimony-form";
+import { EditPrayerRequestForm } from "@/components/prayer/EditPrayerRequestForm";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import AdsenseAd from "@/components/common/adsense-ad";
 
@@ -102,8 +103,8 @@ export default function TestimoniesPage() {
 
   const [itemToDelete, setItemToDelete] = useState<{ type: 'testimony', data: Testimony } | { type: 'prayer', data: PrayerRequest } | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [itemToEdit, setItemToEdit] = useState<Testimony | null>(null);
-  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [testimonyToEdit, setTestimonyToEdit] = useState<Testimony | null>(null);
+  const [prayerToEdit, setPrayerToEdit] = useState<PrayerRequest | null>(null);
   const [prayerToAnswer, setPrayerToAnswer] = useState<PrayerRequest | null>(null);
 
   const closeDeleteDialog = useCallback(() => {
@@ -111,8 +112,8 @@ export default function TestimoniesPage() {
   }, []);
 
   const closeEditDialog = useCallback(() => {
-    setIsEditOpen(false);
-    setTimeout(() => setItemToEdit(null), 300);
+    setTestimonyToEdit(null);
+    setPrayerToEdit(null);
   }, []);
 
   useEffect(() => {
@@ -346,7 +347,7 @@ export default function TestimoniesPage() {
                                 hasPendingRequest={pendingRequestIds.has(testimony.authorId)}
                                 currentUserProfile={userProfile}
                                 onDelete={() => setItemToDelete({ type: 'testimony', data: testimony })}
-                                onEdit={() => { setItemToEdit(testimony); setIsEditOpen(true); }}
+                                onEdit={() => setTestimonyToEdit(testimony)}
                             />
                             {(index + 1) % 4 === 0 && (
                                 <AdsenseAd adSlot={`testimonies-feed-ad-${index}`} className="h-full" />
@@ -378,6 +379,7 @@ export default function TestimoniesPage() {
                         prayerRequest={req}
                         onDelete={() => setItemToDelete({ type: 'prayer', data: req })}
                         onAnswerPrayer={() => handleOpenTestimonyDialog(req)}
+                        onEdit={() => setPrayerToEdit(req)}
                     />
                      {(index + 1) % 4 === 0 && (
                         <AdsenseAd adSlot={`prayers-feed-ad-${index}`} className="h-full" />
@@ -415,8 +417,9 @@ export default function TestimoniesPage() {
           </AlertDialogContent>
       </AlertDialog>
 
+      {/* Edit Testimony */}
       {mounted && isMobile ? (
-        <Sheet open={isEditOpen} onOpenChange={(open) => !open && closeEditDialog()}>
+        <Sheet open={!!testimonyToEdit} onOpenChange={(open) => !open && closeEditDialog()}>
           <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-2xl">
             <div className="p-6 border-b flex-shrink-0 bg-muted/10">
               <SheetHeader className="text-left">
@@ -426,13 +429,13 @@ export default function TestimoniesPage() {
             </div>
             <ScrollArea className="flex-grow">
               <div className="p-6">
-                {itemToEdit && <EditTestimonyForm testimony={itemToEdit} onTestimonyUpdated={closeEditDialog} />}
+                {testimonyToEdit && <EditTestimonyForm testimony={testimonyToEdit} onTestimonyUpdated={closeEditDialog} />}
               </div>
             </ScrollArea>
           </SheetContent>
         </Sheet>
       ) : (
-        <Dialog open={isEditOpen} onOpenChange={(open) => !open && closeEditDialog()}>
+        <Dialog open={!!testimonyToEdit} onOpenChange={(open) => !open && closeEditDialog()}>
           <DialogContent className="sm:max-w-lg">
             <DialogHeader>
               <DialogTitle>Edit Testimony</DialogTitle>
@@ -441,7 +444,40 @@ export default function TestimoniesPage() {
               </DialogDescription>
             </DialogHeader>
             <div className="max-h-[70vh] overflow-y-auto pr-2">
-              {itemToEdit && <EditTestimonyForm testimony={itemToEdit} onTestimonyUpdated={closeEditDialog} />}
+              {testimonyToEdit && <EditTestimonyForm testimony={testimonyToEdit} onTestimonyUpdated={closeEditDialog} />}
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
+
+      {/* Edit Prayer Request */}
+      {mounted && isMobile ? (
+        <Sheet open={!!prayerToEdit} onOpenChange={(open) => !open && closeEditDialog()}>
+          <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-2xl">
+            <div className="p-6 border-b flex-shrink-0 bg-muted/10">
+              <SheetHeader className="text-left">
+                <SheetTitle className="text-xl font-bold">Edit Prayer Request</SheetTitle>
+                <SheetDescription className="text-xs">Update your request for the community.</SheetDescription>
+              </SheetHeader>
+            </div>
+            <ScrollArea className="flex-grow">
+              <div className="p-6">
+                {prayerToEdit && <EditPrayerRequestForm prayerRequest={prayerToEdit} onPrayerRequestUpdated={closeEditDialog} />}
+              </div>
+            </ScrollArea>
+          </SheetContent>
+        </Sheet>
+      ) : (
+        <Dialog open={!!prayerToEdit} onOpenChange={(open) => !open && closeEditDialog()}>
+          <DialogContent className="sm:max-w-lg">
+            <DialogHeader>
+              <DialogTitle>Edit Prayer Request</DialogTitle>
+              <DialogDescription>
+                Update the details of your prayer request.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="max-h-[70vh] overflow-y-auto pr-2">
+              {prayerToEdit && <EditPrayerRequestForm prayerRequest={prayerToEdit} onPrayerRequestUpdated={closeEditDialog} />}
             </div>
           </DialogContent>
         </Dialog>
