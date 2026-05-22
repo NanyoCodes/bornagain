@@ -16,7 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Testimony, TestimonyComment } from "@/lib/types";
 import { format } from "date-fns";
-import { Share2, MoreVertical, Edit, Trash2, Loader2, Globe, Sparkles, PartyPopper, HandHeart, MessageCircle, X } from "lucide-react";
+import { Share2, MoreVertical, Edit, Trash2, Loader2, Globe, Sparkles, PartyPopper, HandHeart, MessageCircle, X, Facebook, Twitter, Link as LinkIcon } from "lucide-react";
 import { useUser, useAuth, useFirestore, useCollection } from "@/firebase";
 import { useState, useMemo } from "react";
 import {
@@ -131,20 +131,42 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
         });
   }
 
-  const handleShare = (platform: "link" | "facebook" | "twitter" | "whatsapp") => {
+  const handleShare = async () => {
+    const baseUrl = "https://testifyglobal.com";
+    const shareUrl = `${baseUrl}/dashboard/testimonies#${testimony.id}`;
+    const shareData = {
+      title: `Powerful testimony from ${authorFullName} on Testify!`,
+      text: `Read this powerful testimony on Testify: "${testimony.content.substring(0, 150)}..."`,
+      url: shareUrl,
+    };
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else {
+         handleShareDropdown('link');
+      }
+    } catch (err: any) {
+      if (err.name !== 'AbortError') {
+        console.error('Share failed:', err);
+        handleShareDropdown('link');
+      }
+    }
+  };
+
+  const handleShareDropdown = (platform: "link" | "facebook" | "twitter" | "whatsapp") => {
     const baseUrl = "https://testifyglobal.com";
     const url = `${baseUrl}/dashboard/testimonies#${testimony.id}`;
-    const text = `Powerful testimony from ${authorFullName} on Testify! \n\n"${testimony.content.substring(0, 150)}..."`;
-    const shareTextWithUrl = `${text}\n\nRead more at: ${url}`;
+    const titleText = `Powerful testimony from ${authorFullName} on Testify!`;
+    const shareTextWithUrl = `${titleText} ${url}`;
     let shareUrl = "";
 
     switch (platform) {
       case "facebook":
-        shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}&quote=${encodeURIComponent(text)}`;
+        shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}&quote=${encodeURIComponent(titleText)}`;
         window.open(shareUrl, "_blank");
         break;
       case "twitter":
-        shareUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`;
+        shareUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(titleText)}`;
         window.open(shareUrl, "_blank");
         break;
       case "whatsapp":
@@ -160,6 +182,39 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
         break;
     }
   };
+
+  const shareButton = (
+    <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+            <Button variant="outline" size="icon" className="h-8 w-8" onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              handleShare();
+            }}>
+                <Share2 className="h-4 w-4" />
+                <span className="sr-only">Share Testimony</span>
+            </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+            <DropdownMenuItem onSelect={() => handleShareDropdown('link')}>
+                <LinkIcon className="mr-2 h-4 w-4" />
+                Copy Link
+            </DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => handleShareDropdown('whatsapp')}>
+                <MessageCircle className="mr-2 h-4 w-4" />
+                Share on WhatsApp
+            </DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => handleShareDropdown('facebook')}>
+                <Facebook className="mr-2 h-4 w-4" />
+                Share on Facebook
+            </DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => handleShareDropdown('twitter')}>
+                <Twitter className="mr-2 h-4 w-4" />
+                Share on Twitter (X)
+            </DropdownMenuItem>
+        </DropdownMenuContent>
+    </DropdownMenu>
+  );
 
   const fullTextContent = (
     <ScrollArea className={cn("pr-4", isMobile ? "h-full" : "max-h-[60vh]")}>
@@ -208,23 +263,29 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => e.stopPropagation()}>
-                  <Share2 className="h-4 w-4" />
-                  <span className="sr-only">Share God's Glory</span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuLabel>Share God's Glory</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onSelect={(e) => { e.preventDefault(); handleShare('link'); }}><Share2 className="mr-2 h-4 w-4" /><span>Copy Link</span></DropdownMenuItem>
-                <DropdownMenuItem onSelect={(e) => { e.preventDefault(); handleShare('whatsapp'); }}><Icons.google className="mr-2 h-4 w-4" /><span>WhatsApp</span></DropdownMenuItem>
-                {isAuthor && <DropdownMenuSeparator />}
-                {isAuthor && <DropdownMenuItem onSelect={(e) => { e.preventDefault(); onEdit(); }}><Edit className="mr-2 h-4 w-4" /><span>Edit</span></DropdownMenuItem>}
-                {isAuthor && <DropdownMenuItem onSelect={(e) => { e.preventDefault(); onDelete(); }} className="text-destructive focus:text-destructive"><Trash2 className="mr-2 h-4 w-4" /><span>Delete</span></DropdownMenuItem>}
-              </DropdownMenuContent>
-            </DropdownMenu>
+            {shareButton}
+            {isAuthor && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => e.stopPropagation()}>
+                    <MoreVertical className="h-4 w-4" />
+                    <span className="sr-only">More options</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onSelect={(e) => { e.preventDefault(); onEdit(); }}>
+                    <Edit className="mr-2 h-4 w-4" />
+                    <span>Edit</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onSelect={(e) => { e.preventDefault(); onDelete(); }} className="text-destructive focus:text-destructive">
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    <span>Delete</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
           </div>
         </CardHeader>
         
