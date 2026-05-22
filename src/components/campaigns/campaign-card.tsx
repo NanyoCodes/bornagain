@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { format, parse, isSameDay, differenceInDays } from "date-fns";
-import { CalendarDays, MapPin, Users, Share2, Edit, MoreVertical, Loader2, MessagesSquare, UserCheck, PlayCircle, Newspaper, UserPlus, ChevronDown } from "lucide-react";
+import { CalendarDays, MapPin, Users, Share2, Edit, MoreVertical, Loader2, MessagesSquare, UserCheck, PlayCircle, Newspaper, UserPlus, ChevronDown, MessageSquare, MessageCircle, Facebook, Twitter, Link as LinkIcon } from "lucide-react";
 import type { Campaign, CampaignParticipant, UserProfile } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -340,7 +340,7 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
     }
   };
 
-  const handleShareDropdown = (platform: "link" | "facebook" | "twitter" | "whatsapp") => {
+  const handleShareDropdown = (platform: "link" | "facebook" | "twitter" | "whatsapp" | "whatsapp-business") => {
     const baseUrl = "https://testifyglobal.com";
     const url = `${baseUrl}/dashboard/campaigns/${campaign.id}`;
     const titleText = `Join the '${campaign.title}' campaign on Testify!`;
@@ -357,6 +357,7 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
         window.open(shareUrl, "_blank");
         break;
       case "whatsapp":
+      case "whatsapp-business":
         shareUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareTextWithUrl)}`;
         window.open(shareUrl, "_blank");
         break;
@@ -441,6 +442,7 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
         <DropdownMenuTrigger asChild>
             <Button variant="outline" size="icon" onClick={(e) => {
               e.preventDefault();
+              e.stopPropagation();
               handleShare();
             }} disabled={status === 'Past'}>
                 <Share2 className="h-4 w-4" />
@@ -449,15 +451,23 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
             <DropdownMenuItem onSelect={() => handleShareDropdown('link')}>
+                <LinkIcon className="mr-2 h-4 w-4" />
                 Copy Link
             </DropdownMenuItem>
             <DropdownMenuItem onSelect={() => handleShareDropdown('whatsapp')}>
+                <MessageCircle className="mr-2 h-4 w-4" />
                 Share on WhatsApp
             </DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => handleShareDropdown('whatsapp-business')}>
+                <MessageSquare className="mr-2 h-4 w-4" />
+                WhatsApp Business
+            </DropdownMenuItem>
             <DropdownMenuItem onSelect={() => handleShareDropdown('facebook')}>
+                <Facebook className="mr-2 h-4 w-4" />
                 Share on Facebook
             </DropdownMenuItem>
             <DropdownMenuItem onSelect={() => handleShareDropdown('twitter')}>
+                <Twitter className="mr-2 h-4 w-4" />
                 Share on Twitter (X)
             </DropdownMenuItem>
         </DropdownMenuContent>

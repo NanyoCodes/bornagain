@@ -16,7 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Testimony, TestimonyComment } from "@/lib/types";
 import { format } from "date-fns";
-import { Share2, MoreVertical, Edit, Trash2, Loader2, Globe, Sparkles, PartyPopper, HandHeart, MessageCircle, X, Facebook, Twitter, Link as LinkIcon } from "lucide-react";
+import { Share2, MoreVertical, Edit, Trash2, Loader2, Globe, Sparkles, PartyPopper, HandHeart, MessageCircle, X, Facebook, Twitter, Link as LinkIcon, MessageSquare } from "lucide-react";
 import { useUser, useAuth, useFirestore, useCollection } from "@/firebase";
 import { useState, useMemo } from "react";
 import {
@@ -153,7 +153,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
     }
   };
 
-  const handleShareDropdown = (platform: "link" | "facebook" | "twitter" | "whatsapp") => {
+  const handleShareDropdown = (platform: "link" | "facebook" | "twitter" | "whatsapp" | "whatsapp-business") => {
     const baseUrl = "https://testifyglobal.com";
     const url = `${baseUrl}/dashboard/testimonies#${testimony.id}`;
     const titleText = `Powerful testimony from ${authorFullName} on Testify!`;
@@ -170,6 +170,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
         window.open(shareUrl, "_blank");
         break;
       case "whatsapp":
+      case "whatsapp-business":
         shareUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareTextWithUrl)}`;
         window.open(shareUrl, "_blank");
         break;
@@ -203,6 +204,10 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
             <DropdownMenuItem onSelect={() => handleShareDropdown('whatsapp')}>
                 <MessageCircle className="mr-2 h-4 w-4" />
                 Share on WhatsApp
+            </DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => handleShareDropdown('whatsapp-business')}>
+                <MessageSquare className="mr-2 h-4 w-4" />
+                WhatsApp Business
             </DropdownMenuItem>
             <DropdownMenuItem onSelect={() => handleShareDropdown('facebook')}>
                 <Facebook className="mr-2 h-4 w-4" />
