@@ -357,6 +357,7 @@ export type Fellowship = {
   memberCount: number;
   location?: string;
   city?: string;
+  state?: string;
   country?: string;
   locationType?: 'Physical' | 'Virtual' | 'Physical and Virtual';
   latitude?: number;

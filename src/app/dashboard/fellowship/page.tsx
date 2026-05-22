@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect, useCallback } from 'react';
@@ -51,33 +52,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-
-const countries = [
-  "Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Antigua and Barbuda", "Argentina", "Armenia", "Australia", "Austria", "Azerbaijan",
-  "Bahamas", "Bahrain", "Bangladesh", "Barbados", "Belarus", "Belgium", "Belize", "Benin", "Bhutan", "Bolivia", "Bosnia and Herzegovina", "Botswana", "Brazil", "Brunei", "Bulgaria", "Burkina Faso", "Burundi",
-  "Cabo Verde", "Cambodia", "Cameroon", "Canada", "Central African Republic", "Chad", "Chile", "China", "Colombia", "Comoros", "Congo", "Costa Rica", "Croatia", "Cuba", "Cyprus", "Czech Republic",
-  "Denmark", "Djibouti", "Dominica", "Dominican Republic",
-  "Ecuador", "Egypt", "El Salvador", "Equatorial Guinea", "Eritrea", "Estonia", "Eswatini", "Ethiopia",
-  "Fiji", "Finland", "France",
-  "Gabon", "Gambia", "Georgia", "Germany", "Ghana", "Greece", "Grenada", "Guatemala", "Guinea", "Guinea-Bissau", "Guyana",
-  "Haiti", "Honduras", "Hungary",
-  "Iceland", "India", "Indonesia", "Iran", "Iraq", "Ireland", "Israel", "Italy", "Ivory Coast",
-  "Jamaica", "Japan", "Jordan",
-  "Kazakhstan", "Kenya", "Kiribati", "Kuwait", "Kyrgyzstan",
-  "Laos", "Latvia", "Lebanon", "Lesotho", "Liberia", "Libya", "Liechtenstein", "Lithuania", "Luxembourg",
-  "Madagascar", "Malawi", "Malaysia", "Maldives", "Mali", "Malta", "Marshall Islands", "Mauritania", "Mauritius", "Mexico", "Micronesia", "Moldova", "Monaco", "Mongolia", "Montenegro", "Morocco", "Mozambique", "Myanmar",
-  "Namibia", "Nauru", "Nepal", "Netherlands", "New Zealand", "Nicaragua", "Niger", "Nigeria", "North Korea", "North Macedonia", "Norway",
-  "Oman",
-  "Pakistan", "Palau", "Palestine", "Panama", "Papua New Guinea", "Paraguay", "Peru", "Philippines", "Poland", "Portugal",
-  "Qatar",
-  "Romania", "Russia", "Rwanda",
-  "Saint Kitts and Nevis", "Saint Lucia", "Saint Vincent and the Grenadines", "Samoa", "San Marino", "Sao Tome and Principe", "Saudi Arabia", "Senegal", "Serbia", "Seychelles", "Sierra Leone", "Singapore", "Slovakia", "Slovenia", "Solomon Islands", "Somalia", "South Africa", "South Korea", "South Sudan", "Spain", "Sri Lanka", "Sudan", "Suriname", "Sweden", "Switzerland", "Syria",
-  "Taiwan", "Tajikistan", "Tanzania", "Thailand", "Timor-Leste", "Togo", "Tonga", "Trinidad and Tobago", "Tunisia", "Turkey", "Turkmenistan", "Tuvalu",
-  "Uganda", "Ukraine", "United Arab Emirates", "United Kingdom", "United States", "Uruguay", "Uzbekistan",
-  "Vanuatu", "Vatican City", "Venezuela", "Vietnam",
-  "Yemen",
-  "Zambia", "Zimbabwe"
-];
+import { Country, State, City } from 'country-state-city';
 
 const formSchema = z.object({
   name: z.string().min(3, "Name must be at least 3 characters.").max(100),
@@ -87,14 +62,15 @@ const formSchema = z.object({
   streamUrl: z.string().url({ message: "Please enter a valid URL." }).optional().or(z.literal('')),
   locationType: z.enum(['Physical', 'Virtual', 'Physical and Virtual'], { required_error: "Please select a location type." }),
   city: z.string().max(100).optional(),
+  state: z.string().max(100).optional(),
   country: z.string().optional(),
 }).refine((data) => {
     if (data.locationType === 'Physical' || data.locationType === 'Physical and Virtual') {
-        return !!data.city && data.city.trim().length > 1 && !!data.country;
+        return !!data.city && data.city.trim().length > 0 && !!data.state && !!data.country;
     }
     return true;
 }, {
-    message: "City and Country are required for physical meetings.",
+    message: "City, State, and Country are required for physical meetings.",
     path: ["city"],
 });
 
@@ -119,9 +95,21 @@ function FellowshipForm({
             streamUrl: userProfile?.defaultMeetingLink || "",
             locationType: 'Physical',
             city: userProfile?.location?.city || '',
+            state: userProfile?.location?.state || '',
             country: userProfile?.location?.country || '',
         },
     });
+
+    const watchedCountryName = form.watch('country');
+    const watchedStateName = form.watch('state');
+
+    const countriesList = useMemo(() => Country.getAllCountries(), []);
+    const selectedCountry = useMemo(() => countriesList.find(c => c.name === watchedCountryName), [countriesList, watchedCountryName]);
+
+    const statesList = useMemo(() => selectedCountry ? State.getStatesOfCountry(selectedCountry.isoCode) : [], [selectedCountry]);
+    const selectedState = useMemo(() => statesList.find(s => s.name === watchedStateName), [statesList, watchedStateName]);
+
+    const citiesList = useMemo(() => (selectedCountry && selectedState) ? City.getCitiesOfState(selectedCountry.isoCode, selectedState.isoCode) : [], [selectedCountry, selectedState]);
 
     useEffect(() => {
         form.setValue('groupType', defaultType);
@@ -223,26 +211,65 @@ function FellowshipForm({
                     />
                 {(form.watch('locationType') === 'Physical' || form.watch('locationType') === 'Physical and Virtual') && (
                     <div className="space-y-4">
+                        <FormField control={form.control} name="country" render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Country</FormLabel>
+                                <Select onValueChange={(val) => { field.onChange(val); form.setValue('state', ''); form.setValue('city', ''); }} value={field.value}>
+                                    <FormControl>
+                                        <SelectTrigger className="text-base">
+                                            <SelectValue placeholder="Select Country" />
+                                        </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                        {countriesList.map(c => (
+                                            <SelectItem key={c.isoCode} value={c.name}>{c.name}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                <FormMessage />
+                            </FormItem>
+                        )} />
+
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <FormField control={form.control} name="city" render={({ field }) => (
+                            <FormField control={form.control} name="state" render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>City</FormLabel>
-                                    <FormControl><Input placeholder="City" {...field} value={field.value ?? ''} className="text-base" /></FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )} />
-                            <FormField control={form.control} name="country" render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Country</FormLabel>
-                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <FormLabel>State / Region</FormLabel>
+                                    <Select 
+                                        onValueChange={(val) => { field.onChange(val); form.setValue('city', ''); }} 
+                                        value={field.value} 
+                                        disabled={!watchedCountryName || statesList.length === 0}
+                                    >
                                         <FormControl>
                                             <SelectTrigger className="text-base">
-                                                <SelectValue placeholder="Select Country" />
+                                                <SelectValue placeholder={statesList.length === 0 ? "N/A" : "Select State"} />
                                             </SelectTrigger>
                                         </FormControl>
                                         <SelectContent>
-                                            {countries.map(country => (
-                                                <SelectItem key={country} value={country}>{country}</SelectItem>
+                                            {statesList.map(s => (
+                                                <SelectItem key={s.isoCode + s.name} value={s.name}>{s.name}</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                </FormItem>
+                            )} />
+
+                            <FormField control={form.control} name="city" render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>City</FormLabel>
+                                    <Select 
+                                        onValueChange={field.onChange} 
+                                        value={field.value} 
+                                        disabled={!watchedStateName || citiesList.length === 0}
+                                    >
+                                        <FormControl>
+                                            <SelectTrigger className="text-base">
+                                                <SelectValue placeholder={citiesList.length === 0 ? "N/A" : "Select City"} />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            {citiesList.map(city => (
+                                                <SelectItem key={city.name} value={city.name}>{city.name}</SelectItem>
                                             ))}
                                         </SelectContent>
                                     </Select>
@@ -296,9 +323,21 @@ function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting, onDelete
       streamUrl: fellowship.streamUrl || "",
       locationType: fellowship.locationType || 'Physical',
       city: fellowship.city || "",
+      state: fellowship.state || "",
       country: fellowship.country || "",
     },
   });
+
+  const watchedCountryName = form.watch('country');
+  const watchedStateName = form.watch('state');
+
+  const countriesList = useMemo(() => Country.getAllCountries(), []);
+  const selectedCountry = useMemo(() => countriesList.find(c => c.name === watchedCountryName), [countriesList, watchedCountryName]);
+
+  const statesList = useMemo(() => selectedCountry ? State.getStatesOfCountry(selectedCountry.isoCode) : [], [selectedCountry]);
+  const selectedState = useMemo(() => statesList.find(s => s.name === watchedStateName), [statesList, watchedStateName]);
+
+  const citiesList = useMemo(() => (selectedCountry && selectedState) ? City.getCitiesOfState(selectedCountry.isoCode, selectedState.isoCode) : [], [selectedCountry, selectedState]);
 
   const handleCreateMeet = () => {
     window.open('https://meet.google.com/new', '_blank');
@@ -386,26 +425,65 @@ function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting, onDelete
             />
             {(form.watch('locationType') === 'Physical' || form.watch('locationType') === 'Physical and Virtual') && (
                 <div className="space-y-4">
+                    <FormField control={form.control} name="country" render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Country</FormLabel>
+                            <Select onValueChange={(val) => { field.onChange(val); form.setValue('state', ''); form.setValue('city', ''); }} value={field.value}>
+                                <FormControl>
+                                    <SelectTrigger className="text-base">
+                                        <SelectValue placeholder="Select Country" />
+                                    </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                    {countriesList.map(c => (
+                                        <SelectItem key={c.isoCode} value={c.name}>{c.name}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                            <FormMessage />
+                        </FormItem>
+                    )} />
+
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <FormField control={form.control} name="city" render={({ field }) => (
+                        <FormField control={form.control} name="state" render={({ field }) => (
                             <FormItem>
-                                <FormLabel>City</FormLabel>
-                                <FormControl><Input placeholder="City" {...field} value={field.value ?? ''} className="text-base" /></FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )} />
-                        <FormField control={form.control} name="country" render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Country</FormLabel>
-                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <FormLabel>State / Region</FormLabel>
+                                <Select 
+                                    onValueChange={(val) => { field.onChange(val); form.setValue('city', ''); }} 
+                                    value={field.value} 
+                                    disabled={!watchedCountryName || statesList.length === 0}
+                                >
                                     <FormControl>
                                         <SelectTrigger className="text-base">
-                                            <SelectValue placeholder="Select Country" />
+                                            <SelectValue placeholder={statesList.length === 0 ? "N/A" : "Select State"} />
                                         </SelectTrigger>
                                     </FormControl>
                                     <SelectContent>
-                                        {countries.map(country => (
-                                            <SelectItem key={country} value={country}>{country}</SelectItem>
+                                        {statesList.map(s => (
+                                            <SelectItem key={s.isoCode + s.name} value={s.name}>{s.name}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                <FormMessage />
+                            </FormItem>
+                        )} />
+
+                        <FormField control={form.control} name="city" render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>City</FormLabel>
+                                <Select 
+                                    onValueChange={field.onChange} 
+                                    value={field.value} 
+                                    disabled={!watchedStateName || citiesList.length === 0}
+                                >
+                                    <FormControl>
+                                        <SelectTrigger className="text-base">
+                                            <SelectValue placeholder={citiesList.length === 0 ? "N/A" : "Select City"} />
+                                        </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                        {citiesList.map(city => (
+                                            <SelectItem key={city.name} value={city.name}>{city.name}</SelectItem>
                                         ))}
                                     </SelectContent>
                                 </Select>
@@ -507,6 +585,8 @@ export default function FellowshipPage() {
         const userFellowshipRef = doc(firestore, 'users', user.uid, 'fellowships', newFellowshipRef.id);
         const fellowshipMemberRef = doc(firestore, 'fellowships', newFellowshipRef.id, 'members', user.uid);
 
+        const location = [values.city, values.state, values.country].filter(Boolean).join(', ');
+
         const newFellowshipData = {
             name: values.name,
             description: values.description,
@@ -515,8 +595,9 @@ export default function FellowshipPage() {
             streamUrl: values.streamUrl || null,
             locationType: values.locationType,
             city: values.city || null,
+            state: values.state || null,
             country: values.country || null,
-            location: values.city && values.country ? `${values.city.trim()}, ${values.country}` : values.city || values.country || null,
+            location: values.locationType === 'Virtual' ? 'Global' : location || null,
             latitude: userProfile.location?.latitude || null,
             longitude: userProfile.location?.longitude || null,
             organizerId: user.uid,
@@ -557,7 +638,7 @@ export default function FellowshipPage() {
         setIsSubmitting(true);
         const fellowshipRef = doc(firestore, 'fellowships', fellowshipToManage.id);
         
-        const location = values.city && values.country ? `${values.city.trim()}, ${values.country}` : values.city || values.country || null;
+        const location = [values.city, values.state, values.country].filter(Boolean).join(', ');
         
         try {
             await updateDoc(fellowshipRef, {
@@ -567,8 +648,9 @@ export default function FellowshipPage() {
                 schedule: values.schedule,
                 locationType: values.locationType,
                 city: values.city || null,
+                state: values.state || null,
                 country: values.country || null,
-                location: location,
+                location: values.locationType === 'Virtual' ? 'Global' : location || null,
                 streamUrl: values.streamUrl || null,
             });
             toast({ title: 'Group Updated' });
@@ -652,6 +734,7 @@ export default function FellowshipPage() {
             f.name.toLowerCase().includes(term) || 
             f.description.toLowerCase().includes(term) ||
             f.city?.toLowerCase().includes(term) ||
+            f.state?.toLowerCase().includes(term) ||
             f.country?.toLowerCase().includes(term)
         );
     }, [membershipFilteredFellowships, searchTerm]);
