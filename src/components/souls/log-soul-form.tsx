@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -26,12 +27,14 @@ import { FirestorePermissionError } from "@/firebase/errors";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { LocationWonInput } from "./location-won-input";
-import { haversineDistance } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
+import { Country } from 'country-state-city';
 
 const formSchema = z.object({
   firstName: z.string().min(2, "First name must be at least 2 characters."),
   lastName: z.string().min(2, "Last name must be at least 2 characters."),
+  gender: z.string().optional(),
+  nationality: z.string().optional(),
   email: z.string().email("Please enter a valid email address.").optional().or(z.literal('')),
   phone: z.string().optional(),
   church: z.string().optional(),
@@ -61,6 +64,8 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign, fellowships, campai
   const firestore = useFirestore();
   const [isLoading, setIsLoading] = useState(false);
 
+  const countriesList = useMemo(() => Country.getAllCountries(), []);
+
   const userDocRef = useMemo(() => user ? doc(firestore, 'users', user.uid) : null, [user, firestore]);
   const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userDocRef);
 
@@ -69,6 +74,8 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign, fellowships, campai
     defaultValues: {
       firstName: "",
       lastName: "",
+      gender: "",
+      nationality: "",
       email: "",
       phone: "",
       church: "",
@@ -117,10 +124,12 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign, fellowships, campai
       userId: user.uid,
       firstName: values.firstName,
       lastName: values.lastName,
+      gender: values.gender || null,
+      nationality: values.nationality || null,
       source: values.source as 'Campaign' | 'Personal',
       wonAt: values.wonAt,
       status: "New",
-      followUpLog: values.initialNote ? [{ date: new Date(), note: values.initialNote }] : [],
+      followUpLog: values.initialNote ? [{ date: new Date(), note: values.initialNote, memberId: user.uid, memberName: `${userProfile.firstName} ${userProfile.lastName}` }] : [],
       attendingChurch: false,
       inBibleStudy: false,
       attendingPrayer: false,
@@ -221,6 +230,54 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign, fellowships, campai
             )}
             />
         </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <FormField
+              control={form.control}
+              name="gender"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Gender</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger className="text-base">
+                        <SelectValue placeholder="Select Gender" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="Male">Male</SelectItem>
+                      <SelectItem value="Female">Female</SelectItem>
+                      <SelectItem value="Other">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="nationality"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Nationality</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger className="text-base">
+                        <SelectValue placeholder="Select Country" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {countriesList.map(c => (
+                        <SelectItem key={c.isoCode} value={c.name}>{c.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+        </div>
+
          <FormField
           control={form.control}
           name="wonAt"

@@ -248,6 +248,8 @@ export type Soul = {
   email?: string;
   phone?: string;
   church?: string;
+  gender?: string;
+  nationality?: string;
   source: 'Campaign' | 'Personal';
   sourceDetails?: string;
   campaignId?: string;

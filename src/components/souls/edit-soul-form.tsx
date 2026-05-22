@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -24,13 +25,16 @@ import { doc, serverTimestamp, runTransaction } from "firebase/firestore";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { haversineDistance, safeToDate } from "@/lib/utils";
+import { safeToDate } from "@/lib/utils";
 import { LocationWonInput } from "./location-won-input";
 import { Label } from "@/components/ui/label";
+import { Country } from 'country-state-city';
 
 const formSchema = z.object({
   firstName: z.string().min(2, "First name must be at least 2 characters."),
   lastName: z.string().min(2, "Last name must be at least 2 characters."),
+  gender: z.string().optional(),
+  nationality: z.string().optional(),
   email: z.string().email("Please enter a valid email address.").optional().or(z.literal('')),
   phone: z.string().optional(),
   church: z.string().optional(),
@@ -59,11 +63,15 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
   const firestore = useFirestore();
   const [isLoading, setIsLoading] = useState(false);
 
+  const countriesList = useMemo(() => Country.getAllCountries(), []);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       firstName: soul.firstName || "",
       lastName: soul.lastName || "",
+      gender: soul.gender || "",
+      nationality: soul.nationality || "",
       email: soul.email || "",
       phone: soul.phone || "",
       church: soul.church || "",
@@ -86,6 +94,8 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
         reset({
             firstName: soul.firstName || "",
             lastName: soul.lastName || "",
+            gender: soul.gender || "",
+            nationality: soul.nationality || "",
             email: soul.email || "",
             phone: soul.phone || "",
             church: soul.church || "",
@@ -123,6 +133,8 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
     const soulUpdateData: { [key: string]: any } = {
       firstName: values.firstName,
       lastName: values.lastName,
+      gender: values.gender || null,
+      nationality: values.nationality || null,
       source: values.source as 'Personal' | 'Campaign',
       wonAt: values.wonAt,
       updatedAt: serverTimestamp(),
@@ -212,6 +224,54 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
             )}
             />
         </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <FormField
+              control={form.control}
+              name="gender"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Gender</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
+                    <FormControl>
+                      <SelectTrigger className="text-base">
+                        <SelectValue placeholder="Select Gender" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="Male">Male</SelectItem>
+                      <SelectItem value="Female">Female</SelectItem>
+                      <SelectItem value="Other">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="nationality"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Nationality</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
+                    <FormControl>
+                      <SelectTrigger className="text-base">
+                        <SelectValue placeholder="Select Country" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {countriesList.map(c => (
+                        <SelectItem key={c.isoCode} value={c.name}>{c.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+        </div>
+
         <FormField
           control={form.control}
           name="wonAt"
