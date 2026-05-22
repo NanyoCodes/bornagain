@@ -198,12 +198,6 @@ function AppHeader({ unreadChatCount, unreadNotifCount }: { unreadChatCount: num
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
-              <Link href="/accountability">
-                <HeartHandshake className="mr-2 h-4 w-4" />
-                <span>Accountability Partner</span>
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
               <Link href="/settings">
                 <Settings className="mr-2 h-4 w-4" />
                 <span>Settings</span>
