@@ -257,32 +257,35 @@ export default function TestimoniesPage() {
       {/* Responsive Single-Row Interaction Box */}
       <Card className="border shadow-sm sm:shadow-md rounded-none sm:rounded-lg border-x-0 sm:border-x -mx-4 sm:mx-0">
         <CardContent className="p-3 sm:p-4">
-          <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3">
+          <div className="flex flex-row items-center gap-2 sm:gap-3">
             <Button 
               variant="outline" 
-              className="w-full sm:flex-1 justify-start text-muted-foreground font-normal rounded-full h-10 sm:h-11 px-4 hover:bg-muted/50 transition-colors text-sm"
+              className="flex-1 justify-start text-muted-foreground font-normal rounded-full h-10 sm:h-11 px-4 hover:bg-muted/50 transition-colors text-sm min-w-0"
               onClick={() => setIsTestimonyDialogOpen(true)}
+              disabled={loading}
             >
-              What has God done today?
+              <span className="truncate">What has God done today?</span>
             </Button>
-            <div className="flex w-full sm:w-auto items-center gap-2">
+            <div className="flex items-center gap-2 shrink-0">
               <Button 
                 variant="secondary" 
-                size="sm" 
-                className="flex-1 sm:flex-none h-10 sm:h-11 px-4 rounded-full"
+                size="icon" 
+                className="h-10 sm:h-11 w-10 sm:w-11 rounded-full"
                 onClick={() => setIsTestimonyDialogOpen(true)}
+                disabled={loading}
+                title="Share Testimony"
               >
-                <Newspaper className="mr-2 h-4 w-4" />
-                <span className="text-xs sm:text-sm font-medium">Testify</span>
+                <Newspaper className="h-4 w-4" />
               </Button>
               <Button 
                 variant="outline" 
-                size="sm" 
-                className="flex-1 sm:flex-none h-10 sm:h-11 px-4 rounded-full"
+                size="icon" 
+                className="h-10 sm:h-11 w-10 sm:w-11 rounded-full"
                 onClick={() => setIsPrayerDialogOpen(true)}
+                disabled={loading}
+                title="Request Prayer"
               >
-                <HandHeart className="mr-2 h-4 w-4" />
-                <span className="text-xs sm:text-sm font-medium">Request</span>
+                <HandHeart className="h-4 w-4" />
               </Button>
             </div>
           </div>
