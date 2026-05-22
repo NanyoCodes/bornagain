@@ -247,12 +247,12 @@ function AppHeader({ unreadChatCount }: { unreadChatCount: number }) {
   );
 }
 
-function BottomNavBar({ unreadChatCount }: { unreadChatCount: number }) {
+function BottomNavBar() {
     const pathname = usePathname();
   
     return (
-      <nav className="fixed bottom-0 left-0 right-0 z-40 border-t bg-background md:hidden">
-        <div className="grid h-16 grid-cols-6 items-center">
+      <nav className="fixed bottom-0 left-0 right-0 z-40 border-t bg-background/80 backdrop-blur-lg md:hidden pb-[env(safe-area-inset-bottom)]">
+        <div className="flex h-16 items-center justify-around px-2">
           {navItems.map((item) => {
             const isActive = pathname.startsWith(item.href);
             return (
@@ -261,11 +261,13 @@ function BottomNavBar({ unreadChatCount }: { unreadChatCount: number }) {
                 href={item.href}
                 prefetch={true}
                 className={cn(
-                  "relative flex flex-col items-center justify-center p-1 transition-colors hover:text-primary",
-                  isActive ? "text-primary" : "text-muted-foreground"
+                  "relative flex flex-col items-center justify-center p-2 rounded-xl transition-all duration-200",
+                  isActive ? "text-primary bg-primary/10" : "text-muted-foreground hover:bg-muted"
                 )}
+                aria-label={item.label}
               >
                 <item.icon className={cn("h-6 w-6", !isActive && item.color)} />
+                <span className="sr-only">{item.label}</span>
               </Link>
             )
           })}
@@ -348,7 +350,7 @@ export default function DashboardClientLayout({ children }: { children: React.Re
             </div>
           </main>
         </div>
-        {!isTakeoverPage && <BottomNavBar unreadChatCount={unreadChatCount} />}
+        {!isTakeoverPage && <BottomNavBar />}
         {!isProfileIncomplete && <WelcomePopup isOpen={showWelcomePopup} onClose={() => setShowWelcomePopup(false)} userName={userProfile?.firstName} />}
          <Dialog open={isProfileIncomplete}>
           <DialogContent hideCloseButton className="sm:max-w-lg">
