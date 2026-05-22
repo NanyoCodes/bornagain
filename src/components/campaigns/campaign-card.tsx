@@ -340,7 +340,7 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
     }
   };
 
-  const handleShareDropdown = (platform: "link" | "facebook" | "twitter" | "whatsapp" | "whatsapp-business") => {
+  const handleShareDropdown = (platform: "link" | "facebook" | "twitter" | "whatsapp") => {
     const baseUrl = "https://testifyglobal.com";
     const url = `${baseUrl}/dashboard/campaigns/${campaign.id}`;
     const titleText = `Join the '${campaign.title}' campaign on Testify!`;
@@ -357,7 +357,6 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
         window.open(shareUrl, "_blank");
         break;
       case "whatsapp":
-      case "whatsapp-business":
         shareUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareTextWithUrl)}`;
         window.open(shareUrl, "_blank");
         break;
@@ -457,10 +456,6 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
             <DropdownMenuItem onSelect={() => handleShareDropdown('whatsapp')}>
                 <MessageCircle className="mr-2 h-4 w-4" />
                 Share on WhatsApp
-            </DropdownMenuItem>
-            <DropdownMenuItem onSelect={() => handleShareDropdown('whatsapp-business')}>
-                <MessageSquare className="mr-2 h-4 w-4" />
-                WhatsApp Business
             </DropdownMenuItem>
             <DropdownMenuItem onSelect={() => handleShareDropdown('facebook')}>
                 <Facebook className="mr-2 h-4 w-4" />

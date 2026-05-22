@@ -171,7 +171,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
     }
   };
 
-  const handleShareDropdown = (platform: "link" | "facebook" | "twitter" | "whatsapp" | "whatsapp-business") => {
+  const handleShareDropdown = (platform: "link" | "facebook" | "twitter" | "whatsapp") => {
     const baseUrl = "https://testifyglobal.com";
     const url = `${baseUrl}/dashboard/testimonies#${testimony.id}`;
     const titleText = `Check out this testimony from ${authorFullName} on Testify!`;
@@ -188,7 +188,6 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
         window.open(shareUrl, "_blank");
         break;
       case "whatsapp":
-      case "whatsapp-business":
         shareUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareTextWithUrl)}`;
         window.open(shareUrl, "_blank");
         break;
@@ -236,10 +235,6 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
             <DropdownMenuItem onSelect={() => handleShareDropdown('whatsapp')}>
                 <MessageCircle className="mr-2 h-4 w-4" />
                 Share on WhatsApp
-            </DropdownMenuItem>
-            <DropdownMenuItem onSelect={() => handleShareDropdown('whatsapp-business')}>
-                <MessageSquare className="mr-2 h-4 w-4" />
-                WhatsApp Business
             </DropdownMenuItem>
             <DropdownMenuItem onSelect={() => handleShareDropdown('facebook')}>
                 <Facebook className="mr-2 h-4 w-4" />
