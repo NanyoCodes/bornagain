@@ -471,7 +471,7 @@ export default function AccountabilityPage() {
   return (
     <div className="space-y-8 max-w-3xl mx-auto -mx-4 sm:mx-auto">
       <div className="px-4 sm:px-0 space-y-1">
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Accountability</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Accountability Partners</h1>
         <p className="text-sm text-muted-foreground">Encourage your partners and keep each other on track.</p>
       </div>
 
