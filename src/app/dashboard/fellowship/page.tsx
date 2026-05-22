@@ -440,7 +440,7 @@ function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting, onDelete
         <Card className="border-destructive">
             <CardHeader>
                 <CardTitle className="text-destructive flex items-center gap-2"><Trash2 className="h-4 w-4" /> Delete Group</CardTitle>
-                <CardDescription>Permanently remove this {fellowship.groupType.toLowerCase()} from Testify.</CardDescription>
+                <CardDescription>Permanently remove this {(fellowship.groupType || 'group').toLowerCase()} from Testify.</CardDescription>
             </CardHeader>
             <CardContent>
                 <Button variant="destructive" onClick={onDelete}>Delete Permanently</Button>
@@ -719,7 +719,7 @@ export default function FellowshipPage() {
                     <Tabs value={membershipFilter} onValueChange={setMembershipFilter} className="w-full sm:w-auto">
                         <TabsList className="grid w-full grid-cols-3">
                             <TabsTrigger value="all">All Groups</TabsTrigger>
-                            <TabsTrigger value="owned">My Groups</TabsTrigger>
+                            <TabsTrigger value="owned">Created</TabsTrigger>
                             <TabsTrigger value="joined">Joined</TabsTrigger>
                         </TabsList>
                     </Tabs>
