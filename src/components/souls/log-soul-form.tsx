@@ -247,7 +247,6 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign, fellowships, campai
                     <SelectContent>
                       <SelectItem value="Male">Male</SelectItem>
                       <SelectItem value="Female">Female</SelectItem>
-                      <SelectItem value="Other">Other</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />

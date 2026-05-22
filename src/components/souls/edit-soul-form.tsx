@@ -241,7 +241,6 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
                     <SelectContent>
                       <SelectItem value="Male">Male</SelectItem>
                       <SelectItem value="Female">Female</SelectItem>
-                      <SelectItem value="Other">Other</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
