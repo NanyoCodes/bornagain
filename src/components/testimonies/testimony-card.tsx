@@ -134,11 +134,29 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
   const handleShare = async () => {
     const baseUrl = "https://testifyglobal.com";
     const shareUrl = `${baseUrl}/dashboard/testimonies#${testimony.id}`;
-    const shareData = {
-      title: `Powerful testimony from ${authorFullName} on Testify!`,
-      text: `Read this powerful testimony on Testify: "${testimony.content.substring(0, 150)}..."`,
+    const title = `Testimony from ${authorFullName} on Testify!`;
+    const text = `Read what God has done! "${testimony.content.substring(0, 150)}..."`;
+    
+    const shareData: any = {
+      title,
+      text,
       url: shareUrl,
     };
+
+    // Attempt to include the author's photo for mobile share sheets
+    if (testimony.authorAvatarUrl && typeof navigator !== 'undefined' && (navigator as any).canShare) {
+        try {
+            const response = await fetch(testimony.authorAvatarUrl);
+            const blob = await response.blob();
+            const file = new File([blob], "testimony-author.jpg", { type: blob.type });
+            if ((navigator as any).canShare({ files: [file] })) {
+                shareData.files = [file];
+            }
+        } catch (e) {
+            console.warn("Could not fetch author photo for sharing", e);
+        }
+    }
+
     try {
       if (navigator.share) {
         await navigator.share(shareData);
@@ -156,7 +174,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
   const handleShareDropdown = (platform: "link" | "facebook" | "twitter" | "whatsapp" | "whatsapp-business") => {
     const baseUrl = "https://testifyglobal.com";
     const url = `${baseUrl}/dashboard/testimonies#${testimony.id}`;
-    const titleText = `Powerful testimony from ${authorFullName} on Testify!`;
+    const titleText = `Check out this testimony from ${authorFullName} on Testify!`;
     const shareTextWithUrl = `${titleText} ${url}`;
     let shareUrl = "";
 
@@ -196,12 +214,27 @@ export const TestimonyCard = React.memo(function TestimonyCard({ testimony, onDe
                 <span className="sr-only">Share Testimony</span>
             </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
+        <DropdownMenuContent align="end" className="w-56">
+            <DropdownMenuLabel className="flex items-center gap-2 border-b pb-3 mb-1">
+                <Avatar className="h-8 w-8 border shrink-0">
+                    <AvatarImage src={testimony.authorAvatarUrl} />
+                    <AvatarFallback>{initials}</AvatarFallback>
+                </Avatar>
+                <div className="flex flex-col min-w-0">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground truncate">
+                        Share Glory
+                    </span>
+                    <span className="text-xs font-semibold truncate leading-tight">
+                        From {authorFullName}
+                    </span>
+                </div>
+            </DropdownMenuLabel>
             <DropdownMenuItem onSelect={() => handleShareDropdown('link')}>
                 <LinkIcon className="mr-2 h-4 w-4" />
                 Copy Link
             </DropdownMenuItem>
             <DropdownMenuItem onSelect={() => handleShareDropdown('whatsapp')}>
+                <Icons.google className="mr-2 h-4 w-4" /> {/* Placeholder for WhatsApp Icon - using MessageCircle logic from previous turns if available */}
                 <MessageCircle className="mr-2 h-4 w-4" />
                 Share on WhatsApp
             </DropdownMenuItem>
