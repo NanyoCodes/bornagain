@@ -281,7 +281,18 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   useEffect(() => { setMounted(true); }, []);
 
-  const publicRoutes = ['/testimonies', '/campaigns', '/about', '/contact', '/resources', '/guide', '/terms-of-service', '/privacy-policy'];
+  const publicRoutes = [
+    '/testimonies', 
+    '/campaigns', 
+    '/about', 
+    '/contact', 
+    '/resources', 
+    '/guide', 
+    '/terms-of-service', 
+    '/privacy-policy',
+    '/progress',
+    '/fellowships'
+  ];
   const isPublicRoute = publicRoutes.some(route => pathname.startsWith(route));
 
   const unreadChatNotifsQuery = useMemo(() => {

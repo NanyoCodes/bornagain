@@ -50,6 +50,7 @@ import { actionItems } from '@/lib/follow-up-data';
 import { welcomeScriptures } from '@/lib/verses';
 import { ProgressOverview } from '@/components/dashboard/progress-overview';
 import { AppShell } from '@/components/layout/app-shell';
+import AdsenseAd from '@/components/common/adsense-ad';
 
 const MonthlyStatsChart = dynamic(() => import('@/components/dashboard/monthly-stats-chart').then(m => m.MonthlyStatsChart), {
   loading: () => <Skeleton className="h-[300px] w-full" />,
@@ -208,6 +209,9 @@ export default function ProgressPage() {
                 <div className="-mx-4 sm:mx-0">
                   <PrayerRemindersCard souls={soulsWon || []} />
                 </div>
+                
+                <AdsenseAd adSlot="progress-sidebar-ad" className="h-auto" />
+
                 <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-sm">
                   <CardHeader>
                     <CardTitle className="text-lg">Recent Souls</CardTitle>

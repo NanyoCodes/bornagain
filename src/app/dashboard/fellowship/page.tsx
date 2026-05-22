@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useEffect, useCallback } from 'react';
+import { useState, useMemo, useEffect, useCallback, Fragment } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -52,6 +52,7 @@ import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Country, State, City } from 'country-state-city';
+import AdsenseAd from '@/components/common/adsense-ad';
 
 const formSchema = z.object({
   name: z.string().min(3, "Name must be at least 3 characters.").max(100),
@@ -807,15 +808,19 @@ export default function FellowshipPage() {
                     </div>
                 ) : (
                     <div className="grid gap-0 md:gap-6 md:grid-cols-2 lg:grid-cols-3 -mx-4 sm:mx-0">
-                        {filteredFellowships.map((f) => (
-                            <FellowshipCard 
-                              key={f.id}
-                              fellowship={f} 
-                              userProfile={userProfile ?? null} 
-                              onManage={() => setFellowshipToManage(f)} 
-                              onDelete={() => setFellowshipToDelete(f)} 
-                              onClick={() => handleCardClick(f.id)} 
-                            />
+                        {filteredFellowships.map((f, index) => (
+                            <Fragment key={f.id}>
+                                <FellowshipCard 
+                                  fellowship={f} 
+                                  userProfile={userProfile ?? null} 
+                                  onManage={() => setFellowshipToManage(f)} 
+                                  onDelete={() => setFellowshipToDelete(f)} 
+                                  onClick={() => handleCardClick(f.id)} 
+                                />
+                                {(index + 1) % 4 === 0 && (
+                                    <AdsenseAd adSlot={`fellowships-feed-ad-${index}`} className="h-full" />
+                                )}
+                            </Fragment>
                         ))}
                         {filteredFellowships.length === 0 && (
                             <div className="col-span-full text-center py-20 bg-muted/10 rounded-lg border-2 border-dashed">
