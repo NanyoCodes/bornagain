@@ -407,7 +407,6 @@ export default function TestimoniesPage() {
             {prayerFormContent}
           </div>
         </DialogContent>
-      </Dialog>
 
     </div>
   );
