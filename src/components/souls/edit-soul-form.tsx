@@ -1,4 +1,3 @@
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -320,10 +319,15 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
         )}
 
         <Accordion type="single" collapsible className="w-full">
-            <AccordionItem value="optional-details">
-                <AccordionTrigger>Optional Details</AccordionTrigger>
+            <AccordionItem value="optional-details" className="border-none">
+                <AccordionTrigger className="text-sm font-semibold py-4 hover:no-underline">Additional Details & Location</AccordionTrigger>
                 <AccordionContent>
-                    <div className="space-y-4 pt-4">
+                    <div className="space-y-6 pt-2">
+                        <div className="space-y-4">
+                          <Label className="text-sm font-bold uppercase tracking-widest text-muted-foreground">Location Won</Label>
+                          <LocationWonInput form={form} />
+                        </div>
+
                         <FormField
                             control={form.control}
                             name="fellowshipId"
@@ -340,7 +344,7 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
                                             <SelectItem value="none">None</SelectItem>
                                             {sortedFellowships?.map((f) => (
                                                 <SelectItem key={f.id} value={f.id}>
-                                                    <div className="flex flex-col py-1">
+                                                    <div className="flex flex-col py-1 text-left">
                                                         <span className="font-medium">{f.name}</span>
                                                         {f.location && <span className="text-xs text-muted-foreground">{f.location}</span>}
                                                     </div>
@@ -391,10 +395,6 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
                                 </FormItem>
                             )}
                             />
-                        <div className="space-y-2">
-                            <Label className="text-sm font-medium">Location Won</Label>
-                            <LocationWonInput form={form} />
-                        </div>
                     </div>
                 </AccordionContent>
             </AccordionItem>

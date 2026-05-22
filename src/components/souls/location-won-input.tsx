@@ -1,52 +1,136 @@
 'use client';
 
-import { Input } from '@/components/ui/input';
+import * as React from 'react';
 import { type UseFormReturn } from 'react-hook-form';
-import { useState, useEffect } from 'react';
+import { Country, State, City } from 'country-state-city';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 
 interface LocationWonInputProps {
-    form: UseFormReturn<any>;
+  form: UseFormReturn<any>;
 }
 
-/**
- * Text-only location input to ensure compatibility and simplicity.
- * Fulfills the requirement: MAKE THIS FIELD INPUT TEXT ONLY.
- */
 export function LocationWonInput({ form }: LocationWonInputProps) {
-    const initialCity = form.getValues('locationWonCity');
-    const initialState = form.getValues('locationWonState');
-    const initialCountry = form.getValues('locationWonCountry');
-    
-    const [inputValue, setInputValue] = useState(
-        [initialCity, initialState, initialCountry].filter(Boolean).join(', ')
-    );
+  const [countries] = React.useState(Country.getAllCountries());
+  
+  // Need to find codes to fetch sub-data
+  const selectedCountryName = form.watch('locationWonCountry');
+  const selectedStateName = form.watch('locationWonState');
 
-    useEffect(() => {
-        const city = form.getValues('locationWonCity');
-        const state = form.getValues('locationWonState');
-        const country = form.getValues('locationWonCountry');
-        setInputValue([city, state, country].filter(Boolean).join(', '));
-    }, [form]);
+  const selectedCountry = React.useMemo(() => 
+    countries.find(c => c.name === selectedCountryName)
+  , [countries, selectedCountryName]);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const val = e.target.value;
-        setInputValue(val);
-        
-        // Map the entire text input to 'city' for simple persistent storage
-        form.setValue('locationWonCity', val, { shouldDirty: true });
-        form.setValue('locationWonState', '', { shouldDirty: true });
-        form.setValue('locationWonCountry', '', { shouldDirty: true });
-        form.setValue('locationWonLatitude', null, { shouldDirty: true });
-        form.setValue('locationWonLongitude', null, { shouldDirty: true });
-    };
+  const states = React.useMemo(() => 
+    selectedCountry ? State.getStatesOfCountry(selectedCountry.isoCode) : []
+  , [selectedCountry]);
 
-    return (
-        <Input
-            placeholder="e.g. City, State, Country"
-            type="text"
-            className="text-base"
-            value={inputValue}
-            onChange={handleChange}
+  const selectedState = React.useMemo(() => 
+    states.find(s => s.name === selectedStateName)
+  , [states, selectedStateName]);
+
+  const cities = React.useMemo(() => 
+    (selectedCountry && selectedState) 
+      ? City.getCitiesOfState(selectedCountry.isoCode, selectedState.isoCode) 
+      : []
+  , [selectedCountry, selectedState]);
+
+  return (
+    <div className="grid grid-cols-1 gap-4">
+      <FormField
+        control={form.control}
+        name="locationWonCountry"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Country</FormLabel>
+            <Select
+              onValueChange={(val) => {
+                field.onChange(val);
+                form.setValue('locationWonState', '');
+                form.setValue('locationWonCity', '');
+              }}
+              value={field.value}
+            >
+              <SelectTrigger className="text-sm">
+                <SelectValue placeholder="Select Country" />
+              </SelectTrigger>
+              <SelectContent>
+                {countries.map((c) => (
+                  <SelectItem key={c.isoCode} value={c.name}>
+                    {c.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <FormField
+          control={form.control}
+          name="locationWonState"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">State / Region</FormLabel>
+              <Select
+                onValueChange={(val) => {
+                  field.onChange(val);
+                  form.setValue('locationWonCity', '');
+                }}
+                value={field.value}
+                disabled={!selectedCountryName || states.length === 0}
+              >
+                <SelectTrigger className="text-sm">
+                  <SelectValue placeholder={states.length === 0 ? "N/A" : "Select State"} />
+                </SelectTrigger>
+                <SelectContent>
+                  {states.map((s) => (
+                    <SelectItem key={s.isoCode + s.name} value={s.name}>
+                      {s.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
         />
-    );
+
+        <FormField
+          control={form.control}
+          name="locationWonCity"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">City</FormLabel>
+              <Select
+                onValueChange={field.onChange}
+                value={field.value}
+                disabled={!selectedStateName || cities.length === 0}
+              >
+                <SelectTrigger className="text-sm">
+                  <SelectValue placeholder={cities.length === 0 ? "N/A" : "Select City"} />
+                </SelectTrigger>
+                <SelectContent>
+                  {cities.map((c) => (
+                    <SelectItem key={c.name} value={c.name}>
+                      {c.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </div>
+    </div>
+  );
 }
