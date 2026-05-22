@@ -137,7 +137,7 @@ function PartnerCard({
                     </Dialog>
                     <div className="min-w-0">
                         <Link href={`/dashboard/profile/${partner.userId}`}>
-                            <h2 className="text-base sm:text-lg font-bold truncate hover:underline">{partner.firstName} {partner.lastName}</h2>
+                            <h2 className="text-sm sm:text-base font-bold truncate hover:underline">{partner.firstName} {partner.lastName}</h2>
                         </Link>
                     </div>
                 </div>
