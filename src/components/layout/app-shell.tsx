@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from "next/link";
@@ -75,8 +74,6 @@ function AppHeader({ unreadChatCount, unreadNotifCount }: { unreadChatCount: num
     router.push("/login");
   };
   
-  if (!user) return null;
-
   if (showMobileSearch) {
     return (
       <header className="sticky top-0 z-30 flex h-16 items-center border-b bg-background px-4 md:px-6">
@@ -105,7 +102,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount }: { unreadChatCount: num
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b bg-background px-4 md:px-6">
       <div className="flex items-center gap-2 md:gap-6">
-        <Link href="/testimonies" className="flex items-center gap-2 text-lg font-semibold">
+        <Link href={user ? "/testimonies" : "/"} className="flex items-center gap-2 text-lg font-semibold">
           {logo && (
             <Avatar className="h-11 w-11">
               <AvatarImage src={logo.imageUrl} alt={logo.description} />
@@ -157,75 +154,89 @@ function AppHeader({ unreadChatCount, unreadNotifCount }: { unreadChatCount: num
             <span className="sr-only">Search</span>
           </Button>
         )}
-        <Link href="/chats">
-            <Button variant="ghost" size="icon" className="relative">
-              <MessagesSquare className="h-5 w-5" />
-              {unreadChatCount > 0 && (
-                <div className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-xs font-bold text-destructive-foreground">
-                  {unreadChatCount}
-                </div>
-              )}
+        
+        {user ? (
+          <>
+            <Link href="/chats">
+                <Button variant="ghost" size="icon" className="relative">
+                  <MessagesSquare className="h-5 w-5" />
+                  {unreadChatCount > 0 && (
+                    <div className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-xs font-bold text-destructive-foreground">
+                      {unreadChatCount}
+                    </div>
+                  )}
+                </Button>
+            </Link>
+            <Link href="/notifications">
+                <Button variant="ghost" size="icon" className="relative">
+                  <Bell className="h-5 w-5" />
+                  {unreadNotifCount > 0 && (
+                    <div className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-xs font-bold text-destructive-foreground">
+                      {unreadNotifCount}
+                    </div>
+                  )}
+                </Button>
+            </Link>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="rounded-full">
+                  <Avatar className="h-8 w-8">
+                    <AvatarImage src={user.photoURL ?? undefined} />
+                    <AvatarFallback>{user.displayName?.charAt(0) || 'U'}</AvatarFallback>
+                  </Avatar>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56" align="end">
+                <DropdownMenuLabel className="font-normal">
+                  <div className="flex flex-col space-y-1">
+                    <p className="text-sm font-medium">{user.displayName || 'User'}</p>
+                    <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+                  </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link href="/profile">
+                    <User className="mr-2 h-4 w-4" />
+                    <span>Profile</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/settings">
+                    <Settings className="mr-2 h-4 w-4" />
+                    <span>Settings</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                    <Link href="/guide" className="cursor-pointer">
+                    <BookOpen className="mr-2 h-4 w-4" />
+                    <span>App Guide</span>
+                    </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                    <Link href="/resources" className="cursor-pointer">
+                    <BookMarked className="mr-2 h-4 w-4" />
+                    <span>Spiritual Resources</span>
+                    </Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleLogout}>
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Logout</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </>
+        ) : (
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" asChild className="hidden sm:inline-flex">
+              <Link href="/login">Sign In</Link>
             </Button>
-        </Link>
-        <Link href="/notifications">
-            <Button variant="ghost" size="icon" className="relative">
-              <Bell className="h-5 w-5" />
-              {unreadNotifCount > 0 && (
-                <div className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-xs font-bold text-destructive-foreground">
-                  {unreadNotifCount}
-                </div>
-              )}
+            <Button asChild>
+              <Link href="/">Get Started</Link>
             </Button>
-        </Link>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="rounded-full">
-              <Avatar className="h-8 w-8">
-                <AvatarImage src={user.photoURL ?? undefined} />
-                <AvatarFallback>{user.displayName?.charAt(0) || 'U'}</AvatarFallback>
-              </Avatar>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-56" align="end">
-            <DropdownMenuLabel className="font-normal">
-              <div className="flex flex-col space-y-1">
-                <p className="text-sm font-medium">{user.displayName || 'User'}</p>
-                <p className="text-xs text-muted-foreground truncate">{user.email}</p>
-              </div>
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem asChild>
-              <Link href="/profile">
-                <User className="mr-2 h-4 w-4" />
-                <span>Profile</span>
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link href="/settings">
-                <Settings className="mr-2 h-4 w-4" />
-                <span>Settings</span>
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem asChild>
-                <Link href="/guide" className="cursor-pointer">
-                <BookOpen className="mr-2 h-4 w-4" />
-                <span>App Guide</span>
-                </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-                <Link href="/resources" className="cursor-pointer">
-                <BookMarked className="mr-2 h-4 w-4" />
-                <span>Spiritual Resources</span>
-                </Link>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleLogout}>
-              <LogOut className="mr-2 h-4 w-4" />
-              <span>Logout</span>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+          </div>
+        )}
       </div>
     </header>
   );
@@ -270,6 +281,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   useEffect(() => { setMounted(true); }, []);
 
+  const publicRoutes = ['/testimonies', '/campaigns', '/about', '/contact', '/resources', '/guide', '/terms-of-service', '/privacy-policy'];
+  const isPublicRoute = publicRoutes.some(route => pathname.startsWith(route));
+
   const unreadChatNotifsQuery = useMemo(() => {
     if (!user?.uid || !firestore) return null;
     return query(collection(firestore, `users/${user.uid}/notifications`), where('type', '==', 'new_chat_message'), where('isRead', '==', false));
@@ -283,8 +297,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const { data: unreadOtherNotifications } = useCollection<Notification>(unreadOtherNotifsQuery);
 
   useEffect(() => {
-    if (!authLoading && !user) router.push('/login');
-  }, [authLoading, user, router]);
+    // Only redirect if it's NOT a public route and user is definitely logged out
+    if (!authLoading && !user && !isPublicRoute) {
+      router.push('/login');
+    }
+  }, [authLoading, user, router, isPublicRoute]);
 
   useEffect(() => {
     if (!profileLoading && userProfile) {
@@ -297,7 +314,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     }
   }, [profileLoading, userProfile]);
 
-  if (authLoading || profileLoading) {
+  if (authLoading || (profileLoading && !isPublicRoute)) {
     return (
       <div className="flex h-screen items-center justify-center">
         <Loader2 className="h-10 w-10 animate-spin text-primary" />
@@ -305,9 +322,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     );
   }
 
-  if (!user) return null;
-
-  const isProfileIncomplete = userProfile && (!userProfile.firstName || !userProfile.lastName);
+  const isProfileIncomplete = user && userProfile && (!userProfile.firstName || !userProfile.lastName);
 
   return (
     <SearchProvider>
@@ -316,11 +331,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <main className="flex-1 pb-20 md:pb-6 p-4 md:p-8 max-w-7xl mx-auto w-full">
             <PageTransition>{children}</PageTransition>
         </main>
-        <BottomNavBar />
+        {user && <BottomNavBar />}
         
-        {!isProfileIncomplete && <WelcomePopup isOpen={showWelcomePopup} onClose={() => setShowWelcomePopup(false)} userName={userProfile?.firstName} />}
+        {user && !isProfileIncomplete && <WelcomePopup isOpen={showWelcomePopup} onClose={() => setShowWelcomePopup(false)} userName={userProfile?.firstName} />}
         
-        {mounted && isMobile ? (
+        {user && mounted && isMobile ? (
           <Sheet open={!!isProfileIncomplete}>
             <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-2xl">
               <div className="p-6 border-b flex-shrink-0 bg-muted/10">
@@ -334,7 +349,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               </div>
             </SheetContent>
           </Sheet>
-        ) : (
+        ) : user ? (
           <Dialog open={!!isProfileIncomplete}>
             <DialogContent hideCloseButton className="sm:max-w-lg">
               <DialogHeader>
@@ -344,7 +359,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
             </DialogContent>
           </Dialog>
-        )}
+        ) : null}
       </div>
     </SearchProvider>
   );

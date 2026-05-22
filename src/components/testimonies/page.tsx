@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useEffect, useMemo, useCallback } from "react";
@@ -46,6 +45,7 @@ import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { EditTestimonyForm } from "@/components/testimonies/edit-testimony-form";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import AdsenseAd from "@/components/common/adsense-ad";
 
 export default function TestimoniesPage() {
   const [isTestimonyDialogOpen, setIsTestimonyDialogOpen] = useState(false);
@@ -85,22 +85,21 @@ export default function TestimoniesPage() {
   }, [accountabilityRequests, user?.uid]);
 
   const testimoniesQuery = useMemo(() => {
-    if (!firestore || !user) return null;
+    if (!firestore) return null;
     return query(collection(firestore, "testimonies"), orderBy("createdAt", "desc"));
-  }, [firestore, user?.uid]);
+  }, [firestore]);
 
   const { data: testimonies, loading: loadingTestimonies } = useCollection<Testimony>(testimoniesQuery);
 
   const prayerRequestsQuery = useMemo(() => {
-    if (!firestore || !user) return null;
+    if (!firestore) return null;
     return query(collection(firestore, "prayerRequests"), orderBy("createdAt", "desc"));
-  }, [firestore, user?.uid]);
+  }, [firestore]);
 
   const { data: prayerRequests, loading: loadingPrayers } = useCollection<PrayerRequest>(prayerRequestsQuery);
 
   const loading = userLoading || profileLoading || loadingTestimonies || loadingPrayers;
 
-  // Pattern: Controlled visibility booleans with transition buffers to prevent body lock freezes
   const [itemToDelete, setItemToDelete] = useState<{ type: 'testimony', data: Testimony } | { type: 'prayer', data: PrayerRequest } | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [itemToEdit, setItemToEdit] = useState<Testimony | null>(null);
@@ -113,7 +112,6 @@ export default function TestimoniesPage() {
 
   const closeEditDialog = useCallback(() => {
     setIsEditOpen(false);
-    // Allow closing animation to finish before clearing data
     setTimeout(() => setItemToEdit(null), 300);
   }, []);
 
@@ -180,18 +178,15 @@ export default function TestimoniesPage() {
     });
 
     const sorted = withMetadata.sort((a, b) => {
-        // 1. Partner Status (Prioritize Partners)
         if (a._isPartner && !b._isPartner) return -1;
         if (!a._isPartner && b._isPartner) return 1;
 
-        // 2. Distance (Closer first)
         if (a._distance != null && b._distance != null) {
             if (a._distance !== b._distance) return a._distance - b._distance;
         }
         if (a._distance != null) return -1;
         if (b._distance != null) return 1;
         
-        // 3. Freshness (Newest first)
         const timeA = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : 0;
         const timeB = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : 0;
         return timeB - timeA;
@@ -293,7 +288,6 @@ export default function TestimoniesPage() {
 
   return (
     <div className="space-y-6 md:space-y-12">
-      {/* Responsive Single-Row Interaction Box */}
       <Card className="border shadow-sm sm:shadow-md rounded-none sm:rounded-lg border-x-0 sm:border-x -mx-4 sm:mx-0">
         <CardContent className="p-3 sm:p-4">
           <div className="flex flex-row items-center gap-2 sm:gap-3">
@@ -343,17 +337,21 @@ export default function TestimoniesPage() {
                     <Card key={i} className="flex flex-col h-full"><CardContent className="p-6 space-y-4"><Skeleton className="h-12 w-12 rounded-full" /><div className="w-full space-y-2"><Skeleton className="h-4 w-1/4" /><Skeleton className="h-4 w-1/5" /></div><Skeleton className="h-5 w-3/4" /><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-full" /></CardContent></Card>
                   ))
                 )}
-                {!loading && filteredTestimonies.map((testimony) => {
+                {!loading && filteredTestimonies.map((testimony, index) => {
                     return (
-                        <TestimonyCard 
-                            key={testimony.id} 
-                            testimony={testimony} 
-                            isPartner={partnerIds.has(testimony.authorId)}
-                            hasPendingRequest={pendingRequestIds.has(testimony.authorId)}
-                            currentUserProfile={userProfile}
-                            onDelete={() => setItemToDelete({ type: 'testimony', data: testimony })}
-                            onEdit={() => { setItemToEdit(testimony); setIsEditOpen(true); }}
-                        />
+                        <React.Fragment key={testimony.id}>
+                            <TestimonyCard 
+                                testimony={testimony} 
+                                isPartner={partnerIds.has(testimony.authorId)}
+                                hasPendingRequest={pendingRequestIds.has(testimony.authorId)}
+                                currentUserProfile={userProfile}
+                                onDelete={() => setItemToDelete({ type: 'testimony', data: testimony })}
+                                onEdit={() => { setItemToEdit(testimony); setIsEditOpen(true); }}
+                            />
+                            {(index + 1) % 4 === 0 && (
+                                <AdsenseAd adSlot={`testimonies-feed-ad-${index}`} className="h-full" />
+                            )}
+                        </React.Fragment>
                     );
                 })}
                  {!loading && filteredTestimonies?.length === 0 && (
@@ -374,13 +372,17 @@ export default function TestimoniesPage() {
                     <Card key={i} className="flex flex-col h-full"><CardContent className="p-6 space-y-4"><Skeleton className="h-12 w-12 rounded-full" /><div className="w-full space-y-2"><Skeleton className="h-4 w-1/4" /><Skeleton className="h-4 w-1/5" /></div><Skeleton className="h-5 w-3/4" /><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-full" /></CardContent></Card>
                   ))
                 )}
-                {!loading && filteredPrayerRequests?.map((req) => (
-                  <PrayerRequestCard 
-                    key={req.id} 
-                    prayerRequest={req}
-                    onDelete={() => setItemToDelete({ type: 'prayer', data: req })}
-                    onAnswerPrayer={() => handleOpenTestimonyDialog(req)}
-                  />
+                {!loading && filteredPrayerRequests?.map((req, index) => (
+                  <React.Fragment key={req.id}>
+                    <PrayerRequestCard 
+                        prayerRequest={req}
+                        onDelete={() => setItemToDelete({ type: 'prayer', data: req })}
+                        onAnswerPrayer={() => handleOpenTestimonyDialog(req)}
+                    />
+                     {(index + 1) % 4 === 0 && (
+                        <AdsenseAd adSlot={`prayers-feed-ad-${index}`} className="h-full" />
+                    )}
+                  </React.Fragment>
                 ))}
                 {!loading && filteredPrayerRequests?.length === 0 && (
                   <div className="col-span-full text-center py-12 flex flex-col items-center">
@@ -413,7 +415,6 @@ export default function TestimoniesPage() {
           </AlertDialogContent>
       </AlertDialog>
 
-      {/* Edit Testimony */}
       {mounted && isMobile ? (
         <Sheet open={isEditOpen} onOpenChange={(open) => !open && closeEditDialog()}>
           <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-2xl">
@@ -446,7 +447,6 @@ export default function TestimoniesPage() {
         </Dialog>
       )}
       
-      {/* Share Testimony */}
       {mounted && isMobile ? (
         <Sheet open={isTestimonyDialogOpen} onOpenChange={(open) => !open && setIsTestimonyDialogOpen(false)}>
           <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-2xl">
@@ -477,7 +477,6 @@ export default function TestimoniesPage() {
         </Dialog>
       )}
       
-      {/* Request Prayer */}
       {mounted && isMobile ? (
         <Sheet open={isPrayerDialogOpen} onOpenChange={(open) => !open && setIsPrayerDialogOpen(false)}>
           <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-2xl">

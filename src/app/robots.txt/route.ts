@@ -7,13 +7,14 @@ Allow: /about
 Allow: /contact
 Allow: /resources
 Allow: /guide
+Allow: /testimonies
+Allow: /campaigns
 Disallow: /dashboard/
 Disallow: /chats/
 Disallow: /notifications/
 Disallow: /profile/
 Disallow: /settings/
 Disallow: /souls-won/
-Disallow: /testimonies/
 Disallow: /progress/
 
 Sitemap: https://testifyglobal.com/sitemap.xml
