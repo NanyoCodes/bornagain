@@ -19,12 +19,11 @@ type AdsenseAdProps = {
  * @fileOverview Flexible Ad component supporting Google AdSense and custom providers.
  */
 const AdsenseAd = ({ adSlot, adFormat = 'auto', style, className, provider = 'google' }: AdsenseAdProps) => {
-  const RAW_ADSENSE_ID = process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID;
-  const ADSENSE_CLIENT_ID = RAW_ADSENSE_ID?.startsWith('ca-') ? RAW_ADSENSE_ID : `ca-${RAW_ADSENSE_ID}`;
+  const ADSENSE_CLIENT_ID = 'ca-pub-5186166468494737';
   const isDevelopment = process.env.NODE_ENV === 'development';
 
   useEffect(() => {
-    if (provider === 'google' && RAW_ADSENSE_ID) {
+    if (provider === 'google') {
       try {
         // @ts-ignore
         if (window.adsbygoogle) {
@@ -33,12 +32,9 @@ const AdsenseAd = ({ adSlot, adFormat = 'auto', style, className, provider = 'go
         }
       } catch (err: any) {
         // Silently ignore errors related to multiple pushes or already-filled slots
-        // which are common during React re-renders or navigations.
       }
     }
-  }, [adSlot, provider, RAW_ADSENSE_ID]);
-
-  const isGoogleConfigured = RAW_ADSENSE_ID && RAW_ADSENSE_ID !== 'ca-pub-YOUR_PUBLISHER_ID';
+  }, [adSlot, provider]);
 
   return (
     <Card className={cn("w-full flex flex-col justify-center items-center bg-muted/20 rounded-lg border min-h-[350px] relative overflow-hidden", className)}>
@@ -47,7 +43,7 @@ const AdsenseAd = ({ adSlot, adFormat = 'auto', style, className, provider = 'go
         Sponsored
       </div>
 
-      {provider === 'google' && isGoogleConfigured ? (
+      {provider === 'google' ? (
         <ins
           className='adsbygoogle'
           style={{ display: 'block', width: '100%', height: '100%', ...style }}
@@ -55,7 +51,6 @@ const AdsenseAd = ({ adSlot, adFormat = 'auto', style, className, provider = 'go
           data-ad-slot={adSlot}
           data-ad-format={adFormat}
           data-full-width-responsive="true"
-          // Hints for targeted content
           data-ad-channel="christian-content"
           data-ad-type="image_text"
         />
@@ -84,11 +79,6 @@ const AdsenseAd = ({ adSlot, adFormat = 'auto', style, className, provider = 'go
                 : "Promoting faith-based initiatives and community growth."}
             </p>
           </div>
-          {isDevelopment && !isGoogleConfigured && provider === 'google' && (
-             <p className="text-[10px] text-destructive bg-destructive/10 p-1 rounded font-code">
-               NEXT_PUBLIC_ADSENSE_CLIENT_ID not set
-             </p>
-          )}
         </div>
       )}
     </Card>

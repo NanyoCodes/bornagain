@@ -9,8 +9,9 @@ import Script from 'next/script';
 
 const logo = PlaceHolderImages.find((img) => img.id === 'logo');
 const testifyLogoUrl = logo?.imageUrl || '';
-const RAW_ADSENSE_ID = process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID;
-const ADSENSE_CLIENT_ID = RAW_ADSENSE_ID?.startsWith('ca-') ? RAW_ADSENSE_ID : `ca-${RAW_ADSENSE_ID}`;
+
+// AdSense Configuration
+const ADSENSE_PUB_ID = 'ca-pub-5186166468494737';
 
 export const metadata: Metadata = {
   title: {
@@ -73,6 +74,15 @@ export default function RootLayout({
         <link rel="preconnect" href="https://pagead2.googlesyndication.com" />
         <link rel="icon" href={testifyLogoUrl} />
         <link rel="apple-touch-icon" href={testifyLogoUrl} />
+        
+        {/* Global Google AdSense Script (Auto Ads) */}
+        <Script
+          async
+          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_PUB_ID}`}
+          crossOrigin="anonymous"
+          strategy="afterInteractive"
+        />
+
         <script
           dangerouslySetInnerHTML={{
             __html: `
@@ -87,14 +97,6 @@ export default function RootLayout({
             `,
           }}
         />
-        {RAW_ADSENSE_ID && (
-          <Script
-            async
-            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT_ID}`}
-            crossOrigin="anonymous"
-            strategy="lazyOnload"
-          />
-        )}
       </head>
       <body className="font-body antialiased">
         <ThemeProvider
