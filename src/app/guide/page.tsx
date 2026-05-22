@@ -14,21 +14,16 @@ import {
   Share2, 
   Users, 
   Flame, 
-  History, 
   ArrowLeft,
   Zap,
   ShieldCheck,
-  Award,
-  HeartHandshake,
-  TrendingUp,
   LayoutGrid
 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 
@@ -254,12 +249,9 @@ export default function GuidePage() {
         <div className="max-w-md mx-auto space-y-4">
             <h3 className="font-bold text-2xl font-headline">Ready to mobilize?</h3>
             <p className="text-sm text-muted-foreground">Sharing this tool with fellow believers helps build a stronger network dedicated to the Great Commission.</p>
-            <div className="flex flex-col sm:flex-row justify-center gap-3 pt-4">
-                <Button onClick={handleShare} size="lg" className="font-bold">
+            <div className="flex justify-center pt-4">
+                <Button onClick={handleShare} size="lg" className="font-bold w-full sm:w-auto">
                     <Share2 className="mr-2 h-4 w-4" /> Share App & Refer Brethren
-                </Button>
-                <Button variant="outline" asChild size="lg">
-                    <Link href="/login">Launch Dashboard</Link>
                 </Button>
             </div>
         </div>
