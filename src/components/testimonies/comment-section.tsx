@@ -80,81 +80,83 @@ function CommentItem({
     const profileLink = isAuthor ? "/dashboard/profile" : `/dashboard/profile/${comment.authorId}`;
 
     return (
-        <div className={cn("space-y-4", level > 0 && (isMobile ? "ml-4" : "ml-8"))}>
-            <div className="flex gap-2 sm:gap-3 items-start group relative">
+        <div className={cn("space-y-4", level > 0 && (isMobile ? "ml-6" : "ml-10"))}>
+            <div className="flex gap-3 sm:gap-4 items-start group relative">
                 <Link href={profileLink}>
-                    <Avatar className={cn("shrink-0 hover:opacity-80 transition-opacity", level > 0 ? "h-5 w-5 sm:h-6 sm:w-6" : "h-6 w-6 sm:h-7 sm:w-7")}>
+                    <Avatar className={cn("shrink-0 hover:opacity-80 transition-opacity shadow-sm border", level > 0 ? "h-6 w-6 sm:h-8 sm:w-8" : "h-8 w-8 sm:h-10 sm:w-10")}>
                         <AvatarImage src={comment.authorAvatarUrl} />
-                        <AvatarFallback className="text-[8px] sm:text-[10px]">{comment.authorFirstName?.charAt(0) || 'U'}</AvatarFallback>
+                        <AvatarFallback className="text-xs sm:text-sm font-bold">{comment.authorFirstName?.charAt(0) || 'U'}</AvatarFallback>
                     </Avatar>
                 </Link>
                 <div className="flex-1 min-w-0">
-                    <div className="bg-muted/30 rounded-lg p-2 sm:p-2.5 relative">
-                        <div className="flex justify-between items-start mb-1 gap-2">
+                    <div className="bg-muted/30 rounded-xl p-3 sm:p-4 relative border">
+                        <div className="flex justify-between items-start mb-1.5 gap-2">
                             <div className="min-w-0 flex-1">
                                 <Link href={profileLink} className="hover:underline decoration-primary/30 underline-offset-2">
-                                    <p className="text-[10px] sm:text-xs font-bold truncate">
+                                    <p className="text-sm font-bold truncate leading-tight">
                                         {authorName}
                                     </p>
                                 </Link>
-                                <p className="text-[8px] sm:text-[9px] text-muted-foreground">
+                                <p className="text-xs text-muted-foreground mt-0.5">
                                     {createdAt ? formatDistanceToNow(createdAt, { addSuffix: true }) : 'just now'}
                                 </p>
                             </div>
                             {isAuthor && (
                                 <button
                                     className={cn(
-                                        "h-5 w-5 shrink-0 text-destructive transition-opacity",
+                                        "h-6 w-6 shrink-0 text-destructive/60 hover:text-destructive transition-all rounded-full hover:bg-destructive/10 flex items-center justify-center",
                                         isMobile ? "opacity-100" : "opacity-0 group-hover:opacity-100"
                                     )}
                                     onClick={handleDelete}
                                 >
-                                    <Trash2 className="h-3 w-3" />
+                                    <Trash2 className="h-4 w-4" />
                                 </button>
                             )}
                         </div>
-                        <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap break-words">
+                        <p className="text-sm sm:text-base text-muted-foreground leading-relaxed whitespace-pre-wrap break-words">
                             {comment.text}
                         </p>
                         
                         {(supporters.length > 0 || inspiredBy.length > 0 || connectedBy.length > 0) && (
-                            <div className="absolute -bottom-2 right-1 flex items-center gap-0.5 bg-background border rounded-full px-1 py-0.5 shadow-sm z-10">
-                                {supporters.length > 0 && <HandHeart className="h-2.5 w-2.5 text-primary fill-current" />}
-                                {inspiredBy.length > 0 && <Sparkles className="h-2.5 w-2.5 text-chart-3 fill-current" />}
-                                {connectedBy.length > 0 && <PartyPopper className="h-2.5 w-2.5 text-blue-500" />}
-                                <span className="text-[8px] font-bold px-0.5 leading-none">
+                            <div className="absolute -bottom-2 right-2 flex items-center gap-1 bg-background border rounded-full px-1.5 py-0.5 shadow-md z-10">
+                                <div className="flex items-center -space-x-0.5">
+                                    {supporters.length > 0 && <HandHeart className="h-3 w-3 text-primary fill-current" />}
+                                    {inspiredBy.length > 0 && <Sparkles className="h-3 w-3 text-chart-3 fill-current" />}
+                                    {connectedBy.length > 0 && <PartyPopper className="h-3 w-3 text-blue-500" />}
+                                </div>
+                                <span className="text-[10px] font-bold px-0.5 leading-none text-muted-foreground">
                                     {(supporters.length + inspiredBy.length + connectedBy.length)}
                                 </span>
                             </div>
                         )}
                     </div>
 
-                    <div className="flex items-center gap-3 mt-1 px-1">
-                        <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-4 mt-1.5 px-1">
+                        <div className="flex items-center gap-4">
                             <button 
                                 onClick={() => handleReaction('amen')}
                                 disabled={isReacting !== null}
-                                className={cn("text-[9px] sm:text-[10px] font-bold transition-colors hover:text-primary", hasAmened ? "text-primary" : "text-muted-foreground")}
+                                className={cn("text-xs font-bold transition-colors hover:text-primary", hasAmened ? "text-primary" : "text-muted-foreground")}
                             >
                                 Amen
                             </button>
                             <button 
                                 onClick={() => handleReaction('inspired')}
                                 disabled={isReacting !== null}
-                                className={cn("text-[9px] sm:text-[10px] font-bold transition-colors hover:text-chart-3", hasInspired ? "text-chart-3" : "text-muted-foreground")}
+                                className={cn("text-xs font-bold transition-colors hover:text-chart-3", hasInspired ? "text-chart-3" : "text-muted-foreground")}
                             >
                                 Inspired
                             </button>
                             <button 
                                 onClick={() => handleReaction('celebrate')}
                                 disabled={isReacting !== null}
-                                className={cn("text-[9px] sm:text-[10px] font-bold transition-colors hover:text-blue-500", hasCelebrated ? "text-blue-500" : "text-muted-foreground")}
+                                className={cn("text-xs font-bold transition-colors hover:text-blue-500", hasCelebrated ? "text-blue-500" : "text-muted-foreground")}
                             >
                                 Celebrate
                             </button>
                             <button 
                                 onClick={() => onReply(comment)}
-                                className="text-[9px] sm:text-[10px] font-bold text-muted-foreground hover:text-foreground transition-colors"
+                                className="text-xs font-bold text-muted-foreground hover:text-foreground transition-colors"
                             >
                                 Reply
                             </button>
@@ -250,13 +252,14 @@ export function CommentSection({ testimonyId }: { testimonyId: string }) {
     return (
         <div className="flex flex-col h-full min-h-0 overflow-hidden">
             <div className="flex-1 min-h-0 overflow-y-auto">
-                <div className="space-y-6 p-4 sm:p-6">
+                <div className="space-y-8 p-4 sm:p-6 pb-20">
                     {(loading || userLoading) ? (
                         <div className="flex justify-center py-12"><Loader2 className="h-8 w-8 animate-spin opacity-20" /></div>
                     ) : topLevelComments.length > 0 ? (
                         topLevelComments.map(comment => renderComment(comment))
                     ) : (
-                        <div className="text-center py-12 bg-muted/20 rounded-lg border border-dashed mx-2">
+                        <div className="text-center py-20 bg-muted/20 rounded-2xl border-2 border-dashed mx-2 flex flex-col items-center">
+                             <Sparkles className="h-10 w-10 text-muted-foreground/20 mb-4" />
                              <p className="text-sm text-muted-foreground italic">No comments yet. Be the first to encourage!</p>
                         </div>
                     )}
@@ -264,26 +267,26 @@ export function CommentSection({ testimonyId }: { testimonyId: string }) {
             </div>
 
             {user && (
-                <div className="shrink-0 p-4 border-t bg-background shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]">
+                <div className="shrink-0 p-4 border-t bg-background shadow-[0_-8px_10px_-4px_rgba(0,0,0,0.05)]">
                     {replyingTo && (
-                        <div className="flex items-center justify-between bg-muted/50 px-3 py-1.5 rounded-t-md text-[10px] text-muted-foreground border-x border-t mb-0">
-                            <p className="truncate">Replying to <strong>{replyingTo.authorFirstName}</strong></p>
-                            <button onClick={() => setReplyingTo(null)} className="hover:text-foreground transition-colors">
+                        <div className="flex items-center justify-between bg-primary/5 px-4 py-2 rounded-t-xl text-xs text-muted-foreground border-x border-t mb-0 border-primary/20">
+                            <p className="truncate">Replying to <span className="font-bold text-primary">{replyingTo.authorFirstName}</span></p>
+                            <button onClick={() => setReplyingTo(null)} className="hover:text-foreground transition-colors p-1 rounded-full hover:bg-muted">
                                 <X className="h-3 w-3" />
                             </button>
                         </div>
                     )}
-                    <form onSubmit={handleSendComment} className={cn("flex gap-2 items-center", replyingTo && "border-x border-b p-2 rounded-b-md bg-muted/10")}>
+                    <form onSubmit={handleSendComment} className={cn("flex gap-2 items-center", replyingTo && "border-x border-b p-2 rounded-b-xl bg-muted/10 border-primary/20")}>
                         <Input
-                            placeholder={replyingTo ? "Write a reply..." : "Add a comment..."}
+                            placeholder={replyingTo ? "Write your reply..." : "Write a comment of encouragement..."}
                             value={newComment}
                             onChange={(e) => setNewMessage(e.target.value)}
-                            className="text-sm h-10 shadow-inner"
+                            className="text-base h-12 shadow-sm rounded-xl focus-visible:ring-primary/30"
                             disabled={isSending}
                             autoFocus={!!replyingTo}
                         />
-                        <Button type="submit" size="icon" className="h-10 w-10 shrink-0" disabled={!newComment.trim() || isSending}>
-                            {isSending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                        <Button type="submit" size="icon" className="h-12 w-12 shrink-0 rounded-xl shadow-md transition-transform active:scale-95" disabled={!newComment.trim() || isSending}>
+                            {isSending ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
                         </Button>
                     </form>
                 </div>
