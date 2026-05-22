@@ -58,6 +58,7 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
         const deltaX = e.touches[0].clientX - swipeState.startX;
         const deltaY = e.touches[0].clientY - swipeState.startY;
 
+        // Prevent swiping horizontal if user is scrolling vertically
         if (Math.abs(deltaY) > Math.abs(deltaX)) {
             if (swipeState.deltaX !== 0) {
                 setSwipeState(s => ({ ...s, deltaX: 0 }));
@@ -67,6 +68,8 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
 
         const isOwnMessage = msg.senderId === user?.uid;
         const maxSwipe = 80;
+        
+        // Swipe direction: right for others, left for self (standard chat pattern)
         if ((!isOwnMessage && deltaX > 0 && deltaX < maxSwipe) || (isOwnMessage && deltaX < 0 && deltaX > -maxSwipe)) {
             setSwipeState(s => ({ ...s, deltaX }));
         }
@@ -191,17 +194,7 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
         try {
             const messagesRef = collection(firestore, 'chats', chatId, 'messages');
             
-            const newDocData: {
-                senderId: string;
-                text: string;
-                createdAt: FieldValue;
-                replyTo?: {
-                    messageId: string;
-                    text: string;
-                    senderFirstName: string;
-                    senderLastName: string;
-                }
-            } = {
+            const newDocData: any = {
                 senderId: user.uid,
                 text: newMessage,
                 createdAt: serverTimestamp(),
@@ -227,7 +220,6 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
             const otherParticipantIds = chat.participantIds.filter(id => id !== user.uid);
             if (otherParticipantIds.length > 0) {
                 const batch = writeBatch(firestore);
-                const link = `${window.location.origin}/dashboard/chats/${chatId}`;
 
                 otherParticipantIds.forEach(participantId => {
                     const recipientInfo = chat.participantInfo[participantId];
@@ -269,16 +261,8 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                                 <p>Hi ${recipientInfo?.firstName || 'there'},</p>
                                 <p>You have a new ${replyingTo ? 'reply' : 'message'} from <strong>${user.displayName || 'a user'}</strong> ${chat.campaignTitle ? `in the chat for the campaign "<strong>${chat.campaignTitle}</strong>"` : ''}.</p>
                                 <blockquote style="border-left: 4px solid #ccc; padding-left: 1rem; margin-left: 0; font-style: italic; color: #666;">${newMessage}</blockquote>
-                                <p>You can view the full conversation and reply by clicking the button below:</p>
-                                <div style="text-align: center; margin: 30px 0;">
-                                    <a href="${link}" style="background-color: #f97416; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-size: 16px; font-weight: bold;">View Chat</a>
-                                </div>
                                 <p>God bless,</p>
                                 <p><strong>The Testify Team</strong></p>
-                              </div>
-                               <div style="text-align: center; font-size: 12px; color: #999; margin-top: 20px;">
-                                <p>You received this email because you have notifications enabled for Testify chats.</p>
-                                <p>&copy; Testify. All rights reserved.</p>
                               </div>
                             </div>
                         `;
@@ -501,11 +485,10 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                                                         </Button>
 
                                                         {msg.replyTo && (
-                                                            <a 
-                                                                href={`#message-${msg.replyTo.messageId}`} 
+                                                            <div 
                                                                 onClick={(e) => {
                                                                     e.preventDefault();
-                                                                    const repliedMsgEl = document.getElementById(`message-${msg.replyTo.messageId}`);
+                                                                    const repliedMsgEl = document.getElementById(`message-${msg.replyTo!.messageId}`);
                                                                     if (repliedMsgEl) {
                                                                         repliedMsgEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
                                                                         const parentGroup = repliedMsgEl.closest('.group');
@@ -515,11 +498,11 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                                                                         }, 600);
                                                                     }
                                                                 }}
-                                                                className="mb-1.5 rounded-md border-l-2 border-primary/50 bg-black/10 p-2 text-xs dark:bg-white/10 block hover:bg-black/20 dark:hover:bg-white/20 transition-colors"
+                                                                className="mb-1.5 rounded-md border-l-2 border-primary/50 bg-black/10 p-2 text-xs dark:bg-white/10 block hover:bg-black/20 dark:hover:bg-white/20 transition-colors cursor-pointer"
                                                             >
                                                                 <p className="font-bold">{msg.replyTo.senderFirstName} {msg.replyTo.senderLastName}</p>
                                                                 <p className="line-clamp-2">{msg.replyTo.text}</p>
-                                                            </a>
+                                                            </div>
                                                         )}
 
                                                         {chat.isGroupChat && !isOwnMessage && senderInfo && (
@@ -553,7 +536,7 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                 </TooltipProvider>
             </div>
 
-            <div className="shrink-0 border-t p-4 bg-background">
+            <div className="shrink-0 border-t p-4 bg-background pb-[calc(1rem+env(safe-area-inset-bottom))]">
                 {isChatFrozen ? (
                     <div className="p-3 text-center text-sm text-muted-foreground bg-muted/50 rounded-lg">
                         This group chat has been frozen as the campaign ended more than 24 hours ago.
@@ -561,15 +544,15 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                 ) : (
                     <>
                     {replyingTo && (
-                        <div className="relative rounded-t-lg border bg-muted/50 p-3 pt-2 pb-3 mb-2">
-                            <p className="text-xs font-bold">
+                        <div className="relative rounded-t-lg border bg-muted/50 p-3 pt-2 pb-3 mb-2 animate-in slide-in-from-bottom-2 duration-200">
+                            <p className="text-xs font-bold text-primary">
                                 Replying to {chat.participantInfo[replyingTo.senderId]?.firstName || 'User'}
                             </p>
                             <p className="line-clamp-1 text-sm text-muted-foreground">{replyingTo.text}</p>
                             <Button
                                 variant="ghost"
                                 size="icon"
-                                className="absolute right-1 top-1 h-6 w-6"
+                                className="absolute right-1 top-1 h-6 w-6 rounded-full"
                                 onClick={() => setReplyingTo(null)}
                             >
                                 <X className="h-4 w-4" />
@@ -584,9 +567,9 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                             placeholder="Type a message..."
                             disabled={isSending}
                             autoComplete="off"
-                            className="h-11 sm:h-12"
+                            className="h-11 sm:h-12 rounded-2xl"
                         />
-                        <Button type="submit" size="icon" className="h-11 w-11 sm:h-12 sm:w-12 shrink-0" disabled={!newMessage.trim() || isSending}>
+                        <Button type="submit" size="icon" className="h-11 w-11 sm:h-12 sm:w-12 shrink-0 rounded-2xl" disabled={!newMessage.trim() || isSending}>
                             {isSending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-5 w-5" />}
                         </Button>
                     </form>
