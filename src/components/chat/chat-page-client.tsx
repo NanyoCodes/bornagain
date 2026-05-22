@@ -476,7 +476,7 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                                                             variant="ghost"
                                                             size="icon"
                                                             className={cn(
-                                                                "absolute top-0 h-6 w-6 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-20 hidden sm:flex",
+                                                                "absolute top-0 h-6 w-6 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-20",
                                                                 isOwnMessage ? "-left-8" : "-right-8"
                                                             )}
                                                             onClick={() => setReplyingTo(msg)}
@@ -502,6 +502,13 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                                                             >
                                                                 <p className="font-bold">{msg.replyTo.senderFirstName} {msg.replyTo.senderLastName}</p>
                                                                 <p className="line-clamp-2">{msg.replyTo.text}</p>
+                                                            </div>
+                                                        )}
+                                                        
+                                                        {msg.replyTo && (
+                                                            <div className="flex items-center gap-1 text-[9px] font-bold text-muted-foreground mb-1 uppercase tracking-tighter">
+                                                                <Reply className="h-2.5 w-2.5" />
+                                                                Reply
                                                             </div>
                                                         )}
 
