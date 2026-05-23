@@ -288,7 +288,7 @@ function LastBibleReadCard({ history }: { history: ReadingHistoryItem[] }) {
           <p className="text-[10px] text-muted-foreground mt-1">resuming where you left off...</p>
         </div>
         <Button asChild variant="default" size="sm" className="w-full h-9 font-bold">
-          <Link href="/dashboard/bible">
+          <Link href={`/dashboard/bible?book=${encodeURIComponent(lastRead.book)}&chapter=${lastRead.chapter}`}>
             Continue Reading
             <ArrowRight className="ml-2 h-3.5 w-3.5" />
           </Link>

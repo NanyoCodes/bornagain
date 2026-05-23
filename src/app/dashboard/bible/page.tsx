@@ -195,40 +195,51 @@ export default function BibleReaderPage() {
   
   const selectedBook = useMemo(() => bibleData.find(b => b.name === selectedBookName), [selectedBookName]);
 
-  // Load last viewed chapter on mount
+  // Load context on mount: URL Params > LocalStorage > Reading History
   useEffect(() => {
     if (!profileLoading && !isInitialized) {
-      // 1. Try local storage for "last viewed" across browser sessions
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlBook = urlParams.get('book');
+      const urlChapter = urlParams.get('chapter');
+
       const savedBook = typeof window !== 'undefined' ? localStorage.getItem('last_bible_book') : null;
       const savedChapter = typeof window !== 'undefined' ? localStorage.getItem('last_bible_chapter') : null;
+      const savedVersion = typeof window !== 'undefined' ? localStorage.getItem('last_bible_version') : null;
 
-      if (savedBook && savedChapter) {
-          setSelectedBookName(savedBook);
-          setSelectedChapterNumber(parseInt(savedChapter, 10));
+      if (savedVersion) {
+        setSelectedVersion(savedVersion);
+      }
+
+      if (urlBook && urlChapter) {
+        setSelectedBookName(urlBook);
+        setSelectedChapterNumber(parseInt(urlChapter, 10));
+      } else if (savedBook && savedChapter) {
+        setSelectedBookName(savedBook);
+        setSelectedChapterNumber(parseInt(savedChapter, 10));
       } else if (userProfile?.readingHistory?.length) {
-          // 2. Fallback to spiritual milestone history if no local storage
-          const sortedHistory = [...userProfile.readingHistory].sort((a, b) => {
-             const timeA = safeToDate(a.readAt)?.getTime() ?? 0;
-             const timeB = safeToDate(b.readAt)?.getTime() ?? 0;
-             return timeB - timeA;
-          });
-          const lastRead = sortedHistory[0];
-          if (lastRead) {
-            setSelectedBookName(lastRead.book);
-            setSelectedChapterNumber(lastRead.chapter);
-          }
+        const sortedHistory = [...userProfile.readingHistory].sort((a, b) => {
+           const timeA = safeToDate(a.readAt)?.getTime() ?? 0;
+           const timeB = safeToDate(b.readAt)?.getTime() ?? 0;
+           return timeB - timeA;
+        });
+        const lastRead = sortedHistory[0];
+        if (lastRead) {
+          setSelectedBookName(lastRead.book);
+          setSelectedChapterNumber(lastRead.chapter);
+        }
       }
       setIsInitialized(true);
     }
   }, [userProfile, profileLoading, isInitialized]);
 
-  // Persist the current viewed book and chapter to local storage
+  // Persist viewing context
   useEffect(() => {
     if (isInitialized && typeof window !== 'undefined') {
         localStorage.setItem('last_bible_book', selectedBookName);
         localStorage.setItem('last_bible_chapter', selectedChapterNumber.toString());
+        localStorage.setItem('last_bible_version', selectedVersion);
     }
-  }, [selectedBookName, selectedChapterNumber, isInitialized]);
+  }, [selectedBookName, selectedChapterNumber, selectedVersion, isInitialized]);
 
   const prevBookNameRef = useRef(selectedBookName);
   useEffect(() => {
@@ -307,7 +318,6 @@ export default function BibleReaderPage() {
             return; 
         }
 
-        // Fresh highlight starts here
         setActiveHighlightId(null);
         
         const newSelection = selectedVerses.includes(verseNumber) 

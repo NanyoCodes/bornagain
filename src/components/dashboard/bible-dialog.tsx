@@ -170,17 +170,27 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
   
   const selectedBook = useMemo(() => bibleData.find(b => b.name === selectedBookName), [selectedBookName]);
 
-  const hasInitializedSelection = useRef(false);
+  const [isInitialized, setIsInitialized] = useState(false);
   const lastBookRef = useRef(bibleData[0].name);
 
+  // Cross-device/Session Initialization
   useEffect(() => {
     if (!isOpen) {
-      hasInitializedSelection.current = false;
+      setIsInitialized(false);
       return;
     }
 
-    if (isOpen && userProfile && !hasInitializedSelection.current) {
-      if (userProfile.readingHistory && userProfile.readingHistory.length > 0) {
+    if (isOpen && !loadingProfile && !isInitialized) {
+      const savedBook = typeof window !== 'undefined' ? localStorage.getItem('last_bible_book') : null;
+      const savedChapter = typeof window !== 'undefined' ? localStorage.getItem('last_bible_chapter') : null;
+      const savedVersion = typeof window !== 'undefined' ? localStorage.getItem('last_bible_version') : null;
+
+      if (savedVersion) setSelectedVersion(savedVersion);
+
+      if (savedBook && savedChapter) {
+        setSelectedBookName(savedBook);
+        setSelectedChapterNumber(parseInt(savedChapter, 10));
+      } else if (userProfile?.readingHistory?.length) {
         const sortedHistory = [...userProfile.readingHistory].sort((a, b) => {
           const timeA = safeToDate(a.readAt)?.getTime() ?? 0;
           const timeB = safeToDate(b.readAt)?.getTime() ?? 0;
@@ -188,25 +198,30 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
         });
         const lastRead = sortedHistory[0];
         if (lastRead) {
-          lastBookRef.current = lastRead.book;
           setSelectedBookName(lastRead.book);
           setSelectedChapterNumber(lastRead.chapter);
         }
-      } else {
-        setSelectedBookName(bibleData[0].name);
-        setSelectedChapterNumber(1);
       }
-      hasInitializedSelection.current = true;
+      setIsInitialized(true);
     }
-  }, [isOpen, userProfile]);
+  }, [isOpen, userProfile, loadingProfile, isInitialized]);
+
+  // Viewing Persistence
+  useEffect(() => {
+    if (isInitialized && typeof window !== 'undefined') {
+        localStorage.setItem('last_bible_book', selectedBookName);
+        localStorage.setItem('last_bible_chapter', selectedChapterNumber.toString());
+        localStorage.setItem('last_bible_version', selectedVersion);
+    }
+  }, [selectedBookName, selectedChapterNumber, selectedVersion, isInitialized]);
 
   useEffect(() => {
-    if (hasInitializedSelection.current && selectedBookName !== lastBookRef.current) {
+    if (isInitialized && selectedBookName !== lastBookRef.current) {
       setSelectedChapterNumber(1);
       setActiveHighlightId(null);
       lastBookRef.current = selectedBookName;
     }
-  }, [selectedBookName]);
+  }, [selectedBookName, isInitialized]);
 
   const highlightsQuery = useMemo(() => {
     if (!user || !chapterContent) return null;
@@ -235,7 +250,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
   }, [highlights]);
   
   useEffect(() => {
-    if (!isOpen || !selectedBookName || !selectedChapterNumber) return;
+    if (!isOpen || !isInitialized) return;
     const fetchChapter = async () => {
       setIsLoadingChapter(true);
       setChapterError(null);
@@ -251,7 +266,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
       finally { setIsLoadingChapter(false); }
     };
     fetchChapter();
-  }, [isOpen, selectedBookName, selectedChapterNumber, selectedVersion]);
+  }, [isOpen, isInitialized, selectedBookName, selectedChapterNumber, selectedVersion]);
 
   useLayoutEffect(() => {
     const viewport = scrollAreaRef.current?.querySelector('div[data-radix-scroll-area-viewport]');
@@ -375,8 +390,8 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                  <Button variant="outline" size="icon" className="h-7 w-7" onClick={() => setFontSize(f => f === 'xl' ? 'xl' : fontSizes[fontSizes.indexOf(f)+1] as any)}><Plus className="h-4 w-4" /></Button>
                </div>
               <ScrollArea ref={scrollAreaRef} onScroll={handleScroll} className="h-full border rounded-md p-2 sm:p-4 pt-12 relative">
-                  {isLoadingChapter && <div className="absolute inset-0 flex items-center justify-center bg-background/50 z-20"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>}
-                  {!isLoadingChapter && !chapterError && chapterContent && (
+                  {(isLoadingChapter || !isInitialized) && <div className="absolute inset-0 flex items-center justify-center bg-background/50 z-20"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>}
+                  {!isLoadingChapter && isInitialized && !chapterError && chapterContent && (
                   <>
                     <div className={cn("space-y-1 font-serif", fontSizeClasses[fontSize])}>
                         {chapterContent.verses.map(v => (
