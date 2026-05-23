@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect, useRef } from 'react';
@@ -184,7 +185,7 @@ export default function BibleReaderPage() {
   const [fontSize, setFontSize] = useState<FontSize>('sm');
   const [historyFilterDate, setHistoryFilterDate] = useState<string>('');
 
-  const fontSizeClasses = { sm: 'text-xs sm:text-sm', base: 'text-sm sm:text-base', lg: 'text-base sm:text-lg', xl: 'text-lg sm:text-xl' };
+  const fontSizeClasses = { sm: 'text-base sm:text-lg', base: 'text-lg sm:text-xl', lg: 'text-xl sm:text-2xl', xl: 'text-2xl sm:text-3xl' };
   const subFontSizeClasses = { sm: 'text-xs', base: 'text-xs', lg: 'text-sm', xl: 'text-sm' };
 
   const userDocRef = useMemo(() => (user ? doc(firestore, 'users', user.uid) : null), [user, firestore]);
@@ -351,8 +352,8 @@ export default function BibleReaderPage() {
     );
     
     const ReaderContent = (
-      <div className="flex flex-col gap-4 h-full min-h-0">
-          <ScrollArea ref={scrollAreaRef} className="flex-grow border rounded-md p-4 relative">
+      <div className="flex flex-col h-full min-h-0">
+          <ScrollArea ref={scrollAreaRef} className="flex-grow border-none relative h-full">
                   {isLoadingChapter && (
                     <div className="absolute inset-0 flex flex-col items-center justify-center bg-background/50 z-20 gap-2">
                         <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -360,11 +361,12 @@ export default function BibleReaderPage() {
                     </div>
                   )}
                   {!isLoadingChapter && chapterContent && (
-                    <>
-                        <div className={cn("space-y-2 font-serif leading-relaxed", fontSizeClasses[fontSize])}>
+                    <div className="max-w-4xl mx-auto px-6 sm:px-12 py-8">
+                        <div className={cn("space-y-4 font-serif leading-relaxed text-foreground/90", fontSizeClasses[fontSize])}>
                             {chapterContent.verses.map(v => (
-                                <div key={v.verse} id={`verse-${v.verse}`} className={cn('rounded px-1 py-1 cursor-pointer transition-colors', highlightsMap.get(v.verse) && getHighlightClass(highlightsMap.get(v.verse)!.color), selectedVerses.includes(v.verse) && 'bg-primary/20', activeHighlight?.verses.includes(v.verse) && 'ring-2 ring-primary')} onClick={() => handleVerseClick(v.verse)}>
-                                    <sup className={cn("mr-1 text-muted-foreground font-sans", subFontSizeClasses[fontSize])}>{v.verse}</sup>{v.text}
+                                <div key={v.verse} id={`verse-${v.verse}`} className={cn('rounded px-2 py-1 cursor-pointer transition-colors relative', highlightsMap.get(v.verse) && getHighlightClass(highlightsMap.get(v.verse)!.color), selectedVerses.includes(v.verse) && 'bg-primary/20', activeHighlight?.verses.includes(v.verse) && 'ring-2 ring-primary')} onClick={() => handleVerseClick(v.verse)}>
+                                    <sup className={cn("mr-2 text-muted-foreground/60 font-sans font-bold select-none", subFontSizeClasses[fontSize])}>{v.verse}</sup>
+                                    {v.text}
                                 </div>
                             ))}
                         </div>
@@ -373,11 +375,24 @@ export default function BibleReaderPage() {
                                 <Button size="sm" className="pointer-events-auto shadow-xl" onClick={handleSaveHighlight} disabled={isProcessingHighlight}>{isProcessingHighlight ? <Loader2 className="h-4 w-4 animate-spin" /> : <Highlighter className="mr-2 h-4 w-4" />}Highlight & Note</Button>
                             </div>
                         )}
-                        <div className="mt-8 flex flex-col sm:flex-row gap-4 items-center justify-between pb-10">
-                              {unfinishedHighlight && <Card className="border-amber-500/50 bg-amber-500/10 p-3 w-full sm:w-auto"><div className="flex items-center justify-between gap-3"><p className="text-sm font-semibold">Note Required</p><Button size="sm" onClick={() => setActiveHighlightId(unfinishedHighlight.id)}>Go to Note</Button></div></Card>}
-                              <Button onClick={handleMarkAsRead} disabled={isSubmitting} className="w-full sm:w-auto">{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Mark as Read & Next</Button>
+                        <div className="mt-16 flex flex-col sm:flex-row gap-6 items-center justify-between pb-24">
+                              {unfinishedHighlight && (
+                                <Card className="border-amber-500/50 bg-amber-500/10 p-4 w-full sm:w-auto shadow-inner">
+                                  <div className="flex items-center justify-between gap-6">
+                                    <div className="space-y-0.5">
+                                      <p className="text-sm font-bold">Reflection Required</p>
+                                      <p className="text-xs text-muted-foreground">Add a note to your highlight.</p>
+                                    </div>
+                                    <Button size="sm" onClick={() => setActiveHighlightId(unfinishedHighlight.id)}>Go to Note</Button>
+                                  </div>
+                                </Card>
+                              )}
+                              <Button onClick={handleMarkAsRead} disabled={isSubmitting} size="lg" className="w-full sm:w-auto font-bold h-12 px-10 shadow-lg">
+                                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                Mark as Read & Next Chapter
+                              </Button>
                         </div>
-                    </>
+                    </div>
                   )}
           </ScrollArea>
       </div>
@@ -389,161 +404,200 @@ export default function BibleReaderPage() {
     }
 
     return (
-        <div className="h-dvh flex flex-col p-4">
-            <div className="shrink-0 flex items-center justify-between mb-4 gap-2">
-                <div className="flex items-center gap-2">
-                  <Button variant="outline" size="icon" onClick={() => router.back()}><ArrowLeft className="h-4 w-4" /></Button>
-                  {view === 'read' && (
-                    <div className="flex items-center gap-2">
-                        <Select value={selectedVersion} onValueChange={setSelectedVersion}>
-                            <SelectTrigger className="w-[80px] h-9"><SelectValue /></SelectTrigger>
-                            <SelectContent>
-                                {bibleVersions.map(v => <SelectItem key={v.id} value={v.id}>{v.name}</SelectItem>)}
-                            </SelectContent>
-                        </Select>
-                        <div className="flex items-center gap-1 border rounded-md p-0.5 bg-background">
-                            <Button 
-                              variant="ghost" 
-                              size="icon" 
-                              className="h-8 w-8" 
-                              onClick={() => setFontSize(f => f === 'sm' ? 'sm' : FONT_SIZES[FONT_SIZES.indexOf(f)-1] as FontSize)}
-                            >
-                                <Minus className="h-4 w-4" />
-                            </Button>
-                            <Button 
-                              variant="ghost" 
-                              size="icon" 
-                              className="h-8 w-8" 
-                              onClick={() => setFontSize(f => f === 'xl' ? 'xl' : FONT_SIZES[FONT_SIZES.indexOf(f)+1] as FontSize)}
-                            >
-                                <Plus className="h-4 w-4" />
-                            </Button>
-                        </div>
-                    </div>
-                  )}
+        <div className="h-dvh flex flex-col bg-background overflow-hidden">
+            <div className="shrink-0 flex items-center justify-between p-4 md:px-8 border-b bg-background/80 backdrop-blur-md z-10 gap-4">
+                <div className="flex items-center gap-3">
+                  <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full"><ArrowLeft className="h-5 w-5" /></Button>
+                  <div className="hidden sm:flex items-center gap-2">
+                    <BookOpen className="h-5 w-5 text-primary" />
+                    <span className="font-headline font-bold text-lg">Testify Bible</span>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2">
-                   <Button variant={view === 'read' ? 'default' : 'ghost'} size="icon" onClick={() => setView('read')} className="h-9">
-                     <BookOpen className="h-4 w-4" />
-                     <span className="sr-only">Read</span>
+                
+                {view === 'read' && (
+                  <div className="flex items-center gap-2">
+                      <Select value={selectedVersion} onValueChange={setSelectedVersion}>
+                          <SelectTrigger className="w-[80px] h-9 border-none bg-muted/50 hover:bg-muted font-bold text-xs"><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                              {bibleVersions.map(v => <SelectItem key={v.id} value={v.id}>{v.name}</SelectItem>)}
+                          </SelectContent>
+                      </Select>
+                      <div className="flex items-center gap-1 border rounded-full p-0.5 bg-muted/30">
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            className="h-8 w-8 rounded-full" 
+                            onClick={() => setFontSize(f => f === 'sm' ? 'sm' : FONT_SIZES[FONT_SIZES.indexOf(f)-1] as FontSize)}
+                          >
+                              <Minus className="h-3.5 w-3.5" />
+                          </Button>
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            className="h-8 w-8 rounded-full" 
+                            onClick={() => setFontSize(f => f === 'xl' ? 'xl' : FONT_SIZES[FONT_SIZES.indexOf(f)+1] as FontSize)}
+                          >
+                              <Plus className="h-3.5 w-3.5" />
+                          </Button>
+                      </div>
+                  </div>
+                )}
+
+                <div className="flex items-center gap-1 bg-muted/50 p-1 rounded-full">
+                   <Button variant={view === 'read' ? 'secondary' : 'ghost'} size="sm" onClick={() => setView('read')} className={cn("h-8 px-4 rounded-full text-xs font-bold", view === 'read' && "shadow-sm")}>
+                     READ
                    </Button>
-                   <Button variant={view === 'history' ? 'default' : 'ghost'} size="icon" onClick={() => setView('history')} className="h-9">
-                     <History className="h-4 w-4" />
-                     <span className="sr-only">History</span>
+                   <Button variant={view === 'history' ? 'secondary' : 'ghost'} size="sm" onClick={() => setView('history')} className={cn("h-8 px-4 rounded-full text-xs font-bold", view === 'history' && "shadow-sm")}>
+                     HISTORY
                    </Button>
                 </div>
             </div>
 
             {view === 'read' ? (
-                <div className="flex-grow flex flex-col min-h-0 overflow-hidden">
-                    <div className="grid grid-cols-[1fr_1fr_auto] md:grid-cols-2 gap-2 shrink-0 mb-4">
+                <div className="flex-grow flex flex-col min-h-0">
+                    <div className="flex items-center gap-2 p-2 sm:p-4 bg-muted/10 border-b overflow-x-auto whitespace-nowrap scrollbar-hide">
                         <Select value={selectedBookName} onValueChange={setSelectedBookName}>
-                            <SelectTrigger className="truncate"><SelectValue /></SelectTrigger>
-                            <SelectContent>{bibleData.map(b => <SelectItem key={b.name} value={b.name}>{b.name}</SelectItem>)}</SelectContent>
+                            <SelectTrigger className="w-auto min-w-[140px] h-9 border-none bg-background shadow-sm font-bold text-sm">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="max-h-[300px]">{bibleData.map(b => <SelectItem key={b.name} value={b.name}>{b.name}</SelectItem>)}</SelectContent>
                         </Select>
                         <Popover open={isChapterPopoverOpen} onOpenChange={setIsChapterPopoverOpen}>
                             <PopoverTrigger asChild>
-                              <Button variant="outline" className="w-full justify-between">
+                              <Button variant="outline" size="sm" className="h-9 border-none bg-background shadow-sm font-bold text-sm min-w-[110px] justify-between">
                                 Chapter {selectedChapterNumber}
-                                <ChevronDown className="h-4 w-4 opacity-50" />
+                                <ChevronDown className="ml-2 h-4 w-4 opacity-50" />
                               </Button>
                             </PopoverTrigger>
-                            <PopoverContent className="w-[300px] p-0">
+                            <PopoverContent className="w-[300px] p-0" align="start">
                               <ScrollArea className="h-72">
-                                <div className="grid grid-cols-8 gap-1 p-2">
+                                <div className="grid grid-cols-5 gap-1 p-3">
                                   {selectedBook?.chapters.map(c => (
-                                    <Button key={c.chapter} variant={c.chapter === selectedChapterNumber ? "default" : "outline"} size="sm" onClick={() => handleSelectChapter(c.chapter)}>{c.chapter}</Button>
+                                    <Button key={c.chapter} variant={c.chapter === selectedChapterNumber ? "default" : "ghost"} size="sm" className="h-10 w-10 font-bold" onClick={() => handleSelectChapter(c.chapter)}>{c.chapter}</Button>
                                   ))}
                                 </div>
                               </ScrollArea>
                             </PopoverContent>
                         </Popover>
+                        <div className="flex-1" />
                         <Button 
-                          variant="outline" 
+                          variant="ghost" 
                           size="icon" 
-                          className="md:hidden" 
+                          className="rounded-full bg-background shadow-sm border h-9 w-9" 
                           onClick={() => setIsJournalSheetOpen(true)}
-                          title="My Journal"
                         >
                           <Highlighter className="h-4 w-4" />
+                          <span className="sr-only">My Journal</span>
                         </Button>
                     </div>
-                    <div className="flex-grow flex-col md:flex-row flex gap-6 min-h-0 overflow-hidden">
-                        <div className="flex-grow min-h-0">{ReaderContent}</div>
-                        <div className="hidden md:flex md:w-1/3 flex-col border rounded-md bg-muted/30 p-4 min-h-0"><h3 className="font-semibold mb-2">My Journal</h3><ScrollArea className="flex-grow">{NotesList}</ScrollArea></div>
+                    <div className="flex-grow flex gap-0 min-h-0">
+                        <div className="flex-1 min-h-0">{ReaderContent}</div>
+                        <div className="hidden lg:flex lg:w-96 flex-col border-l bg-muted/10 p-6 min-h-0">
+                            <h3 className="font-headline font-bold text-xl mb-4 flex items-center gap-2">
+                                <Highlighter className="h-5 w-5 text-primary" />
+                                My Journal
+                            </h3>
+                            <ScrollArea className="flex-grow pr-4 -mr-4">{NotesList}</ScrollArea>
+                        </div>
                     </div>
-                    {isMobile && (
-                      <>
-                        {activeHighlight && (
-                          <Sheet open={!!activeHighlight} onOpenChange={(open) => !open && setActiveHighlightId(null)}>
-                            <SheetContent side="bottom" className="h-[85dvh] p-0 flex flex-col rounded-t-2xl">
-                              <SheetHeader className="p-6 border-b shrink-0 bg-muted/20">
-                                <SheetTitle className="text-xl">Journal Entry</SheetTitle>
-                                <SheetDescription className="text-muted-foreground">Meditation for {getVerseReference(activeHighlight)}</SheetDescription>
-                              </SheetHeader>
-                              <div className="flex-grow overflow-y-auto p-4 sm:p-6">
-                                <NoteEditor 
-                                  highlight={activeHighlight} 
-                                  onSave={handleUpdateNote} 
-                                  onDelete={(id) => deleteDoc(doc(firestore!, user!.uid, 'bibleHighlights', id)).then(() => setActiveHighlightId(null))} 
-                                  onCancel={() => setActiveHighlightId(null)} 
-                                />
-                              </div>
-                            </SheetContent>
-                          </Sheet>
-                        )}
-                        <Sheet open={isJournalSheetOpen} onOpenChange={setIsJournalSheetOpen}>
-                          <SheetContent side="right" className="w-[90vw] sm:max-w-md flex flex-col p-0">
-                            <SheetHeader className="p-6 border-b shrink-0 bg-muted/20">
-                              <SheetTitle className="text-xl">My Journal</SheetTitle>
-                              <SheetDescription className="text-muted-foreground">Notes and highlights for this chapter.</SheetDescription>
-                            </SheetHeader>
-                            <div className="flex-grow overflow-y-auto p-4">
-                              {NotesList}
-                            </div>
-                          </SheetContent>
-                        </Sheet>
-                      </>
+                    
+                    {/* Mobile/Tablet Journal Sheet */}
+                    <Sheet open={isJournalSheetOpen} onOpenChange={setIsJournalSheetOpen}>
+                      <SheetContent side="right" className="w-full sm:max-w-md flex flex-col p-0">
+                        <SheetHeader className="p-6 border-b shrink-0 bg-muted/20">
+                          <SheetTitle className="text-2xl font-headline font-bold">My Journal</SheetTitle>
+                          <SheetDescription className="text-muted-foreground">Revelations and highlights from your study.</SheetDescription>
+                        </SheetHeader>
+                        <div className="flex-grow overflow-y-auto p-4 sm:p-6 bg-muted/5">
+                          {NotesList}
+                        </div>
+                      </SheetContent>
+                    </Sheet>
+
+                    {/* Active Note Modal for Mobile */}
+                    {isMobile && activeHighlight && (
+                      <Sheet open={!!activeHighlight} onOpenChange={(open) => !open && setActiveHighlightId(null)}>
+                        <SheetContent side="bottom" className="h-[85dvh] p-0 flex flex-col rounded-t-3xl border-t-4 border-t-primary/20">
+                          <SheetHeader className="p-6 border-b shrink-0 bg-muted/10">
+                            <SheetTitle className="text-xl font-headline font-bold">Reflect & Journal</SheetTitle>
+                            <SheetDescription className="text-sm">{getVerseReference(activeHighlight)}</SheetDescription>
+                          </SheetHeader>
+                          <div className="flex-grow overflow-y-auto p-6">
+                            <NoteEditor 
+                              highlight={activeHighlight} 
+                              onSave={handleUpdateNote} 
+                              onDelete={(id) => deleteDoc(doc(firestore!, 'users', user!.uid, 'bibleHighlights', id)).then(() => setActiveHighlightId(null))} 
+                              onCancel={() => setActiveHighlightId(null)} 
+                            />
+                          </div>
+                        </SheetContent>
+                      </Sheet>
                     )}
                 </div>
             ) : (
-                <div className="flex-grow flex flex-col min-h-0 mt-4 overflow-hidden">
-                    <div className="flex items-center gap-2 mb-4 shrink-0 px-1">
-                        <Input
-                            type="date"
-                            value={historyFilterDate}
-                            onChange={(e) => setHistoryFilterDate(e.target.value)}
-                            className="max-w-[200px]"
-                        />
-                        {historyFilterDate && (
-                            <Button variant="ghost" size="icon" onClick={() => setHistoryFilterDate('')}>
-                                <XCircle className="h-5 w-5 text-muted-foreground" />
-                            </Button>
-                        )}
-                    </div>
-                    <ScrollArea className="flex-grow">
-                        <div className="p-4 pt-0 space-y-8">
-                            {historyGroups.length > 0 ? historyGroups.map(g => (
-                                <div key={g.date.toISOString()} className="space-y-4">
-                                    <div className="relative"><div className="absolute inset-0 flex items-center"><div className="w-full border-t" /></div><div className="relative flex justify-center"><span className="bg-background px-3 text-sm font-semibold text-muted-foreground">{format(g.date, 'PPP')}</span></div></div>
-                                    <div className="space-y-4">
-                                      {g.items.map((i, idx) => {
-                                        const readAt = safeToDate(i.readAt);
-                                        return (
-                                        <div key={idx} className="flex items-center gap-3">
-                                            <BookOpen className="h-4 w-4 text-primary" />
-                                            <div className="text-sm">Read <span className="font-medium">{i.book} {i.chapter}</span> at {readAt ? format(readAt, 'p') : 'N/A'}</div>
-                                        </div>
-                                      )})}
-                                    </div>
-                                </div>
-                            )) : (
-                                <div className="text-center py-12 text-muted-foreground italic">
-                                    {historyFilterDate ? "No history found for this date." : "Your reading history will appear here."}
-                                </div>
+                <div className="flex-grow flex flex-col min-h-0 bg-muted/5 overflow-hidden">
+                    <div className="max-w-3xl mx-auto w-full flex-grow flex flex-col p-4 md:p-8 min-h-0">
+                        <div className="flex items-center gap-3 mb-8 shrink-0">
+                            <div className="relative flex-1">
+                                <Input
+                                    type="date"
+                                    value={historyFilterDate}
+                                    onChange={(e) => setHistoryFilterDate(e.target.value)}
+                                    className="h-11 pl-10 rounded-xl bg-background shadow-sm"
+                                />
+                                <Calendar className="absolute left-3.5 top-3.5 h-4 w-4 text-muted-foreground" />
+                            </div>
+                            {historyFilterDate && (
+                                <Button variant="secondary" size="icon" onClick={() => setHistoryFilterDate('')} className="h-11 w-11 rounded-xl">
+                                    <XCircle className="h-5 w-5" />
+                                </Button>
                             )}
                         </div>
-                    </ScrollArea>
+                        <ScrollArea className="flex-grow pr-4 -mr-4">
+                            <div className="space-y-12 pb-20">
+                                {historyGroups.length > 0 ? historyGroups.map(g => (
+                                    <div key={g.date.toISOString()} className="space-y-6">
+                                        <div className="sticky top-0 z-10 py-2 bg-muted/5">
+                                            <div className="flex items-center gap-4">
+                                                <span className="font-bold text-xs uppercase tracking-[0.2em] text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20">{format(g.date, 'PPPP')}</span>
+                                                <div className="h-px bg-muted flex-grow" />
+                                            </div>
+                                        </div>
+                                        <div className="grid gap-3 sm:grid-cols-2">
+                                          {g.items.map((i, idx) => {
+                                            const readAt = safeToDate(i.readAt);
+                                            return (
+                                              <Card key={idx} className="border shadow-sm hover:shadow-md transition-shadow">
+                                                <CardHeader className="p-4 flex flex-row items-center justify-between space-y-0">
+                                                    <div className="flex items-center gap-3">
+                                                      <div className="h-10 w-10 rounded-xl bg-primary/5 flex items-center justify-center border border-primary/10">
+                                                        <BookOpen className="h-5 w-5 text-primary" />
+                                                      </div>
+                                                      <div>
+                                                        <p className="font-headline font-bold text-base">{i.book} {i.chapter}</p>
+                                                        <p className="text-xs text-muted-foreground">{readAt ? format(readAt, 'p') : 'N/A'}</p>
+                                                      </div>
+                                                    </div>
+                                                    <Button variant="ghost" size="icon" onClick={() => { setSelectedBookName(i.book); setSelectedChapterNumber(i.chapter); setView('read'); }} className="rounded-full">
+                                                        <ArrowLeft className="h-4 w-4 rotate-180" />
+                                                    </Button>
+                                                </CardHeader>
+                                              </Card>
+                                          )})}
+                                        </div>
+                                    </div>
+                                )) : (
+                                    <div className="text-center py-20 flex flex-col items-center">
+                                        <History className="h-16 w-16 text-muted-foreground/20 mb-4" />
+                                        <h3 className="font-bold text-lg">No Reading History</h3>
+                                        <p className="text-sm text-muted-foreground mt-1 px-12">
+                                            {historyFilterDate ? "No study logged for this date." : "Your spiritual milestones will appear here as you read."}
+                                        </p>
+                                    </div>
+                                )}
+                            </div>
+                        </ScrollArea>
+                    </div>
                 </div>
             )}
         </div>
