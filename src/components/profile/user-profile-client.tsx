@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useDoc, useFirestore, useUser, useCollection } from '@/firebase';
 import type { Testimony, Campaign, UserProfile } from '@/lib/types';
 import { doc, collection, query, where, orderBy } from 'firebase/firestore';
-import { Loader2, Mail, MapPin, ArrowLeft, Edit, Youtube, Globe, Activity } from 'lucide-react';
+import { Loader2, Mail, MapPin, ArrowLeft, Edit, Youtube, Globe, Activity, Target } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from '@/components/ui/button';
