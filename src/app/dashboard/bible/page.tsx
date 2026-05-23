@@ -446,12 +446,39 @@ export default function BibleReaderPage() {
                 )}
 
                 <div className="flex items-center gap-1 bg-muted/50 p-1 rounded-full">
-                   <Button variant={view === 'read' ? 'secondary' : 'ghost'} size="sm" onClick={() => setView('read')} className={cn("h-8 px-4 rounded-full text-xs font-bold", view === 'read' && "shadow-sm")}>
-                     READ
-                   </Button>
-                   <Button variant={view === 'history' ? 'secondary' : 'ghost'} size="sm" onClick={() => setView('history')} className={cn("h-8 px-4 rounded-full text-xs font-bold", view === 'history' && "shadow-sm")}>
-                     HISTORY
-                   </Button>
+                   <TooltipProvider>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                           <Button 
+                                variant={view === 'read' ? 'secondary' : 'ghost'} 
+                                size="sm" 
+                                onClick={() => setView('read')} 
+                                className={cn("h-8 w-10 sm:w-12 rounded-full p-0", view === 'read' && "shadow-sm")}
+                            >
+                                <BookOpen className="h-4 w-4" />
+                                <span className="sr-only">Read</span>
+                            </Button>
+                        </TooltipTrigger>
+                        <TooltipContent><p>Read Bible</p></TooltipContent>
+                    </Tooltip>
+                   </TooltipProvider>
+
+                   <TooltipProvider>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <Button 
+                                variant={view === 'history' ? 'secondary' : 'ghost'} 
+                                size="sm" 
+                                onClick={() => setView('history')} 
+                                className={cn("h-8 w-10 sm:w-12 rounded-full p-0", view === 'history' && "shadow-sm")}
+                            >
+                                <History className="h-4 w-4" />
+                                <span className="sr-only">History</span>
+                            </Button>
+                        </TooltipTrigger>
+                        <TooltipContent><p>Reading History</p></TooltipContent>
+                    </Tooltip>
+                   </TooltipProvider>
                 </div>
             </div>
 
