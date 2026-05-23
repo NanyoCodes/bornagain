@@ -25,6 +25,7 @@ import {
   CheckCircle2,
   Sparkles,
   BookOpen,
+  Info,
 } from 'lucide-react';
 import { useCollection, useFirestore, useUser, useDoc } from '@/firebase';
 import {
@@ -292,6 +293,10 @@ function LastBibleReadCard({ history }: { history: ReadingHistoryItem[] }) {
             <ArrowRight className="ml-2 h-3.5 w-3.5" />
           </Link>
         </Button>
+        <p className="text-[9px] text-muted-foreground mt-3 flex items-start gap-1.5 leading-tight italic">
+          <Info className="h-3 w-3 shrink-0 mt-0.5" />
+          Last read is detected when you finish a chapter and click "Mark as Read" in the Bible Reader.
+        </p>
       </CardContent>
     </Card>
   );
