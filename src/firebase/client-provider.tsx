@@ -1,7 +1,6 @@
-
 'use client';
 
-import { createContext, useContext, useMemo } from 'react';
+import { createContext, useContext, useMemo, useEffect } from 'react';
 import { initializeFirebase } from './init';
 import { FirebaseErrorListener } from '@/components/FirebaseErrorListener';
 import { FirebaseProvider } from './provider';
@@ -9,6 +8,7 @@ import { useUser } from './auth/use-user';
 import { useDoc } from './firestore/use-doc';
 import { doc } from 'firebase/firestore';
 import type { UserProfile } from '@/lib/types';
+import { setPersistence, browserLocalPersistence } from 'firebase/auth';
 
 const { app, auth, firestore, storage } = initializeFirebase();
 
@@ -41,6 +41,14 @@ function ProfileProvider({ children }: { children: React.ReactNode }) {
 }
 
 export function FirebaseClientProvider({ children }: { children: React.ReactNode }) {
+  useEffect(() => {
+    if (auth) {
+      setPersistence(auth, browserLocalPersistence).catch((err) => {
+        console.error('Failed to set auth persistence:', err);
+      });
+    }
+  }, []);
+
   return (
     <FirebaseProvider value={{ app, auth, firestore, storage }}>
       <ProfileProvider>

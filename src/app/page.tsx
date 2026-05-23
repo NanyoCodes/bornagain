@@ -6,17 +6,19 @@ import { AuthLayout } from '@/components/auth/auth-layout';
 import { SignUpForm } from '@/components/auth/signup-form';
 import { Button } from '@/components/ui/button';
 import { Icons } from '@/components/icons';
-import { useAuth, useFirestore } from '@/firebase';
+import { useAuth, useFirestore, useUser } from '@/firebase';
 import {
   signInWithPopup,
   GoogleAuthProvider,
   AuthError,
+  setPersistence,
+  browserLocalPersistence,
 } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
 import { doc, setDoc } from 'firebase/firestore';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Loader2 } from 'lucide-react';
 
 export default function Page() {
@@ -25,6 +27,14 @@ export default function Page() {
   const router = useRouter();
   const { toast } = useToast();
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const { user, loading: authLoading } = useUser();
+
+  // Redirect away if already logged in
+  useEffect(() => {
+    if (!authLoading && user) {
+      router.replace('/dashboard/testimonies');
+    }
+  }, [user, authLoading, router]);
 
   const handleSocialLogin = async (provider: 'google') => {
     setIsGoogleLoading(true);
@@ -39,6 +49,8 @@ export default function Page() {
     }
     const authProvider = new GoogleAuthProvider();
     try {
+      // Ensure persistence is set before sign in
+      await setPersistence(auth, browserLocalPersistence);
       const result = await signInWithPopup(auth, authProvider);
       const user = result.user;
       
@@ -72,7 +84,7 @@ export default function Page() {
         title: 'Success',
         description: 'You are now logged in.',
       });
-      router.push('/testimonies');
+      router.push('/dashboard/testimonies');
     } catch (error) {
       const authError = error as AuthError;
       if (authError.code !== 'auth/popup-closed-by-user') {
@@ -86,6 +98,14 @@ export default function Page() {
       setIsGoogleLoading(false);
     }
   };
+
+  if (authLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <Loader2 className="h-10 w-10 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <AuthLayout>

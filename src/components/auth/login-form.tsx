@@ -18,7 +18,7 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import React, { useState } from "react";
 import { Loader2, Mail, Lock } from "lucide-react";
-import { signInWithEmailAndPassword, AuthError, sendEmailVerification, type User } from "firebase/auth";
+import { signInWithEmailAndPassword, AuthError, sendEmailVerification, type User, setPersistence, browserLocalPersistence } from "firebase/auth";
 import { useAuth, useFirestore } from "@/firebase";
 import { doc, setDoc } from "firebase/firestore";
 import { errorEmitter } from "@/firebase/error-emitter";
@@ -118,6 +118,8 @@ export function LoginForm() {
       return;
     }
     try {
+      // Explicitly set persistence to local for consistent behavior
+      await setPersistence(auth, browserLocalPersistence);
       const userCredential = await signInWithEmailAndPassword(auth, values.email, values.password);
       const user = userCredential.user;
 

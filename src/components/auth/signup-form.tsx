@@ -18,7 +18,7 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { Loader2, User, Mail, Lock } from "lucide-react";
-import { createUserWithEmailAndPassword, updateProfile, AuthError, sendEmailVerification } from "firebase/auth";
+import { createUserWithEmailAndPassword, updateProfile, AuthError, sendEmailVerification, setPersistence, browserLocalPersistence } from "firebase/auth";
 import { useAuth, useFirestore } from "@/firebase";
 import { doc, setDoc } from "firebase/firestore";
 import { errorEmitter } from "@/firebase/error-emitter";
@@ -74,6 +74,8 @@ export function SignUpForm() {
       return;
     }
     try {
+      // Ensure persistence is set
+      await setPersistence(auth, browserLocalPersistence);
       const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
       const user = userCredential.user;
       const displayName = `${values.firstName} ${values.lastName}`;
