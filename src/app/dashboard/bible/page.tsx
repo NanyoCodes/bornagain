@@ -282,10 +282,21 @@ export default function BibleReaderPage() {
 
   const handleVerseClick = (verseNumber: number) => {
         const existingHighlight = highlightsMap.get(verseNumber);
-        if (existingHighlight) { setActiveHighlightId(existingHighlight.id); return; }
-        if (unfinishedHighlight) { setActiveHighlightId(unfinishedHighlight.id); return; }
         
-        const newSelection = selectedVerses.includes(verseNumber) ? selectedVerses.filter(v => v !== verseNumber) : [...selectedVerses, verseNumber].sort((a, b) => a - b);
+        if (existingHighlight) { 
+            setActiveHighlightId(existingHighlight.id); 
+            setSelectedVerses([]);
+            setToolbarPos(null);
+            return; 
+        }
+
+        // Fresh highlight starts here
+        setActiveHighlightId(null);
+        
+        const newSelection = selectedVerses.includes(verseNumber) 
+            ? selectedVerses.filter(v => v !== verseNumber) 
+            : [...selectedVerses, verseNumber].sort((a, b) => a - b);
+        
         setSelectedVerses(newSelection);
         
         const targetVerseNum = newSelection[0] || verseNumber;
@@ -300,11 +311,13 @@ export default function BibleReaderPage() {
                     left: rect.left - vRect.left + rect.width / 2 
                 });
             }
-        } else if (newSelection.length === 0) setToolbarPos(null);
+        } else {
+            setToolbarPos(null);
+        }
     };
 
     const handleSaveHighlight = async () => {
-        if (!user || selectedVerses.length === 0 || !chapterContent || unfinishedHighlight) return;
+        if (!user || selectedVerses.length === 0 || !chapterContent) return;
         setIsProcessingHighlight(true);
         const newHighlightRef = doc(collection(firestore, 'users', user.uid, 'bibleHighlights'));
         await setDoc(newHighlightRef, { userId: user.uid, book: chapterContent.book, chapter: chapterContent.chapter, verses: selectedVerses, color: 'blue', createdAt: serverTimestamp(), note: '' });
