@@ -22,6 +22,8 @@ import {
   Target,
   Flame,
   Globe,
+  CheckCircle2,
+  Sparkles,
 } from 'lucide-react';
 import { useCollection, useFirestore, useUser, useDoc } from '@/firebase';
 import {
@@ -48,6 +50,7 @@ import { actionItems } from '@/lib/follow-up-data';
 import { welcomeScriptures } from '@/lib/verses';
 import { ProgressOverview } from '@/components/dashboard/progress-overview';
 import AdsenseAd from '@/components/common/adsense-ad';
+import { useToast } from '@/hooks/use-toast';
 
 const MonthlyStatsChart = dynamic(() => import('@/components/dashboard/monthly-stats-chart').then(m => m.MonthlyStatsChart), {
   loading: () => <Skeleton className="h-[300px] w-full" />,
@@ -239,6 +242,7 @@ function ActionAnalyticsCard({ souls }: { souls: Soul[] }) {
 export function ProgressPageContent() {
   const { user } = useUser();
   const firestore = useFirestore();
+  const { toast } = useToast();
   const [welcomeMessage, setWelcomeMessage] = useState(welcomeScriptures[0]);
 
   const userDocRef = useMemo(() => user?.uid ? doc(firestore, 'users', user.uid) : null, [user?.uid, firestore]);
@@ -259,6 +263,35 @@ export function ProgressPageContent() {
     return Object.values(monthlyData);
   }, [soulsWon]);
 
+  const handleAffirmation = (type: 'hallelujah' | 'amen' | 'receive') => {
+    let title = '';
+    let description = '';
+    let icon = null;
+
+    switch (type) {
+        case 'hallelujah':
+            title = 'Hallelujah!';
+            description = 'Let the praises of God fill your heart today.';
+            icon = <Sparkles className="h-4 w-4" />;
+            break;
+        case 'amen':
+            title = 'Amen!';
+            description = 'Agreeing with the Word in faith.';
+            icon = <CheckCircle2 className="h-4 w-4" />;
+            break;
+        case 'receive':
+            title = 'I Receive!';
+            description = 'Claiming this promise in Jesus name.';
+            icon = <Heart className="h-4 w-4" />;
+            break;
+    }
+
+    toast({
+        title: title,
+        description: description,
+    });
+  };
+
   if (profileLoading || soulsLoading) return <div className="flex justify-center py-20"><Loader2 className="h-10 w-10 animate-spin text-primary" /></div>;
 
   return (
@@ -270,6 +303,36 @@ export function ProgressPageContent() {
             <p className="text-primary font-black uppercase text-[10px] sm:text-xs tracking-[0.2em]">
               {welcomeMessage.verse}
             </p>
+            
+            <div className="flex flex-wrap justify-center gap-2 pt-2">
+                <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="h-8 text-[10px] uppercase font-bold tracking-widest border-primary/20 text-primary hover:bg-primary/10"
+                    onClick={() => handleAffirmation('hallelujah')}
+                >
+                    <Sparkles className="mr-1.5 h-3 w-3" />
+                    Hallelujah
+                </Button>
+                <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="h-8 text-[10px] uppercase font-bold tracking-widest border-primary/20 text-primary hover:bg-primary/10"
+                    onClick={() => handleAffirmation('amen')}
+                >
+                    <CheckCircle2 className="mr-1.5 h-3 w-3" />
+                    Amen
+                </Button>
+                <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="h-8 text-[10px] uppercase font-bold tracking-widest border-primary/20 text-primary hover:bg-primary/10"
+                    onClick={() => handleAffirmation('receive')}
+                >
+                    <Heart className="mr-1.5 h-3 w-3" />
+                    I Receive
+                </Button>
+            </div>
         </header>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">

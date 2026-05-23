@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, useMemo } from 'react';
-import { useUser, useAuth, useFirestore, useCollection, useDoc } from '@/firebase';
+import { useUser, useFirestore, useCollection, useDoc } from '@/firebase';
 import {
   collection,
   query,
@@ -11,11 +11,10 @@ import {
   doc,
   updateDoc,
   writeBatch,
-  type FieldValue,
   where,
   getDocs,
 } from 'firebase/firestore';
-import type { Chat, ChatMessage, Campaign, UserProfile, Fellowship } from '@/lib/types';
+import type { Chat, ChatMessage, Campaign, Fellowship } from '@/lib/types';
 import { Loader2, Send, ArrowLeft, Reply, X } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn, safeToDate } from '@/lib/utils';
@@ -58,7 +57,6 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
         const deltaX = e.touches[0].clientX - swipeState.startX;
         const deltaY = e.touches[0].clientY - swipeState.startY;
 
-        // Prevent swiping horizontal if user is scrolling vertically
         if (Math.abs(deltaY) > Math.abs(deltaX)) {
             if (swipeState.deltaX !== 0) {
                 setSwipeState(s => ({ ...s, deltaX: 0 }));
@@ -69,7 +67,6 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
         const isOwnMessage = msg.senderId === user?.uid;
         const maxSwipe = 80;
         
-        // Swipe direction: right for others, left for self (standard chat pattern)
         if ((!isOwnMessage && deltaX > 0 && deltaX < maxSwipe) || (isOwnMessage && deltaX < 0 && deltaX > -maxSwipe)) {
             setSwipeState(s => ({ ...s, deltaX }));
         }
@@ -87,7 +84,6 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
         setSwipeState(s => ({ ...s, deltaX: 0 }));
         setTimeout(() => setSwipeState({ id: null, startX: 0, startY: 0, deltaX: 0 }), 200);
     };
-
 
     const chatDocRef = useMemo(() => {
         if (!user?.uid || !firestore || !chatId) return null;
@@ -433,7 +429,7 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                                             {!isOwnMessage && senderInfo && (
                                                 <Tooltip>
                                                     <TooltipTrigger asChild>
-                                                        <div>
+                                                        <div className="shrink-0">
                                                             <Avatar className="h-8 w-8">
                                                                 <AvatarImage src={senderInfo.photoURL} />
                                                                 <AvatarFallback>{senderInfo.firstName?.charAt(0)}</AvatarFallback>
@@ -446,7 +442,7 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                                                 </Tooltip>
                                             )}
                                             
-                                            <div className="relative flex items-center">
+                                            <div className="relative flex items-center gap-1 group">
                                                 <div className={cn(
                                                     "absolute top-0 flex h-full items-center justify-center transition-opacity",
                                                     isOwnMessage ? "right-full pr-3" : "left-full pl-3"
@@ -458,6 +454,18 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                                                         }}
                                                     />
                                                 </div>
+
+                                                {!isOwnMessage && (
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        className="h-7 w-7 rounded-full opacity-0 group-hover:opacity-100 transition-opacity order-last"
+                                                        onClick={() => setReplyingTo(msg)}
+                                                        title="Reply"
+                                                    >
+                                                        <Reply className="h-4 w-4" />
+                                                    </Button>
+                                                )}
 
                                                 <div
                                                     style={{
@@ -472,17 +480,12 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                                                         "relative z-10 rounded-lg px-3 py-2 max-w-sm sm:max-w-md break-words flex flex-col",
                                                         isOwnMessage ? "bg-primary text-primary-foreground" : "bg-muted"
                                                     )}>
-                                                        <Button
-                                                            variant="ghost"
-                                                            size="icon"
-                                                            className={cn(
-                                                                "absolute top-0 h-6 w-6 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-20",
-                                                                isOwnMessage ? "-left-8" : "-right-8"
-                                                            )}
-                                                            onClick={() => setReplyingTo(msg)}
-                                                        >
-                                                            <Reply className="h-3 w-3" />
-                                                        </Button>
+                                                        {msg.replyTo && (
+                                                            <div className="flex items-center gap-1 text-[9px] font-bold text-muted-foreground/60 mb-1 uppercase tracking-tighter">
+                                                                <Reply className="h-2.5 w-2.5" />
+                                                                Reply
+                                                            </div>
+                                                        )}
 
                                                         {msg.replyTo && (
                                                             <div 
@@ -500,15 +503,8 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                                                                 }}
                                                                 className="mb-1.5 rounded-md border-l-2 border-primary/50 bg-black/10 p-2 text-xs dark:bg-white/10 block hover:bg-black/20 dark:hover:bg-white/20 transition-colors cursor-pointer"
                                                             >
-                                                                <p className="font-bold">{msg.replyTo.senderFirstName} {msg.replyTo.senderLastName}</p>
-                                                                <p className="line-clamp-2">{msg.replyTo.text}</p>
-                                                            </div>
-                                                        )}
-                                                        
-                                                        {msg.replyTo && (
-                                                            <div className="flex items-center gap-1 text-[9px] font-bold text-muted-foreground mb-1 uppercase tracking-tighter">
-                                                                <Reply className="h-2.5 w-2.5" />
-                                                                Reply
+                                                                <p className="font-bold text-[10px]">{msg.replyTo.senderFirstName} {msg.replyTo.senderLastName}</p>
+                                                                <p className="line-clamp-2 opacity-80">{msg.replyTo.text}</p>
                                                             </div>
                                                         )}
 
@@ -520,13 +516,25 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                                                         {msg.text && <p className="text-sm">{msg.text}</p>}
                                                         {createdAtDate && (
                                                             <p className={cn(
-                                                                "text-xs mt-1 self-end",
-                                                                isOwnMessage ? "text-primary-foreground/70" : "text-muted-foreground/70"
+                                                                "text-[10px] mt-1 self-end",
+                                                                isOwnMessage ? "text-primary-foreground/60" : "text-muted-foreground/60"
                                                             )}>
                                                                 {format(createdAtDate, 'p')}
                                                             </p>
                                                         )}
                                                 </div>
+
+                                                {isOwnMessage && (
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        className="h-7 w-7 rounded-full opacity-0 group-hover:opacity-100 transition-opacity order-first"
+                                                        onClick={() => setReplyingTo(msg)}
+                                                        title="Reply"
+                                                    >
+                                                        <Reply className="h-4 w-4" />
+                                                    </Button>
+                                                )}
                                             </div>
                                         </div>
                                     )})}
@@ -551,7 +559,7 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                 ) : (
                     <>
                     {replyingTo && (
-                        <div className="relative rounded-t-lg border bg-muted/50 p-3 pt-2 pb-3 mb-2 animate-in slide-in-from-bottom-2 duration-200">
+                        <div className="relative rounded-t-lg border-x border-t bg-muted/50 p-3 pt-2 pb-3 mb-0 animate-in slide-in-from-bottom-2 duration-200">
                             <p className="text-xs font-bold text-primary">
                                 Replying to {chat.participantInfo[replyingTo.senderId]?.firstName || 'User'}
                             </p>
@@ -574,7 +582,7 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                             placeholder="Type a message..."
                             disabled={isSending}
                             autoComplete="off"
-                            className="h-11 sm:h-12 rounded-2xl"
+                            className={cn("h-11 sm:h-12 rounded-2xl", replyingTo && "rounded-t-none")}
                         />
                         <Button type="submit" size="icon" className="h-11 w-11 sm:h-12 sm:w-12 shrink-0 rounded-2xl" disabled={!newMessage.trim() || isSending}>
                             {isSending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-5 w-5" />}
