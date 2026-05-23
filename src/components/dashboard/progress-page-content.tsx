@@ -24,6 +24,7 @@ import {
   Globe,
   CheckCircle2,
   Sparkles,
+  BookOpen,
 } from 'lucide-react';
 import { useCollection, useFirestore, useUser, useDoc } from '@/firebase';
 import {
@@ -36,7 +37,7 @@ import {
   getCountFromServer,
   getDocs,
 } from 'firebase/firestore';
-import type { Soul, UserProfile, Testimony } from '@/lib/types';
+import type { Soul, UserProfile, Testimony, ReadingHistoryItem } from '@/lib/types';
 import { useMemo, useEffect, useState, useCallback } from 'react';
 import { DailyDisciplineCard } from '@/components/dashboard/daily-discipline-card';
 import { Button } from '@/components/ui/button';
@@ -93,7 +94,7 @@ function PrayerRemindersCard({ souls }: { souls: Soul[] }) {
   }, [souls]);
 
   return (
-    <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x">
+    <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-sm">
       <CardHeader>
         <CardTitle className="text-lg flex items-center gap-2">
           <Heart className="h-5 w-5 text-primary" />
@@ -145,7 +146,7 @@ function CityImpactCard({ location, userSouls }: { location: { city?: string; co
   useEffect(() => { fetchCounts(); }, [fetchCounts]);
   
   return (
-    <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x">
+    <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-sm">
       <CardHeader className="flex flex-row items-start justify-between pb-4">
         <div className="min-w-0 pr-4">
           <CardTitle className="text-lg">City Impact</CardTitle>
@@ -214,7 +215,7 @@ function ActionAnalyticsCard({ souls }: { souls: Soul[] }) {
   }, [souls]);
 
   return (
-    <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x">
+    <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-sm">
       <CardHeader>
         <CardTitle className="text-lg">Follow-up Tracker</CardTitle>
         <CardDescription>Interaction types logged this month.</CardDescription>
@@ -235,6 +236,62 @@ function ActionAnalyticsCard({ souls }: { souls: Soul[] }) {
             <p className="text-sm text-muted-foreground italic px-6">No interactions logged this month. Start follow-up to see your activity break down.</p>
           </div>
         )}
+      </CardContent>
+    </Card>
+  );
+}
+
+function LastBibleReadCard({ history }: { history: ReadingHistoryItem[] }) {
+  const lastRead = useMemo(() => {
+    if (!history || history.length === 0) return null;
+    return [...history].sort((a, b) => (safeToDate(b.readAt)?.getTime() ?? 0) - (safeToDate(a.readAt)?.getTime() ?? 0))[0];
+  }, [history]);
+
+  if (!lastRead) {
+    return (
+      <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-sm bg-muted/10">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base flex items-center gap-2">
+            <BookOpen className="h-4 w-4 text-primary" />
+            Resume Study
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-xs text-muted-foreground mb-4">You haven't logged any Bible reading yet. Start today!</p>
+          <Button asChild variant="secondary" size="sm" className="w-full">
+            <Link href="/dashboard/bible">Open Bible</Link>
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const readDate = safeToDate(lastRead.readAt);
+
+  return (
+    <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-sm border-l-4 border-l-chart-2">
+      <CardHeader className="pb-3">
+        <CardTitle className="text-base flex items-center gap-2">
+          <BookOpen className="h-4 w-4 text-chart-2" />
+          Last Read
+        </CardTitle>
+        <CardDescription className="text-[10px] uppercase font-bold tracking-wider">
+          {readDate ? format(readDate, 'PPP') : 'Recently'}
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="p-3 rounded-lg bg-muted/40 mb-4">
+          <p className="text-lg font-bold font-headline leading-tight">
+            {lastRead.book} {lastRead.chapter}
+          </p>
+          <p className="text-[10px] text-muted-foreground mt-1">resuming where you left off...</p>
+        </div>
+        <Button asChild variant="default" size="sm" className="w-full h-9 font-bold">
+          <Link href="/dashboard/bible">
+            Continue Reading
+            <ArrowRight className="ml-2 h-3.5 w-3.5" />
+          </Link>
+        </Button>
       </CardContent>
     </Card>
   );
@@ -361,6 +418,10 @@ export function ProgressPageContent() {
             
             <div className="space-y-6 md:space-y-8 pb-16 lg:pb-0">
                 <div className="-mx-4 sm:mx-0">
+                  <LastBibleReadCard history={userProfile?.readingHistory || []} />
+                </div>
+
+                <div className="-mx-4 sm:mx-0">
                   <PrayerRemindersCard souls={soulsWon || []} />
                 </div>
                 
@@ -383,7 +444,6 @@ export function ProgressPageContent() {
                     <CityImpactCard location={userProfile.location} userSouls={soulsWon || []} />
                   </div>
                 )}
-                <div className="h-20 sm:hidden"></div>
             </div>
         </div>
     </div>
