@@ -18,7 +18,7 @@ import Link from "next/link";
 import { format, isSameDay } from "date-fns";
 import { Input } from "@/components/ui/input";
 import { EditProfileModal } from "@/components/profile/edit-profile-modal";
-import { cn } from "@/lib/utils";
+import { cn, safeToDate } from "@/lib/utils";
 
 function getYouTubeEmbedUrl(url: string | undefined) {
   if (!url) return null;
@@ -56,24 +56,26 @@ function FilterControls({
   const dateValue = filterDate ? format(filterDate, "yyyy-MM-dd") : "";
 
   return (
-    <div className="flex flex-col gap-2 mb-4 sm:flex-row">
+    <div className="flex flex-col gap-2 mb-4 sm:flex-row sm:items-center">
       <Input
         placeholder={searchPlaceholder}
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
-        className="flex-grow text-sm h-9"
+        className="flex-grow text-sm h-10"
       />
       {setFilterDate && (
-        <div className="flex items-center gap-1 w-full sm:w-auto">
-          <Input
-            type="date"
-            value={dateValue}
-            onChange={handleDateChange}
-            className="flex-1 text-sm h-9 sm:w-[150px]"
-          />
+        <div className="flex items-center gap-2 w-full sm:w-auto">
+          <div className="relative flex-grow sm:w-[160px]">
+            <Input
+              type="date"
+              value={dateValue}
+              onChange={handleDateChange}
+              className="text-sm h-10 w-full"
+            />
+          </div>
           {filterDate && (
-            <Button variant="ghost" size="icon" onClick={() => setFilterDate(undefined)} className="h-9 w-9 shrink-0">
-              <XCircle className="h-4 w-4 text-muted-foreground" />
+            <Button variant="ghost" size="icon" onClick={() => setFilterDate(undefined)} className="h-10 w-10 shrink-0">
+              <XCircle className="h-5 w-5 text-muted-foreground" />
               <span className="sr-only">Clear</span>
             </Button>
           )}
@@ -323,8 +325,8 @@ export default function ProfilePage() {
   const { city, state } = location || {};
 
   return (
-    <div className="space-y-6 max-w-5xl mx-auto px-1 sm:px-0">
-      <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none">
+    <div className="space-y-6 max-w-5xl mx-auto px-0 sm:px-0">
+      <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b">
         <CardContent className="p-6 sm:p-8">
           <div className="flex flex-col items-center sm:items-start sm:flex-row gap-6">
             <Dialog>
@@ -351,7 +353,7 @@ export default function ProfilePage() {
                     <div className="flex-grow min-w-0">
                         <h1 className="text-2xl sm:text-3xl font-bold truncate leading-tight">{displayName}</h1>
                         <div className="mt-2 flex flex-wrap justify-center sm:justify-start gap-x-6 gap-y-2 text-xs sm:text-sm text-muted-foreground font-medium">
-                            {(city || state) && <div className="flex items-center gap-1.5"><MapPin className="h-3.5 w-3.5 text-primary" /> {[city, state].filter(Boolean).join(', ')}</div>}
+                            {(city || state) && <div className="flex items-center gap-1.5 text-primary font-bold uppercase tracking-wider"><MapPin className="h-3.5 w-3.5" /> {[city, state].filter(Boolean).join(', ')}</div>}
                             {phone && <div className="flex items-center gap-1.5"><Phone className="h-3.5 w-3.5 text-primary" /> {phone}</div>}
                         </div>
                     </div>
@@ -384,7 +386,7 @@ export default function ProfilePage() {
       </Card>
 
       {embedUrl && (
-        <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none overflow-hidden border-t-4 border-t-red-600">
+        <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none overflow-hidden border-t-4 border-t-red-600 border-b-2 sm:border-b">
             <CardHeader className="pb-4 pt-6 px-6">
                 <CardTitle className="flex items-center gap-2 text-lg font-bold">
                     <Youtube className="h-5 w-5 text-red-600" />
@@ -410,10 +412,10 @@ export default function ProfilePage() {
                 <Activity className="h-5 w-5" /> Your Kingdom Activity
             </h2>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 px-0 sm:px-0">
-                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x">
-                    <CardHeader className="p-4 sm:p-6"><CardTitle className="text-base sm:text-lg">Testimonies ({testimonies?.length ?? 0})</CardTitle></CardHeader>
-                    <CardContent className="p-4 sm:p-6 pt-0">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-0 sm:gap-6">
+                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b">
+                    <CardHeader className="p-5 sm:p-6"><CardTitle className="text-base sm:text-lg">Testimonies ({testimonies?.length ?? 0})</CardTitle></CardHeader>
+                    <CardContent className="p-5 sm:p-6 pt-0">
                         <FilterControls 
                             searchTerm={testimonySearchTerm}
                             setSearchTerm={setTestimonySearchTerm}
@@ -425,9 +427,9 @@ export default function ProfilePage() {
                             <div className="p-1 space-y-1">
                                 {filteredTestimonies.length > 0 ? (
                                     filteredTestimonies.map(t => (
-                                        <Link key={t.id} href="/dashboard/testimonies" className="block p-3 rounded-md hover:bg-muted transition-colors border-b last:border-0 border-muted/50">
-                                            <p className="font-bold text-xs sm:text-sm truncate text-primary">{t.category}</p>
-                                            <p className="text-[11px] sm:text-xs text-muted-foreground truncate italic mt-0.5">{t.content}</p>
+                                        <Link key={t.id} href="/dashboard/testimonies" className="block p-3 rounded-md hover:bg-muted transition-colors border-b last:border-0 border-muted/50 group">
+                                            <p className="font-bold text-sm truncate text-primary group-hover:underline">{t.category}</p>
+                                            <p className="text-xs text-muted-foreground truncate italic mt-0.5">{t.content}</p>
                                         </Link>
                                     ))
                                 ) : (
@@ -438,9 +440,9 @@ export default function ProfilePage() {
                     </CardContent>
                 </Card>
 
-                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x">
-                    <CardHeader className="p-4 sm:p-6"><CardTitle className="text-base sm:text-lg">Prayer Requests ({prayerRequests?.length ?? 0})</CardTitle></CardHeader>
-                    <CardContent className="p-4 sm:p-6 pt-0">
+                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b">
+                    <CardHeader className="p-5 sm:p-6"><CardTitle className="text-base sm:text-lg">Prayer Requests ({prayerRequests?.length ?? 0})</CardTitle></CardHeader>
+                    <CardContent className="p-5 sm:p-6 pt-0">
                          <FilterControls 
                             searchTerm={prayerSearchTerm}
                             setSearchTerm={setPrayerSearchTerm}
@@ -452,9 +454,9 @@ export default function ProfilePage() {
                             <div className="p-1 space-y-1">
                                 {filteredPrayerRequests.length > 0 ? (
                                     filteredPrayerRequests.map(p => (
-                                        <Link key={p.id} href="/dashboard/testimonies" className="block p-3 rounded-md hover:bg-muted transition-colors border-b last:border-0 border-muted/50">
-                                            <p className="font-bold text-xs sm:text-sm truncate text-primary">{p.category}</p>
-                                            <p className="text-[11px] sm:text-xs text-muted-foreground truncate italic mt-0.5">{p.content}</p>
+                                        <Link key={p.id} href="/dashboard/testimonies" className="block p-3 rounded-md hover:bg-muted transition-colors border-b last:border-0 border-muted/50 group">
+                                            <p className="font-bold text-sm truncate text-primary group-hover:underline">{p.category}</p>
+                                            <p className="text-xs text-muted-foreground truncate italic mt-0.5">{p.content}</p>
                                         </Link>
                                     ))
                                 ) : (
@@ -466,10 +468,10 @@ export default function ProfilePage() {
                 </Card>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x">
-                    <CardHeader className="p-4 sm:p-6"><CardTitle className="text-base sm:text-lg">Campaigns Created ({createdCampaigns?.length ?? 0})</CardTitle></CardHeader>
-                    <CardContent className="p-4 sm:p-6 pt-0">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-0 sm:gap-6">
+                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b">
+                    <CardHeader className="p-5 sm:p-6"><CardTitle className="text-base sm:text-lg">Campaigns Created ({createdCampaigns?.length ?? 0})</CardTitle></CardHeader>
+                    <CardContent className="p-5 sm:p-6 pt-0">
                          <FilterControls 
                             searchTerm={createdCampaignSearchTerm}
                             setSearchTerm={setCreatedCampaignSearchTerm}
@@ -481,9 +483,9 @@ export default function ProfilePage() {
                             <div className="p-1 space-y-1">
                                 {filteredCreatedCampaigns.length > 0 ? (
                                     filteredCreatedCampaigns.map(c => (
-                                        <Link key={c.id} href={`/dashboard/campaigns/${c.id}`} className="block p-3 rounded-md hover:bg-muted transition-colors border-b last:border-0 border-muted/50">
-                                            <p className="font-bold text-xs sm:text-sm truncate">{c.title}</p>
-                                            <p className="text-[10px] sm:text-xs text-muted-foreground truncate mt-0.5">Created on {c.createdAt ? format(c.createdAt.toDate(), "PPP") : 'N/A'}</p>
+                                        <Link key={c.id} href={`/dashboard/campaigns/${c.id}`} className="block p-3 rounded-md hover:bg-muted transition-colors border-b last:border-0 border-muted/50 group">
+                                            <p className="font-bold text-sm truncate group-hover:underline">{c.title}</p>
+                                            <p className="text-xs text-muted-foreground truncate mt-0.5">Created on {c.createdAt ? format(c.createdAt.toDate(), "PPP") : 'N/A'}</p>
                                         </Link>
                                     ))
                                 ) : (
@@ -494,9 +496,9 @@ export default function ProfilePage() {
                     </CardContent>
                 </Card>
 
-                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x">
-                    <CardHeader className="p-4 sm:p-6"><CardTitle className="text-base sm:text-lg">Campaigns Joined ({activeJoinedCampaigns.length})</CardTitle></CardHeader>
-                    <CardContent className="p-4 sm:p-6 pt-0">
+                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b">
+                    <CardHeader className="p-5 sm:p-6"><CardTitle className="text-base sm:text-lg">Campaigns Joined ({activeJoinedCampaigns.length})</CardTitle></CardHeader>
+                    <CardContent className="p-5 sm:p-6 pt-0">
                          <FilterControls 
                             searchTerm={joinedCampaignSearchTerm}
                             setSearchTerm={setJoinedCampaignSearchTerm}
@@ -506,9 +508,9 @@ export default function ProfilePage() {
                             <div className="p-1 space-y-1">
                                 {filteredJoinedCampaigns.length > 0 ? (
                                     filteredJoinedCampaigns.map(c => (
-                                        <Link key={c.id} href={`/dashboard/campaigns/${c.id}`} className="block p-3 rounded-md hover:bg-muted transition-colors border-b last:border-0 border-muted/50">
-                                            <p className="font-bold text-xs sm:text-sm truncate">{c.title}</p>
-                                            <p className="text-[10px] sm:text-xs text-muted-foreground truncate mt-0.5">Starts on {c.startDate ? format(c.startDate.toDate(), "PPP") : 'N/A'}</p>
+                                        <Link key={c.id} href={`/dashboard/campaigns/${c.id}`} className="block p-3 rounded-md hover:bg-muted transition-colors border-b last:border-0 border-muted/50 group">
+                                            <p className="font-bold text-sm truncate group-hover:underline">{c.title}</p>
+                                            <p className="text-xs text-muted-foreground truncate mt-0.5">Starts on {c.startDate ? format(c.startDate.toDate(), "PPP") : 'N/A'}</p>
                                         </Link>
                                     ))
                                 ) : (
@@ -520,15 +522,15 @@ export default function ProfilePage() {
                 </Card>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x">
-                    <CardHeader className="p-4 sm:p-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-0 sm:gap-6">
+                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b">
+                    <CardHeader className="p-5 sm:p-6">
                         <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
                             <Users className="h-5 w-5 text-primary" />
                             Fellowships Joined ({joinedFellowships.length})
                         </CardTitle>
                     </CardHeader>
-                    <CardContent className="p-4 sm:p-6 pt-0">
+                    <CardContent className="p-5 sm:p-6 pt-0">
                         <FilterControls 
                             searchTerm={joinedFellowshipSearchTerm}
                             setSearchTerm={setJoinedFellowshipSearchTerm}
@@ -538,9 +540,9 @@ export default function ProfilePage() {
                             <div className="p-1 space-y-1">
                                 {filteredJoinedFellowships.length > 0 ? (
                                     filteredJoinedFellowships.map(f => (
-                                        <Link key={f.id} href={`/dashboard/fellowship/${f.id}`} className="block p-3 rounded-md hover:bg-muted transition-colors border-b last:border-0 border-muted/50">
-                                            <p className="font-bold text-xs sm:text-sm truncate">{f.name}</p>
-                                            <p className="text-[10px] sm:text-xs text-muted-foreground truncate mt-0.5">{f.location || 'Global'}</p>
+                                        <Link key={f.id} href={`/dashboard/fellowship/${f.id}`} className="block p-3 rounded-md hover:bg-muted transition-colors border-b last:border-0 border-muted/50 group">
+                                            <p className="font-bold text-sm truncate group-hover:underline">{f.name}</p>
+                                            <p className="text-xs text-muted-foreground truncate mt-0.5">{f.location || 'Global'}</p>
                                         </Link>
                                     ))
                                 ) : (
@@ -551,14 +553,14 @@ export default function ProfilePage() {
                     </CardContent>
                 </Card>
 
-                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x">
-                    <CardHeader className="p-4 sm:p-6">
+                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b">
+                    <CardHeader className="p-5 sm:p-6">
                         <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
                             <Group className="h-5 w-5 text-primary" />
                             Associations Joined ({joinedAssociations.length})
                         </CardTitle>
                     </CardHeader>
-                    <CardContent className="p-4 sm:p-6 pt-0">
+                    <CardContent className="p-5 sm:p-6 pt-0">
                         <FilterControls 
                             searchTerm={joinedAssociationSearchTerm}
                             setSearchTerm={setJoinedAssociationSearchTerm}
@@ -568,9 +570,9 @@ export default function ProfilePage() {
                             <div className="p-1 space-y-1">
                                 {filteredJoinedAssociations.length > 0 ? (
                                     filteredJoinedAssociations.map(a => (
-                                        <Link key={a.id} href={`/dashboard/fellowship/${a.id}`} className="block p-3 rounded-md hover:bg-muted transition-colors border-b last:border-0 border-muted/50">
-                                            <p className="font-bold text-xs sm:text-sm truncate">{a.name}</p>
-                                            <p className="text-[10px] sm:text-xs text-muted-foreground truncate mt-0.5">{a.location || 'Global'}</p>
+                                        <Link key={a.id} href={`/dashboard/fellowship/${a.id}`} className="block p-3 rounded-md hover:bg-muted transition-colors border-b last:border-0 border-muted/50 group">
+                                            <p className="font-bold text-sm truncate group-hover:underline">{a.name}</p>
+                                            <p className="text-xs text-muted-foreground truncate mt-0.5">{a.location || 'Global'}</p>
                                         </Link>
                                     ))
                                 ) : (
@@ -582,10 +584,10 @@ export default function ProfilePage() {
                 </Card>
             </div>
 
-             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x">
-                    <CardHeader className="p-4 sm:p-6"><CardTitle className="text-base sm:text-lg">Souls Won ({soulsWon?.length ?? 0})</CardTitle></CardHeader>
-                    <CardContent className="p-4 sm:p-6 pt-0">
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-0 sm:gap-6">
+                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b">
+                    <CardHeader className="p-5 sm:p-6"><CardTitle className="text-base sm:text-lg">Souls Won ({soulsWon?.length ?? 0})</CardTitle></CardHeader>
+                    <CardContent className="p-5 sm:p-6 pt-0">
                          <FilterControls 
                             searchTerm={soulSearchTerm}
                             setSearchTerm={setSoulSearchTerm}
@@ -597,9 +599,9 @@ export default function ProfilePage() {
                             <div className="p-1 space-y-1">
                                 {filteredSoulsWon.length > 0 ? (
                                     filteredSoulsWon.map(s => (
-                                        <Link key={s.id} href="/dashboard/souls-won" className="block p-3 rounded-md hover:bg-muted transition-colors border-b last:border-0 border-muted/50">
-                                            <p className="font-bold text-xs sm:text-sm truncate">{s.firstName} {s.lastName}</p>
-                                            <p className="text-[10px] sm:text-xs text-muted-foreground truncate mt-0.5">Won on {s.wonAt ? format(s.wonAt.toDate(), "PPP") : 'N/A'}</p>
+                                        <Link key={s.id} href="/dashboard/souls-won" className="block p-3 rounded-md hover:bg-muted transition-colors border-b last:border-0 border-muted/50 group">
+                                            <p className="font-bold text-sm truncate group-hover:underline">{s.firstName} {s.lastName}</p>
+                                            <p className="text-xs text-muted-foreground truncate mt-0.5">Won on {s.wonAt ? format(safeToDate(s.wonAt)!, "PPP") : 'N/A'}</p>
                                         </Link>
                                     ))
                                 ) : (
@@ -610,14 +612,14 @@ export default function ProfilePage() {
                     </CardContent>
                 </Card>
 
-                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x">
-                    <CardHeader className="p-4 sm:p-6">
+                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b">
+                    <CardHeader className="p-5 sm:p-6">
                         <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
                             <HeartHandshake className="h-5 w-5 text-primary" />
                             Partners ({accountabilityPartners?.length ?? 0})
                         </CardTitle>
                     </CardHeader>
-                    <CardContent className="p-4 sm:p-6 pt-0">
+                    <CardContent className="p-5 sm:p-6 pt-0">
                          <FilterControls 
                             searchTerm={partnerSearchTerm}
                             setSearchTerm={setPartnerSearchTerm}
@@ -627,13 +629,13 @@ export default function ProfilePage() {
                             <div className="p-1 space-y-1">
                                 {filteredAccountabilityPartners.length > 0 ? (
                                     filteredAccountabilityPartners.map(p => (
-                                        <Link key={p.userId} href={`/dashboard/profile/${p.userId}`} className="flex items-center gap-3 p-3 rounded-md hover:bg-muted transition-colors border-b last:border-0 border-muted/50">
-                                            <Avatar className="h-8 w-8 border">
+                                        <Link key={p.userId} href={`/dashboard/profile/${p.userId}`} className="flex items-center gap-3 p-3 rounded-md hover:bg-muted transition-colors border-b last:border-0 border-muted/50 group">
+                                            <Avatar className="h-9 w-9 border shrink-0">
                                                 <AvatarImage src={p.photoURL} />
                                                 <AvatarFallback className="text-[10px] font-bold">{p.firstName.charAt(0)}{p.lastName.charAt(0)}</AvatarFallback>
                                             </Avatar>
                                             <div className="min-w-0 flex-1">
-                                                <p className="font-bold text-xs sm:text-sm truncate leading-tight">{p.firstName} {p.lastName}</p>
+                                                <p className="font-bold text-sm truncate leading-tight group-hover:underline">{p.firstName} {p.lastName}</p>
                                             </div>
                                         </Link>
                                     ))
