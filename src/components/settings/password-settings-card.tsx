@@ -81,19 +81,18 @@ export function PasswordSettingsCard() {
     }
   };
   
-  // We should only show this card if the user signed in with email/password.
   const isEmailProvider = auth.currentUser?.providerData.some(p => p.providerId === 'password');
 
   if (!isEmailProvider) {
-    return null; // Don't show for social logins
+    return null; 
   }
 
   return (
-    <Card>
+    <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2"><Lock className="h-5 w-5" /> Change Password</CardTitle>
+        <CardTitle className="flex items-center gap-2 text-lg"><Lock className="h-5 w-5 text-primary" /> Security</CardTitle>
         <CardDescription>
-          Update your account password here.
+          Update your account password.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -104,9 +103,9 @@ export function PasswordSettingsCard() {
               name="currentPassword"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Current Password</FormLabel>
+                  <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Current Password</FormLabel>
                   <FormControl>
-                    <Input type="password" {...field} />
+                    <Input type="password" {...field} className="h-11 text-base" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -117,9 +116,9 @@ export function PasswordSettingsCard() {
               name="newPassword"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>New Password</FormLabel>
+                  <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">New Password</FormLabel>
                   <FormControl>
-                    <Input type="password" {...field} />
+                    <Input type="password" {...field} className="h-11 text-base" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -130,15 +129,15 @@ export function PasswordSettingsCard() {
               name="confirmPassword"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Confirm New Password</FormLabel>
+                  <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Confirm New Password</FormLabel>
                   <FormControl>
-                    <Input type="password" {...field} />
+                    <Input type="password" {...field} className="h-11 text-base" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <Button type="submit" disabled={isSubmitting || !form.formState.isDirty}>
+            <Button type="submit" className="w-full sm:w-auto" disabled={isSubmitting || !form.formState.isDirty}>
               {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Update Password
             </Button>

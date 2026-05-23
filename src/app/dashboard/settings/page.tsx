@@ -54,13 +54,13 @@ const notificationFormSchema = z.object({
 
 function ProfileSettingsCard() {
   return (
-    <Card>
+    <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2"><User className="h-5 w-5" /> Public Profile</CardTitle>
-        <CardDescription>This is how others will see you on the site.</CardDescription>
+        <CardTitle className="flex items-center gap-2 text-lg"><User className="h-5 w-5 text-primary" /> Public Profile</CardTitle>
+        <CardDescription>This is how others will see you on the platform.</CardDescription>
       </CardHeader>
       <CardContent>
-        <Button asChild><Link href="/dashboard/profile">Edit Your Profile</Link></Button>
+        <Button asChild className="w-full sm:w-auto"><Link href="/dashboard/profile">Edit Your Profile</Link></Button>
       </CardContent>
     </Card>
   );
@@ -68,16 +68,16 @@ function ProfileSettingsCard() {
 
 function AppearanceSettingsCard() {
   return (
-    <Card>
+    <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2"><Palette className="h-5 w-5" /> Appearance</CardTitle>
+        <CardTitle className="flex items-center gap-2 text-lg"><Palette className="h-5 w-5 text-primary" /> Appearance</CardTitle>
         <CardDescription>Customize the look and feel of the application.</CardDescription>
       </CardHeader>
       <CardContent>
-         <div className="flex items-center justify-between rounded-lg border p-4">
+         <div className="flex items-center justify-between rounded-xl border p-4 bg-muted/20">
             <div className="space-y-0.5">
-                <label className="text-base font-medium">Theme</label>
-                <p className="text-sm text-muted-foreground">Select theme.</p>
+                <label className="text-sm font-bold uppercase tracking-wider">Display Theme</label>
+                <p className="text-xs text-muted-foreground">Switch between light and dark mode.</p>
             </div>
             <ThemeToggle />
         </div>
@@ -89,6 +89,7 @@ function AppearanceSettingsCard() {
 function NotificationSettingsForm({ userProfile, userId }: { userProfile: UserProfile, userId: string }) {
   const { toast } = useToast();
   const firestore = useFirestore();
+  const { user } = useUser();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const form = useForm<z.infer<typeof notificationFormSchema>>({
     resolver: zodResolver(notificationFormSchema),
@@ -103,30 +104,34 @@ function NotificationSettingsForm({ userProfile, userId }: { userProfile: UserPr
       weeklyDigest: userProfile.notificationSettings?.weeklyDigest ?? false,
     });
   }, [userProfile, form]);
+
   async function onSubmit(values: z.infer<typeof notificationFormSchema>) {
     setIsSubmitting(true);
     const userRef = doc(firestore, 'users', userId);
     updateDoc(userRef, { notificationSettings: values }).then(() => {
-            toast({ title: 'Success' });
+            toast({ title: 'Preferences Saved' });
             form.reset(values);
         }).catch(() => {
-             const permissionError = new FirestorePermissionError({ path: userRef.path, operation: 'update' });
+             const permissionError = new FirestorePermissionError({ path: userRef.path, operation: 'update' }, user);
             errorEmitter.emit('permission-error', permissionError);
         }).finally(() => setIsSubmitting(false));
   }
   return (
-    <Card>
-      <CardHeader><CardTitle className="flex items-center gap-2"><Bell className="h-5 w-5" /> Notifications</CardTitle></CardHeader>
+    <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b">
+      <CardHeader><CardTitle className="flex items-center gap-2 text-lg"><Bell className="h-5 w-5 text-primary" /> Notifications</CardTitle></CardHeader>
       <CardContent>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <FormField control={form.control} name="newCampaignsInArea" render={({ field }) => (
-                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                  <div className="space-y-0.5"><FormLabel>New Campaigns</FormLabel></div>
+                <FormItem className="flex flex-row items-center justify-between rounded-xl border p-4 bg-muted/20">
+                  <div className="space-y-0.5">
+                    <FormLabel className="text-sm font-bold uppercase tracking-wider">New Campaigns</FormLabel>
+                    <FormDescription className="text-[10px]">Notify me of missions in my area.</FormDescription>
+                  </div>
                   <FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl>
                 </FormItem>
               )} />
-            <Button type="submit" disabled={isSubmitting || !form.formState.isDirty}>{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Save</Button>
+            <Button type="submit" className="w-full sm:w-auto" disabled={isSubmitting || !form.formState.isDirty}>{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Save Preferences</Button>
           </form>
         </Form>
       </CardContent>
@@ -136,11 +141,23 @@ function NotificationSettingsForm({ userProfile, userId }: { userProfile: UserPr
 
 function ContactCard() {
   return (
-    <Card>
-      <CardHeader><CardTitle className="flex items-center gap-2"><MessageSquare className="h-5 w-5" /> Contact</CardTitle></CardHeader>
+    <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b">
+      <CardHeader><CardTitle className="flex items-center gap-2 text-lg"><MessageSquare className="h-5 w-5 text-primary" /> Ministry Support</CardTitle></CardHeader>
       <CardContent className="space-y-4">
-        <div className="flex items-center gap-4"><Mail className="h-5 w-5" /><a href="mailto:testifyglobal360@gmail.com" className="hover:underline">testifyglobal360@gmail.com</a></div>
-        <div className="flex items-center gap-4"><Phone className="h-5 w-5" /><a href="tel:+2348148538502" className="hover:underline">+2348148538502</a></div>
+        <div className="flex items-center gap-4 p-3 rounded-lg border bg-muted/20">
+            <Mail className="h-5 w-5 text-primary" />
+            <div className="min-w-0">
+                <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Email</p>
+                <a href="mailto:testifyglobal360@gmail.com" className="text-sm font-medium hover:underline truncate block">testifyglobal360@gmail.com</a>
+            </div>
+        </div>
+        <div className="flex items-center gap-4 p-3 rounded-lg border bg-muted/20">
+            <Phone className="h-5 w-5 text-primary" />
+            <div className="min-w-0">
+                <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Phone / WhatsApp</p>
+                <a href="tel:+2348148538502" className="text-sm font-medium hover:underline truncate block">+234 814 853 8502</a>
+            </div>
+        </div>
       </CardContent>
     </Card>
   );
@@ -155,9 +172,30 @@ function AccountSettingsCard() {
         setTimeout(() => setIsDeleting(false), 2000);
     }
   return (
-    <Card className="border-destructive">
-      <CardHeader><CardTitle className="text-destructive flex items-center gap-2"><Trash2 className="h-5 w-5" /> Delete Account</CardTitle></CardHeader>
-      <CardContent><AlertDialog><AlertDialogTrigger asChild><Button variant="destructive">Delete My Account</Button></AlertDialogTrigger><AlertDialogContent><AlertDialogHeader><AlertDialogTitle>Are you sure?</AlertDialogTitle></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel><AlertDialogAction onClick={handleDelete} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90">{isDeleting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}Confirm</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog></CardContent>
+    <Card className="border-destructive border-t-4 rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none">
+      <CardHeader><CardTitle className="text-destructive flex items-center gap-2 text-lg"><Trash2 className="h-5 w-5" /> Danger Zone</CardTitle></CardHeader>
+      <CardContent>
+        <AlertDialog>
+            <AlertDialogTrigger asChild>
+                <Button variant="destructive" className="w-full sm:w-auto">Delete My Account</Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent className="w-[90vw] max-w-lg rounded-2xl">
+                <AlertDialogHeader>
+                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                        This action cannot be undone. This will permanently delete your account and remove all your data from our servers.
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                    <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleDelete} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90">
+                        {isDeleting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                        Confirm Deletion
+                    </AlertDialogAction>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
+      </CardContent>
     </Card>
   );
 }
@@ -167,12 +205,36 @@ export default function SettingsPage() {
   const firestore = useFirestore();
   const userDocRef = useMemo(() => (user?.uid ? doc(firestore, 'users', user.uid) : null), [user?.uid, firestore]);
   const { data: userProfile, loading } = useDoc<UserProfile>(userDocRef);
+
   return (
-    <div className="space-y-8 max-w-3xl auto">
-      <div className="space-y-2"><h1 className="text-3xl font-bold tracking-tight font-headline">Settings</h1></div>
-      <Separator />
-       {loading || !userProfile || !user ? <div className="space-y-6"><Skeleton className="h-40 w-full" /></div> : (
-        <div className="space-y-6"><ProfileSettingsCard /><ChurchSettingsCard userProfile={userProfile} userId={user.uid} /><AppearanceSettingsCard /><NotificationSettingsForm userProfile={userProfile} userId={user.uid} /><PasswordSettingsCard /><ContactCard /><AccountSettingsCard /></div>
+    <div className="space-y-8 max-w-3xl mx-auto -mx-4 sm:mx-auto">
+      <div className="px-4 sm:px-0 space-y-1">
+        <h1 className="text-2xl sm:text-3xl font-black font-headline tracking-tight uppercase">Settings</h1>
+        <p className="text-xs sm:text-sm text-muted-foreground">Manage your identity and Kingdom preferences.</p>
+      </div>
+      
+       {loading || !userProfile || !user ? (
+        <div className="space-y-6 px-4 sm:px-0">
+            <Skeleton className="h-40 w-full rounded-2xl" />
+            <Skeleton className="h-60 w-full rounded-2xl" />
+            <Skeleton className="h-40 w-full rounded-2xl" />
+        </div>
+       ) : (
+        <div className="space-y-6 md:space-y-8">
+            <ProfileSettingsCard />
+            <ChurchSettingsCard userProfile={userProfile} userId={user.uid} />
+            <AppearanceSettingsCard />
+            <NotificationSettingsForm userProfile={userProfile} userId={user.uid} />
+            <PasswordSettingsCard />
+            <ContactCard />
+            <AccountSettingsCard />
+            
+            <footer className="pt-8 pb-20 text-center">
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/30">
+                    Testify Global Platform v1.2
+                </p>
+            </footer>
+        </div>
       )}
     </div>
   );
