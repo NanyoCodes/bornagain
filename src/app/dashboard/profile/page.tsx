@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Edit, Loader2, MapPin, Phone, HeartHandshake, XCircle, Users, Group, Youtube } from "lucide-react";
+import { Edit, Loader2, MapPin, Phone, HeartHandshake, XCircle, Users, Group, Youtube, Activity } from "lucide-react";
 import { useCollection, useFirestore, useUser } from "@/firebase";
 import { useDoc } from "@/firebase/firestore/use-doc";
 import { collection, query, where, doc, getDocs, documentId } from "firebase/firestore";
