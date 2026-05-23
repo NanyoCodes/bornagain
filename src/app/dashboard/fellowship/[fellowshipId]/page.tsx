@@ -1,5 +1,17 @@
 import FellowshipPageClient from "@/components/fellowship/fellowship-page-client";
 
-export default function FellowshipDetailsPage() {
+type Params = Promise<{ fellowshipId: string }>;
+type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
+
+/**
+ * @fileOverview Server component for the fellowship details page.
+ * In Next.js 15, dynamic route params must be awaited even if accessed 
+ * via useParams in a child client component.
+ */
+export default async function FellowshipDetailsPage(props: { params: Params; searchParams: SearchParams }) {
+    // Ensure async params and searchParams are unwrapped to comply with Next.js 15 dynamic API requirements.
+    await props.params;
+    await props.searchParams;
+    
     return <FellowshipPageClient />;
 }
