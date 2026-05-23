@@ -51,6 +51,7 @@ import { welcomeScriptures } from '@/lib/verses';
 import { ProgressOverview } from '@/components/dashboard/progress-overview';
 import AdsenseAd from '@/components/common/adsense-ad';
 import { useToast } from '@/hooks/use-toast';
+import { motion } from 'framer-motion';
 
 const MonthlyStatsChart = dynamic(() => import('@/components/dashboard/monthly-stats-chart').then(m => m.MonthlyStatsChart), {
   loading: () => <Skeleton className="h-[300px] w-full" />,
@@ -266,23 +267,19 @@ export function ProgressPageContent() {
   const handleAffirmation = (type: 'hallelujah' | 'amen' | 'receive') => {
     let title = '';
     let description = '';
-    let icon = null;
 
     switch (type) {
         case 'hallelujah':
             title = 'Hallelujah!';
             description = 'Let the praises of God fill your heart today.';
-            icon = <Sparkles className="h-4 w-4" />;
             break;
         case 'amen':
             title = 'Amen!';
             description = 'Agreeing with the Word in faith.';
-            icon = <CheckCircle2 className="h-4 w-4" />;
             break;
         case 'receive':
             title = 'I Receive!';
-            description = 'Claiming this promise in Jesus name.';
-            icon = <Heart className="h-4 w-4" />;
+            description = 'Claiming this promise in the mighty name of Jesus.';
             break;
     }
 
@@ -305,33 +302,39 @@ export function ProgressPageContent() {
             </p>
             
             <div className="flex flex-wrap justify-center gap-2 pt-2">
-                <Button 
-                    variant="outline" 
-                    size="sm" 
-                    className="h-8 text-[10px] uppercase font-bold tracking-widest border-primary/20 text-primary hover:bg-primary/10"
-                    onClick={() => handleAffirmation('hallelujah')}
-                >
-                    <Sparkles className="mr-1.5 h-3 w-3" />
-                    Hallelujah
-                </Button>
-                <Button 
-                    variant="outline" 
-                    size="sm" 
-                    className="h-8 text-[10px] uppercase font-bold tracking-widest border-primary/20 text-primary hover:bg-primary/10"
-                    onClick={() => handleAffirmation('amen')}
-                >
-                    <CheckCircle2 className="mr-1.5 h-3 w-3" />
-                    Amen
-                </Button>
-                <Button 
-                    variant="outline" 
-                    size="sm" 
-                    className="h-8 text-[10px] uppercase font-bold tracking-widest border-primary/20 text-primary hover:bg-primary/10"
-                    onClick={() => handleAffirmation('receive')}
-                >
-                    <Heart className="mr-1.5 h-3 w-3" />
-                    I Receive
-                </Button>
+                <motion.div whileTap={{ scale: 0.95 }} whileHover={{ scale: 1.05 }}>
+                    <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="h-8 text-[10px] uppercase font-bold tracking-widest border-primary/20 text-primary hover:bg-primary/10"
+                        onClick={() => handleAffirmation('hallelujah')}
+                    >
+                        <Sparkles className="mr-1.5 h-3 w-3" />
+                        Hallelujah
+                    </Button>
+                </motion.div>
+                <motion.div whileTap={{ scale: 0.95 }} whileHover={{ scale: 1.05 }}>
+                    <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="h-8 text-[10px] uppercase font-bold tracking-widest border-primary/20 text-primary hover:bg-primary/10"
+                        onClick={() => handleAffirmation('amen')}
+                    >
+                        <CheckCircle2 className="mr-1.5 h-3 w-3" />
+                        Amen
+                    </Button>
+                </motion.div>
+                <motion.div whileTap={{ scale: 0.95 }} whileHover={{ scale: 1.05 }}>
+                    <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="h-8 text-[10px] uppercase font-bold tracking-widest border-primary/20 text-primary hover:bg-primary/10"
+                        onClick={() => handleAffirmation('receive')}
+                    >
+                        <Heart className="mr-1.5 h-3 w-3" />
+                        I RECEIVE IN THE NAME OF JESUS
+                    </Button>
+                </motion.div>
             </div>
         </header>
 
@@ -380,6 +383,7 @@ export function ProgressPageContent() {
                     <CityImpactCard location={userProfile.location} userSouls={soulsWon || []} />
                   </div>
                 )}
+                <div className="h-20 sm:hidden"></div>
             </div>
         </div>
     </div>
