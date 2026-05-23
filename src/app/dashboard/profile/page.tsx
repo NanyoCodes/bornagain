@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useMemo } from "react";
@@ -460,7 +459,7 @@ export default function ProfilePage() {
                             searchTerm={testimonySearchTerm}
                             setSearchTerm={setTestimonySearchTerm}
                             filterDate={testimonyFilterDate}
-                            setFilterDate={setFilterDate}
+                            setFilterDate={setTestimonyFilterDate}
                             searchPlaceholder="Search testimonies..."
                         />
                         <ScrollArea className="h-48">
@@ -487,7 +486,7 @@ export default function ProfilePage() {
                             searchTerm={prayerSearchTerm}
                             setSearchTerm={setPrayerSearchTerm}
                             filterDate={prayerFilterDate}
-                            setFilterDate={setFilterDate}
+                            setFilterDate={setPrayerFilterDate}
                             searchPlaceholder="Search prayer requests..."
                         />
                         <ScrollArea className="h-48">
@@ -516,7 +515,7 @@ export default function ProfilePage() {
                             searchTerm={createdCampaignSearchTerm}
                             setSearchTerm={setCreatedCampaignSearchTerm}
                             filterDate={createdCampaignFilterDate}
-                            setFilterDate={setFilterDate}
+                            setFilterDate={setCreatedCampaignFilterDate}
                             searchPlaceholder="Search created campaigns..."
                         />
                         <ScrollArea className="h-48">
@@ -632,7 +631,7 @@ export default function ProfilePage() {
                             searchTerm={soulSearchTerm}
                             setSearchTerm={setSoulSearchTerm}
                             filterDate={soulFilterDate}
-                            setFilterDate={setFilterDate}
+                            setFilterDate={setSoulFilterDate}
                             searchPlaceholder="Search souls by name..."
                         />
                         <ScrollArea className="h-48">
