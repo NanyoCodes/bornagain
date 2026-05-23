@@ -1,12 +1,11 @@
-
 'use client';
 
 import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useDoc, useFirestore, useUser, useCollection } from '@/firebase';
-import type { UserProfile, Testimony, Campaign } from '@/lib/types';
+import type { Testimony, Campaign, UserProfile } from '@/lib/types';
 import { doc, collection, query, where, orderBy } from 'firebase/firestore';
-import { Loader2, Mail, MapPin, ArrowLeft, Edit, Youtube } from 'lucide-react';
+import { Loader2, Mail, MapPin, ArrowLeft, Edit, Youtube, Globe, Activity } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from '@/components/ui/button';
@@ -80,19 +79,22 @@ export default function UserProfileClient({ userId }: { userId: string }) {
 
   if (loading) {
     return (
-      <div className="flex h-full w-full flex-col items-center justify-center">
-        <Loader2 className="h-12 w-12 animate-spin text-primary" />
-        <p className="mt-4 text-muted-foreground">Loading Profile...</p>
+      <div className="flex h-full w-full flex-col items-center justify-center py-20">
+        <Loader2 className="h-10 w-10 animate-spin text-primary" />
+        <p className="mt-4 text-muted-foreground font-medium animate-pulse">Loading profile...</p>
       </div>
     );
   }
 
   if (!userProfile) {
     return (
-      <div className="text-center py-12">
-        <h3 className="mt-4 text-xl font-semibold">User Not Found</h3>
-        <p className="mt-2 text-sm text-muted-foreground">This user profile could not be found.</p>
-        <Button variant="outline" onClick={() => router.back()} className="mt-4">
+      <div className="text-center py-12 px-4">
+        <div className="bg-muted/20 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+            <ArrowLeft className="h-8 w-8 text-muted-foreground/50" />
+        </div>
+        <h3 className="text-xl font-bold font-headline">User Not Found</h3>
+        <p className="mt-2 text-sm text-muted-foreground max-w-xs mx-auto">This profile might have been set to private or no longer exists.</p>
+        <Button variant="outline" onClick={() => router.back()} className="mt-8">
             <ArrowLeft className="mr-2 h-4 w-4" /> Go Back
         </Button>
       </div>
@@ -102,73 +104,89 @@ export default function UserProfileClient({ userId }: { userId: string }) {
   const { firstName, lastName, photoURL, bio, location } = userProfile;
   const displayName = [firstName, lastName].filter(Boolean).join(' ');
   const { city, state, country } = location || {};
+  const initials = (firstName?.charAt(0) || '') + (lastName?.charAt(0) || '');
 
   return (
-    <div className="space-y-8 max-w-4xl mx-auto">
-        <Button variant="outline" onClick={() => router.back()} className="w-fit">
+    <div className="space-y-6 md:space-y-8 max-w-4xl mx-auto px-4 md:px-0">
+        <Button variant="outline" size="sm" onClick={() => router.back()} className="w-fit h-9">
             <ArrowLeft className="mr-2 h-4 w-4"/>
             Back
         </Button>
-      <Card>
-        <CardContent className="p-6 sm:p-8">
-          <div className="flex flex-col sm:flex-row items-start gap-6">
+      
+      <Card className="rounded-2xl overflow-hidden shadow-md">
+        <CardContent className="p-6 sm:p-8 lg:p-10">
+          <div className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-6 md:gap-8">
             <Dialog>
               <DialogTrigger asChild disabled={!photoURL}>
-                <Avatar className={cn("h-24 w-24 sm:h-32 sm:w-32 border-4 border-background shrink-0", photoURL && "cursor-pointer")}>
-                  <AvatarImage src={photoURL ?? undefined} alt={displayName || 'user'} />
-                  <AvatarFallback className="text-4xl sm:text-5xl">
-                    {firstName?.charAt(0) || userProfile.email?.charAt(0) || 'U'}
-                  </AvatarFallback>
-                </Avatar>
+                <div className="relative group">
+                    <Avatar className={cn(
+                        "h-28 w-24 sm:h-32 sm:w-32 lg:h-40 lg:w-40 border-4 border-background shrink-0 shadow-xl", 
+                        photoURL && "cursor-pointer hover:ring-4 hover:ring-primary/20 transition-all"
+                    )}>
+                    <AvatarImage src={photoURL ?? undefined} alt={displayName || 'user'} />
+                    <AvatarFallback className="text-4xl sm:text-5xl font-bold bg-muted text-muted-foreground">
+                        {initials || userProfile.email?.charAt(0).toUpperCase() || 'U'}
+                    </AvatarFallback>
+                    </Avatar>
+                </div>
               </DialogTrigger>
               {photoURL && (
-                <DialogContent className="p-0 bg-transparent border-0 w-auto max-w-lg">
+                <DialogContent className="p-0 bg-transparent border-0 w-auto max-w-lg overflow-hidden">
                     <DialogHeader className="sr-only">
-                        <DialogTitle>Profile photo of {displayName || 'user'}</DialogTitle>
+                        <DialogTitle>Profile photo of {displayName}</DialogTitle>
                         <DialogDescription>A larger view of the user's profile photo.</DialogDescription>
                     </DialogHeader>
-                    <Image src={photoURL} alt={displayName || 'user'} width={600} height={600} className="rounded-lg object-contain" unoptimized/>
+                    <Image src={photoURL} alt={displayName} width={600} height={600} className="rounded-2xl object-contain max-h-[80vh]" unoptimized/>
                 </DialogContent>
               )}
             </Dialog>
-            <div className="flex-grow">
-                <div className="flex flex-col sm:flex-row justify-between items-start">
-                    <div className="flex-grow">
-                        <h1 className="text-2xl sm:text-3xl font-bold">{displayName}</h1>
-                        <p className="text-muted-foreground mt-2">{bio || "This user hasn't set a bio yet."}</p>
+            
+            <div className="flex-grow min-w-0 space-y-4">
+                <div className="flex flex-col sm:flex-row justify-between items-center sm:items-start gap-4">
+                    <div className="flex-grow min-w-0">
+                        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black font-headline truncate leading-tight">{displayName}</h1>
+                        {(city || state || country) && (
+                            <div className="flex items-center justify-center sm:justify-start gap-1.5 text-primary font-bold text-xs sm:text-sm mt-1 uppercase tracking-wider">
+                                <MapPin className="h-3.5 w-3.5" /> 
+                                {[city, state].filter(Boolean).join(', ') || country}
+                            </div>
+                        )}
                     </div>
                     {isOwnProfile && (
-                         <div className="mt-4 sm:mt-0 sm:ml-4 shrink-0">
-                            <Button asChild>
+                         <div className="shrink-0">
+                            <Button asChild variant="outline" size="sm" className="h-9 px-4 rounded-full font-bold">
                                 <Link href="/dashboard/profile">
-                                    <Edit className="mr-2 h-4 w-4" />
+                                    <Edit className="mr-2 h-3.5 w-3.5" />
                                     Edit Profile
                                 </Link>
                             </Button>
                         </div>
                     )}
                 </div>
-              <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground">
-                {(city || state || country) && <div className="flex items-center gap-2"><MapPin className="h-4 w-4" /> {[city, state, country].filter(Boolean).join(', ')}</div>}
-              </div>
+                
+                <div className="relative">
+                    <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-2xl">
+                        {bio || "This user is a member of the global harvest and hasn't set a personal bio yet."}
+                    </p>
+                </div>
             </div>
           </div>
         </CardContent>
       </Card>
       
       {embedUrl && (
-        <Card className="overflow-hidden">
-            <CardHeader className="pb-3">
-                <CardTitle className="flex items-center gap-2 text-lg">
+        <Card className="rounded-2xl overflow-hidden shadow-md border-t-4 border-t-red-600">
+            <CardHeader className="pb-4 pt-6 sm:px-8">
+                <CardTitle className="flex items-center gap-2 text-lg sm:text-xl font-bold font-headline">
                     <Youtube className="h-5 w-5 text-red-600" />
-                    Personal Video Testimony
+                    Video Testimony
                 </CardTitle>
-                <CardDescription>
-                    Sharing the greatness of God through video.
+                <CardDescription className="text-xs sm:text-sm">
+                    Sharing God's power and grace through visual testimony.
                 </CardDescription>
             </CardHeader>
-            <CardContent>
-                <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-black border shadow-inner">
+            <CardContent className="px-0 sm:px-8 pb-8">
+                <div className="relative w-full aspect-video sm:rounded-2xl overflow-hidden bg-black shadow-2xl group">
                     <iframe
                         src={embedUrl}
                         title={`Video Testimony from ${displayName}`}
@@ -181,49 +199,89 @@ export default function UserProfileClient({ userId }: { userId: string }) {
         </Card>
       )}
 
-      <div className="space-y-4">
-        <h2 className="text-2xl font-bold tracking-tight">Activity Feed</h2>
+      <div className="space-y-6">
+        <div className="flex items-center gap-2 px-1">
+            <Activity className="h-5 w-5 text-primary" />
+            <h2 className="text-xl sm:text-2xl font-black font-headline tracking-tight uppercase">Kingdom Activity</h2>
+        </div>
+        
         <Accordion type="multiple" defaultValue={['testimonies', 'campaigns']} className="w-full space-y-4">
-          {testimonies && testimonies.length > 0 && (
-            <Card>
-              <AccordionItem value="testimonies" className="border-b-0">
-                  <AccordionTrigger className="w-full p-6 hover:no-underline">
-                      <h3 className="text-lg font-semibold">Shared Testimonies ({testimonies.length})</h3>
-                  </AccordionTrigger>
-                  <AccordionContent className="px-6 pb-6 pt-0">
-                      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                          {testimonies.map(testimony => (
-                          <TestimonyCard key={testimony.id} testimony={testimony} onDelete={() => {}} onEdit={() => {}} />
-                          ))}
-                      </div>
-                  </AccordionContent>
-              </AccordionItem>
-            </Card>
-          )}
+          <Card className="rounded-2xl overflow-hidden border shadow-sm">
+            <AccordionItem value="testimonies" className="border-b-0">
+                <AccordionTrigger className="w-full px-6 py-5 hover:no-underline hover:bg-muted/20 transition-colors">
+                    <div className="flex items-center gap-3">
+                        <div className="bg-chart-3/10 p-2 rounded-lg">
+                            <Activity className="h-4 w-4 text-chart-3" />
+                        </div>
+                        <h3 className="text-base sm:text-lg font-bold">Shared Testimonies ({testimonies.length})</h3>
+                    </div>
+                </AccordionTrigger>
+                <AccordionContent className="px-4 sm:px-6 pb-6 pt-2">
+                    {testimonies.length > 0 ? (
+                        <div className="grid gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-3">
+                            {testimonies.map(testimony => (
+                                <div key={testimony.id} className="-mx-2 sm:mx-0">
+                                    <TestimonyCard testimony={testimony} onDelete={() => {}} onEdit={() => {}} />
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <p className="text-sm text-muted-foreground italic text-center py-4">No testimonies shared yet.</p>
+                    )}
+                </AccordionContent>
+            </AccordionItem>
+          </Card>
           
-          {activeCampaigns && activeCampaigns.length > 0 && (
-            <Card>
-              <AccordionItem value="campaigns" className="border-b-0">
-                  <AccordionTrigger className="w-full p-6 hover:no-underline">
-                      <h3 className="text-lg font-semibold">Kingdom Campaigns ({activeCampaigns.length})</h3>
-                  </AccordionTrigger>
-                  <AccordionContent className="px-6 pb-6 pt-0">
-                      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                          {activeCampaigns.map(campaign => (
-                          <CampaignCard key={campaign.id} campaign={campaign} userId={currentUser?.uid} userProfile={userProfile} distance={null} onManage={() => {}} onLogSoul={() => {}} onShareTestimony={() => {}} onDelete={() => {}} />
-                          ))}
-                      </div>
-                  </AccordionContent>
-              </AccordionItem>
-            </Card>
-          )}
+          <Card className="rounded-2xl overflow-hidden border shadow-sm">
+            <AccordionItem value="campaigns" className="border-b-0">
+                <AccordionTrigger className="w-full px-6 py-5 hover:no-underline hover:bg-muted/20 transition-colors">
+                    <div className="flex items-center gap-3">
+                        <div className="bg-primary/10 p-2 rounded-lg">
+                            <Target className="h-4 w-4 text-primary" />
+                        </div>
+                        <h3 className="text-base sm:text-lg font-bold">Organized Campaigns ({activeCampaigns.length})</h3>
+                    </div>
+                </AccordionTrigger>
+                <AccordionContent className="px-4 sm:px-6 pb-6 pt-2">
+                    {activeCampaigns.length > 0 ? (
+                        <div className="grid gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-3">
+                            {activeCampaigns.map(campaign => (
+                                <div key={campaign.id} className="-mx-2 sm:mx-0">
+                                    <CampaignCard 
+                                        campaign={campaign} 
+                                        userId={currentUser?.uid} 
+                                        userProfile={userProfile} 
+                                        distance={null} 
+                                        onManage={() => {}} 
+                                        onLogSoul={() => {}} 
+                                        onShareTestimony={() => {}} 
+                                        onDelete={() => {}} 
+                                    />
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <p className="text-sm text-muted-foreground italic text-center py-4">No public campaigns active.</p>
+                    )}
+                </AccordionContent>
+            </AccordionItem>
+          </Card>
         </Accordion>
-        {(!testimonies || testimonies.length === 0) && (!activeCampaigns || activeCampaigns.length === 0) && (
-            <div className="text-center py-12 text-muted-foreground border-2 border-dashed rounded-lg bg-muted/20">
-                <p className="italic">This user has no public activity shared yet.</p>
+
+        {testimonies.length === 0 && activeCampaigns.length === 0 && (
+            <div className="text-center py-20 text-muted-foreground border-2 border-dashed rounded-3xl bg-muted/10 mx-1">
+                <Globe className="h-12 w-12 text-muted-foreground/20 mx-auto mb-4" />
+                <p className="font-bold text-sm sm:text-base px-6">This user is active in the secret place.</p>
+                <p className="text-xs mt-1 px-8 opacity-70">No public testimonies or campaigns have been shared yet.</p>
             </div>
         )}
       </div>
+      
+      <footer className="pt-12 pb-20 text-center">
+        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/40">
+            Glorifying God Through Technology
+        </p>
+      </footer>
     </div>
   );
 }
