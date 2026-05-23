@@ -339,24 +339,24 @@ export const TestimonyCard = React.memo(function TestimonyCard({
           <div className="flex items-center gap-3 min-w-0 flex-1">
             <Dialog>
               <DialogTrigger asChild onClick={(e) => e.stopPropagation()} disabled={!testimony.authorAvatarUrl}>
-                <Avatar className={cn(testimony.authorAvatarUrl && "cursor-pointer h-10 w-10 sm:h-12 sm:w-12")}>
-                  <AvatarImage src={testimony.authorAvatarUrl} alt={authorFullName} />
-                  <AvatarFallback>{initials || 'A'}</AvatarFallback>
+                <Avatar className={cn(testimony.authorAvatarUrl && "cursor-pointer h-10 w-10 sm:h-12 sm:w-12 border shadow-sm transition-transform active:scale-95")}>
+                  <AvatarImage src={testimony.authorAvatarUrl} alt={authorFullName} className="object-cover" />
+                  <AvatarFallback className="bg-primary/10 text-primary font-bold">{initials || 'A'}</AvatarFallback>
                 </Avatar>
               </DialogTrigger>
               {testimony.authorAvatarUrl && (
-                  <DialogContent className="p-0 bg-transparent border-0 w-auto max-w-lg" onClick={(e) => {e.stopPropagation();}}>
+                  <DialogContent className="p-0 bg-transparent border-0 w-auto max-w-lg overflow-hidden rounded-3xl">
                     <DialogHeader className="sr-only">
                         <DialogTitle>Profile photo of {authorFullName}</DialogTitle>
                         <DialogDescription>A larger view of the user's profile photo.</DialogDescription>
                     </DialogHeader>
-                    <Image src={testimony.authorAvatarUrl} alt={authorFullName} width={600} height={600} className="rounded-lg object-contain" unoptimized/>
+                    <Image src={testimony.authorAvatarUrl} alt={authorFullName} width={800} height={800} className="rounded-3xl object-contain max-h-[85vh] shadow-2xl" unoptimized/>
                   </DialogContent>
               )}
             </Dialog>
             <div className="min-w-0 flex-1">
                <div className="flex items-center gap-2 flex-wrap">
-                    <Link href={profileLink} onClick={(e) => { e.stopPropagation(); }} className="hover:underline">
+                    <Link href={profileLink} onClick={(e) => { e.stopPropagation(); }} className="hover:underline decoration-primary/30 underline-offset-2">
                         <CardTitle className="text-lg font-bold truncate">{authorFullName}</CardTitle>
                     </Link>
                     {isPartner && (
@@ -372,7 +372,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({
                                         variant="ghost" 
                                         size="icon" 
                                         className={cn(
-                                            "h-6 w-6 rounded-full",
+                                            "h-6 w-6 rounded-full transition-colors",
                                             hasPendingRequest ? "text-muted-foreground" : "text-primary hover:bg-primary/10"
                                         )}
                                         onClick={handleSendPartnerRequest}
@@ -395,10 +395,10 @@ export const TestimonyCard = React.memo(function TestimonyCard({
                     )}
                </div>
               <div className="text-muted-foreground text-sm mt-1 flex flex-col gap-1">
-                  <div className="truncate text-sm">{displayDate}</div>
-                  <div className="flex items-center gap-1 mt-0.5 opacity-80 text-sm"><Globe className="h-3.5 w-3.5 text-primary shrink-0" /> {locationString}</div>
+                  <div className="truncate text-xs opacity-70">{displayDate}</div>
+                  <div className="flex items-center gap-1 mt-0.5 opacity-80 text-xs font-medium"><Globe className="h-3 w-3 text-primary shrink-0" /> {locationString}</div>
                   <div className="mt-2">
-                    <Badge variant="outline" className="w-fit text-xs uppercase tracking-widest px-2 py-0.5 h-auto">{testimony.category}</Badge>
+                    <Badge variant="outline" className="w-fit text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 h-auto bg-background/50">{testimony.category}</Badge>
                   </div>
               </div>
             </div>
@@ -413,16 +413,16 @@ export const TestimonyCard = React.memo(function TestimonyCard({
                     <span className="sr-only">More options</span>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                <DropdownMenuContent align="end" className="w-48">
+                  <DropdownMenuLabel className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Manage Story</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onSelect={(e) => { e.preventDefault(); onEdit(); }}>
-                    <Edit className="mr-2 h-4 w-4" />
-                    <span>Edit</span>
+                    <Edit className="mr-2 h-4 w-4 text-primary" />
+                    <span>Edit Testimony</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onSelect={(e) => { e.preventDefault(); onDelete(); }} className="text-destructive focus:text-destructive">
+                  <DropdownMenuItem onSelect={(e) => { e.preventDefault(); onDelete(); }} className="text-destructive focus:text-destructive focus:bg-destructive/5">
                     <Trash2 className="mr-2 h-4 w-4" />
-                    <span>Delete</span>
+                    <span>Delete Permanently</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -431,8 +431,8 @@ export const TestimonyCard = React.memo(function TestimonyCard({
         </CardHeader>
         
         <CardContent className="flex-grow pt-0 px-4 sm:px-6 space-y-4">
-          <div className="text-sm text-muted-foreground whitespace-pre-wrap leading-relaxed">
-            <p ref={contentRef} className="line-clamp-4 text-sm">
+          <div className="text-sm sm:text-base text-muted-foreground whitespace-pre-wrap leading-relaxed">
+            <p ref={contentRef} className="line-clamp-4">
               &ldquo;{testimony.content}&rdquo;
             </p>
             {isTruncated && (
@@ -449,12 +449,12 @@ export const TestimonyCard = React.memo(function TestimonyCard({
             )}
           </div>
           {testimony.answeredPrayerId && testimony.answeredPrayerContent && (
-            <Card className="border-amber-500/50 bg-amber-500/5 dark:bg-amber-500/10 shadow-inner">
-                <CardHeader className="p-3 sm:p-4">
-                    <CardDescription className="text-xs uppercase tracking-wider text-amber-600 dark:text-amber-400 font-bold">
+            <Card className="rounded-2xl border-amber-500/40 bg-amber-500/5 dark:bg-amber-500/10 shadow-inner">
+                <CardHeader className="p-4">
+                    <CardDescription className="text-[10px] uppercase tracking-[0.2em] text-amber-600 dark:text-amber-400 font-black mb-1">
                         Answer to Prayer Request:
                     </CardDescription>
-                    <div className="border-l-2 border-amber-500/50 pl-3 sm:pl-4 italic text-sm text-muted-foreground line-clamp-2">
+                    <div className="border-l-2 border-amber-500/30 pl-4 italic text-sm text-muted-foreground line-clamp-2 leading-relaxed">
                         &ldquo;{testimony.answeredPrayerContent}&rdquo;
                     </div>
                 </CardHeader>
@@ -464,21 +464,21 @@ export const TestimonyCard = React.memo(function TestimonyCard({
            {totalReactions > 0 && (
              <div className="flex items-center justify-between pt-2">
                 <div className="flex items-center gap-1.5">
-                    <div className="flex items-center -space-x-1">
-                        {supporters.length > 0 && <div className="bg-primary rounded-full p-1 border-2 border-background z-30"><HandHeart className="h-2.5 w-2.5 text-primary-foreground fill-current" /></div>}
-                        {inspiredBy.length > 0 && <div className="bg-chart-3 rounded-full p-1 border-2 border-background z-20"><Sparkles className="h-2.5 w-2.5 text-white fill-current" /></div>}
-                        {connectedBy.length > 0 && <div className="bg-blue-500 rounded-full p-1 border-2 border-background z-10"><PartyPopper className="h-2.5 w-2.5 text-white" /></div>}
+                    <div className="flex items-center -space-x-1.5">
+                        {supporters.length > 0 && <div className="bg-primary rounded-full p-1 border-2 border-background z-30 shadow-sm"><HandHeart className="h-2.5 w-2.5 text-primary-foreground fill-current" /></div>}
+                        {inspiredBy.length > 0 && <div className="bg-chart-3 rounded-full p-1 border-2 border-background z-20 shadow-sm"><Sparkles className="h-2.5 w-2.5 text-white fill-current" /></div>}
+                        {connectedBy.length > 0 && <div className="bg-blue-500 rounded-full p-1 border-2 border-background z-10 shadow-sm"><PartyPopper className="h-2.5 w-2.5 text-white" /></div>}
                     </div>
-                    <span className="text-xs text-muted-foreground font-medium">{totalReactions}</span>
+                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-tight">{totalReactions} Reactions</span>
                 </div>
                 {testimony.campaignTitle && (
-                   <span className="text-xs text-muted-foreground truncate italic opacity-60">Event: {testimony.campaignTitle}</span>
+                   <span className="text-[10px] font-medium text-muted-foreground truncate italic opacity-60 bg-muted/50 px-2 py-0.5 rounded-full border">In mission: {testimony.campaignTitle}</span>
                 )}
              </div>
            )}
         </CardContent>
 
-        <Separator className="mx-4 sm:mx-6 w-auto" />
+        <Separator className="mx-4 sm:mx-6 w-auto opacity-50" />
         
         <CardFooter className="py-2 px-1 sm:px-4 grid grid-cols-4 gap-0.5">
             <Button 
@@ -486,7 +486,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({
                 disabled={isProcessingReaction !== null || !user} 
                 variant="ghost" 
                 size="sm" 
-                className={cn("flex flex-col sm:flex-row h-auto py-2 gap-1 text-xs font-semibold text-muted-foreground hover:bg-muted/50", hasAmened && "text-primary hover:text-primary")}
+                className={cn("flex flex-col sm:flex-row h-auto py-3 gap-1 text-[10px] sm:text-xs font-bold uppercase tracking-wider text-muted-foreground hover:bg-muted/50 rounded-xl transition-all", hasAmened && "text-primary hover:text-primary bg-primary/5")}
             >
                 {isProcessingReaction === 'amen' ? <Loader2 className="h-4 w-4 animate-spin" /> : <HandHeart className={cn("h-4 w-4", hasAmened && "fill-current")} />}
                 <span>Amen</span>
@@ -497,7 +497,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({
                 disabled={isProcessingReaction !== null || !user} 
                 variant="ghost" 
                 size="sm" 
-                className={cn("flex flex-col sm:flex-row h-auto py-2 gap-1 text-xs font-semibold text-muted-foreground hover:bg-muted/50", hasInspired && "text-chart-3 hover:text-chart-3")}
+                className={cn("flex flex-col sm:flex-row h-auto py-3 gap-1 text-[10px] sm:text-xs font-bold uppercase tracking-wider text-muted-foreground hover:bg-muted/50 rounded-xl transition-all", hasInspired && "text-chart-3 hover:text-chart-3 bg-chart-3/5")}
             >
                 {isProcessingReaction === 'inspired' ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className={cn("h-4 w-4", hasInspired && "fill-current")} />}
                 <span>Inspired</span>
@@ -508,7 +508,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({
                 disabled={isProcessingReaction !== null || !user} 
                 variant="ghost" 
                 size="sm" 
-                className={cn("flex flex-col sm:flex-row h-auto py-2 gap-1 text-xs font-semibold text-muted-foreground hover:bg-muted/50", hasConnected && "text-blue-500 hover:text-blue-500")}
+                className={cn("flex flex-col sm:flex-row h-auto py-3 gap-1 text-[10px] sm:text-xs font-bold uppercase tracking-wider text-muted-foreground hover:bg-muted/50 rounded-xl transition-all", hasConnected && "text-blue-500 hover:text-blue-500 bg-blue-500/5")}
             >
                 {isProcessingReaction === 'connect' ? <Loader2 className="h-4 w-4 animate-spin" /> : <PartyPopper className="h-4 w-4" />}
                 <span>Celebrate</span>
@@ -517,13 +517,13 @@ export const TestimonyCard = React.memo(function TestimonyCard({
             <Button 
                 variant="ghost" 
                 size="sm" 
-                className={cn("flex flex-col sm:flex-row h-auto py-2 gap-1 text-xs font-semibold text-muted-foreground hover:bg-muted/50", isCommentsOpen && "text-primary hover:text-primary")}
+                className={cn("flex flex-col sm:flex-row h-auto py-3 gap-1 text-[10px] sm:text-xs font-bold uppercase tracking-wider text-muted-foreground hover:bg-muted/50 rounded-xl transition-all", isCommentsOpen && "text-primary hover:text-primary bg-primary/5")}
                 onClick={(e) => { e.stopPropagation(); setIsCommentsOpen(true); }}
             >
                 <div className="relative">
                     <MessageCircle className={cn("h-4 w-4", isCommentsOpen && "fill-current")} />
                     {commentCount > 0 && (
-                        <span className="absolute -top-1.5 -right-1.5 flex h-3 w-3 items-center justify-center rounded-full bg-primary text-[8px] font-bold text-primary-foreground border-background border">
+                        <span className="absolute -top-2 -right-2 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[8px] font-black text-primary-foreground border-background border-2 shadow-sm">
                             {commentCount}
                         </span>
                     )}
@@ -538,25 +538,25 @@ export const TestimonyCard = React.memo(function TestimonyCard({
             {isMobile ? (
                 <>
                     <Sheet open={showFullText} onOpenChange={setShowFullText}>
-                        <SheetContent side="bottom" className="h-[80dvh] flex flex-col p-0">
-                            <div className="p-6 border-b shrink-0">
+                        <SheetContent side="bottom" className="h-[80dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+                            <div className="p-8 border-b shrink-0 bg-muted/20">
                                 <SheetHeader className="text-left">
-                                <SheetTitle className="text-2xl font-bold">Testimony by {authorFullName}</SheetTitle>
-                                <SheetDescription className="text-sm">{displayDate}</SheetDescription>
+                                    <SheetTitle className="text-2xl font-black font-headline tracking-tight">Testimony by {authorFullName}</SheetTitle>
+                                    <SheetDescription className="text-sm font-medium">{displayDate}</SheetDescription>
                                 </SheetHeader>
                             </div>
-                            <div className="flex-grow min-h-0 p-6 overflow-y-auto">
-                            {fullTextContent}
+                            <div className="flex-grow min-h-0 p-8 overflow-y-auto">
+                                {fullTextContent}
                             </div>
                         </SheetContent>
                     </Sheet>
 
                     <Sheet open={isCommentsOpen} onOpenChange={setIsCommentsOpen}>
-                        <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0">
-                            <div className="p-6 border-b shrink-0">
+                        <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+                            <div className="p-8 border-b shrink-0 bg-muted/20">
                                 <SheetHeader className="text-left">
-                                    <SheetTitle className="text-2xl font-bold">Comments</SheetTitle>
-                                    <SheetDescription className="text-sm">Sharing the joy of {authorFullName}'s testimony.</SheetDescription>
+                                    <SheetTitle className="text-2xl font-black font-headline tracking-tight">Gathered Responses</SheetTitle>
+                                    <SheetDescription className="text-sm font-medium">Sharing the joy of {authorFullName}'s victory.</SheetDescription>
                                 </SheetHeader>
                             </div>
                             <div className="flex-grow min-h-0">
@@ -568,21 +568,25 @@ export const TestimonyCard = React.memo(function TestimonyCard({
             ) : (
                 <>
                     <Dialog open={showFullText} onOpenChange={setShowFullText}>
-                        <DialogContent className="sm:max-w-2xl">
-                            <DialogHeader>
-                            <DialogTitle className="text-2xl font-bold">Testimony by {authorFullName}</DialogTitle>
-                            <DialogDescription className="text-sm">{displayDate}</DialogDescription>
-                            </DialogHeader>
-                            {fullTextContent}
+                        <DialogContent className="sm:max-w-2xl rounded-3xl p-0 overflow-hidden">
+                            <div className="p-8 border-b bg-muted/10">
+                                <DialogHeader>
+                                    <DialogTitle className="text-3xl font-black font-headline tracking-tight">Testimony by {authorFullName}</DialogTitle>
+                                    <DialogDescription className="text-sm font-medium">{displayDate}</DialogDescription>
+                                </DialogHeader>
+                            </div>
+                            <div className="p-8">
+                                {fullTextContent}
+                            </div>
                         </DialogContent>
                     </Dialog>
 
                     <Dialog open={isCommentsOpen} onOpenChange={setIsCommentsOpen}>
-                        <DialogContent className="sm:max-w-lg flex flex-col max-h-[85vh] p-0 overflow-hidden">
-                            <div className="p-6 border-b shrink-0">
+                        <DialogContent className="sm:max-w-lg flex flex-col max-h-[85vh] p-0 overflow-hidden rounded-3xl">
+                            <div className="p-8 border-b shrink-0 bg-muted/10">
                                 <DialogHeader>
-                                    <DialogTitle className="text-2xl font-bold">Comments</DialogTitle>
-                                    <DialogDescription className="text-sm">Community responses to this testimony.</DialogDescription>
+                                    <DialogTitle className="text-2xl font-black font-headline tracking-tight">Gathered Responses</DialogTitle>
+                                    <DialogDescription className="text-sm font-medium">Community responses to this miracle.</DialogDescription>
                                 </DialogHeader>
                             </div>
                             <div className="flex-1 min-h-0">
