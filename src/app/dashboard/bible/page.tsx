@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect, useRef } from 'react';
@@ -45,6 +44,7 @@ import {
   ArrowLeft,
   XCircle,
   History,
+  Calendar,
 } from 'lucide-react';
 import { getBibleChapter, type BibleChapterOutput } from '@/ai/flows/get-bible-chapter-flow';
 import { Input } from '@/components/ui/input';
@@ -53,6 +53,8 @@ import { cn, safeToDate } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Separator } from '@/components/ui/separator';
 
 const bibleVersions = [
     { id: 'kjv', name: 'KJV' },
@@ -455,40 +457,75 @@ export default function BibleReaderPage() {
 
             {view === 'read' ? (
                 <div className="flex-grow flex flex-col min-h-0">
-                    <div className="flex items-center gap-2 p-2 sm:p-4 bg-muted/10 border-b overflow-x-auto whitespace-nowrap scrollbar-hide">
-                        <Select value={selectedBookName} onValueChange={setSelectedBookName}>
-                            <SelectTrigger className="w-auto min-w-[140px] h-9 border-none bg-background shadow-sm font-bold text-sm">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent className="max-h-[300px]">{bibleData.map(b => <SelectItem key={b.name} value={b.name}>{b.name}</SelectItem>)}</SelectContent>
-                        </Select>
-                        <Popover open={isChapterPopoverOpen} onOpenChange={setIsChapterPopoverOpen}>
-                            <PopoverTrigger asChild>
-                              <Button variant="outline" size="sm" className="h-9 border-none bg-background shadow-sm font-bold text-sm min-w-[110px] justify-between">
-                                Chapter {selectedChapterNumber}
-                                <ChevronDown className="ml-2 h-4 w-4 opacity-50" />
-                              </Button>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-[300px] p-0" align="start">
-                              <ScrollArea className="h-72">
-                                <div className="grid grid-cols-5 gap-1 p-3">
-                                  {selectedBook?.chapters.map(c => (
-                                    <Button key={c.chapter} variant={c.chapter === selectedChapterNumber ? "default" : "ghost"} size="sm" className="h-10 w-10 font-bold" onClick={() => handleSelectChapter(c.chapter)}>{c.chapter}</Button>
-                                  ))}
-                                </div>
-                              </ScrollArea>
-                            </PopoverContent>
-                        </Popover>
-                        <div className="flex-1" />
-                        <Button 
-                          variant="ghost" 
-                          size="icon" 
-                          className="rounded-full bg-background shadow-sm border h-9 w-9" 
-                          onClick={() => setIsJournalSheetOpen(true)}
-                        >
-                          <Highlighter className="h-4 w-4" />
-                          <span className="sr-only">My Journal</span>
-                        </Button>
+                    <div className="flex items-center justify-between gap-3 p-2 sm:px-6 bg-muted/20 border-b sticky top-0 z-20 backdrop-blur-sm">
+                        <div className="flex items-center gap-1.5 min-w-0">
+                            <Select value={selectedBookName} onValueChange={setSelectedBookName}>
+                                <SelectTrigger className="h-9 px-3 border-none bg-background shadow-sm font-bold text-sm rounded-full hover:bg-accent transition-colors">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent className="max-h-[300px]">{bibleData.map(b => <SelectItem key={b.name} value={b.name}>{b.name}</SelectItem>)}</SelectContent>
+                            </Select>
+                            
+                            <Separator orientation="vertical" className="h-4 mx-1" />
+
+                            <Popover open={isChapterPopoverOpen} onOpenChange={setIsChapterPopoverOpen}>
+                                <PopoverTrigger asChild>
+                                  <Button variant="ghost" size="sm" className="h-9 px-3 font-bold text-sm rounded-full hover:bg-background/80 shadow-sm border-none">
+                                    Ch. {selectedChapterNumber}
+                                    <ChevronDown className="ml-1.5 h-3.5 w-3.5 opacity-50" />
+                                  </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-[280px] p-0 shadow-2xl border-primary/10" align="start">
+                                    <div className="p-3 bg-muted/20 border-b flex items-center justify-between">
+                                        <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{selectedBookName}</span>
+                                        <span className="text-xs text-muted-foreground">{selectedBook?.chapters.length} Chapters</span>
+                                    </div>
+                                  <ScrollArea className="h-64">
+                                    <div className="grid grid-cols-5 gap-1 p-2">
+                                      {selectedBook?.chapters.map(c => (
+                                        <Button 
+                                            key={c.chapter} 
+                                            variant={c.chapter === selectedChapterNumber ? "default" : "ghost"} 
+                                            size="sm" 
+                                            className={cn("h-10 w-10 font-bold rounded-lg", c.chapter === selectedChapterNumber ? "shadow-md" : "")} 
+                                            onClick={() => handleSelectChapter(c.chapter)}
+                                        >
+                                            {c.chapter}
+                                        </Button>
+                                      ))}
+                                    </div>
+                                  </ScrollArea>
+                                </PopoverContent>
+                            </Popover>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                            <TooltipProvider>
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <Button 
+                                          variant="outline" 
+                                          size="sm" 
+                                          className="hidden sm:flex gap-2 rounded-full bg-background border-primary/20 hover:bg-primary/5 h-9"
+                                          onClick={() => setIsJournalSheetOpen(true)}
+                                        >
+                                          <Highlighter className="h-4 w-4 text-primary" />
+                                          <span className="font-bold text-xs">My Journal</span>
+                                        </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent><p>View your highlights and notes</p></TooltipContent>
+                                </Tooltip>
+                            </TooltipProvider>
+
+                            <Button 
+                              variant="ghost" 
+                              size="icon" 
+                              className="sm:hidden rounded-full bg-background shadow-sm border h-9 w-9 text-primary" 
+                              onClick={() => setIsJournalSheetOpen(true)}
+                            >
+                              <Highlighter className="h-4 w-4" />
+                            </Button>
+                        </div>
                     </div>
                     <div className="flex-grow flex gap-0 min-h-0">
                         <div className="flex-1 min-h-0">{ReaderContent}</div>
