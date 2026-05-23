@@ -346,7 +346,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         )}
         <main className={cn(
           "flex-1 w-full mx-auto relative",
-          isTakeoverPage ? "h-full overflow-hidden" : "pb-32 md:pb-8 p-4 md:p-8 max-w-7xl"
+          isTakeoverPage ? "h-full overflow-hidden" : "pb-40 md:pb-8 p-4 md:p-8 max-w-7xl"
         )}>
             <div className={cn("h-full w-full", isTakeoverPage && "pb-16 md:pb-0")}>
                 <PageTransition>{children}</PageTransition>

@@ -207,7 +207,7 @@ export default function SettingsPage() {
   const { data: userProfile, loading } = useDoc<UserProfile>(userDocRef);
 
   return (
-    <div className="space-y-8 max-w-3xl mx-auto -mx-4 sm:mx-auto">
+    <div className="space-y-8 max-w-3xl mx-auto -mx-4 sm:mx-auto pb-12">
       <div className="px-4 sm:px-0 space-y-1">
         <h1 className="text-2xl sm:text-3xl font-black font-headline tracking-tight uppercase">Settings</h1>
         <p className="text-xs sm:text-sm text-muted-foreground">Manage your identity and Kingdom preferences.</p>
@@ -229,7 +229,7 @@ export default function SettingsPage() {
             <ContactCard />
             <AccountSettingsCard />
             
-            <footer className="pt-8 pb-20 text-center">
+            <footer className="pt-8 pb-32 text-center">
                 <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/30">
                     Testify Global Platform v1.2
                 </p>
