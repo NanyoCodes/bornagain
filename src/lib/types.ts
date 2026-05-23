@@ -46,6 +46,7 @@ export type UserProfile = {
   email: string;
   photoURL?: string;
   bio?: string;
+  videoTestimonyUrl?: string;
   location?: {
     city?: string;
     state?: string;

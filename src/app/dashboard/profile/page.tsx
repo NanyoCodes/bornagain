@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useMemo } from "react";
@@ -5,7 +6,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Edit, Loader2, MapPin, Phone, HeartHandshake, XCircle, Users, Group } from "lucide-react";
+import { Edit, Loader2, MapPin, Phone, HeartHandshake, XCircle, Users, Group, Youtube } from "lucide-react";
 import { useCollection, useFirestore, useUser } from "@/firebase";
 import { useDoc } from "@/firebase/firestore/use-doc";
 import { collection, query, where, doc, getDocs, documentId } from "firebase/firestore";
@@ -19,6 +20,16 @@ import { format, isSameDay } from "date-fns";
 import { Input } from "@/components/ui/input";
 import { EditProfileModal } from "@/components/profile/edit-profile-modal";
 import { cn } from "@/lib/utils";
+
+function getYouTubeEmbedUrl(url: string | undefined) {
+  if (!url) return null;
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+  const match = url.match(regExp);
+  if (match && match[2].length === 11) {
+    return `https://www.youtube.com/embed/${match[2]}`;
+  }
+  return null;
+}
 
 function FilterControls({
   searchTerm,
@@ -152,6 +163,8 @@ export default function ProfilePage() {
     if (!allCreatedCampaigns) return [];
     return allCreatedCampaigns.filter(c => c.status === 'active');
   }, [allCreatedCampaigns]);
+
+  const embedUrl = useMemo(() => getYouTubeEmbedUrl(userProfile?.videoTestimonyUrl), [userProfile?.videoTestimonyUrl]);
 
   // Fetching data for joined campaigns
   useEffect(() => {
@@ -411,6 +424,31 @@ export default function ProfilePage() {
         </CardContent>
       </Card>
 
+      {embedUrl && (
+        <Card className="overflow-hidden">
+            <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-2 text-lg">
+                    <Youtube className="h-5 w-5 text-red-600" />
+                    My Video Testimony
+                </CardTitle>
+                <CardDescription>
+                    Your personal journey with Christ in video format.
+                </CardDescription>
+            </CardHeader>
+            <CardContent>
+                <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-black border shadow-inner">
+                    <iframe
+                        src={embedUrl}
+                        title="My Video Testimony"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                        className="absolute inset-0 w-full h-full border-0"
+                    />
+                </div>
+            </CardContent>
+        </Card>
+      )}
+
         <div className="space-y-6">
             <h2 className="text-xl font-semibold tracking-tight">Your Activity</h2>
             
@@ -422,7 +460,7 @@ export default function ProfilePage() {
                             searchTerm={testimonySearchTerm}
                             setSearchTerm={setTestimonySearchTerm}
                             filterDate={testimonyFilterDate}
-                            setFilterDate={setTestimonyFilterDate}
+                            setFilterDate={setFilterDate}
                             searchPlaceholder="Search testimonies..."
                         />
                         <ScrollArea className="h-48">
@@ -449,7 +487,7 @@ export default function ProfilePage() {
                             searchTerm={prayerSearchTerm}
                             setSearchTerm={setPrayerSearchTerm}
                             filterDate={prayerFilterDate}
-                            setFilterDate={setPrayerFilterDate}
+                            setFilterDate={setFilterDate}
                             searchPlaceholder="Search prayer requests..."
                         />
                         <ScrollArea className="h-48">
@@ -478,7 +516,7 @@ export default function ProfilePage() {
                             searchTerm={createdCampaignSearchTerm}
                             setSearchTerm={setCreatedCampaignSearchTerm}
                             filterDate={createdCampaignFilterDate}
-                            setFilterDate={setCreatedCampaignFilterDate}
+                            setFilterDate={setFilterDate}
                             searchPlaceholder="Search created campaigns..."
                         />
                         <ScrollArea className="h-48">
@@ -594,7 +632,7 @@ export default function ProfilePage() {
                             searchTerm={soulSearchTerm}
                             setSearchTerm={setSoulSearchTerm}
                             filterDate={soulFilterDate}
-                            setFilterDate={setSoulFilterDate}
+                            setFilterDate={setFilterDate}
                             searchPlaceholder="Search souls by name..."
                         />
                         <ScrollArea className="h-48">

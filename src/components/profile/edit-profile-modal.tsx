@@ -18,7 +18,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import React, { useState } from "react";
-import { Loader2, LocateFixed, Video, Map as MapIcon, AlertTriangle } from "lucide-react";
+import { Loader2, LocateFixed, Video, Map as MapIcon, AlertTriangle, Youtube } from "lucide-react";
 import { useUser, useFirestore, useAuth } from "@/firebase";
 import { doc, updateDoc, serverTimestamp } from "firebase/firestore";
 import { updateProfile } from "firebase/auth";
@@ -44,6 +44,7 @@ const formSchema = z.object({
   lastName: z.string().min(2, "Last name must be at least 2 characters.").max(50, "Name is too long."),
   photoURL: z.string().optional(),
   bio: z.string().max(280, "Bio is too long.").optional(),
+  videoTestimonyUrl: z.string().url("Please enter a valid YouTube URL.").optional().or(z.literal('')),
   city: z.string().max(50, "City is too long.").optional(),
   state: z.string().max(50, "State is too long.").optional(),
   country: z.string().max(50, "Country is too long.").optional(),
@@ -118,6 +119,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
       lastName: userProfile.lastName || "",
       photoURL: userProfile.photoURL || "",
       bio: userProfile.bio || "",
+      videoTestimonyUrl: userProfile.videoTestimonyUrl || "",
       city: userProfile.location?.city || "",
       state: userProfile.location?.state || "",
       country: userProfile.location?.country || "",
@@ -179,6 +181,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
         fullName_lowercase: displayName.toLowerCase(),
         name_tokens: displayName.toLowerCase().split(/\s+/).filter(Boolean),
         bio: values.bio || "",
+        videoTestimonyUrl: values.videoTestimonyUrl || "",
         location: {
           city: values.city || "",
           state: values.state || "",
@@ -289,6 +292,26 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                 <FormControl>
                   <Textarea placeholder="Share your personal testimony..." className="resize-none text-base" {...field} />
                 </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="videoTestimonyUrl"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="flex items-center gap-2">
+                    <Youtube className="h-4 w-4 text-red-600" />
+                    Video Testimony (YouTube URL)
+                </FormLabel>
+                <FormControl>
+                  <Input placeholder="https://www.youtube.com/watch?v=..." {...field} value={field.value ?? ''} className="text-base" />
+                </FormControl>
+                <FormDescription>
+                    Link a YouTube video where you share your miracle or encounter with Christ.
+                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useMemo, useState } from 'react';
@@ -5,8 +6,8 @@ import { useRouter } from 'next/navigation';
 import { useDoc, useFirestore, useUser, useCollection } from '@/firebase';
 import type { UserProfile, Testimony, Campaign } from '@/lib/types';
 import { doc, collection, query, where, orderBy } from 'firebase/firestore';
-import { Loader2, Mail, MapPin, ArrowLeft, Edit } from 'lucide-react';
-import { Card, CardContent } from "@/components/ui/card";
+import { Loader2, Mail, MapPin, ArrowLeft, Edit, Youtube } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from '@/components/ui/button';
 import { TestimonyCard } from '@/components/testimonies/testimony-card';
@@ -16,6 +17,16 @@ import Image from 'next/image';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import { cn } from '@/lib/utils';
+
+function getYouTubeEmbedUrl(url: string | undefined) {
+  if (!url) return null;
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+  const match = url.match(regExp);
+  if (match && match[2].length === 11) {
+    return `https://www.youtube.com/embed/${match[2]}`;
+  }
+  return null;
+}
 
 export default function UserProfileClient({ userId }: { userId: string }) {
   const firestore = useFirestore();
@@ -65,6 +76,8 @@ export default function UserProfileClient({ userId }: { userId: string }) {
 
   const loading = profileLoading || testimoniesLoading || campaignsLoading || userLoading;
 
+  const embedUrl = useMemo(() => getYouTubeEmbedUrl(userProfile?.videoTestimonyUrl), [userProfile?.videoTestimonyUrl]);
+
   if (loading) {
     return (
       <div className="flex h-full w-full flex-col items-center justify-center">
@@ -86,7 +99,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
     );
   }
 
-  const { firstName, lastName, email, photoURL, bio, location } = userProfile;
+  const { firstName, lastName, photoURL, bio, location } = userProfile;
   const displayName = [firstName, lastName].filter(Boolean).join(' ');
   const { city, state, country } = location || {};
 
@@ -104,7 +117,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                 <Avatar className={cn("h-24 w-24 sm:h-32 sm:w-32 border-4 border-background shrink-0", photoURL && "cursor-pointer")}>
                   <AvatarImage src={photoURL ?? undefined} alt={displayName || 'user'} />
                   <AvatarFallback className="text-4xl sm:text-5xl">
-                    {firstName?.charAt(0) || email?.charAt(0) || 'U'}
+                    {firstName?.charAt(0) || userProfile.email?.charAt(0) || 'U'}
                   </AvatarFallback>
                 </Avatar>
               </DialogTrigger>
@@ -143,14 +156,39 @@ export default function UserProfileClient({ userId }: { userId: string }) {
         </CardContent>
       </Card>
       
+      {embedUrl && (
+        <Card className="overflow-hidden">
+            <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-2 text-lg">
+                    <Youtube className="h-5 w-5 text-red-600" />
+                    Personal Video Testimony
+                </CardTitle>
+                <CardDescription>
+                    Sharing the greatness of God through video.
+                </CardDescription>
+            </CardHeader>
+            <CardContent>
+                <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-black border shadow-inner">
+                    <iframe
+                        src={embedUrl}
+                        title={`Video Testimony from ${displayName}`}
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                        className="absolute inset-0 w-full h-full border-0"
+                    />
+                </div>
+            </CardContent>
+        </Card>
+      )}
+
       <div className="space-y-4">
-        <h2 className="text-2xl font-bold tracking-tight">User Activity</h2>
+        <h2 className="text-2xl font-bold tracking-tight">Activity Feed</h2>
         <Accordion type="multiple" defaultValue={['testimonies', 'campaigns']} className="w-full space-y-4">
           {testimonies && testimonies.length > 0 && (
             <Card>
               <AccordionItem value="testimonies" className="border-b-0">
                   <AccordionTrigger className="w-full p-6 hover:no-underline">
-                      <h3 className="text-lg font-semibold">Testimonies ({testimonies.length})</h3>
+                      <h3 className="text-lg font-semibold">Shared Testimonies ({testimonies.length})</h3>
                   </AccordionTrigger>
                   <AccordionContent className="px-6 pb-6 pt-0">
                       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -167,7 +205,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
             <Card>
               <AccordionItem value="campaigns" className="border-b-0">
                   <AccordionTrigger className="w-full p-6 hover:no-underline">
-                      <h3 className="text-lg font-semibold">Campaigns Organized ({activeCampaigns.length})</h3>
+                      <h3 className="text-lg font-semibold">Kingdom Campaigns ({activeCampaigns.length})</h3>
                   </AccordionTrigger>
                   <AccordionContent className="px-6 pb-6 pt-0">
                       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -181,8 +219,8 @@ export default function UserProfileClient({ userId }: { userId: string }) {
           )}
         </Accordion>
         {(!testimonies || testimonies.length === 0) && (!activeCampaigns || activeCampaigns.length === 0) && (
-            <div className="text-center py-8 text-muted-foreground border-2 border-dashed rounded-lg">
-                This user has no public activity yet.
+            <div className="text-center py-12 text-muted-foreground border-2 border-dashed rounded-lg bg-muted/20">
+                <p className="italic">This user has no public activity shared yet.</p>
             </div>
         )}
       </div>

@@ -37,6 +37,11 @@
           "type": "string",
           "description": "The user's personal testimony."
         },
+        "videoTestimonyUrl": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL to a YouTube video testimony."
+        },
         "location": {
           "type": "object",
           "description": "The user's location. The city, state, and country are public, while latitude and longitude are private and used for geosensitive features.",
