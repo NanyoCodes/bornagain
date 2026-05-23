@@ -262,7 +262,7 @@ export function ProgressPageContent() {
   if (profileLoading || soulsLoading) return <div className="flex justify-center py-20"><Loader2 className="h-10 w-10 animate-spin text-primary" /></div>;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 pb-12">
         <header className="text-center space-y-4 px-4">
             <h1 className="text-2xl sm:text-4xl font-bold italic font-headline leading-tight">
               {welcomeMessage.text.replace('{name}', userProfile?.firstName || 'Soldier')}
@@ -293,7 +293,7 @@ export function ProgressPageContent() {
                 <div className="-mx-4 sm:mx-0"><ActionAnalyticsCard souls={soulsWon || []} /></div>
             </div>
             
-            <div className="space-y-6 md:space-y-8">
+            <div className="space-y-6 md:space-y-8 pb-16 lg:pb-0">
                 <div className="-mx-4 sm:mx-0">
                   <PrayerRemindersCard souls={soulsWon || []} />
                 </div>

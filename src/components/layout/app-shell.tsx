@@ -340,13 +340,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <SearchProvider>
-      <div className={cn("flex w-full flex-col overflow-x-hidden", isTakeoverPage ? "h-dvh" : "min-h-screen")}>
+      <div className={cn("flex w-full flex-col overflow-x-hidden", isTakeoverPage ? "h-full" : "min-h-screen")}>
         {!isTakeoverPage && (
           <AppHeader unreadChatCount={unreadChatNotifications?.length || 0} unreadNotifCount={unreadOtherNotifications?.length || 0} />
         )}
         <main className={cn(
           "flex-1 w-full mx-auto relative",
-          isTakeoverPage ? "h-full overflow-hidden" : "pb-20 md:pb-6 p-4 md:p-8 max-w-7xl"
+          isTakeoverPage ? "h-full overflow-hidden" : "pb-24 md:pb-8 p-4 md:p-8 max-w-7xl"
         )}>
             <div className={cn("h-full w-full", isTakeoverPage && "pb-16 md:pb-0")}>
                 <PageTransition>{children}</PageTransition>
