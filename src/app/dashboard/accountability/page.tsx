@@ -474,20 +474,15 @@ export default function AccountabilityPage() {
             Connect with fellow believers to stay motivated and grow together in your spiritual walk.
             </p>
         </div>
-        <div className="px-4 sm:px-0">
+        <div className="px-4 sm:px-0 pb-20">
             {userProfile && user && <AccountabilitySettingsCard userProfile={userProfile} userId={user.uid} />}
         </div>
-        <footer className="pt-8 pb-12 text-center">
-            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/30">
-                Glorifying God Through Technology
-            </p>
-        </footer>
       </div>
     );
   }
   
   return (
-    <div className="space-y-8 max-w-3xl mx-auto -mx-4 sm:mx-auto">
+    <div className="space-y-8 max-w-3xl mx-auto -mx-4 sm:mx-auto pb-20">
       <div className="px-4 sm:px-0 space-y-1">
         <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Accountability Partners</h1>
         <p className="text-sm text-muted-foreground">Encourage your partners and keep each other on track.</p>
@@ -513,12 +508,6 @@ export default function AccountabilityPage() {
       <div className="px-4 sm:px-0">
         {userProfile && user && <AccountabilitySettingsCard userProfile={userProfile} userId={user.uid} />}
       </div>
-      
-      <footer className="pt-8 pb-12 text-center">
-          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/30">
-              Glorifying God Through Technology
-          </p>
-      </footer>
 
       {removalTarget && (
         <AlertDialog

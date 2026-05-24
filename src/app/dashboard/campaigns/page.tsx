@@ -353,7 +353,7 @@ export default function CampaignsPage() {
     }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 pb-20">
       {/* Responsive Single-Row Interaction Box */}
       <Card className="border shadow-sm sm:shadow-md rounded-none sm:rounded-lg border-x-0 sm:border-x -mx-4 sm:mx-0">
         <CardContent className="p-3 sm:p-4">
@@ -443,12 +443,6 @@ export default function CampaignsPage() {
           </div>
         )}
       </div>
-
-      <footer className="pt-8 pb-12 text-center">
-          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/30">
-              Glorifying God Through Technology
-          </p>
-      </footer>
       
       {/* Campaign Creation */}
       {mounted && isMobile ? (
@@ -531,7 +525,7 @@ export default function CampaignsPage() {
 
       {/* Delete Confirmation */}
       <AlertDialog open={!!campaignToDelete} onOpenChange={(open) => !open && setCampaignToDelete(null)}>
-        <AlertDialogContent className="w-[90vw] max-w-lg rounded-lg">
+        <AlertDialogContent className="w-[90vw] max-lg rounded-lg">
           <AlertDialogHeader>
               <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
               <AlertDialogDescription>

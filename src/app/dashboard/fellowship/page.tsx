@@ -930,12 +930,6 @@ export default function FellowshipPage() {
                     </AlertDialogContent>
                 </AlertDialog>
             )}
-            
-            <footer className="pt-4 pb-20 text-center">
-                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/30">
-                    Testify Global Platform v1.2
-                </p>
-            </footer>
         </div>
     );
 }

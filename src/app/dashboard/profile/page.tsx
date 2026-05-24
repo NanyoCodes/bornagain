@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useMemo } from "react";
@@ -671,11 +670,6 @@ export default function ProfilePage() {
                 </Card>
             </div>
         </div>
-        <footer className="pt-4 pb-20 text-center">
-            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/30">
-                Testify Global Platform • {new Date().getFullYear()}
-            </p>
-        </footer>
     </div>
   );
 }

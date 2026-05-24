@@ -291,7 +291,7 @@ export default function SoulsWonPage() {
   }, [souls, searchTerm]);
 
   return (
-    <div className="space-y-8 max-w-3xl mx-auto -mx-4 sm:mx-auto">
+    <div className="space-y-8 max-w-3xl mx-auto -mx-4 sm:mx-auto pb-20">
       {/* Responsive Single-Row Interaction Box */}
       <Card className="border shadow-sm sm:shadow-md rounded-none sm:rounded-lg border-x-0 sm:border-x">
         <CardContent className="p-2 sm:p-4">
@@ -351,12 +351,6 @@ export default function SoulsWonPage() {
           onDelete={handleOpenDelete}
         />
       </div>
-
-      <footer className="pt-8 pb-12 text-center">
-          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/30">
-              Glorifying God Through Technology
-          </p>
-      </footer>
 
       <LogFollowUpDialog 
           soul={soulForFollowUp} 

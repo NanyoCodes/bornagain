@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useMemo, useState, useEffect } from 'react';
@@ -345,12 +344,6 @@ export default function UserProfileClient({ userId }: { userId: string }) {
             </div>
         )}
       </div>
-      
-      <footer className="pt-4 pb-16 text-center border-t border-dashed">
-        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/30">
-            Kingdom Workforce • Testify Global Platform
-        </p>
-      </footer>
     </div>
   );
 }
