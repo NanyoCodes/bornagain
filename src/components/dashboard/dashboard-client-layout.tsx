@@ -364,7 +364,7 @@ export default function DashboardClientLayout({ children }: { children: React.Re
 
   if (loading || (profileLoading && !userProfile) || !user?.uid) {
     return (
-      <div className="flex min-h-screen w-full flex-col items-center justify-center bg-background animate-in fade-in duration-700">
+      <div className="flex min-h-screen w-full flex-col items-center justify-center bg-background animate-in fade-in duration-1000">
         <div className="relative mb-8">
             <Loader2 className="h-10 w-10 animate-spin text-primary" />
             <div className="absolute inset-0 flex items-center justify-center">
