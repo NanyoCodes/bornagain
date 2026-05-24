@@ -202,6 +202,7 @@ function FellowshipForm({
                                 <RadioGroupItem value="Physical and Virtual" />
                                 </FormControl>
                                 <FormLabel className="font-normal">Both</FormLabel>
+                            </FormItem>
                             </RadioGroup>
                         </FormControl>
                         <FormMessage />
@@ -415,10 +416,11 @@ function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting, onDelete
                             <FormItem className="flex items-center space-x-2 space-y-0">
                                 <FormControl><RadioGroupItem value="Physical and Virtual" /></FormControl>
                                 <FormLabel className="font-normal">Both</FormLabel>
-                            </RadioGroup>
-                        </FormControl>
-                        <FormMessage />
-                        </FormItem>
+                            </FormItem>
+                        </RadioGroup>
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
                     )}
             />
             {(form.watch('locationType') === 'Physical' || form.watch('locationType') === 'Physical and Virtual') && (
