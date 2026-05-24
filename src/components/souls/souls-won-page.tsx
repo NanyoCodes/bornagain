@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
@@ -30,7 +29,7 @@ import {
 } from "@/components/ui/sheet";
 import { PlusCircle, Download, Loader2, Trash2 } from "lucide-react";
 import type { Soul, Campaign, Fellowship } from "@/lib/types";
-import { useCollection, useFirestore, useUser } from "@/firebase";
+import { useCollection, useFirestore, useUser, useDoc } from "@/firebase";
 import { collection, query, orderBy, doc, serverTimestamp, updateDoc, writeBatch, addDoc, deleteField } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -364,6 +363,12 @@ export default function SoulsWonPage() {
           onDelete={handleOpenDelete}
         />
       </div>
+
+      <footer className="pt-8 pb-12 text-center">
+          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/30">
+              Glorifying God Through Technology
+          </p>
+      </footer>
 
       <LogFollowUpDialog 
           soul={soulForFollowUp} 

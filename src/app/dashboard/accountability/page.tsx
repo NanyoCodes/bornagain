@@ -477,6 +477,11 @@ export default function AccountabilityPage() {
         <div className="px-4 sm:px-0">
             {userProfile && user && <AccountabilitySettingsCard userProfile={userProfile} userId={user.uid} />}
         </div>
+        <footer className="pt-8 pb-12 text-center">
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/30">
+                Glorifying God Through Technology
+            </p>
+        </footer>
       </div>
     );
   }
@@ -509,6 +514,12 @@ export default function AccountabilityPage() {
         {userProfile && user && <AccountabilitySettingsCard userProfile={userProfile} userId={user.uid} />}
       </div>
       
+      <footer className="pt-8 pb-12 text-center">
+          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/30">
+              Glorifying God Through Technology
+          </p>
+      </footer>
+
       {removalTarget && (
         <AlertDialog
             open={!!removalTarget}

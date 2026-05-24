@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useMemo, useState, useEffect, Fragment } from "react";
@@ -444,6 +443,12 @@ export default function CampaignsPage() {
           </div>
         )}
       </div>
+
+      <footer className="pt-8 pb-12 text-center">
+          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/30">
+              Glorifying God Through Technology
+          </p>
+      </footer>
       
       {/* Campaign Creation */}
       {mounted && isMobile ? (

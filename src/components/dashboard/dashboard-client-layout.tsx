@@ -1,4 +1,3 @@
-
 'use client';
 
 /**
@@ -358,7 +357,7 @@ export default function DashboardClientLayout({ children }: { children: React.Re
         {!isTakeoverPage && <AppHeader unreadChatCount={unreadChatCount} />}
         <div className="flex-1 relative min-h-0">
           <main className={cn("absolute inset-0", !isTakeoverPage && "overflow-y-auto")}>
-            <div className={cn("max-w-7xl mx-auto", !isTakeoverPage && "p-4 md:p-6 pb-40 md:pb-6", isTakeoverPage && "h-full")}>
+            <div className={cn("max-w-7xl mx-auto", !isTakeoverPage && "p-4 md:p-6 pb-32 md:pb-6", isTakeoverPage && "h-full")}>
               <PageTransition>{children}</PageTransition>
             </div>
           </main>

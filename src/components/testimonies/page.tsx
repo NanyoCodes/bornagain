@@ -399,6 +399,12 @@ export default function TestimoniesPage() {
           </TabsContent>
       </Tabs>
       
+      <footer className="pt-8 pb-12 text-center">
+          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/30">
+              Glorifying God Through Technology
+          </p>
+      </footer>
+      
       <AlertDialog open={!!itemToDelete} onOpenChange={(open) => !open && closeDeleteDialog()}>
           <AlertDialogContent className="w-[90vw] max-w-lg rounded-lg">
           <AlertDialogHeader>
