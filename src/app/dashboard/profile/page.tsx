@@ -621,7 +621,7 @@ export default function ProfilePage() {
                             searchTerm={soulSearchTerm}
                             setSearchTerm={setSoulSearchTerm}
                             filterDate={soulFilterDate}
-                            setFilterDate={setFilterDate}
+                            setFilterDate={setSoulFilterDate}
                             searchPlaceholder="Search souls by name..."
                         />
                         <ScrollArea className="h-48 border rounded-lg bg-muted/5">
