@@ -59,8 +59,8 @@ const navItems = [
 
 const NOTIFICATION_TYPES = ['campaign_join', 'new_chat_message', 'accountability_nudge', 'accountability_request', 'request_accepted', 'request_declined', 'accountability_partner_removed', 'new_soul_in_fellowship'];
 
-function AppHeader({ unreadChatCount, unreadNotifCount }: { unreadChatCount: number, unreadNotifCount: number }) {
-  const { user } = useUser();
+function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unreadChatCount: number, unreadNotifCount: number, isPublicRoute: boolean }) {
+  const { user, loading: authLoading } = useUser();
   const { userProfile } = useUserProfile();
   const pathname = usePathname();
   const auth = useAuth();
@@ -101,6 +101,10 @@ function AppHeader({ unreadChatCount, unreadNotifCount }: { unreadChatCount: num
       </header>
     );
   }
+
+  // Determine if we should show the "Guest" buttons.
+  // We only show them if we are on a public route AND auth check is finished AND there's no user.
+  const showGuestButtons = isPublicRoute && !authLoading && !user;
 
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b bg-background px-4 md:px-6">
@@ -236,7 +240,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount }: { unreadChatCount: num
               </DropdownMenuContent>
             </DropdownMenu>
           </>
-        ) : (
+        ) : showGuestButtons ? (
           <div className="flex items-center gap-2">
             <Button variant="ghost" asChild className="hidden sm:inline-flex">
               <Link href="/login">Sign In</Link>
@@ -245,6 +249,8 @@ function AppHeader({ unreadChatCount, unreadNotifCount }: { unreadChatCount: num
               <Link href="/">Get Started</Link>
             </Button>
           </div>
+        ) : (
+          <div className="h-8 w-8 animate-pulse rounded-full bg-muted" />
         )}
       </div>
     </header>
@@ -302,7 +308,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     '/progress',
     '/fellowships'
   ];
-  const isPublicRoute = publicRoutes.some(route => pathname.startsWith(route));
+  const isPublicRoute = publicRoutes.some(route => pathname === route || pathname.startsWith(route + '/')) || pathname === '/';
 
   // Identify pages that take over the screen (like chat, bible, or notes editor)
   const isTakeoverPage = pathname.startsWith('/dashboard/chats/') || pathname.startsWith('/dashboard/notes') || pathname.startsWith('/dashboard/bible');
@@ -338,7 +344,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   }, [profileLoading, userProfile]);
 
   // STRIKE: Prevent flickering by returning a full-screen loader until auth is resolved.
-  // We also return the loader if we're on a private route but haven't confirmed a user yet.
   if (authLoading || (profileLoading && !isPublicRoute) || (!user && !isPublicRoute)) {
     return (
       <div className="flex h-screen w-full items-center justify-center bg-background">
@@ -353,7 +358,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     <SearchProvider>
       <div className={cn("flex w-full flex-col overflow-x-hidden", isTakeoverPage ? "h-full" : "min-h-screen")}>
         {!isTakeoverPage && (
-          <AppHeader unreadChatCount={unreadChatNotifications?.length || 0} unreadNotifCount={unreadOtherNotifications?.length || 0} />
+          <AppHeader 
+            unreadChatCount={unreadChatNotifications?.length || 0} 
+            unreadNotifCount={unreadOtherNotifications?.length || 0}
+            isPublicRoute={isPublicRoute}
+          />
         )}
         <main className={cn(
           "flex-1 w-full mx-auto relative",
