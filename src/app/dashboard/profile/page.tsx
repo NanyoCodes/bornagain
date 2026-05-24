@@ -320,7 +320,17 @@ export default function ProfilePage() {
 
   const filteredAccountabilityPartners = useMemo(() => {
     if (!userProfile?.accountabilityPartners) return [];
-    return userProfile.accountabilityPartners.filter(p => {
+    
+    // Deduplicate to prevent key conflict errors
+    const uniqueMap = new Map();
+    userProfile.accountabilityPartners.forEach(p => {
+        if (p.userId && !uniqueMap.has(p.userId)) {
+            uniqueMap.set(p.userId, p);
+        }
+    });
+    const partners = Array.from(uniqueMap.values());
+
+    return partners.filter(p => {
         const search = partnerSearchTerm.toLowerCase();
         return !search || `${p.firstName} ${p.lastName}`.toLowerCase().includes(search);
     });
