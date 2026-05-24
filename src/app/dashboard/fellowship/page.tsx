@@ -155,7 +155,7 @@ function FellowshipForm({
                 <FormField control={form.control} name="name" render={({ field }) => (
                     <FormItem>
                         <FormLabel>Name</FormLabel>
-                        <FormControl><Input placeholder={form.watch('groupType') === 'Fellowship' ? "e.g., Morning Prayer" : "e.g., Youth Association"} {...field} className="text-base" /></FormControl>
+                        <FormControl><Input placeholder={form.watch('groupType') === 'Fellowship' ? "e.g., Morning Prayer" : "e.g., Youth Association"} {...field} className="text-base h-11" /></FormControl>
                         <FormMessage />
                     </FormItem>
                 )} />
@@ -169,7 +169,7 @@ function FellowshipForm({
                 <FormField control={form.control} name="schedule" render={({ field }) => (
                     <FormItem>
                         <FormLabel>Schedule</FormLabel>
-                        <FormControl><Input placeholder="e.g., Every Friday at 6:00 AM" {...field} className="text-base" /></FormControl>
+                        <FormControl><Input placeholder="e.g., Every Friday at 6:00 AM" {...field} className="text-base h-11" /></FormControl>
                         <FormMessage />
                     </FormItem>
                 )} />
@@ -213,10 +213,10 @@ function FellowshipForm({
                     <div className="space-y-4">
                         <FormField control={form.control} name="country" render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Country</FormLabel>
+                                <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Country</FormLabel>
                                 <Select onValueChange={(val) => { field.onChange(val); form.setValue('state', ''); form.setValue('city', ''); }} value={field.value}>
                                     <FormControl>
-                                        <SelectTrigger className="text-base">
+                                        <SelectTrigger className="text-base h-11">
                                             <SelectValue placeholder="Select Country" />
                                         </SelectTrigger>
                                     </FormControl>
@@ -233,14 +233,14 @@ function FellowshipForm({
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <FormField control={form.control} name="state" render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>State / Region</FormLabel>
+                                    <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">State / Region</FormLabel>
                                     <Select 
                                         onValueChange={(val) => { field.onChange(val); form.setValue('city', ''); }} 
                                         value={field.value} 
                                         disabled={!watchedCountryName || statesList.length === 0}
                                     >
                                         <FormControl>
-                                            <SelectTrigger className="text-base">
+                                            <SelectTrigger className="text-base h-11">
                                                 <SelectValue placeholder={statesList.length === 0 ? "N/A" : "Select State"} />
                                             </SelectTrigger>
                                         </FormControl>
@@ -256,14 +256,14 @@ function FellowshipForm({
 
                             <FormField control={form.control} name="city" render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>City</FormLabel>
+                                    <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">City</FormLabel>
                                     <Select 
                                         onValueChange={field.onChange} 
                                         value={field.value} 
                                         disabled={!watchedStateName || citiesList.length === 0}
                                     >
                                         <FormControl>
-                                            <SelectTrigger className="text-base">
+                                            <SelectTrigger className="text-base h-11">
                                                 <SelectValue placeholder={citiesList.length === 0 ? "N/A" : "Select City"} />
                                             </SelectTrigger>
                                         </FormControl>
@@ -283,7 +283,7 @@ function FellowshipForm({
                     <FormItem>
                         <FormLabel>Meeting URL (Optional)</FormLabel>
                         <FormControl>
-                            <Input placeholder="https://..." {...field} value={field.value ?? ''} className="text-base" />
+                            <Input placeholder="https://..." {...field} value={field.value ?? ''} className="text-base h-11" />
                         </FormControl>
                         <Button type="button" variant="outline" size="sm" onClick={handleCreateMeet} className="mt-1">
                           <Video className="mr-2 h-4 w-4" />
@@ -375,7 +375,7 @@ function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting, onDelete
             <FormField control={form.control} name="name" render={({ field }) => (
                 <FormItem>
                     <FormLabel>Name</FormLabel>
-                    <FormControl><Input {...field} className="text-base" /></FormControl>
+                    <FormControl><Input {...field} className="text-base h-11" /></FormControl>
                     <FormMessage />
                 </FormItem>
             )} />
@@ -389,7 +389,7 @@ function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting, onDelete
             <FormField control={form.control} name="schedule" render={({ field }) => (
                 <FormItem>
                     <FormLabel>Schedule</FormLabel>
-                    <FormControl><Input {...field} className="text-base" /></FormControl>
+                    <FormControl><Input {...field} className="text-base h-11" /></FormControl>
                     <FormMessage />
                 </FormItem>
             )} />
@@ -427,10 +427,10 @@ function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting, onDelete
                 <div className="space-y-4">
                     <FormField control={form.control} name="country" render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Country</FormLabel>
+                            <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Country</FormLabel>
                             <Select onValueChange={(val) => { field.onChange(val); form.setValue('state', ''); form.setValue('city', ''); }} value={field.value}>
                                 <FormControl>
-                                    <SelectTrigger className="text-base">
+                                    <SelectTrigger className="text-base h-11">
                                         <SelectValue placeholder="Select Country" />
                                     </SelectTrigger>
                                 </FormControl>
@@ -447,14 +447,14 @@ function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting, onDelete
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <FormField control={form.control} name="state" render={({ field }) => (
                             <FormItem>
-                                <FormLabel>State / Region</FormLabel>
+                                <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">State / Region</FormLabel>
                                 <Select 
                                     onValueChange={(val) => { field.onChange(val); form.setValue('city', ''); }} 
                                     value={field.value} 
                                     disabled={!watchedCountryName || statesList.length === 0}
                                 >
                                     <FormControl>
-                                        <SelectTrigger className="text-base">
+                                        <SelectTrigger className="text-base h-11">
                                             <SelectValue placeholder={statesList.length === 0 ? "N/A" : "Select State"} />
                                         </SelectTrigger>
                                     </FormControl>
@@ -470,14 +470,14 @@ function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting, onDelete
 
                         <FormField control={form.control} name="city" render={({ field }) => (
                             <FormItem>
-                                <FormLabel>City</FormLabel>
+                                <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">City</FormLabel>
                                 <Select 
                                     onValueChange={field.onChange} 
                                     value={field.value} 
                                     disabled={!watchedStateName || citiesList.length === 0}
                                 >
                                     <FormControl>
-                                        <SelectTrigger className="text-base">
+                                        <SelectTrigger className="text-base h-11">
                                             <SelectValue placeholder={citiesList.length === 0 ? "N/A" : "Select City"} />
                                         </SelectTrigger>
                                     </FormControl>
@@ -497,7 +497,7 @@ function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting, onDelete
                 <FormItem>
                     <FormLabel>Meeting URL (Optional)</FormLabel>
                     <FormControl>
-                        <Input placeholder="https://..." {...field} value={field.value ?? ''} className="text-base" />
+                        <Input placeholder="https://..." {...field} value={field.value ?? ''} className="text-base h-11" />
                     </FormControl>
                     <Button type="button" variant="outline" size="sm" onClick={handleCreateMeet} className="mt-1">
                       <Video className="mr-2 h-4 w-4" />
@@ -808,19 +808,15 @@ export default function FellowshipPage() {
                     </div>
                 ) : (
                     <div className="grid gap-0 md:gap-6 md:grid-cols-2 lg:grid-cols-3 -mx-4 sm:mx-0">
-                        {filteredFellowships.map((f, index) => (
-                            <Fragment key={f.id}>
-                                <FellowshipCard 
-                                  fellowship={f} 
-                                  userProfile={userProfile ?? null} 
-                                  onManage={() => setFellowshipToManage(f)} 
-                                  onDelete={() => setFellowshipToDelete(f)} 
-                                  onClick={() => handleCardClick(f.id)} 
-                                />
-                                {(index + 1) % 4 === 0 && (
-                                    <AdsenseAd adSlot={`fellowships-feed-ad-${index}`} className="h-full" />
-                                )}
-                            </Fragment>
+                        {filteredFellowships.map((f) => (
+                            <FellowshipCard 
+                              key={f.id} 
+                              fellowship={f} 
+                              userProfile={userProfile ?? null} 
+                              onManage={() => setFellowshipToManage(f)} 
+                              onDelete={() => setFellowshipToDelete(f)} 
+                              onClick={() => handleCardClick(f.id)} 
+                            />
                         ))}
                         {filteredFellowships.length === 0 && (
                             <div className="col-span-full text-center py-20 bg-muted/10 rounded-lg border-2 border-dashed">

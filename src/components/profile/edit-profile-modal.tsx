@@ -1,4 +1,3 @@
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -26,7 +25,7 @@ import type { UserProfile } from "@/lib/types";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { LocationProfileInput } from "../common/location-profile-input";
-import { Label } from "../ui/label";
+import { Label } from "@/components/ui/label";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { ImageUpload } from "../common/image-upload";
 import { useJsApiLoader, GoogleMap, MarkerF } from '@react-google-maps/api';
@@ -307,9 +306,9 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
               name="firstName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>First Name</FormLabel>
+                  <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">First Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="John" {...field} value={field.value ?? ''} className="text-base" />
+                    <Input placeholder="John" {...field} value={field.value ?? ''} className="text-base h-11" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -320,9 +319,9 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
               name="lastName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Last Name</FormLabel>
+                  <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Last Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="Doe" {...field} value={field.value ?? ''} className="text-base" />
+                    <Input placeholder="Doe" {...field} value={field.value ?? ''} className="text-base h-11" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -334,9 +333,9 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
             name="bio"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Bio</FormLabel>
+                <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Bio</FormLabel>
                 <FormControl>
-                  <Textarea placeholder="Share your personal testimony..." className="resize-none text-base" {...field} />
+                  <Textarea placeholder="Share your personal testimony..." className="resize-none text-base min-h-[100px]" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -361,9 +360,9 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                             <Video className="h-6 w-6 text-primary" />
                         </div>
                         <div className="space-y-1">
-                            <h4 className="font-bold text-sm">Help Share Your Glory</h4>
+                            <h4 className="font-bold text-sm">Share Your Story via Video</h4>
                             <p className="text-xs text-muted-foreground leading-relaxed max-w-[250px] mx-auto">
-                                Sharing your story through video is a powerful way to testify of God's goodness.
+                                Sharing your journey through video is a powerful way to testify of God's goodness.
                             </p>
                         </div>
                         <div className="flex flex-col gap-2">
@@ -374,7 +373,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                             </Button>
                             <p className="text-[10px] text-muted-foreground flex items-center justify-center gap-1">
                                 <Info className="h-3 w-3" />
-                                Record your video, upload to YouTube, and paste the link here.
+                                Record, upload to YouTube, and paste the link here.
                             </p>
                         </div>
                     </CardContent>
@@ -422,9 +421,6 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                             </div>
                         </div>
                     ))}
-                    <p className="text-[10px] text-muted-foreground px-1 italic">
-                        Link videos where you share your miracles or encounters with Christ.
-                    </p>
                 </div>
             )}
           </div>
@@ -433,37 +429,22 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
             <AccordionItem value="item-1" className="border-none">
               <AccordionTrigger className="p-3 hover:no-underline [&[data-state=open]>svg]:rotate-180">
                 <div className="flex flex-col items-start text-left">
-                  <Label>Location Settings</Label>
+                  <Label className="text-base font-bold">Public Location Settings</Label>
                   <p className="text-sm text-muted-foreground font-normal">
-                    Public city and private location pin.
+                    Set your Country, State, and City.
                   </p>
                 </div>
               </AccordionTrigger>
               <AccordionContent className="p-4 pt-0 space-y-4">
                 <div>
-                  <Label className="mb-2 block">Quick Location Search</Label>
+                  <Label className="mb-2 block text-xs font-bold uppercase tracking-wider text-muted-foreground">Quick Search</Label>
                   <LocationProfileInput form={form} />
-                </div>
-
-                <div>
-                    <div className="flex justify-between items-center mb-2">
-                      <Label className="text-xs">Private Location Pin</Label>
-                      <Button type="button" variant="ghost" size="sm" onClick={handleGeolocate} className="h-7 text-[10px]">
-                          <LocateFixed className="mr-1 h-3 w-3" />
-                          Set to Current
-                      </Button>
-                    </div>
-                    {!isValidKey(GOOGLE_MAPS_API_KEY) ? (
-                        <MapPlaceholder />
-                    ) : (
-                        <PrivateLocationMap form={form} markerPosition={markerPosition} />
-                    )}
                 </div>
                 
                 <div className="space-y-4 pt-2">
                   <FormField control={form.control} name="country" render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Country (Public)</FormLabel>
+                        <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Country</FormLabel>
                         <Select 
                           onValueChange={(val) => { 
                               field.onChange(val); 
@@ -546,6 +527,26 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                     />
                   </div>
                 </div>
+
+                <Separator className="my-4" />
+
+                <div>
+                    <div className="flex justify-between items-center mb-2">
+                      <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Private Location Pin (Geosensing)</Label>
+                      <Button type="button" variant="ghost" size="sm" onClick={handleGeolocate} className="h-7 text-[10px] font-bold">
+                          <LocateFixed className="mr-1 h-3 w-3" />
+                          SET TO CURRENT
+                      </Button>
+                    </div>
+                    {!isValidKey(GOOGLE_MAPS_API_KEY) ? (
+                        <MapPlaceholder />
+                    ) : (
+                        <PrivateLocationMap form={form} markerPosition={markerPosition} />
+                    )}
+                    <p className="text-[10px] text-muted-foreground mt-2 leading-snug">
+                        Your private pin is only used to calculate proximity to local campaigns and testimonies. It is never shared with other users.
+                    </p>
+                </div>
               </AccordionContent>
             </AccordionItem>
           </Accordion>
@@ -555,9 +556,9 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
             name="defaultMeetingLink"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Default Meeting Link</FormLabel>
+                <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Default Meeting Link</FormLabel>
                 <FormControl>
-                  <Input placeholder="https://meet.google.com/..." {...field} value={field.value ?? ""} className="text-base" />
+                  <Input placeholder="https://meet.google.com/..." {...field} value={field.value ?? ""} className="text-base h-11" />
                 </FormControl>
                 <Button type="button" variant="outline" size="sm" onClick={handleCreateMeet} className="mt-1">
                   <Video className="mr-2 h-4 w-4" />
@@ -573,17 +574,17 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
             name="phone"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Phone</FormLabel>
+                <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Phone Number</FormLabel>
                 <FormControl>
-                  <Input placeholder="123 456 7890" {...field} value={field.value ?? ""} className="text-base" />
+                  <Input placeholder="123 456 7890" {...field} value={field.value ?? ""} className="text-base h-11" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
 
-          <Button type="submit" className="w-full" disabled={isSubmitting}>
-            {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 'Save Changes'}
+          <Button type="submit" className="w-full h-12 text-lg font-bold" disabled={isSubmitting}>
+            {isSubmitting ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : 'Save Changes'}
           </Button>
         </form>
       </Form>
