@@ -22,7 +22,7 @@ import {
 } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, User, Bell, Lock, Trash2, MessageSquare, Mail, Phone, Palette } from 'lucide-react';
+import { Loader2, User, Bell, Lock, Trash2, MessageSquare, Mail, Phone, Palette, Type } from 'lucide-react';
 import { useDoc, useFirestore, useUser } from '@/firebase';
 import { doc, updateDoc } from 'firebase/firestore';
 import type { UserProfile } from '@/lib/types';
@@ -39,6 +39,13 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import Link from 'next/link';
 import { useEffect, useState, useMemo } from 'react';
 import { ThemeToggle } from '@/components/theme-toggle';
@@ -46,6 +53,7 @@ import { ChurchSettingsCard } from '@/components/settings/church-settings-card';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { PasswordSettingsCard } from '@/components/settings/password-settings-card';
+import { useFontSize } from '@/components/font-size-provider';
 
 const notificationFormSchema = z.object({
   newCampaignsInArea: z.boolean().default(false),
@@ -67,19 +75,42 @@ function ProfileSettingsCard() {
 }
 
 function AppearanceSettingsCard() {
+  const { fontSize, setFontSize } = useFontSize();
+
   return (
     <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-lg"><Palette className="h-5 w-5 text-primary" /> Appearance</CardTitle>
         <CardDescription>Customize the look and feel of the application.</CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="space-y-6">
          <div className="flex items-center justify-between rounded-xl border p-4 bg-muted/20">
             <div className="space-y-0.5">
                 <label className="text-sm font-bold uppercase tracking-wider">Display Theme</label>
                 <p className="text-xs text-muted-foreground">Switch between light and dark mode.</p>
             </div>
             <ThemeToggle />
+        </div>
+
+        <div className="flex items-center justify-between rounded-xl border p-4 bg-muted/20">
+            <div className="space-y-0.5 pr-4">
+                <label className="text-sm font-bold uppercase tracking-wider flex items-center gap-2">
+                    <Type className="h-4 w-4 text-primary" />
+                    Text Size
+                </label>
+                <p className="text-xs text-muted-foreground">Adjust readability across the entire app.</p>
+            </div>
+            <Select value={fontSize} onValueChange={(val) => setFontSize(val as any)}>
+                <SelectTrigger className="w-[130px] h-9 text-xs sm:text-sm font-bold uppercase">
+                    <SelectValue placeholder="Select size" />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectItem value="sm">Small</SelectItem>
+                    <SelectItem value="base">Medium</SelectItem>
+                    <SelectItem value="lg">Large</SelectItem>
+                    <SelectItem value="xl">Extra Large</SelectItem>
+                </SelectContent>
+            </Select>
         </div>
       </CardContent>
     </Card>

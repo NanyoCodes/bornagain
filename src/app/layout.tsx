@@ -5,6 +5,7 @@ import { ThemeProvider } from '@/components/theme-provider';
 import { FirebaseClientProvider } from '@/firebase/client-provider';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { CookieConsentBanner } from '@/components/cookie-consent-banner';
+import { FontSizeProvider } from '@/components/font-size-provider';
 import Script from 'next/script';
 
 const logo = PlaceHolderImages.find((img) => img.id === 'logo');
@@ -160,11 +161,13 @@ export default function RootLayout({
           enableSystem={false}
           disableTransitionOnChange
         >
-          <FirebaseClientProvider>
-            {children}
-            <Toaster />
-            <CookieConsentBanner />
-          </FirebaseClientProvider>
+          <FontSizeProvider>
+            <FirebaseClientProvider>
+              {children}
+              <Toaster />
+              <CookieConsentBanner />
+            </FirebaseClientProvider>
+          </FontSizeProvider>
         </ThemeProvider>
       </body>
     </html>
