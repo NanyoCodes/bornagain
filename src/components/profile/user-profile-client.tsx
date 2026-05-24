@@ -238,8 +238,8 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                 </CardDescription>
             </CardHeader>
             <CardContent className="px-0 sm:px-12 pb-12">
-                <ScrollArea className="w-full">
-                    <div className="flex gap-6 p-6 sm:p-0">
+                <div className="w-full overflow-x-auto pb-4 scrollbar-hide">
+                    <div className="flex gap-6 p-6 sm:p-0 flex-nowrap">
                         {videoTestimonies.map((video, idx) => (
                             <div key={idx} className="flex-shrink-0 w-[300px] sm:w-[450px] space-y-3">
                                 {video.title && (
@@ -259,7 +259,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                             </div>
                         ))}
                     </div>
-                </ScrollArea>
+                </div>
             </CardContent>
         </Card>
       )}
