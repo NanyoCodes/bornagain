@@ -150,7 +150,7 @@ function CommentItem({
                                 disabled={isReacting !== null}
                                 className={cn("text-xs font-bold transition-colors hover:text-chart-3 py-1", hasInspired ? "text-chart-3" : "text-muted-foreground")}
                             >
-                                Inspired
+                                Hallelujah
                             </button>
                             <button 
                                 onClick={() => handleReaction('celebrate')}

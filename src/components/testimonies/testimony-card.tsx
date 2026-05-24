@@ -500,7 +500,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({
                 className={cn("flex flex-col sm:flex-row h-auto py-3 gap-1 text-[10px] sm:text-xs font-bold uppercase tracking-wider text-muted-foreground hover:bg-muted/50 rounded-xl transition-all", hasInspired && "text-chart-3 hover:text-chart-3 bg-chart-3/5")}
             >
                 {isProcessingReaction === 'inspired' ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className={cn("h-4 w-4", hasInspired && "fill-current")} />}
-                <span>Inspired</span>
+                <span>Hallelujah</span>
             </Button>
 
             <Button 
