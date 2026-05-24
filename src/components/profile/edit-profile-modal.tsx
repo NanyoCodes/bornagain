@@ -1,4 +1,3 @@
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -17,7 +16,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import React, { useState } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import { Loader2, LocateFixed, Video, Map as MapIcon, Youtube, Plus, Trash2, ExternalLink, Info } from "lucide-react";
 import { useUser, useFirestore, useAuth } from "@/firebase";
 import { doc, updateDoc, serverTimestamp } from "firebase/firestore";
@@ -152,7 +151,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
   const watchedLat = form.watch('latitude');
   const watchedLng = form.watch('longitude');
 
-  const markerPosition = React.useMemo(() => {
+  const markerPosition = useMemo(() => {
     if (watchedLat != null && watchedLng != null) {
       return { lat: watchedLat, lng: watchedLng };
     }
@@ -253,6 +252,8 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
         </div>
     </div>
   );
+
+  const sourceValue = useWatch({ control: form.control, name: "videoTestimonies" });
 
   return (
     <>
