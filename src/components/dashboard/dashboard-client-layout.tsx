@@ -66,6 +66,18 @@ const navItems = [
 
 const OTHER_NOTIFICATION_TYPES = ['campaign_join', 'new_chat_message', 'accountability_nudge', 'accountability_request', 'request_accepted', 'request_declined', 'accountability_partner_removed', 'new_soul_in_fellowship'];
 
+const inspirationalMessages = [
+  "GOD FIRST",
+  "SEEK THE KINGDOM",
+  "POWER IN TESTIMONY",
+  "GLORY TO THE MOST HIGH",
+  "EMPOWERING THE HARVEST",
+  "JESUS IS LORD",
+  "THE HARVEST IS PLENTIFUL",
+  "STAND FIRM IN FAITH",
+  "REJOICE ALWAYS"
+];
+
 function AppHeader({ unreadChatCount }: { unreadChatCount: number }) {
   const { user } = useUser();
   const { userProfile } = useUserProfile();
@@ -299,10 +311,14 @@ export default function DashboardClientLayout({ children }: { children: React.Re
   const isMobile = useIsMobile();
   const [mounted, setMounted] = useState(false);
   const [showWelcomePopup, setShowWelcomePopup] = useState(false);
+  const [loadingMessage, setLoadingMessage] = useState("");
   const isTakeoverPage = pathname.startsWith('/dashboard/chats/') || pathname.startsWith('/dashboard/notes') || pathname.startsWith('/dashboard/bible');
   const [lastActiveUpdated, setLastActiveUpdated] = useState(false);
 
-  useEffect(() => { setMounted(true); }, []);
+  useEffect(() => { 
+    setMounted(true); 
+    setLoadingMessage(inspirationalMessages[Math.floor(Math.random() * inspirationalMessages.length)]);
+  }, []);
 
   const { userProfile, loading: profileLoading } = useUserProfile();
 
@@ -317,12 +333,10 @@ export default function DashboardClientLayout({ children }: { children: React.Re
   const { data: unreadChatNotifications } = useCollection<Notification>(unreadChatNotifsQuery);
   const unreadChatCount = unreadChatNotifications?.length ?? 0;
 
-  // Protect dashboard routes
   useEffect(() => {
     if (!loading && !user) router.push('/login');
   }, [loading, user, router]);
 
-  // Update "last active" timestamp in the background
   useEffect(() => {
     if (user && firestore && !lastActiveUpdated) {
       const userRef = doc(firestore, 'users', user.uid);
@@ -334,7 +348,6 @@ export default function DashboardClientLayout({ children }: { children: React.Re
     }
   }, [user, firestore, lastActiveUpdated]);
 
-  // Welcome popup for first-time profile completion in session
   useEffect(() => {
     if (profileLoading || !userProfile) return;
     const isNewUserSession = sessionStorage.getItem('isNewUserSession') === 'true';
@@ -349,12 +362,21 @@ export default function DashboardClientLayout({ children }: { children: React.Re
     }
   }, [profileLoading, userProfile]);
 
-  // STRIKE: Prevent guest-state flickering by showing the loader until auth is confirmed for this internal layout.
   if (loading || (profileLoading && !userProfile) || !user?.uid) {
     return (
-      <div className="flex min-h-screen w-full flex-col items-center justify-center bg-background">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        <p className="mt-4 text-muted-foreground animate-pulse font-headline italic">Connecting to the Kingdom network...</p>
+      <div className="flex min-h-screen w-full flex-col items-center justify-center bg-background animate-in fade-in duration-700">
+        <div className="relative mb-8">
+            <Loader2 className="h-10 w-10 animate-spin text-primary" />
+            <div className="absolute inset-0 flex items-center justify-center">
+                <div className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+            </div>
+        </div>
+        <p className="text-xl font-black font-headline tracking-[0.4em] uppercase text-primary animate-pulse text-center px-8">
+          {loadingMessage || "GOD FIRST"}
+        </p>
+        <p className="mt-4 text-[9px] uppercase font-bold tracking-[0.2em] text-muted-foreground/50">
+            Establishing Kingdom Connection...
+        </p>
       </div>
     );
   }

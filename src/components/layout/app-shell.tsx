@@ -19,7 +19,6 @@ import {
   HeartHandshake,
   TrendingUp,
   BookMarked,
-  LayoutGrid,
   Users,
 } from "lucide-react";
 
@@ -58,6 +57,18 @@ const navItems = [
 ];
 
 const NOTIFICATION_TYPES = ['campaign_join', 'new_chat_message', 'accountability_nudge', 'accountability_request', 'request_accepted', 'request_declined', 'accountability_partner_removed', 'new_soul_in_fellowship'];
+
+const inspirationalMessages = [
+  "GOD FIRST",
+  "SEEK THE KINGDOM",
+  "POWER IN TESTIMONY",
+  "GLORY TO THE MOST HIGH",
+  "EMPOWERING THE HARVEST",
+  "JESUS IS LORD",
+  "THE HARVEST IS PLENTIFUL",
+  "STAND FIRM IN FAITH",
+  "REJOICE ALWAYS"
+];
 
 function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unreadChatCount: number, unreadNotifCount: number, isPublicRoute: boolean }) {
   const { user, loading: authLoading } = useUser();
@@ -102,8 +113,6 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
     );
   }
 
-  // Determine if we should show the "Guest" buttons.
-  // We only show them if we are on a public route AND auth check is finished AND there's no user.
   const showGuestButtons = isPublicRoute && !authLoading && !user;
 
   return (
@@ -293,8 +302,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const isMobile = useIsMobile();
   const [mounted, setMounted] = useState(false);
   const [showWelcomePopup, setShowWelcomePopup] = useState(false);
+  const [loadingMessage, setLoadingMessage] = useState("");
 
-  useEffect(() => { setMounted(true); }, []);
+  useEffect(() => { 
+    setMounted(true); 
+    setLoadingMessage(inspirationalMessages[Math.floor(Math.random() * inspirationalMessages.length)]);
+  }, []);
 
   const publicRoutes = [
     '/testimonies', 
@@ -310,7 +323,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   ];
   const isPublicRoute = publicRoutes.some(route => pathname === route || pathname.startsWith(route + '/')) || pathname === '/';
 
-  // Identify pages that take over the screen (like chat, bible, or notes editor)
   const isTakeoverPage = pathname.startsWith('/dashboard/chats/') || pathname.startsWith('/dashboard/notes') || pathname.startsWith('/dashboard/bible');
 
   const unreadChatNotifsQuery = useMemo(() => {
@@ -326,7 +338,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const { data: unreadOtherNotifications } = useCollection<Notification>(unreadOtherNotifsQuery);
 
   useEffect(() => {
-    // Only redirect if it's NOT a public route and user is definitely logged out
     if (!authLoading && !user && !isPublicRoute) {
       router.push('/login');
     }
@@ -343,11 +354,21 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     }
   }, [profileLoading, userProfile]);
 
-  // STRIKE: Prevent flickering by returning a full-screen loader until auth is resolved.
   if (authLoading || (profileLoading && !isPublicRoute) || (!user && !isPublicRoute)) {
     return (
-      <div className="flex h-screen w-full items-center justify-center bg-background">
-        <Loader2 className="h-10 w-10 animate-spin text-primary" />
+      <div className="flex h-screen w-full flex-col items-center justify-center bg-background animate-in fade-in duration-700">
+        <div className="relative mb-8">
+            <Loader2 className="h-12 w-12 animate-spin text-primary" />
+            <div className="absolute inset-0 flex items-center justify-center">
+                <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
+            </div>
+        </div>
+        <p className="text-2xl font-black font-headline tracking-[0.3em] uppercase text-primary animate-pulse text-center px-6">
+          {loadingMessage || "GOD FIRST"}
+        </p>
+        <p className="mt-4 text-[10px] uppercase font-bold tracking-[0.2em] text-muted-foreground/60">
+            Kingdom Network Active
+        </p>
       </div>
     );
   }
