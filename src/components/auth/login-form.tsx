@@ -1,4 +1,11 @@
+
 "use client";
+
+/**
+ * @fileOverview This component handles the email/password login form.
+ * It includes logic for handling unverified email addresses and enforcing
+ * session persistence.
+ */
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -34,7 +41,6 @@ const formSchema = z.object({
   }),
 });
 
-// Dialog for handling unverified email
 function EmailVerificationDialog({ user, isOpen, onOpenChange }: { user: User | null; isOpen: boolean; onOpenChange: (open: boolean) => void; }) {
     const { toast } = useToast();
     const [isLoading, setIsLoading] = useState(false);
@@ -65,19 +71,19 @@ function EmailVerificationDialog({ user, isOpen, onOpenChange }: { user: User | 
 
     return (
         <AlertDialog open={isOpen} onOpenChange={onOpenChange}>
-            <AlertDialogContent>
+            <AlertDialogContent className="w-[90vw] max-w-md rounded-lg">
                 <AlertDialogHeader>
                     <AlertDialogTitle>Email Verification Required</AlertDialogTitle>
                     <AlertDialogDescription>
-                        You must verify your email address before you can sign in. A verification link was sent to <strong>{user?.email}</strong> when you created your account.
+                        You must verify your email address before you can sign in. A verification link was sent to <strong>{user?.email}</strong>.
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <p className="text-sm text-muted-foreground">
                     Please check your inbox (and spam folder). If you don&apos;t see it, you can request a new one.
                 </p>
-                <AlertDialogFooter>
+                <AlertDialogFooter className="flex-col sm:flex-row gap-2">
                     <AlertDialogCancel disabled={isLoading} onClick={() => onOpenChange(false)}>Close</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleResend} disabled={isLoading}>
+                    <AlertDialogAction onClick={handleResend} disabled={isLoading} className="bg-primary text-primary-foreground">
                         {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                         Resend Verification Email
                     </AlertDialogAction>
@@ -86,7 +92,6 @@ function EmailVerificationDialog({ user, isOpen, onOpenChange }: { user: User | 
         </AlertDialog>
     );
 }
-
 
 export function LoginForm() {
   const router = useRouter();
@@ -97,7 +102,6 @@ export function LoginForm() {
   const [userForVerification, setUserForVerification] = useState<User | null>(null);
   const [isVerificationDialogOpen, setIsVerificationDialogOpen] = useState(false);
 
-
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -107,6 +111,8 @@ export function LoginForm() {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    if (isLoading) return;
+    
     setIsLoading(true);
     if (!auth || !firestore) {
       toast({
@@ -118,11 +124,12 @@ export function LoginForm() {
       return;
     }
     try {
-      // Explicitly set persistence to local for consistent behavior
+      // Explicitly reinforce persistence to local for consistent behavior
       await setPersistence(auth, browserLocalPersistence);
       const userCredential = await signInWithEmailAndPassword(auth, values.email, values.password);
       const user = userCredential.user;
 
+      // Check for email verification if using standard password login
       if (!user.emailVerified && user.providerData.some(p => p.providerId === 'password')) {
         setUserForVerification(user);
         setIsVerificationDialogOpen(true);
@@ -130,6 +137,7 @@ export function LoginForm() {
         return;
       }
 
+      // Background sync profile
       const userDocRef = doc(firestore, "users", user.uid);
       const nameParts = user.displayName?.split(' ') || [];
       const firstName = nameParts[0] || '';
@@ -146,7 +154,6 @@ export function LoginForm() {
         photoURL: user.photoURL,
       };
 
-      // Create or merge user profile in Firestore to ensure it exists
       setDoc(userDocRef, userData, { merge: true }).catch((serverError) => {
         const permissionError = new FirestorePermissionError({
           path: userDocRef.path,
@@ -157,12 +164,15 @@ export function LoginForm() {
       });
 
       toast({
-        title: "Success",
-        description: "You are now logged in.",
+        title: "Welcome Back!",
+        description: "You have been successfully signed in.",
       });
+      
       router.push("/dashboard/testimonies");
     } catch (error) {
       const authError = error as AuthError;
+      console.error('Email sign in error:', authError);
+      
       let description = "An unexpected error occurred. Please try again.";
       
       switch (authError.code) {
@@ -175,7 +185,10 @@ export function LoginForm() {
           description = "Access to this account has been temporarily disabled due to many failed login attempts. You can restore it by resetting your password or try again later.";
           break;
         case 'auth/user-disabled':
-          description = "This account has been disabled.";
+          description = "This account has been disabled. Please contact support.";
+          break;
+        case 'auth/network-request-failed':
+          description = "Network error. Please check your internet connection.";
           break;
         default:
           description = authError.message || description;
@@ -183,7 +196,7 @@ export function LoginForm() {
       
       toast({
         variant: "destructive",
-        title: "Login Failed",
+        title: "Sign In Failed",
         description: description,
       });
     } finally {
@@ -204,7 +217,7 @@ export function LoginForm() {
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <FormControl>
-                    <Input placeholder="name@example.com" {...field} className="pl-10" />
+                    <Input placeholder="name@example.com" {...field} className="pl-10 h-11" />
                   </FormControl>
                 </div>
                 <FormMessage />
@@ -218,21 +231,21 @@ export function LoginForm() {
               <FormItem>
                   <div className="flex items-center justify-between">
                       <FormLabel>Password</FormLabel>
-                      <Link href="/forgot-password" size="sm" className="text-sm text-primary hover:underline">
+                      <Link href="/forgot-password" size="sm" className="text-sm text-primary hover:underline font-medium">
                         Forgot password?
                       </Link>
                   </div>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <FormControl>
-                    <Input type="password" placeholder="********" {...field} className="pl-10" />
+                    <Input type="password" placeholder="********" {...field} className="pl-10 h-11" />
                   </FormControl>
                 </div>
                 <FormMessage />
               </FormItem>
             )}
           />
-          <Button type="submit" variant="destructive" className="w-full" disabled={isLoading}>
+          <Button type="submit" variant="default" className="w-full h-11 font-bold shadow-md" disabled={isLoading}>
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Sign In
           </Button>

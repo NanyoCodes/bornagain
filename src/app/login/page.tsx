@@ -1,4 +1,11 @@
+
 'use client';
+
+/**
+ * @fileOverview This page handles the login experience, including social login (Google)
+ * and traditional email/password login. It includes robust error handling and
+ * automatic redirection for already-authenticated users.
+ */
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -29,7 +36,7 @@ export default function LoginPage() {
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const { user, loading: authLoading } = useUser();
 
-  // Redirect away if already logged in
+  // Redirect away if already logged in to prevent double-login
   useEffect(() => {
     if (!authLoading && user) {
       router.replace('/dashboard/testimonies');
@@ -37,6 +44,8 @@ export default function LoginPage() {
   }, [user, authLoading, router]);
 
   const handleSocialLogin = async (provider: 'google') => {
+    if (isGoogleLoading) return;
+    
     setIsGoogleLoading(true);
     if (!auth || !firestore) {
       toast({
@@ -47,9 +56,14 @@ export default function LoginPage() {
       setIsGoogleLoading(false);
       return;
     }
+
     const authProvider = new GoogleAuthProvider();
+    // Add custom parameters to force user to select an account if needed, 
+    // or just use default for smoother "Remember Me" behavior.
+    authProvider.setCustomParameters({ prompt: 'select_account' });
+
     try {
-      // Ensure persistence is set before sign in
+      // Reinforce persistence right before sign-in to be absolutely sure
       await setPersistence(auth, browserLocalPersistence);
       const result = await signInWithPopup(auth, authProvider);
       const user = result.user;
@@ -70,7 +84,8 @@ export default function LoginPage() {
         photoURL: user.photoURL,
       };
 
-      // Create or merge user profile in Firestore
+      // Background sync: Create or merge user profile in Firestore
+      // We don't await this to speed up the login redirect
       setDoc(userDocRef, userData, { merge: true }).catch((serverError) => {
         const permissionError = new FirestorePermissionError({
           path: userDocRef.path,
@@ -81,17 +96,30 @@ export default function LoginPage() {
       });
 
       toast({
-        title: 'Success',
-        description: 'You are now logged in.',
+        title: 'Welcome Back!',
+        description: 'You have been successfully signed in.',
       });
+      
       router.push('/dashboard/testimonies');
     } catch (error) {
       const authError = error as AuthError;
-      if (authError.code !== 'auth/popup-closed-by-user') {
+      console.error('Social login error:', authError);
+      
+      let message = 'An unexpected error occurred during sign in.';
+      
+      if (authError.code === 'auth/popup-closed-by-user') {
+        message = 'Login was canceled. Please try again.';
+      } else if (authError.code === 'auth/popup-blocked') {
+        message = 'The login popup was blocked by your browser. Please allow popups and try again.';
+      } else if (authError.code === 'auth/network-request-failed') {
+        message = 'Network error. Please check your internet connection.';
+      }
+
+      if (authError.code !== 'auth/popup-closed-by-user' || process.env.NODE_ENV === 'development') {
         toast({
           variant: 'destructive',
-          title: 'Login Failed',
-          description: authError.message || 'An unexpected error occurred.',
+          title: 'Sign In Failed',
+          description: message,
         });
       }
     } finally {
@@ -121,7 +149,7 @@ export default function LoginPage() {
 
         <div className="text-center text-sm">
           Don&apos;t have an account?{' '}
-          <Link href="/" className="underline cursor-pointer">
+          <Link href="/" className="underline cursor-pointer font-semibold text-primary">
             Sign up
           </Link>
         </div>
@@ -138,7 +166,7 @@ export default function LoginPage() {
           </div>
 
           <div className="grid grid-cols-1 gap-2">
-              <Button variant="outline" onClick={() => handleSocialLogin('google')} disabled={isGoogleLoading}>
+              <Button variant="outline" onClick={() => handleSocialLogin('google')} disabled={isGoogleLoading} className="h-11">
                   {isGoogleLoading ? (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   ) : (

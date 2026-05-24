@@ -1,4 +1,10 @@
+
 'use client';
+
+/**
+ * @fileOverview This layout wrapper handles dashboard-specific logic, including
+ * mandatory authentication redirects and unread notification tracking.
+ */
 
 import Image from "next/image";
 import Link from "next/link";
@@ -37,7 +43,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { useUser, useAuth, useFirestore, useCollection, useDoc } from "@/firebase";
+import { useUser, useAuth, useFirestore, useCollection, useUserProfile } from "@/firebase";
 import { signOut } from "firebase/auth";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { SearchProvider, useSearch } from "@/context/search-context";
@@ -104,7 +110,7 @@ function AppHeader({ unreadChatCount }: { unreadChatCount: number }) {
               <Input
                 type="search"
                 placeholder={searchPlaceholder}
-                className="w-full pl-8"
+                className="w-full pl-8 h-11"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 autoFocus
@@ -158,7 +164,7 @@ function AppHeader({ unreadChatCount }: { unreadChatCount: number }) {
                 <Input
                   type="search"
                   placeholder={searchPlaceholder}
-                  className="pl-8 sm:w-auto md:w-[250px] lg:w-[300px]"
+                  className="pl-8 sm:w-auto md:w-[250px] lg:w-[300px] h-10"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
@@ -173,10 +179,10 @@ function AppHeader({ unreadChatCount }: { unreadChatCount: number }) {
           </Button>
         )}
         <Link href="/dashboard/chats">
-            <Button variant="ghost" size="icon" className="relative">
+            <Button variant="ghost" size="icon" className="relative h-10 w-10">
               <MessagesSquare className="h-5 w-5" />
               {unreadChatCount > 0 && (
-                <div className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-xs font-bold text-destructive-foreground">
+                <div className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[10px] font-bold text-destructive-foreground">
                   {unreadChatCount}
                 </div>
               )}
@@ -184,10 +190,10 @@ function AppHeader({ unreadChatCount }: { unreadChatCount: number }) {
             </Button>
         </Link>
         <Link href="/dashboard/notifications">
-            <Button variant="ghost" size="icon" className="relative">
+            <Button variant="ghost" size="icon" className="relative h-10 w-10">
               <Bell className="h-5 w-5" />
               {unreadCount > 0 && (
-                <div className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-xs font-bold text-destructive-foreground">
+                <div className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[10px] font-bold text-destructive-foreground">
                   {unreadCount}
                 </div>
               )}
@@ -196,7 +202,7 @@ function AppHeader({ unreadChatCount }: { unreadChatCount: number }) {
         </Link>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="rounded-full">
+            <Button variant="ghost" size="icon" className="rounded-full h-10 w-10">
               <Avatar className="h-8 w-8">
                 <AvatarImage src={user.photoURL ?? undefined} alt={user.displayName || "User avatar"} />
                 <AvatarFallback>{user.displayName?.charAt(0) || user.email?.charAt(0) || 'U'}</AvatarFallback>
@@ -207,6 +213,7 @@ function AppHeader({ unreadChatCount }: { unreadChatCount: number }) {
             <DropdownMenuLabel className="font-normal">
               <div className="flex flex-col space-y-1">
                 <p className="text-sm font-medium leading-none">{user.displayName || 'User'}</p>
+                <p className="text-xs text-muted-foreground truncate">{user.email}</p>
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
@@ -236,7 +243,7 @@ function AppHeader({ unreadChatCount }: { unreadChatCount: number }) {
                 </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleLogout}>
+            <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive">
                 <LogOut className="mr-2 h-4 w-4" />
                 <span>Logout</span>
             </DropdownMenuItem>
@@ -251,7 +258,7 @@ function BottomNavBar() {
     const pathname = usePathname();
   
     return (
-      <nav className="fixed bottom-0 left-0 right-0 z-40 border-t bg-background/80 backdrop-blur-lg md:hidden pb-[env(safe-area-inset-bottom)]">
+      <nav className="fixed bottom-0 left-0 right-0 z-40 border-t bg-background/80 backdrop-blur-lg md:hidden pb-[env(safe-area-inset-bottom)] shadow-[0_-5px_15px_-10px_rgba(0,0,0,0.1)]">
         <div className="flex h-16 items-center justify-around px-2">
           {navItems.map((item) => {
             const isActive = pathname.startsWith(item.href);
@@ -289,8 +296,7 @@ export default function DashboardClientLayout({ children }: { children: React.Re
 
   useEffect(() => { setMounted(true); }, []);
 
-  const userDocRef = useMemo(() => (user && firestore ? doc(firestore, 'users', user.uid) : null), [user, firestore]);
-  const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userDocRef);
+  const { userProfile, loading: profileLoading } = useUserProfile();
 
   const unreadChatNotifsQuery = useMemo(() => {
     if (!user?.uid || !firestore) return null;
@@ -303,10 +309,12 @@ export default function DashboardClientLayout({ children }: { children: React.Re
   const { data: unreadChatNotifications } = useCollection<Notification>(unreadChatNotifsQuery);
   const unreadChatCount = unreadChatNotifications?.length ?? 0;
 
+  // Protect dashboard routes
   useEffect(() => {
     if (!loading && !user) router.push('/login');
   }, [loading, user, router]);
 
+  // Update "last active" timestamp in the background
   useEffect(() => {
     if (user && firestore && !lastActiveUpdated) {
       const userRef = doc(firestore, 'users', user.uid);
@@ -318,6 +326,7 @@ export default function DashboardClientLayout({ children }: { children: React.Re
     }
   }, [user, firestore, lastActiveUpdated]);
 
+  // Welcome popup for first-time profile completion in session
   useEffect(() => {
     if (profileLoading || !userProfile) return;
     const isNewUserSession = sessionStorage.getItem('isNewUserSession') === 'true';
@@ -334,7 +343,7 @@ export default function DashboardClientLayout({ children }: { children: React.Re
 
   const isProfileIncomplete = userProfile && (!userProfile.firstName || !userProfile.lastName);
 
-  if (loading || profileLoading || !user?.uid) {
+  if (loading || (profileLoading && !userProfile) || !user?.uid) {
     return (
       <div className="flex min-h-screen w-full flex-col items-center justify-center bg-background">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
