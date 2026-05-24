@@ -32,6 +32,7 @@ import { useJsApiLoader, GoogleMap, MarkerF } from '@react-google-maps/api';
 import { Skeleton } from "../ui/skeleton";
 import { Card, CardContent } from "../ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
 import { Country, State, City } from 'country-state-city';
 
 const libraries: ('places')[] = ['places'];
@@ -584,7 +585,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
           />
 
           <Button type="submit" className="w-full h-12 text-lg font-bold" disabled={isSubmitting}>
-            {isSubmitting ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : 'Save Changes'}
+            {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 'Save Changes'}
           </Button>
         </form>
       </Form>
