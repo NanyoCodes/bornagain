@@ -173,6 +173,10 @@ export default function ProfilePage() {
     return list.map(v => ({ ...v, embedUrl: getYouTubeEmbedUrl(v.url) })).filter(v => !!v.embedUrl);
   }, [userProfile]);
 
+  const isProfileIncomplete = useMemo(() => {
+    return userProfile && (!userProfile.firstName || !userProfile.lastName || !userProfile.photoURL);
+  }, [userProfile]);
+
   useEffect(() => {
     if (!firestore || campaignsLoading || !joinedCampaignsDocs) {
         setActiveJoinedCampaigns([]);
@@ -337,25 +341,33 @@ export default function ProfilePage() {
       <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b">
         <CardContent className="p-6 sm:p-8">
           <div className="flex flex-col items-center sm:items-start sm:flex-row gap-6">
-            <Dialog>
-                <DialogTrigger asChild disabled={!photoURL}>
-                    <Avatar className={cn("h-24 w-24 sm:h-32 sm:w-32 border-4 border-background shrink-0 shadow-lg", photoURL && "cursor-pointer")}>
-                        <AvatarImage src={photoURL ?? undefined} alt={displayName || 'user'} />
-                        <AvatarFallback className="text-3xl sm:text-4xl">
-                            {firstName?.charAt(0) || email?.charAt(0) || 'U'}
-                        </AvatarFallback>
-                    </Avatar>
-                </DialogTrigger>
-                {photoURL && (
-                    <DialogContent className="p-0 bg-transparent border-0 w-auto max-w-lg">
-                        <DialogHeader className="sr-only">
-                            <DialogTitle>Profile photo of {displayName}</DialogTitle>
-                            <DialogDescription>A larger view of your profile photo.</DialogDescription>
-                        </DialogHeader>
-                        <Image src={photoURL} alt={displayName} width={600} height={600} className="rounded-lg object-contain" unoptimized />
-                    </DialogContent>
-                )}
-            </Dialog>
+            <div className="relative">
+              <Dialog>
+                  <DialogTrigger asChild disabled={!photoURL}>
+                      <Avatar className={cn("h-24 w-24 sm:h-32 sm:w-32 border-4 border-background shrink-0 shadow-lg", photoURL && "cursor-pointer")}>
+                          <AvatarImage src={photoURL ?? undefined} alt={displayName || 'user'} />
+                          <AvatarFallback className="text-3xl sm:text-4xl">
+                              {firstName?.charAt(0) || email?.charAt(0) || 'U'}
+                          </AvatarFallback>
+                      </Avatar>
+                  </DialogTrigger>
+                  {photoURL && (
+                      <DialogContent className="p-0 bg-transparent border-0 w-auto max-w-lg">
+                          <DialogHeader className="sr-only">
+                              <DialogTitle>Profile photo of {displayName}</DialogTitle>
+                              <DialogDescription>A larger view of your profile photo.</DialogDescription>
+                          </DialogHeader>
+                          <Image src={photoURL} alt={displayName} width={600} height={600} className="rounded-lg object-contain" unoptimized />
+                      </DialogContent>
+                  )}
+              </Dialog>
+              {isProfileIncomplete && (
+                <div className="absolute -top-1 -right-1 flex h-4 w-4">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-4 w-4 bg-red-600 border-2 border-background"></span>
+                </div>
+              )}
+            </div>
             <div className="flex-grow w-full text-center sm:text-left space-y-4">
                 <div className="flex flex-col sm:flex-row justify-between items-center sm:items-start gap-4">
                     <div className="flex-grow min-w-0">

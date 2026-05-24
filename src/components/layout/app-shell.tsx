@@ -61,12 +61,15 @@ const NOTIFICATION_TYPES = ['campaign_join', 'new_chat_message', 'accountability
 
 function AppHeader({ unreadChatCount, unreadNotifCount }: { unreadChatCount: number, unreadNotifCount: number }) {
   const { user } = useUser();
+  const { userProfile } = useUserProfile();
   const pathname = usePathname();
   const auth = useAuth();
   const router = useRouter();
   const logo = PlaceHolderImages.find((img) => img.id === "logo");
   const { searchTerm, setSearchTerm, searchPlaceholder, isSearchVisible } = useSearch();
   const [showMobileSearch, setShowMobileSearch] = useState(false);
+
+  const isProfileIncomplete = userProfile && (!userProfile.firstName || !userProfile.lastName || !userProfile.photoURL);
 
   const handleLogout = async () => {
     if (!auth) return;
@@ -179,11 +182,17 @@ function AppHeader({ unreadChatCount, unreadNotifCount }: { unreadChatCount: num
             </Link>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="rounded-full">
+                <Button variant="ghost" size="icon" className="rounded-full relative">
                   <Avatar className="h-8 w-8">
                     <AvatarImage src={user.photoURL ?? undefined} />
                     <AvatarFallback>{user.displayName?.charAt(0) || 'U'}</AvatarFallback>
                   </Avatar>
+                  {isProfileIncomplete && (
+                    <span className="absolute top-0 right-0 flex h-2.5 w-2.5">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-600 border border-background"></span>
+                    </span>
+                  )}
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-56" align="end">
@@ -352,7 +361,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 <PageTransition>{children}</PageTransition>
             </div>
         </main>
-        {user && <BottomNavBar />}
+        {user && BottomNavBar && <BottomNavBar />}
         
         {user && !isProfileIncomplete && <WelcomePopup isOpen={showWelcomePopup} onClose={() => setShowWelcomePopup(false)} userName={userProfile?.firstName} />}
         

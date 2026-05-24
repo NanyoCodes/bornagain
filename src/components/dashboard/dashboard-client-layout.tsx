@@ -68,6 +68,7 @@ const OTHER_NOTIFICATION_TYPES = ['campaign_join', 'new_chat_message', 'accounta
 
 function AppHeader({ unreadChatCount }: { unreadChatCount: number }) {
   const { user } = useUser();
+  const { userProfile } = useUserProfile();
   const pathname = usePathname();
   const auth = useAuth();
   const firestore = useFirestore();
@@ -87,6 +88,8 @@ function AppHeader({ unreadChatCount }: { unreadChatCount: number }) {
 
   const { data: unreadOtherNotifications } = useCollection<Notification>(otherNotificationsQuery);
   const unreadCount = unreadOtherNotifications?.length ?? 0;
+
+  const isProfileIncomplete = userProfile && (!userProfile.firstName || !userProfile.lastName || !userProfile.photoURL);
 
   const handleLogout = async () => {
     if (!auth) return;
@@ -201,11 +204,17 @@ function AppHeader({ unreadChatCount }: { unreadChatCount: number }) {
         </Link>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="rounded-full h-10 w-10">
+            <Button variant="ghost" size="icon" className="rounded-full h-10 w-10 relative">
               <Avatar className="h-8 w-8">
                 <AvatarImage src={user.photoURL ?? undefined} alt={user.displayName || "User avatar"} />
                 <AvatarFallback>{user.displayName?.charAt(0) || user.email?.charAt(0) || 'U'}</AvatarFallback>
               </Avatar>
+              {isProfileIncomplete && (
+                <span className="absolute top-1 right-1 flex h-2.5 w-2.5">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-600 border border-background"></span>
+                </span>
+              )}
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-56" align="end" forceMount>
