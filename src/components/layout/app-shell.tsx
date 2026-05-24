@@ -337,9 +337,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     }
   }, [profileLoading, userProfile]);
 
-  if (authLoading || (profileLoading && !isPublicRoute)) {
+  // STRIKE: Prevent flickering by returning a full-screen loader until auth is resolved.
+  // We also return the loader if we're on a private route but haven't confirmed a user yet.
+  if (authLoading || (profileLoading && !isPublicRoute) || (!user && !isPublicRoute)) {
     return (
-      <div className="flex h-screen items-center justify-center">
+      <div className="flex h-screen w-full items-center justify-center bg-background">
         <Loader2 className="h-10 w-10 animate-spin text-primary" />
       </div>
     );

@@ -349,8 +349,7 @@ export default function DashboardClientLayout({ children }: { children: React.Re
     }
   }, [profileLoading, userProfile]);
 
-  const isProfileIncomplete = userProfile && (!userProfile.firstName || !userProfile.lastName);
-
+  // STRIKE: Prevent guest-state flickering by showing the loader until auth is confirmed for this internal layout.
   if (loading || (profileLoading && !userProfile) || !user?.uid) {
     return (
       <div className="flex min-h-screen w-full flex-col items-center justify-center bg-background">
@@ -359,6 +358,8 @@ export default function DashboardClientLayout({ children }: { children: React.Re
       </div>
     );
   }
+
+  const isProfileIncomplete = userProfile && (!userProfile.firstName || !userProfile.lastName);
 
   return (
     <SearchProvider>

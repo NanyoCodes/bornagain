@@ -1,4 +1,3 @@
-
 'use client';
 
 /**
@@ -58,12 +57,9 @@ export default function LoginPage() {
     }
 
     const authProvider = new GoogleAuthProvider();
-    // Add custom parameters to force user to select an account if needed, 
-    // or just use default for smoother "Remember Me" behavior.
     authProvider.setCustomParameters({ prompt: 'select_account' });
 
     try {
-      // Reinforce persistence right before sign-in to be absolutely sure
       await setPersistence(auth, browserLocalPersistence);
       const result = await signInWithPopup(auth, authProvider);
       const user = result.user;
@@ -84,8 +80,6 @@ export default function LoginPage() {
         photoURL: user.photoURL,
       };
 
-      // Background sync: Create or merge user profile in Firestore
-      // We don't await this to speed up the login redirect
       setDoc(userDocRef, userData, { merge: true }).catch((serverError) => {
         const permissionError = new FirestorePermissionError({
           path: userDocRef.path,
@@ -127,7 +121,8 @@ export default function LoginPage() {
     }
   };
 
-  if (authLoading) {
+  // STRIKE: If user is truthy, we are about to redirect. Return the loader to prevent the login form from flickering.
+  if (authLoading || user) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
         <Loader2 className="h-10 w-10 animate-spin text-primary" />

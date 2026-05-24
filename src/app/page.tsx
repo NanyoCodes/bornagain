@@ -99,7 +99,8 @@ export default function Page() {
     }
   };
 
-  if (authLoading) {
+  // STRIKE: If user is truthy, we are about to redirect. Return the loader to prevent the signup form from flickering.
+  if (authLoading || user) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
         <Loader2 className="h-10 w-10 animate-spin text-primary" />
