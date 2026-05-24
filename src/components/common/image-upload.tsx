@@ -124,8 +124,15 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
 
     const fileName = file instanceof File ? file.name : 'cropped-image.jpg';
     const fileRef = ref(storage, `${storagePath}/${user.uid}/${Date.now()}_${fileName}`);
-    await uploadBytes(fileRef, file);
-    return getDownloadURL(fileRef);
+    try {
+        await uploadBytes(fileRef, file);
+        return getDownloadURL(fileRef);
+    } catch (err: any) {
+        if (err.code === 'storage/unauthorized') {
+            throw new Error("Permission denied. Ensure your storage bucket is correctly configured.");
+        }
+        throw err;
+    }
   };
 
   const handleCrop = async () => {
@@ -150,10 +157,14 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
 
     } catch (error: any) {
       console.error("Storage upload error:", error);
+      const message = error.message === 'Failed to fetch' 
+        ? "Network error during upload. Please check your connection or storage CORS settings."
+        : (error.message || "An unknown error occurred during upload.");
+        
       toast({ 
         variant: 'destructive', 
         title: 'Upload Failed', 
-        description: error.message || "An unknown error occurred during upload."
+        description: message
       });
       setPreviewUrl(initialImageUrl || null);
     } finally {

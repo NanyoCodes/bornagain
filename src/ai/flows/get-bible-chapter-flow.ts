@@ -1,4 +1,3 @@
-
 'use server';
 /**
  * @fileOverview A Genkit flow for fetching Bible chapter content from external APIs.
@@ -44,12 +43,15 @@ async function fetchFromPublicApi(book: string, chapter: number, version?: strin
   }
 
   try {
-    const response = await fetch(url, { headers: { 'Content-Type': 'application/json' } });
+    const response = await fetch(url, { 
+        headers: { 'Content-Type': 'application/json' },
+        signal: AbortSignal.timeout(10000) // 10 second timeout
+    });
 
     if (!response.ok) {
       const errorBody = await response.text();
       console.error(`Public Bible API Error: ${response.status} ${response.statusText}`, errorBody);
-      throw new Error(`Failed to fetch chapter from public API. Status: ${response.status}`);
+      throw new Error(`Public Bible API returned status ${response.status}. It may be temporarily unavailable.`);
     }
 
     const data = await response.json();
@@ -64,9 +66,12 @@ async function fetchFromPublicApi(book: string, chapter: number, version?: strin
       verses: formattedVerses,
       translation: data.translation_name,
     };
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error fetching from public Bible API:', error);
-    throw new Error('Could not retrieve Bible chapter from the public API.');
+    if (error.name === 'AbortError' || error.message?.includes('fetch')) {
+        throw new Error('The Bible API could not be reached. Please check your internet connection and try again.');
+    }
+    throw error;
   }
 }
 
