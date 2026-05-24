@@ -469,7 +469,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({
                         {inspiredBy.length > 0 && <div className="bg-chart-3 rounded-full p-1 border-2 border-background z-20 shadow-sm"><Sparkles className="h-2.5 w-2.5 text-white fill-current" /></div>}
                         {connectedBy.length > 0 && <div className="bg-blue-500 rounded-full p-1 border-2 border-background z-10 shadow-sm"><PartyPopper className="h-2.5 w-2.5 text-white" /></div>}
                     </div>
-                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-tight">{totalReactions} Reactions</span>
+                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-tight">{totalReactions}</span>
                 </div>
                 {testimony.campaignTitle && (
                    <span className="text-[10px] font-medium text-muted-foreground truncate italic opacity-60 bg-muted/50 px-2 py-0.5 rounded-full border">In mission: {testimony.campaignTitle}</span>
