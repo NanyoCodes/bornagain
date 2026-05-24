@@ -57,10 +57,10 @@ export function LocationWonInput({ form }: LocationWonInputProps) {
               }}
               value={field.value}
             >
-              <SelectTrigger className="text-sm">
+              <SelectTrigger className="text-sm h-11">
                 <SelectValue placeholder="Select Country" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="max-h-[300px] overflow-y-auto">
                 {countries.map((c) => (
                   <SelectItem key={c.isoCode} value={c.name}>
                     {c.name}
@@ -88,10 +88,10 @@ export function LocationWonInput({ form }: LocationWonInputProps) {
                 value={field.value}
                 disabled={!selectedCountryName || states.length === 0}
               >
-                <SelectTrigger className="text-sm">
+                <SelectTrigger className="text-sm h-11">
                   <SelectValue placeholder={states.length === 0 ? "N/A" : "Select State"} />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="max-h-[300px] overflow-y-auto">
                   {states.map((s) => (
                     <SelectItem key={s.isoCode + s.name} value={s.name}>
                       {s.name}
@@ -115,10 +115,10 @@ export function LocationWonInput({ form }: LocationWonInputProps) {
                 value={field.value}
                 disabled={!selectedStateName || cities.length === 0}
               >
-                <SelectTrigger className="text-sm">
+                <SelectTrigger className="text-sm h-11">
                   <SelectValue placeholder={cities.length === 0 ? "N/A" : "Select City"} />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="max-h-[300px] overflow-y-auto">
                   {cities.map((c) => (
                     <SelectItem key={c.name} value={c.name}>
                       {c.name}

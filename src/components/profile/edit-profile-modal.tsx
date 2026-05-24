@@ -459,7 +459,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                               <SelectValue placeholder="Select Country" />
                             </SelectTrigger>
                           </FormControl>
-                          <SelectContent>
+                          <SelectContent className="max-h-[300px] overflow-y-auto">
                             {countriesList.map((c) => (
                               <SelectItem key={c.isoCode} value={c.name}>
                                 {c.name}
@@ -489,7 +489,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                                 <SelectValue placeholder={statesList.length === 0 ? "N/A" : "Select State"} />
                               </SelectTrigger>
                             </FormControl>
-                            <SelectContent>
+                            <SelectContent className="max-h-[300px] overflow-y-auto">
                               {statesList.map((s) => (
                                 <SelectItem key={s.isoCode + s.name} value={s.name}>
                                   {s.name}
@@ -514,7 +514,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                                 <SelectValue placeholder={citiesList.length === 0 ? "N/A" : "Select City"} />
                               </SelectTrigger>
                             </FormControl>
-                            <SelectContent>
+                            <SelectContent className="max-h-[300px] overflow-y-auto">
                               {citiesList.map((c) => (
                                 <SelectItem key={c.name} value={c.name}>
                                   {c.name}

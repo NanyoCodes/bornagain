@@ -220,7 +220,7 @@ function FellowshipForm({
                                             <SelectValue placeholder="Select Country" />
                                         </SelectTrigger>
                                     </FormControl>
-                                    <SelectContent>
+                                    <SelectContent className="max-h-[300px] overflow-y-auto">
                                         {countriesList.map(c => (
                                             <SelectItem key={c.isoCode} value={c.name}>{c.name}</SelectItem>
                                         ))}
@@ -244,7 +244,7 @@ function FellowshipForm({
                                                 <SelectValue placeholder={statesList.length === 0 ? "N/A" : "Select State"} />
                                             </SelectTrigger>
                                         </FormControl>
-                                        <SelectContent>
+                                        <SelectContent className="max-h-[300px] overflow-y-auto">
                                             {statesList.map(s => (
                                                 <SelectItem key={s.isoCode + s.name} value={s.name}>{s.name}</SelectItem>
                                             ))}
@@ -267,7 +267,7 @@ function FellowshipForm({
                                                 <SelectValue placeholder={citiesList.length === 0 ? "N/A" : "Select City"} />
                                             </SelectTrigger>
                                         </FormControl>
-                                        <SelectContent>
+                                        <SelectContent className="max-h-[300px] overflow-y-auto">
                                             {citiesList.map(city => (
                                                 <SelectItem key={city.name} value={city.name}>{city.name}</SelectItem>
                                             ))}
@@ -434,7 +434,7 @@ function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting, onDelete
                                         <SelectValue placeholder="Select Country" />
                                     </SelectTrigger>
                                 </FormControl>
-                                <SelectContent>
+                                <SelectContent className="max-h-[300px] overflow-y-auto">
                                     {countriesList.map(c => (
                                         <SelectItem key={c.isoCode} value={c.name}>{c.name}</SelectItem>
                                     ))}
@@ -458,7 +458,7 @@ function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting, onDelete
                                             <SelectValue placeholder={statesList.length === 0 ? "N/A" : "Select State"} />
                                         </SelectTrigger>
                                     </FormControl>
-                                    <SelectContent>
+                                    <SelectContent className="max-h-[300px] overflow-y-auto">
                                         {statesList.map(s => (
                                             <SelectItem key={s.isoCode + s.name} value={s.name}>{s.name}</SelectItem>
                                         ))}
@@ -481,7 +481,7 @@ function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting, onDelete
                                             <SelectValue placeholder={citiesList.length === 0 ? "N/A" : "Select City"} />
                                         </SelectTrigger>
                                     </FormControl>
-                                    <SelectContent>
+                                    <SelectContent className="max-h-[300px] overflow-y-auto">
                                         {citiesList.map(city => (
                                             <SelectItem key={city.name} value={city.name}>{city.name}</SelectItem>
                                         ))}
