@@ -54,6 +54,7 @@ import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { PasswordSettingsCard } from '@/components/settings/password-settings-card';
 import { useFontSize } from '@/components/font-size-provider';
+import { PwaInstallCard } from '@/components/settings/pwa-install-card';
 
 const notificationFormSchema = z.object({
   newCampaignsInArea: z.boolean().default(false),
@@ -255,6 +256,7 @@ export default function SettingsPage() {
             <ProfileSettingsCard />
             <ChurchSettingsCard userProfile={userProfile} userId={user.uid} />
             <AppearanceSettingsCard />
+            <PwaInstallCard />
             <NotificationSettingsForm userProfile={userProfile} userId={user.uid} />
             <PasswordSettingsCard />
             <ContactCard />
