@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -31,6 +32,8 @@ import { ImageUpload } from "../common/image-upload";
 import { useJsApiLoader, GoogleMap, MarkerF } from '@react-google-maps/api';
 import { Skeleton } from "../ui/skeleton";
 import { Card, CardContent } from "../ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Country, State, City } from 'country-state-city';
 
 const libraries: ('places')[] = ['places'];
 const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
@@ -50,9 +53,9 @@ const formSchema = z.object({
   photoURL: z.string().optional(),
   bio: z.string().max(280, "Bio is too long.").optional(),
   videoTestimonies: z.array(videoSchema).default([]),
-  city: z.string().max(50, "City is too long.").optional(),
-  state: z.string().max(50, "State is too long.").optional(),
-  country: z.string().max(50, "Country is too long.").optional(),
+  city: z.string().max(100, "City is too long.").optional(),
+  state: z.string().max(100, "State is too long.").optional(),
+  country: z.string().optional(),
   latitude: z.number().optional().nullable(),
   longitude: z.number().optional().nullable(),
   phone: z.string().max(50, "Phone number is too long.").optional(),
@@ -108,7 +111,6 @@ function PrivateLocationMap({ form, markerPosition }: { form: any, markerPositio
     );
 }
 
-
 export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps) {
   const { toast } = useToast();
   const { user } = useUser();
@@ -117,13 +119,15 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
   
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const countriesList = useMemo(() => Country.getAllCountries(), []);
+
   const initialVideos = useMemo(() => {
     const vids = [...(userProfile.videoTestimonies || [])];
     if (userProfile.videoTestimonyUrl && !vids.some(v => v.url === userProfile.videoTestimonyUrl)) {
         vids.unshift({ url: userProfile.videoTestimonyUrl, title: "My Testimony" });
     }
     return vids;
-  }, [userProfile]);
+  }, [userProfile.videoTestimonyUrl, userProfile.videoTestimonies]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -150,6 +154,28 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
 
   const watchedLat = form.watch('latitude');
   const watchedLng = form.watch('longitude');
+  const watchedCountryName = form.watch('country');
+  const watchedStateName = form.watch('state');
+
+  const selectedCountry = useMemo(() => 
+    countriesList.find(c => c.name === watchedCountryName), 
+    [countriesList, watchedCountryName]
+  );
+
+  const statesList = useMemo(() => 
+    selectedCountry ? State.getStatesOfCountry(selectedCountry.isoCode) : [], 
+    [selectedCountry]
+  );
+
+  const selectedState = useMemo(() => 
+    statesList.find(s => s.name === watchedStateName), 
+    [statesList, watchedStateName]
+  );
+
+  const citiesList = useMemo(() => 
+    (selectedCountry && selectedState) ? City.getCitiesOfState(selectedCountry.isoCode, selectedState.isoCode) : [], 
+    [selectedCountry, selectedState]
+  );
 
   const markerPosition = useMemo(() => {
     if (watchedLat != null && watchedLng != null) {
@@ -252,8 +278,6 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
         </div>
     </div>
   );
-
-  const sourceValue = useWatch({ control: form.control, name: "videoTestimonies" });
 
   return (
     <>
@@ -417,7 +441,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
               </AccordionTrigger>
               <AccordionContent className="p-4 pt-0 space-y-4">
                 <div>
-                  <Label>Location Search</Label>
+                  <Label className="mb-2 block">Quick Location Search</Label>
                   <LocationProfileInput form={form} />
                 </div>
 
@@ -436,32 +460,92 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                     )}
                 </div>
                 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <FormField control={form.control} name="city" render={({ field }) => (
+                <div className="space-y-4 pt-2">
+                  <FormField control={form.control} name="country" render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-xs">City (Public)</FormLabel>
-                        <FormControl><Input placeholder="e.g., Nairobi" {...field} value={field.value ?? ""} /></FormControl>
+                        <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Country (Public)</FormLabel>
+                        <Select 
+                          onValueChange={(val) => { 
+                              field.onChange(val); 
+                              form.setValue('state', '', { shouldDirty: true }); 
+                              form.setValue('city', '', { shouldDirty: true }); 
+                          }} 
+                          value={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger className="text-base h-11">
+                              <SelectValue placeholder="Select Country" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {countriesList.map((c) => (
+                              <SelectItem key={c.isoCode} value={c.name}>
+                                {c.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-                  <FormField control={form.control} name="state" render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-xs">State (Public)</FormLabel>
-                        <FormControl><Input placeholder="e.g., California" {...field} value={field.value ?? ""} /></FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <FormField control={form.control} name="state" render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">State / Region</FormLabel>
+                          <Select 
+                            onValueChange={(val) => { 
+                                field.onChange(val); 
+                                form.setValue('city', '', { shouldDirty: true }); 
+                            }} 
+                            value={field.value}
+                            disabled={!watchedCountryName || statesList.length === 0}
+                          >
+                            <FormControl>
+                              <SelectTrigger className="text-base h-11">
+                                <SelectValue placeholder={statesList.length === 0 ? "N/A" : "Select State"} />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {statesList.map((s) => (
+                                <SelectItem key={s.isoCode + s.name} value={s.name}>
+                                  {s.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField control={form.control} name="city" render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">City</FormLabel>
+                          <Select 
+                            onValueChange={field.onChange} 
+                            value={field.value}
+                            disabled={!watchedStateName || citiesList.length === 0}
+                          >
+                            <FormControl>
+                              <SelectTrigger className="text-base h-11">
+                                <SelectValue placeholder={citiesList.length === 0 ? "N/A" : "Select City"} />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {citiesList.map((c) => (
+                                <SelectItem key={c.name} value={c.name}>
+                                  {c.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
                 </div>
-                <FormField control={form.control} name="country" render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-xs">Country (Public)</FormLabel>
-                      <FormControl><Input placeholder="e.g., Kenya" {...field} value={field.value ?? ""} /></FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
               </AccordionContent>
             </AccordionItem>
           </Accordion>
