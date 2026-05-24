@@ -466,7 +466,7 @@ export default function AccountabilityPage() {
   
   if (partners.length === 0) {
     return (
-      <div className="space-y-6 max-w-3xl mx-auto -mx-4 sm:mx-auto">
+      <div className="space-y-6 max-w-3xl mx-auto -mx-4 sm:mx-auto pb-32">
         <div className="flex flex-col items-center justify-center text-center p-8 sm:p-12 bg-muted/20 rounded-none sm:rounded-lg border-y sm:border-2 border-dashed">
             <HeartHandshake className="h-16 w-16 text-muted-foreground opacity-20" />
             <h2 className="mt-6 text-xl sm:text-2xl font-bold">Find a Partner</h2>
@@ -474,7 +474,7 @@ export default function AccountabilityPage() {
             Connect with fellow believers to stay motivated and grow together in your spiritual walk.
             </p>
         </div>
-        <div className="px-4 sm:px-0 pb-20">
+        <div className="px-4 sm:px-0">
             {userProfile && user && <AccountabilitySettingsCard userProfile={userProfile} userId={user.uid} />}
         </div>
       </div>
@@ -482,7 +482,7 @@ export default function AccountabilityPage() {
   }
   
   return (
-    <div className="space-y-8 max-w-3xl mx-auto -mx-4 sm:mx-auto pb-20">
+    <div className="space-y-8 max-w-3xl mx-auto -mx-4 sm:mx-auto pb-32">
       <div className="px-4 sm:px-0 space-y-1">
         <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Accountability Partners</h1>
         <p className="text-sm text-muted-foreground">Encourage your partners and keep each other on track.</p>

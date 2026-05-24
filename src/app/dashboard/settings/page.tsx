@@ -239,7 +239,7 @@ export default function SettingsPage() {
   const { data: userProfile, loading } = useDoc<UserProfile>(userDocRef);
 
   return (
-    <div className="space-y-8 max-w-3xl mx-auto -mx-4 sm:mx-auto pb-12">
+    <div className="space-y-8 max-w-3xl mx-auto -mx-4 sm:mx-auto pb-32">
       <div className="px-4 sm:px-0 space-y-1">
         <h1 className="text-2xl sm:text-3xl font-black font-headline tracking-tight uppercase">Settings</h1>
         <p className="text-xs sm:text-sm text-muted-foreground">Manage your identity and Kingdom preferences.</p>
@@ -253,7 +253,7 @@ export default function SettingsPage() {
         </div>
        ) : (
         <div className="space-y-6 md:space-y-8">
-            <ProfileSettingsCard />
+            < ProfileSettingsCard />
             <ChurchSettingsCard userProfile={userProfile} userId={user.uid} />
             <AppearanceSettingsCard />
             <PwaInstallCard />

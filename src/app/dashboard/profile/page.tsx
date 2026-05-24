@@ -337,7 +337,7 @@ export default function ProfilePage() {
   const { city, state } = location || {};
 
   return (
-    <div className="space-y-6 max-w-5xl mx-auto px-0 sm:px-0 pb-20">
+    <div className="space-y-6 max-w-5xl mx-auto px-0 sm:px-0 pb-32">
       <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b">
         <CardContent className="p-6 sm:p-8">
           <div className="flex flex-col items-center sm:items-start sm:flex-row gap-6">
@@ -621,7 +621,7 @@ export default function ProfilePage() {
                             searchTerm={soulSearchTerm}
                             setSearchTerm={setSoulSearchTerm}
                             filterDate={soulFilterDate}
-                            setFilterDate={setSoulFilterDate}
+                            setFilterDate={setFilterDate}
                             searchPlaceholder="Search souls by name..."
                         />
                         <ScrollArea className="h-48 border rounded-lg bg-muted/5">

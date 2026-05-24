@@ -291,7 +291,7 @@ export default function SoulsWonPage() {
   }, [souls, searchTerm]);
 
   return (
-    <div className="space-y-8 max-w-3xl mx-auto -mx-4 sm:mx-auto pb-20">
+    <div className="space-y-8 max-w-3xl mx-auto -mx-4 sm:mx-auto pb-32">
       {/* Responsive Single-Row Interaction Box */}
       <Card className="border shadow-sm sm:shadow-md rounded-none sm:rounded-lg border-x-0 sm:border-x">
         <CardContent className="p-2 sm:p-4">

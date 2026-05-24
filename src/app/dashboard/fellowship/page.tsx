@@ -202,7 +202,6 @@ function FellowshipForm({
                                 <RadioGroupItem value="Physical and Virtual" />
                                 </FormControl>
                                 <FormLabel className="font-normal">Both</FormLabel>
-                            </FormItem>
                             </RadioGroup>
                         </FormControl>
                         <FormMessage />
@@ -416,12 +415,11 @@ function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting, onDelete
                             <FormItem className="flex items-center space-x-2 space-y-0">
                                 <FormControl><RadioGroupItem value="Physical and Virtual" /></FormControl>
                                 <FormLabel className="font-normal">Both</FormLabel>
-                            </FormItem>
-                        </RadioGroup>
-                    </FormControl>
-                    <FormMessage />
-                    </FormItem>
-                )}
+                            </RadioGroup>
+                        </FormControl>
+                        <FormMessage />
+                        </FormItem>
+                    )}
             />
             {(form.watch('locationType') === 'Physical' || form.watch('locationType') === 'Physical and Virtual') && (
                 <div className="space-y-4">
@@ -742,7 +740,7 @@ export default function FellowshipPage() {
     const loading = userLoading || profileLoading || fellowshipsLoading;
 
     return (
-        <div className="space-y-8">
+        <div className="space-y-8 pb-32">
             {/* Responsive Single-Row Interaction Box */}
             <Card className="border shadow-sm sm:shadow-md rounded-none sm:rounded-lg border-x-0 sm:border-x -mx-4 sm:mx-0">
                 <CardContent className="p-3 sm:p-4">
