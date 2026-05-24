@@ -413,9 +413,9 @@ export default function ProfilePage() {
                     My Video Testimonies
                 </CardTitle>
             </CardHeader>
-            <CardContent className="p-0 sm:p-6 sm:pt-0">
+            <CardContent className="p-0">
                 <div className="w-full overflow-x-auto pb-4 scrollbar-hide">
-                    <div className="flex gap-4 p-4 sm:p-0 flex-nowrap">
+                    <div className="flex gap-4 p-4 sm:p-6 sm:pt-0 flex-nowrap">
                         {videoTestimonies.map((video, idx) => (
                             <div key={idx} className="flex-shrink-0 w-[280px] sm:w-[400px] space-y-2">
                                 {video.title && <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground truncate">{video.title}</p>}
