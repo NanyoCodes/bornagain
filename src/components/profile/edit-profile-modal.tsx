@@ -2,7 +2,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useForm, useFieldArray } from "react-hook-form";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,7 +18,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import React, { useState } from "react";
-import { Loader2, LocateFixed, Video, Map as MapIcon, AlertTriangle, Youtube } from "lucide-react";
+import { Loader2, LocateFixed, Video, Map as MapIcon, Youtube, Plus, Trash2, ExternalLink, Info } from "lucide-react";
 import { useUser, useFirestore, useAuth } from "@/firebase";
 import { doc, updateDoc, serverTimestamp } from "firebase/firestore";
 import { updateProfile } from "firebase/auth";
@@ -31,6 +31,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { ImageUpload } from "../common/image-upload";
 import { useJsApiLoader, GoogleMap, MarkerF } from '@react-google-maps/api';
 import { Skeleton } from "../ui/skeleton";
+import { Card, CardContent } from "../ui/card";
 
 const libraries: ('places')[] = ['places'];
 const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
@@ -39,12 +40,17 @@ const isValidKey = (key: string | undefined) => !!(key && key.startsWith('AIza')
 
 const fallbackCenter = { lat: 34.0522, lng: -118.2437 };
 
+const videoSchema = z.object({
+  url: z.string().url("Please enter a valid YouTube URL."),
+  title: z.string().max(100, "Title too long").optional(),
+});
+
 const formSchema = z.object({
   firstName: z.string().min(2, "First name must be at least 2 characters.").max(50, "Name is too long."),
   lastName: z.string().min(2, "Last name must be at least 2 characters.").max(50, "Name is too long."),
   photoURL: z.string().optional(),
   bio: z.string().max(280, "Bio is too long.").optional(),
-  videoTestimonyUrl: z.string().url("Please enter a valid YouTube URL.").optional().or(z.literal('')),
+  videoTestimonies: z.array(videoSchema).default([]),
   city: z.string().max(50, "City is too long.").optional(),
   state: z.string().max(50, "State is too long.").optional(),
   country: z.string().max(50, "Country is too long.").optional(),
@@ -112,6 +118,14 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
   
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const initialVideos = useMemo(() => {
+    const vids = [...(userProfile.videoTestimonies || [])];
+    if (userProfile.videoTestimonyUrl && !vids.some(v => v.url === userProfile.videoTestimonyUrl)) {
+        vids.unshift({ url: userProfile.videoTestimonyUrl, title: "My Testimony" });
+    }
+    return vids;
+  }, [userProfile]);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -119,7 +133,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
       lastName: userProfile.lastName || "",
       photoURL: userProfile.photoURL || "",
       bio: userProfile.bio || "",
-      videoTestimonyUrl: userProfile.videoTestimonyUrl || "",
+      videoTestimonies: initialVideos,
       city: userProfile.location?.city || "",
       state: userProfile.location?.state || "",
       country: userProfile.location?.country || "",
@@ -128,6 +142,11 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
       phone: userProfile.phone || "",
       defaultMeetingLink: userProfile.defaultMeetingLink || "",
     },
+  });
+
+  const { fields, append, remove } = useFieldArray({
+    control: form.control,
+    name: "videoTestimonies"
   });
 
   const watchedLat = form.watch('latitude');
@@ -163,25 +182,14 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
     }
     setIsSubmitting(true);
 
-    try {
-      const displayName = `${values.firstName} ${values.lastName}`;
-      const finalPhotoUrl = values.photoURL || "";
-
-      const authUpdatePayload: { displayName?: string; photoURL?: string } = {};
-      if (auth.currentUser.displayName !== displayName) { authUpdatePayload.displayName = displayName; }
-      if (auth.currentUser.photoURL !== finalPhotoUrl) { authUpdatePayload.photoURL = finalPhotoUrl; }
-      
-      const authUpdatePromise = Object.keys(authUpdatePayload).length > 0 
-        ? updateProfile(auth.currentUser, authUpdatePayload) 
-        : Promise.resolve();
-      
-      const firestoreUpdatePayload = {
+    const displayName = `${values.firstName} ${values.lastName}`;
+    const firestoreUpdatePayload = {
         firstName: values.firstName,
         lastName: values.lastName,
         fullName_lowercase: displayName.toLowerCase(),
         name_tokens: displayName.toLowerCase().split(/\s+/).filter(Boolean),
         bio: values.bio || "",
-        videoTestimonyUrl: values.videoTestimonyUrl || "",
+        videoTestimonies: values.videoTestimonies,
         location: {
           city: values.city || "",
           state: values.state || "",
@@ -193,10 +201,19 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
           longitude: values.longitude ?? null,
         },
         phone: values.phone || "",
-        photoURL: finalPhotoUrl,
+        photoURL: values.photoURL || "",
         defaultMeetingLink: values.defaultMeetingLink || null,
         lastUpdatedAt: serverTimestamp(),
-      };
+    };
+
+    try {
+      const authUpdatePayload: { displayName?: string; photoURL?: string } = {};
+      if (auth.currentUser.displayName !== displayName) { authUpdatePayload.displayName = displayName; }
+      if (auth.currentUser.photoURL !== (values.photoURL || "")) { authUpdatePayload.photoURL = values.photoURL || ""; }
+      
+      const authUpdatePromise = Object.keys(authUpdatePayload).length > 0 
+        ? updateProfile(auth.currentUser, authUpdatePayload) 
+        : Promise.resolve();
       
       await updateDoc(doc(firestore, 'users', user.uid), firestoreUpdatePayload);
       await authUpdatePromise;
@@ -223,6 +240,10 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
 
   const handleCreateMeet = () => {
     window.open('https://meet.google.com/new', '_blank');
+  };
+
+  const handleCreateYoutubeChannel = () => {
+    window.open('https://www.youtube.com/create_channel', '_blank');
   };
 
   const MapPlaceholder = () => (
@@ -297,27 +318,93 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
             )}
           />
 
-          <FormField
-            control={form.control}
-            name="videoTestimonyUrl"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="flex items-center gap-2">
-                    <Youtube className="h-4 w-4 text-red-600" />
-                    Video Testimony (YouTube URL)
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+                <FormLabel className="flex items-center gap-2 text-base font-bold">
+                    <Youtube className="h-5 w-5 text-red-600" />
+                    Video Testimonies
                 </FormLabel>
-                <FormControl>
-                  <Input placeholder="https://www.youtube.com/watch?v=..." {...field} value={field.value ?? ''} className="text-base" />
-                </FormControl>
-                <FormDescription>
-                    Link a YouTube video where you share your miracle or encounter with Christ.
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
+                <Button type="button" variant="outline" size="sm" onClick={() => append({ url: '', title: '' })} className="h-8">
+                    <Plus className="mr-1 h-3 w-3" /> Add Video
+                </Button>
+            </div>
+            
+            {fields.length === 0 ? (
+                <Card className="bg-primary/5 border-primary/20 border-dashed">
+                    <CardContent className="p-6 text-center space-y-4">
+                        <div className="bg-primary/10 w-12 h-12 rounded-full flex items-center justify-center mx-auto">
+                            <Video className="h-6 w-6 text-primary" />
+                        </div>
+                        <div className="space-y-1">
+                            <h4 className="font-bold text-sm">Help Share Your Glory</h4>
+                            <p className="text-xs text-muted-foreground leading-relaxed max-w-[250px] mx-auto">
+                                Sharing your story through video is a powerful way to testify of God's goodness.
+                            </p>
+                        </div>
+                        <div className="flex flex-col gap-2">
+                             <Button type="button" size="sm" onClick={handleCreateYoutubeChannel} className="font-bold">
+                                <Youtube className="mr-2 h-4 w-4" />
+                                Create YouTube Channel
+                                <ExternalLink className="ml-2 h-3 w-3" />
+                            </Button>
+                            <p className="text-[10px] text-muted-foreground flex items-center justify-center gap-1">
+                                <Info className="h-3 w-3" />
+                                Record your video, upload to YouTube, and paste the link here.
+                            </p>
+                        </div>
+                    </CardContent>
+                </Card>
+            ) : (
+                <div className="space-y-3">
+                    {fields.map((field, index) => (
+                        <div key={field.id} className="p-3 border rounded-xl bg-muted/20 relative group">
+                            <Button 
+                                type="button" 
+                                variant="ghost" 
+                                size="icon" 
+                                className="absolute -top-2 -right-2 h-6 w-6 rounded-full bg-background border shadow-sm text-destructive hover:text-destructive hover:bg-destructive/10"
+                                onClick={() => remove(index)}
+                            >
+                                <Trash2 className="h-3 w-3" />
+                            </Button>
+                            <div className="grid gap-3">
+                                <FormField
+                                    control={form.control}
+                                    name={`videoTestimonies.${index}.title`}
+                                    render={({ field }) => (
+                                        <FormItem className="space-y-1">
+                                            <FormLabel className="text-[10px] uppercase font-bold text-muted-foreground">Video Title (Optional)</FormLabel>
+                                            <FormControl>
+                                                <Input placeholder="e.g., My Healing Miracle" {...field} className="h-8 text-xs" />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name={`videoTestimonies.${index}.url`}
+                                    render={({ field }) => (
+                                        <FormItem className="space-y-1">
+                                            <FormLabel className="text-[10px] uppercase font-bold text-muted-foreground">YouTube URL</FormLabel>
+                                            <FormControl>
+                                                <Input placeholder="https://www.youtube.com/watch?v=..." {...field} className="h-8 text-xs" />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            </div>
+                        </div>
+                    ))}
+                    <p className="text-[10px] text-muted-foreground px-1 italic">
+                        Link videos where you share your miracles or encounters with Christ.
+                    </p>
+                </div>
             )}
-          />
+          </div>
          
-          <Accordion type="single" collapsible defaultValue="item-1" className="w-full border rounded-md">
+          <Accordion type="single" collapsible className="w-full border rounded-md">
             <AccordionItem value="item-1" className="border-none">
               <AccordionTrigger className="p-3 hover:no-underline [&[data-state=open]>svg]:rotate-180">
                 <div className="flex flex-col items-start text-left">

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useMemo, useState, useEffect } from 'react';
@@ -19,7 +20,8 @@ import {
     Award,
     HeartHandshake,
     Sparkles,
-    CalendarDays
+    CalendarDays,
+    Video
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -33,6 +35,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { cn, safeToDate } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import { ScrollArea } from '../ui/scroll-area';
 
 function getYouTubeEmbedUrl(url: string | undefined) {
   if (!url) return null;
@@ -93,7 +96,14 @@ export default function UserProfileClient({ userId }: { userId: string }) {
   }, [allCampaigns]);
 
   const loading = profileLoading || testimoniesLoading || campaignsLoading || userLoading;
-  const embedUrl = useMemo(() => getYouTubeEmbedUrl(userProfile?.videoTestimonyUrl), [userProfile?.videoTestimonyUrl]);
+  
+  const videoTestimonies = useMemo(() => {
+    const list = [...(userProfile?.videoTestimonies || [])];
+    if (userProfile?.videoTestimonyUrl && !list.some(v => v.url === userProfile.videoTestimonyUrl)) {
+        list.unshift({ url: userProfile.videoTestimonyUrl, title: "My Testimony" });
+    }
+    return list.map(v => ({ ...v, embedUrl: getYouTubeEmbedUrl(v.url) })).filter(v => !!v.embedUrl);
+  }, [userProfile]);
 
   if (loading || !mounted) {
     return (
@@ -217,7 +227,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
       </Card>
       
       {/* Video Testimony Showcase */}
-      {embedUrl && (
+      {videoTestimonies.length > 0 && (
         <Card className="rounded-[2.5rem] overflow-hidden shadow-xl border-t-8 border-t-red-600 bg-zinc-950">
             <CardHeader className="pb-6 pt-10 px-8 sm:px-12">
                 <CardTitle className="flex items-center gap-3 text-2xl sm:text-3xl font-black font-headline text-white tracking-tight">
@@ -225,19 +235,32 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                     Watch Glory
                 </CardTitle>
                 <CardDescription className="text-zinc-400 text-sm sm:text-base font-medium">
-                    Experience the living testimony of God's power through this personal story.
+                    Experience the living testimony of God's power through these personal stories.
                 </CardDescription>
             </CardHeader>
             <CardContent className="px-0 sm:px-12 pb-12">
-                <div className="relative w-full aspect-video sm:rounded-3xl overflow-hidden bg-black shadow-2xl border border-white/5 group">
-                    <iframe
-                        src={embedUrl}
-                        title={`Video Testimony from ${displayName}`}
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen
-                        className="absolute inset-0 w-full h-full border-0"
-                    />
-                </div>
+                <ScrollArea className="w-full">
+                    <div className="flex gap-6 p-6 sm:p-0">
+                        {videoTestimonies.map((video, idx) => (
+                            <div key={idx} className="flex-shrink-0 w-[300px] sm:w-[450px] space-y-3">
+                                {video.title && (
+                                    <h4 className="text-xs font-black uppercase tracking-[0.2em] text-zinc-500 truncate">
+                                        {video.title}
+                                    </h4>
+                                )}
+                                <div className="relative w-full aspect-video sm:rounded-3xl overflow-hidden bg-black shadow-2xl border border-white/5 group">
+                                    <iframe
+                                        src={video.embedUrl!}
+                                        title={video.title || `Video Testimony from ${displayName}`}
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                        allowFullScreen
+                                        className="absolute inset-0 w-full h-full border-0"
+                                    />
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </ScrollArea>
             </CardContent>
         </Card>
       )}

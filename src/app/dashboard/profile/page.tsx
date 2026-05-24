@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useMemo } from "react";
@@ -5,7 +6,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Edit, Loader2, MapPin, Phone, HeartHandshake, XCircle, Users, Group, Youtube, Activity } from "lucide-react";
+import { Edit, Loader2, MapPin, Phone, HeartHandshake, XCircle, Users, Group, Youtube, Activity, Video } from "lucide-react";
 import { useCollection, useFirestore, useUser } from "@/firebase";
 import { useDoc } from "@/firebase/firestore/use-doc";
 import { collection, query, where, doc, getDocs, documentId } from "firebase/firestore";
@@ -165,7 +166,13 @@ export default function ProfilePage() {
     return allCreatedCampaigns.filter(c => c.status === 'active');
   }, [allCreatedCampaigns]);
 
-  const embedUrl = useMemo(() => getYouTubeEmbedUrl(userProfile?.videoTestimonyUrl), [userProfile?.videoTestimonyUrl]);
+  const videoTestimonies = useMemo(() => {
+    const list = [...(userProfile?.videoTestimonies || [])];
+    if (userProfile?.videoTestimonyUrl && !list.some(v => v.url === userProfile.videoTestimonyUrl)) {
+        list.unshift({ url: userProfile.videoTestimonyUrl, title: "My Testimony" });
+    }
+    return list.map(v => ({ ...v, embedUrl: getYouTubeEmbedUrl(v.url) })).filter(v => !!v.embedUrl);
+  }, [userProfile]);
 
   useEffect(() => {
     if (!firestore || campaignsLoading || !joinedCampaignsDocs) {
@@ -387,24 +394,33 @@ export default function ProfilePage() {
         </CardContent>
       </Card>
 
-      {embedUrl && (
+      {videoTestimonies.length > 0 && (
         <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none overflow-hidden border-t-4 border-t-red-600 border-b-2 sm:border-b">
             <CardHeader className="pb-4 pt-6 px-6">
                 <CardTitle className="flex items-center gap-2 text-lg font-bold">
                     <Youtube className="h-5 w-5 text-red-600" />
-                    My Video Testimony
+                    My Video Testimonies
                 </CardTitle>
             </CardHeader>
             <CardContent className="p-0 sm:p-6 sm:pt-0">
-                <div className="relative w-full aspect-video sm:rounded-xl overflow-hidden bg-black shadow-inner">
-                    <iframe
-                        src={embedUrl}
-                        title="My Video Testimony"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen
-                        className="absolute inset-0 w-full h-full border-0"
-                    />
-                </div>
+                <ScrollArea className="w-full">
+                    <div className="flex gap-4 p-4 sm:p-0">
+                        {videoTestimonies.map((video, idx) => (
+                            <div key={idx} className="flex-shrink-0 w-[280px] sm:w-[400px] space-y-2">
+                                {video.title && <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground truncate">{video.title}</p>}
+                                <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-black shadow-lg border border-white/5">
+                                    <iframe
+                                        src={video.embedUrl!}
+                                        title={video.title || "Video Testimony"}
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                        allowFullScreen
+                                        className="absolute inset-0 w-full h-full border-0"
+                                    />
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </ScrollArea>
             </CardContent>
         </Card>
       )}

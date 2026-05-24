@@ -37,6 +37,11 @@ export type DailyDisciplineLog = {
   date: Timestamp;
 };
 
+export type VideoTestimony = {
+  url: string;
+  title?: string;
+};
+
 export type UserProfile = {
   id: string;
   firstName: string;
@@ -46,7 +51,8 @@ export type UserProfile = {
   email: string;
   photoURL?: string;
   bio?: string;
-  videoTestimonyUrl?: string;
+  videoTestimonyUrl?: string; // Legacy field
+  videoTestimonies?: VideoTestimony[];
   location?: {
     city?: string;
     state?: string;

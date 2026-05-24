@@ -37,10 +37,17 @@
           "type": "string",
           "description": "The user's personal testimony."
         },
-        "videoTestimonyUrl": {
-          "type": "string",
-          "format": "uri",
-          "description": "URL to a YouTube video testimony."
+        "videoTestimonies": {
+          "type": "array",
+          "description": "A collection of YouTube video testimony links.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "url": { "type": "string", "format": "uri" },
+              "title": { "type": "string" }
+            },
+            "required": ["url"]
+          }
         },
         "location": {
           "type": "object",
