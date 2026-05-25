@@ -14,13 +14,14 @@ import {
   Share2, 
   Users, 
   Flame, 
-  History, 
   Zap,
   ShieldCheck,
-  Award,
+  Heart,
   HeartHandshake,
   TrendingUp,
-  LayoutGrid
+  Sparkles,
+  Award,
+  ChevronRight
 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
@@ -29,56 +30,59 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 
+const gettingStartedItems = [
+  { step: "1", title: "Complete Profile", desc: "Set your identity.", icon: UserPlus, color: "text-blue-500", bg: "bg-blue-500/10" },
+  { step: "2", title: "Daily Disciplines", desc: "Build consistency.", icon: Zap, color: "text-amber-500", bg: "bg-amber-500/10" },
+  { step: "3", title: "Testifying", desc: "Share glory.", icon: Newspaper, color: "text-primary", bg: "bg-primary/10" },
+  { step: "4", title: "Log Soul", desc: "Record harvest.", icon: Heart, color: "text-red-500", bg: "bg-red-500/10" },
+  { step: "5", title: "Accountability", desc: "Stay sharp.", icon: HeartHandshake, color: "text-purple-500", bg: "bg-purple-500/10" },
+  { step: "6", title: "Campaigning", desc: "Lead missions.", icon: Target, color: "text-emerald-500", bg: "bg-emerald-500/10" },
+  { step: "7", title: "Fellowships", desc: "Connect community.", icon: Users, color: "text-indigo-500", bg: "bg-indigo-500/10" },
+];
+
 const journeyPhases = [
   {
     title: "Phase 1: Your Personal Altar",
-    description: "Strength begins in the secret place. Build your daily discipline.",
+    description: "Strength begins in the secret place.",
     icon: Zap,
-    color: "text-chart-5",
-    bgColor: "bg-chart-5/10",
+    color: "text-amber-500",
+    bgColor: "bg-amber-500/10",
     items: [
-      {
-        title: "Daily Disciplines",
-        content: "Use the dashboard to track your Prayer, Bible Reading, and Church Attendance. Consistency builds spiritual authority."
-      },
-      {
-        title: "The Bible Reader",
-        content: "Access the Word directly in-app. Highlight revelations and save personal meditation notes in your digital journal."
-      }
+      { title: "Daily Disciplines", content: "Use the dashboard to track Prayer, Word Study via the Bible Reader, and Church Attendance." },
+      { title: "The Revelation Journal", content: "Save meditations and highlights directly from the Word to track your spiritual insights." }
     ]
   },
   {
-    title: "Phase 2: Into the Harvest",
-    description: "Mobilize for evangelism and track your progress in the field.",
-    icon: Flame,
+    title: "Phase 2: Shared Testimony",
+    description: "Overcoming by the word of your testimony.",
+    icon: Sparkles,
     color: "text-primary",
     bgColor: "bg-primary/10",
     items: [
-      {
-        title: "Logging Souls Won",
-        content: "Record new converts immediately. Add contact details and initial notes so no soul is forgotten in the follow-up process."
-      },
-      {
-        title: "Mission Campaigns",
-        content: "Join mass outreach events or organize your own. Use group chats to coordinate with your team in real-time."
-      }
+      { title: "Public Feed", content: "Post God's goodness to encourage the global body and respond to others with 'Amen' or 'Inspired'." },
+      { title: "Answered Prayer", content: "Link your testimonies to previous prayer requests to show the full arc of God's faithfulness." }
     ]
   },
   {
-    title: "Phase 3: Building the Body",
-    description: "Discipleship is a communal effort. Connect and grow together.",
-    icon: Users,
-    color: "text-chart-2",
-    bgColor: "bg-chart-2/10",
+    title: "Phase 3: Into the Harvest",
+    description: "Mobilize for evangelism and track progress.",
+    icon: Flame,
+    color: "text-orange-600",
+    bgColor: "bg-orange-600/10",
     items: [
-      {
-        title: "Fellowship Groups",
-        content: "Assign souls to local fellowships for long-term nurturing. Members collaborate on follow-up logs to track spiritual growth."
-      },
-      {
-        title: "Accountability",
-        content: "Find a partner to stay motivated. Nudge each other to complete daily disciplines and celebrate victories together."
-      }
+      { title: "Soul Winning", content: "Log converts with location and source data. Use AI Insights for personalized follow-up strategies." },
+      { title: "Campaign Hub", content: "Join mass missions or launch your own. Use group chats to mobilize your team on the field." }
+    ]
+  },
+  {
+    title: "Phase 4: Building the Body",
+    description: "Preserving the harvest through community.",
+    icon: Users,
+    color: "text-blue-600",
+    bgColor: "bg-blue-600/10",
+    items: [
+      { title: "Fellowship Groups", content: "Nurture converts collectively by sharing follow-up logs and interaction history within groups." },
+      { title: "Accountability", content: "Partner with a brother or sister to stay sharp. Nudge each other to maintain daily disciplines." }
     ]
   }
 ];
@@ -92,114 +96,85 @@ export default function GuidePage() {
       text: 'Help us organize the harvest and track evangelism progress for the Kingdom of God.',
       url: typeof window !== 'undefined' ? window.location.origin : 'https://testifyglobal.com'
     };
-
     try {
-      if (typeof navigator !== 'undefined' && navigator.share) {
-        await navigator.share(shareData);
-      } else {
-        throw new Error('Share API not supported');
-      }
+      if (typeof navigator !== 'undefined' && navigator.share) { await navigator.share(shareData); }
+      else { throw new Error(); }
     } catch (err) {
       if (typeof window !== 'undefined') {
         navigator.clipboard.writeText(shareData.url);
-        toast({
-          title: 'Link Copied',
-          description: 'Referral link has been copied to your clipboard.',
-        });
+        toast({ title: 'Link Copied', description: 'Referral link copied to clipboard.' });
       }
     }
   };
 
   return (
-    <div className="space-y-12 max-w-4xl mx-auto pb-12">
-      {/* Header Section */}
+    <div className="space-y-12 max-w-4xl mx-auto pb-24">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="space-y-1">
-            <h1 className="text-3xl md:text-4xl font-bold tracking-tight font-headline flex items-center gap-3">
+            <h1 className="text-3xl md:text-5xl font-black font-headline tracking-tight flex items-center gap-3">
             <BookOpen className="h-8 w-8 text-primary" />
-            App Guide & Tutorials
+            App Guide
             </h1>
-            <p className="text-muted-foreground italic text-sm md:text-base">
-            Equipping you for every good work in service to the Kingdom.
+            <p className="text-muted-foreground italic text-sm md:text-base font-medium">
+            Equipping the Kingdom workforce for a global harvest.
             </p>
         </div>
         <div className="flex gap-2">
-            <Badge variant="secondary" className="px-3 py-1">Dashboard Help</Badge>
-            <Badge className="bg-primary/20 text-primary border-primary/20 px-3 py-1">Kingdom Force</Badge>
+            <Badge variant="secondary" className="px-3 py-1 font-bold uppercase tracking-widest text-[10px]">Dashboard Guide</Badge>
+            <Badge className="bg-primary/20 text-primary border-primary/20 px-3 py-1 font-bold uppercase tracking-widest text-[10px]">Kingdom Force</Badge>
         </div>
       </div>
 
       <Separator />
 
-      {/* Quick Start Grid */}
-      <section className="space-y-6">
-        <h2 className="text-xl font-bold flex items-center gap-2">
-          <Zap className="h-5 w-5 text-chart-5" /> Getting Started
+      <section className="space-y-8">
+        <h2 className="text-2xl font-black font-headline uppercase flex items-center gap-2">
+          <Sparkles className="h-6 w-6 text-blue-500" /> Getting Started Path
         </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <Card className="bg-muted/30 border-dashed">
-                <CardHeader className="p-4 pb-2">
-                    <div className="h-8 w-8 rounded-lg bg-background flex items-center justify-center mb-2 border shadow-sm">
-                        <UserPlus className="h-4 w-4 text-primary" />
-                    </div>
-                    <CardTitle className="text-sm">1. Complete Profile</CardTitle>
-                </CardHeader>
-                <CardContent className="p-4 pt-0">
-                    <p className="text-xs text-muted-foreground">Add your name, photo, and home church to join the active workforce.</p>
-                </CardContent>
-            </Card>
-            <Card className="bg-muted/30 border-dashed">
-                <CardHeader className="p-4 pb-2">
-                    <div className="h-8 w-8 rounded-lg bg-background flex items-center justify-center mb-2 border shadow-sm">
-                        <LayoutGrid className="h-4 w-4 text-primary" />
-                    </div>
-                    <CardTitle className="text-sm">2. Daily Disciplines</CardTitle>
-                </CardHeader>
-                <CardContent className="p-4 pt-0">
-                    <p className="text-xs text-muted-foreground">Log your prayers and Bible study daily to build a consistent spiritual streak.</p>
-                </CardContent>
-            </Card>
-            <Card className="bg-muted/30 border-dashed">
-                <CardHeader className="p-4 pb-2">
-                    <div className="h-8 w-8 rounded-lg bg-background flex items-center justify-center mb-2 border shadow-sm">
-                        <Flame className="h-4 w-4 text-primary" />
-                    </div>
-                    <CardTitle className="text-sm">3. Log Your First Soul</CardTitle>
-                </CardHeader>
-                <CardContent className="p-4 pt-0">
-                    <p className="text-xs text-muted-foreground">Record your first convert and see your personal and city impact grow.</p>
-                </CardContent>
-            </Card>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {gettingStartedItems.map((item) => (
+                <Card key={item.step} className="bg-muted/30 border-2 border-dashed relative group">
+                    <CardHeader className="p-4 pb-2">
+                        <div className={cn("h-10 w-10 rounded-2xl bg-background flex items-center justify-center mb-3 border shadow-sm transition-transform group-hover:scale-110", item.bg)}>
+                            <item.icon className={cn("h-5 w-5", item.color)} />
+                        </div>
+                        <CardTitle className="text-sm font-black tracking-tight">{item.title}</CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-4 pt-0">
+                        <p className="text-xs text-muted-foreground font-medium leading-relaxed">{item.desc}</p>
+                    </CardContent>
+                    <span className="absolute top-2 right-4 text-3xl font-black text-foreground/5 italic">{item.step}</span>
+                </Card>
+            ))}
         </div>
       </section>
 
-      {/* Journey Phases */}
-      <section className="space-y-8">
+      <section className="space-y-12">
         <div className="space-y-2">
-            <h2 className="text-2xl font-bold font-headline">The Believer's Journey</h2>
-            <p className="text-sm text-muted-foreground">Follow these phases to maximize your impact on the platform.</p>
+            <h2 className="text-2xl font-black font-headline uppercase tracking-tight">The Believer's Journey</h2>
+            <p className="text-sm text-muted-foreground font-medium">Maximize your Kingdom impact using the full platform.</p>
         </div>
 
         <div className="space-y-12">
             {journeyPhases.map((phase, idx) => (
-                <div key={idx} className="space-y-4">
-                    <div className="flex items-center gap-4">
-                        <div className={cn("h-12 w-12 rounded-2xl flex items-center justify-center shrink-0 shadow-sm border", phase.bgColor)}>
-                            <phase.icon className={cn("h-6 w-6", phase.color)} />
+                <div key={idx} className="space-y-6">
+                    <div className="flex items-center gap-5">
+                        <div className={cn("h-14 w-14 rounded-2xl flex items-center justify-center shrink-0 shadow-sm border-2", phase.bgColor)}>
+                            <phase.icon className={cn("h-7 w-7", phase.color)} />
                         </div>
                         <div>
-                            <h3 className="text-lg font-bold">{phase.title}</h3>
-                            <p className="text-sm text-muted-foreground">{phase.description}</p>
+                            <h3 className="text-lg font-black tracking-tight">{phase.title}</h3>
+                            <p className="text-sm text-muted-foreground font-medium">{phase.description}</p>
                         </div>
                     </div>
-                    <div className="grid gap-4 sm:grid-cols-2 ml-2 sm:ml-16">
+                    <div className="grid gap-4 sm:grid-cols-2 ml-2 sm:ml-20">
                         {phase.items.map((item, i) => (
-                            <Card key={i} className="border-none shadow-none bg-muted/20">
-                                <CardHeader className="p-4 pb-1">
-                                    <CardTitle className="text-sm font-bold text-foreground/80">{item.title}</CardTitle>
+                            <Card key={i} className="border-none shadow-none bg-muted/20 rounded-2xl">
+                                <CardHeader className="p-6 pb-2">
+                                    <CardTitle className="text-xs font-black uppercase tracking-widest text-primary">{item.title}</CardTitle>
                                 </CardHeader>
-                                <CardContent className="p-4 pt-0">
-                                    <p className="text-xs leading-relaxed text-muted-foreground">{item.content}</p>
+                                <CardContent className="p-6 pt-0">
+                                    <p className="text-sm leading-relaxed text-muted-foreground font-medium">{item.content}</p>
                                 </CardContent>
                             </Card>
                         ))}
@@ -209,51 +184,43 @@ export default function GuidePage() {
         </div>
       </section>
 
-      {/* Advanced Features FAQ */}
       <section className="space-y-6">
         <div className="flex items-center gap-2">
-            <ShieldCheck className="h-5 w-5 text-primary" />
-            <h2 className="text-xl font-bold">Deep Dive</h2>
+            <ShieldCheck className="h-6 w-6 text-primary" />
+            <h2 className="text-xl font-black font-headline uppercase tracking-tight">Advanced Features</h2>
         </div>
         <Accordion type="single" collapsible className="w-full">
-            <AccordionItem value="referrals" className="border rounded-xl px-4 bg-card mb-4 shadow-sm">
-                <AccordionTrigger className="hover:no-underline font-semibold">How do I refer other believers?</AccordionTrigger>
-                <AccordionContent className="text-sm text-muted-foreground leading-relaxed">
-                    Testify is most powerful when used collectively. Use the "Share App" button below or in the sidebar to invite your pastors, youth leaders, and friends. A stronger network means a more organized harvest.
+            <AccordionItem value="referrals" className="border rounded-2xl px-6 bg-card mb-4 shadow-sm overflow-hidden">
+                <AccordionTrigger className="hover:no-underline font-bold text-sm">How do I expand the Kingdom workforce?</AccordionTrigger>
+                <AccordionContent className="text-sm text-muted-foreground leading-relaxed font-medium">
+                    Testify is most powerful when used collectively. Use the "Share App" button to invite pastors and youth leaders. A connected network is a prepared network.
                 </AccordionContent>
             </AccordionItem>
-            <AccordionItem value="insights" className="border rounded-xl px-4 bg-card mb-4 shadow-sm">
-                <AccordionTrigger className="hover:no-underline font-semibold">What are AI Follow-up Insights?</AccordionTrigger>
-                <AccordionContent className="text-sm text-muted-foreground leading-relaxed">
-                    On the "Souls Won" page, click the "Insights" lightbulb on any convert's record. Our AI analyzes their status and history to suggest the best next steps and personalized messages for you to send.
-                </AccordionContent>
-            </AccordionItem>
-            <AccordionItem value="amen" className="border rounded-xl px-4 bg-card mb-4 shadow-sm">
-                <AccordionTrigger className="hover:no-underline font-semibold">The power of "Amen" and "Inspired"</AccordionTrigger>
-                <AccordionContent className="text-sm text-muted-foreground leading-relaxed">
-                    Interaction on the testimonies feed isn't just social—it's spiritual support. Marking a story with an "Amen" lets the author know you are standing with them in faith, while "Inspired" notes that their story has ignited your own courage.
+            <AccordionItem value="insights" className="border rounded-2xl px-6 bg-card mb-4 shadow-sm overflow-hidden">
+                <AccordionTrigger className="hover:no-underline font-bold text-sm">What are AI Follow-up Insights?</AccordionTrigger>
+                <AccordionContent className="text-sm text-muted-foreground leading-relaxed font-medium">
+                    In the "Souls Won" section, the AI assistant analyzes convert history to suggest personalized next steps and natural-sounding messages for you to send.
                 </AccordionContent>
             </AccordionItem>
         </Accordion>
       </section>
       
-      {/* Referral & CTA */}
-      <section className="mt-16 p-8 rounded-3xl bg-primary/5 border border-primary/20 text-center relative overflow-hidden">
-        <div className="absolute top-0 right-0 p-4 opacity-5">
-            <Flame className="h-24 w-24 text-primary" />
+      <section className="mt-16 p-8 rounded-[2.5rem] bg-primary/5 border-2 border-dashed border-primary/20 text-center relative overflow-hidden">
+        <div className="absolute -top-4 -right-4 p-4 opacity-5 rotate-12">
+            <Flame className="h-32 w-32 text-primary" />
         </div>
-        <div className="max-w-md mx-auto space-y-4">
-            <h3 className="font-bold text-2xl font-headline">Ready to expand the Kingdom?</h3>
-            <p className="text-sm text-muted-foreground">Sharing this tool with fellow believers helps build a stronger network dedicated to the Great Commission.</p>
-            <Button onClick={handleShare} size="lg" className="w-full sm:w-auto font-bold mt-4">
-                <Share2 className="mr-2 h-4 w-4" /> Share App & Refer Brethren
+        <div className="max-w-md mx-auto space-y-6 relative z-10">
+            <h3 className="font-black text-3xl font-headline tracking-tight uppercase">Ready to mobilize?</h3>
+            <p className="text-sm text-muted-foreground font-medium">Connect more believers to the harvest network by sharing this platform.</p>
+            <Button onClick={handleShare} size="lg" className="w-full sm:w-auto font-black h-12 rounded-2xl shadow-xl shadow-primary/10 tracking-widest uppercase">
+                <Share2 className="mr-2 h-4 w-4" /> REFER BRETHREN
             </Button>
         </div>
       </section>
 
-      <footer className="text-center pt-8 border-t">
-        <p className="text-xs text-muted-foreground italic">
-          "The harvest is plentiful, but the laborers are few; therefore pray earnestly to the Lord of the harvest to send out laborers into his harvest." — Matthew 9:37-38
+      <footer className="text-center pt-12 border-t mt-12">
+        <p className="text-xs text-muted-foreground italic font-medium">
+          "But ye shall receive power, after that the Holy Ghost is come upon you: and ye shall be witnesses unto me both in Jerusalem, and in all Judaea, and in Samaria, and unto the uttermost part of the earth." — Acts 1:8
         </p>
       </footer>
     </div>
