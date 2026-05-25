@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
@@ -28,8 +27,8 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { PlusCircle, Download, Loader2, Trash2 } from "lucide-react";
-import type { Soul, Campaign, Fellowship } from "@/lib/types";
+import { PlusCircle, Download, Loader2, Trash2, HeartHandshake } from "lucide-react";
+import type { Soul, Campaign, Fellowship, UserProfile } from "@/lib/types";
 import { useCollection, useFirestore, useUser, useDoc } from "@/firebase";
 import { collection, query, orderBy, doc, serverTimestamp, updateDoc, writeBatch, addDoc, deleteField } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
@@ -97,25 +96,21 @@ export default function SoulsWonPage() {
   }, [user?.uid, firestore]);
   const { data: souls, loading: soulsLoading } = useCollection<Soul>(soulsQuery);
 
-  // Derived "live" souls for dialogs
   const soulToAssign = useMemo(() => souls?.find(s => s.id === soulToAssignId) || null, [soulToAssignId, souls]);
   const soulToEdit = useMemo(() => souls?.find(s => s.id === soulToEditId) || null, [soulToEditId, souls]);
   const soulToDelete = useMemo(() => souls?.find(s => s.id === soulToDeleteId) || null, [soulToDeleteId, souls]);
 
   const campaignsQuery = useMemo(() => {
     if (!user?.uid || !firestore) return null;
-    return query(collection(firestore, 'campaigns'), orderBy('createdAt', 'desc'));
+    return query(collection(firestore, 'campaigns'), where('status', '==', 'active'), orderBy('createdAt', 'desc'));
   }, [user?.uid, firestore]);
   const { data: campaigns } = useCollection<Campaign>(campaignsQuery);
   
   const fellowshipsQuery = useMemo(() => {
     if (!firestore) return null;
-    return query(collection(firestore, 'fellowships'), orderBy('name', 'asc'));
+    return query(collection(firestore, 'fellowships'), where('status', '==', 'active'), orderBy('name', 'asc'));
   }, [firestore]);
-  const { data: allFellowships } = useCollection<Fellowship>(fellowshipsQuery);
-
-  const activeFellowships = useMemo(() => allFellowships?.filter(f => f.status !== 'deleted') ?? [], [allFellowships]);
-  const activeCampaigns = useMemo(() => campaigns?.filter(c => c.status !== 'deleted') ?? [], [campaigns]);
+  const { data: activeFellowships } = useCollection<Fellowship>(fellowshipsQuery);
 
   const loading = userLoading || soulsLoading;
 
@@ -203,7 +198,7 @@ export default function SoulsWonPage() {
 
     const soulRef = doc(firestore, `users/${user.uid}/souls`, soul.id);
     const globalSoulRef = doc(firestore, 'souls', soul.id);
-    const selectedGroup = allFellowships?.find(f => f.id === groupId);
+    const selectedGroup = activeFellowships?.find(f => f.id === groupId);
     
     const updateData: { [key: string]: any } = {
         updatedAt: serverTimestamp(),
@@ -227,7 +222,6 @@ export default function SoulsWonPage() {
         }
     }
 
-    // NON-BLOCKING: Use optimistic background sync
     updateDoc(soulRef, updateData).catch(async (serverError) => {
         const permissionError = new FirestorePermissionError({
             path: soulRef.path,
@@ -305,7 +299,6 @@ export default function SoulsWonPage() {
 
   return (
     <div className="space-y-6 md:space-y-12 pb-32">
-      {/* Responsive Single-Row Interaction Box */}
       <Card className="border shadow-sm sm:shadow-md rounded-none sm:rounded-lg border-x-0 sm:border-x -mx-4 sm:mx-0">
         <CardContent className="p-3 sm:p-4">
           <div className="flex flex-row items-center gap-2 sm:gap-3">
@@ -380,13 +373,12 @@ export default function SoulsWonPage() {
       
       <AssignFellowshipDialog 
           soul={soulToAssign} 
-          fellowships={activeFellowships} 
+          fellowships={activeFellowships || []} 
           isOpen={!!soulToAssignId} 
           onOpenChange={(open) => !open && setSoulToAssignId(null)} 
           onAssignGroup={handleAssignGroup} 
       />
       
-      {/* Edit Soul */}
       {mounted && isMobile ? (
         <Sheet open={!!soulToEditId} onOpenChange={(open) => !open && setSoulToEditId(null)}>
           <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
@@ -402,8 +394,8 @@ export default function SoulsWonPage() {
                   <EditSoulForm 
                       soul={soulToEdit} 
                       onSoulUpdated={() => setSoulToEditId(null)} 
-                      fellowships={activeFellowships}
-                      campaigns={activeCampaigns}
+                      fellowships={activeFellowships || []}
+                      campaigns={campaigns || []}
                   />
                 )}
               </div>
@@ -422,8 +414,8 @@ export default function SoulsWonPage() {
                       <EditSoulForm 
                           soul={soulToEdit} 
                           onSoulUpdated={() => setSoulToEditId(null)} 
-                          fellowships={activeFellowships}
-                          campaigns={activeCampaigns}
+                          fellowships={activeFellowships || []}
+                          campaigns={campaigns || []}
                       />
                     )}
                 </div>
@@ -431,7 +423,6 @@ export default function SoulsWonPage() {
         </Dialog>
       )}
 
-      {/* Log Soul */}
       {mounted && isMobile ? (
         <Sheet open={isLogDialogOpen} onOpenChange={setIsLogDialogOpen}>
           <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
@@ -442,7 +433,7 @@ export default function SoulsWonPage() {
                 </SheetHeader>
             </div>
             <div className="flex-grow overflow-y-auto p-8">
-                <LogSoulForm onSoulLogged={() => setIsLogDialogOpen(false)} fellowships={activeFellowships} campaigns={activeCampaigns} />
+                <LogSoulForm onSoulLogged={() => setIsLogDialogOpen(false)} fellowships={activeFellowships || []} campaigns={campaigns || []} />
             </div>
           </SheetContent>
         </Sheet>
@@ -456,7 +447,7 @@ export default function SoulsWonPage() {
               </DialogDescription>
             </DialogHeader>
             <div className="max-h-[70vh] overflow-y-auto pr-2">
-              <LogSoulForm onSoulLogged={() => setIsLogDialogOpen(false)} fellowships={activeFellowships} campaigns={activeCampaigns} />
+              <LogSoulForm onSoulLogged={() => setIsLogDialogOpen(false)} fellowships={activeFellowships || []} campaigns={campaigns || []} />
             </div>
           </DialogContent>
         </Dialog>

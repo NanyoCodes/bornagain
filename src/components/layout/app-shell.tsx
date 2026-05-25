@@ -269,7 +269,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
 function BottomNavBar() {
     const pathname = usePathname();
     return (
-      <nav className="fixed bottom-0 left-0 right-0 z-40 border-t bg-background/80 backdrop-blur-lg md:hidden pb-[env(safe-area-inset-bottom)]">
+      <nav className="fixed bottom-0 left-0 right-0 z-40 border-t bg-background/80 backdrop-blur-lg md:hidden pb-[env(safe-area-inset-bottom)] shadow-[0_-5px_15px_-10px_rgba(0,0,0,0.1)]">
         <div className="flex h-16 items-center justify-around px-2">
           {navItems.map((item) => {
             const isActive = pathname.startsWith(item.href);
@@ -375,7 +375,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   const isProfileIncomplete = user && userProfile && (!userProfile.firstName || !userProfile.lastName);
 
-  // We show the navbar on chat pages as requested, but keep the header hidden for focus
+  // Show bottom nav on takeover pages like chat if requested, but generally hide header
   const showBottomNav = !isTakeoverPage || pathname.includes('/chats/');
 
   return (
@@ -389,10 +389,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           />
         )}
         <main className={cn(
-          "flex-1 w-full mx-auto relative",
+          "flex-1 w-full mx-auto relative flex flex-col",
           isTakeoverPage ? "h-full overflow-hidden" : "pb-32 md:pb-8 p-4 md:p-8 max-w-7xl"
         )}>
-            <div className={cn("h-full w-full")}>
+            <div className={cn("flex-grow w-full")}>
                 <PageTransition>{children}</PageTransition>
             </div>
         </main>
