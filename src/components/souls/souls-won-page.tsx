@@ -103,14 +103,17 @@ export default function SoulsWonPage() {
 
   const campaignsQuery = useMemo(() => {
     if (!user?.uid || !firestore) return null;
-    return query(collection(firestore, 'campaigns'), where('status', '==', 'active'), orderBy('createdAt', 'desc'));
+    return query(collection(firestore, 'campaigns'), orderBy('createdAt', 'desc'));
   }, [user?.uid, firestore]);
-  const { data: campaigns } = useCollection<Campaign>(campaignsQuery);
+  const { data: allCampaignsData } = useCollection<Campaign>(campaignsQuery);
+
+  const campaigns = useMemo(() => {
+    if (!allCampaignsData) return [];
+    return allCampaignsData.filter(c => c.status === 'active');
+  }, [allCampaignsData]);
   
   const fellowshipsQuery = useMemo(() => {
     if (!firestore) return null;
-    // We simplified this to avoid requiring a composite index for status + name.
-    // Filtering by 'active' is now done on the client side.
     return query(collection(firestore, 'fellowships'), orderBy('name', 'asc'));
   }, [firestore]);
   const { data: allFellowshipsData } = useCollection<Fellowship>(fellowshipsQuery);
