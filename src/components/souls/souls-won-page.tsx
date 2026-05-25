@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
@@ -108,9 +109,16 @@ export default function SoulsWonPage() {
   
   const fellowshipsQuery = useMemo(() => {
     if (!firestore) return null;
-    return query(collection(firestore, 'fellowships'), where('status', '==', 'active'), orderBy('name', 'asc'));
+    // We simplified this to avoid requiring a composite index for status + name.
+    // Filtering by 'active' is now done on the client side.
+    return query(collection(firestore, 'fellowships'), orderBy('name', 'asc'));
   }, [firestore]);
-  const { data: activeFellowships } = useCollection<Fellowship>(fellowshipsQuery);
+  const { data: allFellowshipsData } = useCollection<Fellowship>(fellowshipsQuery);
+
+  const activeFellowships = useMemo(() => {
+    if (!allFellowshipsData) return [];
+    return allFellowshipsData.filter(f => f.status === 'active');
+  }, [allFellowshipsData]);
 
   const loading = userLoading || soulsLoading;
 
@@ -441,7 +449,7 @@ export default function SoulsWonPage() {
         <Dialog open={isLogDialogOpen} onOpenChange={setIsLogDialogOpen}>
           <DialogContent className="sm:max-w-lg">
             <DialogHeader>
-              <DialogTitle className="text-2xl font-bold font-headline">Log a New Soul</DialogTitle>
+              <DialogTitle>Log a New Soul</DialogTitle>
               <DialogDescription>
                   Record the details of the person you've ministered to.
               </DialogDescription>
