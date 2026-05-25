@@ -1,3 +1,4 @@
+
 'use client';
 
 import Image from 'next/image';
@@ -26,13 +27,6 @@ const scriptures = [
     text: "All the believers were one in heart and mind. No one claimed that any of their possessions was their own, but they shared everything they had.",
     reference: "Acts 4:32"
   }
-];
-
-const collageImages = [
-    "https://images.unsplash.com/photo-1511632765486-a01980e01a18?q=80&w=1000&auto=format&fit=crop", // Community joy
-    "https://images.unsplash.com/photo-1491438590914-bc09fcaaf77a?q=80&w=1000&auto=format&fit=crop", // Group laughing
-    "https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?q=80&w=1000&auto=format&fit=crop", // Friends together
-    "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?q=80&w=1000&auto=format&fit=crop", // Joyful crowd
 ];
 
 export function AuthLayout({ children }: { children: React.ReactNode }) {
@@ -90,30 +84,23 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
         </div>
       </div>
       
-      <div className="hidden lg:flex flex-col items-center justify-center p-12 text-white relative overflow-hidden bg-zinc-950">
-        <div className="absolute inset-0 grid grid-cols-2 grid-rows-2 gap-2 p-2 opacity-30">
-            {collageImages.map((src, idx) => (
-                <div key={idx} className="relative w-full h-full overflow-hidden rounded-xl">
-                    <Image src={src} alt="Happy people in community" fill className="object-cover" priority data-ai-hint="happy people" />
-                </div>
-            ))}
-        </div>
-        <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-transparent" />
+      <div className="hidden lg:flex flex-col items-center justify-center p-12 text-foreground relative overflow-hidden bg-transparent border-l">
+        <div className="absolute inset-0 bg-gradient-to-t from-primary/5 via-transparent to-transparent" />
         
         <div className="space-y-4 mb-12 z-10 text-center">
             <h1 className="text-5xl font-bold font-headline">Testify</h1>
-            <p className="text-zinc-300 max-w-md text-lg">Share Testimonies. Win Souls. Spread Jesus Christ.</p>
-            <p className="text-zinc-500 font-medium tracking-wide uppercase">GLORIFYING GOD</p>
+            <p className="text-muted-foreground max-w-md text-lg">Share Testimonies. Win Souls. Spread Jesus Christ.</p>
+            <p className="text-primary font-black tracking-[0.3em] uppercase text-xs">GLORIFYING GOD</p>
         </div>
 
         <Carousel plugins={[plugin.current]} className="w-full max-w-lg z-10">
           <CarouselContent>
             {scriptures.map((scripture, index) => (
               <CarouselItem key={index}>
-                <div className="bg-white/5 backdrop-blur-md border border-white/10 p-10 rounded-3xl text-center space-y-6">
+                <div className="bg-muted/10 backdrop-blur-md border border-border/50 p-10 rounded-3xl text-center space-y-6">
                   <Quote className="h-8 w-8 text-primary opacity-50 mx-auto" />
                   <p className="text-2xl font-medium italic">"{scripture.text}"</p>
-                  <p className="text-zinc-400 font-bold tracking-wider">— {scripture.reference}</p>
+                  <p className="text-muted-foreground font-bold tracking-wider">— {scripture.reference}</p>
                 </div>
               </CarouselItem>
             ))}

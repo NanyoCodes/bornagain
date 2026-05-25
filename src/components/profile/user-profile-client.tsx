@@ -2,7 +2,7 @@
 'use client';
 
 import { useMemo, useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { useDoc, useFirestore, useUser, useCollection } from '@/firebase';
 import type { Testimony, Campaign, UserProfile } from '@/lib/types';
 import { doc, collection, query, where, orderBy } from 'firebase/firestore';
@@ -151,13 +151,9 @@ export default function UserProfileClient({ userId }: { userId: string }) {
             )}
         </div>
       
-      {/* Cinematic Header Card */}
+      {/* Header Card */}
       <Card className="rounded-none sm:rounded-[2.5rem] overflow-hidden border-none shadow-2xl bg-gradient-to-br from-background via-background to-primary/5">
-        <div className="h-40 sm:h-64 w-full bg-zinc-900 relative">
-            <div className="absolute inset-0 bg-gradient-to-b from-primary/20 to-zinc-900/80 z-10" />
-            <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1491438590914-bc09fcaaf77a?q=80&w=1000&auto=format&fit=crop')] bg-cover bg-center opacity-30" />
-        </div>
-        <CardContent className="p-6 sm:p-12 lg:p-16 -mt-20 sm:-mt-32 relative z-20">
+        <CardContent className="p-6 sm:p-12 lg:p-16 relative z-20">
           <div className="flex flex-col md:flex-row items-center md:items-end text-center md:text-left gap-8 md:gap-12">
             <Dialog>
               <DialogTrigger asChild disabled={!photoURL}>
