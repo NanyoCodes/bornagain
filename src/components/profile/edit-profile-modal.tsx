@@ -357,7 +357,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
             name="bio"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Personal Testimony (Bio)</FormLabel>
+                <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">ABOUT YOURSELF</FormLabel>
                 <FormControl>
                   <Textarea placeholder="Share your personal testimony..." className="resize-none text-base min-h-[100px]" {...field} />
                 </FormControl>
@@ -413,7 +413,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                                 className="absolute -top-2 -right-2 h-6 w-6 rounded-full bg-background border shadow-sm text-destructive hover:text-destructive hover:bg-destructive/10"
                                 onClick={() => remove(index)}
                             >
-                                <Trash2 className="h-3 w-3" />
+                                <Trash2 className="h-3.5 w-3.5" />
                             </Button>
                             <div className="grid gap-3">
                                 <FormField
