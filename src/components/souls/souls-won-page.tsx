@@ -30,7 +30,7 @@ import {
 import { PlusCircle, Download, Loader2, Trash2, HeartHandshake } from "lucide-react";
 import type { Soul, Campaign, Fellowship, UserProfile } from "@/lib/types";
 import { useCollection, useFirestore, useUser, useDoc } from "@/firebase";
-import { collection, query, orderBy, doc, serverTimestamp, updateDoc, writeBatch, addDoc, deleteField } from "firebase/firestore";
+import { collection, query, orderBy, doc, serverTimestamp, updateDoc, writeBatch, addDoc, deleteField, where } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useSearch } from "@/context/search-context";
