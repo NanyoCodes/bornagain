@@ -1,7 +1,8 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, useFieldArray, useWatch } from "react-hook-form";
+import { useForm, useFieldArray } from "react-hook-form";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,8 +17,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import React, { useState, useMemo, useEffect, useRef } from "react";
-import { Loader2, LocateFixed, Video, Map as MapIcon, Youtube, Plus, Trash2, ExternalLink, Info } from "lucide-react";
+import React, { useState, useMemo, useEffect } from "react";
+import { Loader2, LocateFixed, Video, Map as MapIcon, Youtube, Plus, Trash2, ExternalLink, Info, MessageSquare } from "lucide-react";
 import { useUser, useFirestore, useAuth } from "@/firebase";
 import { doc, updateDoc, serverTimestamp } from "firebase/firestore";
 import { updateProfile } from "firebase/auth";
@@ -52,6 +53,7 @@ const formSchema = z.object({
   lastName: z.string().min(2, "Last name must be at least 2 characters.").max(50, "Name is too long."),
   photoURL: z.string().optional(),
   bio: z.string().max(280, "Bio is too long.").optional(),
+  personalMessage: z.string().max(150, "Personal message is too long.").optional(),
   videoTestimonies: z.array(videoSchema).default([]),
   city: z.string().max(100, "City is too long.").optional(),
   state: z.string().max(100, "State is too long.").optional(),
@@ -136,6 +138,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
       lastName: userProfile.lastName || "",
       photoURL: userProfile.photoURL || "",
       bio: userProfile.bio || "",
+      personalMessage: userProfile.personalMessage || "",
       videoTestimonies: initialVideos,
       city: userProfile.location?.city || "",
       state: userProfile.location?.state || "",
@@ -214,6 +217,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
         fullName_lowercase: displayName.toLowerCase(),
         name_tokens: displayName.toLowerCase().split(/\s+/).filter(Boolean),
         bio: values.bio || "",
+        personalMessage: values.personalMessage || "",
         videoTestimonies: values.videoTestimonies,
         location: {
           city: values.city || "",
@@ -329,12 +333,31 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
               )}
             />
           </div>
+
+          <FormField
+            control={form.control}
+            name="personalMessage"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-2">
+                  <MessageSquare className="h-3.5 w-3.5" />
+                  Message to the World
+                </FormLabel>
+                <FormControl>
+                  <Input placeholder="e.g., Jesus is Lord of all!" {...field} value={field.value ?? ''} className="text-base h-11 font-medium" />
+                </FormControl>
+                <FormDescription className="text-[10px]">A prominent short message shown at the top of your profile.</FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
           <FormField
             control={form.control}
             name="bio"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Bio</FormLabel>
+                <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Personal Testimony (Bio)</FormLabel>
                 <FormControl>
                   <Textarea placeholder="Share your personal testimony..." className="resize-none text-base min-h-[100px]" {...field} />
                 </FormControl>

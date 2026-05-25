@@ -21,7 +21,8 @@ import {
     HeartHandshake,
     Sparkles,
     CalendarDays,
-    Video
+    Video,
+    MessageSquare
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -131,7 +132,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
     );
   }
 
-  const { firstName, lastName, photoURL, bio, location } = userProfile;
+  const { firstName, lastName, photoURL, bio, personalMessage, location } = userProfile;
   const displayName = [firstName, lastName].filter(Boolean).join(' ');
   const { city, state, country } = location || {};
   const initials = (firstName?.charAt(0) || '') + (lastName?.charAt(0) || '');
@@ -196,6 +197,16 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                         </div>
                     )}
                 </div>
+
+                {personalMessage && (
+                    <div className="bg-primary/10 p-6 rounded-[2rem] border-2 border-primary/20 inline-flex items-center gap-4 text-left max-w-2xl group transition-all hover:bg-primary/15 shadow-xl shadow-primary/5">
+                        <MessageSquare className="h-6 w-6 text-primary shrink-0 transition-transform group-hover:scale-110" />
+                        <p className="text-lg sm:text-xl font-black text-foreground leading-tight italic tracking-tight">
+                            &ldquo;{personalMessage}&rdquo;
+                        </p>
+                    </div>
+                )}
+
                 <div className="flex flex-wrap justify-center md:justify-start gap-4">
                      <div className="flex items-center gap-2 bg-muted/50 px-4 py-2 rounded-2xl border">
                         <Newspaper className="h-4 w-4 text-primary" />

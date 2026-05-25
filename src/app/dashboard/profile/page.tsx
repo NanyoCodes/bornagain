@@ -6,7 +6,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Edit, Loader2, MapPin, Phone, HeartHandshake, XCircle, Users, Group, Youtube, Activity, Video } from "lucide-react";
+import { Edit, Loader2, MapPin, Phone, HeartHandshake, XCircle, Users, Group, Youtube, Activity, Video, MessageSquare, Sparkles } from "lucide-react";
 import { useCollection, useFirestore, useUser } from "@/firebase";
 import { useDoc } from "@/firebase/firestore/use-doc";
 import { collection, query, where, doc, getDocs, documentId } from "firebase/firestore";
@@ -343,7 +343,7 @@ export default function ProfilePage() {
   
   if (!userProfile) return <div className="text-center py-12"><p>User profile not found.</p></div>;
   
-  const { firstName, lastName, email, photoURL, bio, location, phone, accountabilityPartners } = userProfile;
+  const { firstName, lastName, email, photoURL, bio, personalMessage, location, phone, accountabilityPartners } = userProfile;
   const displayName = [firstName, lastName].filter(Boolean).join(' ');
   const { city, state } = location || {};
 
@@ -408,6 +408,16 @@ export default function ProfilePage() {
                         </Dialog>
                     </div>
                 </div>
+
+                {personalMessage && (
+                    <div className="bg-primary/5 p-4 rounded-2xl border border-primary/10 inline-flex items-center gap-3 text-left max-w-xl mx-auto sm:mx-0">
+                        <Sparkles className="h-5 w-5 text-primary shrink-0" />
+                        <p className="text-sm sm:text-base font-bold text-foreground leading-snug italic">
+                          &ldquo;{personalMessage}&rdquo;
+                        </p>
+                    </div>
+                )}
+
                 <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-3xl">
                     {bio || "You haven't set a bio yet. Share a brief summary of your spiritual journey to encourage others."}
                 </p>
