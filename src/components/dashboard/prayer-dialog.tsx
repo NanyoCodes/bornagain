@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -24,6 +23,7 @@ import {
   CardDescription,
 } from '@/components/ui/card';
 import { Button } from '../ui/button';
+import { ScrollArea } from '../ui/scroll-area';
 import { Loader2, PlayCircle, ChevronDown, Zap } from 'lucide-react';
 import type { UserProfile } from '@/lib/types';
 import { useUser } from '@/firebase';
