@@ -176,18 +176,18 @@ export function SoulInsightsDialog({ soul, children }: { soul: Soul, children: R
     return (
       <Sheet open={isOpen} onOpenChange={setIsOpen}>
         <SheetTrigger asChild>{children}</SheetTrigger>
-        <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0">
-          <div className="p-6 border-b flex-shrink-0">
+        <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+          <div className="p-8 border-b flex-shrink-0 bg-muted/10">
             <SheetHeader className="text-left flex-shrink-0">
               <SheetTitle className="font-headline text-2xl">{titleText}</SheetTitle>
-              <SheetDescription>{descText}</SheetDescription>
+              <SheetDescription className="text-sm font-medium">{descText}</SheetDescription>
             </SheetHeader>
           </div>
-          <div className="flex-grow min-h-0 pt-6 px-6">
+          <div className="flex-grow min-h-0 pt-6 px-8">
             {bodyContent}
           </div>
-          <div className="p-6 border-t flex-shrink-0">
-              <Button variant="outline" className="w-full" onClick={() => setIsOpen(false)}>Close</Button>
+          <div className="p-8 border-t flex-shrink-0">
+              <Button variant="outline" className="w-full h-12 rounded-2xl font-bold" onClick={() => setIsOpen(false)}>Close Insights</Button>
           </div>
         </SheetContent>
       </Sheet>

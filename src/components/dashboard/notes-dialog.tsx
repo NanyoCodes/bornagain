@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useMemo, useRef } from 'react';
@@ -54,6 +53,7 @@ import {
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
+import { Label } from '../ui/label';
 
 const noteCategories: NoteCategory[] = ['Personal', 'Church', 'Revelation', 'Other'];
 

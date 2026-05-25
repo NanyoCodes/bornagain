@@ -46,12 +46,14 @@ export function ChatParticipantsDialog({ chat, children }: { chat: Chat; childre
     return (
       <Sheet>
         <SheetTrigger asChild>{children}</SheetTrigger>
-        <SheetContent side="bottom" className="h-[80dvh] flex flex-col">
-          <SheetHeader className="text-left flex-shrink-0">
-            <SheetTitle>Participants: {chat.campaignTitle}</SheetTitle>
-            <SheetDescription>{participants.length} people in this chat.</SheetDescription>
-          </SheetHeader>
-          <div className="flex-grow min-h-0 pt-6">
+        <SheetContent side="bottom" className="h-[80dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+          <div className="p-8 border-b flex-shrink-0 bg-muted/10">
+            <SheetHeader className="text-left flex-shrink-0">
+              <SheetTitle className="text-2xl font-black font-headline">Participants</SheetTitle>
+              <SheetDescription className="text-sm font-medium">{participants.length} people in {chat.campaignTitle}.</SheetDescription>
+            </SheetHeader>
+          </div>
+          <div className="flex-grow min-h-0 pt-6 px-8">
             {listContent}
           </div>
         </SheetContent>
