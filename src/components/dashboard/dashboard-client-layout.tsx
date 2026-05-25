@@ -1,4 +1,3 @@
-
 'use client';
 
 /**
@@ -384,6 +383,9 @@ export default function DashboardClientLayout({ children }: { children: React.Re
 
   const isProfileIncomplete = userProfile && (!userProfile.firstName || !userProfile.lastName);
 
+  // We show the navbar on chat pages as requested, but keep the header hidden for focus
+  const showBottomNav = !isTakeoverPage || pathname.startsWith('/dashboard/chats/');
+
   return (
     <SearchProvider>
       <div className={cn("flex w-full flex-col overflow-x-hidden", isTakeoverPage ? "h-dvh" : "min-h-dvh")}>
@@ -395,7 +397,7 @@ export default function DashboardClientLayout({ children }: { children: React.Re
             </div>
           </main>
         </div>
-        {!isTakeoverPage && <BottomNavBar />}
+        {user && showBottomNav && <BottomNavBar />}
         {!isProfileIncomplete && <WelcomePopup isOpen={showWelcomePopup} onClose={() => setShowWelcomePopup(false)} userName={userProfile?.firstName} />}
         
         {mounted && isMobile ? (

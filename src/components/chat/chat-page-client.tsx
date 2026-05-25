@@ -477,7 +477,7 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                                                     onTouchMove={(e) => handleTouchMove(e, msg)}
                                                     onTouchEnd={() => handleTouchEnd(msg)}
                                                     className={cn(
-                                                        "relative z-10 rounded-lg px-3 py-2 max-w-sm sm:max-w-md break-words flex flex-col",
+                                                        "relative z-10 rounded-lg px-3 py-2 max-w-[280px] sm:max-w-md break-words flex flex-col",
                                                         isOwnMessage ? "bg-primary text-primary-foreground" : "bg-muted"
                                                     )}>
                                                         {msg.replyTo && (
@@ -551,7 +551,7 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                 </TooltipProvider>
             </div>
 
-            <div className="shrink-0 border-t p-4 bg-background pb-[calc(1rem+env(safe-area-inset-bottom))]">
+            <div className="shrink-0 border-t p-4 bg-background pb-[calc(4rem+1rem+env(safe-area-inset-bottom))] md:pb-4">
                 {isChatFrozen ? (
                     <div className="p-3 text-center text-sm text-muted-foreground bg-muted/50 rounded-lg">
                         This group chat has been frozen as the campaign ended more than 24 hours ago.

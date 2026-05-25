@@ -375,6 +375,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   const isProfileIncomplete = user && userProfile && (!userProfile.firstName || !userProfile.lastName);
 
+  // We show the navbar on chat pages as requested, but keep the header hidden for focus
+  const showBottomNav = !isTakeoverPage || pathname.includes('/chats/');
+
   return (
     <SearchProvider>
       <div className={cn("flex w-full flex-col overflow-x-hidden", isTakeoverPage ? "h-full" : "min-h-screen")}>
@@ -389,11 +392,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           "flex-1 w-full mx-auto relative",
           isTakeoverPage ? "h-full overflow-hidden" : "pb-32 md:pb-8 p-4 md:p-8 max-w-7xl"
         )}>
-            <div className={cn("h-full w-full", isTakeoverPage && "pb-16 md:pb-0")}>
+            <div className={cn("h-full w-full", (isTakeoverPage && showBottomNav) && "pb-16 md:pb-0")}>
                 <PageTransition>{children}</PageTransition>
             </div>
         </main>
-        {user && BottomNavBar && <BottomNavBar />}
+        {user && showBottomNav && <BottomNavBar />}
         
         {user && !isProfileIncomplete && <WelcomePopup isOpen={showWelcomePopup} onClose={() => setShowWelcomePopup(false)} userName={userProfile?.firstName} />}
         
