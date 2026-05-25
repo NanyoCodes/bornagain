@@ -51,19 +51,19 @@ export function GuidePageClient() {
         </div>
         <Accordion type="single" collapsible className="w-full">
             <AccordionItem value="referrals" className="border rounded-xl px-4 bg-card mb-4 shadow-sm">
-                <AccordionTrigger className="hover:no-underline font-semibold">How do I refer other believers?</AccordionTrigger>
+                <AccordionTrigger className="hover:no-underline font-semibold text-left">How do I refer other believers?</AccordionTrigger>
                 <AccordionContent className="text-sm text-muted-foreground leading-relaxed">
                     Testify is most powerful when used collectively. Use the "Share App" button below or in the sidebar to invite your pastors, youth leaders, and friends. A stronger network means a more organized harvest.
                 </AccordionContent>
             </AccordionItem>
             <AccordionItem value="insights" className="border rounded-xl px-4 bg-card mb-4 shadow-sm">
-                <AccordionTrigger className="hover:no-underline font-semibold">What are AI Follow-up Insights?</AccordionTrigger>
+                <AccordionTrigger className="hover:no-underline font-semibold text-left">What are AI Follow-up Insights?</AccordionTrigger>
                 <AccordionContent className="text-sm text-muted-foreground leading-relaxed">
                     On the "Souls Won" page, click the "Insights" lightbulb on any convert's record. Our AI analyzes their status and history to suggest the best next steps and personalized messages for you to send.
                 </AccordionContent>
             </AccordionItem>
             <AccordionItem value="amen" className="border rounded-xl px-4 bg-card mb-4 shadow-sm">
-                <AccordionTrigger className="hover:no-underline font-semibold">The power of Amen, Hallelujah, Celebrate and Comments</AccordionTrigger>
+                <AccordionTrigger className="hover:no-underline font-semibold text-left">The power of Amen, Hallelujah, Celebrate and Comments</AccordionTrigger>
                 <AccordionContent className="text-sm text-muted-foreground leading-relaxed">
                     Interaction on the testimonies feed isn't just social—it's spiritual support. Marking a story with an "Amen" lets the author know you are standing with them in faith, while "Hallelujah" and "Celebrate" signal that their story has ignited your own joy. Leaving a comment allows you to directly speak words of life and encouragement to your brethren.
                 </AccordionContent>
