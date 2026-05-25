@@ -124,12 +124,8 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
   const countriesList = useMemo(() => Country.getAllCountries(), []);
 
   const initialVideos = useMemo(() => {
-    const vids = [...(userProfile.videoTestimonies || [])];
-    if (userProfile.videoTestimonyUrl && !vids.some(v => v.url === userProfile.videoTestimonyUrl)) {
-        vids.unshift({ url: userProfile.videoTestimonyUrl, title: "My Testimony" });
-    }
-    return vids;
-  }, [userProfile.videoTestimonyUrl, userProfile.videoTestimonies]);
+    return userProfile.videoTestimonies || [];
+  }, [userProfile.videoTestimonies]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),

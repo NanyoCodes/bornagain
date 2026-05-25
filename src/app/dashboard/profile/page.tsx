@@ -168,9 +168,6 @@ export default function ProfilePage() {
 
   const videoTestimonies = useMemo(() => {
     const list = [...(userProfile?.videoTestimonies || [])];
-    if (userProfile?.videoTestimonyUrl && !list.some(v => v.url === userProfile.videoTestimonyUrl)) {
-        list.unshift({ url: userProfile.videoTestimonyUrl, title: "My Testimony" });
-    }
     return list.map(v => ({ ...v, embedUrl: getYouTubeEmbedUrl(v.url) })).filter(v => !!v.embedUrl);
   }, [userProfile]);
 

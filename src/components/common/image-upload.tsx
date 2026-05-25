@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
@@ -182,27 +183,18 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
       <div className="flex flex-col items-center gap-4 w-full py-4">
         <div className="relative">
           {circularCrop ? (
-            <Avatar className="h-24 w-24 border">
+            <Avatar className="h-24 w-24 border shadow-md">
               <AvatarImage src={previewUrl ?? undefined} />
               <AvatarFallback><Camera className="h-8 w-8 text-muted-foreground" /></AvatarFallback>
             </Avatar>
           ) : (
-            <div className="relative w-full max-w-xs aspect-video rounded-lg border bg-muted flex items-center justify-center overflow-hidden">
+            <div className="relative w-full max-w-xs aspect-video rounded-lg border bg-muted flex items-center justify-center overflow-hidden shadow-md">
               {previewUrl ? (
-                <Image src={previewUrl} alt="Preview" layout="fill" objectFit="cover" unoptimized />
+                <Image src={previewUrl} alt="Preview" fill className="object-cover" unoptimized />
               ) : (
                 <Camera className="h-10 w-10 text-muted-foreground" />
               )}
             </div>
-          )}
-          {previewUrl && !isLoading && (
-              <button
-                  className="absolute -top-2 -right-2 h-6 w-6 rounded-full z-10 bg-destructive text-destructive-foreground flex items-center justify-center shadow-md hover:bg-destructive/90 transition-colors"
-                  onClick={handleRemoveImage}
-                  type="button"
-              >
-                  <X className="h-4 w-4" />
-              </button>
           )}
         </div>
         

@@ -47,7 +47,6 @@ import { FirestorePermissionError } from "@/firebase/errors";
 import { EditTestimonyForm } from "@/components/testimonies/edit-testimony-form";
 import { EditPrayerRequestForm } from "@/components/prayer/EditPrayerRequestForm";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import AdsenseAd from "@/components/common/adsense-ad";
 
 export default function TestimoniesPage() {
   const [isTestimonyDialogOpen, setIsTestimonyDialogOpen] = useState(false);
@@ -341,19 +340,15 @@ export default function TestimoniesPage() {
                 )}
                 {!loading && filteredTestimonies.map((testimony, index) => {
                     return (
-                        <React.Fragment key={testimony.id}>
-                            <TestimonyCard 
-                                testimony={testimony} 
-                                isPartner={partnerIds.has(testimony.authorId)}
-                                hasPendingRequest={pendingRequestIds.has(testimony.authorId)}
-                                currentUserProfile={userProfile}
-                                onDelete={() => setItemToDelete({ type: 'testimony', data: testimony })}
-                                onEdit={() => setTestimonyToEdit(testimony)}
-                            />
-                            {(index + 1) % 4 === 0 && (
-                                <AdsenseAd adSlot={`testimonies-feed-ad-${index}`} className="h-full" />
-                            )}
-                        </React.Fragment>
+                        <TestimonyCard 
+                            key={testimony.id}
+                            testimony={testimony} 
+                            isPartner={partnerIds.has(testimony.authorId)}
+                            hasPendingRequest={pendingRequestIds.has(testimony.authorId)}
+                            currentUserProfile={userProfile}
+                            onDelete={() => setItemToDelete({ type: 'testimony', data: testimony })}
+                            onEdit={() => setTestimonyToEdit(testimony)}
+                        />
                     );
                 })}
                  {!loading && filteredTestimonies?.length === 0 && (
@@ -375,17 +370,13 @@ export default function TestimoniesPage() {
                   ))
                 )}
                 {!loading && filteredPrayerRequests?.map((req, index) => (
-                  <React.Fragment key={req.id}>
-                    <PrayerRequestCard 
-                        prayerRequest={req}
-                        onDelete={() => setItemToDelete({ type: 'prayer', data: req })}
-                        onAnswerPrayer={() => handleOpenTestimonyDialog(req)}
-                        onEdit={() => setPrayerToEdit(req)}
-                    />
-                     {(index + 1) % 4 === 0 && (
-                        <AdsenseAd adSlot={`prayers-feed-ad-${index}`} className="h-full" />
-                    )}
-                  </React.Fragment>
+                  <PrayerRequestCard 
+                      key={req.id}
+                      prayerRequest={req}
+                      onDelete={() => setItemToDelete({ type: 'prayer', data: req })}
+                      onAnswerPrayer={() => handleOpenTestimonyDialog(req)}
+                      onEdit={() => setPrayerToEdit(req)}
+                  />
                 ))}
                 {!loading && filteredPrayerRequests?.length === 0 && (
                   <div className="col-span-full text-center py-12 flex flex-col items-center">

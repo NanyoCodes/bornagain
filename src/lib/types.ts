@@ -52,7 +52,6 @@ export type UserProfile = {
   photoURL?: string;
   bio?: string;
   personalMessage?: string;
-  videoTestimonyUrl?: string; // Legacy field
   videoTestimonies?: VideoTestimony[];
   location?: {
     city?: string;
