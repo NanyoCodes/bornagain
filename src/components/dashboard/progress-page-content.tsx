@@ -47,13 +47,13 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
-import { safeToDate } from '@/lib/utils';
+import { safeToDate, cn } from '@/lib/utils';
 import { actionItems } from '@/lib/follow-up-data';
 import { welcomeScriptures } from '@/lib/verses';
 import { ProgressOverview } from '@/components/dashboard/progress-overview';
 import AdsenseAd from '@/components/common/adsense-ad';
 import { useToast } from '@/hooks/use-toast';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const MonthlyStatsChart = dynamic(() => import('@/components/dashboard/monthly-stats-chart').then(m => m.MonthlyStatsChart), {
   loading: () => <Skeleton className="h-[300px] w-full" />,
@@ -66,7 +66,7 @@ function RecentSoulsList() {
   const { user } = useUser();
   const firestore = useFirestore();
   const soulsQuery = useMemo(() => user?.uid ? query(collection(firestore, `users/${user.uid}/souls`), orderBy('wonAt', 'desc'), limit(3)) : null, [user?.uid, firestore]);
-  const { data: souls, loading } = useCollection<Soul>(soulsQuery);
+  const { data: souls, loading } = useCollection<Soul>( soulsQuery);
   if (loading) return <div className="space-y-4">{[...Array(3)].map((_, i) => (<div key={i} className="flex items-center gap-4"><Skeleton className="h-10 w-10 rounded-full" /><div className="space-y-1 flex-1"><Skeleton className="h-4 w-2/4" /><Skeleton className="h-3 w-1/4" /></div></div>))}</div>;
   if (!souls || souls.length === 0) return <div className="text-center py-10 border-2 border-dashed rounded-lg bg-slate-50 dark:bg-slate-900/30"><div className="mx-auto h-12 w-12 text-muted-foreground"><UserPlus strokeWidth={1.5} /></div><h3 className="mt-4 text-lg font-semibold">Log Your First Soul</h3><p className="mt-1 text-sm text-muted-foreground">Start tracking the lives you impact.</p><Button asChild size="sm" className="mt-4"><Link href="/souls-won">Get Started <ArrowRight className="ml-2 h-4 w-4" /></Link></Button></div>;
   return (<div className="space-y-1">{souls.map((soul) => { const wonAt = safeToDate(soul.wonAt); return (<Link href="/souls-won" key={soul.id} className="flex items-center gap-4 p-2 -mx-2 rounded-lg hover:bg-muted/50 transition-colors"><Avatar className="h-10 w-10 border"><AvatarFallback>{soul.firstName?.charAt(0) || 'S'}</AvatarFallback></Avatar><div className="flex-1 min-w-0"><p className="font-semibold leading-none truncate">{soul.firstName} {soul.lastName}</p><p className="text-sm text-muted-foreground">Won on {wonAt ? format(wonAt, 'PPP') : 'N/A'}</p></div><ArrowRight className="h-4 w-4 text-muted-foreground shrink-0" /></Link>); })}</div>);
@@ -302,6 +302,74 @@ function LastBibleReadCard({ history }: { history: ReadingHistoryItem[] }) {
   );
 }
 
+function AffirmationButton({ 
+  onClick, 
+  children, 
+  className 
+}: { 
+  onClick: (e: React.MouseEvent<HTMLButtonElement>) => void; 
+  children: React.ReactNode; 
+  className?: string;
+}) {
+  const [imprints, setImprints] = useState<{ id: number; x: number; y: number }[]>([]);
+
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    const id = Date.now();
+    setImprints(prev => [...prev, { id, x, y }]);
+    
+    setTimeout(() => {
+      setImprints(prev => prev.filter(i => i.id !== id));
+    }, 1000);
+    
+    onClick(e);
+  };
+
+  return (
+    <motion.div whileTap={{ scale: 0.95 }} whileHover={{ scale: 1.05 }} className="relative">
+      <Button 
+        variant="outline" 
+        size="sm" 
+        className={cn("relative overflow-hidden h-8 text-[10px] uppercase font-bold tracking-widest border-primary/20 text-primary hover:bg-primary/10", className)}
+        onClick={handleClick}
+      >
+        <AnimatePresence>
+          {imprints.map((imprint) => (
+            <motion.div
+              key={imprint.id}
+              initial={{ opacity: 0, scale: 0.2, rotate: -30 }}
+              animate={{ opacity: 0.5, scale: 1.5, rotate: 0 }}
+              exit={{ opacity: 0, scale: 2, filter: 'blur(4px)' }}
+              transition={{ duration: 0.8 }}
+              style={{
+                position: 'absolute',
+                left: imprint.x,
+                top: imprint.y,
+                width: '30px',
+                height: '30px',
+                marginLeft: '-15px',
+                marginTop: '-15px',
+                pointerEvents: 'none',
+                zIndex: 0,
+              }}
+            >
+              <svg viewBox="0 0 100 100" fill="currentColor" className="text-red-700 dark:text-red-600">
+                <path d="M50,85 C25,85 10,60 10,40 C10,25 30,10 50,10 C70,10 90,25 90,40 C90,60 75,85 50,85" />
+              </svg>
+            </motion.div>
+          ))}
+        </AnimatePresence>
+        <span className="relative z-10 flex items-center gap-1.5">
+          {children}
+        </span>
+      </Button>
+    </motion.div>
+  );
+}
+
 export function ProgressPageContent() {
   const { user } = useUser();
   const firestore = useFirestore();
@@ -364,39 +432,18 @@ export function ProgressPageContent() {
             </p>
             
             <div className="flex flex-wrap justify-center gap-2 pt-2">
-                <motion.div whileTap={{ scale: 0.95 }} whileHover={{ scale: 1.05 }}>
-                    <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="h-8 text-[10px] uppercase font-bold tracking-widest border-primary/20 text-primary hover:bg-primary/10"
-                        onClick={() => handleAffirmation('hallelujah')}
-                    >
-                        <Sparkles className="mr-1.5 h-3 w-3" />
-                        Hallelujah
-                    </Button>
-                </motion.div>
-                <motion.div whileTap={{ scale: 0.95 }} whileHover={{ scale: 1.05 }}>
-                    <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="h-8 text-[10px] uppercase font-bold tracking-widest border-primary/20 text-primary hover:bg-primary/10"
-                        onClick={() => handleAffirmation('amen')}
-                    >
-                        <CheckCircle2 className="mr-1.5 h-3 w-3" />
-                        Amen
-                    </Button>
-                </motion.div>
-                <motion.div whileTap={{ scale: 0.95 }} whileHover={{ scale: 1.05 }}>
-                    <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="h-8 text-[10px] uppercase font-bold tracking-widest border-primary/20 text-primary hover:bg-primary/10"
-                        onClick={() => handleAffirmation('receive')}
-                    >
-                        <Heart className="mr-1.5 h-3 w-3" />
-                        I RECEIVE IN THE NAME OF JESUS
-                    </Button>
-                </motion.div>
+                <AffirmationButton onClick={() => handleAffirmation('hallelujah')}>
+                    <Sparkles className="mr-1.5 h-3 w-3" />
+                    Hallelujah
+                </AffirmationButton>
+                <AffirmationButton onClick={() => handleAffirmation('amen')}>
+                    <CheckCircle2 className="mr-1.5 h-3 w-3" />
+                    Amen
+                </AffirmationButton>
+                <AffirmationButton onClick={() => handleAffirmation('receive')}>
+                    <Heart className="mr-1.5 h-3 w-3" />
+                    I RECEIVE IN THE NAME OF JESUS
+                </AffirmationButton>
             </div>
         </header>
 
