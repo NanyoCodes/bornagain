@@ -20,7 +20,7 @@ import { useToast } from "@/hooks/use-toast";
 import React, { useState, useMemo, useEffect } from "react";
 import { Loader2, LocateFixed, Video, Map as MapIcon, Youtube, Plus, Trash2, ExternalLink, Info, MessageSquare } from "lucide-react";
 import { useUser, useFirestore, useAuth } from "@/firebase";
-import { doc, updateDoc, serverTimestamp } from "firebase/firestore";
+import { doc, updateDoc, serverTimestamp, collection, query, where, getDocs, writeBatch } from "firebase/firestore";
 import { updateProfile } from "firebase/auth";
 import type { UserProfile } from "@/lib/types";
 import { errorEmitter } from "@/firebase/error-emitter";
@@ -242,6 +242,34 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
       
       await updateDoc(doc(firestore, 'users', user.uid), firestoreUpdatePayload);
       await authUpdatePromise;
+
+      // Sync photo across other collections if it changed
+      if (values.photoURL !== userProfile.photoURL) {
+          const batch = writeBatch(firestore);
+          const syncUrl = values.photoURL || ""; // Handle potential removal
+
+          // 1. Sync Testimonies
+          const testimoniesSnap = await getDocs(query(collection(firestore, 'testimonies'), where('authorId', '==', user.uid)));
+          testimoniesSnap.forEach(tDoc => {
+              batch.update(tDoc.ref, { authorAvatarUrl: syncUrl });
+          });
+
+          // 2. Sync Prayer Requests
+          const prayersSnap = await getDocs(query(collection(firestore, 'prayerRequests'), where('authorId', '==', user.uid)));
+          prayersSnap.forEach(pDoc => {
+              batch.update(pDoc.ref, { authorAvatarUrl: syncUrl });
+          });
+
+          // 3. Sync Fellowships (organized by user)
+          const fellowshipsSnap = await getDocs(query(collection(firestore, 'fellowships'), where('organizerId', '==', user.uid)));
+          fellowshipsSnap.forEach(fDoc => {
+              batch.update(fDoc.ref, { organizerPhotoURL: syncUrl });
+          });
+
+          await batch.commit().catch(err => {
+              console.error("Denormalized sync failed:", err);
+          });
+      }
       
       toast({ title: "Profile Updated" });
       onClose();
