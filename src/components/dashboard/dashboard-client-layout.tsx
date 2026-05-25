@@ -394,8 +394,7 @@ export default function DashboardClientLayout({ children }: { children: React.Re
           <main className={cn("absolute inset-0", !isTakeoverPage && "overflow-y-auto")}>
             <div className={cn(
               "mx-auto h-full", 
-              !isTakeoverPage ? "max-w-7xl p-4 md:p-6 pb-32 md:pb-6" : "w-full",
-              (isTakeoverPage && showBottomNav) && "pb-[calc(4rem+env(safe-area-inset-bottom))] md:pb-0"
+              !isTakeoverPage ? "max-w-7xl p-4 md:p-6 pb-32 md:pb-6" : "w-full"
             )}>
               <PageTransition>{children}</PageTransition>
             </div>

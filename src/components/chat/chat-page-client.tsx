@@ -333,8 +333,8 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
     const otherParticipantInfo = otherParticipantId ? chat.participantInfo[otherParticipantId] : null;
 
     return (
-        <div className="flex flex-col w-full h-full bg-background">
-            <div className="flex items-center gap-4 p-4 shrink-0 border-b">
+        <div className="flex flex-col w-full h-full bg-background overflow-hidden">
+            <div className="flex items-center gap-4 p-4 shrink-0 border-b bg-background/80 backdrop-blur-md z-10">
                 <Button variant="outline" size="icon" onClick={() => router.back()}>
                     <ArrowLeft className="h-4 w-4" />
                     <span className="sr-only">Back</span>
@@ -405,187 +405,193 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                 ) : null}
             </div>
 
-            <div className="flex-1 px-4 py-4 overflow-y-auto min-h-0">
-                <TooltipProvider>
-                    {messageGroups.length > 0 ? (
-                       <div className="space-y-2">
-                            {messageGroups.map((group) => (
-                            <div key={group.date.toISOString()} className="relative">
-                                <div className="sticky top-0 z-10 flex justify-center my-4">
-                                    <div className="px-3 py-1 text-xs text-muted-foreground bg-muted/80 backdrop-blur-sm rounded-full">
-                                        {format(group.date, 'PPP')}
+            <div className="flex-1 overflow-y-auto min-h-0 bg-muted/5">
+                <div className="px-4 py-6 space-y-2">
+                    <TooltipProvider>
+                        {messageGroups.length > 0 ? (
+                           <div className="space-y-2">
+                                {messageGroups.map((group) => (
+                                <div key={group.date.toISOString()} className="relative">
+                                    <div className="sticky top-0 z-10 flex justify-center my-4">
+                                        <div className="px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-muted-foreground bg-muted/80 backdrop-blur-sm rounded-full border shadow-sm">
+                                            {format(group.date, 'PPP')}
+                                        </div>
+                                    </div>
+                                    <div className="space-y-4">
+                                        {group.messages.map(msg => {
+                                            const senderInfo = chat.participantInfo[msg.senderId];
+                                            const isOwnMessage = msg.senderId === user?.uid;
+                                            const createdAtDate = safeToDate(msg.createdAt);
+                                            return (
+                                            <div key={msg.id} id={`message-${msg.id}`} className={cn(
+                                                "group flex w-full items-end gap-2",
+                                                isOwnMessage ? "justify-end" : "justify-start"
+                                            )}>
+                                                {!isOwnMessage && senderInfo && (
+                                                    <Tooltip>
+                                                        <TooltipTrigger asChild>
+                                                            <div className="shrink-0 mb-1">
+                                                                <Avatar className="h-7 w-7 border shadow-sm">
+                                                                    <AvatarImage src={senderInfo.photoURL} />
+                                                                    <AvatarFallback className="text-[10px]">{senderInfo.firstName?.charAt(0)}</AvatarFallback>
+                                                                </Avatar>
+                                                            </div>
+                                                        </TooltipTrigger>
+                                                        <TooltipContent>
+                                                            <p>{senderInfo.firstName} {senderInfo.lastName}</p>
+                                                        </TooltipContent>
+                                                    </Tooltip>
+                                                )}
+                                                
+                                                <div className="relative flex items-center gap-1 group">
+                                                    <div className={cn(
+                                                        "absolute top-0 flex h-full items-center justify-center transition-opacity",
+                                                        isOwnMessage ? "right-full pr-3" : "left-full pl-3"
+                                                    )}>
+                                                        <Reply
+                                                            className="h-5 w-5 text-muted-foreground"
+                                                            style={{
+                                                                opacity: Math.min(Math.abs(swipeState.id === msg.id ? swipeState.deltaX : 0) / swipeThreshold, 1)
+                                                            }}
+                                                        />
+                                                    </div>
+
+                                                    {!isOwnMessage && (
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="icon"
+                                                            className="h-7 w-7 rounded-full opacity-0 group-hover:opacity-100 transition-opacity order-last shrink-0"
+                                                            onClick={() => setReplyingTo(msg)}
+                                                            title="Reply"
+                                                        >
+                                                            <Reply className="h-3.5 w-3.5" />
+                                                        </Button>
+                                                    )}
+
+                                                    <div
+                                                        style={{
+                                                            touchAction: 'pan-y',
+                                                            transform: swipeState.id === msg.id ? `translateX(${swipeState.deltaX}px)` : 'translateX(0px)',
+                                                            transition: swipeState.id === msg.id && swipeState.deltaX === 0 ? 'transform 0.2s ease-out' : 'none'
+                                                        }}
+                                                        onTouchStart={(e) => handleTouchStart(e, msg)}
+                                                        onTouchMove={(e) => handleTouchMove(e, msg)}
+                                                        onTouchEnd={() => handleTouchEnd(msg)}
+                                                        className={cn(
+                                                            "relative z-10 rounded-2xl px-4 py-2.5 max-w-[280px] sm:max-w-md break-words flex flex-col shadow-sm",
+                                                            isOwnMessage ? "bg-primary text-primary-foreground rounded-br-sm" : "bg-background border rounded-bl-sm"
+                                                        )}>
+                                                            {msg.replyTo && (
+                                                                <div className="flex items-center gap-1 text-[9px] font-black text-muted-foreground/60 mb-1.5 uppercase tracking-widest">
+                                                                    <Reply className="h-2.5 w-2.5" />
+                                                                    Reply
+                                                                </div>
+                                                            )}
+
+                                                            {msg.replyTo && (
+                                                                <div 
+                                                                    onClick={(e) => {
+                                                                        e.preventDefault();
+                                                                        const repliedMsgEl = document.getElementById(`message-${msg.replyTo!.messageId}`);
+                                                                        if (repliedMsgEl) {
+                                                                            repliedMsgEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                                                            const parentGroup = repliedMsgEl.closest('.group');
+                                                                            parentGroup?.classList.add('animate-pulse-once');
+                                                                            setTimeout(() => {
+                                                                                parentGroup?.classList.remove('animate-pulse-once');
+                                                                            }, 600);
+                                                                        }
+                                                                    }}
+                                                                    className="mb-2 rounded-xl border-l-4 border-primary/50 bg-black/5 p-2 text-xs dark:bg-white/5 block hover:bg-black/10 dark:hover:bg-white/10 transition-colors cursor-pointer"
+                                                                >
+                                                                    <p className="font-black text-[9px] uppercase tracking-wider mb-0.5">{msg.replyTo.senderFirstName} {msg.replyTo.senderLastName}</p>
+                                                                    <p className="line-clamp-2 opacity-80 leading-snug">{msg.replyTo.text}</p>
+                                                                </div>
+                                                            )}
+
+                                                            {chat.isGroupChat && !isOwnMessage && senderInfo && (
+                                                                <div className="text-[10px] font-black uppercase tracking-widest text-primary mb-1">
+                                                                    {senderInfo.firstName} {senderInfo.lastName}
+                                                                </div>
+                                                            )}
+                                                            {msg.text && <p className="text-sm leading-relaxed">{msg.text}</p>}
+                                                            {createdAtDate && (
+                                                                <p className={cn(
+                                                                    "text-[9px] font-bold mt-1 self-end opacity-50",
+                                                                    isOwnMessage ? "text-primary-foreground" : "text-muted-foreground"
+                                                                )}>
+                                                                    {format(createdAtDate, 'p')}
+                                                                </p>
+                                                            )}
+                                                    </div>
+
+                                                    {isOwnMessage && (
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="icon"
+                                                            className="h-7 w-7 rounded-full opacity-0 group-hover:opacity-100 transition-opacity order-first shrink-0"
+                                                            onClick={() => setReplyingTo(msg)}
+                                                            title="Reply"
+                                                        >
+                                                            <Reply className="h-3.5 w-3.5" />
+                                                        </Button>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        )})}
                                     </div>
                                 </div>
-                                <div className="space-y-4">
-                                    {group.messages.map(msg => {
-                                        const senderInfo = chat.participantInfo[msg.senderId];
-                                        const isOwnMessage = msg.senderId === user?.uid;
-                                        const createdAtDate = safeToDate(msg.createdAt);
-                                        return (
-                                        <div key={msg.id} id={`message-${msg.id}`} className={cn(
-                                            "group flex w-full items-end gap-2",
-                                            isOwnMessage ? "justify-end" : "justify-start"
-                                        )}>
-                                            {!isOwnMessage && senderInfo && (
-                                                <Tooltip>
-                                                    <TooltipTrigger asChild>
-                                                        <div className="shrink-0">
-                                                            <Avatar className="h-8 w-8">
-                                                                <AvatarImage src={senderInfo.photoURL} />
-                                                                <AvatarFallback>{senderInfo.firstName?.charAt(0)}</AvatarFallback>
-                                                            </Avatar>
-                                                        </div>
-                                                    </TooltipTrigger>
-                                                    <TooltipContent>
-                                                        <p>{senderInfo.firstName} {senderInfo.lastName}</p>
-                                                    </TooltipContent>
-                                                </Tooltip>
-                                            )}
-                                            
-                                            <div className="relative flex items-center gap-1 group">
-                                                <div className={cn(
-                                                    "absolute top-0 flex h-full items-center justify-center transition-opacity",
-                                                    isOwnMessage ? "right-full pr-3" : "left-full pl-3"
-                                                )}>
-                                                    <Reply
-                                                        className="h-5 w-5 text-muted-foreground"
-                                                        style={{
-                                                            opacity: Math.min(Math.abs(swipeState.id === msg.id ? swipeState.deltaX : 0) / swipeThreshold, 1)
-                                                        }}
-                                                    />
-                                                </div>
-
-                                                {!isOwnMessage && (
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="icon"
-                                                        className="h-7 w-7 rounded-full opacity-0 group-hover:opacity-100 transition-opacity order-last"
-                                                        onClick={() => setReplyingTo(msg)}
-                                                        title="Reply"
-                                                    >
-                                                        <Reply className="h-4 w-4" />
-                                                    </Button>
-                                                )}
-
-                                                <div
-                                                    style={{
-                                                        touchAction: 'pan-y',
-                                                        transform: swipeState.id === msg.id ? `translateX(${swipeState.deltaX}px)` : 'translateX(0px)',
-                                                        transition: swipeState.id === msg.id && swipeState.deltaX === 0 ? 'transform 0.2s ease-out' : 'none'
-                                                    }}
-                                                    onTouchStart={(e) => handleTouchStart(e, msg)}
-                                                    onTouchMove={(e) => handleTouchMove(e, msg)}
-                                                    onTouchEnd={() => handleTouchEnd(msg)}
-                                                    className={cn(
-                                                        "relative z-10 rounded-lg px-3 py-2 max-w-[280px] sm:max-w-md break-words flex flex-col",
-                                                        isOwnMessage ? "bg-primary text-primary-foreground" : "bg-muted"
-                                                    )}>
-                                                        {msg.replyTo && (
-                                                            <div className="flex items-center gap-1 text-[9px] font-bold text-muted-foreground/60 mb-1 uppercase tracking-tighter">
-                                                                <Reply className="h-2.5 w-2.5" />
-                                                                Reply
-                                                            </div>
-                                                        )}
-
-                                                        {msg.replyTo && (
-                                                            <div 
-                                                                onClick={(e) => {
-                                                                    e.preventDefault();
-                                                                    const repliedMsgEl = document.getElementById(`message-${msg.replyTo!.messageId}`);
-                                                                    if (repliedMsgEl) {
-                                                                        repliedMsgEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                                                                        const parentGroup = repliedMsgEl.closest('.group');
-                                                                        parentGroup?.classList.add('animate-pulse-once');
-                                                                        setTimeout(() => {
-                                                                            parentGroup?.classList.remove('animate-pulse-once');
-                                                                        }, 600);
-                                                                    }
-                                                                }}
-                                                                className="mb-1.5 rounded-md border-l-2 border-primary/50 bg-black/10 p-2 text-xs dark:bg-white/10 block hover:bg-black/20 dark:hover:bg-white/20 transition-colors cursor-pointer"
-                                                            >
-                                                                <p className="font-bold text-[10px]">{msg.replyTo.senderFirstName} {msg.replyTo.senderLastName}</p>
-                                                                <p className="line-clamp-2 opacity-80">{msg.replyTo.text}</p>
-                                                            </div>
-                                                        )}
-
-                                                        {chat.isGroupChat && !isOwnMessage && senderInfo && (
-                                                            <div className="text-xs font-bold mb-1">
-                                                                {senderInfo.firstName} {senderInfo.lastName}
-                                                            </div>
-                                                        )}
-                                                        {msg.text && <p className="text-sm">{msg.text}</p>}
-                                                        {createdAtDate && (
-                                                            <p className={cn(
-                                                                "text-[10px] mt-1 self-end",
-                                                                isOwnMessage ? "text-primary-foreground/60" : "text-muted-foreground/60"
-                                                            )}>
-                                                                {format(createdAtDate, 'p')}
-                                                            </p>
-                                                        )}
-                                                </div>
-
-                                                {isOwnMessage && (
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="icon"
-                                                        className="h-7 w-7 rounded-full opacity-0 group-hover:opacity-100 transition-opacity order-first"
-                                                        onClick={() => setReplyingTo(msg)}
-                                                        title="Reply"
-                                                    >
-                                                        <Reply className="h-4 w-4" />
-                                                    </Button>
-                                                )}
-                                            </div>
-                                        </div>
-                                    )})}
-                                </div>
+                            ))}
+                           </div>
+                        ) : (
+                            <div className="flex flex-col justify-center items-center h-[50vh] text-center px-8">
+                                <MessagesSquare className="h-12 w-12 text-muted-foreground opacity-20 mb-4" />
+                                <p className="text-muted-foreground text-sm font-medium">No messages yet. Start the conversation to encourage the body of Christ.</p>
                             </div>
-                        ))}
-                       </div>
-                    ) : (
-                        <div className="flex justify-center items-center h-full">
-                            <p className="text-muted-foreground text-sm">Send a message to start the conversation.</p>
-                        </div>
-                    )}
-                    <div ref={messagesEndRef} />
-                </TooltipProvider>
+                        )}
+                        <div ref={messagesEndRef} />
+                    </TooltipProvider>
+                </div>
             </div>
 
-            <div className="shrink-0 border-t p-4 bg-background pb-[env(safe-area-inset-bottom)] md:pb-4">
+            <div className="shrink-0 border-t p-4 bg-background/80 backdrop-blur-md pb-[calc(1rem+env(safe-area-inset-bottom))] md:pb-4 relative z-10">
                 {isChatFrozen ? (
-                    <div className="p-3 text-center text-sm text-muted-foreground bg-muted/50 rounded-lg">
-                        This group chat has been frozen as the campaign ended more than 24 hours ago.
+                    <div className="p-4 text-center text-xs font-bold text-muted-foreground bg-muted/30 rounded-2xl border border-dashed">
+                        THIS CONVERSATION IS FROZEN (CAMPAIGN ENDED)
                     </div>
                 ) : (
                     <>
                     {replyingTo && (
-                        <div className="relative rounded-t-lg border-x border-t bg-muted/50 p-3 pt-2 pb-3 mb-0 animate-in slide-in-from-bottom-2 duration-200">
-                            <p className="text-xs font-bold text-primary">
-                                Replying to {chat.participantInfo[replyingTo.senderId]?.firstName || 'User'}
-                            </p>
-                            <p className="line-clamp-1 text-sm text-muted-foreground">{replyingTo.text}</p>
+                        <div className="relative rounded-t-[1.5rem] border-x border-t bg-muted/40 p-4 pt-3 pb-4 mb-0 animate-in slide-in-from-bottom-2 duration-200">
+                            <div className="flex items-center gap-2 mb-1.5">
+                                <Reply className="h-3 w-3 text-primary" />
+                                <p className="text-[10px] font-black uppercase tracking-widest text-primary">
+                                    Replying to {chat.participantInfo[replyingTo.senderId]?.firstName || 'User'}
+                                </p>
+                            </div>
+                            <p className="line-clamp-1 text-sm text-muted-foreground italic">&ldquo;{replyingTo.text}&rdquo;</p>
                             <Button
                                 variant="ghost"
                                 size="icon"
-                                className="absolute right-1 top-1 h-6 w-6 rounded-full"
+                                className="absolute right-2 top-2 h-7 w-7 rounded-full hover:bg-background shadow-sm"
                                 onClick={() => setReplyingTo(null)}
                             >
                                 <X className="h-4 w-4" />
                             </Button>
                         </div>
                     )}
-                    <form onSubmit={handleFormSubmit} className="flex gap-2 w-full items-center">
+                    <form onSubmit={handleFormSubmit} className="flex gap-3 w-full items-center">
                         <Input
                             value={newMessage}
                             onChange={(e) => setNewMessage(e.target.value)}
                             onKeyDown={handleKeyDown}
-                            placeholder="Type a message..."
+                            placeholder={replyingTo ? "Type your reply..." : "Type a message..."}
                             disabled={isSending}
                             autoComplete="off"
-                            className={cn("h-11 sm:h-12 rounded-2xl", replyingTo && "rounded-t-none")}
+                            className={cn("h-12 sm:h-14 rounded-2xl shadow-inner border-muted-foreground/20 text-base", replyingTo && "rounded-t-none border-t-0")}
                         />
-                        <Button type="submit" size="icon" className="h-11 w-11 sm:h-12 sm:w-12 shrink-0 rounded-2xl shadow-lg transition-transform active:scale-90" disabled={!newMessage.trim() || isSending}>
-                            {isSending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-5 w-5" />}
+                        <Button type="submit" size="icon" className="h-12 w-12 sm:h-14 sm:w-14 shrink-0 rounded-2xl shadow-xl transition-all active:scale-90 bg-primary hover:shadow-primary/20" disabled={!newMessage.trim() || isSending}>
+                            {isSending ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5 fill-current" />}
                         </Button>
                     </form>
                     </>

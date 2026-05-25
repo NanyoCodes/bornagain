@@ -323,7 +323,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   ];
   const isPublicRoute = publicRoutes.some(route => pathname === route || pathname.startsWith(route + '/')) || pathname === '/';
 
-  const isTakeoverPage = pathname.startsWith('/dashboard/chats/') || pathname.startsWith('/dashboard/notes') || pathname.startsWith('/dashboard/bible');
+  const isTakeoverPage = pathname.startsWith('/dashboard/chats/') || pathname.startsWith('/dashboard/notes') || pathname.startsWith('/dashboard/bible') || pathname.includes('/chats/');
 
   const unreadChatNotifsQuery = useMemo(() => {
     if (!user?.uid || !firestore) return null;
@@ -380,7 +380,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <SearchProvider>
-      <div className={cn("flex w-full flex-col overflow-x-hidden", isTakeoverPage ? "h-full" : "min-h-screen")}>
+      <div className={cn("flex w-full flex-col overflow-x-hidden", isTakeoverPage ? "h-dvh" : "min-h-dvh")}>
         {!isTakeoverPage && (
           <AppHeader 
             unreadChatCount={unreadChatNotifications?.length || 0} 
@@ -392,7 +392,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           "flex-1 w-full mx-auto relative",
           isTakeoverPage ? "h-full overflow-hidden" : "pb-32 md:pb-8 p-4 md:p-8 max-w-7xl"
         )}>
-            <div className={cn("h-full w-full", (isTakeoverPage && showBottomNav) && "pb-[calc(4rem+env(safe-area-inset-bottom))] md:pb-0")}>
+            <div className={cn("h-full w-full")}>
                 <PageTransition>{children}</PageTransition>
             </div>
         </main>
