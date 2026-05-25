@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
@@ -202,7 +203,7 @@ export default function SoulsWonPage() {
 
     const soulRef = doc(firestore, `users/${user.uid}/souls`, soul.id);
     const globalSoulRef = doc(firestore, 'souls', soul.id);
-    const selectedGroup = fellowships?.find(f => f.id === groupId);
+    const selectedGroup = allFellowships?.find(f => f.id === groupId);
     
     const updateData: { [key: string]: any } = {
         updatedAt: serverTimestamp(),
@@ -388,15 +389,15 @@ export default function SoulsWonPage() {
       {/* Edit Soul */}
       {mounted && isMobile ? (
         <Sheet open={!!soulToEditId} onOpenChange={(open) => !open && setSoulToEditId(null)}>
-          <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-2xl">
-            <div className="p-6 border-b flex-shrink-0 bg-muted/10">
+          <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+            <div className="p-8 border-b flex-shrink-0 bg-muted/10">
               <SheetHeader className="text-left">
-                <SheetTitle className="text-xl font-bold">Edit Soul Record</SheetTitle>
-                <SheetDescription className="text-xs">Update information for {soulToEdit?.firstName}.</SheetDescription>
+                <SheetTitle className="text-2xl font-black font-headline">Edit Soul Record</SheetTitle>
+                <SheetDescription className="text-sm">Update information for {soulToEdit?.firstName}.</SheetDescription>
               </SheetHeader>
             </div>
             <ScrollArea className="flex-grow">
-              <div className="p-6">
+              <div className="p-8">
                  {soulToEdit && (
                   <EditSoulForm 
                       soul={soulToEdit} 
@@ -433,14 +434,14 @@ export default function SoulsWonPage() {
       {/* Log Soul */}
       {mounted && isMobile ? (
         <Sheet open={isLogDialogOpen} onOpenChange={setIsLogDialogOpen}>
-          <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-2xl">
-            <div className="p-6 border-b flex-shrink-0 bg-muted/10">
+          <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+            <div className="p-8 border-b flex-shrink-0 bg-muted/10">
                 <SheetHeader className="text-left">
-                    <SheetTitle className="font-bold font-headline text-xl">Log a New Soul</SheetTitle>
-                    <SheetDescription className="text-xs">Record the details of the person you've ministered to.</SheetDescription>
+                    <SheetTitle className="font-black font-headline text-2xl">Log a New Soul</SheetTitle>
+                    <SheetDescription className="text-sm">Record the details of the person you've ministered to.</SheetDescription>
                 </SheetHeader>
             </div>
-            <div className="flex-grow overflow-y-auto p-6">
+            <div className="flex-grow overflow-y-auto p-8">
                 <LogSoulForm onSoulLogged={() => setIsLogDialogOpen(false)} fellowships={activeFellowships} campaigns={activeCampaigns} />
             </div>
           </SheetContent>

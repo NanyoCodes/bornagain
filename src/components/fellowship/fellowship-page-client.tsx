@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -157,20 +158,20 @@ export default function FellowshipPageClient() {
     }
 
     const soulDetailsContent = selectedSoul ? (
-      <div className="space-y-6 pt-4 pb-20 sm:pb-6">
-          <div className="flex items-center gap-4 border rounded-lg p-4 bg-muted/20">
-              <div className="h-12 w-12 border-2 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                  <Heart className="h-6 w-6 text-primary fill-current" />
+      <div className="space-y-8 pt-4 pb-20 sm:pb-6">
+          <div className="flex items-center gap-4 border-2 rounded-[2rem] p-6 bg-muted/20 border-dashed">
+              <div className="h-14 w-14 border-2 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                  <Heart className="h-7 w-7 text-primary fill-current" />
               </div>
               <div className="flex-1 min-w-0">
-                  <h3 className="text-lg font-bold truncate leading-tight">{selectedSoul.firstName} {selectedSoul.lastName}</h3>
-                  <Badge className="mt-1 h-5 text-[10px]" variant="secondary">{selectedSoul.status}</Badge>
+                  <h3 className="text-xl font-black font-headline truncate leading-tight">{selectedSoul.firstName} {selectedSoul.lastName}</h3>
+                  <Badge className={cn("mt-1.5 h-5 text-[10px] uppercase font-bold tracking-widest")} variant="secondary">{selectedSoul.status}</Badge>
               </div>
               <TooltipProvider>
                 <Tooltip>
                     <TooltipTrigger asChild>
-                        <Button onClick={() => setIsLogFollowUpOpen(true)} size="icon" variant="outline" className="shrink-0 h-9 w-9">
-                            <PlusCircle className="h-4 w-4" />
+                        <Button onClick={() => setIsLogFollowUpOpen(true)} size="icon" className="shrink-0 h-11 w-11 rounded-2xl shadow-lg">
+                            <PlusCircle className="h-5 w-5" />
                             <span className="sr-only">Log Follow-up</span>
                         </Button>
                     </TooltipTrigger>
@@ -181,67 +182,67 @@ export default function FellowshipPageClient() {
               </TooltipProvider>
           </div>
 
-          <div className="grid gap-6">
-              <div className="space-y-3">
-                  <h4 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Context & Accountability</h4>
-                  <div className="space-y-2.5">
-                      <div className="text-sm flex items-center gap-2">
-                          <span className="font-medium text-muted-foreground shrink-0">Won By:</span>
+          <div className="grid gap-8">
+              <div className="space-y-4">
+                  <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Context & Accountability</h4>
+                  <div className="space-y-3">
+                      <div className="text-sm flex items-center gap-3 p-3 rounded-2xl bg-background border shadow-sm">
+                          <span className="font-bold text-muted-foreground text-[10px] uppercase tracking-widest shrink-0 ml-1">Won By:</span>
                           <SoulWinnerInfo userId={selectedSoul.userId} />
                       </div>
                       {selectedSoul.email && (
-                          <div className="flex items-center gap-3 text-sm">
+                          <div className="flex items-center gap-3 text-sm p-3 rounded-2xl bg-background border shadow-sm">
                               <Mail className="h-4 w-4 text-primary shrink-0" />
-                              <a href={`mailto:${selectedSoul.email}`} className="hover:underline truncate text-xs sm:text-sm">{selectedSoul.email}</a>
+                              <a href={`mailto:${selectedSoul.email}`} className="hover:underline truncate text-sm font-medium">{selectedSoul.email}</a>
                           </div>
                       )}
                       {selectedSoul.phone && (
-                          <div className="flex items-center gap-3 text-sm">
+                          <div className="flex items-center gap-3 text-sm p-3 rounded-2xl bg-background border shadow-sm">
                               <Phone className="h-4 w-4 text-primary shrink-0" />
-                              <a href={`tel:${selectedSoul.phone}`} className="hover:underline text-xs sm:text-sm">{selectedSoul.phone}</a>
+                              <a href={`tel:${selectedSoul.phone}`} className="hover:underline text-sm font-medium">{selectedSoul.phone}</a>
                           </div>
                       )}
                       {selectedSoul.church && (
-                          <div className="flex items-start gap-3 text-sm">
+                          <div className="flex items-start gap-3 text-sm p-3 rounded-2xl bg-background border shadow-sm">
                               <Church className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-                              <span className="leading-tight text-xs sm:text-sm">Attends: {selectedSoul.church}</span>
+                              <span className="leading-snug text-sm font-medium">Attends: {selectedSoul.church}</span>
                           </div>
                       )}
                   </div>
               </div>
 
-              <div className="space-y-3">
-                  <h4 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
-                      <History className="h-3.5 w-3.5" /> Collective Follow-up
+              <div className="space-y-4">
+                  <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2 ml-1">
+                      <History className="h-3.5 w-3.5" /> Interaction History
                   </h4>
-                  <div className="border rounded-lg bg-muted/10 overflow-hidden">
+                  <div className="border rounded-[2rem] bg-muted/10 overflow-hidden">
                       {selectedSoul.followUpLog && selectedSoul.followUpLog.length > 0 ? (
-                          <div className="divide-y max-h-60 overflow-y-auto">
+                          <div className="divide-y max-h-80 overflow-y-auto">
                               {[...selectedSoul.followUpLog].reverse().map((log, i) => {
                                   const date = safeToDate(log.date);
                                   return (
-                                      <div key={i} className="p-3 text-xs space-y-1 bg-background/50">
+                                      <div key={i} className="p-4 text-xs space-y-2 bg-background/50">
                                           <div className="flex justify-between items-center text-muted-foreground mb-1">
-                                              <span className="font-bold text-[10px]">{date ? format(date, 'MMM d, yyyy') : 'N/A'}</span>
+                                              <span className="font-black text-[10px] uppercase tracking-widest">{date ? format(date, 'MMM d, yyyy') : 'N/A'}</span>
                                               {log.memberName && (
-                                                <span className="text-[9px] bg-muted px-1.5 py-0.5 rounded-full border truncate max-w-[80px]">By {log.memberName}</span>
+                                                <span className="text-[9px] font-bold bg-muted px-2 py-0.5 rounded-full border truncate max-w-[100px] uppercase">By {log.memberName}</span>
                                               )}
                                           </div>
                                           {log.actions && log.actions.length > 0 && (
-                                              <div className="flex flex-wrap gap-1 py-1">
+                                              <div className="flex flex-wrap gap-1.5 py-1">
                                                   {log.actions.map(id => {
                                                       const action = actionItems.find(a => a.id === id);
-                                                      return action ? <Badge key={id} variant="outline" className="text-[9px] px-1 h-3.5 font-normal leading-none">{action.label}</Badge> : null;
+                                                      return action ? <Badge key={id} variant="outline" className="text-[9px] px-2 h-4 uppercase font-bold tracking-tight leading-none bg-background/80">{action.label}</Badge> : null;
                                                   })}
                                               </div>
                                           )}
-                                          {log.note && <p className="italic text-muted-foreground leading-relaxed">&ldquo;{log.note}&rdquo;</p>}
+                                          {log.note && <p className="italic text-muted-foreground leading-relaxed text-sm">&ldquo;{log.note}&rdquo;</p>}
                                       </div>
                                   );
                               })}
                           </div>
                       ) : (
-                          <p className="text-center py-10 text-xs text-muted-foreground italic px-6">No shared interactions yet.</p>
+                          <p className="text-center py-16 text-xs text-muted-foreground italic px-10">No shared interactions yet. Help this convert grow by reaching out!</p>
                       )}
                   </div>
               </div>
@@ -448,14 +449,14 @@ export default function FellowshipPageClient() {
 
             {isMobile ? (
               <Sheet open={isSoulDetailsOpen} onOpenChange={setIsSoulDetailsOpen}>
-                  <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-2xl">
-                      <div className="p-6 border-b flex-shrink-0 bg-muted/10">
+                  <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+                      <div className="p-8 border-b flex-shrink-0 bg-muted/10">
                         <SheetHeader className="text-left">
-                            <SheetTitle className="text-xl font-bold font-headline">Journey Details</SheetTitle>
-                            <SheetDescription className="text-xs">Record collaborative follow-up for this record.</SheetDescription>
+                            <SheetTitle className="text-2xl font-black font-headline">Journey Details</SheetTitle>
+                            <SheetDescription className="text-sm font-medium">Tracking the spiritual growth of this convert.</SheetDescription>
                         </SheetHeader>
                       </div>
-                      <ScrollArea className="flex-grow min-h-0 px-6">
+                      <ScrollArea className="flex-grow min-h-0 px-8">
                         {soulDetailsContent}
                       </ScrollArea>
                   </SheetContent>

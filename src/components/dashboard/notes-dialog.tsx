@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useMemo, useRef } from 'react';
@@ -20,7 +21,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Loader2, Plus, Trash2, FileText, CornerUpLeft } from 'lucide-react';
+import { Loader2, Plus, Trash2, FileText, CornerUpLeft, Edit } from 'lucide-react';
 import { useUser, useFirestore, useCollection } from '@/firebase';
 import {
   collection,
@@ -232,46 +233,46 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted, userP
   };
   
   const NoteList = (
-    <div className="space-y-4 h-full flex flex-col">
-       <div className="flex flex-col sm:flex-row gap-2 shrink-0">
+    <div className="space-y-6 h-full flex flex-col">
+       <div className="flex flex-col sm:flex-row gap-3 shrink-0">
           <Input
-              placeholder="Search notes..."
+              placeholder="Search your revelations..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="flex-grow"
+              className="flex-grow h-11 rounded-2xl"
           />
-          <Button onClick={handleNewNote} className="w-full sm:w-auto" variant="secondary">
-              <Plus className="mr-2 h-4 w-4" /> New Note
+          <Button onClick={handleNewNote} className="w-full sm:w-auto h-11 rounded-2xl font-bold" variant="secondary">
+              <Plus className="mr-2 h-4 w-4" /> New Entry
           </Button>
       </div>
       <ScrollArea className="flex-grow">
         {notesLoading ? (
-          <div className="flex justify-center py-10"><Loader2 className="h-8 w-8 animate-spin" /></div>
+          <div className="flex justify-center py-12"><Loader2 className="h-10 w-10 animate-spin text-primary opacity-50" /></div>
         ) : filteredNotes && filteredNotes.length > 0 ? (
-          <Accordion type="multiple" defaultValue={noteCategories} className="w-full">
+          <Accordion type="multiple" defaultValue={noteCategories} className="w-full space-y-3">
               {noteCategories.map(cat => {
                   const categoryNotes = groupedNotes[cat] || [];
                   if (categoryNotes.length === 0) return null;
 
                   return (
-                      <AccordionItem value={cat} key={cat}>
-                          <AccordionTrigger className="hover:no-underline">{cat} ({categoryNotes.length})</AccordionTrigger>
+                      <AccordionItem value={cat} key={cat} className="border rounded-2xl overflow-hidden px-4 bg-muted/10">
+                          <AccordionTrigger className="hover:no-underline text-xs font-black uppercase tracking-widest text-muted-foreground">{cat} ({categoryNotes.length})</AccordionTrigger>
                           <AccordionContent>
-                             <div className="space-y-2">
+                             <div className="space-y-3 pt-2 pb-2">
                                 {categoryNotes.map(note => (
                                     <button
                                         key={note.id}
                                         onClick={() => handleSelectNote(note)}
                                         className={cn(
-                                        "w-full text-left p-3 rounded-lg border transition-colors",
-                                        selectedNote?.id === note.id ? "bg-muted ring-1 ring-primary" : "hover:bg-muted/50"
+                                        "w-full text-left p-4 rounded-xl border transition-all duration-200 bg-background hover:shadow-md",
+                                        selectedNote?.id === note.id ? "ring-2 ring-primary border-transparent" : "hover:bg-muted/50"
                                         )}
                                     >
-                                        <p className="font-semibold truncate">{note.title}</p>
-                                        <p className="text-sm text-muted-foreground line-clamp-1">{note.content || 'No content'}</p>
-                                        <p className="text-[10px] text-muted-foreground mt-1">
-                                          {note.updatedAt?.toDate ? format(note.updatedAt.toDate(), 'PPP') : 'Just now'}
-                                        </p>
+                                        <p className="font-bold text-sm sm:text-base truncate">{note.title}</p>
+                                        <p className="text-sm text-muted-foreground line-clamp-2 mt-1 leading-relaxed">{note.content || 'No content'}</p>
+                                        <div className="flex justify-between items-center mt-3 text-[10px] font-bold uppercase tracking-tighter text-muted-foreground/60">
+                                          <span>{note.updatedAt?.toDate ? format(note.updatedAt.toDate(), 'PPP') : 'Just now'}</span>
+                                        </div>
                                     </button>
                                 ))}
                              </div>
@@ -281,10 +282,15 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted, userP
               })}
           </Accordion>
         ) : (
-          <div className="text-center py-12 border-2 border-dashed rounded-lg">
-            <FileText className="mx-auto h-12 w-12 text-muted-foreground opacity-20" />
-            <h3 className="mt-4 font-semibold">{searchTerm ? 'No Results' : 'Empty Journal'}</h3>
-            <p className="text-sm text-muted-foreground mt-1">Start writing your revelations today.</p>
+          <div className="text-center py-20 border-2 border-dashed rounded-[2rem] bg-muted/5 mx-1 flex flex-col items-center">
+            <div className="h-16 w-16 bg-muted/20 rounded-full flex items-center justify-center mb-4">
+                <FileText className="h-8 w-8 text-muted-foreground opacity-20" />
+            </div>
+            <h3 className="font-bold text-lg">{searchTerm ? 'No matches' : 'Empty Spiritual Journal'}</h3>
+            <p className="text-sm text-muted-foreground mt-1 px-12">Start writing your revelations and prayers today.</p>
+            <Button onClick={handleNewNote} variant="outline" className="mt-6 h-10 rounded-full font-bold px-8">
+                <Plus className="mr-2 h-4 w-4" /> Start Journaling
+            </Button>
           </div>
         )}
       </ScrollArea>
@@ -294,63 +300,72 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted, userP
   const NoteEditor = (
     <div className="flex flex-col h-full overflow-hidden">
       {isMobile && (
-        <Button onClick={handleBackToList} variant="ghost" size="sm" className="mb-4 self-start pl-0">
-            <CornerUpLeft className="mr-2 h-4 w-4" /> Back to List
+        <Button onClick={handleBackToList} variant="ghost" size="sm" className="mb-4 self-start pl-0 text-primary font-bold uppercase tracking-widest text-[10px]">
+            <CornerUpLeft className="mr-2 h-3.5 w-3.5" /> Back to Journal
         </Button>
       )}
-      <div className="space-y-4 flex-grow flex flex-col min-h-0">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 shrink-0">
-            <Input
-                placeholder="Title (optional)"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                className="font-semibold"
-            />
-            <Select value={category} onValueChange={(value) => setCategory(value as NoteCategory)}>
-                <SelectTrigger>
-                    <SelectValue placeholder="Category" />
-                </SelectTrigger>
-                <SelectContent>
-                    {noteCategories.map(cat => (
-                        <SelectItem key={cat} value={cat}>{cat}</SelectItem>
-                    ))}
-                </SelectContent>
-            </Select>
+      <div className="space-y-6 flex-grow flex flex-col min-h-0">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 shrink-0">
+            <div className="space-y-1.5">
+                <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Title</Label>
+                <Input
+                    placeholder="E.g., Morning Revelation"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    className="font-bold text-lg h-12 rounded-2xl bg-muted/20"
+                />
+            </div>
+            <div className="space-y-1.5">
+                <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Category</Label>
+                <Select value={category} onValueChange={(value) => setCategory(value as NoteCategory)}>
+                    <SelectTrigger className="h-12 rounded-2xl font-medium">
+                        <SelectValue placeholder="Category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {noteCategories.map(cat => (
+                            <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+            </div>
         </div>
-        <Textarea
-          placeholder="Start writing..."
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          className="flex-grow min-h-0 text-base leading-relaxed"
-        />
+        <div className="flex-grow flex flex-col min-h-0 space-y-1.5">
+            <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Content</Label>
+            <Textarea
+                placeholder="What is the Spirit saying to you today?"
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+                className="flex-grow min-h-0 text-base leading-relaxed p-6 rounded-[2rem] bg-muted/10 resize-none border-dashed"
+            />
+        </div>
       </div>
-      <div className="flex justify-between items-center py-4 shrink-0 border-t mt-auto">
+      <div className="flex justify-between items-center py-6 shrink-0 border-t mt-auto">
         <div>
         {selectedNote && (
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button variant="ghost" size="icon" disabled={isDeleting} className="text-destructive">
-                  {isDeleting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
+                <Button variant="ghost" size="icon" disabled={isDeleting} className="text-destructive hover:bg-destructive/10 h-11 w-11 rounded-full">
+                  {isDeleting ? <Loader2 className="h-5 w-5 animate-spin" /> : <Trash2 className="h-5 w-5" />}
                 </Button>
               </AlertDialogTrigger>
-              <AlertDialogContent>
+              <AlertDialogContent className="rounded-3xl p-8">
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Delete Note?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    This action cannot be undone.
+                  <AlertDialogTitle className="text-xl font-bold font-headline">Delete Journal Entry?</AlertDialogTitle>
+                  <AlertDialogDescription className="text-sm">
+                    This action is permanent and your reflection will be removed from your Kingdom record.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction onClick={handleDeleteNote} className="bg-destructive hover:bg-destructive/90">Delete</AlertDialogAction>
+                <AlertDialogFooter className="mt-6 gap-3">
+                  <AlertDialogCancel className="rounded-2xl h-11">Keep it</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleDeleteNote} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-11 font-bold">Delete permanently</AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
         )}
         </div>
-        <Button onClick={handleSaveNote} disabled={isSaving || !content.trim()}>
-          {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-          {selectedNote ? 'Save Changes' : 'Save Note'}
+        <Button onClick={handleSaveNote} disabled={isSaving || !content.trim()} className="px-10 h-12 rounded-2xl font-black shadow-lg shadow-primary/20">
+          {isSaving ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : null}
+          {selectedNote ? 'SAVE CHANGES' : 'SAVE REVELATION'}
         </Button>
       </div>
     </div>
@@ -358,34 +373,38 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted, userP
 
   const innerContent = !mounted ? null : isMobile ? (
     <Tabs value={mobileTab} onValueChange={setMobileTab} className="flex-grow flex flex-col min-h-0">
-        <TabsList className="grid w-full grid-cols-2 shrink-0">
-            <TabsTrigger value="list">All Notes</TabsTrigger>
-            <TabsTrigger value="editor" disabled={!editorVisible}>Editor</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-2 shrink-0 h-11 p-1 bg-muted/30 rounded-2xl mb-4">
+            <TabsTrigger value="list" className="rounded-xl font-bold">Past Notes</TabsTrigger>
+            <TabsTrigger value="editor" disabled={!editorVisible} className="rounded-xl font-bold">
+                {selectedNote ? 'Edit Entry' : 'New Entry'}
+            </TabsTrigger>
         </TabsList>
-        <TabsContent value="list" className="flex-grow min-h-0 mt-4 overflow-hidden data-[state=inactive]:hidden">
+        <TabsContent value="list" className="flex-grow min-h-0 overflow-hidden data-[state=inactive]:hidden">
             {NoteList}
         </TabsContent>
-        <TabsContent value="editor" className="flex-grow flex flex-col min-h-0 mt-4 overflow-hidden data-[state=inactive]:hidden">
+        <TabsContent value="editor" className="flex-grow flex flex-col min-h-0 overflow-hidden data-[state=inactive]:hidden">
             {editorVisible ? NoteEditor : (
-                <div className="text-center text-muted-foreground py-10 flex flex-col items-center justify-center h-full">
+                <div className="text-center text-muted-foreground py-20 flex flex-col items-center justify-center h-full">
                     <p>Select a note to edit.</p>
                 </div>
             )}
         </TabsContent>
     </Tabs>
 ) : (
-    <div className="grid grid-cols-3 gap-6 h-full overflow-hidden">
+    <div className="grid grid-cols-3 gap-8 h-full overflow-hidden">
         <div className="col-span-1 h-full overflow-hidden">
             {NoteList}
         </div>
         <div className="col-span-2 h-full flex flex-col overflow-hidden">
             {editorVisible ? NoteEditor : (
-                <div className="flex flex-col items-center justify-center h-full text-center text-muted-foreground border-2 border-dashed rounded-lg p-8">
-                    <FileText className="h-12 w-12 mb-4 opacity-10" />
-                    <h3 className="font-semibold">Select a note to view or edit</h3>
-                    <p className="text-sm">Keep track of your spiritual journey here.</p>
-                    <Button onClick={handleNewNote} variant="outline" className="mt-4">
-                        <Plus className="mr-2 h-4 w-4" /> New Note
+                <div className="flex flex-col items-center justify-center h-full text-center text-muted-foreground border-2 border-dashed rounded-[3rem] p-12 bg-muted/5">
+                    <div className="h-20 w-20 bg-muted/10 rounded-full flex items-center justify-center mb-6">
+                        <Edit className="h-10 w-10 text-muted-foreground opacity-10" />
+                    </div>
+                    <h3 className="text-xl font-black font-headline mb-2 uppercase tracking-tight">Select a note to view or edit</h3>
+                    <p className="text-sm max-w-[280px] leading-relaxed">Your journal is a record of your personal journey with God.</p>
+                    <Button onClick={handleNewNote} variant="outline" className="mt-8 h-11 rounded-full font-black px-10 border-primary/20 text-primary hover:bg-primary/10">
+                        <Plus className="mr-2 h-4 w-4" /> NEW JOURNAL ENTRY
                     </Button>
                 </div>
             )}
@@ -396,19 +415,19 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted, userP
   if (isMobile) {
     return (
       <Sheet open={isOpen} onOpenChange={onOpenChange}>
-        <SheetContent side="bottom" className="p-0 flex flex-col h-[95dvh]">
-          <div className="p-6 border-b flex-shrink-0">
+        <SheetContent side="bottom" className="p-0 flex flex-col h-[95dvh] rounded-t-[2.5rem]">
+          <div className="p-8 border-b flex-shrink-0 bg-muted/10">
             <SheetHeader className="text-left">
-                <SheetTitle>Daily Notes</SheetTitle>
-                <SheetDescription>Reflections and revelations from today.</SheetDescription>
+                <SheetTitle className="text-2xl font-black font-headline">Journal</SheetTitle>
+                <SheetDescription className="text-sm font-medium">Capture your reflections and revelations.</SheetDescription>
             </SheetHeader>
           </div>
-          <div className="p-6 flex-grow min-h-0 overflow-hidden">
+          <div className="p-8 flex-grow min-h-0 overflow-hidden">
             {innerContent}
           </div>
-          <div className="p-6 border-t flex-shrink-0">
-              <Button variant="outline" onClick={() => onOpenChange(false)} className="w-full">
-                Close
+          <div className="p-8 border-t flex-shrink-0 bg-background/80 backdrop-blur-sm">
+              <Button variant="outline" onClick={() => onOpenChange(false)} className="w-full h-12 rounded-2xl font-bold">
+                Close Journal
               </Button>
           </div>
         </SheetContent>
@@ -418,19 +437,14 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted, userP
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl h-[80vh] flex flex-col p-6">
-        <DialogHeader className="shrink-0">
-          <DialogTitle>Daily Notes</DialogTitle>
-          <DialogDescription>A place for your thoughts, reflections, and revelations.</DialogDescription>
+      <DialogContent className="sm:max-w-5xl h-[85vh] flex flex-col p-8 rounded-3xl overflow-hidden">
+        <DialogHeader className="shrink-0 mb-4">
+          <DialogTitle className="text-3xl font-black font-headline">Journal</DialogTitle>
+          <DialogDescription className="text-base font-medium">A place for your thoughts, reflections, and revelations.</DialogDescription>
         </DialogHeader>
         <div className="flex-grow min-h-0 overflow-hidden">
             {innerContent}
         </div>
-        <DialogFooter className="shrink-0 border-t pt-4">
-            <Button variant="outline" onClick={() => onOpenChange(false)}>
-              Close
-            </Button>
-        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

@@ -24,7 +24,7 @@ import {
   CardDescription,
 } from '@/components/ui/card';
 import { Button } from '../ui/button';
-import { Loader2, Quote, PlayCircle, ChevronDown } from 'lucide-react';
+import { Loader2, PlayCircle, ChevronDown, Zap } from 'lucide-react';
 import type { UserProfile } from '@/lib/types';
 import { useUser } from '@/firebase';
 import { PrayerLinksSettingsCard } from '../settings/prayer-links-settings-card';
@@ -145,17 +145,17 @@ export function PrayerDialog({
 
   const DialogBody = () => (
     <div className="space-y-6">
-      <Accordion type="single" collapsible className="w-full">
-        <AccordionItem value="manage-links">
+      <Accordion type="single" collapsible className="w-full border rounded-2xl overflow-hidden px-4 bg-muted/20">
+        <AccordionItem value="manage-links" className="border-none">
           <AccordionPrimitive.Header>
-            <AccordionPrimitive.Trigger className="flex w-full flex-1 items-center justify-between py-4 font-medium transition-all hover:underline [&[data-state=open]>svg]:rotate-180">
+            <AccordionPrimitive.Trigger className="flex w-full flex-1 items-center justify-between py-4 text-sm font-bold uppercase tracking-widest text-muted-foreground transition-all hover:text-primary [&[data-state=open]>svg]:rotate-180">
               Manage Prayer Links
               <ChevronDown className="h-4 w-4 shrink-0 transition-transform duration-200" />
             </AccordionPrimitive.Trigger>
           </AccordionPrimitive.Header>
           <AccordionContent>
-            <p className="text-sm text-muted-foreground mt-1 mb-4">
-              Add, edit, or remove personal links to prayer meetings (up to 5).
+            <p className="text-xs text-muted-foreground mt-1 mb-4 italic">
+              Add, edit, or remove personal links to prayer meetings.
             </p>
             {user && userProfile && (
               <PrayerLinksSettingsCard userProfile={userProfile} userId={user.uid} />
@@ -164,67 +164,73 @@ export function PrayerDialog({
         </AccordionItem>
       </Accordion>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Prayer Focus</CardTitle>
-          <CardDescription>Key prayer points with related scripture.</CardDescription>
+      <Card className="rounded-3xl border shadow-sm">
+        <CardHeader className="pb-3 px-6 pt-6">
+          <CardTitle className="text-xl font-black font-headline">Prayer Focus</CardTitle>
+          <CardDescription className="text-sm font-medium">Lifting up needs before the Throne of Grace.</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <Accordion type="single" collapsible className="w-full">
+        <CardContent className="space-y-4 px-6 pb-6">
+          <div className="space-y-px">
             {prayerPoints.map((point, i) => (
-              <AccordionItem value={`item-${i}`} key={i}>
-                <AccordionPrimitive.Header className="flex w-full items-center justify-between py-4 font-medium border-b">
-                   <div className="flex items-center gap-3">
-                      <Checkbox
-                        id={`prayer-${point.label}`}
-                        checked={checkedPrayers.includes(point.label)}
-                        onCheckedChange={(checked) => {
-                          if (checked) {
-                            setCheckedPrayers((prev) => [...prev, point.label]);
-                          } else {
-                            setCheckedPrayers((prev) =>
-                              prev.filter((p) => p !== point.label)
-                            );
-                          }
-                        }}
-                      />
-                      <label htmlFor={`prayer-${point.label}`} className="cursor-pointer font-normal">{point.label}</label>
-                  </div>
-                   <AccordionPrimitive.Trigger className={cn("transition-transform duration-200 [&[data-state=open]>svg]:rotate-180")}>
-                      <ChevronDown className="h-4 w-4" />
-                  </AccordionPrimitive.Trigger>
-                </AccordionPrimitive.Header>
-                <AccordionContent>
-                  <div className="pt-4 space-y-2">
-                    <p className="text-sm text-foreground">{point.prayer}</p>
-                    <blockquote className="border-l-2 pl-4 italic text-sm text-muted-foreground">
-                        {point.text}
-                        <footer className="text-right not-italic mt-2">
-                        - {point.verse}
-                        </footer>
-                    </blockquote>
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
+              <Accordion type="single" collapsible className="w-full" key={i}>
+                <AccordionItem value={`item-${i}`} className="border-b last:border-0 border-muted/50">
+                  <AccordionPrimitive.Header className="flex w-full items-center justify-between py-4 font-medium">
+                     <div className="flex items-center gap-4">
+                        <Checkbox
+                          id={`prayer-${point.label}`}
+                          checked={checkedPrayers.includes(point.label)}
+                          onCheckedChange={(checked) => {
+                            if (checked) {
+                              setCheckedPrayers((prev) => [...prev, point.label]);
+                            } else {
+                              setCheckedPrayers((prev) =>
+                                prev.filter((p) => p !== point.label)
+                              );
+                            }
+                          }}
+                          className="h-5 w-5 rounded-md"
+                        />
+                        <label htmlFor={`prayer-${point.label}`} className="cursor-pointer font-bold text-sm sm:text-base leading-tight">
+                            {point.label}
+                        </label>
+                    </div>
+                     <AccordionPrimitive.Trigger className={cn("transition-transform duration-200 text-muted-foreground hover:text-primary [&[data-state=open]>svg]:rotate-180 p-2")}>
+                        <ChevronDown className="h-4 w-4" />
+                    </AccordionPrimitive.Trigger>
+                  </AccordionPrimitive.Header>
+                  <AccordionContent>
+                    <div className="pt-2 pb-6 space-y-4 px-1">
+                      <p className="text-sm text-muted-foreground leading-relaxed font-medium">{point.prayer}</p>
+                      <div className="bg-primary/5 rounded-2xl p-5 border border-primary/10 relative">
+                        <span className="absolute top-2 left-4 text-primary/20 font-black text-4xl leading-none">"</span>
+                        <p className="italic text-sm text-foreground/80 leading-relaxed">
+                            {point.text}
+                        </p>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-primary text-right mt-3">- {point.verse}</p>
+                      </div>
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
             ))}
-          </Accordion>
+          </div>
 
           {prayerLinks.length > 0 && (
-            <div className="space-y-3 pt-4 border-t">
-              <h4 className="font-medium text-sm text-muted-foreground">
-                Join a Prayer Stream
+            <div className="space-y-4 pt-6 border-t mt-4">
+              <h4 className="font-bold text-[10px] uppercase tracking-[0.2em] text-muted-foreground ml-1">
+                JOIN A PRAYER STREAM
               </h4>
-              <div className="space-y-2">
+              <div className="space-y-3">
                 {prayerLinks.map((link, index) => (
                   <Button
                     key={index}
                     variant="secondary"
-                    className="w-full justify-start"
+                    className="w-full justify-start h-12 rounded-2xl px-5 font-bold transition-transform active:scale-95"
                     onClick={() => handleLinkClick(link.url)}
                     disabled={isCompleting}
                   >
-                    <PlayCircle className="mr-2 h-4 w-4" />
-                    {link.name}
+                    <PlayCircle className="mr-3 h-5 w-5 text-primary" />
+                    <span className="truncate">{link.name}</span>
                   </Button>
                 ))}
               </div>
@@ -237,10 +243,15 @@ export function PrayerDialog({
 
   const Header = ({ isSheet = false }: { isSheet?: boolean }) =>
     isSheet ? (
-      <SheetHeader>
-        <SheetTitle>A Moment to Pray</SheetTitle>
-        <SheetDescription>
-          Reflect on the Word, join a prayer stream, or manage your links.
+      <SheetHeader className="text-left">
+        <div className="flex items-center gap-3 mb-1">
+            <div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center">
+                <Zap className="h-5 w-5 text-primary fill-current" />
+            </div>
+            <SheetTitle className="text-2xl font-black font-headline">Secret Place</SheetTitle>
+        </div>
+        <SheetDescription className="text-sm font-medium">
+          Communing with the Father in the secret place.
         </SheetDescription>
       </SheetHeader>
     ) : (
@@ -252,40 +263,36 @@ export function PrayerDialog({
       </DialogHeader>
     );
 
-  if (!mounted) {
-    return (
-      <Dialog open={isOpen} onOpenChange={onOpenChange}>
-        <DialogContent className="sm:max-w-xl">
-          <Loader2 className="mx-auto h-8 w-8 animate-spin" />
-        </DialogContent>
-      </Dialog>
-    );
-  }
+  if (!mounted) return null;
 
   if (isMobile) {
     return (
       <Sheet open={isOpen} onOpenChange={onOpenChange}>
         <SheetContent
           side="bottom"
-          className="p-0 flex flex-col h-auto max-h-[90dvh]"
+          className="p-0 flex flex-col h-[95dvh] rounded-t-[2.5rem]"
         >
-          <div className="p-6 border-b flex-shrink-0">
+          <div className="p-8 border-b flex-shrink-0 bg-muted/10">
             <Header isSheet />
           </div>
-          <div className="flex-grow min-h-0 overflow-y-auto">
-            <div className="p-6">
+          <ScrollArea className="flex-grow px-8">
+            <div className="py-6">
               <DialogBody />
             </div>
-          </div>
-          <div className="p-6 border-t flex-shrink-0">
+          </ScrollArea>
+          <div className="p-8 border-t flex-shrink-0 bg-background/80 backdrop-blur-sm">
             <Button
               onClick={handleComplete}
               disabled={isCompleting || checkedPrayers.length < prayerPoints.length}
-              className="w-full"
+              size="lg"
+              className="w-full h-14 text-lg font-black rounded-2xl shadow-xl shadow-primary/20"
             >
-              {isCompleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Mark as Prayed
+              {isCompleting && <Loader2 className="mr-2 h-5 w-5 animate-spin" />}
+              MARK AS PRAYED
             </Button>
+            <p className="text-[10px] text-center text-muted-foreground mt-4 font-medium tracking-wide">
+                Complete all {prayerPoints.length} focus points to mark as finished.
+            </p>
           </div>
         </SheetContent>
       </Sheet>
@@ -294,16 +301,20 @@ export function PrayerDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-xl flex flex-col max-h-[80vh]">
-        <Header />
-        <div className="flex-grow min-h-0 overflow-y-auto pr-4 -mr-4 mt-4">
-          <DialogBody />
+      <DialogContent className="sm:max-w-xl flex flex-col max-h-[85vh] p-0">
+        <div className="p-6 border-b shrink-0">
+            <Header />
         </div>
-        <div className="flex-shrink-0 pt-4 border-t -mx-6 px-6 pb-4">
+        <ScrollArea className="flex-grow px-6">
+            <div className="py-6">
+                <DialogBody />
+            </div>
+        </ScrollArea>
+        <div className="flex-shrink-0 p-6 border-t">
           <Button
             onClick={handleComplete}
             disabled={isCompleting || checkedPrayers.length < prayerPoints.length}
-            className="w-full"
+            className="w-full h-12 font-bold text-lg"
           >
             {isCompleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Mark as Prayed

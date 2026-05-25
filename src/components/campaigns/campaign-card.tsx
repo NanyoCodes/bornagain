@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -75,34 +76,34 @@ function ParticipantsDialog({ campaign, children }: { campaign: Campaign; childr
           <Skeleton className="h-10 w-full" />
         </div>
       ) : participants ? (
-         <div className="space-y-6 pb-6">
+         <div className="space-y-6 pb-6 px-1">
             {organizer && (
                 <div className="space-y-3">
-                    <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Organizer</h3>
-                    <div className="flex items-center gap-3 rounded-lg p-3 bg-muted/50 border">
-                        <Avatar className="h-8 w-8">
+                    <h3 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Organizer</h3>
+                    <div className="flex items-center gap-3 rounded-2xl p-4 bg-muted/30 border border-dashed">
+                        <Avatar className="h-10 w-10 border shadow-sm">
                             <AvatarImage src={organizer.photoURL} />
-                            <AvatarFallback>{organizer.firstName?.charAt(0)}</AvatarFallback>
+                            <AvatarFallback className="bg-primary/10 text-primary font-bold">{organizer.firstName?.charAt(0)}</AvatarFallback>
                         </Avatar>
-                        <span className='font-medium'>{organizer.firstName} {organizer.lastName}</span>
+                        <span className='font-bold text-sm sm:text-base'>{organizer.firstName} {organizer.lastName}</span>
                     </div>
                 </div>
             )}
             {otherParticipants && otherParticipants.length > 0 && (
               <div className="space-y-3">
-                <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Members ({otherParticipants.length})</h3>
+                <h3 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Members ({otherParticipants.length})</h3>
                 <div className="space-y-3">
                   {otherParticipants.map(p => (
-                    <div key={p.id} className="p-3 border rounded-lg space-y-3">
+                    <div key={p.id} className="p-4 border rounded-2xl space-y-3 bg-background shadow-sm">
                       <div className="flex items-center gap-3">
-                        <Avatar className="h-8 w-8 text-xs">
+                        <Avatar className="h-9 w-9 text-xs border">
                             <AvatarImage src={p.photoURL} />
-                            <AvatarFallback>{p.firstName?.charAt(0)}</AvatarFallback>
+                            <AvatarFallback className="font-bold">{p.firstName?.charAt(0)}</AvatarFallback>
                         </Avatar>
-                        <span className='font-medium text-sm'>{p.firstName} {p.lastName}</span>
+                        <span className='font-bold text-sm'>{p.firstName} {p.lastName}</span>
                       </div>
                       {p.joinReason && (
-                        <blockquote className="border-l-2 pl-3 text-xs italic text-muted-foreground bg-muted/20 py-1">
+                        <blockquote className="border-l-4 border-primary/20 pl-4 text-xs italic text-muted-foreground bg-primary/[0.02] py-2 rounded-r-xl">
                             &ldquo;{p.joinReason}&rdquo;
                         </blockquote>
                       )}
@@ -112,12 +113,12 @@ function ParticipantsDialog({ campaign, children }: { campaign: Campaign; childr
               </div>
             )}
             {otherParticipants?.length === 0 && user?.uid === campaign.organizerId && (
-                <p className="text-center text-muted-foreground py-8 text-sm italic">No other participants yet.</p>
+                <p className="text-center text-muted-foreground py-12 text-sm italic px-8">No other believers have joined this mission yet. Share the campaign to invite others!</p>
             )}
         </div>
       ) : user?.uid !== campaign.organizerId ? (
-        <div className="text-center py-10 bg-muted/20 rounded-lg border border-dashed">
-            <p className="text-sm text-muted-foreground px-6">Only the campaign organizer can see the full participant list.</p>
+        <div className="text-center py-16 bg-muted/20 rounded-[2rem] border-2 border-dashed mx-1">
+            <p className="text-sm text-muted-foreground px-10 leading-relaxed font-medium">Only the campaign organizer can see the full participant directory.</p>
         </div>
       ) : null}
     </ScrollArea>
@@ -127,14 +128,16 @@ function ParticipantsDialog({ campaign, children }: { campaign: Campaign; childr
     return (
       <Sheet open={isOpen} onOpenChange={setIsOpen}>
         <SheetTrigger asChild>{children}</SheetTrigger>
-        <SheetContent side="bottom" className="h-[80dvh] flex flex-col">
-          <SheetHeader className="text-left flex-shrink-0">
-            <SheetTitle>Participants: {campaign.title}</SheetTitle>
-            <SheetDescription>
-              {campaign.participants || 0} people have joined this campaign.
-            </SheetDescription>
-          </SheetHeader>
-          <div className="flex-grow min-h-0 pt-6">
+        <SheetContent side="bottom" className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+          <div className="p-8 border-b flex-shrink-0 bg-muted/10">
+            <SheetHeader className="text-left flex-shrink-0">
+                <SheetTitle className="text-2xl font-black font-headline leading-tight">Participants Directory</SheetTitle>
+                <SheetDescription className="text-sm font-medium">
+                {campaign.participants || 0} believers mobilized for "{campaign.title}".
+                </SheetDescription>
+            </SheetHeader>
+          </div>
+          <div className="flex-grow min-h-0 pt-6 px-8">
             {content}
           </div>
         </SheetContent>

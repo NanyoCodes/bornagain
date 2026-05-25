@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect, useCallback } from 'react';
@@ -829,14 +830,14 @@ export default function FellowshipPage() {
 
             {mounted && isMobile ? (
                 <Sheet open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-                    <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-2xl">
-                        <div className="p-6 border-b flex-shrink-0 bg-muted/10">
+                    <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+                        <div className="p-8 border-b flex-shrink-0 bg-muted/10">
                             <SheetHeader className="text-left">
-                                <SheetTitle className="text-xl font-bold">New Community Group</SheetTitle>
-                                <SheetDescription className="text-xs">Create a space for community and growth.</SheetDescription>
+                                <SheetTitle className="text-2xl font-black font-headline">New Community Group</SheetTitle>
+                                <SheetDescription className="text-sm">Create a space for community and growth.</SheetDescription>
                             </SheetHeader>
                         </div>
-                        <div className="flex-grow overflow-y-auto p-6">
+                        <div className="flex-grow overflow-y-auto p-8">
                             <FellowshipForm 
                                 userProfile={userProfile ?? null} 
                                 onFormSubmit={handleCreateFellowship} 
@@ -872,14 +873,14 @@ export default function FellowshipPage() {
             {fellowshipToManage && (
                 mounted && isMobile ? (
                     <Sheet open={!!fellowshipToManage} onOpenChange={(open) => !open && closeAllDialogs()}>
-                        <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-2xl">
-                            <div className="p-6 border-b flex-shrink-0 bg-muted/10">
+                        <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+                            <div className="p-8 border-b flex-shrink-0 bg-muted/10">
                                 <SheetHeader className="text-left">
-                                    <SheetTitle className="text-xl font-bold">Manage Group</SheetTitle>
-                                    <SheetDescription className="text-xs">Update your group's details.</SheetDescription>
+                                    <SheetTitle className="text-2xl font-black font-headline">Manage Group</SheetTitle>
+                                    <SheetDescription className="text-sm">Update your group's details.</SheetDescription>
                                 </SheetHeader>
                             </div>
-                            <div className="flex-grow overflow-y-auto p-6">
+                            <div className="flex-grow overflow-y-auto p-8">
                                 <ManageFellowshipForm 
                                     fellowship={fellowshipToManage} 
                                     onFormSubmit={handleUpdateFellowship} 

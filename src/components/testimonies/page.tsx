@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect, useMemo, useCallback } from "react";
@@ -420,15 +421,15 @@ export default function TestimoniesPage() {
       {/* Edit Testimony */}
       {mounted && isMobile ? (
         <Sheet open={!!testimonyToEdit} onOpenChange={(open) => !open && closeEditDialog()}>
-          <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-2xl">
-            <div className="p-6 border-b flex-shrink-0 bg-muted/10">
+          <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+            <div className="p-8 border-b flex-shrink-0 bg-muted/10">
               <SheetHeader className="text-left">
-                <SheetTitle className="text-xl font-bold">Edit Testimony</SheetTitle>
-                <SheetDescription className="text-xs">Update your shared story.</SheetDescription>
+                <SheetTitle className="text-2xl font-black font-headline">Edit Testimony</SheetTitle>
+                <SheetDescription className="text-sm">Update your shared story.</SheetDescription>
               </SheetHeader>
             </div>
             <ScrollArea className="flex-grow">
-              <div className="p-6">
+              <div className="p-8">
                 {testimonyToEdit && <EditTestimonyForm testimony={testimonyToEdit} onTestimonyUpdated={closeEditDialog} />}
               </div>
             </ScrollArea>
@@ -453,15 +454,15 @@ export default function TestimoniesPage() {
       {/* Edit Prayer Request */}
       {mounted && isMobile ? (
         <Sheet open={!!prayerToEdit} onOpenChange={(open) => !open && closeEditDialog()}>
-          <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-2xl">
-            <div className="p-6 border-b flex-shrink-0 bg-muted/10">
+          <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+            <div className="p-8 border-b flex-shrink-0 bg-muted/10">
               <SheetHeader className="text-left">
-                <SheetTitle className="text-xl font-bold">Edit Prayer Request</SheetTitle>
-                <SheetDescription className="text-xs">Update your request for the community.</SheetDescription>
+                <SheetTitle className="text-2xl font-black font-headline">Edit Prayer Request</SheetTitle>
+                <SheetDescription className="text-sm">Update your request for the community.</SheetDescription>
               </SheetHeader>
             </div>
             <ScrollArea className="flex-grow">
-              <div className="p-6">
+              <div className="p-8">
                 {prayerToEdit && <EditPrayerRequestForm prayerRequest={prayerToEdit} onPrayerRequestUpdated={closeEditDialog} />}
               </div>
             </ScrollArea>
@@ -485,15 +486,15 @@ export default function TestimoniesPage() {
       
       {mounted && isMobile ? (
         <Sheet open={isTestimonyDialogOpen} onOpenChange={(open) => !open && setIsTestimonyDialogOpen(false)}>
-          <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-2xl">
-            <div className="p-6 border-b flex-shrink-0 bg-muted/10">
+          <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+            <div className="p-8 border-b flex-shrink-0 bg-muted/10">
               <SheetHeader className="text-left">
-                <SheetTitle className="text-xl font-bold">{prayerToAnswer ? 'Share Answered Prayer' : 'Share Testimony'}</SheetTitle>
-                <SheetDescription className="text-xs">{prayerToAnswer ? "Share how God answered this prayer." : "Encourage others by sharing what God has done."}</SheetDescription>
+                <SheetTitle className="text-2xl font-black font-headline">{prayerToAnswer ? 'Share Answered Prayer' : 'Share Testimony'}</SheetTitle>
+                <SheetDescription className="text-sm">{prayerToAnswer ? "Share how God answered this prayer." : "Encourage others by sharing what God has done."}</SheetDescription>
               </SheetHeader>
             </div>
             <ScrollArea className="flex-grow">
-              <div className="p-6">
+              <div className="p-8">
                 {testimonyFormContent}
               </div>
             </ScrollArea>
@@ -515,15 +516,15 @@ export default function TestimoniesPage() {
       
       {mounted && isMobile ? (
         <Sheet open={isPrayerDialogOpen} onOpenChange={(open) => !open && setIsPrayerDialogOpen(false)}>
-          <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-2xl">
-            <div className="p-6 border-b flex-shrink-0 bg-muted/10">
+          <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+            <div className="p-8 border-b flex-shrink-0 bg-muted/10">
               <SheetHeader className="text-left">
-                <SheetTitle className="text-xl font-bold">Request Prayer</SheetTitle>
-                <SheetDescription className="text-xs">Share your request with the community.</SheetDescription>
+                <SheetTitle className="text-2xl font-black font-headline">Request Prayer</SheetTitle>
+                <SheetDescription className="text-sm">Share your request with the community.</SheetDescription>
               </SheetHeader>
             </div>
             <ScrollArea className="flex-grow">
-              <div className="p-6">
+              <div className="p-8">
                 {prayerFormContent}
               </div>
             </ScrollArea>

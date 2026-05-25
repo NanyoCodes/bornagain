@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -99,8 +100,6 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
     }
   }, [isOpen, soul?.id]);
 
-  // Integrity Check: Only consider a soul assigned if the target group exists in the active fellowships list.
-  // If the group was deleted, we treat it as unassigned to allow for new placement.
   const hasAssignedFellowship = React.useMemo(() => {
     if (!soul?.fellowshipId) return false;
     return fellowships.some(f => f.id === soul.fellowshipId && (f.groupType || 'Fellowship') === 'Fellowship');
@@ -118,38 +117,38 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
   const content = (
     <div className="flex flex-col h-full gap-4">
       <div className="space-y-4 pt-4 shrink-0 px-1">
-        <div className="bg-primary/5 p-3 rounded-lg border border-primary/10 flex items-start gap-3">
+        <div className="bg-primary/5 p-4 rounded-2xl border border-primary/10 flex items-start gap-3">
           <Info className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-          <div className="text-[11px] sm:text-xs text-muted-foreground space-y-1">
-            <p>Assign to one Fellowship and one Association.</p>
-            <p className="font-bold text-foreground/80">Unassign the current group before switching.</p>
+          <div className="text-xs text-muted-foreground space-y-1.5 font-medium leading-relaxed">
+            <p>Assign this convert to a Fellowship for discipleship and an Association for group activity.</p>
+            <p className="font-black text-foreground/80 uppercase text-[10px] tracking-wider">Note: Unassign current group before switching.</p>
           </div>
         </div>
 
         <Tabs value={typeFilter} onValueChange={setTypeFilter} className="w-full">
-          <TabsList className="grid w-full grid-cols-3 h-9 sm:h-10">
-            <TabsTrigger value="all" className="text-xs">All</TabsTrigger>
-            <TabsTrigger value="Fellowship" className="text-xs">Fellowships</TabsTrigger>
-            <TabsTrigger value="Association" className="text-xs">Associations</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-3 h-11 rounded-2xl bg-muted/30 p-1">
+            <TabsTrigger value="all" className="text-xs rounded-xl font-bold">All</TabsTrigger>
+            <TabsTrigger value="Fellowship" className="text-xs rounded-xl font-bold">Fellowships</TabsTrigger>
+            <TabsTrigger value="Association" className="text-xs rounded-xl font-bold">Associations</TabsTrigger>
           </TabsList>
         </Tabs>
         
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div className="space-y-1.5">
-            <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground ml-1">Country</label>
+            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-2">Country</label>
             <Select value={country || 'all'} onValueChange={(val) => { setCountry(val === 'all' ? '' : val); setState(''); }}>
-              <SelectTrigger className="h-9 sm:h-10 text-xs sm:text-sm"><SelectValue placeholder="Select Country" /></SelectTrigger>
-              <SelectContent>
+              <SelectTrigger className="h-11 text-sm rounded-2xl bg-muted/20 border-none font-medium"><SelectValue placeholder="Select Country" /></SelectTrigger>
+              <SelectContent className="rounded-2xl max-h-[300px]">
                   <SelectItem value="all">All Countries</SelectItem>
                   {countries.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
               </SelectContent>
             </Select>
           </div>
           <div className="space-y-1.5">
-            <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground ml-1">State</label>
+            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-2">State</label>
             <Select value={state || 'all'} onValueChange={(val) => setState(val === 'all' ? '' : val)} disabled={!country}>
-              <SelectTrigger className="h-9 sm:h-10 text-xs sm:text-sm"><SelectValue placeholder="Select State" /></SelectTrigger>
-              <SelectContent>
+              <SelectTrigger className="h-11 text-sm rounded-2xl bg-muted/20 border-none font-medium"><SelectValue placeholder="Select State" /></SelectTrigger>
+              <SelectContent className="rounded-2xl max-h-[300px]">
                   <SelectItem value="all">All States</SelectItem>
                   {states.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
               </SelectContent>
@@ -158,8 +157,8 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
         </div>
       </div>
 
-      <ScrollArea className={cn("border rounded-lg bg-muted/5 flex-grow", isMobile ? "min-h-0" : "h-72")}>
-          <div className="p-2 sm:p-3 space-y-2 sm:space-y-3">
+      <ScrollArea className={cn("border rounded-[2rem] bg-muted/5 flex-grow", isMobile ? "min-h-0" : "h-72")}>
+          <div className="p-3 space-y-3">
               {filteredAndSortedFellowships.length > 0 ? (
                   filteredAndSortedFellowships.map(f => {
                       const groupType = f.groupType || 'Fellowship';
@@ -168,20 +167,20 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
                       const isDisabled = !isCurrentlyAssigned && typeAlreadyHasAssignment;
 
                       return (
-                      <Card key={f.id} className={cn("transition-colors shadow-none border", isCurrentlyAssigned ? "bg-primary/5 border-primary/30" : "bg-card")}>
-                          <CardContent className="p-3 flex items-center justify-between gap-3 sm:gap-4">
+                      <Card key={f.id} className={cn("transition-all duration-300 shadow-none border rounded-2xl", isCurrentlyAssigned ? "bg-primary/5 border-primary/30" : "bg-card hover:shadow-md")}>
+                          <CardContent className="p-4 flex items-center justify-between gap-4">
                               <div className="min-w-0 flex-1">
-                                  <div className="flex items-center gap-1.5 mb-0.5 flex-wrap">
-                                    <p className="font-bold text-xs sm:text-sm truncate">{f.name}</p>
-                                    <Badge variant="outline" className={cn("text-[8px] sm:text-[9px] px-1 h-3.5 sm:h-4 uppercase font-bold tracking-tight bg-background/50", groupType === 'Association' ? "border-blue-500/20 text-blue-600" : "border-primary/20 text-primary")}>
+                                  <div className="flex items-center gap-2 mb-1 flex-wrap">
+                                    <p className="font-black text-sm truncate">{f.name}</p>
+                                    <Badge variant="outline" className={cn("text-[9px] px-1.5 h-4 uppercase font-bold tracking-widest bg-background/50", groupType === 'Association' ? "border-blue-500/20 text-blue-600" : "border-primary/20 text-primary")}>
                                         {groupType}
                                     </Badge>
                                   </div>
-                                  <p className="text-[10px] sm:text-[11px] text-muted-foreground truncate flex items-center gap-1">
-                                    <MapPin className="h-2.5 w-2.5 shrink-0" />
+                                  <p className="text-[11px] text-muted-foreground truncate flex items-center gap-1.5 font-medium">
+                                    <MapPin className="h-3 w-3 shrink-0 text-primary/60" />
                                     {f.location}
                                   </p>
-                                  {f.distance !== null ? <p className="text-[9px] sm:text-[10px] text-primary font-bold mt-1 uppercase tracking-tighter">{f.distance.toFixed(1)} km away</p> : null}
+                                  {f.distance !== null ? <p className="text-[9px] text-primary font-black mt-2 uppercase tracking-[0.2em]">{f.distance.toFixed(1)} km away</p> : null}
                               </div>
                               <div className="shrink-0">
                                 {isCurrentlyAssigned ? (
@@ -189,7 +188,7 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
                                         size="sm"
                                         variant="outline"
                                         onClick={() => onAssignGroup(soul, 'none', groupType)}
-                                        className="h-7 sm:h-8 px-2 sm:px-3 text-[10px] sm:text-xs border-destructive/30 text-destructive hover:bg-destructive/10 font-bold"
+                                        className="h-8 px-4 text-[10px] border-destructive/30 text-destructive hover:bg-destructive/10 font-black uppercase tracking-widest rounded-xl"
                                     >
                                         Unassign
                                     </Button>
@@ -202,15 +201,15 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
                                                 size="sm"
                                                 onClick={() => onAssignGroup(soul, f.id, groupType)}
                                                 disabled={isDisabled}
-                                                className="h-7 sm:h-8 px-2 sm:px-4 text-[10px] sm:text-xs font-bold"
+                                                className="h-8 px-5 text-[10px] font-black uppercase tracking-widest rounded-xl shadow-sm"
                                             >
                                                 Assign
                                             </Button>
                                           </div>
                                         </TooltipTrigger>
                                         {isDisabled && (
-                                          <TooltipContent className="max-w-[150px]">
-                                            <p className="text-[10px] leading-tight">Already assigned to a {groupType}. Unassign it first.</p>
+                                          <TooltipContent className="max-w-[180px] rounded-xl p-3">
+                                            <p className="text-[10px] font-bold leading-tight uppercase tracking-tight">Already assigned to a {groupType}. Unassign it first.</p>
                                           </TooltipContent>
                                         )}
                                       </Tooltip>
@@ -221,10 +220,12 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
                       </Card>
                   )})
               ) : (
-                  <div className="text-center text-muted-foreground py-12 px-6">
-                      <Filter className="h-8 w-8 mx-auto mb-3 opacity-20" />
-                      <p className="text-sm font-medium">No groups found</p>
-                      <p className="text-xs mt-1">Try adjusting your filters.</p>
+                  <div className="text-center text-muted-foreground py-20 px-8 flex flex-col items-center">
+                      <div className="h-16 w-16 bg-muted/20 rounded-full flex items-center justify-center mb-4">
+                        <Filter className="h-8 w-8 opacity-20" />
+                      </div>
+                      <p className="text-base font-bold uppercase tracking-tight">No groups found</p>
+                      <p className="text-xs mt-2 italic leading-relaxed">Adjust your filters or start a new group in this area.</p>
                   </div>
               )}
           </div>
@@ -235,14 +236,14 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
   if (mounted && isMobile) {
     return (
       <Sheet open={isOpen} onOpenChange={onOpenChange}>
-        <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-2xl">
-          <div className="p-6 border-b flex-shrink-0 bg-muted/10">
+        <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+          <div className="p-8 border-b flex-shrink-0 bg-muted/10">
             <SheetHeader className="text-left">
-                <SheetTitle className="text-xl font-bold font-headline">Assign Group: {soul.firstName}</SheetTitle>
-                <SheetDescription className="text-xs">Manage community placement for this convert.</SheetDescription>
+                <SheetTitle className="text-2xl font-black font-headline tracking-tight leading-tight">Assign Community</SheetTitle>
+                <SheetDescription className="text-sm font-medium mt-1">Placing {soul.firstName} in local Fellowship and Associations.</SheetDescription>
             </SheetHeader>
           </div>
-          <div className="flex-grow overflow-hidden px-6 pb-6">
+          <div className="flex-grow overflow-hidden px-8 pb-8">
             {content}
           </div>
         </SheetContent>
@@ -252,14 +253,16 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-xl max-h-[90vh] flex flex-col">
-        <DialogHeader>
-          <DialogTitle className="text-2xl font-bold font-headline">Assign Group: {soul?.firstName}</DialogTitle>
-          <DialogDescription>
-            Manage Fellowship and Association placement for this record.
-          </DialogDescription>
-        </DialogHeader>
-        <div className="flex-grow min-h-0">
+      <DialogContent className="sm:max-w-xl max-h-[90vh] flex flex-col p-0 overflow-hidden rounded-3xl">
+        <div className="p-6 border-b shrink-0">
+            <DialogHeader>
+                <DialogTitle className="text-2xl font-bold font-headline">Assign Group: {soul?.firstName}</DialogTitle>
+                <DialogDescription>
+                    Manage Fellowship and Association placement for this record.
+                </DialogDescription>
+            </DialogHeader>
+        </div>
+        <div className="flex-grow min-h-0 p-6 overflow-hidden">
           {content}
         </div>
       </DialogContent>

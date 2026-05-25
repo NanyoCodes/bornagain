@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useMemo, useState, useEffect, Fragment } from "react";
@@ -447,15 +448,15 @@ export default function CampaignsPage() {
       {/* Campaign Creation */}
       {mounted && isMobile ? (
         <Sheet open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-          <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-2xl">
-            <div className="p-6 border-b flex-shrink-0 bg-muted/10">
+          <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+            <div className="p-8 border-b flex-shrink-0 bg-muted/10">
               <SheetHeader className="text-left">
-                <SheetTitle className="text-xl font-bold">Launch New Campaign</SheetTitle>
-                <SheetDescription className="text-xs">Fill in the details to mobilize for the Kingdom.</SheetDescription>
+                <SheetTitle className="text-2xl font-black font-headline">Launch New Campaign</SheetTitle>
+                <SheetDescription className="text-sm">Fill in the details to mobilize for the Kingdom.</SheetDescription>
               </SheetHeader>
             </div>
             <ScrollArea className="flex-grow">
-              <div className="p-6">
+              <div className="p-8">
                 {formContent}
               </div>
             </ScrollArea>
@@ -480,15 +481,15 @@ export default function CampaignsPage() {
       {/* Campaign Management */}
       {mounted && isMobile ? (
         <Sheet open={!!campaignToManage} onOpenChange={(open) => !open && setCampaignToManage(null)}>
-          <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-2xl">
-            <div className="p-6 border-b flex-shrink-0 bg-muted/10">
+          <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+            <div className="p-8 border-b flex-shrink-0 bg-muted/10">
               <SheetHeader className="text-left">
-                <SheetTitle className="text-xl font-bold">Manage Campaign</SheetTitle>
-                <SheetDescription className="text-xs">Update your mission details.</SheetDescription>
+                <SheetTitle className="text-2xl font-black font-headline">Manage Campaign</SheetTitle>
+                <SheetDescription className="text-sm">Update your mission details.</SheetDescription>
               </SheetHeader>
             </div>
             <ScrollArea className="flex-grow">
-              <div className="p-6">
+              <div className="p-8">
                 {campaignToManage && (
                   <ManageCampaignForm 
                     campaign={campaignToManage} 
@@ -545,15 +546,15 @@ export default function CampaignsPage() {
       {/* Share Testimony */}
       {mounted && isMobile ? (
         <Sheet open={!!campaignForTestimony} onOpenChange={(open) => !open && setCampaignForTestimony(null)}>
-          <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-2xl">
-            <div className="p-6 border-b flex-shrink-0 bg-muted/10">
+          <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+            <div className="p-8 border-b flex-shrink-0 bg-muted/10">
               <SheetHeader className="text-left">
-                <SheetTitle className="text-xl font-bold">Share Victory</SheetTitle>
-                <SheetDescription className="text-xs">Share what God has done during "{campaignForTestimony?.title}".</SheetDescription>
+                <SheetTitle className="text-2xl font-black font-headline">Share Victory</SheetTitle>
+                <SheetDescription className="text-sm">Share what God has done during "{campaignForTestimony?.title}".</SheetDescription>
               </SheetHeader>
             </div>
             <ScrollArea className="flex-grow">
-              <div className="p-6">
+              <div className="p-8">
                  {campaignForTestimony && userProfile && (
                     <CreateTestimonyForm
                           userProfile={userProfile}
@@ -590,15 +591,15 @@ export default function CampaignsPage() {
       {/* Log Soul */}
       {mounted && isMobile ? (
         <Sheet open={!!campaignForSoul} onOpenChange={(open) => !open && setCampaignForSoul(null)}>
-          <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-2xl">
-            <div className="p-6 border-b flex-shrink-0 bg-muted/10">
+          <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+            <div className="p-8 border-b flex-shrink-0 bg-muted/10">
               <SheetHeader className="text-left">
-                <SheetTitle className="text-xl font-bold">Log Harvest</SheetTitle>
-                <SheetDescription className="text-xs">Record a soul won in "{campaignForSoul?.title}".</SheetDescription>
+                <SheetTitle className="text-2xl font-black font-headline">Log Harvest</SheetTitle>
+                <SheetDescription className="text-sm">Record a soul won in "{campaignForSoul?.title}".</SheetDescription>
               </SheetHeader>
             </div>
             <ScrollArea className="flex-grow">
-              <div className="p-6">
+              <div className="p-8">
                 {campaignForSoul && (
                   <LogSoulForm
                         onSoulLogged={handleSoulLogged}

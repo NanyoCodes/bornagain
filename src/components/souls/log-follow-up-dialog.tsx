@@ -1,3 +1,4 @@
+
 "use client";
 
 import * as React from "react";
@@ -18,7 +19,7 @@ import { Textarea } from "../ui/textarea";
 import { cn } from "@/lib/utils";
 import { actionItems, statusOptions } from "@/lib/follow-up-data";
 import type { Soul, FollowUpStatus, UserProfile } from "@/lib/types";
-import { Church, BookOpen, Heart, Users, Loader2 } from "lucide-react";
+import { Church, BookOpen, Heart, Users, Loader2, Sparkles } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -151,53 +152,58 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
 
   const formBody = (
     <Form {...form}>
-        <form id="log-follow-up-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-                control={form.control}
-                name="note"
-                render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>Notes</FormLabel>
-                        <FormControl>
-                            <Textarea placeholder="Describe the interaction and spiritual state..." {...field} className="text-base" />
-                        </FormControl>
-                        <FormMessage />
-                    </FormItem>
-                )}
-            />
-            <FormField
-                control={form.control}
-                name="status"
-                render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>Update Status</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+        <form id="log-follow-up-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <div className="space-y-1.5">
+                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Interaction Notes</label>
+                <FormField
+                    control={form.control}
+                    name="note"
+                    render={({ field }) => (
+                        <FormItem>
                             <FormControl>
-                                <SelectTrigger className={cn("font-semibold text-base", getStatusClasses(field.value as FollowUpStatus))}>
-                                    <SelectValue placeholder="Set status" />
-                                </SelectTrigger>
+                                <Textarea placeholder="Describe the spiritual interaction..." {...field} className="text-base min-h-[120px] rounded-2xl bg-muted/20" />
                             </FormControl>
-                            <SelectContent>
-                                {statusOptions.map(s => (
-                                    <SelectItem key={s} value={s}>{s}</SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                        <FormMessage />
-                    </FormItem>
-                )}
-            />
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+            </div>
+
+            <div className="space-y-1.5">
+                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Spiritual Status</label>
+                <FormField
+                    control={form.control}
+                    name="status"
+                    render={({ field }) => (
+                        <FormItem>
+                            <Select onValueChange={field.onChange} value={field.value}>
+                                <FormControl>
+                                    <SelectTrigger className={cn("font-bold text-base h-12 rounded-2xl", getStatusClasses(field.value as FollowUpStatus))}>
+                                        <SelectValue placeholder="Set status" />
+                                    </SelectTrigger>
+                                </FormControl>
+                                <SelectContent className="rounded-2xl">
+                                    {statusOptions.map(s => (
+                                        <SelectItem key={s} value={s}>{s}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+            </div>
             
-            <Accordion type="single" collapsible className="w-full">
-                <AccordionItem value="actions">
-                    <AccordionTrigger className="text-sm font-medium">Relationship Actions</AccordionTrigger>
+            <Accordion type="single" collapsible className="w-full space-y-3">
+                <AccordionItem value="actions" className="border rounded-2xl overflow-hidden px-4 bg-muted/10">
+                    <AccordionTrigger className="text-xs font-black uppercase tracking-widest text-muted-foreground hover:no-underline">Relationship Actions</AccordionTrigger>
                     <AccordionContent>
                         <FormField
                             control={form.control}
                             name="actions"
                             render={() => (
-                                <FormItem className="space-y-3 pt-4">
-                                    <div className="grid grid-cols-2 gap-4">
+                                <FormItem className="space-y-3 pt-2 pb-4">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3">
                                         {actionItems.map((item) => (
                                         <FormField
                                             key={item.id}
@@ -206,7 +212,7 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
                                             render={({ field }) => (
                                                 <FormItem
                                                     key={item.id}
-                                                    className="flex flex-row items-start space-x-3 space-y-0"
+                                                    className="flex flex-row items-center space-x-3 space-y-0"
                                                 >
                                                     <FormControl>
                                                         <Checkbox
@@ -220,9 +226,10 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
                                                                     )
                                                                     )
                                                             }}
+                                                            className="h-5 w-5 rounded-md"
                                                         />
                                                     </FormControl>
-                                                    <FormLabel className="font-normal text-sm cursor-pointer">
+                                                    <FormLabel className="font-bold text-sm cursor-pointer text-foreground/80 leading-none">
                                                         {item.label}
                                                     </FormLabel>
                                                 </FormItem>
@@ -235,16 +242,16 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
                         />
                     </AccordionContent>
                 </AccordionItem>
-                <AccordionItem value="progress">
-                     <AccordionTrigger className="text-sm font-medium">Growth Progress</AccordionTrigger>
+                <AccordionItem value="progress" className="border rounded-2xl overflow-hidden px-4 bg-muted/10">
+                     <AccordionTrigger className="text-xs font-black uppercase tracking-widest text-muted-foreground hover:no-underline">Growth Milestones</AccordionTrigger>
                      <AccordionContent>
-                        <div className="space-y-1 pt-4">
+                        <div className="space-y-2 pt-2 pb-4">
                             <FormField
                                 control={form.control}
                                 name="attendingChurch"
                                 render={({ field }) => (
-                                    <FormItem className="flex flex-row items-center justify-between rounded-md p-2 -mx-2 hover:bg-muted/50">
-                                        <FormLabel className="font-normal flex items-center gap-2 cursor-pointer"><Church className="h-4 w-4" />Attending Church</FormLabel>
+                                    <FormItem className="flex flex-row items-center justify-between rounded-xl p-3 hover:bg-background/50 transition-colors">
+                                        <FormLabel className="font-bold text-sm flex items-center gap-2.5 cursor-pointer"><Church className="h-4 w-4 text-primary" />Attending Church</FormLabel>
                                         <FormControl>
                                             <Switch checked={field.value} onCheckedChange={field.onChange} />
                                         </FormControl>
@@ -255,8 +262,8 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
                                 control={form.control}
                                 name="inBibleStudy"
                                 render={({ field }) => (
-                                    <FormItem className="flex flex-row items-center justify-between rounded-md p-2 -mx-2 hover:bg-muted/50">
-                                        <FormLabel className="font-normal flex items-center gap-2 cursor-pointer"><BookOpen className="h-4 w-4" />In Bible Study</FormLabel>
+                                    <FormItem className="flex flex-row items-center justify-between rounded-xl p-3 hover:bg-background/50 transition-colors">
+                                        <FormLabel className="font-bold text-sm flex items-center gap-2.5 cursor-pointer"><BookOpen className="h-4 w-4 text-primary" />In Bible Study</FormLabel>
                                         <FormControl>
                                             <Switch checked={field.value} onCheckedChange={field.onChange} />
                                         </FormControl>
@@ -276,22 +283,28 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
   if (isMobile) {
     return (
       <Sheet open={isOpen} onOpenChange={onOpenChange}>
-        <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0">
+        <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
           {soul && (
             <>
-              <div className="p-6 border-b flex-shrink-0">
+              <div className="p-8 border-b flex-shrink-0 bg-muted/10">
                 <SheetHeader className="text-left">
-                    <SheetTitle>Log Follow-up: {soul.firstName}</SheetTitle>
-                    <SheetDescription>Track their spiritual journey.</SheetDescription>
+                    <div className="flex items-center gap-2 mb-2">
+                        <Sparkles className="h-4 w-4 text-primary" />
+                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Harvest Follow-up</span>
+                    </div>
+                    <SheetTitle className="text-2xl font-black font-headline leading-tight">Log: {soul.firstName}</SheetTitle>
+                    <SheetDescription className="text-sm font-medium mt-1">Record the latest spiritual development.</SheetDescription>
                 </SheetHeader>
               </div>
-              <div className="flex-grow overflow-y-auto px-6 py-4">
-                {formBody}
-              </div>
-              <div className="p-6 border-t flex-shrink-0">
-                <Button type="submit" form="log-follow-up-form" disabled={isLoading} className="w-full h-12 text-lg">
-                    {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    Save Interaction
+              <ScrollArea className="flex-grow px-8">
+                <div className="py-6">
+                    {formBody}
+                </div>
+              </ScrollArea>
+              <div className="p-8 border-t flex-shrink-0 bg-background/80 backdrop-blur-sm">
+                <Button type="submit" form="log-follow-up-form" disabled={isLoading} className="w-full h-14 text-lg font-black rounded-2xl shadow-xl shadow-primary/20 tracking-widest uppercase">
+                    {isLoading && <Loader2 className="mr-2 h-5 w-5 animate-spin" />}
+                    SAVE INTERACTION
                 </Button>
               </div>
             </>
@@ -303,21 +316,23 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md flex flex-col max-h-[90vh] p-0">
+      <DialogContent className="sm:max-w-lg flex flex-col max-h-[90vh] p-0 rounded-3xl overflow-hidden">
         {soul && (
           <>
-            <div className="p-6 border-b shrink-0">
+            <div className="p-6 border-b shrink-0 bg-muted/10">
                 <DialogHeader>
-                    <DialogTitle>Log Follow-up for {soul.firstName} {soul.lastName}</DialogTitle>
-                    <DialogDescription>Your interaction will be added to the shared history.</DialogDescription>
+                    <DialogTitle className="text-2xl font-bold font-headline">Log Follow-up for {soul.firstName}</DialogTitle>
+                    <DialogDescription className="text-sm font-medium">Record this interaction in the shared history.</DialogDescription>
                 </DialogHeader>
             </div>
-            <div className="flex-grow overflow-y-auto px-6 py-4">
-                {formBody}
-            </div>
+            <ScrollArea className="flex-grow px-6">
+                <div className="py-6">
+                    {formBody}
+                </div>
+            </ScrollArea>
             <div className="p-6 border-t shrink-0">
                 <DialogFooter>
-                    <Button type="submit" form="log-follow-up-form" disabled={isLoading} className="w-full">
+                    <Button type="submit" form="log-follow-up-form" disabled={isLoading} className="w-full h-12 rounded-2xl font-bold">
                         {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                         Save Interaction
                     </Button>

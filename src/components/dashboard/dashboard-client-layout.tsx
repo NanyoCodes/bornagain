@@ -1,3 +1,4 @@
+
 'use client';
 
 /**
@@ -399,26 +400,28 @@ export default function DashboardClientLayout({ children }: { children: React.Re
         
         {mounted && isMobile ? (
           <Sheet open={!!isProfileIncomplete}>
-            <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-2xl">
-              <div className="p-6 border-b flex-shrink-0 bg-muted/10">
+            <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+              <div className="p-8 border-b flex-shrink-0 bg-muted/10">
                 <SheetHeader className="text-left">
-                  <SheetTitle className="text-xl font-bold">Complete Your Profile</SheetTitle>
-                  <SheetDescription className="text-xs">Join the Kingdom workforce by introducing yourself.</SheetDescription>
+                  <SheetTitle className="text-2xl font-black font-headline leading-tight">Complete Your Profile</SheetTitle>
+                  <SheetDescription className="text-sm font-medium mt-1">Join the Kingdom workforce by introducing yourself.</SheetDescription>
                 </SheetHeader>
               </div>
-              <div className="flex-grow overflow-y-auto p-6">
+              <div className="flex-grow overflow-y-auto p-8">
                 {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
               </div>
             </SheetContent>
           </Sheet>
         ) : (
           <Dialog open={!!isProfileIncomplete}>
-            <DialogContent hideCloseButton className="sm:max-w-lg">
-              <DialogHeader>
-                  <DialogTitle>Complete Your Profile</DialogTitle>
-                  <DialogDescription>Please provide your name to continue.</DialogDescription>
-              </DialogHeader>
-              <div className="max-h-[70vh] overflow-y-auto pr-2">
+            <DialogContent hideCloseButton className="sm:max-w-lg rounded-3xl overflow-hidden p-0">
+              <div className="p-6 border-b bg-muted/10">
+                <DialogHeader>
+                    <DialogTitle className="text-2xl font-bold">Complete Your Profile</DialogTitle>
+                    <DialogDescription className="text-sm">Please provide your name to continue.</DialogDescription>
+                </DialogHeader>
+              </div>
+              <div className="p-6 max-h-[70vh] overflow-y-auto">
                 {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
               </div>
             </DialogContent>
