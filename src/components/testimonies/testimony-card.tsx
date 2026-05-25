@@ -432,7 +432,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({
         <CardContent className="flex-grow pt-0 px-4 sm:px-6 space-y-4">
           <div className="text-sm sm:text-base text-muted-foreground whitespace-pre-wrap leading-relaxed">
             <p ref={contentRef} className="line-clamp-4">
-              &ldquo;{testimony.content}&rdquo;
+              {testimony.content}
             </p>
             {isTruncated && (
               <Button
@@ -454,7 +454,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({
                         Answer to Prayer Request:
                     </CardDescription>
                     <div className="border-l-2 border-amber-500/30 pl-4 italic text-sm text-muted-foreground line-clamp-2 leading-relaxed">
-                        &ldquo;{testimony.answeredPrayerContent}&rdquo;
+                        {testimony.answeredPrayerContent}
                     </div>
                 </CardHeader>
             </Card>
