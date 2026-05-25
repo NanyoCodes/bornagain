@@ -187,7 +187,6 @@ export default function GuidePage() {
           </div>
         </div>
         <div className="flex gap-2">
-            <Badge variant="secondary" className="px-3 py-1 font-bold uppercase tracking-widest text-[10px]">v1.5 Harvest Ready</Badge>
             <Badge className="bg-primary/20 text-primary border-primary/20 px-3 py-1 font-bold uppercase tracking-widest text-[10px]">Great Commission</Badge>
         </div>
       </div>
