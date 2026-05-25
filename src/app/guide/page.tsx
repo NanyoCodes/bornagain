@@ -33,7 +33,7 @@ import { cn } from '@/lib/utils';
 import { GuidePageClient } from '@/components/guide/guide-page-client';
 
 export const metadata: Metadata = {
-  title: 'App Guide & Platform Tutorials',
+  title: 'App Guide - Testify Global',
   description: 'A complete guide to using Testify Global for soul winning and testifying. Learn how to log souls, join campaigns, and grow in the Kingdom.',
 };
 
@@ -110,7 +110,7 @@ const journeyPhases = [
       },
       {
         title: "Digital Journaling",
-        content: "Capture revelations as you read the Word. Highlight verses and save notes in your private journal to track your spiritual evolution."
+        content: "Capture revelations as you read the Word. Highlight verses and save notes in your private journal to track your spiritual journey."
       }
     ]
   },
