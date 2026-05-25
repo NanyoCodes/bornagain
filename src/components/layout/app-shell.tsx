@@ -392,7 +392,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           "flex-1 w-full mx-auto relative",
           isTakeoverPage ? "h-full overflow-hidden" : "pb-32 md:pb-8 p-4 md:p-8 max-w-7xl"
         )}>
-            <div className={cn("h-full w-full", (isTakeoverPage && showBottomNav) && "pb-16 md:pb-0")}>
+            <div className={cn("h-full w-full", (isTakeoverPage && showBottomNav) && "pb-[calc(4rem+env(safe-area-inset-bottom))] md:pb-0")}>
                 <PageTransition>{children}</PageTransition>
             </div>
         </main>

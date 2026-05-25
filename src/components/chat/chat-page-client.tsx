@@ -551,7 +551,7 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                 </TooltipProvider>
             </div>
 
-            <div className="shrink-0 border-t p-4 bg-background pb-[calc(4rem+1rem+env(safe-area-inset-bottom))] md:pb-4">
+            <div className="shrink-0 border-t p-4 bg-background pb-4">
                 {isChatFrozen ? (
                     <div className="p-3 text-center text-sm text-muted-foreground bg-muted/50 rounded-lg">
                         This group chat has been frozen as the campaign ended more than 24 hours ago.
@@ -584,7 +584,7 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                             autoComplete="off"
                             className={cn("h-11 sm:h-12 rounded-2xl", replyingTo && "rounded-t-none")}
                         />
-                        <Button type="submit" size="icon" className="h-11 w-11 sm:h-12 sm:w-12 shrink-0 rounded-2xl" disabled={!newMessage.trim() || isSending}>
+                        <Button type="submit" size="icon" className="h-11 w-11 sm:h-12 sm:w-12 shrink-0 rounded-2xl shadow-lg transition-transform active:scale-90" disabled={!newMessage.trim() || isSending}>
                             {isSending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-5 w-5" />}
                         </Button>
                     </form>
