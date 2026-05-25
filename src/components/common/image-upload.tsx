@@ -6,7 +6,7 @@ import { useStorage, useUser } from '@/firebase';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Camera, X, Loader2, Crop as CropIcon } from 'lucide-react';
+import { Camera, X, Loader2, Crop as CropIcon, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
@@ -212,10 +212,23 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
             <span>Uploading...</span>
           </div>
         ) : (
-          <Button type="button" variant="outline" onClick={handleFileSelect}>
-              <Camera className="mr-2 h-4 w-4"/>
-              {previewUrl ? 'Change Photo' : 'Upload Photo'}
-          </Button>
+          <div className="flex flex-col sm:flex-row gap-2">
+            <Button type="button" variant="outline" onClick={handleFileSelect} className="h-10 px-6 rounded-full font-bold">
+                <Camera className="mr-2 h-4 w-4"/>
+                {previewUrl ? 'Change Photo' : 'Upload Photo'}
+            </Button>
+            {previewUrl && (
+              <Button 
+                type="button" 
+                variant="ghost" 
+                className="h-10 px-6 rounded-full font-bold text-destructive hover:text-destructive hover:bg-destructive/10" 
+                onClick={handleRemoveImage}
+              >
+                <Trash2 className="mr-2 h-4 w-4" />
+                Remove Photo
+              </Button>
+            )}
+          </div>
         )}
         <Input 
           type="file" 
