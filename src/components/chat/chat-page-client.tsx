@@ -333,7 +333,7 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
     const otherParticipantInfo = otherParticipantId ? chat.participantInfo[otherParticipantId] : null;
 
     return (
-        <div className="flex flex-col w-full h-full bg-background overflow-hidden">
+        <div className="flex flex-col w-full h-full bg-background overflow-hidden relative">
             <div className="flex items-center gap-4 p-4 shrink-0 border-b bg-background/80 backdrop-blur-md z-10">
                 <Button variant="outline" size="icon" onClick={() => router.back()}>
                     <ArrowLeft className="h-4 w-4" />
@@ -554,7 +554,7 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                 </div>
             </div>
 
-            <div className="shrink-0 border-t p-4 bg-background/80 backdrop-blur-md pb-[calc(1rem+env(safe-area-inset-bottom))] md:pb-4 relative z-10">
+            <div className="shrink-0 border-t p-4 bg-background/80 backdrop-blur-md pb-[calc(4rem+1rem+env(safe-area-inset-bottom))] md:pb-6 relative z-10">
                 {isChatFrozen ? (
                     <div className="p-4 text-center text-xs font-bold text-muted-foreground bg-muted/30 rounded-2xl border border-dashed">
                         THIS CONVERSATION IS FROZEN (CAMPAIGN ENDED)
