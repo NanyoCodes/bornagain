@@ -485,9 +485,9 @@ export const TestimonyCard = React.memo(function TestimonyCard({
                 disabled={isProcessingReaction !== null || !user} 
                 variant="ghost" 
                 size="sm" 
-                className={cn("flex flex-col sm:flex-row h-auto py-2.5 gap-1 text-[9px] sm:text-[10px] font-bold uppercase tracking-tight text-muted-foreground hover:bg-muted/50 rounded-xl transition-all", hasAmened && "text-primary hover:text-primary bg-primary/5")}
+                className={cn("flex flex-col sm:flex-row items-center justify-center h-auto sm:h-10 py-2.5 sm:py-0 gap-1 sm:gap-2 text-[9px] sm:text-sm font-bold uppercase sm:capitalize tracking-tight text-muted-foreground hover:bg-muted/50 rounded-xl transition-all", hasAmened && "text-primary hover:text-primary bg-primary/5")}
             >
-                {isProcessingReaction === 'amen' ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <HandHeart className={cn("h-3.5 w-3.5", hasAmened && "fill-current")} />}
+                {isProcessingReaction === 'amen' ? <Loader2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 animate-spin" /> : <HandHeart className={cn("h-3.5 w-3.5 sm:h-4 sm:w-4", hasAmened && "fill-current")} />}
                 <span>Amen</span>
             </Button>
 
@@ -496,9 +496,9 @@ export const TestimonyCard = React.memo(function TestimonyCard({
                 disabled={isProcessingReaction !== null || !user} 
                 variant="ghost" 
                 size="sm" 
-                className={cn("flex flex-col sm:flex-row h-auto py-2.5 gap-1 text-[9px] sm:text-[10px] font-bold uppercase tracking-tight text-muted-foreground hover:bg-muted/50 rounded-xl transition-all", hasInspired && "text-chart-3 hover:text-chart-3 bg-chart-3/5")}
+                className={cn("flex flex-col sm:flex-row items-center justify-center h-auto sm:h-10 py-2.5 sm:py-0 gap-1 sm:gap-2 text-[9px] sm:text-sm font-bold uppercase sm:capitalize tracking-tight text-muted-foreground hover:bg-muted/50 rounded-xl transition-all", hasInspired && "text-chart-3 hover:text-chart-3 bg-chart-3/5")}
             >
-                {isProcessingReaction === 'inspired' ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className={cn("h-3.5 w-3.5", hasInspired && "fill-current")} />}
+                {isProcessingReaction === 'inspired' ? <Loader2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 animate-spin" /> : <Sparkles className={cn("h-3.5 w-3.5 sm:h-4 sm:w-4", hasInspired && "fill-current")} />}
                 <span>Hallelujah</span>
             </Button>
 
@@ -507,22 +507,22 @@ export const TestimonyCard = React.memo(function TestimonyCard({
                 disabled={isProcessingReaction !== null || !user} 
                 variant="ghost" 
                 size="sm" 
-                className={cn("flex flex-col sm:flex-row h-auto py-2.5 gap-1 text-[9px] sm:text-[10px] font-bold uppercase tracking-tight text-muted-foreground hover:bg-muted/50 rounded-xl transition-all", hasConnected && "text-blue-500 hover:text-blue-500 bg-blue-500/5")}
+                className={cn("flex flex-col sm:flex-row items-center justify-center h-auto sm:h-10 py-2.5 sm:py-0 gap-1 sm:gap-2 text-[9px] sm:text-sm font-bold uppercase sm:capitalize tracking-tight text-muted-foreground hover:bg-muted/50 rounded-xl transition-all", hasConnected && "text-blue-500 hover:text-blue-500 bg-blue-500/5")}
             >
-                {isProcessingReaction === 'connect' ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <PartyPopper className="h-3.5 w-3.5" />}
+                {isProcessingReaction === 'connect' ? <Loader2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 animate-spin" /> : <PartyPopper className="h-3.5 w-3.5 sm:h-4 sm:w-4" />}
                 <span>Celebrate</span>
             </Button>
 
             <Button 
                 variant="ghost" 
                 size="sm" 
-                className={cn("flex flex-col sm:flex-row h-auto py-2.5 gap-1 text-[9px] sm:text-[10px] font-bold uppercase tracking-tight text-muted-foreground hover:bg-muted/50 rounded-xl transition-all", isCommentsOpen && "text-primary hover:text-primary bg-primary/5")}
+                className={cn("flex flex-col sm:flex-row items-center justify-center h-auto sm:h-10 py-2.5 sm:py-0 gap-1 sm:gap-2 text-[9px] sm:text-sm font-bold uppercase sm:capitalize tracking-tight text-muted-foreground hover:bg-muted/50 rounded-xl transition-all", isCommentsOpen && "text-primary hover:text-primary bg-primary/5")}
                 onClick={(e) => { e.stopPropagation(); setIsCommentsOpen(true); }}
             >
                 <div className="relative">
-                    <MessageCircle className={cn("h-3.5 w-3.5", isCommentsOpen && "fill-current")} />
+                    <MessageCircle className={cn("h-3.5 w-3.5 sm:h-4 sm:w-4", isCommentsOpen && "fill-current")} />
                     {commentCount > 0 && (
-                        <span className="absolute -top-1.5 -right-1.5 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-primary text-[7px] font-black text-primary-foreground border-background border-2 shadow-sm">
+                        <span className="absolute -top-1.5 -right-1.5 flex h-3.5 w-3.5 sm:h-4 sm:w-4 items-center justify-center rounded-full bg-primary text-[7px] sm:text-[8px] font-black text-primary-foreground border-background border-2 shadow-sm">
                             {commentCount}
                         </span>
                     )}
