@@ -63,9 +63,9 @@ export function GuidePageClient() {
                 </AccordionContent>
             </AccordionItem>
             <AccordionItem value="amen" className="border rounded-xl px-4 bg-card mb-4 shadow-sm">
-                <AccordionTrigger className="hover:no-underline font-semibold">The power of "Amen" and "Inspired"</AccordionTrigger>
+                <AccordionTrigger className="hover:no-underline font-semibold">The power of Amen, Hallelujah, Celebrate and Comments</AccordionTrigger>
                 <AccordionContent className="text-sm text-muted-foreground leading-relaxed">
-                    Interaction on the testimonies feed isn't just social—it's spiritual support. Marking a story with an "Amen" lets the author know you are standing with them in faith, while "Inspired" notes that their story has ignited your own courage.
+                    Interaction on the testimonies feed isn't just social—it's spiritual support. Marking a story with an "Amen" lets the author know you are standing with them in faith, while "Hallelujah" and "Celebrate" signal that their story has ignited your own joy. Leaving a comment allows you to directly speak words of life and encouragement to your brethren.
                 </AccordionContent>
             </AccordionItem>
         </Accordion>
