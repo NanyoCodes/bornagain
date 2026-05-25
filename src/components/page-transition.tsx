@@ -22,7 +22,7 @@ export function PageTransition({ children }: { children: React.ReactNode }) {
         animate="animate"
         exit="exit"
         transition={{ duration: 0.5, ease: "easeInOut" }}
-        className="h-full w-full"
+        className="flex-1 min-h-0 w-full flex flex-col"
       >
         {children}
       </motion.div>

@@ -59,7 +59,6 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
         const deltaX = e.touches[0].clientX - swipeState.startX;
         const deltaY = e.touches[0].clientY - swipeState.startY;
 
-        // If movement is predominantly vertical, don't trigger swipe logic
         if (Math.abs(deltaY) > Math.abs(deltaX)) {
             if (swipeState.deltaX !== 0) {
                 setSwipeState(s => ({ ...s, deltaX: 0 }));
@@ -183,17 +182,13 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
 
     const scrollToBottom = (behavior: ScrollBehavior = "smooth") => {
         if (scrollContainerRef.current) {
-            scrollContainerRef.current.scrollTo({
-                top: scrollContainerRef.current.scrollHeight,
-                behavior: behavior
-            });
+            const container = scrollContainerRef.current;
+            container.scrollTop = container.scrollHeight;
         }
     };
 
-    // Scroll to bottom on new messages
     useEffect(() => {
         if (messages && messages.length > 0) {
-            // Check if user is already near bottom to auto-scroll
             const container = scrollContainerRef.current;
             if (container) {
                 const isNearBottom = container.scrollHeight - container.scrollTop <= container.clientHeight + 150;
@@ -206,13 +201,12 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
         }
     }, [messages]);
 
-    // Force snap to bottom on initial load
     useEffect(() => {
-        if (!loading && messages && messages.length > 0) {
+        if (!loading && messages) {
             const timer = setTimeout(() => scrollToBottom("auto"), 100);
             return () => clearTimeout(timer);
         }
-    }, [loading]);
+    }, [loading, !!messages]);
 
     const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
         const target = e.currentTarget;
@@ -312,7 +306,6 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
 
             setNewMessage('');
             setReplyingTo(null);
-            // After sending, definitely scroll to bottom
             setTimeout(() => scrollToBottom("smooth"), 100);
         } catch (error) {
             const permissionError = new FirestorePermissionError({
@@ -373,7 +366,7 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
     const otherParticipantInfo = otherParticipantId ? chat.participantInfo[otherParticipantId] : null;
 
     return (
-        <div className="flex flex-col w-full h-full bg-background overflow-hidden relative">
+        <div className="flex flex-col w-full h-full min-h-0 bg-background overflow-hidden relative">
             <div className="flex items-center gap-4 p-4 shrink-0 border-b bg-background/80 backdrop-blur-md z-20">
                 <Button variant="outline" size="icon" onClick={() => router.back()}>
                     <ArrowLeft className="h-4 w-4" />
@@ -448,7 +441,7 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
             <div 
                 ref={scrollContainerRef}
                 onScroll={handleScroll}
-                className="flex-1 overflow-y-auto min-h-0 bg-muted/5 relative"
+                className="flex-1 overflow-y-auto min-h-0 bg-muted/5 relative overscroll-contain"
             >
                 <div className="px-4 py-6 space-y-2">
                     <TooltipProvider>

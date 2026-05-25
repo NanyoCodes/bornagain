@@ -90,7 +90,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
   
   if (showMobileSearch) {
     return (
-      <header className="sticky top-0 z-30 flex h-16 items-center border-b bg-background px-4 md:px-6">
+      <header className="sticky top-0 z-30 flex h-16 items-center border-b bg-background px-4 md:px-6 shrink-0">
         <div className="flex w-full items-center gap-2">
           <Button variant="ghost" size="icon" onClick={() => setShowMobileSearch(false)}>
             <ArrowLeft className="h-5 w-5" />
@@ -116,7 +116,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
   const showGuestButtons = isPublicRoute && !authLoading && !user;
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b bg-background px-4 md:px-6">
+    <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b bg-background px-4 md:px-6 shrink-0">
       <div className="flex items-center gap-2 md:gap-6">
         <Link href={user ? "/testimonies" : "/"} className="flex items-center gap-2 text-lg font-semibold">
           {logo && (
@@ -375,7 +375,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   const isProfileIncomplete = user && userProfile && (!userProfile.firstName || !userProfile.lastName);
 
-  // Show bottom nav on takeover pages like chat if requested, but generally hide header
   const showBottomNav = !isTakeoverPage || pathname.includes('/chats/');
 
   return (
@@ -389,10 +388,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           />
         )}
         <main className={cn(
-          "flex-1 w-full mx-auto relative flex flex-col",
+          "flex-1 w-full mx-auto relative flex flex-col min-h-0",
           isTakeoverPage ? "h-full overflow-hidden" : "pb-32 md:pb-8 p-4 md:p-8 max-w-7xl"
         )}>
-            <div className={cn("flex-grow w-full")}>
+            <div className={cn("flex-grow w-full flex flex-col min-h-0")}>
                 <PageTransition>{children}</PageTransition>
             </div>
         </main>
