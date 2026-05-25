@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useMemo } from "react";
@@ -451,7 +452,7 @@ export default function ProfilePage() {
                 <Activity className="h-5 w-5" /> Your Kingdom Activity
             </h2>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-0 sm:gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                 <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b">
                     <CardHeader className="p-5 sm:p-6"><CardTitle className="text-base sm:text-lg">Testimonies ({testimonies?.length ?? 0})</CardTitle></CardHeader>
                     <CardContent className="p-5 sm:p-6 pt-0">
@@ -507,7 +508,7 @@ export default function ProfilePage() {
                 </Card>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-0 sm:gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                 <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b">
                     <CardHeader className="p-5 sm:p-6"><CardTitle className="text-base sm:text-lg">Campaigns Created ({createdCampaigns?.length ?? 0})</CardTitle></CardHeader>
                     <CardContent className="p-5 sm:p-6 pt-0">
@@ -561,7 +562,7 @@ export default function ProfilePage() {
                 </Card>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-0 sm:gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                 <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b">
                     <CardHeader className="p-5 sm:p-6">
                         <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
@@ -623,7 +624,7 @@ export default function ProfilePage() {
                 </Card>
             </div>
 
-             <div className="grid grid-cols-1 md:grid-cols-2 gap-0 sm:gap-6">
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                 <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b">
                     <CardHeader className="p-5 sm:p-6"><CardTitle className="text-base sm:text-lg">Souls Won ({soulsWon?.length ?? 0})</CardTitle></CardHeader>
                     <CardContent className="p-5 sm:p-6 pt-0">

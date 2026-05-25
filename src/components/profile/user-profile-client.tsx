@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useMemo, useState, useEffect } from 'react';
@@ -136,7 +137,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
   const initials = (firstName?.charAt(0) || '') + (lastName?.charAt(0) || '');
 
   return (
-    <div className="space-y-8 max-w-5xl mx-auto pb-20">
+    <div className="space-y-8 max-w-6xl mx-auto px-0 sm:px-4 pb-20">
         <div className="flex items-center justify-between px-4 sm:px-0">
             <Button variant="ghost" size="sm" onClick={() => router.back()} className="h-9 pr-4 text-muted-foreground hover:text-foreground">
                 <ArrowLeft className="mr-2 h-4 w-4"/>
@@ -153,21 +154,22 @@ export default function UserProfileClient({ userId }: { userId: string }) {
         </div>
       
       {/* Cinematic Header Card */}
-      <Card className="rounded-3xl overflow-hidden border-none shadow-xl bg-gradient-to-br from-background via-background to-primary/5">
-        <div className="h-32 sm:h-48 w-full bg-gradient-to-r from-primary/10 via-primary/5 to-transparent relative">
-            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10" />
+      <Card className="rounded-none sm:rounded-[2.5rem] overflow-hidden border-none shadow-2xl bg-gradient-to-br from-background via-background to-primary/5">
+        <div className="h-40 sm:h-64 w-full bg-zinc-900 relative">
+            <div className="absolute inset-0 bg-gradient-to-b from-primary/20 to-zinc-900/80 z-10" />
+            <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1491438590914-bc09fcaaf77a?q=80&w=1000&auto=format&fit=crop')] bg-cover bg-center opacity-30" />
         </div>
-        <CardContent className="p-6 sm:p-10 lg:p-12 -mt-16 sm:-mt-24">
-          <div className="flex flex-col sm:flex-row items-center sm:items-end text-center sm:text-left gap-6 md:gap-8">
+        <CardContent className="p-6 sm:p-12 lg:p-16 -mt-20 sm:-mt-32 relative z-20">
+          <div className="flex flex-col md:flex-row items-center md:items-end text-center md:text-left gap-8 md:gap-12">
             <Dialog>
               <DialogTrigger asChild disabled={!photoURL}>
-                <div className="relative group">
+                <div className="relative group shrink-0">
                     <Avatar className={cn(
-                        "h-32 w-32 sm:h-40 sm:w-40 lg:h-48 lg:w-48 border-[6px] border-background shrink-0 shadow-2xl transition-all duration-300", 
-                        photoURL && "cursor-pointer hover:scale-105 active:scale-95 ring-1 ring-primary/20"
+                        "h-40 w-40 sm:h-52 sm:w-52 lg:h-64 lg:w-64 border-[8px] border-background shrink-0 shadow-2xl transition-all duration-500", 
+                        photoURL && "cursor-pointer hover:scale-105 active:scale-95 ring-2 ring-primary/10"
                     )}>
                     <AvatarImage src={photoURL ?? undefined} alt={displayName || 'user'} className="object-cover" />
-                    <AvatarFallback className="text-5xl lg:text-6xl font-black bg-primary/10 text-primary">
+                    <AvatarFallback className="text-6xl lg:text-7xl font-black bg-primary/10 text-primary">
                         {initials || userProfile.email?.charAt(0).toUpperCase() || 'U'}
                     </AvatarFallback>
                     </Avatar>
@@ -184,70 +186,64 @@ export default function UserProfileClient({ userId }: { userId: string }) {
               )}
             </Dialog>
             
-            <div className="flex-grow min-w-0 space-y-4 pb-2">
-                <div className="space-y-1.5">
-                    <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black font-headline truncate leading-tight tracking-tight">{displayName}</h1>
+            <div className="flex-grow min-w-0 space-y-6 pb-4">
+                <div className="space-y-2">
+                    <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black font-headline truncate leading-none tracking-tight">{displayName}</h1>
                     {(city || state || country) && (
-                        <div className="flex items-center justify-center sm:justify-start gap-2 text-primary font-black text-xs sm:text-sm uppercase tracking-[0.2em]">
-                            <MapPin className="h-4 w-4" /> 
+                        <div className="flex items-center justify-center md:justify-start gap-2 text-primary font-black text-sm sm:text-base uppercase tracking-[0.3em]">
+                            <MapPin className="h-5 w-5" /> 
                             {[city, state].filter(Boolean).join(', ') || country}
                         </div>
                     )}
                 </div>
+                <div className="flex flex-wrap justify-center md:justify-start gap-4">
+                     <div className="flex items-center gap-2 bg-muted/50 px-4 py-2 rounded-2xl border">
+                        <Newspaper className="h-4 w-4 text-primary" />
+                        <span className="text-lg font-black">{testimonies.length}</span>
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Testimonies</span>
+                    </div>
+                    <div className="flex items-center gap-2 bg-muted/50 px-4 py-2 rounded-2xl border">
+                        <Target className="h-4 w-4 text-primary" />
+                        <span className="text-lg font-black">{activeCampaigns.length}</span>
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Campaigns</span>
+                    </div>
+                </div>
             </div>
           </div>
 
-          <div className="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
-              {/* Bio Section */}
-              <div className="lg:col-span-2 space-y-6">
-                <div className="relative">
-                    <div className="absolute -left-4 top-0 bottom-0 w-1 bg-primary/20 rounded-full hidden sm:block" />
-                    <p className="text-base sm:text-lg text-muted-foreground leading-relaxed italic">
-                        {bio ? `"${bio}"` : "This believer is a member of the global harvest workforce, dedicated to sharing the goodness of Jesus Christ with the world."}
-                    </p>
-                </div>
-              </div>
-
-              {/* Kingdom Stats Grid */}
-              <div className="grid grid-cols-2 gap-4 h-fit">
-                  <div className="p-4 rounded-2xl bg-primary/5 border border-primary/10 flex flex-col items-center justify-center text-center space-y-1">
-                      <Newspaper className="h-5 w-5 text-primary mb-1" />
-                      <span className="text-2xl font-black">{testimonies.length}</span>
-                      <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Testimonies</span>
-                  </div>
-                  <div className="p-4 rounded-2xl bg-primary/5 border border-primary/10 flex flex-col items-center justify-center text-center space-y-1">
-                      <Target className="h-5 w-5 text-primary mb-1" />
-                      <span className="text-2xl font-black">{activeCampaigns.length}</span>
-                      <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Campaigns</span>
-                  </div>
-              </div>
+          <div className="mt-12 max-w-3xl">
+            <div className="relative pl-6 sm:pl-8 border-l-4 border-primary/20">
+                <p className="text-lg sm:text-xl text-muted-foreground leading-relaxed italic font-medium">
+                    {bio ? `"${bio}"` : "This believer is a member of the global harvest workforce, dedicated to sharing the goodness of Jesus Christ with the world."}
+                </p>
+            </div>
           </div>
         </CardContent>
       </Card>
       
       {/* Video Testimony Showcase */}
       {videoTestimonies.length > 0 && (
-        <Card className="rounded-[2.5rem] overflow-hidden shadow-xl border-t-8 border-t-red-600 bg-zinc-950">
-            <CardHeader className="pb-6 pt-10 px-8 sm:px-12">
-                <CardTitle className="flex items-center gap-3 text-2xl sm:text-3xl font-black font-headline text-white tracking-tight">
-                    <Youtube className="h-8 w-8 text-red-600" />
-                    Watch Glory
+        <Card className="rounded-none sm:rounded-[2.5rem] overflow-hidden shadow-2xl border-t-8 border-t-red-600 bg-zinc-950">
+            <CardHeader className="pb-8 pt-12 px-8 sm:px-16">
+                <CardTitle className="flex items-center gap-4 text-3xl sm:text-4xl font-black font-headline text-white tracking-tight">
+                    <Youtube className="h-10 w-10 text-red-600" />
+                    Living Testimonies
                 </CardTitle>
-                <CardDescription className="text-zinc-400 text-sm sm:text-base font-medium">
-                    Experience the living testimony of God's power through these personal stories.
+                <CardDescription className="text-zinc-400 text-base sm:text-lg font-medium">
+                    Experience the power of God through these captured moments of glory.
                 </CardDescription>
             </CardHeader>
-            <CardContent className="px-0 sm:px-12 pb-12">
+            <CardContent className="px-0 sm:px-16 pb-16">
                 <div className="w-full overflow-x-auto pb-4 scrollbar-hide">
-                    <div className="flex gap-6 p-6 sm:p-0 flex-nowrap">
+                    <div className="flex gap-8 p-8 sm:p-0 flex-nowrap">
                         {videoTestimonies.map((video, idx) => (
-                            <div key={idx} className="flex-shrink-0 w-[300px] sm:w-[450px] space-y-3">
+                            <div key={idx} className="flex-shrink-0 w-[320px] sm:w-[500px] space-y-4">
                                 {video.title && (
-                                    <h4 className="text-xs font-black uppercase tracking-[0.2em] text-zinc-500 truncate">
+                                    <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 truncate ml-2">
                                         {video.title}
                                     </h4>
                                 )}
-                                <div className="relative w-full aspect-video sm:rounded-3xl overflow-hidden bg-black shadow-2xl border border-white/5 group">
+                                <div className="relative w-full aspect-video sm:rounded-[2rem] overflow-hidden bg-black shadow-2xl border border-white/5 transition-transform duration-300 hover:scale-[1.02]">
                                     <iframe
                                         src={video.embedUrl!}
                                         title={video.title || `Video Testimony from ${displayName}`}
@@ -265,23 +261,26 @@ export default function UserProfileClient({ userId }: { userId: string }) {
       )}
 
       {/* Activity Feed Section */}
-      <div className="space-y-8 px-2 sm:px-0">
-        <div className="flex items-center gap-3 px-1">
-            <div className="h-10 w-10 rounded-2xl bg-primary flex items-center justify-center shadow-lg shadow-primary/20">
-                <Activity className="h-5 w-5 text-primary-foreground" />
+      <div className="space-y-10 px-4 sm:px-0">
+        <div className="flex items-center gap-4 px-2">
+            <div className="h-12 w-12 rounded-2xl bg-primary flex items-center justify-center shadow-xl shadow-primary/20">
+                <Activity className="h-6 w-6 text-primary-foreground" />
             </div>
-            <h2 className="text-2xl sm:text-3xl font-black font-headline tracking-tight uppercase">Kingdom Activity</h2>
+            <h2 className="text-3xl sm:text-4xl font-black font-headline tracking-tight uppercase">Kingdom Activity</h2>
         </div>
         
-        <div className="grid gap-8">
+        <div className="grid gap-12 lg:grid-cols-12">
             {/* Testimonies Section */}
-            <div className="space-y-4">
-                <div className="flex items-center gap-2 px-2">
-                    <Sparkles className="h-4 w-4 text-primary" />
-                    <h3 className="text-lg font-bold tracking-tight">Shared Testimonies ({testimonies.length})</h3>
+            <div className="lg:col-span-12 space-y-6">
+                <div className="flex items-center justify-between px-2">
+                    <div className="flex items-center gap-3">
+                        <Sparkles className="h-5 w-5 text-primary" />
+                        <h3 className="text-xl font-black uppercase tracking-tight">Shared Testimonies ({testimonies.length})</h3>
+                    </div>
                 </div>
+                
                 {testimonies.length > 0 ? (
-                    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                         {testimonies.map(testimony => (
                             <TestimonyCard 
                                 key={testimony.id} 
@@ -292,23 +291,25 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                         ))}
                     </div>
                 ) : (
-                    <div className="text-center py-16 bg-muted/20 rounded-3xl border-2 border-dashed border-muted">
-                        <Newspaper className="h-10 w-10 text-muted-foreground/20 mx-auto mb-3" />
-                        <p className="text-sm text-muted-foreground italic">No testimonies shared yet.</p>
+                    <div className="text-center py-20 bg-muted/20 rounded-[2rem] border-2 border-dashed border-muted">
+                        <Newspaper className="h-12 w-12 text-muted-foreground/20 mx-auto mb-4" />
+                        <p className="text-sm text-muted-foreground italic font-medium">No shared testimonies found in this folder.</p>
                     </div>
                 )}
             </div>
 
-            <Separator className="opacity-50" />
+            <div className="lg:col-span-12">
+                <Separator className="opacity-50" />
+            </div>
 
             {/* Campaigns Section */}
-            <div className="space-y-4">
-                <div className="flex items-center gap-2 px-2">
-                    <CalendarDays className="h-4 w-4 text-primary" />
-                    <h3 className="text-lg font-bold tracking-tight">Organized Campaigns ({activeCampaigns.length})</h3>
+            <div className="lg:col-span-12 space-y-6">
+                <div className="flex items-center gap-3 px-2">
+                    <CalendarDays className="h-5 w-5 text-primary" />
+                    <h3 className="text-xl font-black uppercase tracking-tight">Organized Campaigns ({activeCampaigns.length})</h3>
                 </div>
                 {activeCampaigns.length > 0 ? (
-                    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                         {activeCampaigns.map(campaign => (
                             <CampaignCard 
                                 key={campaign.id} 
@@ -324,22 +325,22 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                         ))}
                     </div>
                 ) : (
-                    <div className="text-center py-16 bg-muted/20 rounded-3xl border-2 border-dashed border-muted">
-                        <Target className="h-10 w-10 text-muted-foreground/20 mx-auto mb-3" />
-                        <p className="text-sm text-muted-foreground italic">No public campaigns active.</p>
+                    <div className="text-center py-20 bg-muted/20 rounded-[2rem] border-2 border-dashed border-muted">
+                        <Target className="h-12 w-12 text-muted-foreground/20 mx-auto mb-4" />
+                        <p className="text-sm text-muted-foreground italic font-medium">No public mission campaigns organized.</p>
                     </div>
                 )}
             </div>
         </div>
 
         {testimonies.length === 0 && activeCampaigns.length === 0 && (
-            <div className="text-center py-24 text-muted-foreground border-2 border-dashed rounded-[3rem] bg-muted/10 mx-1">
-                <Globe className="h-16 w-16 text-muted-foreground/10 mx-auto mb-6" />
-                <p className="font-black text-lg sm:text-xl px-10 leading-tight uppercase tracking-tight text-muted-foreground/50">
-                    Active in the secret place.
+            <div className="text-center py-32 text-muted-foreground border-2 border-dashed rounded-[3.5rem] bg-muted/5 mx-1">
+                <Globe className="h-20 w-20 text-muted-foreground/5 mx-auto mb-8" />
+                <p className="font-black text-2xl px-12 leading-tight uppercase tracking-widest text-muted-foreground/30">
+                    Faith in the Secret Place
                 </p>
-                <p className="text-xs mt-3 px-12 opacity-60 font-medium">
-                    This believer is dedicated to the harvest behind the scenes.
+                <p className="text-sm mt-4 px-16 opacity-50 font-medium max-w-md mx-auto">
+                    This believer is actively serving the Kingdom through prayer and local fellowship.
                 </p>
             </div>
         )}
