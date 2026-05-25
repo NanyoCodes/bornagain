@@ -15,7 +15,7 @@ import {
   getDocs,
 } from 'firebase/firestore';
 import type { Chat, ChatMessage, Campaign, Fellowship } from '@/lib/types';
-import { Loader2, Send, ArrowLeft, Reply, X } from 'lucide-react';
+import { Loader2, Send, ArrowLeft, Reply, X, ChevronDown } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn, safeToDate } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
@@ -40,8 +40,10 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
 
     const [newMessage, setNewMessage] = useState('');
     const [isSending, setIsSending] = useState(false);
+    const scrollContainerRef = useRef<HTMLDivElement>(null);
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const [replyingTo, setReplyingTo] = useState<ChatMessage | null>(null);
+    const [showScrollBottom, setShowScrollBottom] = useState(false);
     const [swipeState, setSwipeState] = useState<{ id: string | null; startX: number; startY: number; deltaX: number }>({ id: null, startX: 0, startY: 0, deltaX: 0 });
     const swipeThreshold = 60;
 
@@ -57,6 +59,7 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
         const deltaX = e.touches[0].clientX - swipeState.startX;
         const deltaY = e.touches[0].clientY - swipeState.startY;
 
+        // If movement is predominantly vertical, don't trigger swipe logic
         if (Math.abs(deltaY) > Math.abs(deltaX)) {
             if (swipeState.deltaX !== 0) {
                 setSwipeState(s => ({ ...s, deltaX: 0 }));
@@ -177,10 +180,45 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
         });
         return groups;
     }, [messages]);
-    
+
+    const scrollToBottom = (behavior: ScrollBehavior = "smooth") => {
+        if (scrollContainerRef.current) {
+            scrollContainerRef.current.scrollTo({
+                top: scrollContainerRef.current.scrollHeight,
+                behavior: behavior
+            });
+        }
+    };
+
+    // Scroll to bottom on new messages
     useEffect(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, [messageGroups]);
+        if (messages && messages.length > 0) {
+            // Check if user is already near bottom to auto-scroll
+            const container = scrollContainerRef.current;
+            if (container) {
+                const isNearBottom = container.scrollHeight - container.scrollTop <= container.clientHeight + 150;
+                if (isNearBottom) {
+                    scrollToBottom("smooth");
+                } else {
+                    setShowScrollBottom(true);
+                }
+            }
+        }
+    }, [messages]);
+
+    // Force snap to bottom on initial load
+    useEffect(() => {
+        if (!loading && messages && messages.length > 0) {
+            const timer = setTimeout(() => scrollToBottom("auto"), 100);
+            return () => clearTimeout(timer);
+        }
+    }, [loading]);
+
+    const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+        const target = e.currentTarget;
+        const isNearBottom = target.scrollHeight - target.scrollTop <= target.clientHeight + 100;
+        setShowScrollBottom(!isNearBottom);
+    };
 
     const sendMessage = async () => {
         if (!newMessage.trim() || !user || !firestore || !chatId || isSending || !chat || isChatFrozen) return;
@@ -274,6 +312,8 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
 
             setNewMessage('');
             setReplyingTo(null);
+            // After sending, definitely scroll to bottom
+            setTimeout(() => scrollToBottom("smooth"), 100);
         } catch (error) {
             const permissionError = new FirestorePermissionError({
                 path: `chats/${chatId}/messages`,
@@ -334,7 +374,7 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
 
     return (
         <div className="flex flex-col w-full h-full bg-background overflow-hidden relative">
-            <div className="flex items-center gap-4 p-4 shrink-0 border-b bg-background/80 backdrop-blur-md z-10">
+            <div className="flex items-center gap-4 p-4 shrink-0 border-b bg-background/80 backdrop-blur-md z-20">
                 <Button variant="outline" size="icon" onClick={() => router.back()}>
                     <ArrowLeft className="h-4 w-4" />
                     <span className="sr-only">Back</span>
@@ -405,7 +445,11 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                 ) : null}
             </div>
 
-            <div className="flex-1 overflow-y-auto min-h-0 bg-muted/5">
+            <div 
+                ref={scrollContainerRef}
+                onScroll={handleScroll}
+                className="flex-1 overflow-y-auto min-h-0 bg-muted/5 relative"
+            >
                 <div className="px-4 py-6 space-y-2">
                     <TooltipProvider>
                         {messageGroups.length > 0 ? (
@@ -552,9 +596,20 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                         <div ref={messagesEndRef} />
                     </TooltipProvider>
                 </div>
+
+                {showScrollBottom && (
+                    <Button 
+                        size="icon" 
+                        variant="secondary" 
+                        className="fixed bottom-24 right-6 h-10 w-10 rounded-full shadow-2xl z-30 animate-in fade-in zoom-in duration-200"
+                        onClick={() => scrollToBottom("smooth")}
+                    >
+                        <ChevronDown className="h-5 w-5" />
+                    </Button>
+                )}
             </div>
 
-            <div className="shrink-0 border-t p-4 bg-background/80 backdrop-blur-md pb-[calc(4rem+1rem+env(safe-area-inset-bottom))] md:pb-6 relative z-10">
+            <div className="shrink-0 border-t p-4 bg-background/80 backdrop-blur-md pb-[calc(4rem+1rem+env(safe-area-inset-bottom))] md:pb-6 relative z-30">
                 {isChatFrozen ? (
                     <div className="p-4 text-center text-xs font-bold text-muted-foreground bg-muted/30 rounded-2xl border border-dashed">
                         THIS CONVERSATION IS FROZEN (CAMPAIGN ENDED)
