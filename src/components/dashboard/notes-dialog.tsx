@@ -245,57 +245,59 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted, userP
               <Plus className="mr-2 h-4 w-4" /> New Entry
           </Button>
       </div>
-      <ScrollArea className="flex-grow">
-        {notesLoading ? (
-          <div className="flex justify-center py-12"><Loader2 className="h-10 w-10 animate-spin text-primary opacity-50" /></div>
-        ) : filteredNotes && filteredNotes.length > 0 ? (
-          <Accordion type="multiple" defaultValue={noteCategories} className="w-full space-y-3">
-              {noteCategories.map(cat => {
-                  const categoryNotes = groupedNotes[cat] || [];
-                  if (categoryNotes.length === 0) return null;
+      <ScrollArea className="flex-grow min-w-0">
+        <div className="min-w-0 pr-2">
+            {notesLoading ? (
+            <div className="flex justify-center py-12"><Loader2 className="h-10 w-10 animate-spin text-primary opacity-50" /></div>
+            ) : filteredNotes && filteredNotes.length > 0 ? (
+            <Accordion type="multiple" defaultValue={noteCategories} className="w-full space-y-3 min-w-0">
+                {noteCategories.map(cat => {
+                    const categoryNotes = groupedNotes[cat] || [];
+                    if (categoryNotes.length === 0) return null;
 
-                  return (
-                      <AccordionItem value={cat} key={cat} className="border rounded-2xl overflow-hidden px-4 bg-muted/10">
-                          <AccordionTrigger className="hover:no-underline text-xs font-black uppercase tracking-widest text-muted-foreground">{cat} ({categoryNotes.length})</AccordionTrigger>
-                          <AccordionContent>
-                             <div className="space-y-3 pt-2 pb-2">
-                                {categoryNotes.map(note => {
-                                    const cleanContent = (note.content || "No content").replace(/<[^>]*>?/gm, '').replace(/\s+/g, ' ').trim();
-                                    return (
-                                        <button
-                                            key={note.id}
-                                            onClick={() => handleSelectNote(note)}
-                                            className={cn(
-                                            "w-full text-left p-4 rounded-xl border transition-all duration-200 bg-background hover:shadow-md overflow-hidden",
-                                            selectedNote?.id === note.id ? "ring-2 ring-primary border-transparent" : "hover:bg-muted/50"
-                                            )}
-                                        >
-                                            <p className="font-bold text-sm sm:text-base truncate break-words">{note.title}</p>
-                                            <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2 mt-1 leading-relaxed break-words">{cleanContent}</p>
-                                            <div className="flex justify-between items-center mt-3 text-[10px] font-bold uppercase tracking-tighter text-muted-foreground/60">
-                                              <span>{note.updatedAt?.toDate ? format(note.updatedAt.toDate(), 'PPP') : 'Just now'}</span>
-                                            </div>
-                                        </button>
-                                    );
-                                })}
-                             </div>
-                          </AccordionContent>
-                      </AccordionItem>
-                  )
-              })}
-          </Accordion>
-        ) : (
-          <div className="text-center py-20 border-2 border-dashed rounded-[2rem] bg-muted/5 mx-1 flex flex-col items-center">
-            <div className="h-16 w-16 bg-muted/20 rounded-full flex items-center justify-center mb-4">
-                <FileText className="h-8 w-8 text-muted-foreground opacity-20" />
+                    return (
+                        <AccordionItem value={cat} key={cat} className="border rounded-2xl overflow-hidden px-4 bg-muted/10 min-w-0">
+                            <AccordionTrigger className="hover:no-underline text-xs font-black uppercase tracking-widest text-muted-foreground">{cat} ({categoryNotes.length})</AccordionTrigger>
+                            <AccordionContent>
+                                <div className="space-y-3 pt-2 pb-2 min-w-0">
+                                    {categoryNotes.map(note => {
+                                        const cleanContent = (note.content || "No content").replace(/<[^>]*>?/gm, '').replace(/\s+/g, ' ').trim();
+                                        return (
+                                            <button
+                                                key={note.id}
+                                                onClick={() => handleSelectNote(note)}
+                                                className={cn(
+                                                "w-full text-left p-4 rounded-xl border transition-all duration-200 bg-background hover:shadow-md overflow-hidden min-w-0 flex flex-col",
+                                                selectedNote?.id === note.id ? "ring-2 ring-primary border-transparent" : "hover:bg-muted/50"
+                                                )}
+                                            >
+                                                <p className="font-bold text-sm sm:text-base truncate break-words leading-tight w-full">{note.title}</p>
+                                                <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2 mt-1.5 leading-relaxed break-words w-full">{cleanContent}</p>
+                                                <div className="flex justify-between items-center mt-3 text-[10px] font-bold uppercase tracking-tighter text-muted-foreground/60 w-full">
+                                                <span>{note.updatedAt?.toDate ? format(note.updatedAt.toDate(), 'PPP') : 'Just now'}</span>
+                                                </div>
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            </AccordionContent>
+                        </AccordionItem>
+                    )
+                })}
+            </Accordion>
+            ) : (
+            <div className="text-center py-20 border-2 border-dashed rounded-[2rem] bg-muted/5 mx-1 flex flex-col items-center">
+                <div className="h-16 w-16 bg-muted/20 rounded-full flex items-center justify-center mb-4">
+                    <FileText className="h-8 w-8 text-muted-foreground opacity-20" />
+                </div>
+                <h3 className="font-bold text-lg">{searchTerm ? 'No matches' : 'Empty Spiritual Journal'}</h3>
+                <p className="text-sm text-muted-foreground mt-1 px-12">Start writing your revelations and prayers today.</p>
+                <Button onClick={handleNewNote} variant="outline" className="mt-6 h-10 rounded-full font-bold px-8">
+                    <Plus className="mr-2 h-4 w-4" /> Start Journaling
+                </Button>
             </div>
-            <h3 className="font-bold text-lg">{searchTerm ? 'No matches' : 'Empty Spiritual Journal'}</h3>
-            <p className="text-sm text-muted-foreground mt-1 px-12">Start writing your revelations and prayers today.</p>
-            <Button onClick={handleNewNote} variant="outline" className="mt-6 h-10 rounded-full font-bold px-8">
-                <Plus className="mr-2 h-4 w-4" /> Start Journaling
-            </Button>
-          </div>
-        )}
+            )}
+        </div>
       </ScrollArea>
     </div>
   );

@@ -310,65 +310,67 @@ export default function NotesPage() {
               <Plus className="mr-2 h-4 w-4" /> Add Note
           </Button>
       </div>
-      <ScrollArea className="flex-grow">
-        {notesLoading ? (
-          <div className="flex justify-center py-10"><Loader2 className="h-8 w-8 animate-spin" /></div>
-        ) : filteredNotes && filteredNotes.length > 0 ? (
-          <Accordion type="multiple" defaultValue={noteCategories} className="w-full">
-              {noteCategories.map(cat => {
-                  const categoryNotes = groupedNotes[cat] || [];
-                  if (categoryNotes.length === 0) return null;
+      <ScrollArea className="flex-grow min-w-0">
+        <div className="min-w-0 pr-2">
+            {notesLoading ? (
+            <div className="flex justify-center py-10"><Loader2 className="h-8 w-8 animate-spin" /></div>
+            ) : filteredNotes && filteredNotes.length > 0 ? (
+            <Accordion type="multiple" defaultValue={noteCategories} className="w-full min-w-0">
+                {noteCategories.map(cat => {
+                    const categoryNotes = groupedNotes[cat] || [];
+                    if (categoryNotes.length === 0) return null;
 
-                  return (
-                      <AccordionItem value={cat} key={cat}>
-                          <AccordionTrigger className="hover:no-underline">{cat} ({categoryNotes.length})</AccordionTrigger>
-                          <AccordionContent>
-                             <div className="space-y-2">
-                                  {categoryNotes.map(note => {
-                                      const contentPreview = (note.content || "No content").replace(/<[^>]*>?/gm, '').replace(/\s+/g, ' ').trim();
-                                      const truncatedContent = contentPreview.length > 150 
-                                          ? `${contentPreview.substring(0, 150)}...` 
-                                          : contentPreview;
+                    return (
+                        <AccordionItem value={cat} key={cat} className="min-w-0">
+                            <AccordionTrigger className="hover:no-underline px-1">{cat} ({categoryNotes.length})</AccordionTrigger>
+                            <AccordionContent>
+                                <div className="space-y-2 pt-1">
+                                    {categoryNotes.map(note => {
+                                        const contentPreview = (note.content || "No content").replace(/<[^>]*>?/gm, '').replace(/\s+/g, ' ').trim();
+                                        const truncatedContent = contentPreview.length > 150 
+                                            ? `${contentPreview.substring(0, 150)}...` 
+                                            : contentPreview;
 
-                                      return (
-                                          <Card
-                                              key={note.id}
-                                              onClick={() => handleSelectNote(note)}
-                                              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleSelectNote(note); }}
-                                              role="button"
-                                              tabIndex={0}
-                                              className={cn(
-                                                  "cursor-pointer hover:bg-muted/50 transition-colors overflow-hidden",
-                                                  selectedNote?.id === note.id && "ring-2 ring-primary bg-muted"
-                                              )}
-                                          >
-                                              <CardHeader className="p-4 pb-2">
-                                                  <CardTitle className="text-base truncate break-words">{note.title}</CardTitle>
-                                                  <CardDescription className="text-xs">
-                                                      {note.updatedAt?.toDate ? format(note.updatedAt.toDate(), 'PPP') : 'Just now'}
-                                                  </CardDescription>
-                                              </CardHeader>
-                                              <CardContent className="p-4 pt-0">
-                                                  <p className="text-sm text-muted-foreground line-clamp-2 break-words">{truncatedContent}</p>
-                                              </CardContent>
-                                          </Card>
-                                      );
-                                  })}
-                             </div>
-                          </AccordionContent>
-                      </AccordionItem>
-                  )
-              })}
-          </Accordion>
-        ) : (
-          <div className="text-center py-10 border-2 border-dashed rounded-lg">
-            <FileText className="mx-auto h-12 w-12 text-muted-foreground" />
-            <h3 className="mt-4 text-lg font-semibold">{searchTerm ? 'No Results Found' : 'No Notes Yet'}</h3>
-            <p className="mt-1 text-sm text-muted-foreground">
-              {searchTerm ? 'Try a different search term.' : 'Click "Add Note" to start journaling.'}
-            </p>
-          </div>
-        )}
+                                        return (
+                                            <Card
+                                                key={note.id}
+                                                onClick={() => handleSelectNote(note)}
+                                                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleSelectNote(note); }}
+                                                role="button"
+                                                tabIndex={0}
+                                                className={cn(
+                                                    "cursor-pointer hover:bg-muted/50 transition-colors overflow-hidden min-w-0",
+                                                    selectedNote?.id === note.id && "ring-2 ring-primary bg-muted"
+                                                )}
+                                            >
+                                                <CardHeader className="p-4 pb-2 space-y-1">
+                                                    <CardTitle className="text-base truncate break-words leading-tight">{note.title}</CardTitle>
+                                                    <CardDescription className="text-xs">
+                                                        {note.updatedAt?.toDate ? format(note.updatedAt.toDate(), 'PPP') : 'Just now'}
+                                                    </CardDescription>
+                                                </CardHeader>
+                                                <CardContent className="p-4 pt-0">
+                                                    <p className="text-sm text-muted-foreground line-clamp-2 break-words leading-relaxed">{truncatedContent}</p>
+                                                </CardContent>
+                                            </Card>
+                                        );
+                                    })}
+                                </div>
+                            </AccordionContent>
+                        </AccordionItem>
+                    )
+                })}
+            </Accordion>
+            ) : (
+            <div className="text-center py-10 border-2 border-dashed rounded-lg">
+                <FileText className="mx-auto h-12 w-12 text-muted-foreground" />
+                <h3 className="mt-4 text-lg font-semibold">{searchTerm ? 'No Results Found' : 'No Notes Yet'}</h3>
+                <p className="mt-1 text-sm text-muted-foreground">
+                {searchTerm ? 'Try a different search term.' : 'Click "Add Note" to start journaling.'}
+                </p>
+            </div>
+            )}
+        </div>
       </ScrollArea>
     </div>
   );
@@ -455,7 +457,7 @@ export default function NotesPage() {
               <ArrowLeft className="h-4 w-4" />
               <span className="sr-only">Back</span>
             </Button>
-            <h1 className="text-xl md:text-2xl font-bold tracking-tight">My Notes</h1>
+            <h1 className="text-xl md:text-2xl font-bold tracking-tight uppercase font-headline">My Journal</h1>
        </div>
        <div className="flex-grow min-h-0">
             {(!mounted || !isMobile) ? (
