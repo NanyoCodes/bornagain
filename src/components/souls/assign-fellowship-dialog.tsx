@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Card, CardContent } from '@/components/ui/card';
-import { Filter, Info, MapPin } from 'lucide-react';
+import { Filter, Info, MapPin, UserPlus, UserMinus } from 'lucide-react';
 import type { Soul, Fellowship } from '@/lib/types';
 import { haversineDistance } from '@/lib/utils';
 import { cn } from '@/lib/utils';
@@ -176,48 +176,59 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
                       )}>
                           <CardContent className="p-3.5 sm:p-4 flex items-center justify-between gap-3 sm:gap-4">
                               <div className="min-w-0 flex-1">
-                                  <div className="flex items-center gap-2 mb-1 flex-wrap">
-                                    <p className="font-black text-sm truncate leading-tight">{f.name}</p>
-                                    <Badge variant="outline" className={cn("text-[8px] sm:text-[9px] px-1.5 h-4 uppercase font-bold tracking-widest bg-background/50 leading-none", groupType === 'Association' ? "border-blue-500/20 text-blue-600" : "border-primary/20 text-primary")}>
+                                  <div className="flex items-center gap-2 mb-1">
+                                    <p className="font-black text-xs sm:text-sm truncate leading-tight flex-1">{f.name}</p>
+                                    <Badge variant="outline" className={cn("shrink-0 text-[7px] sm:text-[9px] px-1.5 h-4 uppercase font-bold tracking-widest bg-background/50 leading-none", groupType === 'Association' ? "border-blue-500/20 text-blue-600" : "border-primary/20 text-primary")}>
                                         {groupType}
                                     </Badge>
                                   </div>
-                                  <p className="text-[10px] sm:text-[11px] text-muted-foreground line-clamp-1 flex items-center gap-1.5 font-medium">
-                                    <MapPin className="h-3 w-3 shrink-0 text-primary/60" />
+                                  <p className="text-[9px] sm:text-[11px] text-muted-foreground line-clamp-1 flex items-center gap-1.5 font-medium">
+                                    <MapPin className="h-2.5 w-2.5 sm:h-3 sm:w-3 shrink-0 text-primary/60" />
                                     {f.location}
                                   </p>
-                                  {f.distance !== null ? <p className="text-[9px] text-primary font-black mt-1.5 uppercase tracking-[0.2em]">{f.distance.toFixed(1)} km away</p> : null}
+                                  {f.distance !== null ? <p className="text-[8px] sm:text-[9px] text-primary font-black mt-1.5 uppercase tracking-[0.2em]">{f.distance.toFixed(1)} km away</p> : null}
                               </div>
                               <div className="shrink-0">
                                 {isCurrentlyAssigned ? (
-                                    <Button
-                                        size="sm"
-                                        variant="outline"
-                                        onClick={() => onAssignGroup(soul, 'none', groupType)}
-                                        className="h-8 px-4 text-[9px] sm:text-[10px] border-destructive/30 text-destructive hover:bg-destructive/10 font-black uppercase tracking-widest rounded-xl transition-all active:scale-95"
-                                    >
-                                        Unassign
-                                    </Button>
+                                    <TooltipProvider>
+                                      <Tooltip>
+                                        <TooltipTrigger asChild>
+                                          <Button
+                                              size="icon"
+                                              variant="outline"
+                                              onClick={() => onAssignGroup(soul, 'none', groupType)}
+                                              className="h-9 w-9 border-destructive/30 text-destructive hover:bg-destructive/10 rounded-full transition-all active:scale-90"
+                                          >
+                                              <UserMinus className="h-4 w-4" />
+                                              <span className="sr-only">Unassign</span>
+                                          </Button>
+                                        </TooltipTrigger>
+                                        <TooltipContent><p>Unassign from this {groupType}</p></TooltipContent>
+                                      </Tooltip>
+                                    </TooltipProvider>
                                 ) : (
                                     <TooltipProvider>
                                       <Tooltip open={isDisabled ? undefined : false}>
                                         <TooltipTrigger asChild>
                                           <div className="inline-block">
                                             <Button
-                                                size="sm"
+                                                size="icon"
                                                 onClick={() => onAssignGroup(soul, f.id, groupType)}
                                                 disabled={isDisabled}
-                                                className="h-9 sm:h-8 px-5 text-[10px] font-black uppercase tracking-widest rounded-xl shadow-sm transition-all active:scale-95"
+                                                className="h-9 w-9 rounded-full shadow-md transition-all active:scale-90"
                                             >
-                                                Assign
+                                                <UserPlus className="h-4 w-4" />
+                                                <span className="sr-only">Assign</span>
                                             </Button>
                                           </div>
                                         </TooltipTrigger>
-                                        {isDisabled && (
-                                          <TooltipContent className="max-w-[200px] rounded-xl p-3 border-primary/20 shadow-xl" side="left">
+                                        <TooltipContent className="max-w-[200px] rounded-xl p-3 border-primary/20 shadow-xl" side="left">
+                                          {isDisabled ? (
                                             <p className="text-[10px] font-bold leading-tight uppercase tracking-tight text-center">Already assigned to a {groupType}.<br/><span className="text-primary">Unassign it first.</span></p>
-                                          </TooltipContent>
-                                        )}
+                                          ) : (
+                                            <p>Assign to this {groupType}</p>
+                                          )}
+                                        </TooltipContent>
                                       </Tooltip>
                                     </TooltipProvider>
                                 )}
