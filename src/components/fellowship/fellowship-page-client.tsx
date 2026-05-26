@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import { useDoc, useFirestore, useUser, useCollection } from '@/firebase';
+import { useDoc, useFirestore, useUser, useCollection, useUserProfile } from '@/firebase';
 import type { Fellowship, UserProfile, FellowshipMember, Soul } from '@/lib/types';
 import { doc, collection, query, orderBy, where, writeBatch, serverTimestamp, updateDoc } from 'firebase/firestore';
 import { Loader2, ArrowLeft, Users, Calendar, PlayCircle, MapPin, Heart, Phone, Mail, Church, History, PlusCircle, Award, MessagesSquare, User, Info, Sparkles } from 'lucide-react';
@@ -47,6 +47,7 @@ export default function FellowshipPageClient() {
     const fellowshipId = params.fellowshipId as string;
     const firestore = useFirestore();
     const { user } = useUser();
+    const { userProfile, loading: profileLoading } = useUserProfile();
     const isMobile = useIsMobile();
 
     const [selectedSoul, setSelectedSoul] = useState<Soul | null>(null);
@@ -128,7 +129,7 @@ export default function FellowshipPageClient() {
         }
     };
 
-    const loading = fellowshipLoading || organizerLoading;
+    const loading = fellowshipLoading || organizerLoading || profileLoading;
 
     if (loading) {
         return (
