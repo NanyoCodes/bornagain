@@ -32,7 +32,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
-import { cn, safeToDate } from '@/lib/utils';
+import { cn, safeToDate, haversineDistance } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '../ui/scroll-area';
@@ -111,16 +111,25 @@ export default function UserProfileClient({ userId }: { userId: string }) {
       });
   }, [userTestimonies]);
 
-  const activeCampaigns = useMemo(() => {
+  const processedCampaigns = useMemo(() => {
     if (!allCampaigns) return [];
     return allCampaigns
       .filter(campaign => campaign.status === 'active')
+      .map(c => {
+        const distance = (currentUserProfile?.location?.latitude && currentUserProfile?.location?.longitude && c.latitude && c.longitude)
+          ? haversineDistance(
+              { lat: currentUserProfile.location.latitude, lng: currentUserProfile.location.longitude },
+              { lat: c.latitude, lng: c.longitude }
+            )
+          : null;
+        return { ...c, distance };
+      })
       .sort((a, b) => {
         const timeA = safeToDate(a.createdAt)?.getTime() ?? 0;
         const timeB = safeToDate(b.createdAt)?.getTime() ?? 0;
         return timeB - timeA;
       });
-  }, [allCampaigns]);
+  }, [allCampaigns, currentUserProfile]);
 
   const loading = profileLoading || testimoniesLoading || campaignsLoading || userLoading;
   
@@ -223,7 +232,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                 </div>
 
                 {personalMessage && (
-                    <div className="bg-primary/10 p-4 sm:p-6 rounded-2xl sm:rounded-[2rem] border-2 border-primary/20 inline-flex items-center gap-3 sm:gap-4 text-left max-w-2xl group transition-all hover:bg-primary/15 shadow-xl shadow-primary/5">
+                    <div className="bg-primary/10 p-4 sm:p-6 rounded-2xl sm:rounded-[2rem] border-2 border-primary/20 inline-flex items-center gap-3 sm:gap-4 text-left max-w-2xl group transition-all hover:bg-primary/15 shadow-xl shadow-primary/5 mx-auto md:mx-0">
                         <MessageSquare className="h-5 w-5 sm:h-6 sm:w-6 text-primary shrink-0 transition-transform group-hover:scale-110" />
                         <p className="text-base sm:text-lg lg:text-xl font-black text-foreground leading-tight italic tracking-tight">
                             &ldquo;{personalMessage}&rdquo;
@@ -239,7 +248,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                     </div>
                     <div className="flex items-center gap-2 bg-muted/50 px-3 py-1.5 rounded-xl border">
                         <Target className="h-3.5 w-3.5 text-primary" />
-                        <span className="text-base font-black">{activeCampaigns.length}</span>
+                        <span className="text-base font-black">{processedCampaigns.length}</span>
                         <span className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground">Campaigns</span>
                     </div>
                 </div>
@@ -270,7 +279,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
             </CardHeader>
             <CardContent className="px-0 sm:px-12 pb-12">
                 <div className="w-full overflow-x-auto pb-4 scrollbar-hide">
-                    <div className="flex gap-4 sm:gap-6 p-6 sm:p-0 flex-nowrap">
+                    <div className="flex gap-4 sm:gap-6 px-6 sm:px-0 flex-nowrap">
                         {videoTestimonies.map((video, idx) => (
                             <div key={idx} className="flex-shrink-0 w-[280px] sm:w-[450px] space-y-3">
                                 {video.title && (
@@ -340,17 +349,17 @@ export default function UserProfileClient({ userId }: { userId: string }) {
             <div className="space-y-6">
                 <div className="flex items-center gap-2 px-4 sm:px-0">
                     <CalendarDays className="h-4 w-4 text-primary" />
-                    <h3 className="text-lg sm:text-xl font-black uppercase tracking-tight">Organized Campaigns ({activeCampaigns.length})</h3>
+                    <h3 className="text-lg sm:text-xl font-black uppercase tracking-tight">Organized Campaigns ({processedCampaigns.length})</h3>
                 </div>
-                {activeCampaigns.length > 0 ? (
+                {processedCampaigns.length > 0 ? (
                     <div className="grid gap-0 md:grid-cols-2 lg:grid-cols-3">
-                        {activeCampaigns.map(campaign => (
+                        {processedCampaigns.map(campaign => (
                             <CampaignCard 
                                 key={campaign.id} 
                                 campaign={campaign} 
                                 userId={currentUser?.uid} 
                                 userProfile={currentUserProfile} 
-                                distance={null} 
+                                distance={campaign.distance} 
                                 onManage={() => {}} 
                                 onLogSoul={() => {}} 
                                 onShareTestimony={() => {}} 
@@ -367,7 +376,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
             </div>
         </div>
 
-        {testimonies.length === 0 && activeCampaigns.length === 0 && (
+        {testimonies.length === 0 && processedCampaigns.length === 0 && (
             <div className="text-center py-24 text-muted-foreground border-2 border-dashed rounded-[2rem] sm:rounded-[3.5rem] bg-muted/5 mx-4 sm:mx-0">
                 <Globe className="h-16 w-16 text-muted-foreground/5 mx-auto mb-6" />
                 <p className="font-black text-xl sm:text-2xl px-8 leading-tight uppercase tracking-widest text-muted-foreground/30">
