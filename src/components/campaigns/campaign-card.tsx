@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { format, parse, isSameDay, differenceInDays } from "date-fns";
-import { CalendarDays, MapPin, Users, Share2, Edit, MoreVertical, Loader2, MessagesSquare, UserCheck, PlayCircle, Newspaper, UserPlus, ChevronDown, MessageSquare, MessageCircle, Facebook, Twitter, Link as LinkIcon, Sparkles } from "lucide-react";
+import { CalendarDays, MapPin, Users, Share2, Edit, MoreVertical, Loader2, MessagesSquare, UserCheck, PlayCircle, Newspaper, UserPlus, ChevronDown, MessageSquare, MessageCircle, Facebook, Twitter, Link as LinkIcon, Sparkles, BarChart3 } from "lucide-react";
 import type { Campaign, CampaignParticipant, UserProfile } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -503,10 +503,10 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
                     <Button 
                       variant="ghost" 
                       size="icon" 
-                      className="h-8 w-8 text-primary/60 hover:text-primary hover:bg-primary/10 rounded-full" 
+                      className="h-10 w-10 text-primary/60 hover:text-primary hover:bg-primary/10 rounded-full" 
                       onClick={(e) => { e.stopPropagation(); router.push(`/dashboard/campaigns/${campaign.id}`); }}
                     >
-                      <Sparkles className="h-4 w-4" />
+                      <BarChart3 className="h-5 w-5" />
                       <span className="sr-only">View Insights</span>
                     </Button>
                   </TooltipTrigger>
