@@ -10,12 +10,13 @@ import Image from 'next/image';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { format, isToday } from 'date-fns';
 import { useMemo } from 'react';
-import { MessagesSquare, Users, MessageSquare } from 'lucide-react';
+import { MessagesSquare, Users, MessageSquare, ArrowLeft } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import { ChatParticipantsDialog } from '@/components/chat/participants-dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Button } from '@/components/ui/button';
 
 function ChatListItem({ chat, currentUserId, isUnread }: { chat: Chat, currentUserId: string, isUnread: boolean }) {
     const router = useRouter();
@@ -23,7 +24,7 @@ function ChatListItem({ chat, currentUserId, isUnread }: { chat: Chat, currentUs
 
     const containerClasses = cn(
         "block hover:bg-muted/50 active:bg-muted/80 transition-all cursor-pointer border-b last:border-0",
-        isUnread ? "bg-primary/[0.03] border-l-4 border-l-primary" : "border-l-4 border-l-transparent opacity-60"
+        isUnread ? "bg-primary/[0.03] border-l-4 border-l-primary" : "border-l-4 border-l-transparent"
     );
 
     const dateDisplay = isToday(lastUpdatedAt) ? format(lastUpdatedAt, 'p') : format(lastUpdatedAt, 'MM/dd/yy');
@@ -34,8 +35,7 @@ function ChatListItem({ chat, currentUserId, isUnread }: { chat: Chat, currentUs
                 <div className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4">
                     <div className="relative shrink-0">
                         <Avatar className={cn(
-                            "h-10 w-10 sm:h-12 sm:w-12 border shadow-sm transition-transform group-hover:scale-105",
-                            !isUnread && "grayscale-[0.5]"
+                            "h-10 w-10 sm:h-12 sm:w-12 border shadow-sm transition-transform group-hover:scale-105"
                         )}>
                             <AvatarFallback className="bg-primary/10 text-primary font-bold text-xs sm:text-sm">
                                 <Users className="h-4 w-4 sm:h-5 sm:w-5" />
@@ -44,13 +44,16 @@ function ChatListItem({ chat, currentUserId, isUnread }: { chat: Chat, currentUs
                         {isUnread && <div className="absolute -top-0.5 -right-0.5 h-3 w-3 rounded-full bg-primary border-2 border-background shadow-sm animate-pulse" />}
                     </div>
                     <div className="flex-1 min-w-0">
-                        <div className="flex justify-start items-baseline gap-2 mb-0.5">
+                        <div className="flex justify-between items-baseline gap-2 mb-0.5">
                             <h3 className={cn(
                                 "font-bold truncate text-sm sm:text-base leading-none", 
-                                isUnread ? "text-primary" : "text-foreground/80"
+                                isUnread ? "text-primary" : "text-foreground"
                             )}>
                                 {chat.campaignTitle}
                             </h3>
+                            <div className="text-[9px] sm:text-[10px] text-muted-foreground whitespace-nowrap font-medium uppercase tracking-tighter">
+                                {dateDisplay}
+                            </div>
                         </div>
                         <div className="flex items-center gap-2 mb-1">
                             <ChatParticipantsDialog chat={chat}>
@@ -60,13 +63,7 @@ function ChatListItem({ chat, currentUserId, isUnread }: { chat: Chat, currentUs
                                 </button>
                             </ChatParticipantsDialog>
                             <span className="text-[10px] text-muted-foreground opacity-30">•</span>
-                            <span className={cn(
-                                "text-[9px] sm:text-[10px] font-black uppercase tracking-[0.1em]",
-                                isUnread ? "text-primary" : "text-muted-foreground"
-                            )}>Group</span>
-                        </div>
-                        <div className="text-[9px] sm:text-[10px] text-muted-foreground whitespace-nowrap font-medium uppercase tracking-tighter mb-1">
-                            {dateDisplay}
+                            <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.1em] text-muted-foreground">Group</span>
                         </div>
                         <p className={cn(
                             "text-xs sm:text-sm truncate leading-relaxed", 
@@ -94,8 +91,7 @@ function ChatListItem({ chat, currentUserId, isUnread }: { chat: Chat, currentUs
                         <div className="relative shrink-0">
                             <Avatar className={cn(
                                 "h-10 w-10 sm:h-12 sm:w-12 border shadow-sm transition-transform active:scale-95", 
-                                otherParticipantInfo.photoURL && "cursor-pointer hover:scale-105",
-                                !isUnread && "grayscale-[0.5]"
+                                otherParticipantInfo.photoURL && "cursor-pointer hover:scale-105"
                             )}>
                                 <AvatarImage src={otherParticipantInfo.photoURL} className="object-cover" />
                                 <AvatarFallback className="font-bold text-xs sm:text-sm">
@@ -116,26 +112,26 @@ function ChatListItem({ chat, currentUserId, isUnread }: { chat: Chat, currentUs
                     )}
                 </Dialog>
                 <div className="flex-1 min-w-0">
-                    <div className="flex justify-start items-baseline gap-2 mb-0.5">
+                    <div className="flex justify-between items-baseline gap-2 mb-0.5">
                         <h3 className={cn(
                             "font-bold truncate text-sm sm:text-base leading-none", 
-                            isUnread ? "text-primary" : "text-foreground/80"
+                            isUnread ? "text-primary" : "text-foreground"
                         )}>
                             {otherParticipantInfo.firstName} {otherParticipantInfo.lastName}
                         </h3>
+                        <div className="text-[9px] sm:text-[10px] text-muted-foreground whitespace-nowrap font-medium uppercase tracking-tighter">
+                            {dateDisplay}
+                        </div>
                     </div>
                     <div className="text-[9px] sm:text-[10px] text-muted-foreground truncate font-medium flex items-center gap-1.5 mb-1 uppercase tracking-tighter">
                        {chat.campaignTitle ? (
                           <>
-                            <span className={cn("font-black shrink-0", isUnread ? "text-primary" : "text-muted-foreground")}>RE:</span>
+                            <span className="font-black shrink-0">RE:</span>
                             <span className="truncate italic">"{chat.campaignTitle}"</span>
                           </>
                         ) : (
                           <span className="font-black opacity-60">Accountability Partner</span>
                         )}
-                    </div>
-                    <div className="text-[9px] sm:text-[10px] text-muted-foreground whitespace-nowrap font-medium uppercase tracking-tighter mb-1">
-                        {dateDisplay}
                     </div>
                     <p className={cn(
                         "text-xs sm:text-sm truncate leading-relaxed", 
@@ -153,6 +149,7 @@ function ChatListItem({ chat, currentUserId, isUnread }: { chat: Chat, currentUs
 export default function ChatsPage() {
     const { user, loading: userLoading } = useUser();
     const firestore = useFirestore();
+    const router = useRouter();
 
     const chatsQuery = useMemo(() => {
         if (!user?.uid) return null;
@@ -205,10 +202,18 @@ export default function ChatsPage() {
     return (
         <div className="flex flex-col h-full w-full bg-background overflow-hidden">
             <div className="flex-shrink-0 p-4 sm:p-6 md:p-8 pb-4">
-                <h1 className="text-2xl sm:text-3xl font-black font-headline tracking-tight uppercase">
-                    Conversations
-                </h1>
-                <p className="text-xs sm:text-sm text-muted-foreground font-medium mt-1 uppercase tracking-[0.2em]">Kingdom Messages</p>
+                <div className="flex items-center gap-4">
+                    <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0">
+                        <ArrowLeft className="h-6 w-6" />
+                        <span className="sr-only">Back</span>
+                    </Button>
+                    <div className="min-w-0">
+                        <h1 className="text-2xl sm:text-3xl font-black font-headline tracking-tight uppercase truncate">
+                            Conversations
+                        </h1>
+                        <p className="text-xs sm:text-sm text-muted-foreground font-medium mt-1 uppercase tracking-[0.2em] truncate">Kingdom Messages</p>
+                    </div>
+                </div>
             </div>
 
             <div className="flex-1 min-h-0 px-0 sm:px-6 md:px-8 pb-4">

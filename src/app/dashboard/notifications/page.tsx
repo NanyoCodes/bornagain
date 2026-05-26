@@ -7,7 +7,7 @@ import { collection, query, doc, updateDoc, writeBatch, where } from 'firebase/f
 import type { Notification } from '@/lib/types';
 import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Bell, HeartHandshake, Target, Users, CheckCircle2, MessageSquare, Info, XCircle } from 'lucide-react';
+import { Bell, HeartHandshake, Target, Users, CheckCircle2, MessageSquare, Info, XCircle, ArrowLeft } from 'lucide-react';
 import { format, formatDistanceToNow } from 'date-fns';
 import { cn, safeToDate } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -116,13 +116,19 @@ export default function NotificationsPage() {
     <div className="flex flex-col h-full w-full bg-background overflow-hidden">
       <div className="flex-shrink-0 p-4 sm:p-6 md:p-8 pb-4">
         <div className="flex items-center justify-between gap-4">
-          <div className="space-y-0.5 sm:space-y-1 min-w-0">
-            <h1 className="text-xl sm:text-2xl md:text-3xl font-black font-headline tracking-tight uppercase truncate">
-              Notifications
-            </h1>
-            <p className="text-[9px] sm:text-[10px] text-muted-foreground font-bold uppercase tracking-[0.2em] truncate">
-              Kingdom Alerts
-            </p>
+          <div className="flex items-center gap-4 min-w-0">
+            <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0">
+                <ArrowLeft className="h-6 w-6" />
+                <span className="sr-only">Back</span>
+            </Button>
+            <div className="space-y-0.5 sm:space-y-1 min-w-0">
+                <h1 className="text-xl sm:text-2xl md:text-3xl font-black font-headline tracking-tight uppercase truncate">
+                Notifications
+                </h1>
+                <p className="text-[9px] sm:text-[10px] text-muted-foreground font-bold uppercase tracking-[0.2em] truncate">
+                Kingdom Alerts
+                </p>
+            </div>
           </div>
           {!loading && notifications && notifications.length > 0 && unreadCount > 0 && (
                <Button 
