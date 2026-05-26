@@ -534,7 +534,7 @@ export default function ProfilePage() {
                             searchTerm={prayerSearchTerm}
                             setSearchTerm={setPrayerSearchTerm}
                             filterDate={prayerFilterDate}
-                            setFilterDate={setFilterDate}
+                            setFilterDate={setPrayerFilterDate}
                             searchPlaceholder="Search prayer requests..."
                         />
                         <ScrollArea className="h-48 border rounded-lg bg-muted/5">
@@ -563,7 +563,7 @@ export default function ProfilePage() {
                             searchTerm={createdCampaignSearchTerm}
                             setSearchTerm={setCreatedCampaignSearchTerm}
                             filterDate={createdCampaignFilterDate}
-                            setFilterDate={setFilterDate}
+                            setFilterDate={setCreatedCampaignFilterDate}
                             searchPlaceholder="Search created campaigns..."
                         />
                         <ScrollArea className="h-48 border rounded-lg bg-muted/5">
