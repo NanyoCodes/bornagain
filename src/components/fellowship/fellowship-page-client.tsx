@@ -19,7 +19,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { format } from 'date-fns';
 import { safeToDate, cn } from '@/lib/utils';
 import { LogFollowUpDialog } from '@/components/souls/log-follow-up-dialog';
-import { actionItems } from '@/lib/follow-up-data';
+import { actionItems, statusOptions } from '@/lib/follow-up-data';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Skeleton } from '@/components/ui/skeleton';
 import { errorEmitter } from '@/firebase/error-emitter';
@@ -84,9 +84,13 @@ export default function FellowshipPageClient() {
     const { data: members, loading: loadingMembers } = useCollection<FellowshipMember>(membersQuery);
 
     const soulsQuery = useMemo(() => {
-        if (!firestore || !fellowshipId || !(isMember || isOrganizer)) return null;
-        return query(collection(firestore, 'souls'), where('fellowshipId', '==', fellowshipId));
-    }, [firestore, fellowshipId, isMember, isOrganizer]);
+        if (!firestore || !fellowshipId || !(isMember || isOrganizer) || !fellowship) return null;
+        
+        // Dynamic field based on group type to ensure souls appear in associations correctly
+        const soulQueryField = fellowship.groupType === 'Association' ? 'associationId' : 'fellowshipId';
+        
+        return query(collection(firestore, 'souls'), where(soulQueryField, '==', fellowshipId));
+    }, [firestore, fellowshipId, isMember, isOrganizer, fellowship?.groupType]);
     const { data: assignedSouls, loading: soulsLoading } = useCollection<Soul>(soulsQuery);
 
     const handleStartGroupChat = async () => {

@@ -127,7 +127,7 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
                   "transition-all duration-300 shadow-none border-2 rounded-[1.25rem] sm:rounded-2xl overflow-hidden", 
                   isCurrentlyAssigned ? "bg-primary/5 border-primary/40 ring-1 ring-primary/20" : "bg-card border-transparent hover:border-primary/10 hover:shadow-md"
                 )}>
-                    <CardContent className="p-3 sm:p-4 flex items-center justify-between gap-3 sm:gap-4">
+                    <CardContent className="p-3.5 sm:p-4 flex items-center justify-between gap-3 sm:gap-4">
                         <div className="min-w-0 flex-1">
                             <div className="flex items-center gap-1.5 mb-0.5 flex-wrap">
                               <p className="font-black text-[11px] sm:text-sm truncate leading-tight flex-1 min-w-[60px]">{f.name}</p>
