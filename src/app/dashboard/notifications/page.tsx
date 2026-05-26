@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useUser, useFirestore, useCollection } from '@/firebase';
 import { collection, query, doc, updateDoc, writeBatch, where } from 'firebase/firestore';
 import type { Notification } from '@/lib/types';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Bell, HeartHandshake, Target, Users, CheckCircle2, MessageSquare, Info, XCircle } from 'lucide-react';
 import { format, formatDistanceToNow } from 'date-fns';
@@ -115,17 +115,21 @@ export default function NotificationsPage() {
   return (
     <div className="flex flex-col h-full w-full bg-background overflow-hidden">
       <div className="flex-shrink-0 p-4 sm:p-6 md:p-8 pb-4">
-        <div className="flex items-end justify-between">
-          <div className="space-y-1">
-            <h1 className="text-2xl sm:text-3xl font-black font-headline tracking-tight uppercase">Notifications</h1>
-            <p className="text-[10px] sm:text-xs text-muted-foreground font-bold uppercase tracking-[0.2em]">Kingdom Alerts</p>
+        <div className="flex items-center justify-between gap-4">
+          <div className="space-y-0.5 sm:space-y-1 min-w-0">
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-black font-headline tracking-tight uppercase truncate">
+              Notifications
+            </h1>
+            <p className="text-[9px] sm:text-[10px] text-muted-foreground font-bold uppercase tracking-[0.2em] truncate">
+              Kingdom Alerts
+            </p>
           </div>
           {!loading && notifications && notifications.length > 0 && unreadCount > 0 && (
                <Button 
                   variant="ghost" 
                   size="sm" 
                   onClick={handleMarkAllAsRead} 
-                  className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-primary hover:text-primary hover:bg-primary/5 h-7 sm:h-8 rounded-full px-3 sm:px-4"
+                  className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-primary hover:text-primary hover:bg-primary/5 h-8 rounded-full px-3 sm:px-4 shrink-0 shadow-sm border border-primary/10 sm:border-none"
               >
                   Mark all as read
               </Button>
@@ -134,7 +138,7 @@ export default function NotificationsPage() {
       </div>
 
       <div className="flex-1 min-h-0 px-0 sm:px-6 md:px-8 pb-4">
-        <Card className="h-full flex flex-col overflow-hidden border-x-0 sm:border-x rounded-none sm:rounded-3xl shadow-xl bg-card">
+        <Card className="h-full flex flex-col overflow-hidden border-x-0 sm:border-x rounded-none sm:rounded-3xl shadow-xl bg-card border-y sm:border-y-0">
             <ScrollArea className="flex-1 w-full">
                 <div className="flex flex-col h-full">
                     {loading && (
@@ -151,12 +155,12 @@ export default function NotificationsPage() {
                         </div>
                     )}
                     {!loading && (!notifications || notifications.length === 0) && (
-                        <div className="py-24 text-center px-8 flex flex-col items-center">
-                            <div className="h-20 w-20 bg-muted/20 rounded-full flex items-center justify-center mb-6">
-                                <Bell className="h-10 w-10 text-muted-foreground opacity-20" />
+                        <div className="py-24 text-center px-8 flex flex-col items-center justify-center flex-1">
+                            <div className="h-16 w-16 sm:h-20 sm:w-20 bg-muted/20 rounded-full flex items-center justify-center mb-6">
+                                <Bell className="h-8 w-8 sm:h-10 sm:w-10 text-muted-foreground opacity-20" />
                             </div>
-                            <h3 className="text-xl font-bold font-headline uppercase tracking-tight">No Alerts Yet</h3>
-                            <p className="mt-2 text-sm text-muted-foreground italic max-w-[280px] leading-relaxed">
+                            <h3 className="text-lg sm:text-xl font-bold font-headline uppercase tracking-tight">No Alerts Yet</h3>
+                            <p className="mt-2 text-xs sm:text-sm text-muted-foreground italic max-w-[280px] leading-relaxed">
                                 Stay focused on the harvest. We'll notify you here about campaign activity and partner requests.
                             </p>
                         </div>
@@ -169,16 +173,16 @@ export default function NotificationsPage() {
                                     key={notification.id} 
                                     onClick={() => handleNotificationClick(notification)}
                                     className={cn(
-                                        "w-full text-left p-3.5 sm:p-6 transition-all hover:bg-muted/50 active:bg-muted/80 relative border-l-4 overflow-hidden",
+                                        "w-full text-left p-4 sm:p-6 transition-all hover:bg-muted/50 active:bg-muted/80 relative border-l-4 overflow-hidden",
                                         !notification.isRead ? "bg-primary/[0.03] border-l-primary" : "opacity-60 border-l-transparent"
                                     )}
                                 >
                                     <div className="flex items-start gap-3 sm:gap-5">
-                                        <div className="mt-0.5 shrink-0 p-2.5 rounded-xl bg-background border shadow-sm">
+                                        <div className="mt-0.5 shrink-0 p-2 sm:p-2.5 rounded-xl bg-background border shadow-sm">
                                             {getNotificationIcon(notification.type)}
                                         </div>
                                         <div className="flex-1 min-w-0 space-y-1">
-                                            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-baseline gap-1 sm:gap-3">
+                                            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-baseline gap-0.5 sm:gap-3 mb-0.5 sm:mb-1">
                                                 <p className={cn(
                                                     "font-bold text-sm sm:text-base leading-tight truncate", 
                                                     !notification.isRead ? "text-foreground" : "text-muted-foreground"
@@ -189,17 +193,17 @@ export default function NotificationsPage() {
                                                     {createdAt ? formatDistanceToNow(createdAt, { addSuffix: true }) : ''}
                                                 </span>
                                             </div>
-                                            <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed font-medium line-clamp-2">
+                                            <p className="text-xs sm:text-sm text-muted-foreground leading-snug sm:leading-relaxed font-medium line-clamp-2">
                                                 {notification.message}
                                             </p>
                                             {createdAt && (
-                                                <p className="text-[9px] text-muted-foreground/60 uppercase font-bold tracking-widest pt-1">
+                                                <p className="text-[9px] text-muted-foreground/50 uppercase font-black tracking-widest pt-1">
                                                     {format(createdAt, 'PPP')}
                                                 </p>
                                             )}
                                         </div>
                                         {!notification.isRead && (
-                                            <div className="shrink-0 flex items-center h-full">
+                                            <div className="shrink-0 flex items-center h-full pt-1.5 sm:pt-2">
                                                 <div className="h-2 w-2 rounded-full bg-primary animate-pulse shadow-[0_0_8px_rgba(249,116,22,0.5)]" />
                                             </div>
                                         )}
@@ -213,7 +217,7 @@ export default function NotificationsPage() {
                     <div className="h-20 md:hidden shrink-0" />
                     
                     <footer className="p-8 text-center space-y-2 border-t mt-auto">
-                        <p className="text-[10px] text-muted-foreground/40 font-bold uppercase tracking-[0.2em] flex items-center justify-center gap-2">
+                        <p className="text-[9px] sm:text-[10px] text-muted-foreground/40 font-bold uppercase tracking-[0.2em] flex items-center justify-center gap-2">
                           <Info className="h-3 w-3" /> Notifications are purged after 30 days of inactivity
                         </p>
                     </footer>
