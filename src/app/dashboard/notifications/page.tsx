@@ -7,7 +7,7 @@ import { collection, query, doc, updateDoc, writeBatch, where } from 'firebase/f
 import type { Notification } from '@/lib/types';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Bell, HeartHandshake, Target, Users, CheckCircle2, MessageSquare, Info } from 'lucide-react';
+import { Bell, HeartHandshake, Target, Users, CheckCircle2, MessageSquare, Info, XCircle } from 'lucide-react';
 import { format, formatDistanceToNow } from 'date-fns';
 import { cn, safeToDate } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -28,12 +28,15 @@ const NOTIFICATION_TYPES = [
 function getNotificationIcon(type: string) {
     switch (type) {
         case 'campaign_join':
-            return <Target className="h-4 w-4 text-chart-4" />;
+            return <Target className="h-4 w-4 text-orange-500" />;
         case 'accountability_request':
         case 'accountability_nudge':
             return <HeartHandshake className="h-4 w-4 text-primary" />;
         case 'request_accepted':
             return <CheckCircle2 className="h-4 w-4 text-green-500" />;
+        case 'request_declined':
+        case 'accountability_partner_removed':
+            return <XCircle className="h-4 w-4 text-destructive" />;
         case 'new_soul_in_fellowship':
             return <Users className="h-4 w-4 text-blue-500" />;
         case 'new_chat_message':
@@ -109,7 +112,7 @@ export default function NotificationsPage() {
   const unreadCount = useMemo(() => notifications?.filter(n => !n.isRead).length ?? 0, [notifications]);
 
   return (
-    <div className="space-y-6 sm:space-y-8 max-w-3xl mx-auto pb-24">
+    <div className="space-y-6 sm:space-y-8 max-w-3xl mx-auto pb-24 w-full overflow-x-hidden">
       <div className="flex items-end justify-between px-4 sm:px-0">
         <div className="space-y-1">
           <h1 className="text-2xl sm:text-3xl font-black font-headline tracking-tight uppercase">Notifications</h1>
@@ -128,7 +131,7 @@ export default function NotificationsPage() {
       </div>
 
       <div className="-mx-4 sm:mx-0">
-        <Card className="rounded-none sm:rounded-3xl shadow-xl overflow-hidden border-x-0 sm:border-x border-y sm:border-y-0">
+        <Card className="rounded-none sm:rounded-3xl shadow-xl overflow-hidden border-x-0 sm:border-x border-y sm:border-y-0 bg-card">
             <CardContent className="p-0">
             {loading && (
                 <div className="divide-y p-4">
@@ -162,23 +165,23 @@ export default function NotificationsPage() {
                             key={notification.id} 
                             onClick={() => handleNotificationClick(notification)}
                             className={cn(
-                                "w-full text-left p-3.5 sm:p-6 transition-all hover:bg-muted/50 active:bg-muted/80 relative border-l-4 overflow-hidden",
+                                "w-full text-left p-4 sm:p-6 transition-all hover:bg-muted/50 active:bg-muted/80 relative border-l-4 overflow-hidden",
                                 !notification.isRead ? "bg-primary/[0.03] border-l-primary" : "opacity-60 border-l-transparent"
                             )}
                         >
-                            <div className="flex items-start gap-3 sm:gap-4">
-                                <div className="mt-0.5 shrink-0 p-2 rounded-xl bg-background border shadow-sm">
+                            <div className="flex items-start gap-3 sm:gap-5">
+                                <div className="mt-0.5 shrink-0 p-2.5 rounded-xl bg-background border shadow-sm">
                                     {getNotificationIcon(notification.type)}
                                 </div>
                                 <div className="flex-1 min-w-0 space-y-1">
-                                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-baseline gap-1 sm:gap-2">
+                                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-baseline gap-1 sm:gap-3">
                                         <p className={cn(
                                             "font-bold text-sm sm:text-base leading-tight truncate", 
                                             !notification.isRead ? "text-foreground" : "text-muted-foreground"
                                         )}>
                                             {notification.title}
                                         </p>
-                                        <span className="text-[9px] font-black uppercase tracking-tighter text-muted-foreground whitespace-nowrap shrink-0">
+                                        <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-tighter text-muted-foreground whitespace-nowrap shrink-0">
                                             {createdAt ? formatDistanceToNow(createdAt, { addSuffix: true }) : ''}
                                         </span>
                                     </div>
@@ -192,7 +195,7 @@ export default function NotificationsPage() {
                                     )}
                                 </div>
                                 {!notification.isRead && (
-                                    <div className="absolute right-2 top-1/2 -translate-y-1/2 sm:static sm:translate-y-0">
+                                    <div className="shrink-0 flex items-center h-full">
                                         <div className="h-2 w-2 rounded-full bg-primary animate-pulse shadow-[0_0_8px_rgba(249,116,22,0.5)]" />
                                     </div>
                                 )}
