@@ -11,6 +11,7 @@ import { Zap, BookOpen, Loader2, Church, CheckCircle2, Edit, HeartHandshake, XCi
 import { PrayerDialog } from './prayer-dialog';
 import { AttendChurchDialog } from './attend-church-dialog';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { Button } from '@/components/ui/button';
