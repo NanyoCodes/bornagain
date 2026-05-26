@@ -48,7 +48,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion';
@@ -369,7 +368,7 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted, userP
         )}
         </div>
         <Button onClick={handleSaveNote} disabled={isSaving || !content.trim()} className="px-10 h-12 rounded-2xl font-black shadow-lg shadow-primary/20">
-          {isSaving ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : null}
+          {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
           {selectedNote ? 'SAVE CHANGES' : 'SAVE REVELATION'}
         </Button>
       </div>
@@ -424,7 +423,7 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted, userP
           <div className="p-8 border-b flex-shrink-0 bg-muted/10">
             <SheetHeader className="text-left">
                 <SheetTitle className="text-2xl font-black font-headline">Journal</SheetTitle>
-                <SheetDescription className="text-sm font-medium">Capture your reflections and revelations.</SheetDescription>
+                <SheetDescription className="text-sm font-medium mt-1">Capture your reflections and revelations.</SheetDescription>
             </SheetHeader>
           </div>
           <div className="p-8 flex-grow min-h-0 overflow-hidden">
