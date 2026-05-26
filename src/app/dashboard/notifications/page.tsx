@@ -7,9 +7,9 @@ import { collection, query, doc, updateDoc, writeBatch, where } from 'firebase/f
 import type { Notification } from '@/lib/types';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Bell } from 'lucide-react';
-import { format } from 'date-fns';
-import { cn } from '@/lib/utils';
+import { Bell, HeartHandshake, Target, Users, CheckCircle2, MessageSquare, Info } from 'lucide-react';
+import { format, formatDistanceToNow } from 'date-fns';
+import { cn, safeToDate } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
@@ -23,6 +23,24 @@ const NOTIFICATION_TYPES = [
   'accountability_partner_removed',
   'new_soul_in_fellowship'
 ];
+
+function getNotificationIcon(type: string) {
+    switch (type) {
+        case 'campaign_join':
+            return <Target className="h-4 w-4 text-chart-4" />;
+        case 'accountability_request':
+        case 'accountability_nudge':
+            return <HeartHandshake className="h-4 w-4 text-primary" />;
+        case 'request_accepted':
+            return <CheckCircle2 className="h-4 w-4 text-green-500" />;
+        case 'new_soul_in_fellowship':
+            return <Users className="h-4 w-4 text-blue-500" />;
+        case 'new_chat_message':
+            return <MessageSquare className="h-4 w-4 text-primary" />;
+        default:
+            return <Bell className="h-4 w-4 text-muted-foreground" />;
+    }
+}
 
 export default function NotificationsPage() {
   const { user } = useUser();
@@ -42,8 +60,8 @@ export default function NotificationsPage() {
   const notifications = useMemo(() => {
     if (!notificationsData) return null;
     return [...notificationsData].sort((a, b) => {
-        const timeA = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : 0;
-        const timeB = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : 0;
+        const timeA = safeToDate(a.createdAt)?.getTime() ?? 0;
+        const timeB = safeToDate(b.createdAt)?.getTime() ?? 0;
         return timeB - timeA;
     });
   }, [notificationsData]);
@@ -90,54 +108,99 @@ export default function NotificationsPage() {
   const unreadCount = useMemo(() => notifications?.filter(n => !n.isRead).length ?? 0, [notifications]);
 
   return (
-    <div className="space-y-8">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Notifications</h1>
-        {!loading && notifications && notifications.length > 0 && (
-             <Button onClick={handleMarkAllAsRead} disabled={loading || unreadCount === 0}>
+    <div className="space-y-8 max-w-3xl mx-auto pb-24">
+      <div className="flex items-end justify-between px-4 sm:px-0">
+        <div className="space-y-1">
+          <h1 className="text-2xl sm:text-3xl font-black font-headline tracking-tight uppercase">Notifications</h1>
+          <p className="text-[10px] sm:text-xs text-muted-foreground font-bold uppercase tracking-[0.2em]">Kingdom Alerts</p>
+        </div>
+        {!loading && notifications && notifications.length > 0 && unreadCount > 0 && (
+             <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={handleMarkAllAsRead} 
+                className="text-[10px] font-black uppercase tracking-widest text-primary hover:text-primary hover:bg-primary/5 h-8 rounded-full"
+            >
                 Mark all as read
             </Button>
         )}
       </div>
 
-      <Card>
-        <CardContent className="p-0">
-          {loading && (
-            <div className="divide-y p-4">
-              {[...Array(3)].map((_, i) => (
-                <div key={i} className="py-4"><Skeleton className="h-4 w-3/4 mb-2"/><Skeleton className="h-4 w-1/2"/></div>
-              ))}
-            </div>
-          )}
-          {!loading && (!notifications || notifications.length === 0) && (
-            <div className="p-12 text-center">
-              <Bell className="mx-auto h-12 w-12 text-muted-foreground opacity-20" />
-              <h3 className="mt-4 text-lg font-semibold">No Notifications</h3>
-            </div>
-          )}
-          <div className="divide-y">
-            {!loading && user && notifications?.map(notification => {
-                const createdAt = notification.createdAt.toDate();
-                return (
-                    <button
-                        key={notification.id} 
-                        onClick={() => handleNotificationClick(notification)}
-                        className={cn("w-full text-left p-4 hover:bg-muted/50 transition-colors", notification.isRead && "opacity-60")}
-                    >
-                        <div className="flex items-start gap-4">
-                            <div className={cn("mt-1.5 h-2.5 w-2.5 rounded-full", !notification.isRead ? "bg-primary" : "bg-border")} />
-                            <div className="flex-1 space-y-1">
-                                <p className="font-semibold">{notification.title}</p>
-                                <p className="text-sm text-muted-foreground">{notification.message}</p>
-                                <p className="text-xs text-muted-foreground">{format(createdAt, 'PPP')}</p>
-                            </div>
+      <div className="-mx-4 sm:mx-0">
+        <Card className="rounded-none sm:rounded-3xl shadow-xl overflow-hidden border-x-0 sm:border-x">
+            <CardContent className="p-0">
+            {loading && (
+                <div className="divide-y p-4">
+                {[...Array(5)].map((_, i) => (
+                    <div key={i} className="py-6 flex items-start gap-4">
+                        <Skeleton className="h-10 w-10 rounded-full shrink-0" />
+                        <div className="flex-1 space-y-2">
+                            <Skeleton className="h-4 w-3/4" />
+                            <Skeleton className="h-3 w-1/2" />
                         </div>
-                    </button>
-                )
-            })}
-          </div>
-        </CardContent>
-      </Card>
+                    </div>
+                ))}
+                </div>
+            )}
+            {!loading && (!notifications || notifications.length === 0) && (
+                <div className="py-24 text-center px-8 flex flex-col items-center">
+                    <div className="h-20 w-20 bg-muted/20 rounded-full flex items-center justify-center mb-6">
+                        <Bell className="h-10 w-10 text-muted-foreground opacity-20" />
+                    </div>
+                    <h3 className="text-xl font-bold font-headline uppercase tracking-tight">No Alerts Yet</h3>
+                    <p className="mt-2 text-sm text-muted-foreground italic max-w-[280px] leading-relaxed">
+                        Stay focused on the harvest. We'll notify you here about campaign activity and partner requests.
+                    </p>
+                </div>
+            )}
+            <div className="divide-y">
+                {!loading && user && notifications?.map(notification => {
+                    const createdAt = safeToDate(notification.createdAt);
+                    return (
+                        <button
+                            key={notification.id} 
+                            onClick={() => handleNotificationClick(notification)}
+                            className={cn(
+                                "w-full text-left p-5 sm:p-6 transition-all hover:bg-muted/50 active:bg-muted/80 relative border-l-4",
+                                !notification.isRead ? "bg-primary/[0.02] border-l-primary" : "opacity-60 border-l-transparent"
+                            )}
+                        >
+                            <div className="flex items-start gap-4">
+                                <div className="mt-1 shrink-0 p-2 rounded-xl bg-background border shadow-sm">
+                                    {getNotificationIcon(notification.type)}
+                                </div>
+                                <div className="flex-1 min-w-0 space-y-1">
+                                    <div className="flex justify-between items-baseline gap-2">
+                                        <p className={cn("font-bold text-sm sm:text-base leading-tight truncate", !notification.isRead && "text-foreground")}>
+                                            {notification.title}
+                                        </p>
+                                        <span className="text-[9px] font-black uppercase tracking-tighter text-muted-foreground whitespace-nowrap">
+                                            {createdAt ? formatDistanceToNow(createdAt, { addSuffix: true }) : ''}
+                                        </span>
+                                    </div>
+                                    <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed font-medium line-clamp-2">
+                                        {notification.message}
+                                    </p>
+                                    {createdAt && (
+                                        <p className="text-[9px] text-muted-foreground/60 uppercase font-bold tracking-widest pt-1">
+                                            {format(createdAt, 'PPP')}
+                                        </p>
+                                    )}
+                                </div>
+                            </div>
+                        </button>
+                    )
+                })}
+            </div>
+            </CardContent>
+        </Card>
+      </div>
+      
+      <footer className="px-4 sm:px-0 text-center space-y-2">
+          <p className="text-[10px] text-muted-foreground/40 font-bold uppercase tracking-[0.2em] flex items-center justify-center gap-2">
+            <Info className="h-3 w-3" /> Notifications are purged after 30 days of inactivity
+          </p>
+      </footer>
     </div>
   );
 }
