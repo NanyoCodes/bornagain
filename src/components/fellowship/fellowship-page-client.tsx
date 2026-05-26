@@ -5,7 +5,7 @@ import { useRouter, useParams } from 'next/navigation';
 import { useDoc, useFirestore, useUser, useCollection } from '@/firebase';
 import type { Fellowship, UserProfile, FellowshipMember, Soul } from '@/lib/types';
 import { doc, collection, query, orderBy, where, writeBatch, serverTimestamp } from 'firebase/firestore';
-import { Loader2, ArrowLeft, Users, Calendar, PlayCircle, MapPin, Heart, Phone, Mail, Church, History, PlusCircle, Award, MessagesSquare, User, Info } from 'lucide-react';
+import { Loader2, ArrowLeft, Users, Calendar, PlayCircle, MapPin, Heart, Phone, Mail, Church, History, PlusCircle, Award, MessagesSquare, User, Info, Sparkles } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -253,8 +253,8 @@ export default function FellowshipPageClient() {
     ) : null;
 
     return (
-        <div className="space-y-6 max-w-6xl mx-auto pb-32 px-4 sm:px-0">
-            <div className="flex items-center gap-4">
+        <div className="space-y-6 max-w-6xl mx-auto pb-32 px-0 sm:px-0">
+            <div className="flex items-center gap-4 px-4 sm:px-0">
                 <Button variant="ghost" size="icon" onClick={() => router.back()} className="shrink-0 h-10 w-10 rounded-full border bg-background shadow-sm hover:bg-muted/50">
                     <ArrowLeft className="h-5 w-5"/>
                     <span className="sr-only">Back</span>
@@ -270,15 +270,15 @@ export default function FellowshipPageClient() {
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
                 {/* Responsive Grid: Sidebar items first on mobile to highlight actions */}
-                <div className="space-y-6 sm:space-y-8 flex flex-col order-first lg:order-last">
+                <div className="space-y-6 sm:space-y-8 flex flex-col order-first lg:order-last px-4 sm:px-0">
                     {(isMember || isOrganizer) && (
-                        <Card className="rounded-[2rem] sm:rounded-[2.5rem] shadow-xl border-none bg-primary text-primary-foreground">
-                            <CardHeader className="pb-4">
-                                <CardTitle className="text-sm sm:text-base font-black uppercase tracking-[0.2em] opacity-80 flex items-center gap-2">
-                                    <MessagesSquare className="h-5 w-5" /> Group Chat
+                        <Card className="rounded-[2rem] sm:rounded-[2.5rem] shadow-xl border-none bg-primary text-primary-foreground overflow-hidden">
+                            <CardHeader className="p-6 sm:p-8 pb-4">
+                                <CardTitle className="text-xs sm:text-sm font-black uppercase tracking-[0.2em] opacity-80 flex items-center gap-2">
+                                    <MessagesSquare className="h-4 w-4 sm:h-5 w-5" /> Group Chat
                                 </CardTitle>
                             </CardHeader>
-                            <CardContent className="space-y-4">
+                            <CardContent className="px-6 sm:px-8 pb-6 sm:pb-8 space-y-4">
                                 {fellowship.hasGroupChat ? (
                                     <Button onClick={() => router.push(`/dashboard/chats/${fellowshipId}`)} className="w-full h-12 bg-white text-primary hover:bg-white/90 font-black rounded-2xl shadow-lg transition-transform active:scale-95">
                                         OPEN CONVERSATION
@@ -309,10 +309,10 @@ export default function FellowshipPageClient() {
                     )}
 
                     <Card className="rounded-[2rem] sm:rounded-[2.5rem] shadow-sm border-none bg-background border border-muted-foreground/10 overflow-hidden">
-                        <CardHeader className="pb-3 px-6 pt-6">
+                        <CardHeader className="p-6 sm:p-8 pb-3">
                             <CardTitle className="text-[10px] sm:text-sm font-black uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2"><Calendar className="h-4 w-4 text-primary"/> Gathering Details</CardTitle>
                         </CardHeader>
-                        <CardContent className="space-y-5 p-6 pt-2">
+                        <CardContent className="px-6 sm:px-8 pb-6 sm:pb-8 space-y-5 pt-2">
                             {fellowship.schedule && (
                                 <div className="p-4 rounded-2xl bg-muted/30 border border-dashed">
                                     <p className="font-black text-[9px] uppercase tracking-[0.2em] text-muted-foreground mb-1.5">Schedule</p>
@@ -340,10 +340,10 @@ export default function FellowshipPageClient() {
                     </Card>
 
                     <Card className="rounded-[2rem] sm:rounded-[2.5rem] shadow-sm border-none bg-background border border-muted-foreground/10">
-                        <CardHeader className="pb-3 px-6 pt-6">
+                        <CardHeader className="p-6 sm:p-8 pb-3">
                             <CardTitle className="text-[10px] sm:text-sm font-black uppercase tracking-[0.2em] text-muted-foreground">Lead Organizer</CardTitle>
                         </CardHeader>
-                        <CardContent className="p-6 pt-2">
+                        <CardContent className="px-6 sm:px-8 pb-6 sm:pb-8 pt-2">
                             <Link href={isOrganizer ? '/dashboard/profile' : `/dashboard/profile/${fellowship.organizerId}`} className="flex items-center gap-4 group bg-muted/20 p-4 rounded-2xl border border-dashed transition-all hover:bg-muted/40 hover:border-primary/20 min-w-0">
                                 <Avatar className="h-10 w-10 sm:h-11 sm:w-11 border-2 border-primary/20 shadow-sm shrink-0">
                                     <AvatarFallback className="font-black text-sm bg-primary/10 text-primary">{fellowship.organizerName?.charAt(0)}</AvatarFallback>
@@ -361,8 +361,8 @@ export default function FellowshipPageClient() {
                     </Card>
                 </div>
 
-                <div className="lg:col-span-2 space-y-6 sm:space-y-8 order-last lg:order-first">
-                    <Card className="rounded-[2rem] sm:rounded-[2.5rem] shadow-sm border-none bg-muted/20">
+                <div className="lg:col-span-2 space-y-6 sm:order-last lg:order-first">
+                    <Card className="rounded-none sm:rounded-[2.5rem] border-x-0 sm:border-x shadow-sm border-none bg-muted/20">
                         <CardHeader className="p-6 sm:p-8">
                             <CardTitle className="text-sm font-black uppercase tracking-[0.2em] text-muted-foreground">About this Group</CardTitle>
                         </CardHeader>
@@ -373,7 +373,7 @@ export default function FellowshipPageClient() {
                         </CardContent>
                     </Card>
 
-                    <Card className="rounded-[2rem] sm:rounded-[2.5rem] shadow-sm border-none bg-background border border-muted-foreground/10 overflow-hidden">
+                    <Card className="rounded-none sm:rounded-[2.5rem] border-x-0 sm:border-x shadow-sm border-none bg-background border border-muted-foreground/10 overflow-hidden">
                         <CardHeader className="p-6 sm:p-8 border-b bg-muted/5">
                             <CardTitle className="flex items-center justify-between text-base sm:text-lg font-black uppercase tracking-[0.1em]">
                                 <span className="flex items-center gap-2.5">
