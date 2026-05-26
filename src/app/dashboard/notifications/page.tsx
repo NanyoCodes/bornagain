@@ -182,9 +182,9 @@ export default function NotificationsPage() {
                                             {getNotificationIcon(notification.type)}
                                         </div>
                                         <div className="flex-1 min-w-0 space-y-1">
-                                            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-baseline gap-0.5 sm:gap-3 mb-0.5 sm:mb-1">
+                                            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-baseline gap-1 sm:gap-3 mb-1">
                                                 <p className={cn(
-                                                    "font-bold text-sm sm:text-base leading-tight truncate", 
+                                                    "font-bold text-sm sm:text-base leading-snug break-words", 
                                                     !notification.isRead ? "text-foreground" : "text-muted-foreground"
                                                 )}>
                                                     {notification.title}
@@ -193,11 +193,11 @@ export default function NotificationsPage() {
                                                     {createdAt ? formatDistanceToNow(createdAt, { addSuffix: true }) : ''}
                                                 </span>
                                             </div>
-                                            <p className="text-xs sm:text-sm text-muted-foreground leading-snug sm:leading-relaxed font-medium line-clamp-2">
+                                            <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed font-medium line-clamp-3">
                                                 {notification.message}
                                             </p>
                                             {createdAt && (
-                                                <p className="text-[9px] text-muted-foreground/50 uppercase font-black tracking-widest pt-1">
+                                                <p className="text-[9px] text-muted-foreground/50 uppercase font-black tracking-widest pt-1.5">
                                                     {format(createdAt, 'PPP')}
                                                 </p>
                                             )}
