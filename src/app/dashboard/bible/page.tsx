@@ -29,6 +29,7 @@ import {
   serverTimestamp,
   deleteDoc,
   setDoc,
+  writeBatch,
 } from 'firebase/firestore';
 import type { UserProfile, ReadingHistoryItem, BibleHighlight } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
@@ -55,6 +56,8 @@ import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Separator } from '@/components/ui/separator';
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError } from '@/firebase/errors';
 
 const bibleVersions = [
     { id: 'kjv', name: 'KJV' },
@@ -290,11 +293,66 @@ export default function BibleReaderPage() {
   }, [isInitialized, selectedBookName, selectedChapterNumber, selectedVersion]);
 
   const handleMarkAsRead = async () => {
-    if (!user || !chapterContent) return;
+    if (!user || !chapterContent || !firestore) return;
     setIsSubmitting(true);
-    const userRef = doc(firestore, 'users', user.uid);
+    
     try {
-        await updateDoc(userRef, { readingHistory: arrayUnion({ book: chapterContent.book, chapter: chapterContent.chapter, readAt: new Date() }) });
+        const batch = writeBatch(firestore);
+        const userRef = doc(firestore, 'users', user.uid);
+        
+        // 1. Update Reading History
+        const historyItem = { 
+            book: chapterContent.book, 
+            chapter: chapterContent.chapter, 
+            readAt: new Date() 
+        };
+        
+        // 2. Update Daily Discipline Status for the dashboard and partners
+        const now = new Date();
+        const dateStr = format(now, 'yyyy-MM-dd');
+        
+        let currentCompleted: string[] = [];
+        if (userProfile?.dailyDiscipline?.lastUpdated) {
+            const lastUpdated = safeToDate(userProfile.dailyDiscipline.lastUpdated);
+            if (lastUpdated && isSameDay(lastUpdated, now)) {
+                currentCompleted = userProfile.dailyDiscipline.completed || [];
+            }
+        }
+        
+        const newCompleted = currentCompleted.includes('read_bible') 
+            ? currentCompleted 
+            : [...currentCompleted, 'read_bible'];
+
+        const profileUpdateData = {
+            readingHistory: arrayUnion(historyItem),
+            dailyDiscipline: {
+                completed: newCompleted,
+                lastUpdated: serverTimestamp(),
+            }
+        };
+        
+        batch.update(userRef, profileUpdateData);
+        
+        // 3. Sync with the specific daily log document that partners listen to
+        const historyRef = doc(firestore, 'users', user.uid, 'disciplineHistory', dateStr);
+        batch.set(historyRef, {
+            completed: newCompleted,
+            date: serverTimestamp()
+        }, { merge: true });
+
+        await batch.commit().catch(async (serverError) => {
+            const permissionError = new FirestorePermissionError({
+                path: userRef.path,
+                operation: 'update',
+                requestResourceData: profileUpdateData,
+            }, user);
+            errorEmitter.emit('permission-error', permissionError);
+            throw serverError;
+        });
+
+        toast({ title: 'Study Logged & Progress Shared' });
+
+        // Proceed to next chapter
         const currentBookIndex = bibleData.findIndex(b => b.name === chapterContent.book);
         const currentBook = bibleData[currentBookIndex];
         if (chapterContent.chapter >= (currentBook?.chapters.length || 0)) {
@@ -303,9 +361,14 @@ export default function BibleReaderPage() {
                 setSelectedChapterNumber(1); 
             }
             else { toast({ title: 'Finished entire Bible!' }); router.back(); }
-        } else { setSelectedChapterNumber(chapterContent.chapter + 1); }
-    } catch (e) { console.error(e); }
-    finally { setIsSubmitting(false); }
+        } else { 
+            setSelectedChapterNumber(chapterContent.chapter + 1); 
+        }
+    } catch (e) { 
+        console.error(e); 
+    } finally { 
+        setIsSubmitting(false); 
+    }
   };
 
   const handleVerseClick = (verseNumber: number) => {
