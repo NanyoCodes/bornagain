@@ -111,7 +111,14 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
                                   <AvatarFallback className="text-[8px]">{fellowship.organizerName?.charAt(0)}</AvatarFallback>
                               </Avatar>
                               <span className="leading-tight">
-                                Organized by <span className="font-semibold text-primary">{fellowship.organizerName}</span>
+                                Organized by{" "}
+                                <Link 
+                                    href={isOrganizer ? '/dashboard/profile' : `/dashboard/profile/${fellowship.organizerId}`}
+                                    onClick={stopPropagation}
+                                    className="font-semibold text-primary hover:underline"
+                                >
+                                    {fellowship.organizerName}
+                                </Link>
                               </span>
                           </CardDescription>
                           <div className="flex gap-1.5 items-center flex-wrap">
