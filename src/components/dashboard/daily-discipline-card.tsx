@@ -7,7 +7,7 @@ import { doc, serverTimestamp, writeBatch } from 'firebase/firestore';
 import type { UserProfile } from '@/lib/types';
 import { isToday, format } from 'date-fns';
 import { Skeleton } from '../ui/skeleton';
-import { Zap, BookOpen, Loader2, Church, CheckCircle2, Edit, HeartHandshake, XCircle } from 'lucide-react';
+import { Zap, BookOpen, Loader2, Church, CheckCircle2, Edit, HeartHandshake } from 'lucide-react';
 import { PrayerDialog } from './prayer-dialog';
 import { AttendChurchDialog } from './attend-church-dialog';
 import { useRouter } from 'next/navigation';
@@ -60,11 +60,11 @@ function PartnerCompactStatus({ partner, date }: { partner: UserProfile['account
                         <Tooltip>
                             <TooltipTrigger asChild>
                                 <div className={cn(
-                                    "h-5 w-5 rounded-full flex items-center justify-center transition-colors",
-                                    completedOnDate.includes(d.id) ? "bg-primary/20 text-primary shadow-sm" : "bg-muted text-muted-foreground/30"
+                                    "h-5 w-5 rounded-full flex items-center justify-center transition-all duration-300",
+                                    completedOnDate.includes(d.id) ? "bg-primary text-primary-foreground shadow-sm scale-110" : "bg-muted text-muted-foreground/30"
                                 )}>
                                     {completedOnDate.includes(d.id) ? (
-                                        <CheckCircle2 className="h-3 w-3" />
+                                        <CheckCircle2 className="h-3 w-3 fill-current" />
                                     ) : (
                                         <d.Icon className="h-3 w-3 opacity-40" />
                                     )}
@@ -107,7 +107,6 @@ export function DailyDisciplineCard() {
       if (lastUpdatedDate && isToday(lastUpdatedDate)) {
         setCompletedToday(userProfile.dailyDiscipline.completed || []);
       } else {
-        // Reset if it's a new day
         setCompletedToday([]);
       }
     }
@@ -164,7 +163,7 @@ export function DailyDisciplineCard() {
          toast({
             variant: "destructive",
             title: "Update Failed",
-            description: "Your discipline could not be updated. Please check your connection and try again.",
+            description: "Your discipline could not be updated.",
         });
       });
     }
@@ -176,7 +175,7 @@ export function DailyDisciplineCard() {
          toast({
             variant: "destructive",
             title: "Update Failed",
-            description: "Your discipline could not be updated. Please check your connection and try again.",
+            description: "Your discipline could not be updated.",
         });
       });
     }
@@ -188,7 +187,7 @@ export function DailyDisciplineCard() {
          toast({
             variant: "destructive",
             title: "Update Failed",
-            description: "Your discipline could not be updated. Please check your connection and try again.",
+            description: "Your discipline could not be updated.",
         });
       });
     }
@@ -235,15 +234,9 @@ export function DailyDisciplineCard() {
   };
   
    useEffect(() => {
-    if (!isPrayerDialogOpen && togglingId === 'pray') {
-      setTogglingId(null);
-    }
-    if (!isNotesDialogOpen && togglingId === 'take_notes') {
-      setTogglingId(null);
-    }
-    if (!isAttendChurchDialogOpen && togglingId === 'attend_church') {
-        setTogglingId(null);
-    }
+    if (!isPrayerDialogOpen && togglingId === 'pray') setTogglingId(null);
+    if (!isNotesDialogOpen && togglingId === 'take_notes') setTogglingId(null);
+    if (!isAttendChurchDialogOpen && togglingId === 'attend_church') setTogglingId(null);
   }, [isPrayerDialogOpen, isNotesDialogOpen, isAttendChurchDialogOpen, togglingId]);
 
   const partners = userProfile?.accountabilityPartners || [];
