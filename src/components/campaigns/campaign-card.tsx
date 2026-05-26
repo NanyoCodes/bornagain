@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { format, parse, isSameDay, differenceInDays } from "date-fns";
-import { CalendarDays, MapPin, Users, Share2, Edit, MoreVertical, Loader2, MessagesSquare, UserCheck, PlayCircle, Newspaper, UserPlus, ChevronDown, MessageSquare, MessageCircle, Facebook, Twitter, Link as LinkIcon } from "lucide-react";
+import { CalendarDays, MapPin, Users, Share2, Edit, MoreVertical, Loader2, MessagesSquare, UserCheck, PlayCircle, Newspaper, UserPlus, ChevronDown, MessageSquare, MessageCircle, Facebook, Twitter, Link as LinkIcon, Sparkles } from "lucide-react";
 import type { Campaign, CampaignParticipant, UserProfile } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -44,7 +44,7 @@ import { safeToDate } from "@/lib/utils";
 import { JoinCampaignDialog } from "./join-campaign-dialog";
 import { ScrollArea } from "../ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 function ParticipantsDialog({ campaign, children }: { campaign: Campaign; children: React.ReactNode; }) {
   const firestore = useFirestore();
@@ -496,9 +496,29 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
                     </CardDescription>
                 )}
             </div>
-            <Badge variant={status === 'Ongoing' ? 'default' : status === 'Upcoming' ? 'secondary' : 'outline'}>
-                {status}
-            </Badge>
+            <div className="flex items-center gap-2 shrink-0">
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="h-8 w-8 text-primary/60 hover:text-primary hover:bg-primary/10 rounded-full" 
+                      onClick={(e) => { e.stopPropagation(); router.push('/progress'); }}
+                    >
+                      <Sparkles className="h-4 w-4" />
+                      <span className="sr-only">View Insights</span>
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Kingdom Insights</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              <Badge variant={status === 'Ongoing' ? 'default' : status === 'Upcoming' ? 'secondary' : 'outline'}>
+                  {status}
+              </Badge>
+            </div>
         </CardHeader>
         <CardContent className="p-6 pt-0 flex-grow space-y-4">
             
