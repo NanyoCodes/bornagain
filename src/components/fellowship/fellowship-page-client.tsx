@@ -269,38 +269,38 @@ export default function FellowshipPageClient() {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
-                {/* Responsive Grid: Sidebar items first on mobile to highlight actions */}
+                {/* Sidebar components responsive for mobile view */}
                 <div className="space-y-6 sm:space-y-8 flex flex-col order-first lg:order-last px-4 sm:px-0">
                     {(isMember || isOrganizer) && (
                         <Card className="rounded-[2rem] sm:rounded-[2.5rem] shadow-xl border-none bg-primary text-primary-foreground overflow-hidden">
-                            <CardHeader className="p-6 sm:p-8 pb-4">
+                            <CardHeader className="p-5 sm:p-8 pb-3 sm:pb-4">
                                 <CardTitle className="text-xs sm:text-sm font-black uppercase tracking-[0.2em] opacity-80 flex items-center gap-2">
                                     <MessagesSquare className="h-4 w-4 sm:h-5 w-5" /> Group Chat
                                 </CardTitle>
                             </CardHeader>
-                            <CardContent className="px-6 sm:px-8 pb-6 sm:pb-8 space-y-4">
+                            <CardContent className="px-5 sm:px-8 pb-6 sm:pb-8 space-y-4">
                                 {fellowship.hasGroupChat ? (
-                                    <Button onClick={() => router.push(`/dashboard/chats/${fellowshipId}`)} className="w-full h-12 bg-white text-primary hover:bg-white/90 font-black rounded-2xl shadow-lg transition-transform active:scale-95">
+                                    <Button onClick={() => router.push(`/dashboard/chats/${fellowshipId}`)} className="w-full h-11 sm:h-12 bg-white text-primary hover:bg-white/90 font-black rounded-2xl shadow-lg transition-transform active:scale-95 text-xs sm:text-sm">
                                         OPEN CONVERSATION
                                     </Button>
                                 ) : isOrganizer ? (
                                     <Button 
                                         onClick={handleStartGroupChat} 
                                         disabled={isChatLoading || !members || members.length < 2} 
-                                        className="w-full h-12 font-black rounded-2xl bg-white/20 text-white hover:bg-white/30 border-white/20 transition-transform active:scale-95"
+                                        className="w-full h-11 sm:h-12 font-black rounded-2xl bg-white/20 text-white hover:bg-white/30 border-white/20 transition-transform active:scale-95 text-xs sm:text-sm"
                                     >
                                         {isChatLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                                         INITIALIZE CHAT
                                     </Button>
                                 ) : (
-                                    <div className="p-4 bg-black/10 rounded-2xl border border-white/10 text-center">
-                                        <p className="text-xs font-medium italic opacity-80">
+                                    <div className="p-3 sm:p-4 bg-black/10 rounded-2xl border border-white/10 text-center">
+                                        <p className="text-[10px] sm:text-xs font-medium italic opacity-80 leading-relaxed">
                                             The organizer has not started the group chat yet.
                                         </p>
                                     </div>
                                 )}
                                 {isOrganizer && !fellowship.hasGroupChat && (!members || members.length < 2) && (
-                                    <p className="text-[9px] text-white/60 text-center font-bold uppercase tracking-widest leading-tight">
+                                    <p className="text-[8px] sm:text-[9px] text-white/60 text-center font-bold uppercase tracking-widest leading-tight">
                                         At least 2 members required
                                     </p>
                                 )}
@@ -309,29 +309,29 @@ export default function FellowshipPageClient() {
                     )}
 
                     <Card className="rounded-[2rem] sm:rounded-[2.5rem] shadow-sm border-none bg-background border border-muted-foreground/10 overflow-hidden">
-                        <CardHeader className="p-6 sm:p-8 pb-3">
+                        <CardHeader className="p-5 sm:p-8 pb-2 sm:pb-3">
                             <CardTitle className="text-[10px] sm:text-sm font-black uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2"><Calendar className="h-4 w-4 text-primary"/> Gathering Details</CardTitle>
                         </CardHeader>
-                        <CardContent className="px-6 sm:px-8 pb-6 sm:pb-8 space-y-5 pt-2">
+                        <CardContent className="px-5 sm:px-8 pb-6 sm:pb-8 space-y-4 sm:space-y-5 pt-1 sm:pt-2">
                             {fellowship.schedule && (
-                                <div className="p-4 rounded-2xl bg-muted/30 border border-dashed">
-                                    <p className="font-black text-[9px] uppercase tracking-[0.2em] text-muted-foreground mb-1.5">Schedule</p>
-                                    <p className="text-foreground font-bold text-sm leading-tight">{fellowship.schedule}</p>
+                                <div className="p-3 sm:p-4 rounded-2xl bg-muted/30 border border-dashed">
+                                    <p className="font-black text-[8px] sm:text-[9px] uppercase tracking-[0.2em] text-muted-foreground mb-1 sm:mb-1.5">Schedule</p>
+                                    <p className="text-foreground font-bold text-xs sm:text-sm leading-tight">{fellowship.schedule}</p>
                                 </div>
                             )}
                             {fellowship.location && (
-                                <div className="p-4 rounded-2xl bg-muted/30 border border-dashed">
-                                    <p className="font-black text-[9px] uppercase tracking-[0.2em] text-muted-foreground mb-1.5">Location Area</p>
-                                    <p className="text-foreground font-bold text-sm flex items-center gap-1.5 leading-tight break-words">
-                                        <MapPin className="h-3.5 w-3.5 text-primary shrink-0" /> {fellowship.location}
+                                <div className="p-3 sm:p-4 rounded-2xl bg-muted/30 border border-dashed">
+                                    <p className="font-black text-[8px] sm:text-[9px] uppercase tracking-[0.2em] text-muted-foreground mb-1 sm:mb-1.5">Location Area</p>
+                                    <p className="text-foreground font-bold text-xs sm:text-sm flex items-center gap-1.5 leading-tight break-words">
+                                        <MapPin className="h-3 sm:h-3.5 w-3 sm:w-3.5 text-primary shrink-0" /> {fellowship.location}
                                     </p>
                                 </div>
                             )}
                             
                             {(isMember || isOrganizer) && fellowship.streamUrl && (
-                                <Button asChild className="w-full h-12 font-black rounded-2xl shadow-md transition-transform active:scale-95">
+                                <Button asChild className="w-full h-11 sm:h-12 font-black rounded-2xl shadow-md transition-transform active:scale-95 text-xs sm:text-sm">
                                     <Link href={fellowship.streamUrl} target="_blank" rel="noopener noreferrer">
-                                        <PlayCircle className="mr-2 h-5 w-5" />
+                                        <PlayCircle className="mr-2 h-4 sm:h-5 w-4 sm:w-5" />
                                         GATHER ONLINE
                                     </Link>
                                 </Button>
@@ -340,20 +340,20 @@ export default function FellowshipPageClient() {
                     </Card>
 
                     <Card className="rounded-[2rem] sm:rounded-[2.5rem] shadow-sm border-none bg-background border border-muted-foreground/10">
-                        <CardHeader className="p-6 sm:p-8 pb-3">
+                        <CardHeader className="p-5 sm:p-8 pb-2 sm:pb-3">
                             <CardTitle className="text-[10px] sm:text-sm font-black uppercase tracking-[0.2em] text-muted-foreground">Lead Organizer</CardTitle>
                         </CardHeader>
-                        <CardContent className="px-6 sm:px-8 pb-6 sm:pb-8 pt-2">
-                            <Link href={isOrganizer ? '/dashboard/profile' : `/dashboard/profile/${fellowship.organizerId}`} className="flex items-center gap-4 group bg-muted/20 p-4 rounded-2xl border border-dashed transition-all hover:bg-muted/40 hover:border-primary/20 min-w-0">
-                                <Avatar className="h-10 w-10 sm:h-11 sm:w-11 border-2 border-primary/20 shadow-sm shrink-0">
-                                    <AvatarFallback className="font-black text-sm bg-primary/10 text-primary">{fellowship.organizerName?.charAt(0)}</AvatarFallback>
+                        <CardContent className="px-5 sm:px-8 pb-6 sm:pb-8 pt-1 sm:pt-2">
+                            <Link href={isOrganizer ? '/dashboard/profile' : `/dashboard/profile/${fellowship.organizerId}`} className="flex items-center gap-3 sm:gap-4 group bg-muted/20 p-3 sm:p-4 rounded-2xl border border-dashed transition-all hover:bg-muted/40 hover:border-primary/20 min-w-0">
+                                <Avatar className="h-9 w-9 sm:h-11 sm:w-11 border-2 border-primary/20 shadow-sm shrink-0">
+                                    <AvatarFallback className="font-black text-xs sm:text-sm bg-primary/10 text-primary">{fellowship.organizerName?.charAt(0)}</AvatarFallback>
                                 </Avatar>
                                 <div className="min-w-0 flex-1">
-                                    <span className="font-black text-sm sm:text-base group-hover:text-primary transition-colors truncate block leading-tight">
+                                    <span className="font-black text-xs sm:text-base group-hover:text-primary transition-colors truncate block leading-tight">
                                         {fellowship.organizerName}
                                     </span>
-                                    <div className="flex items-center gap-1.5 mt-0.5">
-                                        <Badge className="h-4 text-[7px] uppercase font-black tracking-widest px-1.5" variant={isOrganizer ? "default" : "secondary"}>{isOrganizer ? "YOU" : "LEADER"}</Badge>
+                                    <div className="flex items-center gap-1.5 mt-1 sm:mt-0.5">
+                                        <Badge className="h-3.5 sm:h-4 text-[6px] sm:text-[7px] uppercase font-black tracking-widest px-1 sm:px-1.5" variant={isOrganizer ? "default" : "secondary"}>{isOrganizer ? "YOU" : "LEADER"}</Badge>
                                     </div>
                                 </div>
                             </Link>
@@ -392,8 +392,8 @@ export default function FellowshipPageClient() {
                            {(isMember || isOrganizer) ? (
                                <Tabs defaultValue="believers" className="w-full">
                                     <TabsList className="flex w-full bg-muted/10 h-14 p-0 rounded-none border-b">
-                                        <TabsTrigger value="believers" className="flex-1 text-xs sm:text-sm font-bold h-full rounded-none data-[state=active]:bg-background data-[state=active]:shadow-none border-r last:border-r-0 truncate">Believers ({members?.length || 0})</TabsTrigger>
-                                        <TabsTrigger value="souls" className="flex-1 text-xs sm:text-sm font-bold h-full rounded-none data-[state=active]:bg-background data-[state=active]:shadow-none border-r last:border-r-0 truncate">Converts ({assignedSouls?.length || 0})</TabsTrigger>
+                                        <TabsTrigger value="believers" className="flex-1 text-xs sm:text-sm font-bold h-full rounded-none data-[state=active]:bg-background data-[state=active]:shadow-none border-r last:border-r-0 truncate px-2">Believers ({members?.length || 0})</TabsTrigger>
+                                        <TabsTrigger value="souls" className="flex-1 text-xs sm:text-sm font-bold h-full rounded-none data-[state=active]:bg-background data-[state=active]:shadow-none border-r last:border-r-0 truncate px-2">Converts ({assignedSouls?.length || 0})</TabsTrigger>
                                     </TabsList>
                                     <TabsContent value="believers" className="mt-0 p-4 sm:p-8">
                                         {loadingMembers ? (
