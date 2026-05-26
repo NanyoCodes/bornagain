@@ -81,6 +81,7 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted, userP
   const [category, setCategory] = useState<NoteCategory>('Personal');
   const [searchTerm, setSearchTerm] = useState('');
   const [mobileTab, setMobileTab] = useState('list');
+  const [isDirty, setIsDirty] = useState(false);
 
   const notesQuery = useMemo(() => {
     if (!user) return null;
@@ -129,6 +130,7 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted, userP
       setCategory('Personal');
       setSearchTerm('');
       setMobileTab('list');
+      setIsDirty(false);
     }
   }, [isOpen]);
 
@@ -140,6 +142,7 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted, userP
     setContent(note.content);
     setCategory(note.category || 'Personal');
     setIsCreatingNew(false);
+    setIsDirty(false);
     if (isMobile) {
       setMobileTab('editor');
     }
@@ -151,6 +154,7 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted, userP
     setTitle('');
     setContent('');
     setCategory('Personal');
+    setIsDirty(false);
     if (isMobile) {
       setMobileTab('editor');
     }
@@ -162,6 +166,7 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted, userP
     setTitle('');
     setContent('');
     setCategory('Personal');
+    setIsDirty(false);
     if (isMobile) {
       setMobileTab('list');
     }
@@ -201,6 +206,7 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted, userP
         toast({ title: 'Note Saved' });
         setIsCreatingNew(false);
       }
+      setIsDirty(false);
       if (!disciplineCompletedInSession) {
         onDisciplineCompleted();
         setDisciplineCompletedInSession(true);
@@ -319,13 +325,13 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted, userP
                 <Input
                     placeholder="E.g., Morning Revelation"
                     value={title}
-                    onChange={(e) => setTitle(e.target.value)}
+                    onChange={(e) => { setTitle(e.target.value); setIsDirty(true); }}
                     className="font-bold text-lg h-12 rounded-2xl bg-muted/20"
                 />
             </div>
             <div className="space-y-1.5">
                 <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Category</Label>
-                <Select value={category} onValueChange={(value) => setCategory(value as NoteCategory)}>
+                <Select value={category} onValueChange={(value) => { setCategory(value as NoteCategory); setIsDirty(true); }}>
                     <SelectTrigger className="h-12 rounded-2xl font-medium">
                         <SelectValue placeholder="Category" />
                     </SelectTrigger>
@@ -342,7 +348,7 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted, userP
             <Textarea
                 placeholder="What is the Spirit saying to you today?"
                 value={content}
-                onChange={(e) => setContent(e.target.value)}
+                onChange={(e) => { setContent(e.target.value); setIsDirty(true); }}
                 className="flex-grow min-h-0 text-base leading-relaxed p-6 rounded-[2rem] bg-muted/10 resize-none border-dashed overflow-y-auto"
             />
         </div>
@@ -371,7 +377,7 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted, userP
             </AlertDialog>
         )}
         </div>
-        <Button onClick={handleSaveNote} disabled={isSaving || !content.trim()} className="px-10 h-12 rounded-2xl font-black shadow-lg shadow-primary/20">
+        <Button onClick={handleSaveNote} disabled={isSaving || !content.trim() || !isDirty} className="px-10 h-12 rounded-2xl font-black shadow-lg shadow-primary/20">
           {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
           {selectedNote ? 'SAVE CHANGES' : 'SAVE REVELATION'}
         </Button>

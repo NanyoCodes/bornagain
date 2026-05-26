@@ -10,7 +10,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/dialog";
+} from "@/components/ui/alert-dialog";
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -230,7 +230,6 @@ export default function NotesPage() {
     setIsSaving(true);
     try {
       if (selectedNote) {
-        // Update existing note
         const noteRef = doc(firestore, 'users', user.uid, 'notes', selectedNote.id);
         const updatedData = {
           title: newTitle,
@@ -249,7 +248,6 @@ export default function NotesPage() {
         setIsDirty(false);
 
       } else {
-        // Create new note
         const noteData = {
           userId: user.uid,
           title: newTitle,
