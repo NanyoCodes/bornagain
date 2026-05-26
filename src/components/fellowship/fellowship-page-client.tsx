@@ -452,7 +452,7 @@ export default function FellowshipPageClient() {
                       <div className="p-8 border-b flex-shrink-0 bg-muted/10">
                         <SheetHeader className="text-left">
                             <SheetTitle className="text-2xl font-black font-headline">Journey Details</SheetTitle>
-                            <SheetDescription className="text-sm font-medium">Tracking the spiritual growth of this convert.</SheetDescription>
+                            <SheetDescription className="text-sm font-medium mt-1">Tracking the spiritual growth of this convert.</SheetDescription>
                         </SheetHeader>
                       </div>
                       <ScrollArea className="flex-grow min-h-0 px-8">

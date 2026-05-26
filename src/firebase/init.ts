@@ -1,7 +1,6 @@
-
 import { initializeApp, getApps, getApp, type FirebaseApp } from 'firebase/app';
 import { getAuth, type Auth } from 'firebase/auth';
-import { getFirestore, type Firestore } from 'firebase/firestore';
+import { getFirestore, initializeFirestore, type Firestore } from 'firebase/firestore';
 import { getStorage, type FirebaseStorage } from 'firebase/storage';
 import { firebaseConfig } from './config';
 
@@ -23,7 +22,13 @@ export function initializeFirebase(): FirebaseServices {
   
   const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
   const auth = getAuth(app);
-  const firestore = getFirestore(app);
+  
+  // Use initializeFirestore to enable experimentalForceLongPolling.
+  // This is a critical fix for "Could not reach backend" errors in proxied environments.
+  const firestore = initializeFirestore(app, {
+    experimentalForceLongPolling: true,
+  });
+  
   const storage = getStorage(app);
   
   firebaseServices = { app, auth, firestore, storage };

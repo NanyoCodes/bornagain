@@ -224,7 +224,7 @@ export default function NotificationsPage() {
                     
                     <footer className="p-8 text-center space-y-2 border-t mt-auto">
                         <p className="text-[9px] sm:text-[10px] text-muted-foreground/40 font-bold uppercase tracking-[0.2em] flex items-center justify-center gap-2">
-                          <Info className="h-3 w-3" /> Notifications are purged after 30 days of inactivity
+                          <CircleAlert className="h-3 w-3" /> Notifications are purged after 30 days of inactivity
                         </p>
                     </footer>
                 </div>

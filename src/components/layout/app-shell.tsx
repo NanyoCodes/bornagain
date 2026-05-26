@@ -388,7 +388,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   const isProfileIncomplete = user && userProfile && (!userProfile.firstName || !userProfile.lastName);
 
-  // Bottom Nav is hidden for all takeover pages (Chat, Bible, Notes, Notifications)
+  // Takeover pages hide the global bottom nav to manage their own viewports
   const showBottomNav = !isTakeoverPage;
 
   return (

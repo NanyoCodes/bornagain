@@ -143,15 +143,30 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{
             __html: `
               window.addEventListener('error', (e) => {
-                if (e.message && (
-                  e.message.includes('A listener indicated an asynchronous response by returning true') ||
-                  e.message.includes('Could not establish connection. Receiving end does not exist') ||
-                  e.message.includes('Hydration failed')
-                )) {
-                  if (e.message.includes('Hydration failed')) {
-                    // Refresh if hydration fails to unfreeze the page
-                    window.location.reload();
+                const fatalKeywords = [
+                  'A listener indicated an asynchronous response by returning true',
+                  'Could not establish connection',
+                  'Hydration failed',
+                  'Could not reach Cloud Firestore backend'
+                ];
+                if (e.message && fatalKeywords.some(key => e.message.includes(key))) {
+                  // Automatic refresh mechanism for persistent network or state errors
+                  const reloadCountKey = 'app_reload_count';
+                  const lastReloadKey = 'app_last_reload';
+                  const now = Date.now();
+                  const lastReload = parseInt(localStorage.getItem(lastReloadKey) || '0', 10);
+                  const reloadCount = parseInt(localStorage.getItem(reloadCountKey) || '0', 10);
+
+                  // Prevent infinite loop by allowing only 2 refreshes within a 30s window
+                  if (now - lastReload < 30000 && reloadCount >= 2) {
+                    console.error('Persistent fatal error detected. Stopping auto-refresh.');
+                    return;
                   }
+
+                  localStorage.setItem(lastReloadKey, now.toString());
+                  localStorage.setItem(reloadCountKey, (now - lastReload > 30000 ? 1 : reloadCount + 1).toString());
+                  
+                  window.location.reload();
                   e.stopImmediatePropagation();
                 }
               }, true);
