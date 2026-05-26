@@ -240,11 +240,6 @@ export default function NotesPage() {
         };
         await updateDoc(noteRef, updatedData);
         
-        const updatedDocSnap = await getDoc(noteRef);
-        if (updatedDocSnap.exists()) {
-            setSelectedNote({ id: updatedDocSnap.id, ...updatedDocSnap.data() } as Note);
-        }
-        
         toast({ title: 'Note Updated' });
         setIsDirty(false);
 
@@ -257,18 +252,13 @@ export default function NotesPage() {
           createdAt: serverTimestamp(),
           updatedAt: serverTimestamp(),
         };
-        const docRef = await addDoc(collection(firestore, 'users', user.uid, 'notes'), noteData);
-
-        const newDocSnap = await getDoc(docRef);
-        if (newDocSnap.exists()) {
-             const newNote: Note = { id: newDocSnap.id, ...newDocSnap.data() } as Note;
-             setSelectedNote(newNote);
-        }
+        await addDoc(collection(firestore, 'users', user.uid, 'notes'), noteData);
 
         toast({ title: 'Note Saved' });
         setIsCreatingNew(false);
         setIsDirty(false);
       }
+      handleBackToList();
     } catch (e) {
       if ((e as any)?.name !== 'FirestorePermissionError') {
         const permissionError = new FirestorePermissionError({ path: `users/${user.uid}/notes`, operation: 'write' }, user);

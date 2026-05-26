@@ -27,7 +27,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Loader2, Plus, Trash2, FileText, CornerUpLeft, Edit } from 'lucide-react';
+import { Loader2, Plus, Trash2, FileText, CornerUpLeft, Edit, Sparkles } from 'lucide-react';
 import { useUser, useFirestore, useCollection } from '@/firebase';
 import {
   collection,
@@ -219,6 +219,7 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted, userP
         onDisciplineCompleted();
         setDisciplineCompletedInSession(true);
       }
+      handleBackToList();
     } catch (e) {
       const permissionError = new FirestorePermissionError({ path: `users/${user.uid}/notes`, operation: 'write' }, user);
       errorEmitter.emit('permission-error', permissionError);
