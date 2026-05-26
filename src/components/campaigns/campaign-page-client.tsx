@@ -67,9 +67,19 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
 
     const testimoniesQuery = useMemo(() => {
         if (!firestore || !campaignId) return null;
-        return query(collection(firestore, 'testimonies'), where('campaignId', '==', campaignId), orderBy('createdAt', 'desc'));
+        // Optimization: Removed orderBy('createdAt', 'desc') to avoid composite index requirement
+        return query(collection(firestore, 'testimonies'), where('campaignId', '==', campaignId));
     }, [firestore, campaignId]);
-    const { data: testimonies, loading: testimoniesLoading } = useCollection<Testimony>(testimoniesQuery);
+    const { data: rawTestimonies, loading: testimoniesLoading } = useCollection<Testimony>(testimoniesQuery);
+
+    const testimonies = useMemo(() => {
+        if (!rawTestimonies) return [];
+        return [...rawTestimonies].sort((a, b) => {
+            const timeA = safeToDate(a.createdAt)?.getTime() ?? 0;
+            const timeB = safeToDate(b.createdAt)?.getTime() ?? 0;
+            return timeB - timeA;
+        });
+    }, [rawTestimonies]);
 
     const joinedCampaignQuery = useMemo(() => {
         if (!user?.uid || !firestore || !campaignId) return null;

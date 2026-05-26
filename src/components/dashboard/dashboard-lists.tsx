@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useMemo, useState, useEffect } from 'react';
@@ -12,6 +11,7 @@ import { ArrowRight, XCircle } from 'lucide-react';
 import { format, isSameDay } from 'date-fns';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { safeToDate } from '@/lib/utils';
 
 function FilterControls({
   searchTerm,
@@ -226,10 +226,20 @@ export function TestimoniesList({ userId }: { userId: string }) {
 
   const testimoniesQuery = useMemo(() => {
     if (userLoading || !user || user.uid !== userId || !firestore) return null;
-    return query(collection(firestore, 'testimonies'), where('authorId', '==', userId), orderBy('createdAt', 'desc'));
+    // Optimization: Removed server-side orderBy to avoid composite index requirement
+    return query(collection(firestore, 'testimonies'), where('authorId', '==', userId));
   }, [userId, firestore, user, userLoading]);
 
-  const { data: testimonies, loading: testimoniesLoading } = useCollection<Testimony>(testimoniesQuery);
+  const { data: rawTestimonies, loading: testimoniesLoading } = useCollection<Testimony>(testimoniesQuery);
+
+  const testimonies = useMemo(() => {
+    if (!rawTestimonies) return [];
+    return [...rawTestimonies].sort((a, b) => {
+      const timeA = safeToDate(a.createdAt)?.getTime() ?? 0;
+      const timeB = safeToDate(b.createdAt)?.getTime() ?? 0;
+      return timeB - timeA;
+    });
+  }, [rawTestimonies]);
 
   const filteredTestimonies = useMemo(() => {
     if (!testimonies) return [];
@@ -293,11 +303,19 @@ export function CampaignsCreatedList({ userId }: { userId: string }) {
 
   const campaignsQuery = useMemo(() => {
     if (userLoading || !user || user.uid !== userId || !firestore) return null;
-    return query(collection(firestore, 'campaigns'), where('organizerId', '==', userId), orderBy('createdAt', 'desc'));
+    // Optimization: Removed server-side orderBy to avoid composite index requirement
+    return query(collection(firestore, 'campaigns'), where('organizerId', '==', userId));
   }, [userId, firestore, user, userLoading]);
-  const { data: campaigns, loading: campaignsLoading } = useCollection<Campaign>(campaignsQuery);
+  const { data: rawCampaigns, loading: campaignsLoading } = useCollection<Campaign>(campaignsQuery);
   
-  const activeCampaigns = useMemo(() => campaigns?.filter(c => c.status !== 'deleted') ?? [], [campaigns]);
+  const activeCampaigns = useMemo(() => {
+    const active = rawCampaigns?.filter(c => c.status !== 'deleted') ?? [];
+    return [...active].sort((a, b) => {
+        const timeA = safeToDate(a.createdAt)?.getTime() ?? 0;
+        const timeB = safeToDate(b.createdAt)?.getTime() ?? 0;
+        return timeB - timeA;
+    });
+  }, [rawCampaigns]);
 
   const filteredCampaigns = useMemo(() => {
     return activeCampaigns.filter(campaign => {

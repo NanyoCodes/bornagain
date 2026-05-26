@@ -253,7 +253,14 @@ export default function ProfilePage() {
 
   const filteredTestimonies = useMemo(() => {
     if (!testimonies) return [];
-    return testimonies.filter(t => {
+    // Optimization: Sorting on client-side to avoid composite index requirements
+    const sorted = [...testimonies].sort((a, b) => {
+        const timeA = safeToDate(a.createdAt)?.getTime() ?? 0;
+        const timeB = safeToDate(b.createdAt)?.getTime() ?? 0;
+        return timeB - timeA;
+    });
+
+    return sorted.filter(t => {
       const search = testimonySearchTerm.toLowerCase();
       const matchSearch = !search || t.content.toLowerCase().includes(search) || t.category.toLowerCase().includes(search);
       const matchDate = !testimonyFilterDate || isSameDay(t.createdAt.toDate(), testimonyFilterDate);
@@ -263,7 +270,13 @@ export default function ProfilePage() {
 
   const filteredPrayerRequests = useMemo(() => {
     if (!prayerRequests) return [];
-    return prayerRequests.filter(p => {
+    const sorted = [...prayerRequests].sort((a, b) => {
+        const timeA = safeToDate(a.createdAt)?.getTime() ?? 0;
+        const timeB = safeToDate(b.createdAt)?.getTime() ?? 0;
+        return timeB - timeA;
+    });
+
+    return sorted.filter(p => {
       const search = prayerSearchTerm.toLowerCase();
       const matchSearch = !search || p.content.toLowerCase().includes(search) || p.category.toLowerCase().includes(search);
       const matchDate = !prayerFilterDate || isSameDay(p.createdAt.toDate(), prayerFilterDate);
@@ -273,7 +286,13 @@ export default function ProfilePage() {
 
   const filteredCreatedCampaigns = useMemo(() => {
     if (!createdCampaigns) return [];
-    return createdCampaigns.filter(c => {
+    const sorted = [...createdCampaigns].sort((a, b) => {
+        const timeA = safeToDate(a.createdAt)?.getTime() ?? 0;
+        const timeB = safeToDate(b.createdAt)?.getTime() ?? 0;
+        return timeB - timeA;
+    });
+
+    return sorted.filter(c => {
       const search = createdCampaignSearchTerm.toLowerCase();
       const matchSearch = !search || c.title.toLowerCase().includes(search) || c.location.toLowerCase().includes(search);
       const matchDate = !createdCampaignFilterDate || isSameDay(c.createdAt.toDate(), createdCampaignFilterDate);
@@ -283,7 +302,13 @@ export default function ProfilePage() {
 
   const filteredJoinedCampaigns = useMemo(() => {
     if (!activeJoinedCampaigns) return [];
-    return activeJoinedCampaigns.filter(c => {
+    const sorted = [...activeJoinedCampaigns].sort((a, b) => {
+        const timeA = safeToDate(a.createdAt)?.getTime() ?? 0;
+        const timeB = safeToDate(b.createdAt)?.getTime() ?? 0;
+        return timeB - timeA;
+    });
+
+    return sorted.filter(c => {
       const search = joinedCampaignSearchTerm.toLowerCase();
       return !search || c.title.toLowerCase().includes(search) || c.location.toLowerCase().includes(search);
     });
@@ -293,14 +318,26 @@ export default function ProfilePage() {
   const joinedAssociations = useMemo(() => activeJoinedGroups.filter(f => f.groupType === 'Association'), [activeJoinedGroups]);
 
   const filteredJoinedFellowships = useMemo(() => {
-    return joinedFellowships.filter(f => {
+    const sorted = [...joinedFellowships].sort((a, b) => {
+        const timeA = safeToDate(a.createdAt)?.getTime() ?? 0;
+        const timeB = safeToDate(b.createdAt)?.getTime() ?? 0;
+        return timeB - timeA;
+    });
+
+    return sorted.filter(f => {
         const search = joinedFellowshipSearchTerm.toLowerCase();
         return !search || f.name.toLowerCase().includes(search) || f.description.toLowerCase().includes(search);
     });
   }, [joinedFellowships, joinedFellowshipSearchTerm]);
 
   const filteredJoinedAssociations = useMemo(() => {
-    return joinedAssociations.filter(f => {
+    const sorted = [...joinedAssociations].sort((a, b) => {
+        const timeA = safeToDate(a.createdAt)?.getTime() ?? 0;
+        const timeB = safeToDate(b.createdAt)?.getTime() ?? 0;
+        return timeB - timeA;
+    });
+
+    return sorted.filter(f => {
         const search = joinedAssociationSearchTerm.toLowerCase();
         return !search || f.name.toLowerCase().includes(search) || f.description.toLowerCase().includes(search);
     });
@@ -308,7 +345,13 @@ export default function ProfilePage() {
 
   const filteredSoulsWon = useMemo(() => {
     if (!soulsWon) return [];
-    return soulsWon.filter(s => {
+    const sorted = [...soulsWon].sort((a, b) => {
+        const timeA = safeToDate(a.wonAt)?.getTime() ?? 0;
+        const timeB = safeToDate(b.wonAt)?.getTime() ?? 0;
+        return timeB - timeA;
+    });
+
+    return sorted.filter(s => {
       const search = soulSearchTerm.toLowerCase();
       const matchSearch = !search || `${s.firstName} ${s.lastName}`.toLowerCase().includes(search);
       const matchDate = !soulFilterDate || isSameDay(s.wonAt.toDate(), soulFilterDate);
@@ -491,7 +534,7 @@ export default function ProfilePage() {
                             searchTerm={prayerSearchTerm}
                             setSearchTerm={setPrayerSearchTerm}
                             filterDate={prayerFilterDate}
-                            setFilterDate={setPrayerFilterDate}
+                            setFilterDate={setFilterDate}
                             searchPlaceholder="Search prayer requests..."
                         />
                         <ScrollArea className="h-48 border rounded-lg bg-muted/5">
@@ -520,7 +563,7 @@ export default function ProfilePage() {
                             searchTerm={createdCampaignSearchTerm}
                             setSearchTerm={setCreatedCampaignSearchTerm}
                             filterDate={createdCampaignFilterDate}
-                            setFilterDate={setCreatedCampaignFilterDate}
+                            setFilterDate={setFilterDate}
                             searchPlaceholder="Search created campaigns..."
                         />
                         <ScrollArea className="h-48 border rounded-lg bg-muted/5">
