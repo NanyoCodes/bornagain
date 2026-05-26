@@ -501,9 +501,9 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button 
-                      variant="ghost" 
+                      variant="outline" 
                       size="icon" 
-                      className="h-10 w-10 text-primary/60 hover:text-primary hover:bg-primary/10 rounded-full" 
+                      className="h-10 w-10 border-primary/20 text-primary/60 hover:text-primary hover:bg-primary/10 rounded-full shadow-sm bg-background" 
                       onClick={(e) => { e.stopPropagation(); router.push(`/dashboard/campaigns/${campaign.id}`); }}
                     >
                       <BarChart3 className="h-5 w-5" />
