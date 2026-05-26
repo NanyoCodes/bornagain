@@ -125,7 +125,7 @@ export default function NotificationsPage() {
                   variant="ghost" 
                   size="sm" 
                   onClick={handleMarkAllAsRead} 
-                  className="text-[10px] font-black uppercase tracking-widest text-primary hover:text-primary hover:bg-primary/5 h-8 rounded-full px-4"
+                  className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-primary hover:text-primary hover:bg-primary/5 h-7 sm:h-8 rounded-full px-3 sm:px-4"
               >
                   Mark all as read
               </Button>
@@ -169,7 +169,7 @@ export default function NotificationsPage() {
                                     key={notification.id} 
                                     onClick={() => handleNotificationClick(notification)}
                                     className={cn(
-                                        "w-full text-left p-4 sm:p-6 transition-all hover:bg-muted/50 active:bg-muted/80 relative border-l-4 overflow-hidden",
+                                        "w-full text-left p-3.5 sm:p-6 transition-all hover:bg-muted/50 active:bg-muted/80 relative border-l-4 overflow-hidden",
                                         !notification.isRead ? "bg-primary/[0.03] border-l-primary" : "opacity-60 border-l-transparent"
                                     )}
                                 >
