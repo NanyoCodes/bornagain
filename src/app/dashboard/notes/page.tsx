@@ -32,7 +32,7 @@ import {
 import type { Note, NoteCategory } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
-import { cn } from '@/lib/utils';
+import { cn, safeToDate } from '@/lib/utils';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -310,7 +310,7 @@ export default function NotesPage() {
               <Plus className="mr-2 h-4 w-4" /> Add Note
           </Button>
       </div>
-      <ScrollArea className="flex-grow h-full min-w-0">
+      <ScrollArea className="flex-1 min-h-0 w-full">
         <div className="min-w-0 pr-2">
             {notesLoading ? (
             <div className="flex justify-center py-12"><Loader2 className="h-10 w-10 animate-spin text-primary" /></div>
@@ -324,7 +324,7 @@ export default function NotesPage() {
                         <AccordionItem value={cat} key={cat} className="border rounded-2xl overflow-hidden px-4 bg-muted/10 min-w-0">
                             <AccordionTrigger className="hover:no-underline text-xs font-black uppercase tracking-widest text-muted-foreground">{cat} ({categoryNotes.length})</AccordionTrigger>
                             <AccordionContent>
-                                <div className="space-y-3 pt-2 pb-2 min-w-0">
+                                <div className="space-y-3 pt-2 pb-2 min-w-0 max-h-80 overflow-y-auto px-1">
                                     {categoryNotes.map(note => {
                                         const cleanContent = (note.content || "No content")
                                           .replace(/<[^>]*>?/gm, '')
@@ -336,7 +336,7 @@ export default function NotesPage() {
                                                 key={note.id}
                                                 onClick={() => handleSelectNote(note)}
                                                 className={cn(
-                                                    "w-full text-left p-4 rounded-xl border transition-all duration-200 bg-background hover:shadow-md overflow-hidden min-w-0 flex flex-col max-w-full",
+                                                    "w-full text-left p-4 rounded-xl border transition-all duration-200 bg-background hover:shadow-md overflow-hidden min-w-0 flex flex-col max-w-full group",
                                                     selectedNote?.id === note.id ? "ring-2 ring-primary border-transparent" : "hover:bg-muted/50"
                                                 )}
                                             >
@@ -358,7 +358,7 @@ export default function NotesPage() {
             <div className="text-center py-20 border-2 border-dashed rounded-[2rem] bg-muted/5 mx-1 flex flex-col items-center">
                 <FileText className="mx-auto h-16 w-16 text-muted-foreground/20 mb-4" />
                 <h3 className="font-bold text-lg">{searchTerm ? 'No matches' : 'Empty Journal'}</h3>
-                <p className="text-sm text-muted-foreground mt-1 px-12">
+                <p className="text-sm text-muted-foreground mt-1 px-12 text-balance leading-relaxed">
                 {searchTerm ? 'Try a different search term.' : 'Click "Add Note" to start your spiritual record.'}
                 </p>
             </div>

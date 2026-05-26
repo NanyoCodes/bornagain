@@ -43,7 +43,7 @@ import type { Note, UserProfile, NoteCategory } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { cn } from '@/lib/utils';
+import { cn, safeToDate } from '@/lib/utils';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import {
@@ -258,7 +258,7 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted, userP
               <Plus className="mr-2 h-4 w-4" /> New Entry
           </Button>
       </div>
-      <ScrollArea className="flex-grow min-h-0">
+      <ScrollArea className="flex-1 min-h-0 w-full">
         <div className="min-w-0 pr-2">
             {notesLoading ? (
             <div className="flex justify-center py-12"><Loader2 className="h-10 w-10 animate-spin text-primary opacity-50" /></div>
@@ -272,7 +272,7 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted, userP
                         <AccordionItem value={cat} key={cat} className="border rounded-2xl overflow-hidden px-4 bg-muted/10 min-w-0">
                             <AccordionTrigger className="hover:no-underline text-xs font-black uppercase tracking-widest text-muted-foreground">{cat} ({categoryNotes.length})</AccordionTrigger>
                             <AccordionContent>
-                                <div className="space-y-3 pt-2 pb-2 min-w-0">
+                                <div className="space-y-3 pt-2 pb-2 min-w-0 max-h-80 overflow-y-auto px-1">
                                     {categoryNotes.map(note => {
                                         const cleanContent = (note.content || "No content")
                                           .replace(/<[^>]*>?/gm, '')
@@ -284,7 +284,7 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted, userP
                                                 key={note.id}
                                                 onClick={() => handleSelectNote(note)}
                                                 className={cn(
-                                                "w-full text-left p-4 rounded-xl border transition-all duration-200 bg-background hover:shadow-md overflow-hidden min-w-0 flex flex-col",
+                                                "w-full text-left p-4 rounded-xl border transition-all duration-200 bg-background hover:shadow-md overflow-hidden min-w-0 flex flex-col group",
                                                 selectedNote?.id === note.id ? "ring-2 ring-primary border-transparent" : "hover:bg-muted/50"
                                                 )}
                                             >
@@ -308,7 +308,7 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted, userP
                     <FileText className="h-8 w-8 text-muted-foreground opacity-20" />
                 </div>
                 <h3 className="font-bold text-lg">{searchTerm ? 'No matches' : 'Empty Spiritual Journal'}</h3>
-                <p className="text-sm text-muted-foreground mt-1 px-12">Start writing your revelations and prayers today.</p>
+                <p className="text-sm text-muted-foreground mt-1 px-12 leading-relaxed text-balance">Start writing your revelations and prayers today to track God's faithfulness.</p>
                 <Button onClick={handleNewNote} variant="outline" className="mt-6 h-10 rounded-full font-bold px-8">
                     <Plus className="mr-2 h-4 w-4" /> Start Journaling
                 </Button>
