@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -59,15 +60,34 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
     const userDocRef = useMemo(() => (user && firestore ? doc(firestore, 'users', user.uid) : null), [user, firestore]);
     const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userDocRef);
 
+    const joinedCampaignQuery = useMemo(() => {
+        if (!user?.uid || !firestore || !campaignId) return null;
+        return doc(firestore, 'users', user.uid, 'joinedCampaigns', campaignId);
+    }, [user?.uid, firestore, campaignId]);
+    const { data: joinedInfo } = useDoc(joinedCampaignQuery);
+
+    const isOwner = useMemo(() => user?.uid === campaign?.organizerId, [user, campaign]);
+    const isJoined = !!joinedInfo || isOwner;
+
     const participantsQuery = useMemo(() => {
-        if (!firestore || !campaignId) return null;
-        return query(collection(firestore, 'campaigns', campaignId, 'participants'), orderBy('joinedAt', 'desc'));
-    }, [firestore, campaignId]);
-    const { data: participants, loading: participantsLoading } = useCollection<CampaignParticipant>(participantsQuery);
+        if (!firestore || !campaignId || !isJoined) return null;
+        // Optimization: Removed orderBy to avoid composite index requirement
+        return query(collection(firestore, 'campaigns', campaignId, 'participants'));
+    }, [firestore, campaignId, isJoined]);
+    const { data: rawParticipants, loading: participantsLoading } = useCollection<CampaignParticipant>(participantsQuery);
+
+    const participants = useMemo(() => {
+        if (!rawParticipants) return [];
+        return [...rawParticipants].sort((a, b) => {
+            const timeA = safeToDate(a.joinedAt)?.getTime() ?? 0;
+            const timeB = safeToDate(b.joinedAt)?.getTime() ?? 0;
+            return timeB - timeA;
+        });
+    }, [rawParticipants]);
 
     const testimoniesQuery = useMemo(() => {
         if (!firestore || !campaignId) return null;
-        // Optimization: Removed orderBy('createdAt', 'desc') to avoid composite index requirement
+        // Optimization: Removed server-side orderBy to avoid composite index requirement
         return query(collection(firestore, 'testimonies'), where('campaignId', '==', campaignId));
     }, [firestore, campaignId]);
     const { data: rawTestimonies, loading: testimoniesLoading } = useCollection<Testimony>(testimoniesQuery);
@@ -81,15 +101,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
         });
     }, [rawTestimonies]);
 
-    const joinedCampaignQuery = useMemo(() => {
-        if (!user?.uid || !firestore || !campaignId) return null;
-        return doc(firestore, 'users', user.uid, 'joinedCampaigns', campaignId);
-    }, [user?.uid, firestore, campaignId]);
-    const { data: joinedInfo } = useDoc(joinedCampaignQuery);
-
     const loading = campaignLoading || profileLoading || participantsLoading || testimoniesLoading;
-    const isOwner = useMemo(() => user?.uid === campaign?.organizerId, [user, campaign]);
-    const isJoined = !!joinedInfo || isOwner;
 
     const dateString = useMemo(() => {
         const start = safeToDate(campaign?.startDate);

@@ -128,8 +128,8 @@ service cloud.firestore {
       allow update: if request.auth != null && ( (request.auth.uid == resource.data.organizerId) || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['soulsLogged'])) || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participants'])) );
 
       match /participants/{userId} {
-        allow read, write: if isOwner(userId);
-        allow list: if request.auth != null && request.auth.uid == get(/databases/$(database)/documents/campaigns/$(campaignId)).data.organizerId;
+        allow read: if request.auth != null;
+        allow write: if isOwner(userId);
       }
     }
     
