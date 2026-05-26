@@ -298,15 +298,15 @@ export default function NotesPage() {
   };
   
   const NoteList = (
-    <div className="space-y-2 h-full flex flex-col">
+    <div className="space-y-2 h-full flex flex-col min-w-0">
        <div className="flex flex-col sm:flex-row gap-2 mb-4 shrink-0">
           <Input
               placeholder="Search by title or content..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="flex-grow"
+              className="flex-grow h-11"
           />
-          <Button onClick={handleNewNote} className="w-full sm:w-auto">
+          <Button onClick={handleNewNote} className="w-full sm:w-auto h-11">
               <Plus className="mr-2 h-4 w-4" /> Add Note
           </Button>
       </div>
@@ -338,18 +338,18 @@ export default function NotesPage() {
                                               role="button"
                                               tabIndex={0}
                                               className={cn(
-                                                  "cursor-pointer hover:bg-muted/50 transition-colors",
+                                                  "cursor-pointer hover:bg-muted/50 transition-colors overflow-hidden",
                                                   selectedNote?.id === note.id && "ring-2 ring-primary bg-muted"
                                               )}
                                           >
                                               <CardHeader className="p-4 pb-2">
-                                                  <CardTitle className="text-base truncate">{note.title}</CardTitle>
+                                                  <CardTitle className="text-base truncate break-words">{note.title}</CardTitle>
                                                   <CardDescription className="text-xs">
                                                       {note.updatedAt?.toDate ? format(note.updatedAt.toDate(), 'PPP') : 'Just now'}
                                                   </CardDescription>
                                               </CardHeader>
                                               <CardContent className="p-4 pt-0">
-                                                  <p className="text-sm text-muted-foreground line-clamp-2">{truncatedContent}</p>
+                                                  <p className="text-sm text-muted-foreground line-clamp-2 break-words">{truncatedContent}</p>
                                               </CardContent>
                                           </Card>
                                       );
@@ -374,7 +374,7 @@ export default function NotesPage() {
   );
   
   const NoteEditor = (
-    <div className="flex flex-col h-full overflow-hidden" key={selectedNote?.id || (isCreatingNew ? 'new-note' : 'empty-editor')}>
+    <div className="flex flex-col h-full overflow-hidden min-w-0" key={selectedNote?.id || (isCreatingNew ? 'new-note' : 'empty-editor')}>
       <div className="space-y-4 flex-grow flex flex-col min-h-0">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 shrink-0">
             <Input
@@ -484,7 +484,7 @@ export default function NotesPage() {
                   } else {
                       setActiveTab(newTab);
                   }
-                }} className="h-full flex flex-col">
+                }} className="h-full flex flex-col min-w-0">
                     <TabsList className="grid w-full grid-cols-2 shrink-0">
                         <TabsTrigger value="list">Notes ({notes?.length || 0})</TabsTrigger>
                         <TabsTrigger value="editor">{editorVisible && !isCreatingNew ? 'Edit Note' : 'New Note'}</TabsTrigger>

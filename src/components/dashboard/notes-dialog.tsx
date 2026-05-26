@@ -233,7 +233,7 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted, userP
   };
   
   const NoteList = (
-    <div className="space-y-6 h-full flex flex-col">
+    <div className="space-y-6 h-full flex flex-col min-w-0">
        <div className="flex flex-col sm:flex-row gap-3 shrink-0">
           <Input
               placeholder="Search your revelations..."
@@ -259,22 +259,25 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted, userP
                           <AccordionTrigger className="hover:no-underline text-xs font-black uppercase tracking-widest text-muted-foreground">{cat} ({categoryNotes.length})</AccordionTrigger>
                           <AccordionContent>
                              <div className="space-y-3 pt-2 pb-2">
-                                {categoryNotes.map(note => (
-                                    <button
-                                        key={note.id}
-                                        onClick={() => handleSelectNote(note)}
-                                        className={cn(
-                                        "w-full text-left p-4 rounded-xl border transition-all duration-200 bg-background hover:shadow-md",
-                                        selectedNote?.id === note.id ? "ring-2 ring-primary border-transparent" : "hover:bg-muted/50"
-                                        )}
-                                    >
-                                        <p className="font-bold text-sm sm:text-base truncate">{note.title}</p>
-                                        <p className="text-sm text-muted-foreground line-clamp-2 mt-1 leading-relaxed">{note.content || 'No content'}</p>
-                                        <div className="flex justify-between items-center mt-3 text-[10px] font-bold uppercase tracking-tighter text-muted-foreground/60">
-                                          <span>{note.updatedAt?.toDate ? format(note.updatedAt.toDate(), 'PPP') : 'Just now'}</span>
-                                        </div>
-                                    </button>
-                                ))}
+                                {categoryNotes.map(note => {
+                                    const cleanContent = (note.content || "No content").replace(/<[^>]*>?/gm, '').replace(/\s+/g, ' ').trim();
+                                    return (
+                                        <button
+                                            key={note.id}
+                                            onClick={() => handleSelectNote(note)}
+                                            className={cn(
+                                            "w-full text-left p-4 rounded-xl border transition-all duration-200 bg-background hover:shadow-md overflow-hidden",
+                                            selectedNote?.id === note.id ? "ring-2 ring-primary border-transparent" : "hover:bg-muted/50"
+                                            )}
+                                        >
+                                            <p className="font-bold text-sm sm:text-base truncate break-words">{note.title}</p>
+                                            <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2 mt-1 leading-relaxed break-words">{cleanContent}</p>
+                                            <div className="flex justify-between items-center mt-3 text-[10px] font-bold uppercase tracking-tighter text-muted-foreground/60">
+                                              <span>{note.updatedAt?.toDate ? format(note.updatedAt.toDate(), 'PPP') : 'Just now'}</span>
+                                            </div>
+                                        </button>
+                                    );
+                                })}
                              </div>
                           </AccordionContent>
                       </AccordionItem>
@@ -298,7 +301,7 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted, userP
   );
   
   const NoteEditor = (
-    <div className="flex flex-col h-full overflow-hidden">
+    <div className="flex flex-col h-full overflow-hidden min-w-0">
       {isMobile && (
         <Button onClick={handleBackToList} variant="ghost" size="sm" className="mb-4 self-start pl-0 text-primary font-bold uppercase tracking-widest text-[10px]">
             <CornerUpLeft className="mr-2 h-3.5 w-3.5" /> Back to Journal
@@ -372,7 +375,7 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted, userP
   );
 
   const innerContent = !mounted ? null : isMobile ? (
-    <Tabs value={mobileTab} onValueChange={setMobileTab} className="flex-grow flex flex-col min-h-0">
+    <Tabs value={mobileTab} onValueChange={setMobileTab} className="flex-grow flex flex-col min-h-0 min-w-0">
         <TabsList className="grid w-full grid-cols-2 shrink-0 h-11 p-1 bg-muted/30 rounded-2xl mb-4">
             <TabsTrigger value="list" className="rounded-xl font-bold">Past Notes</TabsTrigger>
             <TabsTrigger value="editor" disabled={!editorVisible} className="rounded-xl font-bold">
