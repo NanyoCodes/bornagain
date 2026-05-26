@@ -280,14 +280,14 @@ export default function FellowshipPageClient() {
                             </CardHeader>
                             <CardContent className="px-5 sm:px-8 pb-6 sm:pb-8 space-y-4">
                                 {fellowship.hasGroupChat ? (
-                                    <Button onClick={() => router.push(`/dashboard/chats/${fellowshipId}`)} className="w-full h-11 sm:h-12 bg-white text-primary hover:bg-white/90 font-black rounded-2xl shadow-lg transition-transform active:scale-95 text-xs sm:text-sm">
+                                    <Button onClick={() => router.push(`/dashboard/chats/${fellowshipId}`)} className="w-full h-12 sm:h-14 bg-white text-primary hover:bg-white/90 font-black rounded-2xl shadow-lg transition-transform active:scale-95 text-sm sm:text-base">
                                         OPEN CONVERSATION
                                     </Button>
                                 ) : isOrganizer ? (
                                     <Button 
                                         onClick={handleStartGroupChat} 
                                         disabled={isChatLoading || !members || members.length < 2} 
-                                        className="w-full h-11 sm:h-12 font-black rounded-2xl bg-white/20 text-white hover:bg-white/30 border-white/20 transition-transform active:scale-95 text-xs sm:text-sm"
+                                        className="w-full h-12 sm:h-14 font-black rounded-2xl bg-white/20 text-white hover:bg-white/30 border-white/20 transition-transform active:scale-95 text-sm sm:text-base"
                                     >
                                         {isChatLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                                         INITIALIZE CHAT
@@ -329,7 +329,7 @@ export default function FellowshipPageClient() {
                             )}
                             
                             {(isMember || isOrganizer) && fellowship.streamUrl && (
-                                <Button asChild className="w-full h-11 sm:h-12 font-black rounded-2xl shadow-md transition-transform active:scale-95 text-xs sm:text-sm">
+                                <Button asChild className="w-full h-12 sm:h-14 font-black rounded-2xl shadow-md transition-transform active:scale-95 text-sm sm:text-base">
                                     <Link href={fellowship.streamUrl} target="_blank" rel="noopener noreferrer">
                                         <PlayCircle className="mr-2 h-4 sm:h-5 w-4 sm:w-5" />
                                         GATHER ONLINE
