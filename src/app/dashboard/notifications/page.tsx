@@ -173,11 +173,11 @@ export default function NotificationsPage() {
                                     key={notification.id} 
                                     onClick={() => handleNotificationClick(notification)}
                                     className={cn(
-                                        "w-full text-left p-4 sm:p-6 transition-all hover:bg-muted/50 active:bg-muted/80 relative border-l-4 overflow-hidden",
+                                        "w-full text-left p-3.5 sm:p-6 transition-all hover:bg-muted/50 active:bg-muted/80 relative border-l-4 overflow-hidden",
                                         !notification.isRead ? "bg-primary/[0.03] border-l-primary" : "opacity-60 border-l-transparent"
                                     )}
                                 >
-                                    <div className="flex items-start gap-3 sm:gap-5">
+                                    <div className="flex items-start gap-2.5 sm:gap-5">
                                         <div className="mt-0.5 shrink-0 p-2 sm:p-2.5 rounded-xl bg-background border shadow-sm">
                                             {getNotificationIcon(notification.type)}
                                         </div>
