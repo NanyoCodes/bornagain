@@ -244,7 +244,7 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted, userP
               <Plus className="mr-2 h-4 w-4" /> New Entry
           </Button>
       </div>
-      <ScrollArea className="flex-grow min-w-0">
+      <ScrollArea className="flex-grow min-h-0">
         <div className="min-w-0 pr-2">
             {notesLoading ? (
             <div className="flex justify-center py-12"><Loader2 className="h-10 w-10 animate-spin text-primary opacity-50" /></div>
@@ -260,7 +260,11 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted, userP
                             <AccordionContent>
                                 <div className="space-y-3 pt-2 pb-2 min-w-0">
                                     {categoryNotes.map(note => {
-                                        const cleanContent = (note.content || "No content").replace(/<[^>]*>?/gm, '').replace(/\s+/g, ' ').trim();
+                                        const cleanContent = (note.content || "No content")
+                                          .replace(/<[^>]*>?/gm, '')
+                                          .replace(/&nbsp;/g, ' ')
+                                          .replace(/\s+/g, ' ')
+                                          .trim();
                                         return (
                                             <button
                                                 key={note.id}
@@ -339,7 +343,7 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted, userP
                 placeholder="What is the Spirit saying to you today?"
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
-                className="flex-grow min-h-0 text-base leading-relaxed p-6 rounded-[2rem] bg-muted/10 resize-none border-dashed"
+                className="flex-grow min-h-0 text-base leading-relaxed p-6 rounded-[2rem] bg-muted/10 resize-none border-dashed overflow-y-auto"
             />
         </div>
       </div>

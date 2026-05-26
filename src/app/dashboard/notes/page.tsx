@@ -10,7 +10,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+} from "@/components/ui/dialog";
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -311,7 +311,7 @@ export default function NotesPage() {
               <Plus className="mr-2 h-4 w-4" /> Add Note
           </Button>
       </div>
-      <ScrollArea className="flex-grow min-w-0">
+      <ScrollArea className="flex-grow h-full min-w-0">
         <div className="min-w-0 pr-2">
             {notesLoading ? (
             <div className="flex justify-center py-12"><Loader2 className="h-10 w-10 animate-spin text-primary" /></div>
@@ -327,13 +327,17 @@ export default function NotesPage() {
                             <AccordionContent>
                                 <div className="space-y-3 pt-2 pb-2 min-w-0">
                                     {categoryNotes.map(note => {
-                                        const cleanContent = (note.content || "No content").replace(/<[^>]*>?/gm, '').replace(/\s+/g, ' ').trim();
+                                        const cleanContent = (note.content || "No content")
+                                          .replace(/<[^>]*>?/gm, '')
+                                          .replace(/&nbsp;/g, ' ')
+                                          .replace(/\s+/g, ' ')
+                                          .trim();
                                         return (
                                             <button
                                                 key={note.id}
                                                 onClick={() => handleSelectNote(note)}
                                                 className={cn(
-                                                    "w-full text-left p-4 rounded-xl border transition-all duration-200 bg-background hover:shadow-md overflow-hidden min-w-0 flex flex-col",
+                                                    "w-full text-left p-4 rounded-xl border transition-all duration-200 bg-background hover:shadow-md overflow-hidden min-w-0 flex flex-col max-w-full",
                                                     selectedNote?.id === note.id ? "ring-2 ring-primary border-transparent" : "hover:bg-muted/50"
                                                 )}
                                             >
@@ -413,7 +417,7 @@ export default function NotesPage() {
                     setContent(e.target.value);
                     setIsDirty(true);
                 }}
-                className="flex-grow min-h-0 text-base leading-relaxed p-6 rounded-[2rem] bg-muted/10 resize-none border-dashed"
+                className="flex-grow min-h-0 text-base leading-relaxed p-6 rounded-[2rem] bg-muted/10 resize-none border-dashed overflow-y-auto"
             />
         </div>
       </div>
