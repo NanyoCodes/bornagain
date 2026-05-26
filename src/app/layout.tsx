@@ -145,8 +145,13 @@ export default function RootLayout({
               window.addEventListener('error', (e) => {
                 if (e.message && (
                   e.message.includes('A listener indicated an asynchronous response by returning true') ||
-                  e.message.includes('Could not establish connection. Receiving end does not exist')
+                  e.message.includes('Could not establish connection. Receiving end does not exist') ||
+                  e.message.includes('Hydration failed')
                 )) {
+                  if (e.message.includes('Hydration failed')) {
+                    // Refresh if hydration fails to unfreeze the page
+                    window.location.reload();
+                  }
                   e.stopImmediatePropagation();
                 }
               }, true);

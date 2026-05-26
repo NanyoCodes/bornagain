@@ -44,16 +44,13 @@ function ChatListItem({ chat, currentUserId, isUnread }: { chat: Chat, currentUs
                         {isUnread && <div className="absolute -top-0.5 -right-0.5 h-3 w-3 rounded-full bg-primary border-2 border-background shadow-sm animate-pulse" />}
                     </div>
                     <div className="flex-1 min-w-0">
-                        <div className="flex justify-between items-baseline gap-2 mb-0.5">
+                        <div className="flex justify-start items-baseline gap-2 mb-0.5">
                             <h3 className={cn(
                                 "font-bold truncate text-sm sm:text-base leading-none", 
                                 isUnread ? "text-primary" : "text-foreground/80"
                             )}>
                                 {chat.campaignTitle}
                             </h3>
-                            <span className="text-[9px] sm:text-[10px] text-muted-foreground whitespace-nowrap font-medium uppercase tracking-tighter">
-                                {dateDisplay}
-                            </span>
                         </div>
                         <div className="flex items-center gap-2 mb-1">
                             <ChatParticipantsDialog chat={chat}>
@@ -67,6 +64,9 @@ function ChatListItem({ chat, currentUserId, isUnread }: { chat: Chat, currentUs
                                 "text-[9px] sm:text-[10px] font-black uppercase tracking-[0.1em]",
                                 isUnread ? "text-primary" : "text-muted-foreground"
                             )}>Group</span>
+                        </div>
+                        <div className="text-[9px] sm:text-[10px] text-muted-foreground whitespace-nowrap font-medium uppercase tracking-tighter mb-1">
+                            {dateDisplay}
                         </div>
                         <p className={cn(
                             "text-xs sm:text-sm truncate leading-relaxed", 
@@ -116,16 +116,13 @@ function ChatListItem({ chat, currentUserId, isUnread }: { chat: Chat, currentUs
                     )}
                 </Dialog>
                 <div className="flex-1 min-w-0">
-                    <div className="flex justify-between items-baseline gap-2 mb-0.5">
+                    <div className="flex justify-start items-baseline gap-2 mb-0.5">
                         <h3 className={cn(
                             "font-bold truncate text-sm sm:text-base leading-none", 
                             isUnread ? "text-primary" : "text-foreground/80"
                         )}>
                             {otherParticipantInfo.firstName} {otherParticipantInfo.lastName}
                         </h3>
-                        <span className="text-[9px] sm:text-[10px] text-muted-foreground whitespace-nowrap font-medium uppercase tracking-tighter">
-                            {dateDisplay}
-                        </span>
                     </div>
                     <div className="text-[9px] sm:text-[10px] text-muted-foreground truncate font-medium flex items-center gap-1.5 mb-1 uppercase tracking-tighter">
                        {chat.campaignTitle ? (
@@ -136,6 +133,9 @@ function ChatListItem({ chat, currentUserId, isUnread }: { chat: Chat, currentUs
                         ) : (
                           <span className="font-black opacity-60">Accountability Partner</span>
                         )}
+                    </div>
+                    <div className="text-[9px] sm:text-[10px] text-muted-foreground whitespace-nowrap font-medium uppercase tracking-tighter mb-1">
+                        {dateDisplay}
                     </div>
                     <p className={cn(
                         "text-xs sm:text-sm truncate leading-relaxed", 
