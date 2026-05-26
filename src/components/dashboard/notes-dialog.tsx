@@ -48,6 +48,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
+  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion';
@@ -430,20 +431,24 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted, userP
     return (
       <Sheet open={isOpen} onOpenChange={onOpenChange}>
         <SheetContent side="bottom" className="p-0 flex flex-col h-[95dvh] rounded-t-[2.5rem]">
-          <div className="p-8 border-b flex-shrink-0 bg-muted/10">
-            <SheetHeader className="text-left">
-                <SheetTitle className="text-2xl font-black font-headline">Journal</SheetTitle>
-                <SheetDescription className="text-sm font-medium mt-1">Capture your reflections and revelations.</SheetDescription>
-            </SheetHeader>
-          </div>
-          <div className="p-8 flex-grow min-h-0 overflow-hidden">
-            {innerContent}
-          </div>
-          <div className="p-8 border-t flex-shrink-0 bg-background/80 backdrop-blur-sm">
-              <Button variant="outline" onClick={() => onOpenChange(false)} className="w-full h-12 rounded-2xl font-bold">
-                Close Journal
-              </Button>
-          </div>
+          {soul && (
+            <>
+              <div className="p-8 border-b flex-shrink-0 bg-muted/10">
+                <SheetHeader className="text-left">
+                    <SheetTitle className="text-2xl font-black font-headline">Journal</SheetTitle>
+                    <SheetDescription className="text-sm font-medium mt-1">Capture your reflections and revelations.</SheetDescription>
+                </SheetHeader>
+              </div>
+              <div className="p-8 flex-grow min-h-0 overflow-hidden">
+                {innerContent}
+              </div>
+              <div className="p-8 border-t flex-shrink-0 bg-background/80 backdrop-blur-sm">
+                  <Button variant="outline" onClick={() => onOpenChange(false)} className="w-full h-12 rounded-2xl font-bold">
+                    Close Journal
+                  </Button>
+              </div>
+            </>
+          )}
         </SheetContent>
       </Sheet>
     );
