@@ -137,7 +137,9 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
           <div className="space-y-1.5">
             <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-2">Country</label>
             <Select value={country || 'all'} onValueChange={(val) => { setCountry(val === 'all' ? '' : val); setState(''); }}>
-              <SelectTrigger className="h-11 text-sm rounded-2xl bg-muted/20 border-none font-medium"><SelectValue placeholder="Select Country" /></SelectTrigger>
+              <SelectTrigger className="h-11 text-sm rounded-2xl bg-muted/20 border-none font-medium transition-colors hover:bg-muted/30">
+                <SelectValue placeholder="Select Country" />
+              </SelectTrigger>
               <SelectContent className="rounded-2xl max-h-[300px]">
                   <SelectItem value="all">All Countries</SelectItem>
                   {countries.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
@@ -147,7 +149,9 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
           <div className="space-y-1.5">
             <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-2">State</label>
             <Select value={state || 'all'} onValueChange={(val) => setState(val === 'all' ? '' : val)} disabled={!country}>
-              <SelectTrigger className="h-11 text-sm rounded-2xl bg-muted/20 border-none font-medium"><SelectValue placeholder="Select State" /></SelectTrigger>
+              <SelectTrigger className="h-11 text-sm rounded-2xl bg-muted/20 border-none font-medium transition-colors hover:bg-muted/30">
+                <SelectValue placeholder="Select State" />
+              </SelectTrigger>
               <SelectContent className="rounded-2xl max-h-[300px]">
                   <SelectItem value="all">All States</SelectItem>
                   {states.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
@@ -157,8 +161,8 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
         </div>
       </div>
 
-      <ScrollArea className={cn("border rounded-[2rem] bg-muted/5 flex-grow", isMobile ? "min-h-0" : "h-72")}>
-          <div className="p-3 space-y-3">
+      <ScrollArea className={cn("border rounded-[1.5rem] sm:rounded-[2.5rem] bg-muted/5 flex-grow", isMobile ? "min-h-0" : "h-72")}>
+          <div className="p-3 sm:p-4 space-y-3">
               {filteredAndSortedFellowships.length > 0 ? (
                   filteredAndSortedFellowships.map(f => {
                       const groupType = f.groupType || 'Fellowship';
@@ -167,16 +171,19 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
                       const isDisabled = !isCurrentlyAssigned && typeAlreadyHasAssignment;
 
                       return (
-                      <Card key={f.id} className={cn("transition-all duration-300 shadow-none border rounded-2xl", isCurrentlyAssigned ? "bg-primary/5 border-primary/30" : "bg-card hover:shadow-md")}>
+                      <Card key={f.id} className={cn(
+                        "transition-all duration-300 shadow-none border-2 rounded-[1.25rem] sm:rounded-2xl overflow-hidden", 
+                        isCurrentlyAssigned ? "bg-primary/5 border-primary/40 ring-1 ring-primary/20" : "bg-card border-transparent hover:border-primary/10 hover:shadow-md"
+                      )}>
                           <CardContent className="p-4 flex items-center justify-between gap-4">
                               <div className="min-w-0 flex-1">
                                   <div className="flex items-center gap-2 mb-1 flex-wrap">
-                                    <p className="font-black text-sm truncate">{f.name}</p>
-                                    <Badge variant="outline" className={cn("text-[9px] px-1.5 h-4 uppercase font-bold tracking-widest bg-background/50", groupType === 'Association' ? "border-blue-500/20 text-blue-600" : "border-primary/20 text-primary")}>
+                                    <p className="font-black text-sm truncate leading-tight">{f.name}</p>
+                                    <Badge variant="outline" className={cn("text-[8px] sm:text-[9px] px-1.5 h-4 uppercase font-bold tracking-widest bg-background/50 leading-none", groupType === 'Association' ? "border-blue-500/20 text-blue-600" : "border-primary/20 text-primary")}>
                                         {groupType}
                                     </Badge>
                                   </div>
-                                  <p className="text-[11px] text-muted-foreground truncate flex items-center gap-1.5 font-medium">
+                                  <p className="text-[10px] sm:text-[11px] text-muted-foreground truncate flex items-center gap-1.5 font-medium">
                                     <MapPin className="h-3 w-3 shrink-0 text-primary/60" />
                                     {f.location}
                                   </p>
@@ -188,7 +195,7 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
                                         size="sm"
                                         variant="outline"
                                         onClick={() => onAssignGroup(soul, 'none', groupType)}
-                                        className="h-8 px-4 text-[10px] border-destructive/30 text-destructive hover:bg-destructive/10 font-black uppercase tracking-widest rounded-xl"
+                                        className="h-8 px-4 text-[9px] sm:text-[10px] border-destructive/30 text-destructive hover:bg-destructive/10 font-black uppercase tracking-widest rounded-xl transition-all active:scale-95"
                                     >
                                         Unassign
                                     </Button>
@@ -201,15 +208,15 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
                                                 size="sm"
                                                 onClick={() => onAssignGroup(soul, f.id, groupType)}
                                                 disabled={isDisabled}
-                                                className="h-8 px-5 text-[10px] font-black uppercase tracking-widest rounded-xl shadow-sm"
+                                                className="h-9 sm:h-8 px-5 text-[10px] font-black uppercase tracking-widest rounded-xl shadow-sm transition-all active:scale-95"
                                             >
                                                 Assign
                                             </Button>
                                           </div>
                                         </TooltipTrigger>
                                         {isDisabled && (
-                                          <TooltipContent className="max-w-[180px] rounded-xl p-3">
-                                            <p className="text-[10px] font-bold leading-tight uppercase tracking-tight">Already assigned to a {groupType}. Unassign it first.</p>
+                                          <TooltipContent className="max-w-[200px] rounded-xl p-3 border-primary/20 shadow-xl" side="left">
+                                            <p className="text-[10px] font-bold leading-tight uppercase tracking-tight text-center">Already assigned to a {groupType}.<br/><span className="text-primary">Unassign it first.</span></p>
                                           </TooltipContent>
                                         )}
                                       </Tooltip>
@@ -220,15 +227,16 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
                       </Card>
                   )})
               ) : (
-                  <div className="text-center text-muted-foreground py-20 px-8 flex flex-col items-center">
-                      <div className="h-16 w-16 bg-muted/20 rounded-full flex items-center justify-center mb-4">
-                        <Filter className="h-8 w-8 opacity-20" />
+                  <div className="text-center text-muted-foreground py-24 sm:py-32 px-8 flex flex-col items-center">
+                      <div className="h-16 w-16 sm:h-20 sm:w-20 bg-muted/20 rounded-full flex items-center justify-center mb-6">
+                        <Filter className="h-8 w-8 opacity-10" />
                       </div>
-                      <p className="text-base font-bold uppercase tracking-tight">No groups found</p>
-                      <p className="text-xs mt-2 italic leading-relaxed">Adjust your filters or start a new group in this area.</p>
+                      <p className="text-base font-black uppercase tracking-tight opacity-50">No groups found</p>
+                      <p className="text-xs mt-2 italic leading-relaxed text-muted-foreground/60 max-w-[200px] mx-auto text-balance">Adjust your filters or start a new group in this area.</p>
                   </div>
               )}
           </div>
+          <div className="h-20 md:hidden shrink-0" />
       </ScrollArea>
     </div>
   );
@@ -253,16 +261,16 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-xl max-h-[90vh] flex flex-col p-0 overflow-hidden rounded-3xl">
-        <div className="p-6 border-b shrink-0">
+      <DialogContent className="sm:max-w-xl max-h-[90vh] flex flex-col p-0 overflow-hidden rounded-3xl shadow-2xl border-none">
+        <div className="p-8 border-b shrink-0 bg-muted/5">
             <DialogHeader>
-                <DialogTitle className="text-2xl font-bold font-headline">Assign Group: {soul?.firstName}</DialogTitle>
-                <DialogDescription>
+                <DialogTitle className="text-2xl sm:text-3xl font-black font-headline tracking-tight">Assign Group: {soul?.firstName}</DialogTitle>
+                <DialogDescription className="text-sm sm:text-base font-medium">
                     Manage Fellowship and Association placement for this record.
                 </DialogDescription>
             </DialogHeader>
         </div>
-        <div className="flex-grow min-h-0 p-6 overflow-hidden">
+        <div className="flex-grow min-h-0 p-6 sm:p-8 overflow-hidden">
           {content}
         </div>
       </DialogContent>
