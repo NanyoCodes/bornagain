@@ -16,6 +16,7 @@ import { Checkbox } from "../ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { Switch } from "../ui/switch";
 import { Textarea } from "../ui/textarea";
+import { ScrollArea } from "../ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { actionItems, statusOptions } from "@/lib/follow-up-data";
 import type { Soul, FollowUpStatus, UserProfile } from "@/lib/types";

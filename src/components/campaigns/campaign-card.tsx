@@ -483,7 +483,7 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
         )}
         onClick={handleCardClick}
       >
-        <CardHeader className="p-6 flex flex-row items-start justify-between gap-4">
+        <CardHeader className="p-4 sm:p-6 flex flex-row items-start justify-between gap-4">
             <div className="flex-1 min-w-0">
                 <CardTitle className="font-bold text-lg md:text-xl truncate">
                   {campaign.title}
@@ -503,7 +503,7 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
                     <Button 
                       variant="outline" 
                       size="icon" 
-                      className="h-10 w-10 border-primary/20 text-primary/60 hover:text-primary hover:bg-primary/10 rounded-full shadow-sm bg-background" 
+                      className="h-10 w-10 border-primary/20 text-primary/60 hover:text-primary hover:bg-primary/10 rounded-full shadow-md bg-background" 
                       onClick={(e) => { e.stopPropagation(); router.push(`/dashboard/campaigns/${campaign.id}`); }}
                     >
                       <BarChart3 className="h-5 w-5" />
