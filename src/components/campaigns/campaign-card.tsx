@@ -504,7 +504,7 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
                       variant="ghost" 
                       size="icon" 
                       className="h-8 w-8 text-primary/60 hover:text-primary hover:bg-primary/10 rounded-full" 
-                      onClick={(e) => { e.stopPropagation(); router.push('/progress'); }}
+                      onClick={(e) => { e.stopPropagation(); router.push(`/dashboard/campaigns/${campaign.id}`); }}
                     >
                       <Sparkles className="h-4 w-4" />
                       <span className="sr-only">View Insights</span>
