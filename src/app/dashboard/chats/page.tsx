@@ -3,14 +3,14 @@
 import { useCollection, useFirestore, useUser } from '@/firebase';
 import { collection, query, where } from 'firebase/firestore';
 import type { Chat, Notification } from '@/lib/types';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { format, isToday } from 'date-fns';
 import { useMemo } from 'react';
-import { MessagesSquare } from 'lucide-react';
+import { MessagesSquare, Users, MessageSquare } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
@@ -22,9 +22,11 @@ function ChatListItem({ chat, currentUserId, isUnread }: { chat: Chat, currentUs
     const lastUpdatedAt = useMemo(() => chat.lastUpdatedAt?.toDate ? chat.lastUpdatedAt.toDate() : new Date(), [chat.lastUpdatedAt]);
 
     const containerClasses = cn(
-        "block hover:bg-muted/50 active:bg-muted/50 transition-colors cursor-pointer",
-        isUnread && "bg-primary/5"
+        "block hover:bg-muted/50 active:bg-muted/80 transition-all cursor-pointer border-b last:border-0",
+        isUnread && "bg-primary/5 border-l-4 border-l-primary"
     );
+
+    const dateDisplay = isToday(lastUpdatedAt) ? format(lastUpdatedAt, 'p') : format(lastUpdatedAt, 'MM/dd/yy');
 
     if (chat.isGroupChat) {
         const relatedLink = chat.campaignId 
@@ -33,32 +35,36 @@ function ChatListItem({ chat, currentUserId, isUnread }: { chat: Chat, currentUs
         
         return (
             <div onClick={() => router.push(`/dashboard/chats/${chat.id}`)} className={containerClasses}>
-                <div className="flex items-center gap-4 p-4">
-                    <div className="relative">
-                        <Avatar className="h-12 w-12">
-                            <AvatarFallback>{chat.participantIds.length}</AvatarFallback>
+                <div className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4">
+                    <div className="relative shrink-0">
+                        <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border shadow-sm">
+                            <AvatarFallback className="bg-primary/10 text-primary font-bold text-xs sm:text-sm">
+                                <Users className="h-4 w-4 sm:h-5 sm:w-5" />
+                            </AvatarFallback>
                         </Avatar>
-                        {isUnread && <div className="absolute top-0 right-0 h-3 w-3 rounded-full bg-primary border-2 border-background" />}
+                        {isUnread && <div className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-primary border-2 border-background animate-pulse" />}
                     </div>
                     <div className="flex-1 min-w-0">
-                        <div className="flex justify-between items-start">
-                            <div className={cn("font-semibold truncate", isUnread && "text-primary")}>
-                                <Link href={relatedLink} onClick={(e) => e.stopPropagation()} className="hover:underline">
-                                    {chat.campaignTitle}
-                                </Link>
-                                 (Group)
+                        <div className="flex justify-between items-start gap-2">
+                            <div className={cn("font-bold truncate text-sm sm:text-base leading-tight", isUnread && "text-primary")}>
+                                {chat.campaignTitle}
                             </div>
-                            <div className="text-xs text-muted-foreground whitespace-nowrap">
-                                {isToday(lastUpdatedAt) ? format(lastUpdatedAt, 'p') : format(lastUpdatedAt, 'P')}
+                            <div className="text-[10px] sm:text-xs text-muted-foreground whitespace-nowrap font-medium mt-0.5">
+                                {dateDisplay}
                             </div>
                         </div>
-                        <ChatParticipantsDialog chat={chat}>
-                            <p className="text-sm text-muted-foreground truncate hover:underline cursor-pointer" onClick={(e) => e.stopPropagation()}>
-                                {chat.participantIds.length} participants
-                            </p>
-                        </ChatParticipantsDialog>
-                        <p className="text-sm text-muted-foreground truncate mt-1">
-                            {chat.hasMessages ? 'Click to view messages' : 'No messages yet.'}
+                        <div className="flex items-center gap-2 mt-0.5">
+                            <ChatParticipantsDialog chat={chat}>
+                                <button className="text-[10px] sm:text-xs text-muted-foreground hover:text-primary transition-colors flex items-center gap-1 font-semibold uppercase tracking-tighter" onClick={(e) => e.stopPropagation()}>
+                                    <Users className="h-3 w-3" />
+                                    {chat.participantIds.length} Members
+                                </button>
+                            </ChatParticipantsDialog>
+                            <span className="text-[10px] text-muted-foreground opacity-30">•</span>
+                            <span className="text-[10px] sm:text-xs text-primary font-black uppercase tracking-widest">Group</span>
+                        </div>
+                        <p className={cn("text-xs sm:text-sm truncate mt-1 leading-relaxed", isUnread ? "text-foreground font-medium" : "text-muted-foreground")}>
+                            {chat.hasMessages ? 'Tap to view message history...' : 'Start the conversation!'}
                         </p>
                     </div>
                 </div>
@@ -74,15 +80,17 @@ function ChatListItem({ chat, currentUserId, isUnread }: { chat: Chat, currentUs
 
     return (
         <div onClick={() => router.push(`/dashboard/chats/${chat.id}`)} className={containerClasses}>
-            <div className="flex items-center gap-4 p-4">
+            <div className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4">
                 <Dialog>
                     <DialogTrigger asChild onClick={(e) => {e.stopPropagation()}} disabled={!otherParticipantInfo.photoURL}>
-                        <div className="relative">
-                            <Avatar className={cn("h-12 w-12", otherParticipantInfo.photoURL && "cursor-pointer")}>
-                                <AvatarImage src={otherParticipantInfo.photoURL} />
-                                <AvatarFallback>{otherParticipantInfo.firstName?.charAt(0)}</AvatarFallback>
+                        <div className="relative shrink-0">
+                            <Avatar className={cn("h-10 w-10 sm:h-12 sm:w-12 border shadow-sm", otherParticipantInfo.photoURL && "cursor-pointer hover:scale-105 transition-transform")}>
+                                <AvatarImage src={otherParticipantInfo.photoURL} className="object-cover" />
+                                <AvatarFallback className="font-bold text-xs sm:text-sm">
+                                    {otherParticipantInfo.firstName?.charAt(0)}
+                                </AvatarFallback>
                             </Avatar>
-                            {isUnread && <div className="absolute top-0 right-0 h-3 w-3 rounded-full bg-primary border-2 border-background" />}
+                            {isUnread && <div className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-primary border-2 border-background animate-pulse" />}
                         </div>
                     </DialogTrigger>
                     {otherParticipantInfo.photoURL && (
@@ -96,27 +104,26 @@ function ChatListItem({ chat, currentUserId, isUnread }: { chat: Chat, currentUs
                     )}
                 </Dialog>
                 <div className="flex-1 min-w-0">
-                    <div className="flex justify-between items-start">
-                        <div className={cn("font-semibold truncate", isUnread && "text-primary")}>{otherParticipantInfo.firstName} {otherParticipantInfo.lastName}</div>
-                        <div className="text-xs text-muted-foreground whitespace-nowrap">
-                            {isToday(lastUpdatedAt) ? format(lastUpdatedAt, 'p') : format(lastUpdatedAt, 'P')}
+                    <div className="flex justify-between items-start gap-2">
+                        <div className={cn("font-bold truncate text-sm sm:text-base leading-tight", isUnread && "text-primary")}>
+                            {otherParticipantInfo.firstName} {otherParticipantInfo.lastName}
+                        </div>
+                        <div className="text-[10px] sm:text-xs text-muted-foreground whitespace-nowrap font-medium mt-0.5">
+                            {dateDisplay}
                         </div>
                     </div>
-                    <p className="text-sm text-muted-foreground truncate">
-                       {chat.campaignTitle && chat.campaignId ? (
+                    <p className="text-[10px] sm:text-xs text-muted-foreground truncate font-medium flex items-center gap-1.5 mt-0.5">
+                       {chat.campaignTitle ? (
                           <>
-                            Re: <Link href={`/dashboard/campaigns/${chat.campaignId}`} onClick={(e) => e.stopPropagation()} className="hover:underline">{chat.campaignTitle}</Link>
+                            <span className="text-primary font-black uppercase tracking-tighter shrink-0">Regarding:</span>
+                            <span className="truncate italic">"{chat.campaignTitle}"</span>
                           </>
-                        ) : chat.campaignTitle && chat.fellowshipId ? (
-                             <>
-                                Re: <Link href={`/dashboard/fellowship/${chat.fellowshipId}`} onClick={(e) => e.stopPropagation()} className="hover:underline">{chat.campaignTitle}</Link>
-                            </>
                         ) : (
-                          <span>Accountability Chat</span>
+                          <span className="uppercase tracking-widest font-black text-[9px] opacity-60">Accountability Partner</span>
                         )}
                     </p>
-                    <p className="text-sm text-muted-foreground truncate mt-1">
-                        {chat.hasMessages ? 'Click to view messages' : 'No messages yet.'}
+                    <p className={cn("text-xs sm:text-sm truncate mt-1 leading-relaxed", isUnread ? "text-foreground font-medium" : "text-muted-foreground")}>
+                        {chat.hasMessages ? 'Tap to continue chatting...' : 'Send an encouraging word!'}
                     </p>
                 </div>
             </div>
@@ -178,43 +185,43 @@ export default function ChatsPage() {
     }, [allChats, unreadChatIds]);
 
     return (
-        <div className="flex flex-col h-full w-full overflow-hidden bg-background">
-            <ScrollArea className="flex-1 w-full">
-                <div className="max-w-4xl mx-auto p-4 md:p-8 space-y-8 pb-32">
-                    <div className="space-y-2">
-                        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight font-headline">
-                            Chats
-                        </h1>
-                    </div>
+        <div className="flex flex-col h-full w-full bg-background overflow-hidden">
+            <div className="flex-shrink-0 p-4 sm:p-6 md:p-8 pb-4">
+                <h1 className="text-2xl sm:text-3xl font-black font-headline tracking-tight uppercase">
+                    Conversations
+                </h1>
+                <p className="text-xs sm:text-sm text-muted-foreground font-medium mt-1 uppercase tracking-[0.2em]">Kingdom Messages</p>
+            </div>
 
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Conversations</CardTitle>
-                        </CardHeader>
-                        <CardContent className="p-0">
+            <div className="flex-1 min-h-0 px-0 sm:px-6 md:px-8 pb-4">
+                <Card className="h-full flex flex-col overflow-hidden border-x-0 sm:border-x rounded-none sm:rounded-3xl shadow-xl">
+                    <ScrollArea className="flex-1 w-full">
+                        <div className="flex flex-col h-full">
                             {loading && (
                                 <div className="divide-y">
-                                    {[...Array(3)].map((_, i) => (
+                                    {[...Array(5)].map((_, i) => (
                                         <div key={i} className="flex items-center gap-4 p-4">
-                                            <Skeleton className="h-12 w-12 rounded-full" />
-                                            <div className="flex-1 space-y-2">
-                                                <Skeleton className="h-4 w-3/4" />
+                                            <Skeleton className="h-10 w-10 sm:h-12 sm:w-12 rounded-full shrink-0" />
+                                            <div className="flex-1 space-y-2 min-w-0">
                                                 <Skeleton className="h-4 w-1/2" />
+                                                <Skeleton className="h-3 w-3/4" />
                                             </div>
                                         </div>
                                     ))}
                                 </div>
                             )}
                             {!loading && chats?.length === 0 && (
-                                <div className="p-8 text-center border-t">
-                                    <MessagesSquare className="mx-auto h-12 w-12 text-muted-foreground" />
-                                    <h3 className="mt-4 text-lg font-semibold">No Active Conversations</h3>
-                                    <p className="mt-2 text-sm text-muted-foreground">
-                                        When you join a campaign or chat with someone, your conversations will appear here.
+                                <div className="flex-1 flex flex-col items-center justify-center py-24 text-center px-8">
+                                    <div className="h-20 w-20 bg-muted/20 rounded-full flex items-center justify-center mb-6">
+                                        <MessageSquare className="h-10 w-10 text-muted-foreground opacity-20" />
+                                    </div>
+                                    <h3 className="text-xl font-bold font-headline uppercase tracking-tight">Quiet Field</h3>
+                                    <p className="mt-2 text-sm text-muted-foreground max-w-[280px] leading-relaxed italic">
+                                        Your ministry conversations will appear here. Join a campaign or nudge a partner to start!
                                     </p>
                                 </div>
                             )}
-                            <div className="divide-y border-t">
+                            <div className="flex flex-col">
                                 {!loading && user && chats?.map(chat => (
                                     <ChatListItem 
                                         key={chat.id} 
@@ -224,10 +231,12 @@ export default function ChatsPage() {
                                     />
                                 ))}
                             </div>
-                        </CardContent>
-                    </Card>
-                </div>
-            </ScrollArea>
+                            {/* Safe area padding for bottom nav */}
+                            <div className="h-20 md:hidden shrink-0" />
+                        </div>
+                    </ScrollArea>
+                </Card>
+            </div>
         </div>
     )
 }
