@@ -4,6 +4,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import React, { useEffect, useMemo, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft,
   Bell,
@@ -136,11 +137,11 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
                     key={item.href}
                     href={item.href}
                     className={cn(
-                    "transition-colors hover:text-primary whitespace-nowrap flex items-center gap-2",
+                    "transition-all hover:text-primary whitespace-nowrap flex items-center gap-2 group",
                     isActive ? "text-primary font-semibold" : "text-muted-foreground"
                     )}
                 >
-                    <item.icon className={cn("h-4 w-4", !isActive && item.color)} />
+                    <item.icon className={cn("h-4 w-4 transition-transform group-hover:scale-110", !isActive && item.color, isActive && "scale-110")} />
                     {item.label}
                 </Link>
               );
@@ -175,20 +176,20 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
         {user ? (
           <>
             <Link href="/chats">
-                <Button variant="ghost" size="icon" className="relative">
-                  <MessagesSquare className="h-5 w-5" />
+                <Button variant="ghost" size="icon" className="relative group">
+                  <MessagesSquare className="h-5 w-5 transition-transform group-hover:scale-110" />
                   {unreadChatCount > 0 && (
-                    <div className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-xs font-bold text-destructive-foreground">
+                    <div className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-xs font-bold text-destructive-foreground animate-in zoom-in">
                       {unreadChatCount}
                     </div>
                   )}
                 </Button>
             </Link>
             <Link href="/notifications">
-                <Button variant="ghost" size="icon" className="relative">
-                  <Bell className="h-5 w-5" />
+                <Button variant="ghost" size="icon" className="relative group">
+                  <Bell className="h-5 w-5 transition-transform group-hover:scale-110" />
                   {unreadNotifCount > 0 && (
-                    <div className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-xs font-bold text-destructive-foreground">
+                    <div className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-xs font-bold text-destructive-foreground animate-in zoom-in">
                       {unreadNotifCount}
                     </div>
                   )}
@@ -196,7 +197,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
             </Link>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="rounded-full relative">
+                <Button variant="ghost" size="icon" className="rounded-full relative hover:scale-105 transition-transform">
                   <Avatar className="h-8 w-8">
                     <AvatarImage src={user.photoURL ?? undefined} />
                     <AvatarFallback>{user.displayName?.charAt(0) || 'U'}</AvatarFallback>
@@ -278,13 +279,34 @@ function BottomNavBar() {
               <Link
                 key={item.href}
                 href={item.href}
-                className={cn(
-                  "relative flex flex-col items-center justify-center p-2 rounded-xl transition-all duration-200",
-                  isActive ? "text-primary bg-primary/10" : "text-muted-foreground hover:bg-muted"
-                )}
+                className="relative flex flex-col items-center justify-center p-2"
                 aria-label={item.label}
               >
-                <item.icon className={cn("h-6 w-6", !isActive && item.color)} />
+                <motion.div
+                  className="relative flex flex-col items-center justify-center p-2 rounded-xl"
+                  whileTap={{ scale: 0.85 }}
+                >
+                  {isActive && (
+                    <motion.div
+                      layoutId="nav-active-pill"
+                      className="absolute inset-0 bg-primary/10 rounded-xl"
+                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                    />
+                  )}
+                  <motion.div
+                    animate={{ 
+                      scale: isActive ? 1.15 : 1,
+                      color: isActive ? "var(--primary)" : "var(--muted-foreground)"
+                    }}
+                    transition={{ duration: 0.2 }}
+                    className={cn(
+                      "relative z-10",
+                      isActive ? "text-primary" : "text-muted-foreground"
+                    )}
+                  >
+                    <item.icon className={cn("h-6 w-6", !isActive && item.color)} />
+                  </motion.div>
+                </motion.div>
                 <span className="sr-only">{item.label}</span>
               </Link>
             )
