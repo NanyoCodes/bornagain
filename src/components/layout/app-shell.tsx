@@ -56,7 +56,7 @@ const navItems = [
   { href: "/accountability", label: "Accountability", icon: HeartHandshake, color: "text-primary" },
 ];
 
-const NOTIFICATION_TYPES = ['campaign_join', 'new_chat_message', 'accountability_nudge', 'accountability_request', 'request_accepted', 'request_declined', 'accountability_partner_removed', 'new_soul_in_fellowship'];
+const NOTIFICATION_TYPES = ['campaign_join', 'accountability_nudge', 'accountability_request', 'request_accepted', 'request_declined', 'accountability_partner_removed', 'new_soul_in_fellowship'];
 
 const inspirationalMessages = [
   "GOD FIRST",
