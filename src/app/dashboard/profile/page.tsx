@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Edit, Loader2, MapPin, Phone, HeartHandshake, XCircle, Users, Group, Youtube, Activity, Video, MessageSquare, Sparkles } from "lucide-react";
+import { Edit, Loader2, MapPin, Phone, HeartHandshake, XCircle, Users, Group, Youtube, Activity, Video, MessageSquare, Sparkles, Search } from "lucide-react";
 import { useCollection, useFirestore, useUser } from "@/firebase";
 import { useDoc } from "@/firebase/firestore/use-doc";
 import { collection, query, where, doc, getDocs, documentId } from "firebase/firestore";
@@ -58,11 +58,12 @@ function FilterControls({
   return (
     <div className="flex flex-col gap-3 mb-6 sm:flex-row sm:items-center">
       <div className="relative flex-grow">
+        <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
           placeholder={searchPlaceholder}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full text-sm h-11 sm:h-10 bg-muted/20"
+          className="w-full text-sm h-11 sm:h-10 bg-muted/20 pl-8"
         />
       </div>
       {setFilterDate && (
@@ -318,7 +319,6 @@ export default function ProfilePage() {
   const filteredAccountabilityPartners = useMemo(() => {
     if (!userProfile?.accountabilityPartners) return [];
     
-    // Deduplicate to prevent key conflict errors
     const uniqueMap = new Map();
     userProfile.accountabilityPartners.forEach(p => {
         if (p.userId && !uniqueMap.has(p.userId)) {
@@ -464,7 +464,7 @@ export default function ProfilePage() {
                             searchTerm={testimonySearchTerm}
                             setSearchTerm={setTestimonySearchTerm}
                             filterDate={testimonyFilterDate}
-                            setFilterDate={setFilterDate}
+                            setFilterDate={setTestimonyFilterDate}
                             searchPlaceholder="Search testimonies..."
                         />
                         <ScrollArea className="h-48 border rounded-lg bg-muted/5">
@@ -491,7 +491,7 @@ export default function ProfilePage() {
                             searchTerm={prayerSearchTerm}
                             setSearchTerm={setPrayerSearchTerm}
                             filterDate={prayerFilterDate}
-                            setFilterDate={setFilterDate}
+                            setFilterDate={setPrayerFilterDate}
                             searchPlaceholder="Search prayer requests..."
                         />
                         <ScrollArea className="h-48 border rounded-lg bg-muted/5">
@@ -520,7 +520,7 @@ export default function ProfilePage() {
                             searchTerm={createdCampaignSearchTerm}
                             setSearchTerm={setCreatedCampaignSearchTerm}
                             filterDate={createdCampaignFilterDate}
-                            setFilterDate={setFilterDate}
+                            setFilterDate={setCreatedCampaignFilterDate}
                             searchPlaceholder="Search created campaigns..."
                         />
                         <ScrollArea className="h-48 border rounded-lg bg-muted/5">

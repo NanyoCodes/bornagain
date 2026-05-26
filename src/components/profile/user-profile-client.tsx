@@ -189,7 +189,6 @@ export default function UserProfileClient({ userId }: { userId: string }) {
             )}
         </div>
       
-      {/* Header Card */}
       <Card className="rounded-none sm:rounded-[2.5rem] overflow-hidden border-none shadow-2xl bg-gradient-to-br from-background via-background to-primary/5">
         <CardContent className="p-6 sm:p-10 lg:p-12 relative z-20">
           <div className="flex flex-col md:flex-row items-center md:items-end text-center md:text-left gap-6 md:gap-10">
@@ -263,7 +262,6 @@ export default function UserProfileClient({ userId }: { userId: string }) {
         </CardContent>
       </Card>
       
-      {/* Video Testimony Showcase */}
       {videoTestimonies.length > 0 && (
         <Card className="rounded-none sm:rounded-[2.5rem] overflow-hidden shadow-2xl border-t-8 border-t-red-600 bg-zinc-950">
             <CardHeader className="pb-6 pt-10 px-6 sm:px-12">
@@ -300,7 +298,6 @@ export default function UserProfileClient({ userId }: { userId: string }) {
         </Card>
       )}
 
-      {/* Activity Feed Section */}
       <div className="space-y-10 px-0 sm:px-0">
         <div className="flex items-center gap-3 px-4 sm:px-0">
             <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl sm:rounded-2xl bg-primary flex items-center justify-center shadow-xl shadow-primary/20">
@@ -310,7 +307,6 @@ export default function UserProfileClient({ userId }: { userId: string }) {
         </div>
         
         <div className="space-y-12">
-            {/* Testimonies Section */}
             <div className="space-y-6">
                 <div className="flex items-center justify-between px-4 sm:px-0">
                     <div className="flex items-center gap-2">
@@ -341,7 +337,6 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                 )}
             </div>
 
-            {/* Campaigns Section */}
             <div className="space-y-6">
                 <div className="flex items-center gap-2 px-4 sm:px-0">
                     <CalendarDays className="h-4 w-4 text-primary" />
