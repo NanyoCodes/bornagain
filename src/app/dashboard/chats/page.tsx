@@ -23,7 +23,7 @@ function ChatListItem({ chat, currentUserId, isUnread }: { chat: Chat, currentUs
 
     const containerClasses = cn(
         "block hover:bg-muted/50 active:bg-muted/80 transition-all cursor-pointer border-b last:border-0",
-        isUnread ? "bg-primary/[0.03] border-l-4 border-l-primary" : "border-l-4 border-l-transparent"
+        isUnread ? "bg-primary/[0.03] border-l-4 border-l-primary" : "border-l-4 border-l-transparent opacity-60"
     );
 
     const dateDisplay = isToday(lastUpdatedAt) ? format(lastUpdatedAt, 'p') : format(lastUpdatedAt, 'MM/dd/yy');
@@ -33,7 +33,10 @@ function ChatListItem({ chat, currentUserId, isUnread }: { chat: Chat, currentUs
             <div onClick={() => router.push(`/dashboard/chats/${chat.id}`)} className={containerClasses}>
                 <div className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4">
                     <div className="relative shrink-0">
-                        <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border shadow-sm transition-transform group-hover:scale-105">
+                        <Avatar className={cn(
+                            "h-10 w-10 sm:h-12 sm:w-12 border shadow-sm transition-transform group-hover:scale-105",
+                            !isUnread && "grayscale-[0.5]"
+                        )}>
                             <AvatarFallback className="bg-primary/10 text-primary font-bold text-xs sm:text-sm">
                                 <Users className="h-4 w-4 sm:h-5 sm:w-5" />
                             </AvatarFallback>
@@ -42,7 +45,10 @@ function ChatListItem({ chat, currentUserId, isUnread }: { chat: Chat, currentUs
                     </div>
                     <div className="flex-1 min-w-0">
                         <div className="flex justify-between items-baseline gap-2 mb-0.5">
-                            <h3 className={cn("font-bold truncate text-sm sm:text-base leading-none", isUnread && "text-primary")}>
+                            <h3 className={cn(
+                                "font-bold truncate text-sm sm:text-base leading-none", 
+                                isUnread ? "text-primary" : "text-foreground/80"
+                            )}>
                                 {chat.campaignTitle}
                             </h3>
                             <span className="text-[9px] sm:text-[10px] text-muted-foreground whitespace-nowrap font-medium uppercase tracking-tighter">
@@ -57,9 +63,15 @@ function ChatListItem({ chat, currentUserId, isUnread }: { chat: Chat, currentUs
                                 </button>
                             </ChatParticipantsDialog>
                             <span className="text-[10px] text-muted-foreground opacity-30">•</span>
-                            <span className="text-[9px] sm:text-[10px] text-primary font-black uppercase tracking-[0.1em]">Group</span>
+                            <span className={cn(
+                                "text-[9px] sm:text-[10px] font-black uppercase tracking-[0.1em]",
+                                isUnread ? "text-primary" : "text-muted-foreground"
+                            )}>Group</span>
                         </div>
-                        <p className={cn("text-xs sm:text-sm truncate leading-relaxed", isUnread ? "text-foreground font-medium" : "text-muted-foreground")}>
+                        <p className={cn(
+                            "text-xs sm:text-sm truncate leading-relaxed", 
+                            isUnread ? "text-foreground font-bold" : "text-muted-foreground font-medium"
+                        )}>
                             {chat.hasMessages ? 'Tap to view message history...' : 'Start the conversation!'}
                         </p>
                     </div>
@@ -80,7 +92,11 @@ function ChatListItem({ chat, currentUserId, isUnread }: { chat: Chat, currentUs
                 <Dialog>
                     <DialogTrigger asChild onClick={(e) => {e.stopPropagation()}} disabled={!otherParticipantInfo.photoURL}>
                         <div className="relative shrink-0">
-                            <Avatar className={cn("h-10 w-10 sm:h-12 sm:w-12 border shadow-sm transition-transform active:scale-95", otherParticipantInfo.photoURL && "cursor-pointer hover:scale-105")}>
+                            <Avatar className={cn(
+                                "h-10 w-10 sm:h-12 sm:w-12 border shadow-sm transition-transform active:scale-95", 
+                                otherParticipantInfo.photoURL && "cursor-pointer hover:scale-105",
+                                !isUnread && "grayscale-[0.5]"
+                            )}>
                                 <AvatarImage src={otherParticipantInfo.photoURL} className="object-cover" />
                                 <AvatarFallback className="font-bold text-xs sm:text-sm">
                                     {otherParticipantInfo.firstName?.charAt(0)}
@@ -101,7 +117,10 @@ function ChatListItem({ chat, currentUserId, isUnread }: { chat: Chat, currentUs
                 </Dialog>
                 <div className="flex-1 min-w-0">
                     <div className="flex justify-between items-baseline gap-2 mb-0.5">
-                        <h3 className={cn("font-bold truncate text-sm sm:text-base leading-none", isUnread && "text-primary")}>
+                        <h3 className={cn(
+                            "font-bold truncate text-sm sm:text-base leading-none", 
+                            isUnread ? "text-primary" : "text-foreground/80"
+                        )}>
                             {otherParticipantInfo.firstName} {otherParticipantInfo.lastName}
                         </h3>
                         <span className="text-[9px] sm:text-[10px] text-muted-foreground whitespace-nowrap font-medium uppercase tracking-tighter">
@@ -111,14 +130,17 @@ function ChatListItem({ chat, currentUserId, isUnread }: { chat: Chat, currentUs
                     <div className="text-[9px] sm:text-[10px] text-muted-foreground truncate font-medium flex items-center gap-1.5 mb-1 uppercase tracking-tighter">
                        {chat.campaignTitle ? (
                           <>
-                            <span className="text-primary font-black shrink-0">RE:</span>
+                            <span className={cn("font-black shrink-0", isUnread ? "text-primary" : "text-muted-foreground")}>RE:</span>
                             <span className="truncate italic">"{chat.campaignTitle}"</span>
                           </>
                         ) : (
                           <span className="font-black opacity-60">Accountability Partner</span>
                         )}
                     </div>
-                    <p className={cn("text-xs sm:text-sm truncate leading-relaxed", isUnread ? "text-foreground font-medium" : "text-muted-foreground")}>
+                    <p className={cn(
+                        "text-xs sm:text-sm truncate leading-relaxed", 
+                        isUnread ? "text-foreground font-bold" : "text-muted-foreground font-medium"
+                    )}>
                         {chat.hasMessages ? 'Tap to continue chatting...' : 'Send an encouraging word!'}
                     </p>
                 </div>
