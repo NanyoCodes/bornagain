@@ -316,7 +316,8 @@ export default function DashboardClientLayout({ children }: { children: React.Re
     return (
       pathname.startsWith('/dashboard/chats') ||
       pathname.startsWith('/dashboard/notes') ||
-      pathname.startsWith('/dashboard/bible')
+      pathname.startsWith('/dashboard/bible') ||
+      pathname.startsWith('/dashboard/notifications')
     );
   }, [pathname]);
   const [lastActiveUpdated, setLastActiveUpdated] = useState(false);

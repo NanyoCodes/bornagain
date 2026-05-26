@@ -323,7 +323,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   ];
   const isPublicRoute = publicRoutes.some(route => pathname === route || pathname.startsWith(route + '/')) || pathname === '/';
 
-  // Comprehensive takeover detection for modules that require internal scrolling (Chat, Notes, Bible)
+  // Comprehensive takeover detection for modules that require internal scrolling (Chat, Notes, Bible, Notifications)
   const isTakeoverPage = useMemo(() => {
     return (
       pathname.startsWith('/chats') ||
@@ -331,7 +331,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       pathname.startsWith('/notes') ||
       pathname.startsWith('/dashboard/notes') ||
       pathname.startsWith('/bible') ||
-      pathname.startsWith('/dashboard/bible')
+      pathname.startsWith('/dashboard/bible') ||
+      pathname.startsWith('/notifications') ||
+      pathname.startsWith('/dashboard/notifications')
     );
   }, [pathname]);
 
