@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -6,7 +5,7 @@ import { useRouter, useParams } from 'next/navigation';
 import { useDoc, useFirestore, useUser, useCollection } from '@/firebase';
 import type { Fellowship, UserProfile, FellowshipMember, Soul } from '@/lib/types';
 import { doc, collection, query, orderBy, where, writeBatch, serverTimestamp } from 'firebase/firestore';
-import { Loader2, ArrowLeft, Users, Calendar, PlayCircle, MapPin, Heart, Phone, Mail, Church, History, PlusCircle, Award, MessagesSquare } from 'lucide-react';
+import { Loader2, ArrowLeft, Users, Calendar, PlayCircle, MapPin, Heart, Phone, Mail, Church, History, PlusCircle, Award, MessagesSquare, User } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -306,8 +305,8 @@ export default function FellowshipPageClient() {
                                                         <div className="flex-1 min-w-0">
                                                             <p className="font-semibold truncate text-sm">{member.firstName} {member.lastName}</p>
                                                         </div>
-                                                        <Button asChild variant="ghost" size="sm" className="h-8 text-xs font-bold px-3">
-                                                            <Link href={`/dashboard/profile/${member.userId}`}>Profile</Link>
+                                                        <Button asChild variant="ghost" size="icon" className="h-8 w-8 rounded-full" title="View Profile">
+                                                            <Link href={`/dashboard/profile/${member.userId}`}><User className="h-4 w-4" /></Link>
                                                         </Button>
                                                     </div>
                                                 ))}
