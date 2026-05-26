@@ -16,6 +16,13 @@ import {
   SheetTitle,
   SheetDescription,
 } from '@/components/ui/sheet';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -100,7 +107,7 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted, userP
     return notes.filter(
       (note) =>
         note.title.toLowerCase().includes(lowercasedTerm) ||
-        note.content.toLowerCase().includes(lowercasedTerm) ||
+        (note.content && note.content.toLowerCase().includes(lowercasedTerm)) ||
         note.category.toLowerCase().includes(lowercasedTerm)
     );
   }, [notes, searchTerm]);
@@ -431,24 +438,20 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted, userP
     return (
       <Sheet open={isOpen} onOpenChange={onOpenChange}>
         <SheetContent side="bottom" className="p-0 flex flex-col h-[95dvh] rounded-t-[2.5rem]">
-          {soul && (
-            <>
-              <div className="p-8 border-b flex-shrink-0 bg-muted/10">
-                <SheetHeader className="text-left">
-                    <SheetTitle className="text-2xl font-black font-headline">Journal</SheetTitle>
-                    <SheetDescription className="text-sm font-medium mt-1">Capture your reflections and revelations.</SheetDescription>
-                </SheetHeader>
-              </div>
-              <div className="p-8 flex-grow min-h-0 overflow-hidden">
-                {innerContent}
-              </div>
-              <div className="p-8 border-t flex-shrink-0 bg-background/80 backdrop-blur-sm">
-                  <Button variant="outline" onClick={() => onOpenChange(false)} className="w-full h-12 rounded-2xl font-bold">
-                    Close Journal
-                  </Button>
-              </div>
-            </>
-          )}
+            <div className="p-8 border-b flex-shrink-0 bg-muted/10">
+              <SheetHeader className="text-left">
+                  <SheetTitle className="text-2xl font-black font-headline">Journal</SheetTitle>
+                  <SheetDescription className="text-sm font-medium mt-1">Capture your reflections and revelations.</SheetDescription>
+              </SheetHeader>
+            </div>
+            <div className="p-8 flex-grow min-h-0 overflow-hidden">
+              {innerContent}
+            </div>
+            <div className="p-8 border-t flex-shrink-0 bg-background/80 backdrop-blur-sm">
+                <Button variant="outline" onClick={() => onOpenChange(false)} className="w-full h-12 rounded-2xl font-bold">
+                  Close Journal
+                </Button>
+            </div>
         </SheetContent>
       </Sheet>
     );
