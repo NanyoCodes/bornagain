@@ -4,7 +4,7 @@
 import { useMemo, useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useDoc, useFirestore, useUser, useCollection } from '@/firebase';
-import type { Testimony, Campaign, UserProfile } from '@/lib/types';
+import type { Testimony, Campaign, UserProfile, AccountabilityRequest } from '@/lib/types';
 import { doc, collection, query, where, orderBy } from 'firebase/firestore';
 import { 
     Loader2, 
@@ -64,6 +64,12 @@ export default function UserProfileClient({ userId }: { userId: string }) {
   }, [userId, firestore]);
   const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userDocRef);
 
+  const currentUserRef = useMemo(() => {
+    if (!currentUser?.uid || !firestore) return null;
+    return doc(firestore, 'users', currentUser.uid);
+  }, [currentUser?.uid, firestore]);
+  const { data: currentUserProfile } = useDoc<UserProfile>(currentUserRef);
+
   const testimoniesQuery = useMemo(() => {
     if (!userId || !firestore) return null;
     return query(collection(firestore, 'testimonies'), where('authorId', '==', userId));
@@ -75,6 +81,27 @@ export default function UserProfileClient({ userId }: { userId: string }) {
     return query(collection(firestore, 'campaigns'), where('organizerId', '==', userId));
   }, [userId, firestore]);
   const { data: allCampaigns, loading: campaignsLoading } = useCollection<Campaign>(campaignsQuery);
+
+  const requestsQuery = useMemo(() => {
+    if (!currentUser || !firestore) return null;
+    return query(
+      collection(firestore, 'accountabilityRequests'),
+      where('participantIds', 'array-contains', currentUser.uid),
+      where('status', '==', 'pending')
+    );
+  }, [currentUser, firestore]);
+  const { data: accountabilityRequests } = useCollection<AccountabilityRequest>(requestsQuery);
+
+  const pendingRequestIds = useMemo(() => {
+    if (!accountabilityRequests) return new Set<string>();
+    return new Set(
+        accountabilityRequests
+            .flatMap(r => r.participantIds)
+            .filter(id => id !== currentUser?.uid)
+    );
+  }, [accountabilityRequests, currentUser?.uid]);
+
+  const partnerIds = useMemo(() => new Set(currentUserProfile?.partnerIds || []), [currentUserProfile?.partnerIds]);
 
   const testimonies = useMemo(() => {
     if (!userTestimonies) return [];
@@ -106,8 +133,13 @@ export default function UserProfileClient({ userId }: { userId: string }) {
   if (loading || !mounted) {
     return (
       <div className="flex h-full w-full flex-col items-center justify-center py-20">
-        <Loader2 className="h-10 w-10 animate-spin text-primary" />
-        <p className="mt-4 text-muted-foreground font-medium animate-pulse">Connecting to the harvest...</p>
+        <div className="relative mb-8">
+            <Loader2 className="h-12 w-12 animate-spin text-primary" />
+            <div className="absolute inset-0 flex items-center justify-center">
+                <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
+            </div>
+        </div>
+        <p className="text-xl font-black font-headline tracking-[0.4em] uppercase text-primary animate-pulse">Connecting...</p>
       </div>
     );
   }
@@ -143,9 +175,9 @@ export default function UserProfileClient({ userId }: { userId: string }) {
             </Button>
             {isOwnProfile && (
                 <Button asChild variant="outline" size="sm" className="h-9 px-6 rounded-full font-bold shadow-sm">
-                    <Link href="/dashboard/profile">
+                    <Link href="/dashboard/settings">
                         <Edit className="mr-2 h-3.5 w-3.5" />
-                        Edit Profile
+                        Settings
                     </Link>
                 </Button>
             )}
@@ -265,18 +297,18 @@ export default function UserProfileClient({ userId }: { userId: string }) {
       )}
 
       {/* Activity Feed Section */}
-      <div className="space-y-10 px-4 sm:px-0">
-        <div className="flex items-center gap-4 px-2">
+      <div className="space-y-10 px-0 sm:px-0">
+        <div className="flex items-center gap-4 px-4 sm:px-0">
             <div className="h-12 w-12 rounded-2xl bg-primary flex items-center justify-center shadow-xl shadow-primary/20">
                 <Activity className="h-6 w-6 text-primary-foreground" />
             </div>
             <h2 className="text-3xl sm:text-4xl font-black font-headline tracking-tight uppercase">Kingdom Activity</h2>
         </div>
         
-        <div className="grid gap-12 lg:grid-cols-12">
+        <div className="space-y-12">
             {/* Testimonies Section */}
-            <div className="lg:col-span-12 space-y-6">
-                <div className="flex items-center justify-between px-2">
+            <div className="space-y-6">
+                <div className="flex items-center justify-between px-4 sm:px-0">
                     <div className="flex items-center gap-3">
                         <Sparkles className="h-5 w-5 text-primary" />
                         <h3 className="text-xl font-black uppercase tracking-tight">Shared Testimonies ({testimonies.length})</h3>
@@ -284,42 +316,41 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                 </div>
                 
                 {testimonies.length > 0 ? (
-                    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                    <div className="grid gap-0 md:grid-cols-2 lg:grid-cols-3">
                         {testimonies.map(testimony => (
                             <TestimonyCard 
                                 key={testimony.id} 
                                 testimony={testimony} 
                                 onDelete={() => {}} 
-                                onEdit={() => {}} 
+                                onEdit={() => {}}
+                                isPartner={partnerIds.has(testimony.authorId)}
+                                hasPendingRequest={pendingRequestIds.has(testimony.authorId)}
+                                currentUserProfile={currentUserProfile}
                             />
                         ))}
                     </div>
                 ) : (
-                    <div className="text-center py-20 bg-muted/20 rounded-[2rem] border-2 border-dashed border-muted">
+                    <div className="text-center py-20 bg-muted/20 rounded-[2rem] border-2 border-dashed border-muted mx-4 sm:mx-0">
                         <Newspaper className="h-12 w-12 text-muted-foreground/20 mx-auto mb-4" />
                         <p className="text-sm text-muted-foreground italic font-medium">No shared testimonies found in this folder.</p>
                     </div>
                 )}
             </div>
 
-            <div className="lg:col-span-12">
-                <Separator className="opacity-50" />
-            </div>
-
             {/* Campaigns Section */}
-            <div className="lg:col-span-12 space-y-6">
-                <div className="flex items-center gap-3 px-2">
+            <div className="space-y-6">
+                <div className="flex items-center gap-3 px-4 sm:px-0">
                     <CalendarDays className="h-5 w-5 text-primary" />
                     <h3 className="text-xl font-black uppercase tracking-tight">Organized Campaigns ({activeCampaigns.length})</h3>
                 </div>
                 {activeCampaigns.length > 0 ? (
-                    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                    <div className="grid gap-0 md:grid-cols-2 lg:grid-cols-3">
                         {activeCampaigns.map(campaign => (
                             <CampaignCard 
                                 key={campaign.id} 
                                 campaign={campaign} 
                                 userId={currentUser?.uid} 
-                                userProfile={null} 
+                                userProfile={currentUserProfile} 
                                 distance={null} 
                                 onManage={() => {}} 
                                 onLogSoul={() => {}} 
@@ -329,7 +360,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                         ))}
                     </div>
                 ) : (
-                    <div className="text-center py-20 bg-muted/20 rounded-[2rem] border-2 border-dashed border-muted">
+                    <div className="text-center py-20 bg-muted/20 rounded-[2rem] border-2 border-dashed border-muted mx-4 sm:mx-0">
                         <Target className="h-12 w-12 text-muted-foreground/20 mx-auto mb-4" />
                         <p className="text-sm text-muted-foreground italic font-medium">No public mission campaigns organized.</p>
                     </div>
@@ -338,7 +369,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
         </div>
 
         {testimonies.length === 0 && activeCampaigns.length === 0 && (
-            <div className="text-center py-32 text-muted-foreground border-2 border-dashed rounded-[3.5rem] bg-muted/5 mx-1">
+            <div className="text-center py-32 text-muted-foreground border-2 border-dashed rounded-[3.5rem] bg-muted/5 mx-4 sm:mx-0">
                 <Globe className="h-20 w-20 text-muted-foreground/5 mx-auto mb-8" />
                 <p className="font-black text-2xl px-12 leading-tight uppercase tracking-widest text-muted-foreground/30">
                     Faith in the Secret Place
