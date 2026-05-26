@@ -4,11 +4,11 @@ import { useState, useMemo, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useDoc, useFirestore, useUser, useCollection } from '@/firebase';
 import type { Fellowship, UserProfile, FellowshipMember, Soul } from '@/lib/types';
-import { doc, collection, query, orderBy, where, writeBatch, serverTimestamp } from 'firebase/firestore';
+import { doc, collection, query, orderBy, where, writeBatch, serverTimestamp, updateDoc } from 'firebase/firestore';
 import { Loader2, ArrowLeft, Users, Calendar, PlayCircle, MapPin, Heart, Phone, Mail, Church, History, PlusCircle, Award, MessagesSquare, User, Info, Sparkles } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -71,7 +71,7 @@ export default function FellowshipPageClient() {
     
     const isMember = useMemo(() => {
         if (!user || !fellowship) return false;
-        return fellowship.memberIds.includes(user.uid);
+        return fellowship.memberIds?.includes(user.uid) || false;
     }, [user, fellowship]);
 
     const isOrganizer = useMemo(() => {
@@ -259,112 +259,51 @@ export default function FellowshipPageClient() {
                     <ArrowLeft className="h-5 w-5"/>
                     <span className="sr-only">Back</span>
                 </Button>
-                <div className="min-w-0">
+                <div className="min-w-0 flex-1">
                     <h1 className="text-xl sm:text-2xl md:text-4xl font-black font-headline tracking-tight truncate leading-tight uppercase">{fellowship.name}</h1>
                     <div className="flex items-center gap-2 mt-1">
                         <Badge variant="secondary" className="uppercase font-bold tracking-[0.2em] text-[8px] sm:text-[10px] px-2 h-5 shrink-0">{fellowship.groupType || 'Fellowship'}</Badge>
                         <span className="text-[9px] sm:text-xs text-muted-foreground font-medium uppercase tracking-widest opacity-60 truncate">Global Harvest Community</span>
                     </div>
                 </div>
+
+                {/* COMPACT CHAT ICON BUTTON IN HEADER */}
+                {(isMember || isOrganizer) && (
+                    <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Button 
+                                    variant={fellowship.hasGroupChat ? "default" : "outline"}
+                                    size="icon" 
+                                    onClick={fellowship.hasGroupChat ? () => router.push(`/dashboard/chats/${fellowshipId}`) : handleStartGroupChat}
+                                    disabled={isChatLoading || (!fellowship.hasGroupChat && isOrganizer && (!members || members.length < 2))}
+                                    className={cn(
+                                        "h-10 w-10 sm:h-12 sm:w-12 rounded-full shadow-lg transition-all active:scale-90 relative shrink-0",
+                                        fellowship.hasGroupChat && "bg-primary text-primary-foreground border-primary hover:bg-primary/90"
+                                    )}
+                                >
+                                    {isChatLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <MessagesSquare className="h-5 w-5" />}
+                                    {!fellowship.hasGroupChat && isOrganizer && members && members.length >= 2 && (
+                                        <span className="absolute -top-1 -right-1 flex h-3 w-3">
+                                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                                            <span className="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
+                                        </span>
+                                    )}
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p>{fellowship.hasGroupChat ? "Open Group Chat" : isOrganizer ? "Start Group Chat" : "Chat coming soon"}</p>
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
+                )}
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
-                {/* Sidebar components responsive for mobile view */}
-                <div className="space-y-6 sm:space-y-8 flex flex-col order-first lg:order-last px-4 sm:px-0">
-                    {(isMember || isOrganizer) && (
-                        <Card className="rounded-[2rem] sm:rounded-[2.5rem] shadow-xl border-none bg-primary text-primary-foreground overflow-hidden">
-                            <CardHeader className="p-5 sm:p-8 pb-3 sm:pb-4">
-                                <CardTitle className="text-xs sm:text-sm font-black uppercase tracking-[0.2em] opacity-80 flex items-center gap-2">
-                                    <MessagesSquare className="h-4 w-4 sm:h-5 w-5" /> Group Chat
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent className="px-5 sm:px-8 pb-6 sm:pb-8 space-y-4">
-                                {fellowship.hasGroupChat ? (
-                                    <Button onClick={() => router.push(`/dashboard/chats/${fellowshipId}`)} className="w-full h-12 sm:h-14 bg-white text-primary hover:bg-white/90 font-black rounded-2xl shadow-lg transition-transform active:scale-95 text-sm sm:text-base">
-                                        OPEN CONVERSATION
-                                    </Button>
-                                ) : isOrganizer ? (
-                                    <Button 
-                                        onClick={handleStartGroupChat} 
-                                        disabled={isChatLoading || !members || members.length < 2} 
-                                        className="w-full h-12 sm:h-14 font-black rounded-2xl bg-white/20 text-white hover:bg-white/30 border-white/20 transition-transform active:scale-95 text-sm sm:text-base"
-                                    >
-                                        {isChatLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                                        INITIALIZE CHAT
-                                    </Button>
-                                ) : (
-                                    <div className="p-3 sm:p-4 bg-black/10 rounded-2xl border border-white/10 text-center">
-                                        <p className="text-[10px] sm:text-xs font-medium italic opacity-80 leading-relaxed">
-                                            The organizer has not started the group chat yet.
-                                        </p>
-                                    </div>
-                                )}
-                                {isOrganizer && !fellowship.hasGroupChat && (!members || members.length < 2) && (
-                                    <p className="text-[8px] sm:text-[9px] text-white/60 text-center font-bold uppercase tracking-widest leading-tight">
-                                        At least 2 members required
-                                    </p>
-                                )}
-                            </CardContent>
-                        </Card>
-                    )}
-
-                    <Card className="rounded-[2rem] sm:rounded-[2.5rem] shadow-sm border-none bg-background border border-muted-foreground/10 overflow-hidden">
-                        <CardHeader className="p-5 sm:p-8 pb-2 sm:pb-3">
-                            <CardTitle className="text-[10px] sm:text-sm font-black uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2"><Calendar className="h-4 w-4 text-primary"/> Gathering Details</CardTitle>
-                        </CardHeader>
-                        <CardContent className="px-5 sm:px-8 pb-6 sm:pb-8 space-y-4 sm:space-y-5 pt-1 sm:pt-2">
-                            {fellowship.schedule && (
-                                <div className="p-3 sm:p-4 rounded-2xl bg-muted/30 border border-dashed">
-                                    <p className="font-black text-[8px] sm:text-[9px] uppercase tracking-[0.2em] text-muted-foreground mb-1 sm:mb-1.5">Schedule</p>
-                                    <p className="text-foreground font-bold text-xs sm:text-sm leading-tight">{fellowship.schedule}</p>
-                                </div>
-                            )}
-                            {fellowship.location && (
-                                <div className="p-3 sm:p-4 rounded-2xl bg-muted/30 border border-dashed">
-                                    <p className="font-black text-[8px] sm:text-[9px] uppercase tracking-[0.2em] text-muted-foreground mb-1 sm:mb-1.5">Location Area</p>
-                                    <p className="text-foreground font-bold text-xs sm:text-sm flex items-center gap-1.5 leading-tight break-words">
-                                        <MapPin className="h-3 sm:h-3.5 w-3 sm:w-3.5 text-primary shrink-0" /> {fellowship.location}
-                                    </p>
-                                </div>
-                            )}
-                            
-                            {(isMember || isOrganizer) && fellowship.streamUrl && (
-                                <Button asChild className="w-full h-12 sm:h-14 font-black rounded-2xl shadow-md transition-transform active:scale-95 text-sm sm:text-base">
-                                    <Link href={fellowship.streamUrl} target="_blank" rel="noopener noreferrer">
-                                        <PlayCircle className="mr-2 h-4 sm:h-5 w-4 sm:w-5" />
-                                        GATHER ONLINE
-                                    </Link>
-                                </Button>
-                            )}
-                        </CardContent>
-                    </Card>
-
-                    <Card className="rounded-[2rem] sm:rounded-[2.5rem] shadow-sm border-none bg-background border border-muted-foreground/10">
-                        <CardHeader className="p-5 sm:p-8 pb-2 sm:pb-3">
-                            <CardTitle className="text-[10px] sm:text-sm font-black uppercase tracking-[0.2em] text-muted-foreground">Lead Organizer</CardTitle>
-                        </CardHeader>
-                        <CardContent className="px-5 sm:px-8 pb-6 sm:pb-8 pt-1 sm:pt-2">
-                            <Link href={isOrganizer ? '/dashboard/profile' : `/dashboard/profile/${fellowship.organizerId}`} className="flex items-center gap-3 sm:gap-4 group bg-muted/20 p-3 sm:p-4 rounded-2xl border border-dashed transition-all hover:bg-muted/40 hover:border-primary/20 min-w-0">
-                                <Avatar className="h-9 w-9 sm:h-11 sm:w-11 border-2 border-primary/20 shadow-sm shrink-0">
-                                    <AvatarFallback className="font-black text-xs sm:text-sm bg-primary/10 text-primary">{fellowship.organizerName?.charAt(0)}</AvatarFallback>
-                                </Avatar>
-                                <div className="min-w-0 flex-1">
-                                    <span className="font-black text-xs sm:text-base group-hover:text-primary transition-colors truncate block leading-tight">
-                                        {fellowship.organizerName}
-                                    </span>
-                                    <div className="flex items-center gap-1.5 mt-1 sm:mt-0.5">
-                                        <Badge className="h-3.5 sm:h-4 text-[6px] sm:text-[7px] uppercase font-black tracking-widest px-1 sm:px-1.5" variant={isOrganizer ? "default" : "secondary"}>{isOrganizer ? "YOU" : "LEADER"}</Badge>
-                                    </div>
-                                </div>
-                            </Link>
-                        </CardContent>
-                    </Card>
-                </div>
-
-                <div className="lg:col-span-2 space-y-6 sm:order-last lg:order-first">
-                    <Card className="rounded-none sm:rounded-[2.5rem] border-x-0 sm:border-x shadow-sm border-none bg-muted/20">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8 px-4 sm:px-0">
+                <div className="lg:col-span-2 space-y-6">
+                    <Card className="rounded-[2.5rem] shadow-sm border-none bg-muted/20">
                         <CardHeader className="p-6 sm:p-8">
-                            <CardTitle className="text-sm font-black uppercase tracking-[0.2em] text-muted-foreground">About this Group</CardTitle>
+                            <CardTitle className="text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">About this Group</CardTitle>
                         </CardHeader>
                         <CardContent className="px-6 sm:px-8 pb-8">
                             <p className="text-sm sm:text-base text-foreground leading-relaxed whitespace-pre-wrap font-medium">
@@ -373,7 +312,7 @@ export default function FellowshipPageClient() {
                         </CardContent>
                     </Card>
 
-                    <Card className="rounded-none sm:rounded-[2.5rem] border-x-0 sm:border-x shadow-sm border-none bg-background border border-muted-foreground/10 overflow-hidden">
+                    <Card className="rounded-[2.5rem] shadow-sm border-none bg-background border border-muted-foreground/10 overflow-hidden">
                         <CardHeader className="p-6 sm:p-8 border-b bg-muted/5">
                             <CardTitle className="flex items-center justify-between text-base sm:text-lg font-black uppercase tracking-[0.1em]">
                                 <span className="flex items-center gap-2.5">
@@ -463,6 +402,60 @@ export default function FellowshipPageClient() {
                                    <p className="text-xs sm:text-sm text-muted-foreground italic px-10 sm:px-12 leading-relaxed font-medium max-w-sm mx-auto">Join this fellowship to collaborate on follow-up and view the member directory.</p>
                                </div>
                            )}
+                        </CardContent>
+                    </Card>
+                </div>
+
+                <div className="space-y-6 sm:space-y-8 flex flex-col">
+                    <Card className="rounded-[2rem] sm:rounded-[2.5rem] shadow-sm border-none bg-background border border-muted-foreground/10 overflow-hidden">
+                        <CardHeader className="p-5 sm:p-8 pb-2 sm:pb-3">
+                            <CardTitle className="text-[10px] sm:text-sm font-black uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2"><Calendar className="h-4 w-4 text-primary"/> Gathering Details</CardTitle>
+                        </CardHeader>
+                        <CardContent className="px-5 sm:px-8 pb-6 sm:pb-8 space-y-4 sm:space-y-5 pt-1 sm:pt-2">
+                            {fellowship.schedule && (
+                                <div className="p-3 sm:p-4 rounded-2xl bg-muted/30 border border-dashed">
+                                    <p className="font-black text-[8px] sm:text-[9px] uppercase tracking-[0.2em] text-muted-foreground mb-1 sm:mb-1.5">Schedule</p>
+                                    <p className="text-foreground font-bold text-xs sm:text-sm leading-tight">{fellowship.schedule}</p>
+                                </div>
+                            )}
+                            {fellowship.location && (
+                                <div className="p-3 sm:p-4 rounded-2xl bg-muted/30 border border-dashed">
+                                    <p className="font-black text-[8px] sm:text-[9px] uppercase tracking-[0.2em] text-muted-foreground mb-1 sm:mb-1.5">Location Area</p>
+                                    <p className="text-foreground font-bold text-xs sm:text-sm flex items-center gap-1.5 leading-tight break-words">
+                                        <MapPin className="h-3 sm:h-3.5 w-3 sm:w-3.5 text-primary shrink-0" /> {fellowship.location}
+                                    </p>
+                                </div>
+                            )}
+                            
+                            {(isMember || isOrganizer) && fellowship.streamUrl && (
+                                <Button asChild className="w-full h-12 sm:h-14 font-black rounded-2xl shadow-md transition-transform active:scale-95 text-sm sm:text-base">
+                                    <Link href={fellowship.streamUrl} target="_blank" rel="noopener noreferrer">
+                                        <PlayCircle className="mr-2 h-4 sm:h-5 w-4 sm:w-5" />
+                                        GATHER ONLINE
+                                    </Link>
+                                </Button>
+                            )}
+                        </CardContent>
+                    </Card>
+
+                    <Card className="rounded-[2rem] sm:rounded-[2.5rem] shadow-sm border-none bg-background border border-muted-foreground/10">
+                        <CardHeader className="p-5 sm:p-8 pb-2 sm:pb-3">
+                            <CardTitle className="text-[10px] sm:text-sm font-black uppercase tracking-[0.2em] text-muted-foreground">Lead Organizer</CardTitle>
+                        </CardHeader>
+                        <CardContent className="px-5 sm:px-8 pb-6 sm:pb-8 pt-1 sm:pt-2">
+                            <Link href={isOrganizer ? '/dashboard/profile' : `/dashboard/profile/${fellowship.organizerId}`} className="flex items-center gap-3 sm:gap-4 group bg-muted/20 p-3 sm:p-4 rounded-2xl border border-dashed transition-all hover:bg-muted/40 hover:border-primary/20 min-w-0">
+                                <Avatar className="h-9 w-9 sm:h-11 sm:w-11 border-2 border-primary/20 shadow-sm shrink-0">
+                                    <AvatarFallback className="font-black text-xs sm:text-sm bg-primary/10 text-primary">{fellowship.organizerName?.charAt(0)}</AvatarFallback>
+                                </Avatar>
+                                <div className="min-w-0 flex-1">
+                                    <span className="font-black text-xs sm:text-base group-hover:text-primary transition-colors truncate block leading-tight">
+                                        {fellowship.organizerName}
+                                    </span>
+                                    <div className="flex items-center gap-1.5 mt-1 sm:mt-0.5">
+                                        <Badge className="h-3.5 sm:h-4 text-[6px] sm:text-[7px] uppercase font-black tracking-widest px-1 sm:px-1.5" variant={isOrganizer ? "default" : "secondary"}>{isOrganizer ? "YOU" : "LEADER"}</Badge>
+                                    </div>
+                                </div>
+                            </Link>
                         </CardContent>
                     </Card>
                 </div>
