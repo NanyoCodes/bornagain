@@ -43,7 +43,7 @@ function PartnerCompactStatus({ partner, date }: { partner: UserProfile['account
 
     return (
         <div className="flex items-center justify-between p-2 rounded-xl bg-muted/20 border border-transparent hover:border-primary/20 transition-all group">
-            <div className="flex items-center gap-3 min-w-0">
+            <Link href={`/dashboard/profile/${partner.userId}`} className="flex items-center gap-3 min-w-0 flex-1 hover:opacity-80 transition-opacity">
                 <Avatar className="h-8 w-8 border shadow-sm shrink-0">
                     <AvatarImage src={partner.photoURL} />
                     <AvatarFallback className="text-[10px] bg-primary/10 text-primary font-bold">{partner.firstName?.charAt(0)}</AvatarFallback>
@@ -52,7 +52,7 @@ function PartnerCompactStatus({ partner, date }: { partner: UserProfile['account
                     <p className="text-xs font-bold truncate leading-tight group-hover:text-primary transition-colors">{partner.firstName}</p>
                     <p className="text-[9px] text-muted-foreground font-medium uppercase tracking-tighter">Partner</p>
                 </div>
-            </div>
+            </Link>
             
             <div className="flex gap-1.5 shrink-0">
                 {disciplines.map(d => (
