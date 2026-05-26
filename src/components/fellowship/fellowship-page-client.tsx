@@ -93,6 +93,8 @@ export default function FellowshipPageClient() {
     }, [firestore, fellowshipId, isMember, isOrganizer, fellowship?.groupType]);
     const { data: assignedSouls, loading: soulsLoading } = useCollection<Soul>(soulsQuery);
 
+    const totalDirectoryCount = (members?.length || 0) + (assignedSouls?.length || 0);
+
     const handleStartGroupChat = async () => {
         if (!user || !firestore || !fellowship || !members) return;
         setIsChatLoading(true);
@@ -374,7 +376,7 @@ export default function FellowshipPageClient() {
                                     <Users className="h-5 w-5 text-primary" />
                                     Directory
                                 </span>
-                                <Badge variant="secondary" className="rounded-full px-3 h-6 font-bold">{members?.length || 0}</Badge>
+                                <Badge variant="secondary" className="rounded-full px-3 h-6 font-bold">{totalDirectoryCount}</Badge>
                             </CardTitle>
                              <CardDescription className="text-[11px] sm:text-sm font-medium mt-2 leading-relaxed text-balance">
                                 {isMember || isOrganizer 
