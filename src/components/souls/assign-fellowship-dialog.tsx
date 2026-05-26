@@ -129,17 +129,17 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
                 )}>
                     <CardContent className="p-3 sm:p-4 flex items-center justify-between gap-3 sm:gap-4">
                         <div className="min-w-0 flex-1">
-                            <div className="flex items-center gap-2 mb-1 flex-wrap">
-                              <p className="font-black text-xs sm:text-sm truncate leading-tight flex-1 min-w-[80px]">{f.name}</p>
-                              <Badge variant="outline" className={cn("shrink-0 text-[7px] sm:text-[9px] px-1.5 h-4 uppercase font-bold tracking-widest bg-background/50 leading-none", groupType === 'Association' ? "border-blue-500/20 text-blue-600" : "border-primary/20 text-primary")}>
+                            <div className="flex items-center gap-1.5 mb-0.5 flex-wrap">
+                              <p className="font-black text-[11px] sm:text-sm truncate leading-tight flex-1 min-w-[60px]">{f.name}</p>
+                              <Badge variant="outline" className={cn("shrink-0 text-[7px] sm:text-[8px] px-1.5 h-3.5 sm:h-4 uppercase font-bold tracking-tighter sm:tracking-widest bg-background/50 leading-none", groupType === 'Association' ? "border-blue-500/20 text-blue-600" : "border-primary/20 text-primary")}>
                                   {groupType}
                               </Badge>
                             </div>
-                            <p className="text-[9px] sm:text-[11px] text-muted-foreground line-clamp-1 flex items-center gap-1.5 font-medium">
-                              <MapPin className="h-2.5 w-2.5 sm:h-3 sm:w-3 shrink-0 text-primary/60" />
+                            <p className="text-[9px] sm:text-[10px] text-muted-foreground line-clamp-1 flex items-center gap-1 font-medium">
+                              <MapPin className="h-2.5 w-2.5 shrink-0 text-primary/60" />
                               {f.location}
                             </p>
-                            {f.distance !== null ? <p className="text-[8px] sm:text-[9px] text-primary font-black mt-1.5 uppercase tracking-[0.2em]">{f.distance.toFixed(1)} km away</p> : null}
+                            {f.distance !== null ? <p className="text-[8px] sm:text-[9px] text-primary font-black mt-1 uppercase tracking-widest sm:tracking-[0.2em]">{f.distance.toFixed(1)} km away</p> : null}
                         </div>
                         <div className="shrink-0">
                           {isCurrentlyAssigned ? (
