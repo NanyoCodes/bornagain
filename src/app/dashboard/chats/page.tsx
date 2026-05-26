@@ -23,47 +23,43 @@ function ChatListItem({ chat, currentUserId, isUnread }: { chat: Chat, currentUs
 
     const containerClasses = cn(
         "block hover:bg-muted/50 active:bg-muted/80 transition-all cursor-pointer border-b last:border-0",
-        isUnread && "bg-primary/5 border-l-4 border-l-primary"
+        isUnread ? "bg-primary/[0.03] border-l-4 border-l-primary" : "border-l-4 border-l-transparent"
     );
 
     const dateDisplay = isToday(lastUpdatedAt) ? format(lastUpdatedAt, 'p') : format(lastUpdatedAt, 'MM/dd/yy');
 
     if (chat.isGroupChat) {
-        const relatedLink = chat.campaignId 
-            ? `/dashboard/campaigns/${chat.campaignId}` 
-            : `/dashboard/fellowship/${chat.fellowshipId}`;
-        
         return (
             <div onClick={() => router.push(`/dashboard/chats/${chat.id}`)} className={containerClasses}>
                 <div className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4">
                     <div className="relative shrink-0">
-                        <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border shadow-sm">
+                        <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border shadow-sm transition-transform group-hover:scale-105">
                             <AvatarFallback className="bg-primary/10 text-primary font-bold text-xs sm:text-sm">
                                 <Users className="h-4 w-4 sm:h-5 sm:w-5" />
                             </AvatarFallback>
                         </Avatar>
-                        {isUnread && <div className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-primary border-2 border-background animate-pulse" />}
+                        {isUnread && <div className="absolute -top-0.5 -right-0.5 h-3 w-3 rounded-full bg-primary border-2 border-background shadow-sm animate-pulse" />}
                     </div>
                     <div className="flex-1 min-w-0">
-                        <div className="flex justify-between items-start gap-2">
-                            <div className={cn("font-bold truncate text-sm sm:text-base leading-tight", isUnread && "text-primary")}>
+                        <div className="flex justify-between items-baseline gap-2 mb-0.5">
+                            <h3 className={cn("font-bold truncate text-sm sm:text-base leading-none", isUnread && "text-primary")}>
                                 {chat.campaignTitle}
-                            </div>
-                            <div className="text-[10px] sm:text-xs text-muted-foreground whitespace-nowrap font-medium mt-0.5">
+                            </h3>
+                            <span className="text-[9px] sm:text-[10px] text-muted-foreground whitespace-nowrap font-medium uppercase tracking-tighter">
                                 {dateDisplay}
-                            </div>
+                            </span>
                         </div>
-                        <div className="flex items-center gap-2 mt-0.5">
+                        <div className="flex items-center gap-2 mb-1">
                             <ChatParticipantsDialog chat={chat}>
                                 <button className="text-[10px] sm:text-xs text-muted-foreground hover:text-primary transition-colors flex items-center gap-1 font-semibold uppercase tracking-tighter" onClick={(e) => e.stopPropagation()}>
-                                    <Users className="h-3 w-3" />
+                                    <Users className="h-2.5 w-2.5" />
                                     {chat.participantIds.length} Members
                                 </button>
                             </ChatParticipantsDialog>
                             <span className="text-[10px] text-muted-foreground opacity-30">•</span>
-                            <span className="text-[10px] sm:text-xs text-primary font-black uppercase tracking-widest">Group</span>
+                            <span className="text-[9px] sm:text-[10px] text-primary font-black uppercase tracking-[0.1em]">Group</span>
                         </div>
-                        <p className={cn("text-xs sm:text-sm truncate mt-1 leading-relaxed", isUnread ? "text-foreground font-medium" : "text-muted-foreground")}>
+                        <p className={cn("text-xs sm:text-sm truncate leading-relaxed", isUnread ? "text-foreground font-medium" : "text-muted-foreground")}>
                             {chat.hasMessages ? 'Tap to view message history...' : 'Start the conversation!'}
                         </p>
                     </div>
@@ -84,13 +80,13 @@ function ChatListItem({ chat, currentUserId, isUnread }: { chat: Chat, currentUs
                 <Dialog>
                     <DialogTrigger asChild onClick={(e) => {e.stopPropagation()}} disabled={!otherParticipantInfo.photoURL}>
                         <div className="relative shrink-0">
-                            <Avatar className={cn("h-10 w-10 sm:h-12 sm:w-12 border shadow-sm", otherParticipantInfo.photoURL && "cursor-pointer hover:scale-105 transition-transform")}>
+                            <Avatar className={cn("h-10 w-10 sm:h-12 sm:w-12 border shadow-sm transition-transform active:scale-95", otherParticipantInfo.photoURL && "cursor-pointer hover:scale-105")}>
                                 <AvatarImage src={otherParticipantInfo.photoURL} className="object-cover" />
                                 <AvatarFallback className="font-bold text-xs sm:text-sm">
                                     {otherParticipantInfo.firstName?.charAt(0)}
                                 </AvatarFallback>
                             </Avatar>
-                            {isUnread && <div className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-primary border-2 border-background animate-pulse" />}
+                            {isUnread && <div className="absolute -top-0.5 -right-0.5 h-3 w-3 rounded-full bg-primary border-2 border-background shadow-sm animate-pulse" />}
                         </div>
                     </DialogTrigger>
                     {otherParticipantInfo.photoURL && (
@@ -104,25 +100,25 @@ function ChatListItem({ chat, currentUserId, isUnread }: { chat: Chat, currentUs
                     )}
                 </Dialog>
                 <div className="flex-1 min-w-0">
-                    <div className="flex justify-between items-start gap-2">
-                        <div className={cn("font-bold truncate text-sm sm:text-base leading-tight", isUnread && "text-primary")}>
+                    <div className="flex justify-between items-baseline gap-2 mb-0.5">
+                        <h3 className={cn("font-bold truncate text-sm sm:text-base leading-none", isUnread && "text-primary")}>
                             {otherParticipantInfo.firstName} {otherParticipantInfo.lastName}
-                        </div>
-                        <div className="text-[10px] sm:text-xs text-muted-foreground whitespace-nowrap font-medium mt-0.5">
+                        </h3>
+                        <span className="text-[9px] sm:text-[10px] text-muted-foreground whitespace-nowrap font-medium uppercase tracking-tighter">
                             {dateDisplay}
-                        </div>
+                        </span>
                     </div>
-                    <p className="text-[10px] sm:text-xs text-muted-foreground truncate font-medium flex items-center gap-1.5 mt-0.5">
+                    <div className="text-[9px] sm:text-[10px] text-muted-foreground truncate font-medium flex items-center gap-1.5 mb-1 uppercase tracking-tighter">
                        {chat.campaignTitle ? (
                           <>
-                            <span className="text-primary font-black uppercase tracking-tighter shrink-0">Regarding:</span>
+                            <span className="text-primary font-black shrink-0">RE:</span>
                             <span className="truncate italic">"{chat.campaignTitle}"</span>
                           </>
                         ) : (
-                          <span className="uppercase tracking-widest font-black text-[9px] opacity-60">Accountability Partner</span>
+                          <span className="font-black opacity-60">Accountability Partner</span>
                         )}
-                    </p>
-                    <p className={cn("text-xs sm:text-sm truncate mt-1 leading-relaxed", isUnread ? "text-foreground font-medium" : "text-muted-foreground")}>
+                    </div>
+                    <p className={cn("text-xs sm:text-sm truncate leading-relaxed", isUnread ? "text-foreground font-medium" : "text-muted-foreground")}>
                         {chat.hasMessages ? 'Tap to continue chatting...' : 'Send an encouraging word!'}
                     </p>
                 </div>
