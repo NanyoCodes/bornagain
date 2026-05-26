@@ -1,4 +1,3 @@
-
 'use client';
 
 import * as React from 'react';
@@ -119,7 +118,7 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
       <div className="space-y-4 pt-4 shrink-0 px-1">
         <div className="bg-primary/5 p-4 rounded-2xl border border-primary/10 flex items-start gap-3">
           <Info className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-          <div className="text-xs text-muted-foreground space-y-1.5 font-medium leading-relaxed">
+          <div className="text-xs text-muted-foreground space-y-1.5 font-medium leading-relaxed text-balance">
             <p>Assign this convert to a Fellowship for discipleship and an Association for group activity.</p>
             <p className="font-black text-foreground/80 uppercase text-[10px] tracking-wider">Note: Unassign current group before switching.</p>
           </div>
@@ -175,7 +174,7 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
                         "transition-all duration-300 shadow-none border-2 rounded-[1.25rem] sm:rounded-2xl overflow-hidden", 
                         isCurrentlyAssigned ? "bg-primary/5 border-primary/40 ring-1 ring-primary/20" : "bg-card border-transparent hover:border-primary/10 hover:shadow-md"
                       )}>
-                          <CardContent className="p-4 flex items-center justify-between gap-4">
+                          <CardContent className="p-3.5 sm:p-4 flex items-center justify-between gap-3 sm:gap-4">
                               <div className="min-w-0 flex-1">
                                   <div className="flex items-center gap-2 mb-1 flex-wrap">
                                     <p className="font-black text-sm truncate leading-tight">{f.name}</p>
@@ -183,11 +182,11 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
                                         {groupType}
                                     </Badge>
                                   </div>
-                                  <p className="text-[10px] sm:text-[11px] text-muted-foreground truncate flex items-center gap-1.5 font-medium">
+                                  <p className="text-[10px] sm:text-[11px] text-muted-foreground line-clamp-1 flex items-center gap-1.5 font-medium">
                                     <MapPin className="h-3 w-3 shrink-0 text-primary/60" />
                                     {f.location}
                                   </p>
-                                  {f.distance !== null ? <p className="text-[9px] text-primary font-black mt-2 uppercase tracking-[0.2em]">{f.distance.toFixed(1)} km away</p> : null}
+                                  {f.distance !== null ? <p className="text-[9px] text-primary font-black mt-1.5 uppercase tracking-[0.2em]">{f.distance.toFixed(1)} km away</p> : null}
                               </div>
                               <div className="shrink-0">
                                 {isCurrentlyAssigned ? (
