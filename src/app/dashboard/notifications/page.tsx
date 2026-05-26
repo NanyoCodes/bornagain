@@ -162,8 +162,8 @@ export default function NotificationsPage() {
                             key={notification.id} 
                             onClick={() => handleNotificationClick(notification)}
                             className={cn(
-                                "w-full text-left p-4 sm:p-6 transition-all hover:bg-muted/50 active:bg-muted/80 relative border-l-4",
-                                !notification.isRead ? "bg-primary/[0.02] border-l-primary" : "opacity-60 border-l-transparent"
+                                "w-full text-left p-3.5 sm:p-6 transition-all hover:bg-muted/50 active:bg-muted/80 relative border-l-4 overflow-hidden",
+                                !notification.isRead ? "bg-primary/[0.03] border-l-primary" : "opacity-60 border-l-transparent"
                             )}
                         >
                             <div className="flex items-start gap-3 sm:gap-4">
@@ -171,8 +171,11 @@ export default function NotificationsPage() {
                                     {getNotificationIcon(notification.type)}
                                 </div>
                                 <div className="flex-1 min-w-0 space-y-1">
-                                    <div className="flex justify-between items-baseline gap-2">
-                                        <p className={cn("font-bold text-sm sm:text-base leading-tight truncate", !notification.isRead && "text-foreground")}>
+                                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-baseline gap-1 sm:gap-2">
+                                        <p className={cn(
+                                            "font-bold text-sm sm:text-base leading-tight truncate", 
+                                            !notification.isRead ? "text-foreground" : "text-muted-foreground"
+                                        )}>
                                             {notification.title}
                                         </p>
                                         <span className="text-[9px] font-black uppercase tracking-tighter text-muted-foreground whitespace-nowrap shrink-0">
@@ -188,6 +191,11 @@ export default function NotificationsPage() {
                                         </p>
                                     )}
                                 </div>
+                                {!notification.isRead && (
+                                    <div className="absolute right-2 top-1/2 -translate-y-1/2 sm:static sm:translate-y-0">
+                                        <div className="h-2 w-2 rounded-full bg-primary animate-pulse shadow-[0_0_8px_rgba(249,116,22,0.5)]" />
+                                    </div>
+                                )}
                             </div>
                         </button>
                     )
