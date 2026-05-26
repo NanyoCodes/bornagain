@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useMemo, useRef } from 'react';
@@ -361,35 +362,37 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted, userP
             />
         </div>
       </div>
-      <div className="flex justify-between items-center py-6 shrink-0 border-t mt-auto">
-        <div>
-        {selectedNote && (
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button variant="ghost" size="icon" disabled={isDeleting} className="text-destructive hover:bg-destructive/10 h-11 w-11 rounded-full">
-                  {isDeleting ? <Loader2 className="h-5 w-5 animate-spin" /> : <Trash2 className="h-5 w-5" />}
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent className="rounded-3xl p-8">
-                <AlertDialogHeader>
-                  <AlertDialogTitle className="text-xl font-bold font-headline">Delete Journal Entry?</AlertDialogTitle>
-                  <AlertDialogDescription className="text-sm">
-                    This action is permanent and your reflection will be removed from your Kingdom record.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter className="mt-6 gap-3">
-                  <AlertDialogCancel className="rounded-2xl h-11">Keep it</AlertDialogCancel>
-                  <AlertDialogAction onClick={handleDeleteNote} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-11 font-bold">Delete permanently</AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-        )}
+      {!isMobile && (
+        <div className="flex justify-between items-center py-6 shrink-0 border-t mt-auto">
+            <div>
+            {selectedNote && (
+                <AlertDialog>
+                <AlertDialogTrigger asChild>
+                    <Button variant="ghost" size="icon" disabled={isDeleting} className="text-destructive hover:bg-destructive/10 h-11 w-11 rounded-full">
+                    {isDeleting ? <Loader2 className="h-5 w-5 animate-spin" /> : <Trash2 className="h-5 w-5" />}
+                    </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent className="rounded-3xl p-8">
+                    <AlertDialogHeader>
+                    <AlertDialogTitle className="text-xl font-bold font-headline">Delete Journal Entry?</AlertDialogTitle>
+                    <AlertDialogDescription className="text-sm">
+                        This action is permanent and your reflection will be removed from your Kingdom record.
+                    </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter className="mt-6 gap-3">
+                    <AlertDialogCancel className="rounded-2xl h-11">Keep it</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleDeleteNote} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-11 font-bold">Delete permanently</AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+                </AlertDialog>
+            )}
+            </div>
+            <Button onClick={handleSaveNote} disabled={isSaving || !content.trim() || !isDirty} className="px-10 h-12 rounded-2xl font-black shadow-lg shadow-primary/20">
+            {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+            {selectedNote ? 'SAVE CHANGES' : 'SAVE REVELATION'}
+            </Button>
         </div>
-        <Button onClick={handleSaveNote} disabled={isSaving || !content.trim() || !isDirty} className="px-10 h-12 rounded-2xl font-black shadow-lg shadow-primary/20">
-          {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-          {selectedNote ? 'SAVE CHANGES' : 'SAVE REVELATION'}
-        </Button>
-      </div>
+      )}
     </div>
   );
 
@@ -447,7 +450,17 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted, userP
             <div className="p-8 flex-grow min-h-0 overflow-hidden">
               {innerContent}
             </div>
-            <div className="p-8 border-t flex-shrink-0 bg-background/80 backdrop-blur-sm">
+            <div className="p-8 border-t flex-shrink-0 bg-background/80 backdrop-blur-sm flex flex-col gap-3">
+                {mobileTab === 'editor' && editorVisible && (
+                  <Button 
+                    onClick={handleSaveNote} 
+                    disabled={isSaving || !content.trim() || !isDirty} 
+                    className="w-full h-14 text-lg font-black rounded-2xl shadow-xl shadow-primary/20 tracking-widest uppercase"
+                  >
+                    {isSaving && <Loader2 className="mr-2 h-5 w-5 animate-spin" />}
+                    {selectedNote ? 'SAVE CHANGES' : 'SAVE REVELATION'}
+                  </Button>
+                )}
                 <Button variant="outline" onClick={() => onOpenChange(false)} className="w-full h-12 rounded-2xl font-bold">
                   Close Journal
                 </Button>
