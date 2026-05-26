@@ -323,7 +323,17 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   ];
   const isPublicRoute = publicRoutes.some(route => pathname === route || pathname.startsWith(route + '/')) || pathname === '/';
 
-  const isTakeoverPage = pathname.startsWith('/dashboard/chats/') || pathname.startsWith('/dashboard/notes') || pathname.startsWith('/dashboard/bible') || pathname.includes('/chats/');
+  // Comprehensive takeover detection for modules that require internal scrolling (Chat, Notes, Bible)
+  const isTakeoverPage = useMemo(() => {
+    return (
+      pathname.startsWith('/chats') ||
+      pathname.startsWith('/dashboard/chats') ||
+      pathname.startsWith('/notes') ||
+      pathname.startsWith('/dashboard/notes') ||
+      pathname.startsWith('/bible') ||
+      pathname.startsWith('/dashboard/bible')
+    );
+  }, [pathname]);
 
   const unreadChatNotifsQuery = useMemo(() => {
     if (!user?.uid || !firestore) return null;
@@ -375,7 +385,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   const isProfileIncomplete = user && userProfile && (!userProfile.firstName || !userProfile.lastName);
 
-  const showBottomNav = !isTakeoverPage || pathname.includes('/chats/');
+  // Bottom Nav is shown on regular pages and explicitly on chat pages
+  const showBottomNav = !isTakeoverPage || pathname.includes('/chats');
 
   return (
     <SearchProvider>

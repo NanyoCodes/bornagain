@@ -312,7 +312,13 @@ export default function DashboardClientLayout({ children }: { children: React.Re
   const [mounted, setMounted] = useState(false);
   const [showWelcomePopup, setShowWelcomePopup] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState("");
-  const isTakeoverPage = pathname.startsWith('/dashboard/chats/') || pathname.startsWith('/dashboard/notes') || pathname.startsWith('/dashboard/bible');
+  const isTakeoverPage = useMemo(() => {
+    return (
+      pathname.startsWith('/dashboard/chats') ||
+      pathname.startsWith('/dashboard/notes') ||
+      pathname.startsWith('/dashboard/bible')
+    );
+  }, [pathname]);
   const [lastActiveUpdated, setLastActiveUpdated] = useState(false);
 
   useEffect(() => { 
@@ -383,8 +389,8 @@ export default function DashboardClientLayout({ children }: { children: React.Re
 
   const isProfileIncomplete = userProfile && (!userProfile.firstName || !userProfile.lastName);
 
-  // We show the navbar on chat pages as requested, but keep the header hidden for focus
-  const showBottomNav = !isTakeoverPage || pathname.startsWith('/dashboard/chats/');
+  // Bottom Nav is shown on regular pages and on chat module pages
+  const showBottomNav = !isTakeoverPage || pathname.includes('/chats');
 
   return (
     <SearchProvider>

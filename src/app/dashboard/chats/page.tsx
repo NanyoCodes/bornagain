@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useCollection, useFirestore, useUser } from '@/firebase';
@@ -16,6 +15,7 @@ import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import { ChatParticipantsDialog } from '@/components/chat/participants-dialog';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 function ChatListItem({ chat, currentUserId, isUnread }: { chat: Chat, currentUserId: string, isUnread: boolean }) {
     const router = useRouter();
@@ -178,52 +178,56 @@ export default function ChatsPage() {
     }, [allChats, unreadChatIds]);
 
     return (
-        <div className="space-y-8">
-            <div className="space-y-2">
-                <h1 className="text-2xl sm:text-3xl font-bold tracking-tight font-headline">
-                    Chats
-                </h1>
-            </div>
-
-            <Card>
-                <CardHeader>
-                    <CardTitle>Conversations</CardTitle>
-                </CardHeader>
-                <CardContent className="p-0">
-                    {loading && (
-                        <div className="divide-y">
-                            {[...Array(3)].map((_, i) => (
-                                <div key={i} className="flex items-center gap-4 p-4">
-                                    <Skeleton className="h-12 w-12 rounded-full" />
-                                    <div className="flex-1 space-y-2">
-                                        <Skeleton className="h-4 w-3/4" />
-                                        <Skeleton className="h-4 w-1/2" />
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                    {!loading && chats?.length === 0 && (
-                        <div className="p-8 text-center border-t">
-                            <MessagesSquare className="mx-auto h-12 w-12 text-muted-foreground" />
-                            <h3 className="mt-4 text-lg font-semibold">No Active Conversations</h3>
-                            <p className="mt-2 text-sm text-muted-foreground">
-                                When you join a campaign or chat with someone, your conversations will appear here.
-                            </p>
-                        </div>
-                    )}
-                    <div className="divide-y border-t">
-                        {!loading && user && chats?.map(chat => (
-                             <ChatListItem 
-                                key={chat.id} 
-                                chat={chat} 
-                                currentUserId={user.uid}
-                                isUnread={unreadChatIds.has(chat.id)}
-                            />
-                        ))}
+        <div className="flex flex-col h-full w-full overflow-hidden bg-background">
+            <ScrollArea className="flex-1 w-full">
+                <div className="max-w-4xl mx-auto p-4 md:p-8 space-y-8 pb-32">
+                    <div className="space-y-2">
+                        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight font-headline">
+                            Chats
+                        </h1>
                     </div>
-                </CardContent>
-            </Card>
+
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Conversations</CardTitle>
+                        </CardHeader>
+                        <CardContent className="p-0">
+                            {loading && (
+                                <div className="divide-y">
+                                    {[...Array(3)].map((_, i) => (
+                                        <div key={i} className="flex items-center gap-4 p-4">
+                                            <Skeleton className="h-12 w-12 rounded-full" />
+                                            <div className="flex-1 space-y-2">
+                                                <Skeleton className="h-4 w-3/4" />
+                                                <Skeleton className="h-4 w-1/2" />
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                            {!loading && chats?.length === 0 && (
+                                <div className="p-8 text-center border-t">
+                                    <MessagesSquare className="mx-auto h-12 w-12 text-muted-foreground" />
+                                    <h3 className="mt-4 text-lg font-semibold">No Active Conversations</h3>
+                                    <p className="mt-2 text-sm text-muted-foreground">
+                                        When you join a campaign or chat with someone, your conversations will appear here.
+                                    </p>
+                                </div>
+                            )}
+                            <div className="divide-y border-t">
+                                {!loading && user && chats?.map(chat => (
+                                    <ChatListItem 
+                                        key={chat.id} 
+                                        chat={chat} 
+                                        currentUserId={user.uid}
+                                        isUnread={unreadChatIds.has(chat.id)}
+                                    />
+                                ))}
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>
+            </ScrollArea>
         </div>
     )
 }
