@@ -9,7 +9,7 @@ import type { UserProfile } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Loader2, HeartHandshake, MessagesSquare, MoreVertical, UserX, User, CheckCircle2, XCircle, BellRing, BookOpen } from 'lucide-react';
+import { Loader2, HeartHandshake, MessagesSquare, MoreVertical, UserX, User, CheckCircle2, XCircle, BellRing, BookOpen, Edit } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import {
@@ -67,25 +67,35 @@ function PartnerDisciplineStatus({ partnerId, date }: { partnerId: string; date:
     const disciplines = [
         { id: 'pray', label: 'Pray' },
         { id: 'read_bible', label: 'Read Bible' },
-        { id: 'attend_church', label: 'Attend Church' },
+        { id: 'attend_church', label: 'Church' },
+        { id: 'take_notes', label: 'Journal' },
     ];
     
     if (loading) {
-        return <div className="flex justify-around items-center h-10"><Loader2 className="h-4 w-4 animate-spin text-muted-foreground" /></div>;
+        return (
+            <div className="flex justify-around items-center h-12 bg-muted/5 rounded-xl border border-dashed">
+                <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground animate-pulse">Checking records...</span>
+            </div>
+        );
     }
 
     return (
-        <div className="flex justify-around items-center h-12">
+        <div className="grid grid-cols-4 gap-1 items-center h-14">
             {disciplines.map(d => (
-                <div key={d.id} className="flex flex-col items-center gap-1 text-[10px] sm:text-xs text-center min-w-[60px]">
+                <div key={d.id} className="flex flex-col items-center gap-1.5 text-[9px] sm:text-[10px] text-center min-w-0">
                     {completedOnDate.includes(d.id) ? (
-                        <CheckCircle2 className="h-5 w-5 text-green-500" />
+                        <div className="h-6 w-6 rounded-full bg-green-500/10 flex items-center justify-center">
+                            <CheckCircle2 className="h-4 w-4 text-green-500" />
+                        </div>
                     ) : (
-                        <XCircle className="h-5 w-5 text-muted-foreground/50" />
+                        <div className="h-6 w-6 rounded-full bg-muted flex items-center justify-center">
+                            <XCircle className="h-4 w-4 text-muted-foreground/30" />
+                        </div>
                     )}
                     <span className={cn(
-                        "leading-tight",
-                        completedOnDate.includes(d.id) ? 'font-bold text-foreground' : 'text-muted-foreground'
+                        "leading-tight uppercase font-black tracking-tighter truncate w-full px-1",
+                        completedOnDate.includes(d.id) ? 'text-foreground' : 'text-muted-foreground/60'
                     )}>
                         {d.label}
                     </span>
@@ -115,14 +125,14 @@ function PartnerCard({
     }, [dateStr]);
 
     return (
-        <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b shadow-sm">
+        <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b shadow-sm overflow-hidden bg-card/50 backdrop-blur-sm">
             <CardHeader className="flex flex-row items-center justify-between p-4 sm:p-6 gap-4">
                  <div className="flex items-center gap-3 min-w-0 flex-1">
                     <Dialog>
                       <DialogTrigger asChild disabled={!partner.photoURL}>
-                        <Avatar className={cn("h-10 w-10 sm:h-12 sm:w-12 border shrink-0", partner.photoURL && "cursor-pointer")}>
+                        <Avatar className={cn("h-11 w-11 sm:h-12 sm:w-12 border shadow-sm shrink-0", partner.photoURL && "cursor-pointer active:scale-95 transition-transform")}>
                             <AvatarImage src={partner.photoURL} />
-                            <AvatarFallback>{partner.firstName?.charAt(0)}</AvatarFallback>
+                            <AvatarFallback className="font-bold text-lg bg-primary/10 text-primary">{partner.firstName?.charAt(0)}</AvatarFallback>
                         </Avatar>
                       </DialogTrigger>
                       {partner.photoURL && (
@@ -131,13 +141,14 @@ function PartnerCard({
                                   <DialogTitle>Profile photo of {partner.firstName} {partner.lastName}</DialogTitle>
                                   <DialogDescription>A larger view of the user's profile photo.</DialogDescription>
                               </DialogHeader>
-                              <Image src={partner.photoURL} alt={`${partner.firstName} ${partner.lastName}`} width={600} height={600} className="rounded-lg object-contain"/>
+                              <Image src={partner.photoURL} alt={`${partner.firstName} ${partner.lastName}`} width={600} height={600} className="rounded-3xl object-contain shadow-2xl"/>
                           </DialogContent>
                       )}
                     </Dialog>
                     <div className="min-w-0">
-                        <Link href={`/dashboard/profile/${partner.userId}`}>
-                            <h2 className="text-xs sm:text-sm font-bold truncate hover:underline">{partner.firstName} {partner.lastName}</h2>
+                        <Link href={`/dashboard/profile/${partner.userId}`} className="group inline-flex flex-col">
+                            <h2 className="text-sm sm:text-base font-black truncate group-hover:underline leading-none">{partner.firstName} {partner.lastName}</h2>
+                            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-1 opacity-60">Partner</span>
                         </Link>
                     </div>
                 </div>
@@ -148,7 +159,7 @@ function PartnerCard({
                                 <Button
                                     variant="outline"
                                     size="icon"
-                                    className="h-8 w-8 sm:h-9 sm:w-9"
+                                    className="h-9 w-9 rounded-full"
                                     onClick={() => onNudge(partner)}
                                 >
                                     <BellRing className="h-4 w-4" />
@@ -166,7 +177,7 @@ function PartnerCard({
                                 <Button
                                     variant="outline"
                                     size="icon"
-                                    className="h-8 w-8 sm:h-9 sm:w-9"
+                                    className="h-9 w-9 rounded-full"
                                     onClick={() => onChat(partner)}
                                 >
                                     <MessagesSquare className="h-4 w-4" />
@@ -180,20 +191,20 @@ function PartnerCard({
                     </TooltipProvider>
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-8 w-8 sm:h-9 sm:w-9">
+                            <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full">
                                 <MoreVertical className="h-4 w-4" />
                             </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                            <DropdownMenuItem onSelect={() => router.push(`/dashboard/profile/${partner.userId}`)}>
+                        <DropdownMenuContent align="end" className="w-48 rounded-xl">
+                            <DropdownMenuItem onSelect={() => router.push(`/dashboard/profile/${partner.userId}`)} className="rounded-lg">
                               <User className="mr-2 h-4 w-4" /> View Profile
                             </DropdownMenuItem>
-                            <DropdownMenuItem onSelect={() => router.push('/dashboard/bible')}>
-                              <BookOpen className="mr-2 h-4 w-4" /> Read Bible Together
+                            <DropdownMenuItem onSelect={() => router.push('/dashboard/bible')} className="rounded-lg">
+                              <BookOpen className="mr-2 h-4 w-4" /> Read Bible
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem
-                                className="text-destructive focus:text-destructive"
+                                className="text-destructive focus:text-destructive rounded-lg"
                                 onSelect={() => onRemove(partner)}
                             >
                                 <UserX className="mr-2 h-4 w-4" /> Remove Partner
@@ -202,15 +213,18 @@ function PartnerCard({
                     </DropdownMenu>
                 </div>
             </CardHeader>
-            <CardContent className="px-4 sm:px-6 pb-4">
-                <div className="pt-4 border-t space-y-4">
-                    <div className="flex justify-between items-center flex-wrap gap-2">
-                        <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Discipline Status</h4>
+            <CardContent className="px-4 sm:px-6 pb-6">
+                <div className="pt-4 border-t border-dashed space-y-4">
+                    <div className="flex justify-between items-center gap-2">
+                        <div className="flex items-center gap-1.5">
+                            <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+                            <h4 className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">Discipline Records</h4>
+                        </div>
                         <Input 
                             type="date" 
                             value={dateStr} 
                             onChange={(e) => setDateStr(e.target.value)} 
-                            className="w-[130px] h-7 text-[10px] sm:h-8 sm:text-xs"
+                            className="w-[140px] h-8 text-[10px] sm:text-xs font-bold uppercase tracking-tighter bg-muted/20 border-none rounded-lg"
                         />
                     </div>
                     <PartnerDisciplineStatus 
@@ -457,24 +471,26 @@ export default function AccountabilityPage() {
 
   if (isLoading) {
     return (
-      <div className="flex h-full w-full flex-col items-center justify-center">
+      <div className="flex h-full w-full flex-col items-center justify-center py-20">
         <Loader2 className="h-12 w-12 animate-spin text-primary" />
-        <p className="mt-4 text-muted-foreground animate-pulse">Loading partners...</p>
+        <p className="mt-4 text-[10px] font-black uppercase tracking-[0.3em] text-primary animate-pulse">Establishing Connection...</p>
       </div>
     );
   }
   
   if (partners.length === 0) {
     return (
-      <div className="space-y-6 max-w-3xl mx-auto -mx-4 sm:mx-auto pb-32">
-        <div className="flex flex-col items-center justify-center text-center p-8 sm:p-12 bg-muted/20 rounded-none sm:rounded-lg border-y sm:border-2 border-dashed">
-            <HeartHandshake className="h-16 w-16 text-muted-foreground opacity-20" />
-            <h2 className="mt-6 text-xl sm:text-2xl font-bold">Find a Partner</h2>
-            <p className="mt-2 max-w-sm text-sm text-muted-foreground">
-            Connect with fellow believers to stay motivated and grow together in your spiritual walk.
+      <div className="space-y-8 max-w-3xl mx-auto -mx-4 sm:mx-auto pb-32 px-4 sm:px-0">
+        <div className="flex flex-col items-center justify-center text-center p-10 sm:p-16 bg-primary/5 rounded-[2.5rem] border-2 border-dashed border-primary/20">
+            <div className="h-20 w-20 bg-primary/10 rounded-full flex items-center justify-center mb-6">
+                <HeartHandshake className="h-10 w-10 text-primary opacity-40" />
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-black font-headline tracking-tight uppercase">Find a Partner</h2>
+            <p className="mt-3 max-w-sm text-sm text-muted-foreground font-medium leading-relaxed">
+            "Two are better than one... for if they fall, the one will lift up his fellow." — Ecclesiastes 4:9-10
             </p>
         </div>
-        <div className="px-4 sm:px-0">
+        <div>
             {userProfile && user && <AccountabilitySettingsCard userProfile={userProfile} userId={user.uid} />}
         </div>
       </div>
@@ -482,13 +498,13 @@ export default function AccountabilityPage() {
   }
   
   return (
-    <div className="space-y-8 max-w-3xl mx-auto -mx-4 sm:mx-auto pb-32">
+    <div className="space-y-10 max-w-3xl mx-auto -mx-4 sm:mx-auto pb-32">
       <div className="px-4 sm:px-0 space-y-1">
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Accountability Partners</h1>
-        <p className="text-sm text-muted-foreground">Encourage your partners and keep each other on track.</p>
+        <h1 className="text-2xl sm:text-3xl font-black font-headline tracking-tight uppercase">My Partners</h1>
+        <p className="text-xs sm:text-sm text-muted-foreground font-medium uppercase tracking-widest opacity-60">Spiritual Accountability</p>
       </div>
 
-      <div className="space-y-0">
+      <div className="space-y-4">
           {filteredPartners.map(partner => (
               <PartnerCard 
                   key={partner.userId}
@@ -499,13 +515,13 @@ export default function AccountabilityPage() {
               />
           ))}
           {partners.length > 0 && filteredPartners.length === 0 && (
-              <div className="text-center py-12 text-muted-foreground bg-muted/10 border-y sm:border-2 border-dashed rounded-none sm:rounded-lg">
-                  <p>No partners found matching "{searchTerm}".</p>
+              <div className="text-center py-20 text-muted-foreground bg-muted/10 border-y sm:border-2 border-dashed rounded-none sm:rounded-[2.5rem]">
+                  <p className="font-bold">No partners found matching "{searchTerm}".</p>
               </div>
           )}
       </div>
 
-      <div className="px-4 sm:px-0">
+      <div className="px-4 sm:px-0 pt-4">
         {userProfile && user && <AccountabilitySettingsCard userProfile={userProfile} userId={user.uid} />}
       </div>
 
@@ -519,28 +535,28 @@ export default function AccountabilityPage() {
                 }
             }}
         >
-            <AlertDialogContent className="w-[90vw] max-w-lg rounded-lg">
+            <AlertDialogContent className="w-[90vw] max-w-lg rounded-[2rem] p-8">
                 <AlertDialogHeader>
-                    <AlertDialogTitle>Remove {removalTarget.firstName}?</AlertDialogTitle>
-                    <AlertDialogDescription>
-                        Ending this partnership will remove each other from your active partners list. Please provide a reason.
+                    <AlertDialogTitle className="text-2xl font-black font-headline leading-tight">End Partnership?</AlertDialogTitle>
+                    <AlertDialogDescription className="text-sm font-medium">
+                        You're about to end your accountability partnership with {removalTarget.firstName}. This will remove both of you from each other's active tracking lists.
                     </AlertDialogDescription>
                 </AlertDialogHeader>
-                <div className="grid gap-4 py-4">
+                <div className="grid gap-4 py-6">
                     <div className="grid gap-2">
-                        <Label htmlFor="removal-reason">Reason for Removal</Label>
+                        <Label htmlFor="removal-reason" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Reason for Removal</Label>
                         <Textarea
                             id="removal-reason"
                             value={removalReason}
                             onChange={(e) => setRemovalReason(e.target.value)}
-                            placeholder="e.g., We've finished our current program..."
-                            className="text-base"
+                            placeholder="e.g., Seasonal change, moved church..."
+                            className="text-base rounded-2xl min-h-[100px] bg-muted/20"
                         />
                     </div>
                 </div>
-                <AlertDialogFooter>
-                    <AlertDialogCancel disabled={isRemoving === removalTarget.userId}>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleRemovePartner} disabled={isRemoving === removalTarget.userId || !removalReason.trim()} className="bg-destructive hover:bg-destructive/90">
+                <AlertDialogFooter className="gap-3">
+                    <AlertDialogCancel disabled={isRemoving === removalTarget.userId} className="rounded-xl h-11">Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleRemovePartner} disabled={isRemoving === removalTarget.userId || !removalReason.trim()} className="bg-destructive hover:bg-destructive/90 rounded-xl h-11 font-bold">
                         {isRemoving === removalTarget.userId ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                         Confirm Removal
                     </AlertDialogAction>
