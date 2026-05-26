@@ -15,7 +15,7 @@ import {
   getDocs,
 } from 'firebase/firestore';
 import type { Chat, ChatMessage, Campaign, Fellowship } from '@/lib/types';
-import { Loader2, Send, ArrowLeft, Reply, X, ChevronDown } from 'lucide-react';
+import { Loader2, Send, ArrowLeft, Reply, X, ChevronDown, MessagesSquare } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn, safeToDate } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
