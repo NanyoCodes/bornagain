@@ -16,7 +16,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Loader2, Plus, Trash2, FileText, Download, XCircle, ArrowLeft, CornerUpLeft } from 'lucide-react';
+import { Loader2, Plus, Trash2, FileText, Download, ArrowLeft, CornerUpLeft } from 'lucide-react';
 import { useUser, useFirestore, useCollection } from '@/firebase';
 import {
   collection,
@@ -32,13 +32,13 @@ import {
 import type { Note, NoteCategory } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
-import { cn, safeToDate } from '@/lib/utils';
+import { cn } from '@/lib/utils';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import jsPDF from 'jspdf';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useRouter } from 'next/navigation';
@@ -298,7 +298,7 @@ export default function NotesPage() {
   };
   
   const NoteList = (
-    <div className="space-y-6 h-full flex flex-col min-w-0">
+    <div className="space-y-4 h-full flex flex-col min-w-0">
        <div className="flex flex-col sm:flex-row gap-3 shrink-0">
           <Input
               placeholder="Search your journal..."
@@ -371,11 +371,11 @@ export default function NotesPage() {
   const NoteEditor = (
     <div className="flex flex-col h-full overflow-hidden min-w-0" key={selectedNote?.id || (isCreatingNew ? 'new-note' : 'empty-editor')}>
       {isMobile && (
-        <Button onClick={handleBackToList} variant="ghost" size="sm" className="mb-4 self-start pl-0 text-primary font-bold uppercase tracking-widest text-[10px]">
+        <Button onClick={handleBackToList} variant="ghost" size="sm" className="mb-2 self-start pl-0 text-primary font-bold uppercase tracking-widest text-[10px]">
             <CornerUpLeft className="mr-2 h-3.5 w-3.5" /> Back to List
         </Button>
       )}
-      <div className="space-y-6 flex-grow flex flex-col min-h-0">
+      <div className="space-y-4 flex-grow flex flex-col min-h-0">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 shrink-0">
             <div className="space-y-1.5">
                 <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Note Title</Label>
@@ -416,7 +416,7 @@ export default function NotesPage() {
                     setContent(e.target.value);
                     setIsDirty(true);
                 }}
-                className="flex-grow min-h-0 text-base leading-relaxed p-6 rounded-[2rem] bg-muted/10 resize-none border-dashed overflow-y-auto"
+                className="flex-grow min-h-0 text-lg sm:text-xl leading-relaxed p-6 rounded-[2rem] bg-muted/10 resize-none border-dashed overflow-y-auto"
             />
         </div>
       </div>
@@ -459,7 +459,7 @@ export default function NotesPage() {
   
   return (
     <div className="h-full flex flex-col p-4 md:p-10 overflow-hidden bg-background">
-       <div className="flex-shrink-0 flex items-center gap-4 mb-8">
+       <div className="flex-shrink-0 flex items-center gap-4 mb-4 sm:mb-8">
             <Button variant="outline" size="icon" onClick={() => router.back()} className="rounded-full shadow-sm">
               <ArrowLeft className="h-4 w-4" />
               <span className="sr-only">Back</span>
@@ -497,14 +497,14 @@ export default function NotesPage() {
                       setActiveTab(newTab);
                   }
                 }} className="h-full flex flex-col min-w-0">
-                    <TabsList className="grid w-full grid-cols-2 shrink-0 h-12 p-1 bg-muted/30 rounded-2xl mb-6">
+                    <TabsList className="grid w-full grid-cols-2 shrink-0 h-12 p-1 bg-muted/30 rounded-2xl mb-4 sm:mb-6">
                         <TabsTrigger value="list" className="rounded-xl font-bold">Past Records</TabsTrigger>
                         <TabsTrigger value="editor" className="rounded-xl font-bold">{selectedNote ? 'Edit Entry' : 'New Entry'}</TabsTrigger>
                     </TabsList>
-                    <TabsContent value="list" className="flex-grow min-h-0 overflow-hidden data-[state=inactive]:hidden">
+                    <TabsContent value="list" className="flex-grow min-h-0 overflow-hidden h-full data-[state=inactive]:hidden">
                         {NoteList}
                     </TabsContent>
-                    <TabsContent value="editor" className="flex-grow flex flex-col min-h-0 overflow-hidden data-[state=inactive]:hidden">
+                    <TabsContent value="editor" className="flex-grow flex flex-col min-h-0 h-full overflow-hidden data-[state=inactive]:hidden">
                         {editorVisible ? NoteEditor : (
                             <div className="text-center text-muted-foreground py-20 flex flex-col items-center justify-center h-full border-2 border-dashed rounded-[2rem] bg-muted/5 mx-1">
                                <p className="font-black uppercase tracking-tight">No note selected</p>

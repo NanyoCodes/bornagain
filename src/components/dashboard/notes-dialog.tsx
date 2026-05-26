@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useMemo, useRef } from 'react';
@@ -247,7 +246,7 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted, userP
   };
   
   const NoteList = (
-    <div className="space-y-6 h-full flex flex-col min-w-0">
+    <div className="space-y-4 h-full flex flex-col min-w-0">
        <div className="flex flex-col sm:flex-row gap-3 shrink-0">
           <Input
               placeholder="Search your revelations..."
@@ -262,7 +261,7 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted, userP
       <ScrollArea className="flex-1 min-h-0 w-full">
         <div className="min-w-0 pr-2">
             {notesLoading ? (
-            <div className="flex justify-center py-12"><Loader2 className="h-10 w-10 animate-spin text-primary opacity-50" /></div>
+            <div className="flex justify-center py-12"><Loader2 className="h-8 w-8 animate-spin text-primary opacity-50" /></div>
             ) : filteredNotes && filteredNotes.length > 0 ? (
             <Accordion type="multiple" defaultValue={noteCategories} className="w-full space-y-3 min-w-0">
                 {noteCategories.map(cat => {
@@ -323,11 +322,11 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted, userP
   const NoteEditor = (
     <div className="flex flex-col h-full overflow-hidden min-w-0">
       {isMobile && (
-        <Button onClick={handleBackToList} variant="ghost" size="sm" className="mb-4 self-start pl-0 text-primary font-bold uppercase tracking-widest text-[10px]">
+        <Button onClick={handleBackToList} variant="ghost" size="sm" className="mb-2 self-start pl-0 text-primary font-bold uppercase tracking-widest text-[10px]">
             <CornerUpLeft className="mr-2 h-3.5 w-3.5" /> Back to Journal
         </Button>
       )}
-      <div className="space-y-6 flex-grow flex flex-col min-h-0">
+      <div className="space-y-4 flex-grow flex flex-col min-h-0">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 shrink-0">
             <div className="space-y-1.5">
                 <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Title</Label>
@@ -358,7 +357,7 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted, userP
                 placeholder="What is the Spirit saying to you today?"
                 value={content}
                 onChange={(e) => { setContent(e.target.value); setIsDirty(true); }}
-                className="flex-grow min-h-0 text-base leading-relaxed p-6 rounded-[2rem] bg-muted/10 resize-none border-dashed overflow-y-auto"
+                className="flex-grow min-h-0 text-lg sm:text-xl leading-relaxed p-6 rounded-[2rem] bg-muted/10 resize-none border-dashed overflow-y-auto"
             />
         </div>
       </div>
@@ -397,17 +396,17 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted, userP
   );
 
   const innerContent = !mounted ? null : isMobile ? (
-    <Tabs value={mobileTab} onValueChange={setMobileTab} className="flex-grow flex flex-col min-h-0 min-w-0">
+    <Tabs value={mobileTab} onValueChange={setMobileTab} className="flex-grow flex flex-col min-h-0 min-w-0 h-full">
         <TabsList className="grid w-full grid-cols-2 shrink-0 h-11 p-1 bg-muted/30 rounded-2xl mb-4">
             <TabsTrigger value="list" className="rounded-xl font-bold">Past Notes</TabsTrigger>
             <TabsTrigger value="editor" disabled={!editorVisible} className="rounded-xl font-bold">
                 {selectedNote ? 'Edit Entry' : 'New Entry'}
             </TabsTrigger>
         </TabsList>
-        <TabsContent value="list" className="flex-grow min-h-0 overflow-hidden data-[state=inactive]:hidden">
+        <TabsContent value="list" className="flex-grow min-h-0 overflow-hidden h-full data-[state=inactive]:hidden">
             {NoteList}
         </TabsContent>
-        <TabsContent value="editor" className="flex-grow flex flex-col min-h-0 overflow-hidden data-[state=inactive]:hidden">
+        <TabsContent value="editor" className="flex-grow flex flex-col min-h-0 h-full overflow-hidden data-[state=inactive]:hidden">
             {editorVisible ? NoteEditor : (
                 <div className="text-center text-muted-foreground py-20 flex flex-col items-center justify-center h-full">
                     <p>Select a note to edit.</p>
@@ -441,16 +440,16 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted, userP
     return (
       <Sheet open={isOpen} onOpenChange={onOpenChange}>
         <SheetContent side="bottom" className="p-0 flex flex-col h-[95dvh] rounded-t-[2.5rem]">
-            <div className="p-8 border-b flex-shrink-0 bg-muted/10">
+            <div className="p-6 border-b flex-shrink-0 bg-muted/10">
               <SheetHeader className="text-left">
                   <SheetTitle className="text-2xl font-black font-headline">Journal</SheetTitle>
                   <SheetDescription className="text-sm font-medium mt-1">Capture your reflections and revelations.</SheetDescription>
               </SheetHeader>
             </div>
-            <div className="p-8 flex-grow min-h-0 overflow-hidden">
+            <div className="p-6 flex-grow min-h-0 overflow-hidden">
               {innerContent}
             </div>
-            <div className="p-8 border-t flex-shrink-0 bg-background/80 backdrop-blur-sm flex flex-col gap-3">
+            <div className="p-6 border-t flex-shrink-0 bg-background/80 backdrop-blur-sm flex flex-col gap-3">
                 {mobileTab === 'editor' && editorVisible && (
                   <Button 
                     onClick={handleSaveNote} 
@@ -473,7 +472,7 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted, userP
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-5xl h-[85vh] flex flex-col p-8 rounded-3xl overflow-hidden">
-        <DialogHeader className="shrink-0 mb-4">
+        <DialogHeader className="shrink-0 mb-2">
           <DialogTitle className="text-3xl font-black font-headline">Journal</DialogTitle>
           <DialogDescription className="text-base font-medium">A place for your thoughts, reflections, and revelations.</DialogDescription>
         </DialogHeader>
