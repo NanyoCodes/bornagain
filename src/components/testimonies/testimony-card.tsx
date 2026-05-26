@@ -31,6 +31,7 @@ import {
   Twitter, 
   Link as LinkIcon, 
   MessageSquare,
+  MessageCircle,
   UserPlus,
   HeartHandshake,
   CheckCircle2,
