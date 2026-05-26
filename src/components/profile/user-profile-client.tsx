@@ -7,7 +7,6 @@ import type { Testimony, Campaign, UserProfile, AccountabilityRequest } from '@/
 import { doc, collection, query, where, orderBy } from 'firebase/firestore';
 import { 
     Loader2, 
-    Mail, 
     MapPin, 
     ArrowLeft, 
     Edit, 
@@ -30,11 +29,10 @@ import { TestimonyCard } from '@/components/testimonies/testimony-card';
 import { CampaignCard } from '@/components/campaigns/campaign-card';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import { cn, safeToDate, haversineDistance } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
+import { Separator } from '../ui/separator';
 import { ScrollArea } from '../ui/scroll-area';
 
 function getYouTubeEmbedUrl(url: string | undefined) {
@@ -147,7 +145,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                 <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
             </div>
         </div>
-        <p className="text-xl font-black font-headline tracking-[0.4em] uppercase text-primary animate-pulse">Connecting...</p>
+        <p className="text-xl font-black font-headline tracking-[0.4em] uppercase text-primary animate-pulse text-center px-8">Connecting...</p>
       </div>
     );
   }
@@ -324,7 +322,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                 </div>
                 
                 {testimonies.length > 0 ? (
-                    <div className="grid gap-0 md:grid-cols-2 lg:grid-cols-3">
+                    <div className="grid gap-0 md:grid-cols-2 lg:grid-cols-3 -mx-4 sm:mx-0">
                         {testimonies.map(testimony => (
                             <TestimonyCard 
                                 key={testimony.id} 
@@ -340,7 +338,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                 ) : (
                     <div className="text-center py-16 bg-muted/20 rounded-2xl sm:rounded-[2rem] border-2 border-dashed border-muted mx-4 sm:mx-0">
                         <Newspaper className="h-10 w-10 text-muted-foreground/20 mx-auto mb-3" />
-                        <p className="text-xs sm:text-sm text-muted-foreground italic font-medium">No shared testimonies found in this folder.</p>
+                        <p className="text-xs sm:text-sm text-muted-foreground italic font-medium text-balance px-8">No shared testimonies found in this folder.</p>
                     </div>
                 )}
             </div>
@@ -352,7 +350,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                     <h3 className="text-lg sm:text-xl font-black uppercase tracking-tight">Organized Campaigns ({processedCampaigns.length})</h3>
                 </div>
                 {processedCampaigns.length > 0 ? (
-                    <div className="grid gap-0 md:grid-cols-2 lg:grid-cols-3">
+                    <div className="grid gap-0 md:grid-cols-2 lg:grid-cols-3 -mx-4 sm:mx-0">
                         {processedCampaigns.map(campaign => (
                             <CampaignCard 
                                 key={campaign.id} 
@@ -370,7 +368,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                 ) : (
                     <div className="text-center py-16 bg-muted/20 rounded-2xl sm:rounded-[2rem] border-2 border-dashed border-muted mx-4 sm:mx-0">
                         <Target className="h-10 w-10 text-muted-foreground/20 mx-auto mb-3" />
-                        <p className="text-xs sm:text-sm text-muted-foreground italic font-medium">No public mission campaigns organized.</p>
+                        <p className="text-xs sm:text-sm text-muted-foreground italic font-medium text-balance px-8">No public mission campaigns organized.</p>
                     </div>
                 )}
             </div>
