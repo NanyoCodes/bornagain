@@ -2,6 +2,7 @@ import { MetadataRoute } from 'next';
 
 /**
  * @fileOverview Dynamically generates the sitemap for Testify Global to improve Google Search visibility.
+ * All public routes are listed here to ensure full indexing.
  */
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = 'https://testifyglobal.com';

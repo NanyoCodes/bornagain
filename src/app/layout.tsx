@@ -23,6 +23,8 @@ export const metadata: Metadata = {
   description:
     'Join the global movement to organize the harvest. Share Christian testimonies, join soul-winning campaigns, find accountability partners, and track evangelism progress for the Kingdom of God.',
   keywords: [
+    'testify',
+    'testify global',
     'christian testimonies',
     'evangelism platform',
     'soul winning',
