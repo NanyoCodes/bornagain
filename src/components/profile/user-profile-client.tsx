@@ -275,28 +275,26 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                     Experience the power of God through these captured moments of glory.
                 </CardDescription>
             </CardHeader>
-            <CardContent className="px-0 sm:px-12 pb-12">
-                <div className="w-full overflow-x-auto pb-4 scrollbar-hide">
-                    <div className="flex gap-4 sm:gap-6 px-6 sm:px-0 flex-nowrap">
-                        {videoTestimonies.map((video, idx) => (
-                            <div key={idx} className="flex-shrink-0 w-[280px] sm:w-[450px] space-y-3">
-                                {video.title && (
-                                    <h4 className="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-500 truncate ml-2">
-                                        {video.title}
-                                    </h4>
-                                )}
-                                <div className="relative w-full aspect-video rounded-xl sm:rounded-[1.5rem] overflow-hidden bg-black shadow-2xl border border-white/5 transition-transform duration-300 hover:scale-[1.02]">
-                                    <iframe
-                                        src={video.embedUrl!}
-                                        title={video.title || `Video Testimony from ${displayName}`}
-                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                        allowFullScreen
-                                        className="absolute inset-0 w-full h-full border-0"
-                                    />
-                                </div>
+            <CardContent className="px-6 sm:px-12 pb-12">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    {videoTestimonies.map((video, idx) => (
+                        <div key={idx} className="space-y-3">
+                            {video.title && (
+                                <h4 className="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-500 truncate ml-2">
+                                    {video.title}
+                                </h4>
+                            )}
+                            <div className="relative w-full aspect-video rounded-xl sm:rounded-[1.5rem] overflow-hidden bg-black shadow-2xl border border-white/5 transition-transform duration-300 hover:scale-[1.02]">
+                                <iframe
+                                    src={video.embedUrl!}
+                                    title={video.title || `Video Testimony from ${displayName}`}
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                    allowFullScreen
+                                    className="absolute inset-0 w-full h-full border-0"
+                                />
                             </div>
-                        ))}
-                    </div>
+                        </div>
+                    ))}
                 </div>
             </CardContent>
         </Card>

@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useMemo } from "react";
@@ -431,24 +430,22 @@ export default function ProfilePage() {
                     My Video Testimonies
                 </CardTitle>
             </CardHeader>
-            <CardContent className="p-0">
-                <div className="w-full overflow-x-auto pb-4 scrollbar-hide">
-                    <div className="flex gap-4 p-4 sm:p-6 sm:pt-0 flex-nowrap">
-                        {videoTestimonies.map((video, idx) => (
-                            <div key={idx} className="flex-shrink-0 w-[280px] sm:w-[400px] space-y-2">
-                                {video.title && <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground truncate">{video.title}</p>}
-                                <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-black shadow-lg border border-white/5">
-                                    <iframe
-                                        src={video.embedUrl!}
-                                        title={video.title || "Video Testimony"}
-                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                        allowFullScreen
-                                        className="absolute inset-0 w-full h-full border-0"
-                                    />
-                                </div>
+            <CardContent className="px-6 pb-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {videoTestimonies.map((video, idx) => (
+                        <div key={idx} className="space-y-2">
+                            {video.title && <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground truncate ml-1">{video.title}</p>}
+                            <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-black shadow-lg border border-white/5 transition-transform hover:scale-[1.01]">
+                                <iframe
+                                    src={video.embedUrl!}
+                                    title={video.title || "Video Testimony"}
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                    allowFullScreen
+                                    className="absolute inset-0 w-full h-full border-0"
+                                />
                             </div>
-                        ))}
-                    </div>
+                        </div>
+                    ))}
                 </div>
             </CardContent>
         </Card>
@@ -467,7 +464,7 @@ export default function ProfilePage() {
                             searchTerm={testimonySearchTerm}
                             setSearchTerm={setTestimonySearchTerm}
                             filterDate={testimonyFilterDate}
-                            setFilterDate={setTestimonyFilterDate}
+                            setFilterDate={setFilterDate}
                             searchPlaceholder="Search testimonies..."
                         />
                         <ScrollArea className="h-48 border rounded-lg bg-muted/5">
@@ -494,7 +491,7 @@ export default function ProfilePage() {
                             searchTerm={prayerSearchTerm}
                             setSearchTerm={setPrayerSearchTerm}
                             filterDate={prayerFilterDate}
-                            setFilterDate={setPrayerFilterDate}
+                            setFilterDate={setFilterDate}
                             searchPlaceholder="Search prayer requests..."
                         />
                         <ScrollArea className="h-48 border rounded-lg bg-muted/5">
@@ -523,7 +520,7 @@ export default function ProfilePage() {
                             searchTerm={createdCampaignSearchTerm}
                             setSearchTerm={setCreatedCampaignSearchTerm}
                             filterDate={createdCampaignFilterDate}
-                            setFilterDate={setCreatedCampaignFilterDate}
+                            setFilterDate={setFilterDate}
                             searchPlaceholder="Search created campaigns..."
                         />
                         <ScrollArea className="h-48 border rounded-lg bg-muted/5">
