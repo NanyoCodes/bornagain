@@ -1,3 +1,4 @@
+// Comprehensive takeover detection for modules that require internal scrolling (Chat, Notes, Bible, Notifications)
 'use client';
 
 import Link from "next/link";
@@ -387,8 +388,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   const isProfileIncomplete = user && userProfile && (!userProfile.firstName || !userProfile.lastName);
 
-  // Bottom Nav is shown on regular pages and explicitly on chat pages
-  const showBottomNav = !isTakeoverPage || pathname.includes('/chats');
+  // Bottom Nav is hidden for all takeover pages (Chat, Bible, Notes, Notifications)
+  const showBottomNav = !isTakeoverPage;
 
   return (
     <SearchProvider>
