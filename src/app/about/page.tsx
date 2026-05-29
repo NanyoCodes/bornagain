@@ -37,7 +37,7 @@ export default function AboutPage() {
             <h2 className="text-2xl font-bold flex items-center gap-2"><Award className="h-5 w-5 text-primary" /> Founder's Story</h2>
             <Card className="border-l-4 border-l-primary">
                 <CardContent className="pt-6 italic text-muted-foreground leading-relaxed">
-                    "I believe that technology is a divine gift for this final harvest. Seeing the need for accountability and collective encouragement in evangelism, I was led to create a space where every soul won is celebrated and every miracle is recorded for God's glory. God is great, and His power in Jesus Christ is moving through the earth like never before. Testify is a testimony in itself of God's provision for His people."
+                    "I believe that technology is a divine gift for this final harvest. Seeing the need for accountability and collective encouragement in evangelism, I was led to create a space where every soul won is celebrated and every miracle is recorded for God's glory. God is great, and His power in Jesus Christ is moving through the earth like never before. Testify is a testimony in itself of God's provision for His people." - by Nanyo Theophilus
                 </CardContent>
             </Card>
         </section>
