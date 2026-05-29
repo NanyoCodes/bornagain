@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from "next/link";
@@ -323,53 +322,34 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
   }
 
 
-  const handleShare = async () => {
-    const baseUrl = "https://testifyglobal.com";
-    const shareUrl = `${baseUrl}/dashboard/campaigns/${campaign.id}`;
+  const handleShare = async (e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+
+    const shareUrl = `${window.location.origin}/dashboard/campaigns/${campaign.id}`;
     const shareData = {
       title: `Join the '${campaign.title}' campaign on Testify!`,
       text: `Join me in the '${campaign.title}' evangelism campaign. Let's make an impact together!`,
       url: shareUrl,
     };
+
     try {
-      if (navigator.share) {
+      if (navigator && navigator.share) {
         await navigator.share(shareData);
       } else {
-         handleShareDropdown('link');
+        throw new Error('Native share not supported');
       }
-    } catch (err) {
-      console.error('Share failed:', err);
-      handleShareDropdown('link');
-    }
-  };
-
-  const handleShareDropdown = (platform: "link" | "facebook" | "twitter" | "whatsapp") => {
-    const baseUrl = "https://testifyglobal.com";
-    const url = `${baseUrl}/dashboard/campaigns/${campaign.id}`;
-    const titleText = `Join the '${campaign.title}' campaign on Testify!`;
-    const shareTextWithUrl = `${titleText} ${url}`;
-    let shareUrl = "";
-
-    switch (platform) {
-      case "facebook":
-        shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}&quote=${encodeURIComponent(titleText)}`;
-        window.open(shareUrl, "_blank");
-        break;
-      case "twitter":
-        shareUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(titleText)}`;
-        window.open(shareUrl, "_blank");
-        break;
-      case "whatsapp":
-        shareUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareTextWithUrl)}`;
-        window.open(shareUrl, "_blank");
-        break;
-      case "link":
-        navigator.clipboard.writeText(shareTextWithUrl);
-        toast({
-          title: 'Link Copied!',
-          description: 'Campaign link has been copied to your clipboard.',
-        });
-        break;
+    } catch (err: any) {
+        if (err.name === 'AbortError') return;
+        
+        try {
+          await navigator.clipboard.writeText(`${shareData.title} ${shareUrl}`);
+          toast({ title: 'Link Copied!', description: 'Campaign link has been copied to your clipboard.' });
+        } catch (clipErr) {
+          console.error("Clipboard fallback failed", clipErr);
+        }
     }
   };
 
@@ -440,36 +420,15 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
 
 
   const shareButton = (
-    <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="icon" onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              handleShare();
-            }} disabled={status === 'Past'}>
-                <Share2 className="h-4 w-4" />
-                <span className="sr-only">Share Campaign</span>
-            </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-            <DropdownMenuItem onSelect={() => handleShareDropdown('link')}>
-                <LinkIcon className="mr-2 h-4 w-4" />
-                Copy Link
-            </DropdownMenuItem>
-            <DropdownMenuItem onSelect={() => handleShareDropdown('whatsapp')}>
-                <MessageCircle className="mr-2 h-4 w-4" />
-                Share on WhatsApp
-            </DropdownMenuItem>
-            <DropdownMenuItem onSelect={() => handleShareDropdown('facebook')}>
-                <Facebook className="mr-2 h-4 w-4" />
-                Share on Facebook
-            </DropdownMenuItem>
-            <DropdownMenuItem onSelect={() => handleShareDropdown('twitter')}>
-                <Twitter className="mr-2 h-4 w-4" />
-                Share on Twitter (X)
-            </DropdownMenuItem>
-        </DropdownMenuContent>
-    </DropdownMenu>
+    <Button 
+        variant="outline" 
+        size="icon" 
+        onClick={handleShare} 
+        disabled={status === 'Past'}
+    >
+        <Share2 className="h-4 w-4" />
+        <span className="sr-only">Share Campaign</span>
+    </Button>
   );
 
 

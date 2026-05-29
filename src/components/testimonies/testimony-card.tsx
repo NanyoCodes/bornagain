@@ -29,15 +29,9 @@ import {
   X, 
   MessageSquare,
   UserPlus,
-  HeartHandshake,
-  CheckCircle2,
   Hourglass,
-  Link as LinkIcon,
-  MessageCircle,
-  Facebook,
-  Twitter
 } from "lucide-react";
-import { useUser, useAuth, useFirestore, useCollection } from "@/firebase";
+import { useUser, useFirestore, useCollection } from "@/firebase";
 import { useState, useMemo } from "react";
 import {
   DropdownMenu,
@@ -135,6 +129,43 @@ export const TestimonyCard = React.memo(function TestimonyCard({
     };
   }, [testimony.content]);
 
+  const handleShare = async (e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+
+    const shareUrl = `${window.location.origin}/dashboard/testimonies#${testimony.id}`;
+    const titleText = `Testimony from ${authorFullName} on Testify!`;
+    const text = `Read what God has done! "${testimony.content.substring(0, 150)}..."`;
+    
+    const shareData = {
+      title: titleText,
+      text,
+      url: shareUrl,
+    };
+
+    try {
+      if (navigator && navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        throw new Error('Native share not supported');
+      }
+    } catch (err: any) {
+        if (err.name === 'AbortError') return;
+        
+        try {
+          await navigator.clipboard.writeText(`${titleText} ${shareUrl}`);
+          toast({
+            title: "Link Copied!",
+            description: "Testimony link copied to your clipboard.",
+          });
+        } catch (clipErr) {
+          console.error("Clipboard fallback failed", clipErr);
+        }
+    }
+  };
+
   const handleReaction = (type: 'amen' | 'inspired' | 'connect') => {
     if (!user || !firestore) return;
 
@@ -213,44 +244,6 @@ export const TestimonyCard = React.memo(function TestimonyCard({
         errorEmitter.emit('permission-error', permissionError);
     } finally {
         setIsRequestingPartner(false);
-    }
-  };
-
-  const handleShare = async (e?: React.MouseEvent) => {
-    if (e) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
-
-    const baseUrl = "https://testifyglobal.com";
-    const shareUrl = `${baseUrl}/dashboard/testimonies#${testimony.id}`;
-    const titleText = `Testimony from ${authorFullName} on Testify!`;
-    const text = `Read what God has done! "${testimony.content.substring(0, 150)}..."`;
-    
-    const shareData = {
-      title: titleText,
-      text,
-      url: shareUrl,
-    };
-
-    try {
-      if (navigator.share) {
-        await navigator.share(shareData);
-      } else {
-        throw new Error('Native share not supported');
-      }
-    } catch (err: any) {
-        if (err.name === 'AbortError' || err.name === 'NotAllowedError') return;
-        
-        try {
-          await navigator.clipboard.writeText(`${titleText} ${shareUrl}`);
-          toast({
-            title: "Link Copied!",
-            description: "Testimony link copied to your clipboard.",
-          });
-        } catch (clipErr) {
-          console.error("Clipboard fallback failed", clipErr);
-        }
     }
   };
 

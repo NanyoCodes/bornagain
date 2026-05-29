@@ -70,7 +70,6 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
 
     const participantsQuery = useMemo(() => {
         if (!firestore || !campaignId || !isJoined) return null;
-        // Optimization: Removed orderBy to avoid composite index requirement
         return query(collection(firestore, 'campaigns', campaignId, 'participants'));
     }, [firestore, campaignId, isJoined]);
     const { data: rawParticipants, loading: participantsLoading } = useCollection<CampaignParticipant>(participantsQuery);
@@ -86,7 +85,6 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
 
     const testimoniesQuery = useMemo(() => {
         if (!firestore || !campaignId) return null;
-        // Optimization: Removed server-side orderBy to avoid composite index requirement
         return query(collection(firestore, 'testimonies'), where('campaignId', '==', campaignId));
     }, [firestore, campaignId]);
     const { data: rawTestimonies, loading: testimoniesLoading } = useCollection<Testimony>(testimoniesQuery);
@@ -153,18 +151,20 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
         };
 
         try {
-          if (navigator.share) {
+          if (navigator && navigator.share) {
             await navigator.share(shareData);
           } else {
             throw new Error('Native share not supported');
           }
         } catch (err: any) {
-          if (err.name === 'AbortError') return;
-          await navigator.clipboard.writeText(`${titleText} ${shareUrl}`);
-          toast({ 
-              title: 'Link Copied!',
-              description: 'Campaign link has been copied to your clipboard.'
-          });
+            if (err.name === 'AbortError') return;
+            
+            try {
+              await navigator.clipboard.writeText(`${titleText} ${shareUrl}`);
+              toast({ title: 'Link Copied!', description: 'Campaign link has been copied to your clipboard.' });
+            } catch (clipErr) {
+              console.error("Clipboard fallback failed", clipErr);
+            }
         }
     };
     
