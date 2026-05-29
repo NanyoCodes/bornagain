@@ -40,7 +40,7 @@ import { useUser, useAuth, useFirestore, useCollection, useUserProfile } from "@
 import { signOut } from "firebase/auth";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { SearchProvider, useSearch } from "@/context/search-context";
-import { collection, query, where } from "firebase/firestore";
+import { collection, doc, query, where } from "firebase/firestore";
 import type { Notification } from "@/lib/types";
 import { WelcomePopup } from "@/components/auth/welcome-popup";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -338,7 +338,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     if (!mounted) return;
     const root = document.documentElement;
     if (userProfile?.backgroundImage) {
-      root.style.setProperty('--app-bg-image', `url('${userProfile.backgroundImage}')`);
+      const isGradient = userProfile.backgroundImage.startsWith('linear-gradient');
+      const bgValue = isGradient ? userProfile.backgroundImage : `url('${userProfile.backgroundImage}')`;
+      root.style.setProperty('--app-bg-image', bgValue);
     }
     if (userProfile?.backgroundOverlayOpacity != null) {
       root.style.setProperty('--app-bg-overlay', userProfile.backgroundOverlayOpacity.toString());

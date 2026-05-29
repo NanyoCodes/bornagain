@@ -71,6 +71,7 @@ const backgroundPresets = [
   { id: 'scriptures', label: 'Holy Scriptures', url: 'https://images.unsplash.com/photo-1504052434569-70ad58ebb96d?q=80&w=2070&auto=format&fit=crop' },
   { id: 'worship', label: 'Worship Atmosphere', url: 'https://images.unsplash.com/photo-1515162305285-0293e4767cc2?q=80&w=2070&auto=format&fit=crop' },
   { id: 'cross', label: 'Cross at Sunset', url: 'https://images.unsplash.com/photo-1438232992991-995b7058bbb3?q=80&w=2070&auto=format&fit=crop' },
+  { id: 'midnight', label: 'Midnight Grace', url: 'linear-gradient(135deg, #09090b 0%, #18181b 100%)' },
 ];
 
 function ProfileSettingsCard() {
@@ -125,7 +126,7 @@ function BackgroundSettingsCard({ userProfile, userId }: { userProfile: UserProf
             <CardDescription>Personalize your Kingdom environment.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
                 {backgroundPresets.map((preset) => (
                     <button
                         key={preset.id}
@@ -136,7 +137,11 @@ function BackgroundSettingsCard({ userProfile, userId }: { userProfile: UserProf
                             selectedUrl === preset.url ? "border-primary ring-2 ring-primary/20" : "border-transparent opacity-60 hover:opacity-100"
                         )}
                     >
-                        <Image src={preset.url} alt={preset.label} fill className="object-cover" />
+                        {preset.url.startsWith('linear-gradient') ? (
+                          <div className="absolute inset-0" style={{ background: preset.url }} />
+                        ) : (
+                          <Image src={preset.url} alt={preset.label} fill className="object-cover" unoptimized />
+                        )}
                         <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                             <span className="text-[10px] font-bold text-white uppercase tracking-wider">{preset.label}</span>
                         </div>
