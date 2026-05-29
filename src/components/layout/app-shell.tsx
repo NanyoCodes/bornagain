@@ -77,6 +77,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
   const { userProfile } = useUserProfile();
   const pathname = usePathname();
   const auth = useAuth();
+  const firestore = useFirestore();
   const router = useRouter();
   const logo = PlaceHolderImages.find((img) => img.id === "logo");
   const { searchTerm, setSearchTerm, searchPlaceholder, isSearchVisible } = useSearch();
@@ -331,6 +332,18 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     setMounted(true); 
     setLoadingMessage(inspirationalMessages[Math.floor(Math.random() * inspirationalMessages.length)]);
   }, []);
+
+  // Update background image based on user profile
+  useEffect(() => {
+    if (!mounted) return;
+    const root = document.documentElement;
+    if (userProfile?.backgroundImage) {
+      root.style.setProperty('--app-bg-image', `url('${userProfile.backgroundImage}')`);
+    }
+    if (userProfile?.backgroundOverlayOpacity != null) {
+      root.style.setProperty('--app-bg-overlay', userProfile.backgroundOverlayOpacity.toString());
+    }
+  }, [userProfile, mounted]);
 
   const publicRoutes = [
     '/testimonies', 

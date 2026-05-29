@@ -22,7 +22,7 @@ import {
 } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, User, Bell, Lock, Trash2, MessageSquare, Mail, Phone, Palette, Type } from 'lucide-react';
+import { Loader2, User, Bell, Lock, Trash2, MessageSquare, Mail, Phone, Palette, Type, Image as ImageIcon, Sparkles } from 'lucide-react';
 import { useDoc, useFirestore, useUser } from '@/firebase';
 import { doc, updateDoc } from 'firebase/firestore';
 import type { UserProfile } from '@/lib/types';
@@ -55,11 +55,22 @@ import { FirestorePermissionError } from '@/firebase/errors';
 import { PasswordSettingsCard } from '@/components/settings/password-settings-card';
 import { useFontSize } from '@/components/font-size-provider';
 import { PwaInstallCard } from '@/components/settings/pwa-install-card';
+import { Input } from '@/components/ui/input';
+import { Slider } from '@/components/ui/slider';
+import Image from 'next/image';
+import { cn } from '@/lib/utils';
 
 const notificationFormSchema = z.object({
   newCampaignsInArea: z.boolean().default(false),
   weeklyDigest: z.boolean().default(false),
 });
+
+const backgroundPresets = [
+  { id: 'ancient-church', label: 'Ancient Church', url: 'https://images.unsplash.com/photo-1507692049790-de58290a4334?q=80&w=2070&auto=format&fit=crop' },
+  { id: 'scriptures', label: 'Holy Scriptures', url: 'https://images.unsplash.com/photo-1504052434569-70ad58ebb96d?q=80&w=2070&auto=format&fit=crop' },
+  { id: 'worship', label: 'Worship Atmosphere', url: 'https://images.unsplash.com/photo-1515162305285-0293e4767cc2?q=80&w=2070&auto=format&fit=crop' },
+  { id: 'cross', label: 'Cross at Sunset', url: 'https://images.unsplash.com/photo-1438232992991-995b7058bbb3?q=80&w=2070&auto=format&fit=crop' },
+];
 
 function ProfileSettingsCard() {
   return (
@@ -71,6 +82,107 @@ function ProfileSettingsCard() {
       <CardContent>
         <Button asChild className="w-full sm:w-auto"><Link href="/dashboard/profile">Edit Your Profile</Link></Button>
       </CardContent>
+    </Card>
+  );
+}
+
+function BackgroundSettingsCard({ userProfile, userId }: { userProfile: UserProfile, userId: string }) {
+  const { toast } = useToast();
+  const firestore = useFirestore();
+  const { user } = useUser();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedUrl, setSelectedName] = useState(userProfile.backgroundImage || backgroundPresets[0].url);
+  const [overlayOpacity, setOverlayOpacity] = useState(userProfile.backgroundOverlayOpacity ?? 0.7);
+
+  const handleSave = async () => {
+    setIsSubmitting(true);
+    const userRef = doc(firestore, 'users', userId);
+    const payload = {
+        backgroundImage: selectedUrl,
+        backgroundOverlayOpacity: overlayOpacity,
+    };
+
+    updateDoc(userRef, payload)
+        .then(() => {
+            toast({ title: 'Background Updated', description: 'Your spiritual environment has been refreshed.' });
+        })
+        .catch(() => {
+            errorEmitter.emit('permission-error', new FirestorePermissionError({ path: userRef.path, operation: 'update', requestResourceData: payload }, user));
+        })
+        .finally(() => setIsSubmitting(false));
+  };
+
+  return (
+    <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b">
+        <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg"><ImageIcon className="h-5 w-5 text-primary" /> App Background</CardTitle>
+            <CardDescription>Personalize your Kingdom environment.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                {backgroundPresets.map((preset) => (
+                    <button
+                        key={preset.id}
+                        onClick={() => setSelectedName(preset.url)}
+                        className={cn(
+                            "group relative aspect-video rounded-xl overflow-hidden border-2 transition-all active:scale-95",
+                            selectedUrl === preset.url ? "border-primary ring-2 ring-primary/20" : "border-transparent opacity-60 hover:opacity-100"
+                        )}
+                    >
+                        <Image src={preset.url} alt={preset.label} fill className="object-cover" />
+                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                            <span className="text-[10px] font-bold text-white uppercase tracking-wider">{preset.label}</span>
+                        </div>
+                        {selectedUrl === preset.url && (
+                             <div className="absolute top-1 right-1 bg-primary rounded-full p-0.5">
+                                <Sparkles className="h-3 w-3 text-white" />
+                             </div>
+                        )}
+                    </button>
+                ))}
+            </div>
+
+            <div className="space-y-4 pt-4">
+                <div className="space-y-2">
+                    <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1">Background Visibility (Overlay)</Label>
+                    <div className="flex items-center gap-4 px-2">
+                        <span className="text-[10px] font-bold text-muted-foreground uppercase">Clear</span>
+                        <Slider 
+                            value={[1 - overlayOpacity]} 
+                            max={1} 
+                            step={0.05} 
+                            min={0}
+                            onValueChange={(val) => setOverlayOpacity(1 - val[0])}
+                            className="flex-1"
+                        />
+                        <span className="text-[10px] font-bold text-muted-foreground uppercase">Dark</span>
+                    </div>
+                    <p className="text-[10px] text-muted-foreground italic ml-2">Adjust how clearly the background shines through the content.</p>
+                </div>
+
+                <div className="space-y-2">
+                    <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1">Custom Image URL</Label>
+                    <div className="flex gap-2">
+                        <Input 
+                            placeholder="https://images.unsplash.com/..." 
+                            value={selectedUrl}
+                            onChange={(e) => setSelectedName(e.target.value)}
+                            className="h-10 text-sm"
+                        />
+                        {selectedUrl && !backgroundPresets.some(p => p.url === selectedUrl) && (
+                            <Button variant="outline" size="icon" className="h-10 w-10 shrink-0" onClick={() => setSelectedName(backgroundPresets[0].url)}>
+                                <Trash2 className="h-4 w-4" />
+                            </Button>
+                        )}
+                    </div>
+                </div>
+            </div>
+
+            <Button onClick={handleSave} disabled={isSubmitting} className="w-full sm:w-auto h-11 px-8 rounded-full font-bold">
+                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Apply Background
+            </Button>
+        </CardContent>
     </Card>
   );
 }
@@ -88,7 +200,7 @@ function AppearanceSettingsCard() {
          <div className="flex items-center justify-between rounded-xl border p-4 bg-muted/20">
             <div className="space-y-0.5">
                 <label className="text-sm font-bold uppercase tracking-wider">Display Theme</label>
-                <p className="text-xs text-muted-foreground">Switch between light and dark mode.</p>
+                <p className="text-xs text-muted-foreground">Always set to Dark mode by default for Testify.</p>
             </div>
             <ThemeToggle />
         </div>
@@ -253,7 +365,8 @@ export default function SettingsPage() {
         </div>
        ) : (
         <div className="space-y-6 md:space-y-8">
-            < ProfileSettingsCard />
+            <ProfileSettingsCard />
+            <BackgroundSettingsCard userProfile={userProfile} userId={user.uid} />
             <ChurchSettingsCard userProfile={userProfile} userId={user.uid} />
             <AppearanceSettingsCard />
             <PwaInstallCard />

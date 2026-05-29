@@ -1,4 +1,3 @@
-
 import type { Timestamp } from "firebase/firestore";
 
 export type ReadingHistoryItem = {
@@ -50,6 +49,8 @@ export type UserProfile = {
   name_tokens?: string[];
   email: string;
   photoURL?: string;
+  backgroundImage?: string;
+  backgroundOverlayOpacity?: number;
   bio?: string;
   personalMessage?: string;
   videoTestimonies?: VideoTestimony[];
