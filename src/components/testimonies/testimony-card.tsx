@@ -58,7 +58,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { CommentSection } from "./comment-section";
 import { Separator } from "../ui/separator";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 export const TestimonyCard = React.memo(function TestimonyCard({ 
   testimony, 
@@ -355,7 +355,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({
                   <DropdownMenuItem onSelect={(e) => { e.preventDefault(); onDelete(); }} className="text-destructive focus:text-destructive focus:bg-destructive/5">
                     <Trash2 className="mr-2 h-4 w-4" />
                     <span>Delete Permanently</span>
-                  </ിക്കാം>
+                  </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             )}
