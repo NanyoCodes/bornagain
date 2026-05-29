@@ -57,6 +57,7 @@ import { useFontSize } from '@/components/font-size-provider';
 import { PwaInstallCard } from '@/components/settings/pwa-install-card';
 import { Input } from '@/components/ui/input';
 import { Slider } from '@/components/ui/slider';
+import { Label } from '@/components/ui/label';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 
@@ -99,15 +100,21 @@ function BackgroundSettingsCard({ userProfile, userId }: { userProfile: UserProf
     const userRef = doc(firestore, 'users', userId);
     const payload = {
         backgroundImage: selectedUrl,
-        backgroundOverlayOpacity: overlayOpacity,
+        backgroundOverlayOpacity: opacityVal,
     };
 
-    updateDoc(userRef, payload)
+    // Calculate actual opacity value based on slider
+    const opacityVal = 1 - (overlayOpacity);
+
+    updateDoc(userRef, {
+        backgroundImage: selectedUrl,
+        backgroundOverlayOpacity: overlayOpacity,
+    })
         .then(() => {
             toast({ title: 'Background Updated', description: 'Your spiritual environment has been refreshed.' });
         })
         .catch(() => {
-            errorEmitter.emit('permission-error', new FirestorePermissionError({ path: userRef.path, operation: 'update', requestResourceData: payload }, user));
+            errorEmitter.emit('permission-error', new FirestorePermissionError({ path: userRef.path, operation: 'update', requestResourceData: { backgroundImage: selectedUrl, backgroundOverlayOpacity: overlayOpacity } }, user));
         })
         .finally(() => setIsSubmitting(false));
   };
