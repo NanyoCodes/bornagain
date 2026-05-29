@@ -92,29 +92,28 @@ function BackgroundSettingsCard({ userProfile, userId }: { userProfile: UserProf
   const firestore = useFirestore();
   const { user } = useUser();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [selectedUrl, setSelectedName] = useState(userProfile.backgroundImage || backgroundPresets[0].url);
+  const [selectedUrl, setSelectedUrl] = useState(userProfile.backgroundImage || backgroundPresets[0].url);
   const [overlayOpacity, setOverlayOpacity] = useState(userProfile.backgroundOverlayOpacity ?? 0.7);
 
   const handleSave = async () => {
     setIsSubmitting(true);
     const userRef = doc(firestore, 'users', userId);
-    const payload = {
-        backgroundImage: selectedUrl,
-        backgroundOverlayOpacity: opacityVal,
-    };
-
-    // Calculate actual opacity value based on slider
-    const opacityVal = 1 - (overlayOpacity);
-
-    updateDoc(userRef, {
+    
+    const updateData = {
         backgroundImage: selectedUrl,
         backgroundOverlayOpacity: overlayOpacity,
-    })
+    };
+
+    updateDoc(userRef, updateData)
         .then(() => {
             toast({ title: 'Background Updated', description: 'Your spiritual environment has been refreshed.' });
         })
         .catch(() => {
-            errorEmitter.emit('permission-error', new FirestorePermissionError({ path: userRef.path, operation: 'update', requestResourceData: { backgroundImage: selectedUrl, backgroundOverlayOpacity: overlayOpacity } }, user));
+            errorEmitter.emit('permission-error', new FirestorePermissionError({ 
+                path: userRef.path, 
+                operation: 'update', 
+                requestResourceData: updateData 
+            }, user));
         })
         .finally(() => setIsSubmitting(false));
   };
@@ -130,7 +129,8 @@ function BackgroundSettingsCard({ userProfile, userId }: { userProfile: UserProf
                 {backgroundPresets.map((preset) => (
                     <button
                         key={preset.id}
-                        onClick={() => setSelectedName(preset.url)}
+                        type="button"
+                        onClick={() => setSelectedUrl(preset.url)}
                         className={cn(
                             "group relative aspect-video rounded-xl overflow-hidden border-2 transition-all active:scale-95",
                             selectedUrl === preset.url ? "border-primary ring-2 ring-primary/20" : "border-transparent opacity-60 hover:opacity-100"
@@ -173,11 +173,11 @@ function BackgroundSettingsCard({ userProfile, userId }: { userProfile: UserProf
                         <Input 
                             placeholder="https://images.unsplash.com/..." 
                             value={selectedUrl}
-                            onChange={(e) => setSelectedName(e.target.value)}
+                            onChange={(e) => setSelectedUrl(e.target.value)}
                             className="h-10 text-sm"
                         />
                         {selectedUrl && !backgroundPresets.some(p => p.url === selectedUrl) && (
-                            <Button variant="outline" size="icon" className="h-10 w-10 shrink-0" onClick={() => setSelectedName(backgroundPresets[0].url)}>
+                            <Button variant="outline" size="icon" className="h-10 w-10 shrink-0" onClick={() => setSelectedUrl(backgroundPresets[0].url)}>
                                 <Trash2 className="h-4 w-4" />
                             </Button>
                         )}
