@@ -1,3 +1,4 @@
+
 "use client";
 
 import * as React from "react";
@@ -222,7 +223,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({
     const title = `Testimony from ${authorFullName} on Testify!`;
     const text = `Read what God has done! "${testimony.content.substring(0, 150)}..."`;
     
-    const shareData: any = {
+    const shareData = {
       title,
       text,
       url: shareUrl,
@@ -275,11 +276,19 @@ export const TestimonyCard = React.memo(function TestimonyCard({
   const shareButton = (
     <DropdownMenu>
         <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="icon" className="h-8 w-8" onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              handleShare();
-            }}>
+            <Button 
+                variant="outline" 
+                size="icon" 
+                className="h-8 w-8" 
+                onClick={(e) => {
+                    // Similar to CampaignCard, prioritize native share on devices that support it
+                    if (navigator.share) {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      handleShare();
+                    }
+                }}
+            >
                 <Share2 className="h-4 w-4" />
                 <span className="sr-only">Share Testimony</span>
             </Button>
