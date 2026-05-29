@@ -1,4 +1,3 @@
-
 "use client";
 
 import * as React from "react";
@@ -234,88 +233,21 @@ export const TestimonyCard = React.memo(function TestimonyCard({
       url: shareUrl,
     };
 
-    // 1. Attempt Native Share
-    if (navigator.share) {
-      try {
-        await navigator.share(shareData);
-        return; // Success
-      } catch (err: any) {
-        // Log common native share errors but continue to fallback
-        if (err.name === 'AbortError') return;
-        console.warn('Native share failed or was denied, falling back to clipboard:', err);
-      }
-    }
-
-    // 2. Fallback to clipboard
     try {
-      await navigator.clipboard.writeText(`${titleText} ${shareUrl}`);
-      toast({
-        title: "Link Copied!",
-        description: "Testimony link copied to your clipboard.",
-      });
-    } catch (clipboardErr) {
-      console.error('Clipboard fallback failed:', clipboardErr);
-      toast({
-        variant: "destructive",
-        title: "Share Failed",
-        description: "Could not share or copy the link.",
-      });
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        throw new Error('Native share not supported');
+      }
+    } catch (err: any) {
+        if (err.name === 'AbortError') return;
+        await navigator.clipboard.writeText(`${titleText} ${shareUrl}`);
+        toast({
+          title: "Link Copied!",
+          description: "Testimony link copied to your clipboard.",
+        });
     }
   };
-
-  const handleShareToPlatform = (platform: 'whatsapp' | 'facebook' | 'twitter') => {
-    const baseUrl = "https://testifyglobal.com";
-    const shareUrl = `${baseUrl}/dashboard/testimonies#${testimony.id}`;
-    const titleText = `Testimony from ${authorFullName} on Testify!`;
-    
-    let url = '';
-    switch (platform) {
-      case 'whatsapp':
-        url = `https://api.whatsapp.com/send?text=${encodeURIComponent(titleText + ' ' + shareUrl)}`;
-        break;
-      case 'facebook':
-        url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
-        break;
-      case 'twitter':
-        url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(titleText)}&url=${encodeURIComponent(shareUrl)}`;
-        break;
-    }
-    window.open(url, '_blank');
-  };
-
-  const shareButton = (
-    <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-            <Button 
-                variant="outline" 
-                size="icon" 
-                className="h-8 w-8" 
-                onClick={handleShare}
-            >
-                <Share2 className="h-4 w-4" />
-                <span className="sr-only">Share Testimony</span>
-            </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-            <DropdownMenuItem onSelect={() => handleShare()}>
-                <LinkIcon className="mr-2 h-4 w-4" />
-                Copy Link
-            </DropdownMenuItem>
-            <DropdownMenuItem onSelect={() => handleShareToPlatform('whatsapp')}>
-                <MessageCircle className="mr-2 h-4 w-4" />
-                Share on WhatsApp
-            </DropdownMenuItem>
-            <DropdownMenuItem onSelect={() => handleShareToPlatform('facebook')}>
-                <Facebook className="mr-2 h-4 w-4" />
-                Share on Facebook
-            </DropdownMenuItem>
-            <DropdownMenuItem onSelect={() => handleShareToPlatform('twitter')}>
-                <Twitter className="mr-2 h-4 w-4" />
-                Share on Twitter (X)
-            </DropdownMenuItem>
-        </DropdownMenuContent>
-    </DropdownMenu>
-  );
 
   const fullTextContent = (
     <ScrollArea className={cn("pr-4", isMobile ? "h-full" : "max-h-[60vh]")}>
@@ -401,7 +333,10 @@ export const TestimonyCard = React.memo(function TestimonyCard({
             </div>
           </div>
           <div className="flex items-center gap-2">
-            {shareButton}
+            <Button variant="outline" size="icon" className="h-8 w-8" onClick={handleShare}>
+              <Share2 className="h-4 w-4" />
+              <span className="sr-only">Share Testimony</span>
+            </Button>
             {isAuthor && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -420,7 +355,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({
                   <DropdownMenuItem onSelect={(e) => { e.preventDefault(); onDelete(); }} className="text-destructive focus:text-destructive focus:bg-destructive/5">
                     <Trash2 className="mr-2 h-4 w-4" />
                     <span>Delete Permanently</span>
-                  </DropdownMenuItem>
+                  </ിക്കാം>
                 </DropdownMenuContent>
               </DropdownMenu>
             )}

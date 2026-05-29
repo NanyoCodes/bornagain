@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -144,14 +143,29 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
     const handleShare = async () => {
         if (!campaign) return;
         const shareUrl = `${window.location.origin}/dashboard/campaigns/${campaign.id}`;
+        const titleText = `Join the '${campaign.title}' campaign on Testify!`;
+        const text = `Join me in the '${campaign.title}' evangelism campaign. Let's make an impact together!`;
+
+        const shareData = {
+          title: titleText,
+          text,
+          url: shareUrl,
+        };
+
         try {
           if (navigator.share) {
-            await navigator.share({ title: campaign.title, url: shareUrl });
+            await navigator.share(shareData);
           } else {
-            navigator.clipboard.writeText(shareUrl);
-            toast({ title: 'Link Copied' });
+            throw new Error('Native share not supported');
           }
-        } catch (err) { navigator.clipboard.writeText(shareUrl); toast({ title: 'Link Copied' }); }
+        } catch (err: any) {
+          if (err.name === 'AbortError') return;
+          await navigator.clipboard.writeText(`${titleText} ${shareUrl}`);
+          toast({ 
+              title: 'Link Copied!',
+              description: 'Campaign link has been copied to your clipboard.'
+          });
+        }
     };
     
     const status = useMemo(() => {
@@ -183,7 +197,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                     <ArrowLeft className="h-5 w-5"/>
                     <span className="sr-only">Back</span>
                 </Button>
-                <div className="min-w-0">
+                <div className="min-w-0 flex-1">
                     <h1 className="text-2xl sm:text-3xl font-black font-headline tracking-tight truncate leading-tight">{campaign.title}</h1>
                     <div className="flex items-center gap-2 mt-1">
                         <Badge variant={status === 'Ongoing' ? 'default' : status === 'Upcoming' ? 'secondary' : 'outline'} className="uppercase font-bold tracking-widest text-[10px]">
@@ -248,7 +262,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                                     <Users className="h-5 w-5 text-primary" />
                                     Participants Directory
                                 </span>
-                                <Badge variant="secondary" className="rounded-full px-3">{participants?.length || 0}</Badge>
+                                <Badge variant="secondary" className="rounded-full px-3 h-6 font-bold">{participants?.length || 0}</Badge>
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="px-6 pb-6">
