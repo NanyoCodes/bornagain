@@ -284,21 +284,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({
                 <span className="sr-only">Share Testimony</span>
             </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-56">
-            <DropdownMenuLabel className="flex items-center gap-2 border-b pb-3 mb-1">
-                <Avatar className="h-8 w-8 border shrink-0">
-                    <AvatarImage src={testimony.authorAvatarUrl} />
-                    <AvatarFallback>{initials}</AvatarFallback>
-                </Avatar>
-                <div className="flex flex-col min-w-0">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground truncate">
-                        Share Glory
-                    </span>
-                    <span className="text-xs font-semibold truncate leading-tight">
-                        From {authorFullName}
-                    </span>
-                </div>
-            </DropdownMenuLabel>
+        <DropdownMenuContent align="end">
             <DropdownMenuItem onSelect={() => handleShareDropdown('link')}>
                 <LinkIcon className="mr-2 h-4 w-4" />
                 Copy Link
