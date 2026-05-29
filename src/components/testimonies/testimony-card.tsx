@@ -240,12 +240,17 @@ export const TestimonyCard = React.memo(function TestimonyCard({
         throw new Error('Native share not supported');
       }
     } catch (err: any) {
-        if (err.name === 'AbortError') return;
-        await navigator.clipboard.writeText(`${titleText} ${shareUrl}`);
-        toast({
-          title: "Link Copied!",
-          description: "Testimony link copied to your clipboard.",
-        });
+        if (err.name === 'AbortError' || err.name === 'NotAllowedError') return;
+        
+        try {
+          await navigator.clipboard.writeText(`${titleText} ${shareUrl}`);
+          toast({
+            title: "Link Copied!",
+            description: "Testimony link copied to your clipboard.",
+          });
+        } catch (clipErr) {
+          console.error("Clipboard fallback failed", clipErr);
+        }
     }
   };
 

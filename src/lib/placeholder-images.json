@@ -13,6 +13,12 @@
       "imageHint": "community people"
     },
     {
+      "id": "gospel-collage",
+      "description": "A collage of open bibles and spiritual scriptures",
+      "imageUrl": "https://images.unsplash.com/photo-1544427928-142274944d15?q=80&w=2070&auto=format&fit=crop",
+      "imageHint": "scriptures collage"
+    },
+    {
       "id": "user-1",
       "description": "User avatar 1",
       "imageUrl": "https://images.unsplash.com/photo-1610655507808-a59293f4e332?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHx3b21hbiUyMHBvcnRyYWl0fGVufDB8fHx8MTc3MTM0MTI2N3ww&ixlib=rb-4.1.0&q=80&w=1080",
@@ -33,7 +39,7 @@
     {
       "id": "user-4",
       "description": "User avatar 4",
-      "imageUrl": "https://images.unsplash.com/photo-1664813495783-a7b19be83624?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHx3b21hbiUyMG91dGRvb3JzfGVufDB8fHx8fDE3NzEyNjI1ODV8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1664813495783-a7b19be83624?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHx3b21hbiUyMG91dGRvb3JzfGVufDB8fHx8MTc3MTM0MTI2N3ww&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "woman outdoors"
     },
     {

@@ -76,7 +76,11 @@
   }
   body {
     @apply bg-background text-foreground;
-    background-image: radial-gradient(ellipse at 50% -20%, hsl(30 100% 94%), transparent 70%);
+    background-image: 
+      linear-gradient(to bottom, hsl(var(--background) / 0.94), hsl(var(--background) / 0.94)),
+      url('https://images.unsplash.com/photo-1544427928-142274944d15?q=80&w=2070&auto=format&fit=crop');
+    background-size: cover;
+    background-position: center;
     background-repeat: no-repeat;
     background-attachment: fixed;
     /* Ensure no weird cursors are inherited */
@@ -84,7 +88,9 @@
   }
 
   .dark body {
-    background-image: radial-gradient(ellipse at 50% -20%, hsl(25 40% 10%), transparent 70%);
+    background-image: 
+      linear-gradient(to bottom, hsl(var(--background) / 0.92), hsl(var(--background) / 0.92)),
+      url('https://images.unsplash.com/photo-1544427928-142274944d15?q=80&w=2070&auto=format&fit=crop');
   }
   
   .pac-container {
