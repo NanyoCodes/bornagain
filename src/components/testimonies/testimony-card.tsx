@@ -28,17 +28,13 @@ import {
   PartyPopper, 
   HandHeart, 
   X, 
-  Facebook, 
-  Twitter, 
-  Link as LinkIcon, 
   MessageSquare,
-  MessageCircle,
   UserPlus,
   HeartHandshake,
   CheckCircle2,
   Hourglass
 } from "lucide-react";
-import { useUser, useAuth, useFirestore, useCollection } from "@/firebase";
+import { useUser, useFirestore, useCollection } from "@/firebase";
 import { useState, useMemo } from "react";
 import {
   DropdownMenu,
@@ -217,14 +213,17 @@ export const TestimonyCard = React.memo(function TestimonyCard({
     }
   };
 
-  const handleShare = async () => {
+  const handleShare = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
     const baseUrl = "https://testifyglobal.com";
     const shareUrl = `${baseUrl}/dashboard/testimonies#${testimony.id}`;
-    const title = `Testimony from ${authorFullName} on Testify!`;
+    const titleText = `Testimony from ${authorFullName} on Testify!`;
     const text = `Read what God has done! "${testimony.content.substring(0, 150)}..."`;
     
     const shareData = {
-      title,
+      title: titleText,
       text,
       url: shareUrl,
     };
@@ -233,85 +232,36 @@ export const TestimonyCard = React.memo(function TestimonyCard({
       if (navigator.share) {
         await navigator.share(shareData);
       } else {
-         handleShareDropdown('link');
-      }
-    } catch (err: any) {
-      if (err.name !== 'AbortError') {
-        console.error('Share failed:', err);
-        handleShareDropdown('link');
-      }
-    }
-  };
-
-  const handleShareDropdown = (platform: "link" | "facebook" | "twitter" | "whatsapp") => {
-    const baseUrl = "https://testifyglobal.com";
-    const url = `${baseUrl}/dashboard/testimonies#${testimony.id}`;
-    const titleText = `Check out this testimony from ${authorFullName} on Testify!`;
-    const shareTextWithUrl = `${titleText} ${url}`;
-    let shareUrl = "";
-
-    switch (platform) {
-      case "facebook":
-        shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}&quote=${encodeURIComponent(titleText)}`;
-        window.open(shareUrl, "_blank");
-        break;
-      case "twitter":
-        shareUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(titleText)}`;
-        window.open(shareUrl, "_blank");
-        break;
-      case "whatsapp":
-        shareUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareTextWithUrl)}`;
-        window.open(shareUrl, "_blank");
-        break;
-      case "link":
-        navigator.clipboard.writeText(shareTextWithUrl);
+        // Fallback to clipboard
+        await navigator.clipboard.writeText(`${titleText} ${shareUrl}`);
         toast({
           title: "Link Copied!",
           description: "Testimony link copied to your clipboard.",
         });
-        break;
+      }
+    } catch (err: any) {
+      if (err.name !== 'AbortError') {
+        console.error('Share failed:', err);
+        // Fallback to clipboard on error as well
+        navigator.clipboard.writeText(`${titleText} ${shareUrl}`);
+        toast({
+          title: "Link Copied!",
+          description: "Testimony link copied to your clipboard.",
+        });
+      }
     }
   };
 
   const shareButton = (
-    <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-            <Button 
-                variant="outline" 
-                size="icon" 
-                className="h-8 w-8" 
-                onClick={(e) => {
-                    // Similar to CampaignCard, prioritize native share on devices that support it
-                    if (navigator.share) {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      handleShare();
-                    }
-                }}
-            >
-                <Share2 className="h-4 w-4" />
-                <span className="sr-only">Share Testimony</span>
-            </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-            <DropdownMenuItem onSelect={() => handleShareDropdown('link')}>
-                <LinkIcon className="mr-2 h-4 w-4" />
-                Copy Link
-            </DropdownMenuItem>
-            <DropdownMenuItem onSelect={() => handleShareDropdown('whatsapp')}>
-                <MessageCircle className="mr-2 h-4 w-4" />
-                Share on WhatsApp
-            </DropdownMenuItem>
-            <DropdownMenuItem onSelect={() => handleShareDropdown('facebook')}>
-                <Facebook className="mr-2 h-4 w-4" />
-                Share on Facebook
-            </DropdownMenuItem>
-            <DropdownMenuItem onSelect={() => handleShareDropdown('twitter')}>
-                <Twitter className="mr-2 h-4 w-4" />
-                Share on Twitter (X)
-            </DropdownMenuItem>
-        </DropdownMenuContent>
-    </DropdownMenu>
+    <Button 
+        variant="outline" 
+        size="icon" 
+        className="h-8 w-8" 
+        onClick={handleShare}
+    >
+        <Share2 className="h-4 w-4" />
+        <span className="sr-only">Share Testimony</span>
+    </Button>
   );
 
   const fullTextContent = (
