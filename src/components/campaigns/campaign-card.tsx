@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { format, parse, isSameDay, differenceInDays } from "date-fns";
-import { CalendarDays, MapPin, Users, Share2, Edit, MoreVertical, Loader2, MessagesSquare, UserCheck, PlayCircle, Newspaper, UserPlus, ChevronDown, MessageSquare, MessageCircle, Facebook, Twitter, Link as LinkIcon, Sparkles, BarChart3 } from "lucide-react";
+import { CalendarDays, MapPin, Users, Share2, Edit, MoreVertical, Loader2, MessagesSquare, UserCheck, PlayCircle, Newspaper, UserPlus, ChevronDown, BarChart3 } from "lucide-react";
 import type { Campaign, CampaignParticipant, UserProfile } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -30,16 +30,13 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { useCollection, useFirestore, useUser } from "@/firebase";
-import { collection, serverTimestamp, query, where, limit, getDocs, addDoc, doc, runTransaction, getDoc } from "firebase/firestore";
+import { collection, serverTimestamp, query, where, getDocs, addDoc, doc, getDoc } from "firebase/firestore";
 import { useState, useRef, useEffect, useMemo } from "react";
-import { errorEmitter } from "@/firebase/error-emitter";
-import { FirestorePermissionError } from "@/firebase/errors";
 import { Badge } from "../ui/badge";
 import { useRouter } from "next/navigation";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip";
-import { cn } from "@/lib/utils";
+import { cn, safeToDate, haversineDistance } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { safeToDate } from "@/lib/utils";
 import { JoinCampaignDialog } from "./join-campaign-dialog";
 import { ScrollArea } from "../ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -147,14 +144,18 @@ function ParticipantsDialog({ campaign, children }: { campaign: Campaign; childr
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Participants for "{campaign.title}"</DialogTitle>
-          <DialogDescription>
-            {campaign.participants || 0} people have joined this campaign.
-          </DialogDescription>
-        </DialogHeader>
-        {content}
+      <DialogContent className="rounded-3xl overflow-hidden p-0">
+        <div className="p-8 border-b bg-muted/10">
+            <DialogHeader>
+                <DialogTitle className="text-2xl font-black font-headline">Participants for "{campaign.title}"</DialogTitle>
+                <DialogDescription className="text-sm font-medium">
+                    {campaign.participants || 0} people have joined this campaign.
+                </DialogDescription>
+            </DialogHeader>
+        </div>
+        <div className="p-8">
+            {content}
+        </div>
       </DialogContent>
     </Dialog>
   );
@@ -392,7 +393,7 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <Button variant="outline" size="icon" onClick={(e) => { e.stopPropagation(); onShareTestimony(); }}>
+          <Button variant="outline" size="icon" className="rounded-full shadow-sm" onClick={(e) => { e.stopPropagation(); onShareTestimony(); }}>
             <Newspaper className="h-4 w-4" />
           </Button>
         </TooltipTrigger>
@@ -407,7 +408,7 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <Button variant="outline" size="icon" onClick={(e) => { e.stopPropagation(); onLogSoul(); }}>
+          <Button variant="outline" size="icon" className="rounded-full shadow-sm" onClick={(e) => { e.stopPropagation(); onLogSoul(); }}>
             <UserPlus className="h-4 w-4" />
           </Button>
         </TooltipTrigger>
@@ -423,6 +424,7 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
     <Button 
         variant="outline" 
         size="icon" 
+        className="rounded-full shadow-sm"
         onClick={handleShare} 
         disabled={status === 'Past'}
     >
@@ -437,7 +439,7 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
       <Card
         id={campaign.id}
         className={cn(
-          "flex flex-col h-full overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 scroll-mt-20 border-t-4 cursor-pointer rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b",
+          "flex flex-col h-full overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 scroll-mt-20 border-t-4 cursor-pointer rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b bg-card/50 backdrop-blur-sm",
           borderColorClass
         )}
         onClick={handleCardClick}
@@ -447,9 +449,9 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
                 <CardTitle className="font-bold text-lg md:text-xl truncate">
                   {campaign.title}
                 </CardTitle>
-                <CardDescription className="text-sm mt-1 truncate">{campaign.goal}</CardDescription>
+                <CardDescription className="text-sm mt-1 truncate font-medium">{campaign.goal}</CardDescription>
                 {distance != null && (
-                    <CardDescription className="text-xs text-primary font-semibold mt-1 flex items-center gap-1">
+                    <CardDescription className="text-xs text-primary font-black mt-1.5 flex items-center gap-1 uppercase tracking-widest">
                         <MapPin className="h-3 w-3" />
                         {distance.toFixed(1)} km away
                     </CardDescription>
@@ -462,10 +464,10 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
                     <Button 
                       variant="outline" 
                       size="icon" 
-                      className="h-10 w-10 border-primary/20 text-primary/60 hover:text-primary hover:bg-primary/10 rounded-full shadow-md bg-background" 
+                      className="h-9 w-9 sm:h-10 sm:w-10 border-primary/20 text-primary/60 hover:text-primary hover:bg-primary/10 rounded-full shadow-md bg-background" 
                       onClick={(e) => { e.stopPropagation(); router.push(`/dashboard/campaigns/${campaign.id}`); }}
                     >
-                      <BarChart3 className="h-5 w-5" />
+                      <BarChart3 className="h-4 w-4 sm:h-5 sm:w-5" />
                       <span className="sr-only">View Insights</span>
                     </Button>
                   </TooltipTrigger>
@@ -474,7 +476,7 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
-              <Badge variant={status === 'Ongoing' ? 'default' : status === 'Upcoming' ? 'secondary' : 'outline'}>
+              <Badge variant={status === 'Ongoing' ? 'default' : status === 'Upcoming' ? 'secondary' : 'outline'} className="uppercase font-bold tracking-widest text-[10px] h-6">
                   {status}
               </Badge>
             </div>
@@ -482,69 +484,71 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
         <CardContent className="p-6 pt-0 flex-grow space-y-4">
             
             <div className="space-y-1">
-                <p ref={descriptionRef} className="text-muted-foreground text-sm line-clamp-3">{campaign.description}</p>
+                <p ref={descriptionRef} className="text-muted-foreground text-sm line-clamp-3 leading-relaxed font-medium">{campaign.description}</p>
                 {isDescriptionTruncated && (
                     <Dialog open={showFullDescription} onOpenChange={setShowFullDescription}>
                         <DialogTrigger asChild>
-                          <Button variant="link" className="p-0 h-auto text-sm" onClick={stopPropagation}>Read More</Button>
+                          <Button variant="link" className="p-0 h-auto text-sm font-bold text-primary" onClick={stopPropagation}>Read More</Button>
                         </DialogTrigger>
-                        <DialogContent className="sm:max-w-md">
-                        <DialogHeader>
-                            <DialogTitle>{campaign.title}</DialogTitle>
-                            <DialogDescription>Full Campaign Description</DialogDescription>
-                        </DialogHeader>
-                        <div className="max-h-[60vh] overflow-y-auto pr-4">
-                            <p className="text-sm text-muted-foreground whitespace-pre-wrap">{campaign.description}</p>
-                        </div>
+                        <DialogContent className="sm:max-w-md rounded-3xl overflow-hidden p-0">
+                            <div className="p-8 border-b bg-muted/10">
+                                <DialogHeader>
+                                    <DialogTitle className="text-2xl font-black font-headline truncate">{campaign.title}</DialogTitle>
+                                    <DialogDescription className="text-sm font-medium">Full Campaign Description</DialogDescription>
+                                </DialogHeader>
+                            </div>
+                            <div className="p-8 max-h-[60vh] overflow-y-auto overscroll-contain">
+                                <p className="text-sm sm:text-base text-muted-foreground whitespace-pre-wrap leading-relaxed font-medium">{campaign.description}</p>
+                            </div>
                         </DialogContent>
                     </Dialog>
                 )}
             </div>
             
-            <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-                <div className="rounded-lg border p-3 flex items-start gap-3">
-                    <MapPin className="h-5 w-5 text-primary shrink-0 mt-1" />
-                    <div>
-                        <p className="font-medium">Location</p>
-                        <p className="text-muted-foreground break-words">{campaign.location}</p>
+            <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                <div className="rounded-2xl border-2 border-dashed p-3.5 flex items-start gap-3 bg-background/30">
+                    <MapPin className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                    <div className="min-w-0">
+                        <p className="font-black text-[10px] uppercase tracking-widest text-muted-foreground">Location</p>
+                        <p className="font-bold text-foreground break-words leading-snug">{campaign.location}</p>
                     </div>
                 </div>
-                <div className="rounded-lg border p-3 flex items-start gap-3">
-                    <CalendarDays className="h-5 w-5 text-primary shrink-0 mt-1" />
-                    <div>
-                        <p className="font-medium">Date & Time</p>
-                        <p className="text-muted-foreground">{dateString}</p>
-                        <p className="text-muted-foreground">{timeString}</p>
+                <div className="rounded-2xl border-2 border-dashed p-3.5 flex items-start gap-3 bg-background/30">
+                    <CalendarDays className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                    <div className="min-w-0">
+                        <p className="font-black text-[10px] uppercase tracking-widest text-muted-foreground">Schedule</p>
+                        <p className="font-bold text-foreground leading-snug">{dateString}</p>
+                        <p className="text-[10px] font-black uppercase text-primary/70 mt-0.5">{timeString}</p>
                     </div>
                 </div>
             </div>
 
         </CardContent>
-        <CardFooter className="p-6 pt-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mt-auto border-t bg-muted/50">
-            <div className="flex items-center flex-wrap gap-x-4 gap-y-2 text-sm text-muted-foreground">
+        <CardFooter className="p-6 pt-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mt-auto border-t bg-background/20 backdrop-blur-sm">
+            <div className="flex items-center flex-wrap gap-x-4 gap-y-2 text-xs font-bold uppercase tracking-tighter text-muted-foreground">
                 <ParticipantsDialog campaign={campaign}>
-                    <Button variant="ghost" className="h-auto p-0 justify-start text-sm font-normal text-muted-foreground hover:bg-transparent hover:text-primary" onClick={stopPropagation}>
+                    <Button variant="ghost" className="h-auto p-0 justify-start text-xs font-bold text-muted-foreground hover:bg-transparent hover:text-primary transition-colors" onClick={stopPropagation}>
                         <Users className="h-4 w-4" />
-                        <span className="ml-1">
+                        <span className="ml-1.5">
                             {campaign.participants}
-                            {campaign.maxParticipants ? ` / ${campaign.maxParticipants}` : ''} participant{campaign.participants === 1 ? '' : 's'}
+                            {campaign.maxParticipants ? ` / ${campaign.maxParticipants}` : ''} LABOURERS
                         </span>
                     </Button>
                 </ParticipantsDialog>
                 {(status === "Ongoing") && (
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1.5 text-primary">
                         <UserCheck className="h-4 w-4" />
-                        <span>{campaign.soulsLogged || 0} soul{campaign.soulsLogged === 1 ? '' : 's'} won</span>
+                        <span>{campaign.soulsLogged || 0} SOULS WON</span>
                     </div>
                 )}
             </div>
 
             <div className="w-full sm:w-auto flex items-center flex-wrap justify-end gap-2" onClick={stopPropagation}>
                 {status === 'Ongoing' && campaign.streamUrl && (
-                    <Button asChild className="w-full sm:w-auto">
+                    <Button asChild className="w-full sm:w-auto font-black rounded-xl shadow-lg">
                         <Link href={campaign.streamUrl} target="_blank" rel="noopener noreferrer">
                             <PlayCircle className="mr-2 h-4 w-4" />
-                            Watch Live
+                            WATCH LIVE
                         </Link>
                     </Button>
                 )}
@@ -553,15 +557,22 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
                     <div onClick={stopPropagation} className="flex items-center gap-2">
                       {status === "Ongoing" && LogSoulButton}
                       {(status === 'Ongoing' || status === 'Past') && ShareTestimonyButton}
-                      <Button variant="outline" size="icon" onClick={(e) => { e.stopPropagation(); onManage(); }}>
-                        <Edit className="h-4 w-4" /><span className="sr-only">Manage Campaign</span>
-                      </Button>
+                      <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Button variant="outline" size="icon" className="rounded-full shadow-sm" onClick={(e) => { e.stopPropagation(); onManage(); }}>
+                                    <Edit className="h-4 w-4" /><span className="sr-only">Manage Campaign</span>
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent><p>Manage Mission</p></TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
                       {shareButton}
                     </div>
                 ) : (
                     <div onClick={stopPropagation} className="flex items-center gap-2">
                         {!isJoined && status !== 'Past' && (
-                            <Button onClick={(e) => {
+                            <Button className="font-black rounded-xl shadow-lg" onClick={(e) => {
                                 e.stopPropagation();
                                 if (!userProfile) {
                                     toast({ variant: 'destructive', title: 'Please log in to join.' });
@@ -569,11 +580,11 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
                                 }
                                 setIsJoinDialogOpen(true);
                             }}>
-                                Join Campaign
+                                JOIN MISSION
                             </Button>
                         )}
                         {isJoined && (
-                            <Badge variant="secondary" className="flex items-center gap-2 py-2 px-3"><UserCheck className="h-4 w-4" /> Joined</Badge>
+                            <Badge variant="secondary" className="flex items-center gap-2 py-1.5 px-3 h-9 font-black rounded-xl bg-primary/10 text-primary border-primary/20"><UserCheck className="h-4 w-4" /> JOINED</Badge>
                         )}
                         
                         {isJoined && status === 'Ongoing' && LogSoulButton}
@@ -582,7 +593,7 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
                         <TooltipProvider>
                             <Tooltip>
                                 <TooltipTrigger asChild>
-                                    <Button onClick={handleInitiateChat} variant="outline" size="icon" disabled={!userId || isChatLoading}>
+                                    <Button onClick={handleInitiateChat} variant="outline" size="icon" className="rounded-full shadow-sm" disabled={!userId || isChatLoading}>
                                          {isChatLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <MessagesSquare className="h-4 w-4" />}
                                     </Button>
                                 </TooltipTrigger>
@@ -594,14 +605,14 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
                 )}
             </div>
         </CardFooter>
-        <CardFooter className="p-4 bg-muted/20 text-xs text-muted-foreground flex justify-between">
+        <CardFooter className="p-3 bg-black/5 text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 flex justify-between">
             <span className="truncate">
-                Created by{" "}
-                <Link href={isOwner ? '/dashboard/profile' : `/dashboard/profile/${campaign.organizerId}`} onClick={stopPropagation} className="font-medium text-primary px-1 hover:underline">
+                BY{" "}
+                <Link href={isOwner ? '/dashboard/profile' : `/dashboard/profile/${campaign.organizerId}`} onClick={stopPropagation} className="text-primary hover:underline">
                     {campaign.organizerFirstName} {campaign.organizerLastName}
                 </Link>
             </span>
-            <span className="flex-shrink-0">{footerDateText}</span>
+            <span className="flex-shrink-0 opacity-60">{footerDateText}</span>
         </CardFooter>
       </Card>
       {userProfile && !isOwner && (

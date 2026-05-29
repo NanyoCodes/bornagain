@@ -115,12 +115,12 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({
 
   return (
     <>
-      <Card className="flex flex-col h-full overflow-hidden shadow-md">
+      <Card className="flex flex-col h-full overflow-hidden shadow-md bg-card/50 backdrop-blur-sm border-b-2 sm:border-b rounded-none sm:rounded-lg border-x-0 sm:border-x">
         <CardHeader className="flex flex-row items-start justify-between gap-4 p-4 sm:p-6">
             <div className="flex items-center gap-3 min-w-0 flex-1">
                 <Dialog>
                   <DialogTrigger asChild onClick={(e) => e.stopPropagation()} disabled={prayerRequest.isAnonymous || !prayerRequest.authorAvatarUrl}>
-                      <Avatar className={cn(!prayerRequest.isAnonymous && prayerRequest.authorAvatarUrl && "cursor-pointer h-10 w-10 sm:h-12 sm:w-12")}>
+                      <Avatar className={cn(!prayerRequest.isAnonymous && prayerRequest.authorAvatarUrl && "cursor-pointer h-10 w-10 sm:h-12 sm:w-12 border shadow-sm")}>
                           {!prayerRequest.isAnonymous && <AvatarImage src={prayerRequest.authorAvatarUrl} />}
                           <AvatarFallback>
                               {prayerRequest.isAnonymous ? <User className="h-4 w-4" /> : `${prayerRequest.authorFirstName?.charAt(0) || ''}${prayerRequest.authorLastName?.charAt(0) || ''}`}
@@ -128,7 +128,7 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({
                       </Avatar>
                   </DialogTrigger>
                   {!prayerRequest.isAnonymous && prayerRequest.authorAvatarUrl && (
-                      <DialogContent className="p-0 bg-transparent border-0 w-auto max-w-lg" onClick={(e) => e.stopPropagation()}>
+                      <DialogContent className="p-0 bg-transparent border-0 w-auto max-w-lg overflow-hidden rounded-3xl" onClick={(e) => e.stopPropagation()}>
                           <DialogHeader className="sr-only">
                             <DialogTitle>Profile photo of {authorName}</DialogTitle>
                             <DialogDescription>A larger view of the user's profile photo.</DialogDescription>
@@ -138,14 +138,14 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({
                   )}
                 </Dialog>
                 <div className="min-w-0 flex-1">
-                     <Link href={profileLink} onClick={(e) => { if (!isClickable) e.preventDefault(); e.stopPropagation(); }} className={!isClickable ? 'pointer-events-none' : ''}>
+                     <Link href={profileLink} onClick={(e) => { if (!isClickable) e.preventDefault(); e.stopPropagation(); }} className={cn(!isClickable && 'pointer-events-none')}>
                         <CardTitle className={cn("text-lg font-bold", isClickable && "hover:underline")}>{authorName}</CardTitle>
                     </Link>
                     <CardDescription className="text-sm mt-1">
                         {displayDate}
                     </CardDescription>
                     <div className="mt-2">
-                        <Badge variant="outline" className="w-fit text-xs uppercase tracking-widest px-2 py-0.5 h-auto">{prayerRequest.category}</Badge>
+                        <Badge variant="outline" className="w-fit text-xs uppercase tracking-widest px-2 py-0.5 h-auto bg-background/50">{prayerRequest.category}</Badge>
                     </div>
                 </div>
             </div>
@@ -170,26 +170,26 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({
           </div>
         </CardContent>
         <CardFooter className="pt-4 flex justify-between items-center mt-auto p-4 sm:p-6">
-          <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-              <Users className="h-4 w-4" />
-              <span>{prayerCount}</span>
+          <div className="flex items-center gap-1.5 text-sm text-muted-foreground font-medium">
+              <Users className="h-4 w-4 text-primary" />
+              <span>{prayerCount} believers praying</span>
           </div>
           {isAuthor ? (
             <div className="flex items-center gap-2">
                 {!isAnswered ? (
-                    <Button onClick={onAnswerPrayer} size="sm">
+                    <Button onClick={onAnswerPrayer} size="sm" className="font-bold">
                         <Award className="mr-2 h-4 w-4" />
                         Answered
                     </Button>
                 ) : prayerRequest.answeredTestimonyId ? (
                     <Link href={`/dashboard/testimonies#${prayerRequest.answeredTestimonyId}`}>
-                        <Badge variant="secondary" className="flex items-center gap-2 py-1 px-2 border-green-500 text-green-600 dark:text-green-400 cursor-pointer hover:bg-green-500/10">
+                        <Badge variant="secondary" className="flex items-center gap-2 py-1 px-2 border-green-500 text-green-600 dark:text-green-400 cursor-pointer hover:bg-green-500/10 h-8">
                             <Award className="h-4 w-4" />
-                            <span>Prayer Answered</span>
+                            <span className="font-bold uppercase tracking-tighter text-[10px]">Prayer Answered</span>
                         </Badge>
                     </Link>
                 ) : (
-                   <Button onClick={onAnswerPrayer} size="sm">
+                   <Button onClick={onAnswerPrayer} size="sm" className="font-bold">
                         <Newspaper className="mr-2 h-4 w-4" />
                         Testify
                     </Button>
@@ -205,20 +205,20 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({
             </div>
           ) : isAnswered && prayerRequest.answeredTestimonyId ? (
             <Link href={`/dashboard/testimonies#${prayerRequest.answeredTestimonyId}`}>
-                <Badge variant="secondary" className="flex items-center gap-2 py-1 px-2 border-green-500 text-green-600 dark:text-green-400 cursor-pointer hover:bg-green-500/10">
+                <Badge variant="secondary" className="flex items-center gap-2 py-1 px-2 border-green-500 text-green-600 dark:text-green-400 cursor-pointer hover:bg-green-500/10 h-8">
                     <Award className="h-4 w-4" />
-                    <span>Prayer Answered</span>
+                    <span className="font-bold uppercase tracking-tighter text-[10px]">Prayer Answered</span>
                 </Badge>
             </Link>
           ) : isAnswered ? (
-            <Badge variant="secondary" className="flex items-center gap-2 py-1 px-2 border-green-500 text-green-600 dark:text-green-400">
+            <Badge variant="secondary" className="flex items-center gap-2 py-1 px-2 border-green-500 text-green-600 dark:text-green-400 h-8">
                 <Award className="h-4 w-4" />
-                <span>Answered</span>
+                <span className="font-bold uppercase tracking-tighter text-[10px]">Answered</span>
             </Badge>
           ) : (
-              <Button onClick={handlePray} disabled={hasPrayed || isPraying || !user}>
+              <Button onClick={handlePray} disabled={hasPrayed || isPraying || !user} className="font-bold shadow-md transition-transform active:scale-95">
                   {isPraying ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <HandHeart className={cn("mr-2 h-4 w-4", hasPrayed && "fill-current")} />}
-                  {hasPrayed ? 'You Prayed' : 'Pray'}
+                  {hasPrayed ? 'You Prayed' : 'I Will Pray'}
               </Button>
           )}
         </CardFooter>
@@ -228,26 +228,30 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({
         <>
           {isMobile ? (
             <Sheet open={showFullText} onOpenChange={setShowFullText}>
-              <SheetContent side="bottom" className="h-[80dvh] flex flex-col p-0">
-                <div className="p-6 border-b shrink-0">
+              <SheetContent side="bottom" className="h-[80dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+                <div className="p-8 border-b shrink-0 bg-muted/20">
                   <SheetHeader className="text-left">
-                    <SheetTitle className="text-2xl font-bold">Prayer Request from {authorName}</SheetTitle>
-                    <SheetDescription className="text-sm">{displayDate}</SheetDescription>
+                    <SheetTitle className="text-2xl font-black font-headline">Prayer Request from {authorName}</SheetTitle>
+                    <SheetDescription className="text-sm font-medium">{displayDate}</SheetDescription>
                   </SheetHeader>
                 </div>
-                <div className="flex-grow min-h-0 p-6 overflow-y-auto">
+                <div className="flex-grow min-h-0 p-8 overflow-y-auto">
                   {fullTextContent}
                 </div>
               </SheetContent>
             </Sheet>
           ) : (
             <Dialog open={showFullText} onOpenChange={setShowFullText}>
-              <DialogContent className="sm:max-w-2xl">
-                <DialogHeader>
-                  <DialogTitle className="text-2xl font-bold">Prayer Request from {authorName}</DialogTitle>
-                  <DialogDescription className="text-sm">{displayDate}</DialogDescription>
-                </DialogHeader>
-                {fullTextContent}
+              <DialogContent className="sm:max-w-2xl rounded-3xl overflow-hidden p-0">
+                <div className="p-8 border-b bg-muted/10">
+                  <DialogHeader>
+                    <DialogTitle className="text-2xl font-black font-headline">Prayer Request from {authorName}</DialogTitle>
+                    <DialogDescription className="text-sm font-medium">{displayDate}</DialogDescription>
+                  </DialogHeader>
+                </div>
+                <div className="p-8">
+                    {fullTextContent}
+                </div>
               </DialogContent>
             </Dialog>
           )}

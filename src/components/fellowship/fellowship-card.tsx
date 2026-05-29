@@ -2,12 +2,11 @@
 
 import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
-import { useUser, useAuth, useFirestore } from '@/firebase';
+import { useUser, useFirestore } from '@/firebase';
 import type { Fellowship, UserProfile } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { doc, runTransaction, arrayUnion, increment, serverTimestamp } from 'firebase/firestore';
-import { haversineDistance } from '@/lib/utils';
-import { cn } from '@/lib/utils';
+import { haversineDistance, cn } from '@/lib/utils';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -97,36 +96,36 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
     };
 
     return (
-        <Card onClick={onClick} className="cursor-pointer rounded-none sm:rounded-lg border-x-0 sm:border-x transition-shadow duration-300 hover:shadow-lg border-t-2 border-t-primary/10 border-b-2 sm:border-b">
+        <Card onClick={onClick} className="cursor-pointer rounded-none sm:rounded-lg border-x-0 sm:border-x transition-all duration-300 hover:shadow-lg border-t-2 border-t-primary/10 border-b-2 sm:border-b bg-card/50 backdrop-blur-sm">
             <CardHeader className="p-5 sm:p-6">
                 <div className="flex justify-between items-start gap-4">
                     <div className="min-w-0 flex-1">
-                        <CardTitle className="text-lg sm:text-xl font-bold leading-tight mb-2">
+                        <CardTitle className="text-lg sm:text-xl font-black leading-tight mb-2 uppercase tracking-tight">
                           {fellowship.name}
                         </CardTitle>
                         <div className="space-y-2">
-                          <CardDescription className="flex items-center gap-2 text-[11px] sm:text-xs">
-                              <Avatar className="h-5 w-5 border">
+                          <CardDescription className="flex items-center gap-2 text-[11px] sm:text-xs font-medium">
+                              <Avatar className="h-5 w-5 border shadow-sm">
                                   <AvatarImage src={fellowship.organizerPhotoURL} />
-                                  <AvatarFallback className="text-[8px]">{fellowship.organizerName?.charAt(0)}</AvatarFallback>
+                                  <AvatarFallback className="text-[8px] font-black bg-primary/10 text-primary">{fellowship.organizerName?.charAt(0)}</AvatarFallback>
                               </Avatar>
                               <span className="leading-tight">
                                 Organized by{" "}
                                 <Link 
                                     href={isOrganizer ? '/dashboard/profile' : `/dashboard/profile/${fellowship.organizerId}`}
                                     onClick={stopPropagation}
-                                    className="font-semibold text-primary hover:underline"
+                                    className="font-bold text-primary hover:underline"
                                 >
                                     {fellowship.organizerName}
                                 </Link>
                               </span>
                           </CardDescription>
                           <div className="flex gap-1.5 items-center flex-wrap">
-                            <Badge variant="default" className="text-[9px] sm:text-[10px] h-5 px-1.5 w-fit uppercase tracking-wider font-bold">
+                            <Badge variant="default" className="text-[9px] sm:text-[10px] h-5 px-2 w-fit uppercase tracking-widest font-black leading-none">
                                 {fellowship.groupType || 'Fellowship'}
                             </Badge>
                             {fellowship.locationType && (
-                                <Badge variant="secondary" className="text-[9px] sm:text-[10px] h-5 px-1.5 w-fit uppercase tracking-wider font-bold">
+                                <Badge variant="secondary" className="text-[9px] sm:text-[10px] h-5 px-2 w-fit uppercase tracking-widest font-black leading-none">
                                     {fellowship.locationType}
                                 </Badge>
                             )}
@@ -137,19 +136,19 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
                         {isOrganizer && (
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                    <Button variant="ghost" size="icon" className="h-8 w-8 -mr-2">
+                                    <Button variant="ghost" size="icon" className="h-9 w-9 -mr-2 rounded-full">
                                         <MoreVertical className="h-4 w-4" />
                                     </Button>
                                 </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
-                                    <DropdownMenuItem onSelect={onManage}>
+                                <DropdownMenuContent align="end" className="rounded-xl">
+                                    <DropdownMenuItem onSelect={onManage} className="rounded-lg">
                                         <Edit className="mr-2 h-4 w-4" />
                                         Manage
                                     </DropdownMenuItem>
                                     <DropdownMenuSeparator />
-                                    <DropdownMenuItem onSelect={onDelete} className="text-destructive focus:text-destructive">
+                                    <DropdownMenuItem onSelect={onDelete} className="text-destructive focus:text-destructive focus:bg-destructive/10 rounded-lg">
                                         <Trash2 className="mr-2 h-4 w-4" />
-                                        Delete
+                                        Delete Group
                                     </DropdownMenuItem>
                                 </DropdownMenuContent>
                             </DropdownMenu>
@@ -158,46 +157,44 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
                 </div>
             </CardHeader>
             <CardContent className="px-5 sm:px-6 pb-4 space-y-4">
-                <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2 leading-relaxed">{fellowship.description}</p>
-                <div className="text-[11px] sm:text-xs space-y-1.5 p-3 bg-muted/30 rounded-lg border">
-                    <div className="flex items-start gap-2">
-                        <span className="font-bold text-muted-foreground shrink-0 uppercase tracking-tighter">Schedule:</span>
-                        <span className="text-foreground leading-snug">{fellowship.schedule}</span>
+                <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2 leading-relaxed font-medium">{fellowship.description}</p>
+                <div className="text-[11px] sm:text-xs space-y-2 p-4 bg-muted/30 rounded-2xl border border-dashed">
+                    <div className="flex items-start gap-2.5">
+                        <span className="font-black text-[9px] sm:text-[10px] text-muted-foreground shrink-0 uppercase tracking-widest pt-0.5">Schedule</span>
+                        <span className="text-foreground font-bold leading-tight">{fellowship.schedule}</span>
                     </div>
                     {fellowship.location && (
-                        <div className="flex items-start gap-2">
-                            <span className="font-bold text-muted-foreground shrink-0 uppercase tracking-tighter">Area:</span>
-                            <span className="text-foreground line-clamp-1">{fellowship.location}</span>
+                        <div className="flex items-start gap-2.5 pt-1 border-t border-muted-foreground/10 mt-1">
+                            <span className="font-black text-[9px] sm:text-[10px] text-muted-foreground shrink-0 uppercase tracking-widest pt-0.5">Area</span>
+                            <span className="text-foreground font-bold line-clamp-1 leading-tight flex items-center gap-1.5"><MapPin className="h-3 w-3 text-primary" /> {fellowship.location}</span>
                         </div>
                     )}
                 </div>
             </CardContent>
-            <CardFooter className="px-5 sm:px-6 py-4 flex justify-between items-center border-t bg-muted/10">
-                <div className="flex items-center text-[10px] sm:text-xs text-muted-foreground font-medium">
-                    <Users className="mr-1.5 h-3.5 w-3.5 text-primary" /> {fellowship.memberCount} member{fellowship.memberCount === 1 ? '' : 's'}
+            <CardFooter className="px-5 sm:px-6 py-4 flex justify-between items-center border-t bg-black/5">
+                <div className="flex items-center text-[10px] sm:text-xs text-muted-foreground font-black uppercase tracking-widest">
+                    <Users className="mr-2 h-4 w-4 text-primary" /> {fellowship.memberCount} LABOURERS
                 </div>
                 <div className="flex items-center gap-2" onClick={stopPropagation}>
                     {(isMember || isOrganizer) && fellowship.streamUrl && (
                         <TooltipProvider>
                             <Tooltip>
                                 <TooltipTrigger asChild>
-                                    <Button asChild variant="outline" size="icon" className="h-8 w-8">
+                                    <Button asChild variant="outline" size="icon" className="h-9 w-9 rounded-full shadow-sm bg-background">
                                         <Link href={fellowship.streamUrl} target="_blank" rel="noopener noreferrer">
-                                            <PlayCircle className="h-4 w-4" />
-                                            <span className="sr-only">Stream</span>
+                                            <PlayCircle className="h-4 w-4 text-primary" />
+                                            <span className="sr-only">Join Stream</span>
                                         </Link>
                                     </Button>
                                 </TooltipTrigger>
-                                <TooltipContent>
-                                    <p>Join Stream</p>
-                                </TooltipContent>
+                                <TooltipContent><p className="text-[10px] font-bold uppercase">Enter Online Meeting</p></TooltipContent>
                             </Tooltip>
                         </TooltipProvider>
                     )}
                     {!isOrganizer && (
-                        <Button onClick={handleJoin} disabled={isMember || isJoining} size="sm" className="h-8 px-4 text-xs font-bold">
-                            {isJoining ? <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin"/> : null}
-                            {isMember ? 'Joined' : 'Join'}
+                        <Button onClick={handleJoin} disabled={isMember || isJoining} size="sm" className="h-9 px-6 text-xs font-black uppercase tracking-widest rounded-xl shadow-lg">
+                            {isJoining ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : null}
+                            {isMember ? 'JOINED' : 'JOIN GROUP'}
                         </Button>
                     )}
                 </div>
