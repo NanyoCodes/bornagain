@@ -87,13 +87,14 @@ function ProfileSettingsCard() {
   );
 }
 
-function BackgroundSettingsCard({ userProfile, userId }: { userProfile: UserProfile, userId: string }) {
+function VisualEnvironmentCard({ userProfile, userId }: { userProfile: UserProfile, userId: string }) {
   const { toast } = useToast();
   const firestore = useFirestore();
   const { user } = useUser();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedUrl, setSelectedUrl] = useState(userProfile.backgroundImage || backgroundPresets[0].url);
   const [overlayOpacity, setOverlayOpacity] = useState(userProfile.backgroundOverlayOpacity ?? 0.7);
+  const { fontSize, setFontSize } = useFontSize();
 
   const handleSave = async () => {
     setIsSubmitting(true);
@@ -106,7 +107,7 @@ function BackgroundSettingsCard({ userProfile, userId }: { userProfile: UserProf
 
     updateDoc(userRef, updateData)
         .then(() => {
-            toast({ title: 'Background Updated', description: 'Your spiritual environment has been refreshed.' });
+            toast({ title: 'Environment Updated', description: 'Your visual preferences have been saved.' });
         })
         .catch(() => {
             errorEmitter.emit('permission-error', new FirestorePermissionError({ 
@@ -121,122 +122,124 @@ function BackgroundSettingsCard({ userProfile, userId }: { userProfile: UserProf
   return (
     <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b">
         <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-lg"><ImageIcon className="h-5 w-5 text-primary" /> App Background</CardTitle>
-            <CardDescription>Personalize your Kingdom environment.</CardDescription>
+            <CardTitle className="flex items-center gap-2 text-lg"><ImageIcon className="h-5 w-5 text-primary" /> Visual Environment</CardTitle>
+            <CardDescription>Personalize your Kingdom atmosphere and app readability.</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-6">
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                {backgroundPresets.map((preset) => (
-                    <button
-                        key={preset.id}
-                        type="button"
-                        onClick={() => setSelectedUrl(preset.url)}
-                        className={cn(
-                            "group relative aspect-video rounded-xl overflow-hidden border-2 transition-all active:scale-95",
-                            selectedUrl === preset.url ? "border-primary ring-2 ring-primary/20" : "border-transparent opacity-60 hover:opacity-100"
-                        )}
-                    >
-                        {preset.url.startsWith('linear-gradient') ? (
-                          <div className="absolute inset-0" style={{ background: preset.url }} />
-                        ) : (
-                          <Image src={preset.url} alt={preset.label} fill className="object-cover" unoptimized />
-                        )}
-                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                            <span className="text-[10px] font-bold text-white uppercase tracking-wider">{preset.label}</span>
+        <CardContent className="space-y-8">
+            {/* Appearance Controls */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="flex items-center justify-between rounded-xl border p-4 bg-muted/20">
+                    <div className="space-y-0.5">
+                        <label className="text-sm font-bold uppercase tracking-wider flex items-center gap-2">
+                             <Palette className="h-4 w-4 text-primary" />
+                             Theme
+                        </label>
+                        <p className="text-[10px] text-muted-foreground uppercase font-medium">Dark mode is default</p>
+                    </div>
+                    <ThemeToggle />
+                </div>
+
+                <div className="flex items-center justify-between rounded-xl border p-4 bg-muted/20">
+                    <div className="space-y-0.5 pr-4">
+                        <label className="text-sm font-bold uppercase tracking-wider flex items-center gap-2">
+                            <Type className="h-4 w-4 text-primary" />
+                            Text Size
+                        </label>
+                        <p className="text-[10px] text-muted-foreground uppercase font-medium">Adjust readability</p>
+                    </div>
+                    <Select value={fontSize} onValueChange={(val) => setFontSize(val as any)}>
+                        <SelectTrigger className="w-[110px] h-9 text-xs font-bold uppercase">
+                            <SelectValue placeholder="Size" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="sm">Small</SelectItem>
+                            <SelectItem value="base">Medium</SelectItem>
+                            <SelectItem value="lg">Large</SelectItem>
+                            <SelectItem value="xl">XL</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
+            </div>
+
+            <Separator className="opacity-50" />
+
+            {/* Background Selection */}
+            <div className="space-y-6">
+                <div className="space-y-3">
+                    <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1">Select Background</Label>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                        {backgroundPresets.map((preset) => (
+                            <button
+                                key={preset.id}
+                                type="button"
+                                onClick={() => setSelectedUrl(preset.url)}
+                                className={cn(
+                                    "group relative aspect-video rounded-xl overflow-hidden border-2 transition-all active:scale-95",
+                                    selectedUrl === preset.url ? "border-primary ring-2 ring-primary/20" : "border-transparent opacity-60 hover:opacity-100"
+                                )}
+                            >
+                                {preset.url.startsWith('linear-gradient') ? (
+                                <div className="absolute inset-0" style={{ background: preset.url }} />
+                                ) : (
+                                <Image src={preset.url} alt={preset.label} fill className="object-cover" unoptimized />
+                                )}
+                                <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <span className="text-[10px] font-bold text-white uppercase tracking-wider">{preset.label}</span>
+                                </div>
+                                {selectedUrl === preset.url && (
+                                    <div className="absolute top-1 right-1 bg-primary rounded-full p-0.5">
+                                        <Sparkles className="h-3 w-3 text-white" />
+                                    </div>
+                                )}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                <div className="space-y-6">
+                    <div className="space-y-3">
+                        <div className="flex justify-between items-center">
+                            <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1">Overlay Intensity</Label>
+                            <span className="text-[10px] font-black text-primary uppercase tracking-tighter">{Math.round(overlayOpacity * 100)}% Dark</span>
                         </div>
-                        {selectedUrl === preset.url && (
-                             <div className="absolute top-1 right-1 bg-primary rounded-full p-0.5">
-                                <Sparkles className="h-3 w-3 text-white" />
-                             </div>
-                        )}
-                    </button>
-                ))}
-            </div>
-
-            <div className="space-y-4 pt-4">
-                <div className="space-y-2">
-                    <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1">Background Visibility (Overlay)</Label>
-                    <div className="flex items-center gap-4 px-2">
-                        <span className="text-[10px] font-bold text-muted-foreground uppercase">Clear</span>
-                        <Slider 
-                            value={[1 - overlayOpacity]} 
-                            max={1} 
-                            step={0.05} 
-                            min={0}
-                            onValueChange={(val) => setOverlayOpacity(1 - val[0])}
-                            className="flex-1"
-                        />
-                        <span className="text-[10px] font-bold text-muted-foreground uppercase">Dark</span>
+                        <div className="flex items-center gap-4 px-2">
+                            <span className="text-[10px] font-bold text-muted-foreground uppercase">Glass</span>
+                            <Slider 
+                                value={[1 - overlayOpacity]} 
+                                max={1} 
+                                step={0.05} 
+                                min={0}
+                                onValueChange={(val) => setOverlayOpacity(1 - val[0])}
+                                className="flex-1"
+                            />
+                            <span className="text-[10px] font-bold text-muted-foreground uppercase">Solid</span>
+                        </div>
                     </div>
-                    <p className="text-[10px] text-muted-foreground italic ml-2">Adjust how clearly the background shines through the content.</p>
-                </div>
 
-                <div className="space-y-2">
-                    <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1">Custom Image URL</Label>
-                    <div className="flex gap-2">
-                        <Input 
-                            placeholder="https://images.unsplash.com/..." 
-                            value={selectedUrl}
-                            onChange={(e) => setSelectedUrl(e.target.value)}
-                            className="h-10 text-sm"
-                        />
-                        {selectedUrl && !backgroundPresets.some(p => p.url === selectedUrl) && (
-                            <Button variant="outline" size="icon" className="h-10 w-10 shrink-0" onClick={() => setSelectedUrl(backgroundPresets[0].url)}>
-                                <Trash2 className="h-4 w-4" />
-                            </Button>
-                        )}
+                    <div className="space-y-2">
+                        <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1">Custom Image URL</Label>
+                        <div className="flex gap-2">
+                            <Input 
+                                placeholder="https://..." 
+                                value={selectedUrl}
+                                onChange={(e) => setSelectedUrl(e.target.value)}
+                                className="h-10 text-sm rounded-xl"
+                            />
+                            {selectedUrl && !backgroundPresets.some(p => p.url === selectedUrl) && (
+                                <Button variant="outline" size="icon" className="h-10 w-10 shrink-0 rounded-xl" onClick={() => setSelectedUrl(backgroundPresets[0].url)}>
+                                    <Trash2 className="h-4 w-4" />
+                                </Button>
+                            )}
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <Button onClick={handleSave} disabled={isSubmitting} className="w-full sm:w-auto h-11 px-8 rounded-full font-bold">
-                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Apply Background
-            </Button>
+                <Button onClick={handleSave} disabled={isSubmitting} className="w-full h-12 rounded-2xl font-black shadow-xl shadow-primary/20 tracking-widest uppercase">
+                    {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    Save Environment
+                </Button>
+            </div>
         </CardContent>
-    </Card>
-  );
-}
-
-function AppearanceSettingsCard() {
-  const { fontSize, setFontSize } = useFontSize();
-
-  return (
-    <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-lg"><Palette className="h-5 w-5 text-primary" /> Appearance</CardTitle>
-        <CardDescription>Customize the look and feel of the application.</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-6">
-         <div className="flex items-center justify-between rounded-xl border p-4 bg-muted/20">
-            <div className="space-y-0.5">
-                <label className="text-sm font-bold uppercase tracking-wider">Display Theme</label>
-                <p className="text-xs text-muted-foreground">Always set to Dark mode by default for Testify.</p>
-            </div>
-            <ThemeToggle />
-        </div>
-
-        <div className="flex items-center justify-between rounded-xl border p-4 bg-muted/20">
-            <div className="space-y-0.5 pr-4">
-                <label className="text-sm font-bold uppercase tracking-wider flex items-center gap-2">
-                    <Type className="h-4 w-4 text-primary" />
-                    Text Size
-                </label>
-                <p className="text-xs text-muted-foreground">Adjust readability across the entire app.</p>
-            </div>
-            <Select value={fontSize} onValueChange={(val) => setFontSize(val as any)}>
-                <SelectTrigger className="w-[130px] h-9 text-xs sm:text-sm font-bold uppercase">
-                    <SelectValue placeholder="Select size" />
-                </SelectTrigger>
-                <SelectContent>
-                    <SelectItem value="sm">Small</SelectItem>
-                    <SelectItem value="base">Medium</SelectItem>
-                    <SelectItem value="lg">Large</SelectItem>
-                    <SelectItem value="xl">Extra Large</SelectItem>
-                </SelectContent>
-            </Select>
-        </div>
-      </CardContent>
     </Card>
   );
 }
@@ -377,9 +380,8 @@ export default function SettingsPage() {
        ) : (
         <div className="space-y-6 md:space-y-8">
             <ProfileSettingsCard />
-            <BackgroundSettingsCard userProfile={userProfile} userId={user.uid} />
+            <VisualEnvironmentCard userProfile={userProfile} userId={user.uid} />
             <ChurchSettingsCard userProfile={userProfile} userId={user.uid} />
-            <AppearanceSettingsCard />
             <PwaInstallCard />
             <NotificationSettingsForm userProfile={userProfile} userId={user.uid} />
             <PasswordSettingsCard />
