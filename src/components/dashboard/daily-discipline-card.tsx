@@ -263,7 +263,7 @@ export function DailyDisciplineCard() {
         <CardHeader>
           <div className="flex flex-col items-start gap-2 sm:flex-row sm:justify-between">
             <div className="space-y-1">
-              <CardTitle className="text-xl font-black font-headline tracking-tight uppercase">Daily Discipline</CardTitle>
+              <CardTitle className="text-xl font-black tracking-tight uppercase">Daily Discipline</CardTitle>
               <CardDescription className="text-sm font-medium">Your spiritual checklist for today.</CardDescription>
             </div>
             <div className="text-[10px] font-black uppercase tracking-[0.2em] text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20">
