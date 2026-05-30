@@ -173,7 +173,7 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
             </CardContent>
             <CardFooter className="px-5 sm:px-6 py-4 flex justify-between items-center border-t bg-black/5">
                 <div className="flex items-center text-[10px] sm:text-xs text-muted-foreground font-black uppercase tracking-widest">
-                    <Users className="mr-2 h-4 w-4 text-primary" /> {fellowship.memberCount} LABOURERS
+                    <Users className="mr-2 h-4 w-4 text-primary" /> {fellowship.memberCount} SOUL WINNERS
                 </div>
                 <div className="flex items-center gap-2" onClick={stopPropagation}>
                     {(isMember || isOrganizer) && fellowship.streamUrl && (

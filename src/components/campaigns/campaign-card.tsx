@@ -531,7 +531,7 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
                         <Users className="h-4 w-4" />
                         <span className="ml-1.5">
                             {campaign.participants}
-                            {campaign.maxParticipants ? ` / ${campaign.maxParticipants}` : ''} LABOURERS
+                            {campaign.maxParticipants ? ` / ${campaign.maxParticipants}` : ''} SOUL WINNERS
                         </span>
                     </Button>
                 </ParticipantsDialog>
