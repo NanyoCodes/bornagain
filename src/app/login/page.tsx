@@ -97,25 +97,28 @@ export default function LoginPage() {
       router.push('/dashboard/testimonies');
     } catch (error) {
       const authError = error as AuthError;
+      
+      // Gracefully handle user cancellation to avoid console noise and overlays
+      if (authError.code === 'auth/popup-closed-by-user') {
+        setIsGoogleLoading(false);
+        return;
+      }
+
       console.error('Social login error:', authError);
       
       let message = 'An unexpected error occurred during sign in.';
       
-      if (authError.code === 'auth/popup-closed-by-user') {
-        message = 'Login was canceled. Please try again.';
-      } else if (authError.code === 'auth/popup-blocked') {
+      if (authError.code === 'auth/popup-blocked') {
         message = 'The login popup was blocked by your browser. Please allow popups and try again.';
       } else if (authError.code === 'auth/network-request-failed') {
         message = 'Network error. Please check your internet connection.';
       }
 
-      if (authError.code !== 'auth/popup-closed-by-user' || process.env.NODE_ENV === 'development') {
-        toast({
-          variant: 'destructive',
-          title: 'Sign In Failed',
-          description: message,
-        });
-      }
+      toast({
+        variant: 'destructive',
+        title: 'Sign In Failed',
+        description: message,
+      });
     } finally {
       setIsGoogleLoading(false);
     }

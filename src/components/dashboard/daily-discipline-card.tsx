@@ -263,7 +263,7 @@ export function DailyDisciplineCard() {
         <CardHeader>
           <div className="flex flex-col items-start gap-2 sm:flex-row sm:justify-between">
             <div className="space-y-1">
-              <CardTitle className="text-xl font-bold tracking-tight">Daily Discipline</CardTitle>
+              <CardTitle className="text-xl font-semibold tracking-tight">Daily Discipline</CardTitle>
               <CardDescription className="text-sm font-medium">Your spiritual checklist for today.</CardDescription>
             </div>
             <div className="text-[10px] font-black uppercase tracking-[0.2em] text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20">
@@ -297,7 +297,7 @@ export function DailyDisciplineCard() {
                         ) : (
                             <>
                                 <Icon className={cn("h-8 w-8 transition-transform duration-300 group-hover:scale-110", isCompleted ? "text-primary fill-current opacity-40" : color)} />
-                                <span className={cn("text-xs font-bold", isCompleted ? "text-primary" : "text-foreground")}>{discipline.label}</span>
+                                <span className={cn("text-xs font-semibold", isCompleted ? "text-primary" : "text-foreground")}>{discipline.label}</span>
                             </>
                         )}
                     </Button>
