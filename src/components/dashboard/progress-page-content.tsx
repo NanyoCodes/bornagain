@@ -249,14 +249,13 @@ function ActionAnalyticsCard({ souls }: { souls: Soul[] }) {
 function FamilyFriendsTrackerCard({ souls }: { souls: Soul[] }) {
     const stats = useMemo(() => {
         const familyCount = souls.filter(s => s.relationship === 'Family').length;
-        const friendsCount = souls.filter(s => s.relationship === 'Friend').length;
-        const innerCircleCount = souls.filter(s => ['Colleague', 'Neighbor'].includes(s.relationship || '')).length;
+        const friendsCount = souls.filter(s => ['Friend', 'Colleague', 'Neighbor'].includes(s.relationship || '')).length;
+        const outreachCount = souls.filter(s => ['Stranger', 'Other'].includes(s.relationship || '') || !s.relationship).length;
         
         return {
             family: familyCount,
             friends: friendsCount,
-            innerCircle: innerCircleCount,
-            totalInner: familyCount + friendsCount + innerCircleCount
+            outreach: outreachCount,
         };
     }, [souls]);
 
@@ -284,10 +283,10 @@ function FamilyFriendsTrackerCard({ souls }: { souls: Soul[] }) {
 
                     <div className="space-y-1.5 pt-2">
                         <div className="flex justify-between items-center text-xs font-bold uppercase tracking-widest text-muted-foreground">
-                            <span>Friends & Inner Circle</span>
-                            <span className="text-primary">{stats.friends + stats.innerCircle} Souls</span>
+                            <span>Friends & Connections</span>
+                            <span className="text-primary">{stats.friends} Souls</span>
                         </div>
-                        <Progress value={Math.min(((stats.friends + stats.innerCircle) / 10) * 100, 100)} className="h-2" />
+                        <Progress value={Math.min((stats.friends / 10) * 100, 100)} className="h-2" />
                     </div>
                 </div>
 
@@ -301,8 +300,8 @@ function FamilyFriendsTrackerCard({ souls }: { souls: Soul[] }) {
                         <p className="text-xl font-black text-primary">{stats.friends}</p>
                     </div>
                     <div className="p-3 rounded-2xl bg-muted/30 border text-center space-y-1">
-                        <p className="text-[10px] font-black text-muted-foreground uppercase tracking-tighter">Circle</p>
-                        <p className="text-xl font-black text-foreground">{stats.innerCircle}</p>
+                        <p className="text-[10px] font-black text-muted-foreground uppercase tracking-tighter">Outreach</p>
+                        <p className="text-xl font-black text-foreground">{stats.outreach}</p>
                     </div>
                 </div>
 
@@ -576,3 +575,4 @@ export function ProgressPageContent() {
     </div>
   );
 }
+
