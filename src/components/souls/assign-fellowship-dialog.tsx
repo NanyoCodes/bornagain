@@ -147,10 +147,11 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
                                 <Tooltip>
                                   <TooltipTrigger asChild>
                                     <Button
+                                        type="button"
                                         size="icon"
-                                        variant="outline"
-                                        onClick={() => onAssignGroup(soul, 'none', groupType)}
-                                        className="h-8 w-8 sm:h-9 sm:w-9 border-destructive/30 text-destructive hover:bg-destructive/10 rounded-full transition-all active:scale-90"
+                                        variant="ghost"
+                                        onClick={(e) => { e.stopPropagation(); onAssignGroup(soul, 'none', groupType); }}
+                                        className="h-8 w-8 sm:h-9 sm:w-9 text-destructive hover:bg-destructive/10 rounded-full transition-all active:scale-90"
                                     >
                                         <UserMinus className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                                         <span className="sr-only">Unassign</span>
@@ -165,8 +166,9 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
                                   <TooltipTrigger asChild>
                                     <div className="inline-block">
                                       <Button
+                                          type="button"
                                           size="icon"
-                                          onClick={() => onAssignGroup(soul, f.id, groupType)}
+                                          onClick={(e) => { e.stopPropagation(); onAssignGroup(soul, f.id, groupType); }}
                                           disabled={isDisabled}
                                           className="h-8 w-8 sm:h-9 sm:w-9 rounded-full shadow-md transition-all active:scale-90"
                                       >
