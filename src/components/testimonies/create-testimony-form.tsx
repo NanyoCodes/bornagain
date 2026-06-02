@@ -136,12 +136,10 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
     let uploadedMediaUrl = null;
 
     try {
-      // 1. Handle Media Upload if exists
       if (mediaFile && storage) {
         setIsUploadingMedia(true);
         const extension = mediaFile.name.split('.').pop() || 'file';
         const safeName = `${Date.now()}.${extension}`;
-        // CRITICAL: Path must match storage.rules
         const mediaRef = ref(storage, `testimony-media/${user.uid}/${safeName}`);
         
         try {
@@ -153,7 +151,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
                 toast({
                     variant: 'destructive',
                     title: 'Upload Permission Denied',
-                    description: 'Your account does not have permission to upload media. Please ensure you are signed in and try again.',
+                    description: 'Your account does not have permission to upload media. Please check your connection or project settings.',
                 });
                 setIsSubmitting(false);
                 setIsUploadingMedia(false);
@@ -165,7 +163,6 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
         }
       }
 
-      // 2. Prepare Testimony Data
       const testimonyData: any = {
           authorId: user.uid,
           authorFirstName: userProfile.firstName,
@@ -190,7 +187,6 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
       if (campaign) { testimonyData.campaignId = campaign.id; testimonyData.campaignTitle = campaign.title; }
       if (prayerRequest) { testimonyData.answeredPrayerId = prayerRequest.id; testimonyData.answeredPrayerContent = prayerRequest.content; }
       
-      // 3. Save to Firestore via Transaction
       const result = await runTransaction(firestore, async (transaction) => {
           const newDocRef = doc(collection(firestore, "testimonies"));
           if (prayerRequest) {
@@ -275,12 +271,11 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
                 <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
-                    className="w-full h-32 rounded-[2rem] border-2 border-dashed border-primary/20 bg-primary/5 hover:bg-primary/10 transition-colors flex flex-col items-center justify-center gap-2 group"
+                    className="w-full h-20 rounded-2xl border-2 border-dashed border-primary/20 bg-primary/5 hover:bg-primary/10 transition-colors flex items-center justify-center group"
                 >
                     <div className="h-10 w-10 rounded-full bg-background border shadow-sm flex items-center justify-center group-hover:scale-110 transition-transform">
                         <Paperclip className="h-5 w-5 text-primary" />
                     </div>
-                    <span className="text-xs font-bold text-primary/60 uppercase tracking-widest">Attach Media (Img, Vid, Audio)</span>
                 </button>
               ) : (
                 <div className="relative rounded-[2rem] overflow-hidden border shadow-lg aspect-video bg-black flex items-center justify-center">
