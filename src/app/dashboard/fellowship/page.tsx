@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect, useCallback } from 'react';
@@ -785,16 +784,16 @@ export default function FellowshipPage() {
             <div className="flex flex-col gap-6">
                 <div className="flex flex-wrap gap-4 items-center">
                     <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full sm:w-auto">
-                        <TabsList className="grid w-full grid-cols-2">
-                            <TabsTrigger value="Fellowship">Fellowships</TabsTrigger>
-                            <TabsTrigger value="Association">Associations</TabsTrigger>
+                        <TabsList className="grid w-full grid-cols-2 h-11 sm:h-12 p-1 bg-muted/40 rounded-xl">
+                            <TabsTrigger value="Fellowship" className="font-black text-[10px] sm:text-xs uppercase tracking-widest rounded-lg">Fellowships</TabsTrigger>
+                            <TabsTrigger value="Association" className="font-black text-[10px] sm:text-xs uppercase tracking-widest rounded-lg">Associations</TabsTrigger>
                         </TabsList>
                     </Tabs>
                     <Tabs value={membershipFilter} onValueChange={setMembershipFilter} className="w-full sm:w-auto">
-                        <TabsList className="grid w-full grid-cols-3">
-                            <TabsTrigger value="all">All Groups</TabsTrigger>
-                            <TabsTrigger value="owned">Created</TabsTrigger>
-                            <TabsTrigger value="joined">Joined</TabsTrigger>
+                        <TabsList className="grid w-full grid-cols-3 h-11 sm:h-12 p-1 bg-muted/40 rounded-xl">
+                            <TabsTrigger value="all" className="font-black text-[10px] sm:text-xs uppercase tracking-widest rounded-lg">All Groups</TabsTrigger>
+                            <TabsTrigger value="owned" className="font-black text-[10px] sm:text-xs uppercase tracking-widest rounded-lg">Created</TabsTrigger>
+                            <TabsTrigger value="joined" className="font-black text-[10px] sm:text-xs uppercase tracking-widest rounded-lg">Joined</TabsTrigger>
                         </TabsList>
                     </Tabs>
                 </div>

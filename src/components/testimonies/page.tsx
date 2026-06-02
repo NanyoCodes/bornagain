@@ -291,8 +291,8 @@ export default function TestimoniesPage() {
     <div className="space-y-6 md:space-y-10 w-full max-w-3xl mx-auto">
       {/* Interaction Box - Full Width Mobile */}
       <Card className="border-y sm:border shadow-sm sm:shadow-md rounded-none sm:rounded-xl border-x-0 sm:border-x bg-card/50 backdrop-blur-sm -mx-4 sm:mx-0">
-        <CardContent className="p-3 sm:p-6 flex justify-center">
-          <div className="flex flex-row items-center justify-center gap-2 sm:gap-4 w-full">
+        <CardContent className="p-3 sm:p-6">
+          <div className="flex flex-row items-center gap-2 sm:gap-4 w-full">
             <Button 
               variant="outline" 
               className="flex-1 justify-start text-left text-muted-foreground font-normal rounded-full h-10 sm:h-12 px-6 hover:bg-muted/50 transition-colors text-sm sm:text-base min-w-0 border-dashed"
