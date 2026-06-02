@@ -31,7 +31,7 @@ import {
   UserPlus,
   Hourglass,
 } from "lucide-react";
-import { useUser, useFirestore, useCollection } from "@/firebase";
+import { useUser, useFirestore, useCollection, useDoc } from "@/firebase";
 import { useState, useMemo } from "react";
 import {
   DropdownMenu,
@@ -53,6 +53,20 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { CommentSection } from "./comment-section";
 import { Separator } from "../ui/separator";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+
+function LiveAuthorAvatar({ userId, fallbackInitials, className }: { userId: string, fallbackInitials: string, className?: string }) {
+    const firestore = useFirestore();
+    const userRef = React.useMemo(() => userId ? doc(firestore, 'users', userId) : null, [firestore, userId]);
+    const { data: profile } = useDoc<UserProfile>(userRef);
+    const photoURL = profile?.photoURL;
+    
+    return (
+        <Avatar className={className}>
+            <AvatarImage src={photoURL} className="object-cover" />
+            <AvatarFallback className="bg-primary/10 text-primary font-bold">{fallbackInitials || 'U'}</AvatarFallback>
+        </Avatar>
+    );
+}
 
 export const TestimonyCard = React.memo(function TestimonyCard({ 
   testimony, 
@@ -258,28 +272,35 @@ export const TestimonyCard = React.memo(function TestimonyCard({
   return (
     <>
       <Card id={testimony.id} className={cn(
-        "flex flex-col h-full overflow-hidden shadow-sm hover:shadow-md transition-all scroll-mt-20 border-l-4 rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b bg-card/50 backdrop-blur-sm",
+        "flex flex-col h-full w-full overflow-hidden shadow-sm hover:shadow-md transition-all scroll-mt-20 border-l-4 rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b bg-card/50 backdrop-blur-sm",
         testimony.answeredPrayerId ? "border-l-amber-500" : "border-l-primary/40",
         isPartner && "border-l-primary ring-1 ring-primary/20"
       )}>
         <CardHeader className="flex flex-row items-start justify-between gap-3 p-4 sm:p-6">
           <div className="flex items-center gap-3 min-w-0 flex-1">
             <Dialog>
-              <DialogTrigger asChild onClick={(e) => e.stopPropagation()} disabled={!testimony.authorAvatarUrl}>
-                <Avatar className={cn(testimony.authorAvatarUrl && "cursor-pointer h-10 w-10 sm:h-12 sm:w-12 border shadow-sm transition-transform active:scale-95")}>
-                  <AvatarImage src={testimony.authorAvatarUrl} alt={authorFullName} className="object-cover" />
-                  <AvatarFallback className="bg-primary/10 text-primary font-bold">{initials || 'A'}</AvatarFallback>
-                </Avatar>
+              <DialogTrigger asChild onClick={(e) => e.stopPropagation()}>
+                <div className="relative cursor-pointer hover:opacity-90 transition-opacity active:scale-95">
+                    <LiveAuthorAvatar 
+                        userId={testimony.authorId} 
+                        fallbackInitials={initials} 
+                        className="h-10 w-10 sm:h-12 sm:w-12 border shadow-sm"
+                    />
+                </div>
               </DialogTrigger>
-              {testimony.authorAvatarUrl && (
-                  <DialogContent className="p-0 bg-transparent border-0 w-auto max-w-lg overflow-hidden rounded-3xl">
-                    <DialogHeader className="sr-only">
-                        <DialogTitle>Profile photo of {authorFullName}</DialogTitle>
-                        <DialogDescription>A larger view of the user's profile photo.</DialogDescription>
-                    </DialogHeader>
-                    <Image src={testimony.authorAvatarUrl} alt={authorFullName} width={800} height={800} className="rounded-3xl object-contain max-h-[85vh] shadow-2xl" unoptimized/>
-                  </DialogContent>
-              )}
+              <DialogContent className="p-0 bg-transparent border-0 w-auto max-w-lg overflow-hidden rounded-3xl">
+                <DialogHeader className="sr-only">
+                    <DialogTitle>Profile photo of {authorFullName}</DialogTitle>
+                    <DialogDescription>A larger view of the user's profile photo.</DialogDescription>
+                </DialogHeader>
+                <div className="relative">
+                    <LiveAuthorAvatar 
+                        userId={testimony.authorId} 
+                        fallbackInitials={initials} 
+                        className="h-[300px] w-[300px] sm:h-[450px] sm:w-[450px] rounded-3xl"
+                    />
+                </div>
+              </DialogContent>
             </Dialog>
             <div className="min-w-0 flex-1">
                <div className="flex items-center gap-2 flex-wrap">
@@ -362,7 +383,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({
         
         <CardContent className="flex-grow pt-0 px-4 sm:px-6 space-y-4">
           <div className="text-sm sm:text-base text-muted-foreground whitespace-pre-wrap leading-relaxed">
-            <p ref={contentRef} className="line-clamp-4">
+            <p ref={contentRef} className="line-clamp-6">
               {testimony.content}
             </p>
             {isTruncated && (
@@ -531,3 +552,4 @@ export const TestimonyCard = React.memo(function TestimonyCard({
     </>
   );
 });
+TestimonyCard.displayName = "TestimonyCard";

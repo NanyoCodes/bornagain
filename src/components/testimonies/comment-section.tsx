@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { useUser, useFirestore, useCollection } from '@/firebase';
-import { collection, query, orderBy, addDoc, serverTimestamp, doc, deleteDoc, updateDoc, arrayUnion, arrayRemove, getDocs, where, writeBatch } from 'firebase/firestore';
+import { useUser, useFirestore, useCollection, useDoc } from '@/firebase';
+import { collection, query, orderBy, addDoc, serverTimestamp, doc, deleteDoc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
 import type { TestimonyComment, UserProfile } from '@/lib/types';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -11,9 +11,22 @@ import { Loader2, Send, Trash2, HandHeart, Sparkles, PartyPopper, X } from 'luci
 import { formatDistanceToNow } from 'date-fns';
 import { cn, safeToDate } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
-import { useDoc } from '@/firebase/firestore/use-doc';
 import { useIsMobile } from '@/hooks/use-mobile';
 import Link from 'next/link';
+
+function CommentAuthorAvatar({ userId, fallbackInitials, className }: { userId: string, fallbackInitials: string, className?: string }) {
+    const firestore = useFirestore();
+    const userRef = useMemo(() => userId ? doc(firestore, 'users', userId) : null, [firestore, userId]);
+    const { data: profile } = useDoc<UserProfile>(userRef);
+    const photoURL = profile?.photoURL;
+    
+    return (
+        <Avatar className={className}>
+            <AvatarImage src={photoURL} />
+            <AvatarFallback className="font-bold">{fallbackInitials || 'U'}</AvatarFallback>
+        </Avatar>
+    );
+}
 
 function CommentItem({ 
     comment, 
@@ -78,20 +91,20 @@ function CommentItem({
 
     const authorName = `${comment.authorFirstName || 'User'} ${comment.authorLastName || ''}`.trim();
     const profileLink = isAuthor ? "/dashboard/profile" : `/dashboard/profile/${comment.authorId}`;
+    const initials = comment.authorFirstName?.charAt(0) || 'U';
 
     return (
         <div className={cn("space-y-4", level > 0 && (isMobile ? "ml-4" : "ml-10"))}>
             <div className="flex gap-2 sm:gap-4 items-start group relative">
                 <Link href={profileLink} className="shrink-0">
-                    <Avatar className={cn(
-                        "shrink-0 hover:opacity-80 transition-opacity shadow-sm border", 
-                        level > 0 ? (isMobile ? "h-5 w-5" : "h-7 w-7") : "h-8 w-8 sm:h-10 sm:w-10"
-                    )}>
-                        <AvatarImage src={comment.authorAvatarUrl} />
-                        <AvatarFallback className={cn("font-bold", level > 0 ? "text-[8px]" : "text-xs sm:text-sm")}>
-                            {comment.authorFirstName?.charAt(0) || 'U'}
-                        </AvatarFallback>
-                    </Avatar>
+                    <CommentAuthorAvatar 
+                        userId={comment.authorId} 
+                        fallbackInitials={initials}
+                        className={cn(
+                            "shrink-0 hover:opacity-80 transition-opacity shadow-sm border", 
+                            level > 0 ? (isMobile ? "h-5 w-5" : "h-7 w-7") : "h-8 w-8 sm:h-10 sm:w-10"
+                        )}
+                    />
                 </Link>
                 <div className="flex-1 min-w-0">
                     <div className="bg-muted/30 rounded-2xl p-3 sm:p-4 relative border">
