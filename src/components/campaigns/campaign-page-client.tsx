@@ -305,7 +305,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                         {testimoniesLoading ? (
                             <div className="flex justify-center py-8"><Loader2 className="animate-spin h-6 w-6 opacity-20" /></div>
                         ) : (
-                            <div className="grid gap-6 md:grid-cols-2 -mx-4 sm:mx-0">
+                            <div className="flex flex-col gap-4 sm:gap-6 w-full max-w-2xl mx-auto -mx-4 sm:mx-auto">
                                 {testimonies && testimonies.length > 0 ? (
                                     testimonies.map(t => (
                                         <TestimonyCard 

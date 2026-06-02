@@ -212,7 +212,13 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                         <DialogTitle>Profile photo of {displayName}</DialogTitle>
                         <DialogDescription>A larger view of the user's profile photo.</DialogDescription>
                     </DialogHeader>
-                    <Image src={photoURL} alt={displayName} width={800} height={800} className="rounded-3xl object-contain max-h-[85vh] shadow-2xl" unoptimized/>
+                    <div className="relative">
+                        <LiveAuthorAvatar 
+                            userId={testimony.authorId} 
+                            fallbackInitials={initials} 
+                            className="h-[300px] w-[300px] sm:h-[450px] sm:w-[450px] rounded-3xl"
+                        />
+                    </div>
                 </DialogContent>
               )}
             </Dialog>
@@ -316,7 +322,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                 </div>
                 
                 {testimonies.length > 0 ? (
-                    <div className="grid gap-0 md:grid-cols-2 lg:grid-cols-3 -mx-4 sm:mx-0">
+                    <div className="flex flex-col gap-4 sm:gap-6 w-full max-w-2xl mx-auto -mx-4 sm:mx-auto">
                         {testimonies.map(testimony => (
                             <TestimonyCard 
                                 key={testimony.id} 
