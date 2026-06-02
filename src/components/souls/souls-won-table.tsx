@@ -163,7 +163,7 @@ const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, 
                             <div className="space-y-4">
                                {latestFollowUp && latestFollowUpDate ? (
                                     <div className="text-xs">
-                                        <p className="font-black uppercase tracking-tighter text-primary/70 mb-2">LAST SEEN: {format(latestFollowUpDate, "PPP")}</p>
+                                        <p className="font-black uppercase tracking-tighter text-primary/70 mb-2">LAST FOLLOW-UP: {format(latestFollowUpDate, "PPP")}</p>
                                         {latestFollowUp.actions && latestFollowUp.actions.length > 0 && (
                                             <div className="flex flex-wrap gap-1.5 mb-2">
                                                 {latestFollowUp.actions.map(actionId => {
