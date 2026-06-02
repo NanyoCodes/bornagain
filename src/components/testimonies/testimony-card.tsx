@@ -61,7 +61,7 @@ function LiveAuthorAvatar({ userId, fallbackInitials, className }: { userId: str
     
     return (
         <Avatar className={className}>
-            <AvatarImage src={photoURL} className="object-cover" />
+            <AvatarImage src={photoURL} />
             <AvatarFallback className="bg-primary/10 text-primary font-bold">{fallbackInitials || 'U'}</AvatarFallback>
         </Avatar>
     );
