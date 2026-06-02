@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
@@ -131,6 +130,14 @@ export default function SoulsWonPage() {
 
   const loading = userLoading || soulsLoading;
 
+  // Force restore interactivity and refresh data
+  const cleanupAndRefresh = useCallback(() => {
+    if (typeof document !== 'undefined') {
+        document.body.style.pointerEvents = 'auto';
+    }
+    router.refresh();
+  }, [router]);
+
   const handleOpenFollowUp = useCallback((soul: Soul) => setSoulForFollowUp(soul), []);
   const handleOpenHistory = useCallback((soul: Soul) => setSoulForHistory(soul), []);
   
@@ -148,12 +155,6 @@ export default function SoulsWonPage() {
     setSoulToDelete(soul);
     setIsDeleteOpen(true);
   }, []);
-
-  // Force restore interactivity and refresh data
-  const cleanupAndRefresh = useCallback(() => {
-    document.body.style.pointerEvents = 'auto';
-    router.refresh();
-  }, [router]);
 
   const handleCloseEdit = useCallback((open: boolean) => {
     setIsEditOpen(open);
@@ -372,7 +373,7 @@ export default function SoulsWonPage() {
           <div className="flex flex-row items-center gap-2 sm:gap-3">
             <Button 
                 variant="outline" 
-                className="flex-1 justify-start text-muted-foreground font-normal rounded-full h-10 sm:h-11 px-4 hover:bg-muted/50 transition-colors text-sm min-w-0"
+                className="flex-1 justify-start text-muted-foreground font-normal rounded-full h-10 sm:h-11 px-4 hover:bg-muted/50 transition-colors text-sm min-w-0 border-dashed"
                 onClick={() => setIsLogDialogOpen(true)}
                 disabled={loading}
             >
@@ -429,7 +430,12 @@ export default function SoulsWonPage() {
       <LogFollowUpDialog 
           soul={soulForFollowUp} 
           isOpen={!!soulForFollowUp} 
-          onOpenChange={(isOpen) => !isOpen && setSoulForFollowUp(null)} 
+          onOpenChange={(isOpen) => {
+              if (!isOpen) {
+                  setSoulForFollowUp(null);
+                  cleanupAndRefresh();
+              }
+          }} 
           onFollowUpLogged={() => {
             setSoulForFollowUp(null);
             cleanupAndRefresh();
@@ -439,7 +445,12 @@ export default function SoulsWonPage() {
       <ViewHistoryDialog 
           soul={soulForHistory} 
           isOpen={!!soulForHistory} 
-          onOpenChange={(isOpen) => !isOpen && setSoulForHistory(null)} 
+          onOpenChange={(isOpen) => {
+              if (!isOpen) {
+                  setSoulForHistory(null);
+                  cleanupAndRefresh();
+              }
+          }} 
       />
       
       <AssignFellowshipDialog 
@@ -495,7 +506,10 @@ export default function SoulsWonPage() {
       )}
 
       {mounted && isMobile ? (
-        <Sheet open={isLogDialogOpen} onOpenChange={setIsLogDialogOpen}>
+        <Sheet open={isLogDialogOpen} onOpenChange={(open) => {
+            setIsLogDialogOpen(open);
+            if (!open) cleanupAndRefresh();
+        }}>
           <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
             <div className="p-8 border-b flex-shrink-0 bg-muted/10">
                 <SheetHeader className="text-left">
@@ -512,7 +526,10 @@ export default function SoulsWonPage() {
           </SheetContent>
         </Sheet>
       ) : (
-        <Dialog open={isLogDialogOpen} onOpenChange={setIsLogDialogOpen}>
+        <Dialog open={isLogDialogOpen} onOpenChange={(open) => {
+            setIsLogDialogOpen(open);
+            if (!open) cleanupAndRefresh();
+        }}>
           <DialogContent className="sm:max-w-lg">
             <DialogHeader>
               <DialogTitle>Log a New Soul</DialogTitle>
