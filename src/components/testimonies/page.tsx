@@ -107,6 +107,19 @@ export default function TestimoniesPage() {
   const [prayerToEdit, setPrayerToEdit] = useState<PrayerRequest | null>(null);
   const [prayerToAnswer, setPrayerToAnswer] = useState<PrayerRequest | null>(null);
 
+  // Interactivity Safety Valve
+  const isAnyModalOpen = !!(isTestimonyDialogOpen || isPrayerDialogOpen || itemToDelete || testimonyToEdit || prayerToEdit);
+
+  useEffect(() => {
+    if (!isAnyModalOpen && typeof document !== 'undefined') {
+      const timer = setTimeout(() => {
+        document.body.style.pointerEvents = 'auto';
+        document.body.removeAttribute('aria-hidden');
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [isAnyModalOpen]);
+
   const closeDeleteDialog = useCallback(() => {
     setItemToDelete(null);
   }, []);
@@ -288,7 +301,10 @@ export default function TestimoniesPage() {
   const prayerFormContent = userProfile ? <CreatePrayerRequestForm onPrayerRequestCreated={handlePrayerRequestCreated} /> : <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin"/></div>;
 
   return (
-    <div className="space-y-6 md:space-y-10 w-full max-w-3xl mx-auto">
+    <div 
+      className="space-y-6 md:space-y-10 w-full max-w-3xl mx-auto"
+      {...(isAnyModalOpen ? { inert: true } : {})}
+    >
       {/* Interaction Box - Full Width Mobile */}
       <Card className="border-y sm:border shadow-sm sm:shadow-md rounded-none sm:rounded-xl border-x-0 sm:border-x bg-card/50 backdrop-blur-sm -mx-4 sm:mx-0">
         <CardContent className="p-3 sm:p-6">

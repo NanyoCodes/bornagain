@@ -51,6 +51,16 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
         );
     }, [userProfile?.location?.latitude, userProfile?.location?.longitude, fellowship.latitude, fellowship.longitude]);
 
+    /**
+     * INTERACTIVITY SAFETY HELPER
+     * Decouples dropdown close from modal open to prevent Radix body-lock conflicts.
+     */
+    const triggerAction = (action: () => void) => {
+        requestAnimationFrame(() => {
+            action();
+        });
+    };
+
     const handleJoin = async (e: React.MouseEvent) => {
         e.stopPropagation();
         if (!user || !userProfile || !firestore || isMember || isOrganizer) return;
@@ -141,12 +151,12 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
                                     </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end" className="rounded-xl">
-                                    <DropdownMenuItem onSelect={onManage} className="rounded-lg">
+                                    <DropdownMenuItem onSelect={() => triggerAction(onManage)} className="rounded-lg">
                                         <Edit className="mr-2 h-4 w-4" />
                                         Manage
                                     </DropdownMenuItem>
                                     <DropdownMenuSeparator />
-                                    <DropdownMenuItem onSelect={onDelete} className="text-destructive focus:text-destructive focus:bg-destructive/10 rounded-lg">
+                                    <DropdownMenuItem onSelect={() => triggerAction(onDelete)} className="text-destructive focus:text-destructive focus:bg-destructive/10 rounded-lg">
                                         <Trash2 className="mr-2 h-4 w-4" />
                                         Delete Group
                                     </DropdownMenuItem>

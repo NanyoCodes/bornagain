@@ -142,6 +142,16 @@ export const TestimonyCard = React.memo(function TestimonyCard({
     };
   }, [testimony.content]);
 
+  /**
+   * INTERACTIVITY SAFETY HELPER
+   * Decouples dropdown close from modal open to prevent Radix body-lock conflicts.
+   */
+  const triggerAction = (action: () => void) => {
+    requestAnimationFrame(() => {
+      action();
+    });
+  };
+
   const handleShare = async (e?: React.MouseEvent) => {
     if (e) {
       e.preventDefault();
@@ -366,11 +376,11 @@ export const TestimonyCard = React.memo(function TestimonyCard({
                 <DropdownMenuContent align="end" className="w-48">
                   <DropdownMenuLabel className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Manage Story</DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onSelect={(e) => { e.preventDefault(); onEdit(); }}>
+                  <DropdownMenuItem onSelect={() => triggerAction(onEdit)}>
                     <Edit className="mr-2 h-4 w-4 text-primary" />
                     <span>Edit Testimony</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onSelect={(e) => { e.preventDefault(); onDelete(); }} className="text-destructive focus:text-destructive focus:bg-destructive/5">
+                  <DropdownMenuItem onSelect={() => triggerAction(onDelete)} className="text-destructive focus:text-destructive focus:bg-destructive/5">
                     <Trash2 className="mr-2 h-4 w-4" />
                     <span>Delete Permanently</span>
                   </DropdownMenuItem>
