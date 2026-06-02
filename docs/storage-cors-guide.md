@@ -50,25 +50,25 @@ You must run the following command in the **terminal panel within your developme
 **The Command**
 
 1.  **Open the terminal** in your development environment (you may see a "+" icon or a "Terminal" menu).
-2.  **Copy and paste** the following command and press Enter. This is the modern, recommended command.
+2.  **Copy and paste** the following command and press Enter. This uses the bucket defined in your application's configuration.
 
     ```bash
-    gcloud storage buckets update gs://studio-6220967431-56fe2.appspot.com --cors-file=cors.json
+    gcloud storage buckets update gs://studio-6220967431-56fe2.firebasestorage.app --cors-file=cors.json
     ```
 
 3.  **Authorize if prompted.** The first time you run this, you may be asked to authorize the Google Cloud SDK. Follow the on-screen prompts.
 4.  **Verification (Optional but Recommended):** After running the command, you can verify it was applied by running:
     ```bash
-    gcloud storage buckets describe gs://studio-6220967431-56fe2.appspot.com --format="json(cors)"
+    gcloud storage buckets describe gs://studio-6220967431-56fe2.firebasestorage.app --format="json(cors)"
     ```
     The output should match the contents of your `cors.json` file.
 
 **Alternative `gsutil` Command**
 
-If you prefer `gsutil` or if `gcloud` gives you trouble, you can use this command instead. It performs the same action.
+If you prefer `gsutil` or if `gcloud` gives you trouble, you can use this command instead.
 
 ```bash
-gsutil cors set cors.json gs://studio-6220967431-56fe2.appspot.com
+gsutil cors set cors.json gs://studio-6220967431-56fe2.firebasestorage.app
 ```
 
 ### Step 4: Final Check

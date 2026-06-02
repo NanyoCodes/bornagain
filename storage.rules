@@ -14,7 +14,8 @@ service firebase.storage {
     }
     
     // Testimony media: photos, videos, and audios evidence
-    // Rules strictly verify the authenticated UID matches the folder segment
+    // We explicitly allow 'write' (which covers create, update, delete) 
+    // for the authenticated owner of the folder segment.
     match /testimony-media/{userId}/{allPaths=**} {
       allow read: if true;
       allow write: if isOwner(userId);

@@ -139,10 +139,23 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
       // 1. Handle Media Upload if exists
       if (mediaFile && storage) {
         setIsUploadingMedia(true);
-        const mediaRef = ref(storage, `testimony-media/${user.uid}/${Date.now()}_${mediaFile.name}`);
-        const uploadResult = await uploadBytes(mediaRef, mediaFile);
-        uploadedMediaUrl = await getDownloadURL(uploadResult.ref);
-        setIsUploadingMedia(false);
+        // Standardize filename to prevent path issues
+        const extension = mediaFile.name.split('.').pop();
+        const safeName = `${Date.now()}.${extension}`;
+        const mediaRef = ref(storage, `testimony-media/${user.uid}/${safeName}`);
+        
+        try {
+            const uploadResult = await uploadBytes(mediaRef, mediaFile);
+            uploadedMediaUrl = await getDownloadURL(uploadResult.ref);
+        } catch (storageErr: any) {
+            console.error("Storage Error:", storageErr);
+            if (storageErr.code === 'storage/unauthorized') {
+                throw new Error("Storage Permission Denied. Please ensure your project settings authorize media uploads.");
+            }
+            throw storageErr;
+        } finally {
+            setIsUploadingMedia(false);
+        }
       }
 
       // 2. Prepare Testimony Data
@@ -196,6 +209,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
       onTestimonyCreated();
     } catch (error: any) {
         setIsUploadingMedia(false);
+        console.error("Submission error:", error);
         if (error.code === 'permission-denied') {
             errorEmitter.emit('permission-error', new FirestorePermissionError({ path: 'testimonies', operation: 'create' }, user));
         } else {
@@ -264,7 +278,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
               ) : (
                 <div className="relative rounded-[2rem] overflow-hidden border shadow-lg aspect-video bg-black flex items-center justify-center">
                     {mediaType === 'image' ? (
-                        <Image src={mediaPreview} alt="Preview" fill className="object-contain" />
+                        <Image src={mediaPreview} alt="Preview" fill className="object-contain" unoptimized />
                     ) : mediaType === 'video' ? (
                         <video src={mediaPreview} className="w-full h-full object-contain" />
                     ) : (
