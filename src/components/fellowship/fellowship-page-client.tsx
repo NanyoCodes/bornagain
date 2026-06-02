@@ -5,8 +5,8 @@ import { useState, useMemo, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useDoc, useFirestore, useUser, useCollection, useUserProfile } from '@/firebase';
 import type { Fellowship, UserProfile, FellowshipMember, Soul } from '@/lib/types';
-import { doc, collection, query, orderBy, where, writeBatch, serverTimestamp, updateDoc } from 'firebase/firestore';
-import { Loader2, ArrowLeft, Users, Calendar, PlayCircle, MapPin, Heart, Phone, Mail, Church, History, PlusCircle, Award, MessagesSquare, User, Info, Sparkles } from 'lucide-react';
+import { doc, collection, query, orderBy, where, writeBatch, serverTimestamp, updateDoc, arrayRemove, increment, deleteField } from 'firebase/firestore';
+import { Loader2, ArrowLeft, Users, Calendar, PlayCircle, MapPin, Heart, Phone, Mail, Church, History, PlusCircle, Award, MessagesSquare, User, Info, Sparkles, UserMinus, Trash2 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -25,6 +25,16 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { Skeleton } from '@/components/ui/skeleton';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 function SoulWinnerInfo({ userId }: { userId: string }) {
     const firestore = useFirestore();
@@ -55,6 +65,10 @@ export default function FellowshipPageClient() {
     const [isSoulDetailsOpen, setIsSoulDetailsOpen] = useState(false);
     const [isLogFollowUpOpen, setIsLogFollowUpOpen] = useState(false);
     const [isChatLoading, setIsChatLoading] = useState(false);
+    
+    const [memberToRemove, setMemberToRemove] = useState<FellowshipMember | null>(null);
+    const [soulToUnassign, setSoulToUnassign] = useState<Soul | null>(null);
+    const [isProcessingRemoval, setIsProcessingRemoval] = useState(false);
 
     const fellowshipDocRef = useMemo(() => {
         if (!firestore || !fellowshipId) return null;
@@ -98,6 +112,63 @@ export default function FellowshipPageClient() {
     }, [selectedSoulId, assignedSouls]);
 
     const totalDirectoryCount = (members?.length || 0) + (assignedSouls?.length || 0);
+
+    const handleRemoveMember = async () => {
+        if (!user || !firestore || !fellowship || !isOrganizer || !memberToRemove) return;
+        setIsProcessingRemoval(true);
+        
+        const memberId = memberToRemove.userId;
+        const batch = writeBatch(firestore);
+        
+        // 1. Remove from fellowship subcollection
+        batch.delete(doc(firestore, 'fellowships', fellowshipId, 'members', memberId));
+        
+        // 2. Update fellowship doc
+        batch.update(doc(firestore, 'fellowships', fellowshipId), {
+            memberIds: arrayRemove(memberId),
+            memberCount: increment(-1)
+        });
+        
+        // 3. Remove from user's fellowships subcollection
+        batch.delete(doc(firestore, 'users', memberId, 'fellowships', fellowshipId));
+
+        try {
+            await batch.commit();
+            setMemberToRemove(null);
+        } catch (e) {
+            errorEmitter.emit('permission-error', new FirestorePermissionError({ path: `fellowships/${fellowshipId}/members/${memberId}`, operation: 'delete' }, user));
+        } finally {
+            setIsProcessingRemoval(false);
+        }
+    };
+
+    const handleRemoveSoul = async () => {
+        if (!user || !firestore || !fellowship || !isOrganizer || !soulToUnassign) return;
+        setIsProcessingRemoval(true);
+
+        const soul = soulToUnassign;
+        const batch = writeBatch(firestore);
+        const groupTypeField = fellowship.groupType === 'Association' ? 'associationId' : 'fellowshipId';
+        const groupTypeNameField = fellowship.groupType === 'Association' ? 'associationName' : 'fellowshipName';
+
+        const update = {
+            [groupTypeField]: deleteField(),
+            [groupTypeNameField]: deleteField(),
+            updatedAt: serverTimestamp()
+        };
+
+        batch.update(doc(firestore, 'souls', soul.id), update);
+        batch.update(doc(firestore, 'users', soul.userId, 'souls', soul.id), update);
+
+        try {
+            await batch.commit();
+            setSoulToUnassign(null);
+        } catch (e) {
+            errorEmitter.emit('permission-error', new FirestorePermissionError({ path: `souls/${soul.id}`, operation: 'update' }, user));
+        } finally {
+            setIsProcessingRemoval(false);
+        }
+    };
 
     const handleStartGroupChat = async () => {
         if (!user || !firestore || !fellowship || !members) return;
@@ -409,9 +480,22 @@ export default function FellowshipPageClient() {
                                                             <p className="font-bold truncate text-xs sm:text-sm leading-tight">{member.firstName} {member.lastName}</p>
                                                             {member.userId === fellowship.organizerId && <span className="text-[8px] font-black uppercase text-primary tracking-widest block mt-0.5">Organizer</span>}
                                                         </div>
-                                                        <Button asChild variant="ghost" size="icon" className="h-8 w-8 rounded-full opacity-60 sm:opacity-0 group-hover:opacity-100 transition-opacity shrink-0" title="View Profile">
-                                                            <Link href={`/dashboard/profile/${member.userId}`}><User className="h-4 w-4" /></Link>
-                                                        </Button>
+                                                        <div className="flex items-center gap-1 shrink-0">
+                                                            <Button asChild variant="ghost" size="icon" className="h-8 w-8 rounded-full opacity-60 sm:opacity-0 group-hover:opacity-100 transition-opacity" title="View Profile">
+                                                                <Link href={`/dashboard/profile/${member.userId}`}><User className="h-4 w-4" /></Link>
+                                                            </Button>
+                                                            {isOrganizer && member.userId !== user?.uid && (
+                                                                <Button 
+                                                                    variant="ghost" 
+                                                                    size="icon" 
+                                                                    className="h-8 w-8 text-destructive hover:bg-destructive/10 rounded-full opacity-60 sm:opacity-0 group-hover:opacity-100 transition-opacity"
+                                                                    onClick={() => setMemberToRemove(member)}
+                                                                    title="Remove Member"
+                                                                >
+                                                                    <UserMinus className="h-4 w-4" />
+                                                                </Button>
+                                                            )}
+                                                        </div>
                                                     </div>
                                                 ))}
                                             </div>
@@ -425,7 +509,7 @@ export default function FellowshipPageClient() {
                                         ) : assignedSouls && assignedSouls.length > 0 ? (
                                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                                                 {assignedSouls.map(soul => (
-                                                    <div key={soul.id} className="flex items-center gap-3 p-3 sm:p-4 rounded-xl sm:rounded-2xl border bg-primary/5 border-primary/10 transition-all hover:bg-primary/[0.08] min-w-0">
+                                                    <div key={soul.id} className="flex items-center gap-3 p-3 sm:p-4 rounded-xl sm:rounded-2xl border bg-primary/5 border-primary/10 transition-all hover:bg-primary/[0.08] group min-w-0">
                                                         <div className="h-9 w-9 sm:h-10 sm:w-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20 shadow-inner">
                                                             <Heart className="h-4 w-4 sm:h-5 sm:w-5 text-primary fill-current" />
                                                         </div>
@@ -433,17 +517,30 @@ export default function FellowshipPageClient() {
                                                             <p className="font-bold truncate text-xs sm:text-sm leading-tight">{soul.firstName} {soul.lastName}</p>
                                                             <Badge className="mt-1 h-3.5 text-[7px] sm:text-[8px] uppercase tracking-tighter" variant="secondary">{soul.status}</Badge>
                                                         </div>
-                                                        <Button 
-                                                            variant="outline" 
-                                                            size="sm"
-                                                            className="h-7 sm:h-8 text-[9px] sm:text-[10px] font-black uppercase tracking-widest px-2 sm:px-3 rounded-xl shadow-sm shrink-0"
-                                                            onClick={() => {
-                                                                setSelectedSoulId(soul.id);
-                                                                setIsSoulDetailsOpen(true);
-                                                            }}
-                                                        >
-                                                            Details
-                                                        </Button>
+                                                        <div className="flex items-center gap-2 shrink-0">
+                                                            <Button 
+                                                                variant="outline" 
+                                                                size="sm"
+                                                                className="h-7 sm:h-8 text-[9px] sm:text-[10px] font-black uppercase tracking-widest px-2 sm:px-3 rounded-xl shadow-sm"
+                                                                onClick={() => {
+                                                                    setSelectedSoulId(soul.id);
+                                                                    setIsSoulDetailsOpen(true);
+                                                                }}
+                                                            >
+                                                                Details
+                                                            </Button>
+                                                            {isOrganizer && (
+                                                                <Button 
+                                                                    variant="ghost" 
+                                                                    size="icon" 
+                                                                    className="h-8 w-8 text-destructive hover:bg-destructive/10 rounded-full opacity-60 sm:opacity-0 group-hover:opacity-100 transition-opacity"
+                                                                    onClick={() => setSoulToUnassign(soul)}
+                                                                    title="Unassign Soul"
+                                                                >
+                                                                    <Trash2 className="h-4 w-4" />
+                                                                </Button>
+                                                            )}
+                                                        </div>
                                                     </div>
                                                 ))}
                                             </div>
@@ -513,6 +610,44 @@ export default function FellowshipPageClient() {
                 }}
                 userProfile={userProfile}
             />
+
+            {/* Member Removal Confirmation */}
+            <AlertDialog open={!!memberToRemove} onOpenChange={(open) => !open && setMemberToRemove(null)}>
+                <AlertDialogContent className="rounded-3xl p-8">
+                    <AlertDialogHeader>
+                        <AlertDialogTitle className="text-2xl font-black font-headline">Remove Member?</AlertDialogTitle>
+                        <AlertDialogDescription className="text-sm font-medium">
+                            Are you sure you want to remove {memberToRemove?.firstName} {memberToRemove?.lastName} from this group? They will lose access to the shared directory and chat.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter className="mt-6 gap-3">
+                        <AlertDialogCancel disabled={isProcessingRemoval} className="rounded-2xl h-11 font-bold">Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleRemoveMember} disabled={isProcessingRemoval} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-11 font-bold">
+                            {isProcessingRemoval && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                            Confirm Removal
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+
+            {/* Soul Unassignment Confirmation */}
+            <AlertDialog open={!!soulToUnassign} onOpenChange={(open) => !open && setSoulToUnassign(null)}>
+                <AlertDialogContent className="rounded-3xl p-8">
+                    <AlertDialogHeader>
+                        <AlertDialogTitle className="text-2xl font-black font-headline">Unassign Convert?</AlertDialogTitle>
+                        <AlertDialogDescription className="text-sm font-medium">
+                            Are you sure you want to remove {soulToUnassign?.firstName} from this group? This convert will no longer appear in the shared follow-up list for this {fellowship.groupType.toLowerCase()}.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter className="mt-6 gap-3">
+                        <AlertDialogCancel disabled={isProcessingRemoval} className="rounded-2xl h-11 font-bold">Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleRemoveSoul} disabled={isProcessingRemoval} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-11 font-bold">
+                            {isProcessingRemoval && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                            Confirm Unassign
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </div>
     );
 }
