@@ -97,6 +97,18 @@ export default function SoulsWonPage() {
     };
   }, [setIsSearchVisible, setSearchPlaceholder, setSearchTerm]);
 
+  // Safeguard: Ensure body interactivity and visibility are restored when all modals are closed
+  const isAnyModalOpen = useMemo(() => {
+    return isLogDialogOpen || !!soulForFollowUp || !!soulForHistory || isAssignOpen || isEditOpen || isDeleteOpen;
+  }, [isLogDialogOpen, soulForFollowUp, soulForHistory, isAssignOpen, isEditOpen, isDeleteOpen]);
+
+  useEffect(() => {
+    if (mounted && !isAnyModalOpen) {
+      document.body.style.pointerEvents = 'auto';
+      document.body.removeAttribute('aria-hidden');
+    }
+  }, [isAnyModalOpen, mounted]);
+
   const soulsQuery = useMemo(() => {
     if (!user?.uid || !firestore) return null;
     return query(collection(firestore, `users/${user.uid}/souls`), orderBy("wonAt", "desc"));
@@ -151,7 +163,6 @@ export default function SoulsWonPage() {
   const handleCloseEdit = useCallback((open: boolean) => {
     setIsEditOpen(open);
     if (!open) {
-      // Clear data after a delay to allow sheet/dialog close animation
       setTimeout(() => {
           setSoulToEdit(null);
           router.refresh();
@@ -359,64 +370,69 @@ export default function SoulsWonPage() {
   }, [souls, searchTerm]);
 
   return (
-    <div className="space-y-6 md:space-y-12 pb-32">
-      <Card className="border shadow-sm sm:shadow-md rounded-none sm:rounded-lg border-x-0 sm:border-x -mx-4 sm:mx-0">
-        <CardContent className="p-3 sm:p-4">
-          <div className="flex flex-row items-center gap-2 sm:gap-3">
-            <Button 
-                variant="outline" 
-                className="flex-1 justify-start text-left text-muted-foreground font-normal rounded-full h-10 sm:h-11 px-4 hover:bg-muted/50 transition-colors text-sm min-w-0 border-dashed"
-                onClick={() => setIsLogDialogOpen(true)}
-                disabled={loading}
-            >
-                <span className="truncate">
-                    {loading ? "Preparing harvest list..." : "Who did you minister to today?"}
-                </span>
-            </Button>
-            <div className="flex items-center gap-2 shrink-0">
+    <>
+      <div 
+        className="space-y-6 md:space-y-12 pb-32" 
+        {...(isAnyModalOpen ? { inert: "" } : {})}
+      >
+        <Card className="border shadow-sm sm:shadow-md rounded-none sm:rounded-lg border-x-0 sm:border-x -mx-4 sm:mx-0">
+          <CardContent className="p-3 sm:p-4">
+            <div className="flex flex-row items-center gap-2 sm:gap-3">
               <Button 
-                variant="secondary" 
-                size="icon" 
-                className="h-10 sm:h-11 w-10 sm:w-11 rounded-full"
-                onClick={() => setIsLogDialogOpen(true)}
-                disabled={loading}
-                title="Log Soul"
+                  variant="outline" 
+                  className="flex-1 justify-start text-left text-muted-foreground font-normal rounded-full h-10 sm:h-11 px-4 hover:bg-muted/50 transition-colors text-sm min-w-0 border-dashed"
+                  onClick={() => setIsLogDialogOpen(true)}
+                  disabled={loading}
               >
-                {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <PlusCircle className="h-4 w-4" />}
+                  <span className="truncate">
+                      {loading ? "Preparing harvest list..." : "Who did you minister to today?"}
+                  </span>
               </Button>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button 
-                    variant="outline" 
-                    size="icon" 
-                    className="h-10 sm:h-11 w-10 sm:w-11 rounded-full"
-                    disabled={loading}
-                    title="Export Harvest"
-                  >
-                    <Download className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem onSelect={() => handleExportHarvest('csv')}>CSV</DropdownMenuItem>
-                  <DropdownMenuItem onSelect={() => handleExportHarvest('pdf')}>PDF</DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <div className="flex items-center gap-2 shrink-0">
+                <Button 
+                  variant="secondary" 
+                  size="icon" 
+                  className="h-10 sm:h-11 w-10 sm:w-11 rounded-full"
+                  onClick={() => setIsLogDialogOpen(true)}
+                  disabled={loading}
+                  title="Log Soul"
+                >
+                  {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <PlusCircle className="h-4 w-4" />}
+                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button 
+                      variant="outline" 
+                      size="icon" 
+                      className="h-10 sm:h-11 w-10 sm:w-11 rounded-full"
+                      disabled={loading}
+                      title="Export Harvest"
+                    >
+                      <Download className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem onSelect={() => handleExportHarvest('csv')}>CSV</DropdownMenuItem>
+                    <DropdownMenuItem onSelect={() => handleExportHarvest('pdf')}>PDF</DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
             </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
 
-      <div className="-mx-4 sm:mx-0">
-        <SoulsWonTable 
-          souls={filteredSouls || []} 
-          loading={loading}
-          onFollowUp={handleOpenFollowUp}
-          onViewHistory={handleOpenHistory}
-          onExportSingle={handleExportSingleSoul}
-          onOpenAssignDialog={handleOpenAssign}
-          onEdit={handleOpenEdit}
-          onDelete={handleOpenDelete}
-        />
+        <div className="-mx-4 sm:mx-0">
+          <SoulsWonTable 
+            souls={filteredSouls || []} 
+            loading={loading}
+            onFollowUp={handleOpenFollowUp}
+            onViewHistory={handleOpenHistory}
+            onExportSingle={handleExportSingleSoul}
+            onOpenAssignDialog={handleOpenAssign}
+            onEdit={handleOpenEdit}
+            onDelete={handleOpenDelete}
+          />
+        </div>
       </div>
 
       <LogFollowUpDialog 
@@ -556,6 +572,6 @@ export default function SoulsWonPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </div>
+    </>
   );
 }
