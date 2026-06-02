@@ -373,7 +373,7 @@ export default function SoulsWonPage() {
     <>
       <div 
         className="space-y-6 md:space-y-12 pb-32" 
-        {...(isAnyModalOpen ? { inert: "" } : {})}
+        inert={isAnyModalOpen ? true : undefined}
       >
         <Card className="border shadow-sm sm:shadow-md rounded-none sm:rounded-lg border-x-0 sm:border-x -mx-4 sm:mx-0">
           <CardContent className="p-3 sm:p-4">
