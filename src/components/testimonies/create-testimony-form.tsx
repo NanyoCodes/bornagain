@@ -153,7 +153,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
                   <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger className="h-12 rounded-2xl border-2">
-                        <SelectValue placeholder="What kind of miracle?" />
+                        <SelectValue placeholder="Share your testimony" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent className="rounded-2xl">
