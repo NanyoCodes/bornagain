@@ -28,6 +28,7 @@ import {
   MessageSquare,
   UserPlus,
   Hourglass,
+  PartyPopper,
 } from "lucide-react";
 import { useUser, useFirestore, useCollection, useDoc } from "@/firebase";
 import { useState, useMemo } from "react";
