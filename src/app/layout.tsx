@@ -1,3 +1,4 @@
+
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
@@ -148,11 +149,15 @@ export default function RootLayout({
             __html: `
               window.addEventListener('error', (e) => {
                 const fatalKeywords = [
+                  'A listener indicated an asynchronous response by returning true',
                   'Could not establish connection',
                   'Hydration failed',
                   'Could not reach Cloud Firestore backend'
                 ];
                 if (e.message && fatalKeywords.some(key => e.message.includes(key))) {
+                  // Filter out common browser extension errors that aren't fatal
+                  if (e.message.includes('A listener indicated')) return;
+
                   const reloadCountKey = 'app_reload_count';
                   const lastReloadKey = 'app_last_reload';
                   const now = Date.now();

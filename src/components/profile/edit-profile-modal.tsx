@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -242,7 +243,12 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
       await updateDoc(doc(firestore, 'users', user.uid), firestoreUpdatePayload);
       await authUpdatePromise;
 
-      // Global Denormalized Sync: Ensuring photo stays synchronized always
+      /**
+       * GLOBAL DENORMALIZED PHOTO SYNC
+       * 
+       * Ensures that updating the profile photo propagates to all related collections
+       * where the photo is stored as a performance optimization.
+       */
       const batch = writeBatch(firestore);
       const syncUrl = values.photoURL || ""; 
 
@@ -276,7 +282,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
           console.error("Denormalized sync warning:", err);
       });
       
-      toast({ title: "Profile Updated" });
+      toast({ title: "Profile Updated", description: "Your global Kingdom identity has been updated." });
       onClose();
 
     } catch (error: any) {

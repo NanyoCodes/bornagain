@@ -31,8 +31,8 @@ import { Label } from "@/components/ui/label";
 import { Country } from 'country-state-city';
 
 const formSchema = z.object({
-  firstName: z.string().min(2, "First name must be at least 2 characters."),
-  lastName: z.string().min(2, "Last name must be at least 2 characters."),
+  firstName: z.string().min(2, "First name must be at least 2 characters.").max(50, "Name is too long."),
+  lastName: z.string().min(2, "Last name must be at least 2 characters.").max(50, "Name is too long."),
   gender: z.string().optional(),
   nationality: z.string().optional(),
   email: z.string().email("Please enter a valid email address.").optional().or(z.literal('')),
@@ -161,17 +161,28 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
 
     try {
         await runTransaction(firestore, async (transaction) => {
-            // CRITICAL: Perform reads before writes in a transaction to satisfy security rules 
-            // that depend on the existing data (resource.data).
+            // Read both documents before writing to satisfy security rules and ensure existence.
             const soulDoc = await transaction.get(soulRef);
             const globalSoulDoc = await transaction.get(globalSoulRef);
             
-            if (!soulDoc.exists() || !globalSoulDoc.exists()) {
-                throw new Error("Soul record not found.");
+            if (!soulDoc.exists()) {
+                throw new Error("Soul record not found in your personal collection.");
             }
 
+            // Update user's personal record
             transaction.update(soulRef, soulUpdateData);
-            transaction.update(globalSoulRef, soulUpdateData);
+            
+            // Update or Create the global record (Self-healing logic)
+            if (globalSoulDoc.exists()) {
+                transaction.update(globalSoulRef, soulUpdateData);
+            } else {
+                // If global doc is missing, recreate it with current data + updates
+                transaction.set(globalSoulRef, { 
+                    ...soulDoc.data(), 
+                    ...soulUpdateData,
+                    createdAt: soulDoc.data().createdAt || serverTimestamp()
+                });
+            }
         });
 
         toast({

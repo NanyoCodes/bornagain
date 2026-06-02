@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
@@ -93,11 +94,20 @@ export default function SoulsWonPage() {
 
   const isAnyModalOpen = !!(soulForFollowUp || soulForHistory || soulToAssign || soulToEdit || soulToDelete || isLogDialogOpen);
 
-  // Recovery useEffect: Ensures the document body is never permanently locked after a modal closes.
+  /**
+   * INTERACTIVITY SAFETY VALVE
+   * 
+   * This effect explicitly clears 'aria-hidden' and 'pointer-events' on the body
+   * when all modals are closed. This resolves the common "frozen page" issue
+   * where Radix UI focus traps or accessibility attributes persist unexpectedly.
+   */
   useEffect(() => {
-    if (!isAnyModalOpen) {
-      document.body.style.pointerEvents = 'auto';
-      document.body.removeAttribute('aria-hidden');
+    if (!isAnyModalOpen && typeof document !== 'undefined') {
+      const timer = setTimeout(() => {
+        document.body.style.pointerEvents = 'auto';
+        document.body.removeAttribute('aria-hidden');
+      }, 300);
+      return () => clearTimeout(timer);
     }
   }, [isAnyModalOpen]);
 
@@ -141,8 +151,6 @@ export default function SoulsWonPage() {
   const handleOpenDelete = useCallback((soul: Soul) => setSoulToDelete(soul), []);
 
   const cleanupAndRefresh = useCallback(() => {
-    // Explicitly restore body interactivity just in case portals were messy
-    document.body.style.pointerEvents = 'auto';
     router.refresh();
   }, [router]);
 
@@ -330,7 +338,7 @@ export default function SoulsWonPage() {
     <>
       <div 
         className="space-y-6 md:space-y-12 pb-32" 
-        {...(isAnyModalOpen ? { inert: true } : {})}
+        inert={isAnyModalOpen}
       >
         <Card className="border shadow-sm sm:shadow-md rounded-none sm:rounded-lg border-x-0 sm:border-x -mx-4 sm:mx-0">
           <CardContent className="p-3 sm:p-4">
