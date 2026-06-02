@@ -5,6 +5,13 @@ import { useRouter, useParams } from 'next/navigation';
 import { useDoc, useFirestore, useUser, useCollection } from '@/firebase';
 import type { Campaign, UserProfile, CampaignParticipant, Testimony } from '@/lib/types';
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -13,7 +20,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/dialog';
+} from '@/components/ui/alert-dialog';
 import { doc, updateDoc, serverTimestamp, collection, query, where, orderBy } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -26,7 +33,6 @@ import { ManageCampaignForm } from './manage-campaign-form';
 import { LogSoulForm } from "@/components/souls/log-soul-form";
 import { CreateTestimonyForm } from "@/components/testimonies/create-testimony-form";
 import { TestimonyCard } from "@/components/testimonies/testimony-card";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import Link from 'next/link';
 import { safeToDate } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -205,7 +211,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
     return (
         <div 
             className="space-y-8 pb-32"
-            {...(isAnyModalOpen ? { inert: true } : {})}
+            inert={isAnyModalOpen ? true : undefined}
         >
             <div className="flex items-center gap-4 px-4 sm:px-0">
                 <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full">
@@ -508,7 +514,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                 <AlertDialog open={!!campaignToDelete} onOpenChange={(open) => { if (!open) setCampaignToDelete(null); router.refresh(); }}>
                     <AlertDialogContent className="rounded-3xl p-8">
                         <AlertDialogHeader>
-                            <DialogTitle className="text-2xl font-bold font-headline">Delete Campaign?</DialogTitle>
+                            <AlertDialogTitle className="text-2xl font-bold font-headline">Delete Campaign?</AlertDialogTitle>
                             <DialogDescription className="text-sm">
                                 This will permanently remove "{campaignToDelete.title}" from the platform. This action cannot be undone.
                             </DialogDescription>
