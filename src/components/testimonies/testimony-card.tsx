@@ -30,7 +30,7 @@ import {
   Hourglass,
   PartyPopper,
 } from "lucide-react";
-import { useUser, useFirestore, useCollection, useDoc } from "@/firebase";
+import { useUser, useAuth, useFirestore, useCollection, useDoc } from "@/firebase";
 import { useState, useMemo } from "react";
 import {
   DropdownMenu,
@@ -262,7 +262,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({
 
   const fullTextContent = (
     <ScrollArea className={cn("pr-4", isMobile ? "h-full" : "max-h-[60vh]")}>
-      <div className="text-base text-muted-foreground whitespace-pre-wrap leading-relaxed pb-6 text-balance">
+      <div className="text-base text-muted-foreground whitespace-pre-wrap leading-relaxed pb-6 text-justify">
         {testimony.content}
       </div>
     </ScrollArea>
@@ -381,7 +381,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({
         </CardHeader>
         
         <CardContent className="flex-grow pt-0 px-4 sm:px-6 space-y-4">
-          <div className="text-sm sm:text-base text-muted-foreground whitespace-pre-wrap leading-relaxed text-balance">
+          <div className="text-sm sm:text-base text-muted-foreground whitespace-pre-wrap leading-relaxed text-justify">
             <p ref={contentRef} className="line-clamp-6">
               {testimony.content}
             </p>
@@ -436,7 +436,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({
                 disabled={isProcessingReaction !== null || !user} 
                 variant="ghost" 
                 size="sm" 
-                className={cn("flex flex-col sm:flex-row items-center justify-center h-auto sm:h-10 py-2 sm:py-0 gap-0.5 sm:gap-2 text-[9px] sm:text-sm font-bold uppercase sm:capitalize tracking-tight text-muted-foreground hover:bg-muted/50 rounded-xl transition-all", hasAmened && "text-primary hover:text-primary bg-primary/5")}
+                className={cn("flex flex-col items-center justify-center h-auto sm:h-10 py-2 sm:py-0 gap-0.5 sm:gap-2 text-[9px] sm:text-sm font-bold uppercase sm:capitalize tracking-tight text-muted-foreground hover:bg-muted/50 rounded-xl transition-all", hasAmened && "text-primary hover:text-primary bg-primary/5")}
             >
                 {isProcessingReaction === 'amen' ? <Loader2 className="h-3 w-3 sm:h-4 sm:w-4 animate-spin" /> : <HandHeart className={cn("h-3 w-3 sm:h-4 sm:w-4", hasAmened && "fill-current")} />}
                 <span>Amen</span>
@@ -447,7 +447,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({
                 disabled={isProcessingReaction !== null || !user} 
                 variant="ghost" 
                 size="sm" 
-                className={cn("flex flex-col sm:flex-row items-center justify-center h-auto sm:h-10 py-2 sm:py-0 gap-0.5 sm:gap-2 text-[9px] sm:text-sm font-bold uppercase sm:capitalize tracking-tight text-muted-foreground hover:bg-muted/50 rounded-xl transition-all", hasInspired && "text-chart-3 hover:text-chart-3 bg-chart-3/5")}
+                className={cn("flex flex-col items-center justify-center h-auto sm:h-10 py-2 sm:py-0 gap-0.5 sm:gap-2 text-[9px] sm:text-sm font-bold uppercase sm:capitalize tracking-tight text-muted-foreground hover:bg-muted/50 rounded-xl transition-all", hasInspired && "text-chart-3 hover:text-chart-3 bg-chart-3/5")}
             >
                 {isProcessingReaction === 'inspired' ? <Loader2 className="h-3 w-3 sm:h-4 sm:w-4 animate-spin" /> : <Sparkles className={cn("h-3 w-3 sm:h-4 sm:w-4", hasInspired && "fill-current")} />}
                 <span>Hallelujah</span>
@@ -458,7 +458,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({
                 disabled={isProcessingReaction !== null || !user} 
                 variant="ghost" 
                 size="sm" 
-                className={cn("flex flex-col sm:flex-row items-center justify-center h-auto sm:h-10 py-2 sm:py-0 gap-0.5 sm:gap-2 text-[9px] sm:text-sm font-bold uppercase sm:capitalize tracking-tight text-muted-foreground hover:bg-muted/50 rounded-xl transition-all", hasConnected && "text-blue-500 hover:text-blue-500 bg-blue-500/5")}
+                className={cn("flex flex-col items-center justify-center h-auto sm:h-10 py-2 sm:py-0 gap-0.5 sm:gap-2 text-[9px] sm:text-sm font-bold uppercase sm:capitalize tracking-tight text-muted-foreground hover:bg-muted/50 rounded-xl transition-all", hasConnected && "text-blue-500 hover:text-blue-500 bg-blue-500/5")}
             >
                 {isProcessingReaction === 'connect' ? <Loader2 className="h-3 w-3 sm:h-4 sm:w-4 animate-spin" /> : <PartyPopper className={cn("h-3 w-3 sm:h-4 sm:w-4", hasConnected && "fill-current")} />}
                 <span>Celebrate</span>
@@ -467,7 +467,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({
             <Button 
                 variant="ghost" 
                 size="sm" 
-                className={cn("flex flex-col sm:flex-row items-center justify-center h-auto sm:h-10 py-2 sm:py-0 gap-0.5 sm:gap-2 text-[9px] sm:text-sm font-bold uppercase sm:capitalize tracking-tight text-muted-foreground hover:bg-muted/50 rounded-xl transition-all", isCommentsOpen && "text-primary hover:text-primary bg-primary/5")}
+                className={cn("flex flex-col items-center justify-center h-auto sm:h-10 py-2 sm:py-0 gap-0.5 sm:gap-2 text-[9px] sm:text-sm font-bold uppercase sm:capitalize tracking-tight text-muted-foreground hover:bg-muted/50 rounded-xl transition-all", isCommentsOpen && "text-primary hover:text-primary bg-primary/5")}
                 onClick={(e) => { e.stopPropagation(); setIsCommentsOpen(true); }}
             >
                 <div className="relative">
@@ -518,7 +518,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({
             ) : (
                 <>
                     <Dialog open={showFullText} onOpenChange={setShowFullText}>
-                        <DialogContent className="sm:max-w-2xl rounded-3xl p-0 overflow-hidden">
+                        <DialogContent className="sm:max-w-2xl rounded-3xl overflow-hidden p-0">
                             <div className="p-8 border-b bg-muted/10">
                                 <DialogHeader>
                                     <DialogTitle className="text-3xl font-black font-headline tracking-tight">Testimony by {authorFullName}</DialogTitle>

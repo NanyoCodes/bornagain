@@ -287,11 +287,11 @@ export default function TestimoniesPage() {
   const prayerFormContent = userProfile ? <CreatePrayerRequestForm onPrayerRequestCreated={handlePrayerRequestCreated} /> : <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin"/></div>;
 
   return (
-    <div className="space-y-6 md:space-y-10 w-full">
+    <div className="space-y-6 md:space-y-10 w-full max-w-3xl mx-auto">
       {/* Interaction Box */}
       <Card className="border shadow-sm sm:shadow-md rounded-none sm:rounded-xl border-x-0 sm:border-x bg-card/50 backdrop-blur-sm -mx-4 sm:mx-0">
         <CardContent className="p-3 sm:p-6 flex justify-center">
-          <div className="flex flex-row items-center justify-center gap-2 sm:gap-4 w-full max-w-2xl">
+          <div className="flex flex-row items-center justify-center gap-2 sm:gap-4 w-full">
             <Button 
               variant="outline" 
               className="flex-1 justify-start text-left text-muted-foreground font-normal rounded-full h-10 sm:h-12 px-6 hover:bg-muted/50 transition-colors text-sm sm:text-base min-w-0 border-dashed"
@@ -328,9 +328,9 @@ export default function TestimoniesPage() {
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <div className="-mx-4 sm:mx-0">
-            <TabsList className="flex w-full rounded-none sm:rounded-xl bg-muted/10 sm:bg-muted/40 p-1 border-y sm:border-none">
-                <TabsTrigger value="testimonies" className="flex-1 rounded-none sm:rounded-lg font-black text-[10px] sm:text-xs uppercase tracking-widest h-10 sm:h-11">Testimonies</TabsTrigger>
-                <TabsTrigger value="prayers" className="flex-1 rounded-none sm:rounded-lg font-black text-[10px] sm:text-xs uppercase tracking-widest h-10 sm:h-11">Prayer Requests</TabsTrigger>
+            <TabsList className="flex w-full rounded-none sm:rounded-xl bg-muted/10 sm:bg-muted/40 p-1 border-y sm:border-none h-12 sm:h-14">
+                <TabsTrigger value="testimonies" className="flex-1 rounded-none sm:rounded-lg font-black text-[10px] sm:text-xs uppercase tracking-widest h-full">Testimonies</TabsTrigger>
+                <TabsTrigger value="prayers" className="flex-1 rounded-none sm:rounded-lg font-black text-[10px] sm:text-xs uppercase tracking-widest h-full">Prayer Requests</TabsTrigger>
             </TabsList>
           </div>
           

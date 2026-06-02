@@ -122,7 +122,7 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({
 
   const fullTextContent = (
     <ScrollArea className={cn("pr-4", isMobile ? "h-full" : "max-h-[60vh]")}>
-      <div className="text-base text-muted-foreground whitespace-pre-wrap leading-relaxed pb-6 text-balance">
+      <div className="text-base text-muted-foreground whitespace-pre-wrap leading-relaxed pb-6 text-justify">
         {prayerRequest.content}
       </div>
     </ScrollArea>
@@ -179,7 +179,7 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({
             </div>
         </CardHeader>
         <CardContent className="flex-grow py-0 px-4 sm:px-6">
-          <div className="text-sm sm:text-base text-muted-foreground whitespace-pre-wrap text-balance">
+          <div className="text-sm sm:text-base text-muted-foreground whitespace-pre-wrap text-justify">
             <p ref={contentRef} className="line-clamp-4 leading-relaxed">
               {prayerRequest.content}
             </p>
