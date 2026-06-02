@@ -389,10 +389,10 @@ export default function CampaignsPage() {
 
       <div className="flex flex-wrap gap-4 items-center">
         <Tabs value={filter} onValueChange={setFilter} className="w-full sm:w-auto">
-            <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="all" className="font-black text-[10px] sm:text-xs uppercase tracking-widest">All Campaigns</TabsTrigger>
-                <TabsTrigger value="created" className="font-black text-[10px] sm:text-xs uppercase tracking-widest">My Campaigns</TabsTrigger>
-                <TabsTrigger value="joined" className="font-black text-[10px] sm:text-xs uppercase tracking-widest">Joined</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-3 h-11 bg-muted/40 p-1 rounded-xl">
+                <TabsTrigger value="all" className="font-black text-[10px] sm:text-xs uppercase tracking-widest rounded-lg">All Campaigns</TabsTrigger>
+                <TabsTrigger value="created" className="font-black text-[10px] sm:text-xs uppercase tracking-widest rounded-lg">My Campaigns</TabsTrigger>
+                <TabsTrigger value="joined" className="font-black text-[10px] sm:text-xs uppercase tracking-widest rounded-lg">Joined</TabsTrigger>
             </TabsList>
         </Tabs>
         <Select value={statusFilter} onValueChange={setStatusFilter}>

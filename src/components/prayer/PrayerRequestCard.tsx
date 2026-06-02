@@ -69,7 +69,7 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({
   const isAnswered = prayerRequest.status === 'answered';
   const usersWhoPrayed = prayerRequest.usersWhoPrayed || [];
   const prayerCount = usersWhoPrayed.length;
-  const hasPrayed = useMemo(() => user ? usersWhoPrayed.includes(user.uid) : false, [user, usersWhoPrayed]);
+  const hasPrayed = user ? usersWhoPrayed.includes(user.uid) : false;
 
   const displayDate = useMemo(() => {
     const createdAtDate = safeToDate(prayerRequest.createdAt);
