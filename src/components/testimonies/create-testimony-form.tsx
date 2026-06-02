@@ -141,6 +141,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
         setIsUploadingMedia(true);
         const extension = mediaFile.name.split('.').pop() || 'file';
         const safeName = `${Date.now()}.${extension}`;
+        // CRITICAL: Path must match storage.rules
         const mediaRef = ref(storage, `testimony-media/${user.uid}/${safeName}`);
         
         try {
@@ -152,7 +153,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
                 toast({
                     variant: 'destructive',
                     title: 'Upload Permission Denied',
-                    description: 'Please ensure your project settings authorize media uploads and you are logged in.',
+                    description: 'Your account does not have permission to upload media. Please ensure you are signed in and try again.',
                 });
                 setIsSubmitting(false);
                 setIsUploadingMedia(false);

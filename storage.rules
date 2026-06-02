@@ -8,6 +8,7 @@ service firebase.storage {
     }
 
     // Explicitly grant write permissions to authenticated owners for their respective folders
+    // We use a specific match for the userId to ensure rules are applied correctly
     match /profile-pictures/{userId}/{allPaths=**} {
       allow write: if request.auth != null && request.auth.uid == userId;
     }
