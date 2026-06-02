@@ -89,17 +89,19 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
   
   React.useEffect(() => {
     if (isOpen && soul) {
+      // Only reset the form when the dialog opens or the soul ID changes.
+      // This prevents losing user input if the soul document updates in the background.
       form.reset({
-        note: '',
+        note: form.getValues('note') || '', // Preserves note if they are just editing the same soul
         status: soul.status || 'New',
         attendingChurch: soul.attendingChurch || false,
         inBibleStudy: soul.inBibleStudy || false,
         attendingPrayer: soul.attendingPrayer || false,
         inServiceDepartment: soul.inServiceDepartment || false,
-        actions: [],
+        actions: form.getValues('actions') || [],
       });
     }
-  }, [isOpen, soul, form]);
+  }, [isOpen, soul?.id, form]);
 
   async function onSubmit(values: z.infer<typeof logFollowUpFormSchema>) {
     if (!user || !firestore || !soul) return;
@@ -138,6 +140,7 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
 
         toast({ title: 'Follow-up Logged', description: 'Your interaction has been saved to the history.' });
         onFollowUpLogged();
+        form.reset();
     } catch (err: any) {
         console.error("Failed to log follow-up:", err);
         const permissionError = new FirestorePermissionError({

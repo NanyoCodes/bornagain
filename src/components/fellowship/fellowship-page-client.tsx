@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -50,7 +51,7 @@ export default function FellowshipPageClient() {
     const { userProfile, loading: profileLoading } = useUserProfile();
     const isMobile = useIsMobile();
 
-    const [selectedSoul, setSelectedSoul] = useState<Soul | null>(null);
+    const [selectedSoulId, setSelectedSoulId] = useState<string | null>(null);
     const [isSoulDetailsOpen, setIsSoulDetailsOpen] = useState(false);
     const [isLogFollowUpOpen, setIsLogFollowUpOpen] = useState(false);
     const [isChatLoading, setIsChatLoading] = useState(false);
@@ -85,13 +86,16 @@ export default function FellowshipPageClient() {
 
     const soulsQuery = useMemo(() => {
         if (!firestore || !fellowshipId || !(isMember || isOrganizer) || !fellowship) return null;
-        
-        // Dynamic field based on group type to ensure souls appear in associations correctly
         const soulQueryField = fellowship.groupType === 'Association' ? 'associationId' : 'fellowshipId';
-        
         return query(collection(firestore, 'souls'), where(soulQueryField, '==', fellowshipId));
     }, [firestore, fellowshipId, isMember, isOrganizer, fellowship?.groupType]);
     const { data: assignedSouls, loading: soulsLoading } = useCollection<Soul>(soulsQuery);
+
+    // Live update for the selected soul
+    const activeSoul = useMemo(() => {
+        if (!selectedSoulId || !assignedSouls) return null;
+        return assignedSouls.find(s => s.id === selectedSoulId) || null;
+    }, [selectedSoulId, assignedSouls]);
 
     const totalDirectoryCount = (members?.length || 0) + (assignedSouls?.length || 0);
 
@@ -160,15 +164,15 @@ export default function FellowshipPageClient() {
         );
     }
 
-    const soulDetailsContent = selectedSoul ? (
+    const soulDetailsContent = activeSoul ? (
       <div className="space-y-8 pt-4 pb-24 sm:pb-6">
           <div className="flex items-center gap-4 border-2 rounded-[2rem] sm:rounded-[2.5rem] p-6 bg-muted/20 border-dashed">
               <div className="h-12 w-12 sm:h-14 sm:w-14 border-2 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
                   <Heart className="h-6 w-6 sm:h-7 sm:w-7 text-primary fill-current" />
               </div>
               <div className="flex-1 min-w-0">
-                  <h3 className="text-lg sm:text-xl font-black font-headline truncate leading-tight text-balance">{selectedSoul.firstName} {selectedSoul.lastName}</h3>
-                  <Badge className={cn("mt-1.5 h-5 text-[9px] sm:text-[10px] uppercase font-bold tracking-widest")} variant="secondary">{selectedSoul.status}</Badge>
+                  <h3 className="text-lg sm:text-xl font-black font-headline truncate leading-tight text-balance">{activeSoul.firstName} {activeSoul.lastName}</h3>
+                  <Badge className={cn("mt-1.5 h-5 text-[9px] sm:text-[10px] uppercase font-bold tracking-widest")} variant="secondary">{activeSoul.status}</Badge>
               </div>
               <TooltipProvider>
                 <Tooltip>
@@ -191,24 +195,24 @@ export default function FellowshipPageClient() {
                   <div className="space-y-3 px-1">
                       <div className="text-sm flex items-center gap-3 p-4 rounded-[1.5rem] bg-background border shadow-sm min-w-0">
                           <span className="font-bold text-muted-foreground text-[9px] sm:text-[10px] uppercase tracking-widest shrink-0 ml-1">Won By:</span>
-                          <SoulWinnerInfo userId={selectedSoul.userId} />
+                          <SoulWinnerInfo userId={activeSoul.userId} />
                       </div>
-                      {selectedSoul.email && (
+                      {activeSoul.email && (
                           <div className="flex items-center gap-3 text-sm p-4 rounded-[1.5rem] bg-background border shadow-sm min-w-0">
                               <Mail className="h-4 w-4 text-primary shrink-0" />
-                              <a href={`mailto:${selectedSoul.email}`} className="hover:underline truncate text-sm font-medium">{selectedSoul.email}</a>
+                              <a href={`mailto:${activeSoul.email}`} className="hover:underline truncate text-sm font-medium">{activeSoul.email}</a>
                           </div>
                       )}
-                      {selectedSoul.phone && (
+                      {activeSoul.phone && (
                           <div className="flex items-center gap-3 text-sm p-4 rounded-[1.5rem] bg-background border shadow-sm min-w-0">
                               <Phone className="h-4 w-4 text-primary shrink-0" />
-                              <a href={`tel:${selectedSoul.phone}`} className="hover:underline text-sm font-medium">{selectedSoul.phone}</a>
+                              <a href={`tel:${activeSoul.phone}`} className="hover:underline text-sm font-medium">{activeSoul.phone}</a>
                           </div>
                       )}
-                      {selectedSoul.church && (
+                      {activeSoul.church && (
                           <div className="flex items-start gap-3 text-sm p-4 rounded-[1.5rem] bg-background border shadow-sm min-w-0">
                               <Church className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-                              <span className="leading-snug text-sm font-medium line-clamp-2">Attends: {selectedSoul.church}</span>
+                              <span className="leading-snug text-sm font-medium line-clamp-2">Attends: {activeSoul.church}</span>
                           </div>
                       )}
                   </div>
@@ -219,9 +223,9 @@ export default function FellowshipPageClient() {
                       <History className="h-3.5 w-3.5" /> Interaction History
                   </h4>
                   <div className="border rounded-[1.5rem] sm:rounded-[2rem] bg-muted/10 overflow-hidden shadow-inner mx-1">
-                      {selectedSoul.followUpLog && selectedSoul.followUpLog.length > 0 ? (
+                      {activeSoul.followUpLog && activeSoul.followUpLog.length > 0 ? (
                           <div className="divide-y max-h-[40vh] sm:max-h-[50vh] overflow-y-auto overscroll-contain">
-                              {[...selectedSoul.followUpLog].reverse().map((log, i) => {
+                              {[...activeSoul.followUpLog].reverse().map((log, i) => {
                                   const date = safeToDate(log.date);
                                   return (
                                       <div key={i} className="p-4 sm:p-5 text-xs space-y-3 bg-background/50">
@@ -434,7 +438,7 @@ export default function FellowshipPageClient() {
                                                             size="sm"
                                                             className="h-7 sm:h-8 text-[9px] sm:text-[10px] font-black uppercase tracking-widest px-2 sm:px-3 rounded-xl shadow-sm shrink-0"
                                                             onClick={() => {
-                                                                setSelectedSoul(soul);
+                                                                setSelectedSoulId(soul.id);
                                                                 setIsSoulDetailsOpen(true);
                                                             }}
                                                         >
@@ -501,7 +505,7 @@ export default function FellowshipPageClient() {
             )}
 
             <LogFollowUpDialog 
-                soul={selectedSoul}
+                soul={activeSoul}
                 isOpen={isLogFollowUpOpen}
                 onOpenChange={setIsLogFollowUpOpen}
                 onFollowUpLogged={() => {

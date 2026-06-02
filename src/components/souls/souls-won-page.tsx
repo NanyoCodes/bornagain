@@ -73,12 +73,12 @@ export default function SoulsWonPage() {
   const [mounted, setMounted] = useState(false);
   const [isLogDialogOpen, setIsLogDialogOpen] = useState(false);
   
-  // Triggers for specific records
-  const [soulForFollowUp, setSoulForFollowUp] = useState<Soul | null>(null);
-  const [soulForHistory, setSoulForHistory] = useState<Soul | null>(null);
-  const [soulToAssign, setSoulToAssign] = useState<Soul | null>(null);
-  const [soulToEdit, setSoulToEdit] = useState<Soul | null>(null);
-  const [soulToDelete, setSoulToDelete] = useState<Soul | null>(null);
+  // Triggers for specific records using IDs for live synchronization
+  const [followUpSoulId, setFollowUpSoulId] = useState<string | null>(null);
+  const [historySoulId, setHistorySoulId] = useState<string | null>(null);
+  const [assignSoulId, setAssignSoulId] = useState<string | null>(null);
+  const [editSoulId, setEditSoulId] = useState<string | null>(null);
+  const [deleteSoulId, setDeleteSoulId] = useState<string | null>(null);
 
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -92,15 +92,8 @@ export default function SoulsWonPage() {
     };
   }, [setIsSearchVisible, setSearchTerm, setSearchPlaceholder]);
 
-  const isAnyModalOpen = !!(soulForFollowUp || soulForHistory || soulToAssign || soulToEdit || soulToDelete || isLogDialogOpen);
+  const isAnyModalOpen = !!(followUpSoulId || historySoulId || assignSoulId || editSoulId || deleteSoulId || isLogDialogOpen);
 
-  /**
-   * INTERACTIVITY SAFETY VALVE
-   * 
-   * This effect explicitly clears 'aria-hidden' and 'pointer-events' on the body
-   * when all modals are closed. This resolves the common "frozen page" issue
-   * where Radix UI focus traps or accessibility attributes persist unexpectedly.
-   */
   useEffect(() => {
     if (!isAnyModalOpen && typeof document !== 'undefined') {
       const timer = setTimeout(() => {
@@ -116,6 +109,13 @@ export default function SoulsWonPage() {
     return query(collection(firestore, `users/${user.uid}/souls`), orderBy("wonAt", "desc"));
   }, [user?.uid, firestore]);
   const { data: souls, loading: soulsLoading } = useCollection<Soul>(soulsQuery);
+
+  // Derive live soul objects from IDs
+  const soulForFollowUp = useMemo(() => souls?.find(s => s.id === followUpSoulId) || null, [souls, followUpSoulId]);
+  const soulForHistory = useMemo(() => souls?.find(s => s.id === historySoulId) || null, [souls, historySoulId]);
+  const soulToAssign = useMemo(() => souls?.find(s => s.id === assignSoulId) || null, [souls, assignSoulId]);
+  const soulToEdit = useMemo(() => souls?.find(s => s.id === editSoulId) || null, [souls, editSoulId]);
+  const soulToDelete = useMemo(() => souls?.find(s => s.id === deleteSoulId) || null, [souls, deleteSoulId]);
 
   const campaignsQuery = useMemo(() => {
     if (!user?.uid || !firestore) return null;
@@ -144,11 +144,11 @@ export default function SoulsWonPage() {
 
   const loading = userLoading || soulsLoading || profileLoading;
 
-  const handleOpenFollowUp = useCallback((soul: Soul) => setSoulForFollowUp(soul), []);
-  const handleOpenHistory = useCallback((soul: Soul) => setSoulForHistory(soul), []);
-  const handleOpenAssign = useCallback((soul: Soul) => setSoulToAssign(soul), []);
-  const handleOpenEdit = useCallback((soul: Soul) => setSoulToEdit(soul), []);
-  const handleOpenDelete = useCallback((soul: Soul) => setSoulToDelete(soul), []);
+  const handleOpenFollowUp = useCallback((soul: Soul) => setFollowUpSoulId(soul.id), []);
+  const handleOpenHistory = useCallback((soul: Soul) => setHistorySoulId(soul.id), []);
+  const handleOpenAssign = useCallback((soul: Soul) => setAssignSoulId(soul.id), []);
+  const handleOpenEdit = useCallback((soul: Soul) => setEditSoulId(soul.id), []);
+  const handleOpenDelete = useCallback((soul: Soul) => setDeleteSoulId(soul.id), []);
 
   const handleExportHarvest = async (formatType: 'csv' | 'pdf') => {
     if (!souls || souls.length === 0) return;
@@ -211,7 +211,7 @@ export default function SoulsWonPage() {
         
         await batch.commit();
         toast({ title: "Record Deleted" });
-        setSoulToDelete(null);
+        setDeleteSoulId(null);
     } catch (error) {
         const permissionError = new FirestorePermissionError({
             path: soulRef.path,
@@ -276,7 +276,7 @@ export default function SoulsWonPage() {
         }).catch(() => {});
     }
     
-    setSoulToAssign(null);
+    setAssignSoulId(null);
   };
 
   const handleExportSingleSoul = useCallback(async (soul: Soul, formatType: 'csv' | 'pdf') => {
@@ -397,35 +397,35 @@ export default function SoulsWonPage() {
 
       <LogFollowUpDialog 
           soul={soulForFollowUp} 
-          isOpen={!!soulForFollowUp} 
+          isOpen={!!followUpSoulId} 
           onOpenChange={(isOpen) => {
-              if (!isOpen) setSoulForFollowUp(null);
+              if (!isOpen) setFollowUpSoulId(null);
           }} 
           onFollowUpLogged={() => {
-            setSoulForFollowUp(null);
+            setFollowUpSoulId(null);
           }} 
       />
       
       <ViewHistoryDialog 
           soul={soulForHistory} 
-          isOpen={!!soulForHistory} 
+          isOpen={!!historySoulId} 
           onOpenChange={(isOpen) => {
-              if (!isOpen) setSoulForHistory(null);
+              if (!isOpen) setHistorySoulId(null);
           }} 
       />
       
       <AssignFellowshipDialog 
           soul={soulToAssign} 
           fellowships={activeFellowships || []} 
-          isOpen={!!soulToAssign} 
+          isOpen={!!assignSoulId} 
           onOpenChange={(isOpen) => {
-              if (!isOpen) setSoulToAssign(null);
+              if (!isOpen) setAssignSoulId(null);
           }} 
           onAssignGroup={handleAssignGroup} 
       />
       
       {mounted && isMobile ? (
-        <Sheet open={!!soulToEdit} onOpenChange={(open) => { if(!open) setSoulToEdit(null); }}>
+        <Sheet open={!!editSoulId} onOpenChange={(open) => { if(!open) setEditSoulId(null); }}>
           <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
             <div className="p-8 border-b flex-shrink-0 bg-muted/10">
               <SheetHeader className="text-left">
@@ -438,7 +438,7 @@ export default function SoulsWonPage() {
                  {soulToEdit && (
                   <EditSoulForm 
                       soul={soulToEdit} 
-                      onSoulUpdated={() => { setSoulToEdit(null); }} 
+                      onSoulUpdated={() => { setEditSoulId(null); }} 
                       fellowships={activeFellowships || []}
                       campaigns={campaigns || []}
                   />
@@ -448,7 +448,7 @@ export default function SoulsWonPage() {
           </SheetContent>
         </Sheet>
       ) : (
-        <Dialog open={!!soulToEdit} onOpenChange={(open) => { if(!open) setSoulToEdit(null); }}>
+        <Dialog open={!!editSoulId} onOpenChange={(open) => { if(!open) setEditSoulId(null); }}>
             <DialogContent className="sm:max-w-lg">
                 <DialogHeader>
                     <DialogTitle className="font-headline text-2xl">Edit Soul Details</DialogTitle>
@@ -458,7 +458,7 @@ export default function SoulsWonPage() {
                     {soulToEdit && (
                       <EditSoulForm 
                           soul={soulToEdit} 
-                          onSoulUpdated={() => { setSoulToEdit(null); }} 
+                          onSoulUpdated={() => { setEditSoulId(null); }} 
                           fellowships={activeFellowships || []}
                           campaigns={campaigns || []}
                       />
@@ -502,7 +502,7 @@ export default function SoulsWonPage() {
         </Dialog>
       )}
 
-      <AlertDialog open={!!soulToDelete} onOpenChange={(open) => { if(!open) setSoulToDelete(null); }}>
+      <AlertDialog open={!!deleteSoulId} onOpenChange={(open) => { if(!open) setDeleteSoulId(null); }}>
         <AlertDialogContent className="w-[90vw] max-w-lg rounded-lg">
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Record?</AlertDialogTitle>
