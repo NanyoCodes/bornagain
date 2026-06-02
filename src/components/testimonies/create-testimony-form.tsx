@@ -139,7 +139,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
       // 1. Handle Media Upload if exists
       if (mediaFile && storage) {
         setIsUploadingMedia(true);
-        const extension = mediaFile.name.split('.').pop();
+        const extension = mediaFile.name.split('.').pop() || 'file';
         const safeName = `${Date.now()}.${extension}`;
         const mediaRef = ref(storage, `testimony-media/${user.uid}/${safeName}`);
         
@@ -151,8 +151,8 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
             if (storageErr.code === 'storage/unauthorized') {
                 toast({
                     variant: 'destructive',
-                    title: 'Storage Permission Denied',
-                    description: 'You do not have permission to upload files. Please check your account status or contact support.',
+                    title: 'Upload Permission Denied',
+                    description: 'You do not have permission to upload to this path. Please ensure you are logged in correctly.',
                 });
                 setIsSubmitting(false);
                 setIsUploadingMedia(false);
