@@ -152,7 +152,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
                 toast({
                     variant: 'destructive',
                     title: 'Upload Permission Denied',
-                    description: 'You do not have permission to upload to this path. Please ensure you are logged in correctly.',
+                    description: 'Please ensure your project settings authorize media uploads and you are logged in.',
                 });
                 setIsSubmitting(false);
                 setIsUploadingMedia(false);
