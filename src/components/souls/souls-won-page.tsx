@@ -130,14 +130,21 @@ export default function SoulsWonPage() {
 
   const loading = userLoading || soulsLoading;
 
-  // Force restore interactivity and refresh data
-  const cleanupAndRefresh = useCallback(() => {
+  const restoreInteractivity = useCallback(() => {
     if (typeof document !== 'undefined') {
         document.body.style.pointerEvents = 'auto';
         document.body.style.overflow = 'auto';
     }
+  }, []);
+
+  const refreshData = useCallback(() => {
     router.refresh();
   }, [router]);
+
+  const cleanupAndRefresh = useCallback(() => {
+    restoreInteractivity();
+    refreshData();
+  }, [restoreInteractivity, refreshData]);
 
   const handleOpenFollowUp = useCallback((soul: Soul) => setSoulForFollowUp(soul), []);
   const handleOpenHistory = useCallback((soul: Soul) => setSoulForHistory(soul), []);
@@ -160,24 +167,30 @@ export default function SoulsWonPage() {
   const handleCloseEdit = useCallback((open: boolean) => {
     setIsEditOpen(open);
     if (!open) {
-      setSoulToEdit(null);
-      cleanupAndRefresh();
+      setTimeout(() => {
+          setSoulToEdit(null);
+          cleanupAndRefresh();
+      }, 300);
     }
   }, [cleanupAndRefresh]);
 
   const handleCloseAssign = useCallback((open: boolean) => {
     setIsAssignOpen(open);
     if (!open) {
-      setSoulToAssign(null);
-      cleanupAndRefresh();
+      setTimeout(() => {
+          setSoulToAssign(null);
+          cleanupAndRefresh();
+      }, 300);
     }
   }, [cleanupAndRefresh]);
 
   const handleCloseDelete = useCallback((open: boolean) => {
     setIsDeleteOpen(open);
     if (!open) {
-      setSoulToDelete(null);
-      cleanupAndRefresh();
+      setTimeout(() => {
+          setSoulToDelete(null);
+          cleanupAndRefresh();
+      }, 300);
     }
   }, [cleanupAndRefresh]);
 
@@ -307,8 +320,7 @@ export default function SoulsWonPage() {
         }).catch(() => {});
     }
     
-    // Refresh to ensure everything reflects correctly
-    cleanupAndRefresh();
+    refreshData();
   };
 
   const handleExportSingleSoul = useCallback(async (soul: Soul, formatType: 'csv' | 'pdf') => {
