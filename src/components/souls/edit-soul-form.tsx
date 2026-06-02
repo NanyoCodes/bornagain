@@ -161,6 +161,15 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
 
     try {
         await runTransaction(firestore, async (transaction) => {
+            // CRITICAL: Perform reads before writes in a transaction to satisfy security rules 
+            // that depend on the existing data (resource.data).
+            const soulDoc = await transaction.get(soulRef);
+            const globalSoulDoc = await transaction.get(globalSoulRef);
+            
+            if (!soulDoc.exists() || !globalSoulDoc.exists()) {
+                throw new Error("Soul record not found.");
+            }
+
             transaction.update(soulRef, soulUpdateData);
             transaction.update(globalSoulRef, soulUpdateData);
         });

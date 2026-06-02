@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
@@ -89,7 +90,7 @@ export default function SoulsWonPage() {
       setIsSearchVisible(false);
       setSearchTerm("");
     };
-  }, [setIsSearchVisible, setSearchPlaceholder, setSearchTerm]);
+  }, [setIsSearchVisible, setSearchTerm]);
 
   const soulsQuery = useMemo(() => {
     if (!user?.uid || !firestore) return null;
