@@ -12,10 +12,11 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Loader2, Users, MoreVertical, PlayCircle, Edit, Trash2, Group, MapPin } from 'lucide-react';
+import { Loader2, Users, MoreVertical, PlayCircle, Edit, Trash2, Group, MapPin, BarChart3 } from 'lucide-react';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { useRouter } from 'next/navigation';
 
 type FellowshipCardProps = {
   fellowship: Fellowship;
@@ -29,6 +30,7 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
     const { user } = useUser();
     const firestore = useFirestore();
     const { toast } = useToast();
+    const router = useRouter();
     const [isJoining, setIsJoining] = useState(false);
     
     const isMember = useMemo(() => {
@@ -143,6 +145,24 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
                         </div>
                     </div>
                     <div className="flex items-center gap-2 shrink-0" onClick={stopPropagation}>
+                        <TooltipProvider>
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <Button 
+                                        variant="outline" 
+                                        size="icon" 
+                                        className="h-9 w-9 sm:h-10 sm:w-10 border-primary/20 text-primary/60 hover:text-primary hover:bg-primary/10 rounded-full shadow-md bg-background" 
+                                        onClick={() => triggerAction(() => router.push(`/dashboard/fellowship/${fellowship.id}`))}
+                                    >
+                                        <BarChart3 className="h-4 w-4 sm:h-5 sm:w-5" />
+                                        <span className="sr-only">View Details</span>
+                                    </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    <p>Kingdom Insights</p>
+                                </TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
                         {isOrganizer && (
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
