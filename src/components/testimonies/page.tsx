@@ -287,15 +287,15 @@ export default function TestimoniesPage() {
   const prayerFormContent = userProfile ? <CreatePrayerRequestForm onPrayerRequestCreated={handlePrayerRequestCreated} /> : <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin"/></div>;
 
   return (
-    <div className="space-y-0 sm:space-y-12 pb-32">
+    <div className="space-y-6 md:space-y-12 pb-32">
       {/* Interaction Box: Edge-to-edge breakout on mobile */}
-      <div className="w-full max-w-3xl mx-auto -mx-4 sm:mx-0">
+      <div className="w-full -mx-4 sm:mx-0">
         <Card className="border shadow-sm sm:shadow-md rounded-none sm:rounded-xl border-x-0 sm:border-x bg-card/50 backdrop-blur-sm">
-          <CardContent className="p-3 sm:p-4 flex justify-center">
-            <div className="flex flex-row items-center justify-center gap-2 sm:gap-3 w-full max-w-2xl">
+          <CardContent className="p-3 sm:p-6 flex justify-center">
+            <div className="flex flex-row items-center justify-center gap-2 sm:gap-4 w-full max-w-2xl">
               <Button 
                 variant="outline" 
-                className="flex-1 justify-center text-center text-muted-foreground font-normal rounded-full h-10 sm:h-11 px-4 hover:bg-muted/50 transition-colors text-sm min-w-0"
+                className="flex-1 justify-center text-center text-muted-foreground font-normal rounded-full h-10 sm:h-12 px-6 hover:bg-muted/50 transition-colors text-sm sm:text-base min-w-0 border-dashed"
                 onClick={() => setIsTestimonyDialogOpen(true)}
                 disabled={loading}
               >
@@ -305,22 +305,22 @@ export default function TestimoniesPage() {
                 <Button 
                   variant="secondary" 
                   size="icon" 
-                  className="h-10 sm:h-11 w-10 sm:w-11 rounded-full"
+                  className="h-10 sm:h-12 w-10 sm:w-12 rounded-full shadow-lg"
                   onClick={() => setIsTestimonyDialogOpen(true)}
                   disabled={loading}
                   title="Share Testimony"
                 >
-                  < Newspaper className="h-4 w-4" />
+                  < Newspaper className="h-5 w-5" />
                 </Button>
                 <Button 
                   variant="outline" 
                   size="icon" 
-                  className="h-10 sm:h-11 w-10 sm:w-11 rounded-full"
+                  className="h-10 sm:h-12 w-10 sm:w-12 rounded-full shadow-md bg-background"
                   onClick={() => setIsPrayerDialogOpen(true)}
                   disabled={loading}
                   title="Request Prayer"
                 >
-                  <HandHeart className="h-4 w-4" />
+                  <HandHeart className="h-5 w-5" />
                 </Button>
               </div>
             </div>
@@ -329,15 +329,15 @@ export default function TestimoniesPage() {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <div className="max-w-3xl mx-auto w-full -mx-4 sm:mx-0">
-            <TabsList className="grid w-full grid-cols-2 rounded-none sm:rounded-md bg-muted/10 sm:bg-muted p-1">
-                <TabsTrigger value="testimonies">Testimonies</TabsTrigger>
-                <TabsTrigger value="prayers">Prayer Requests</TabsTrigger>
+          <div className="w-full -mx-4 sm:mx-0">
+            <TabsList className="flex w-full rounded-none sm:rounded-xl bg-muted/10 sm:bg-muted/40 p-1 border-y sm:border-none">
+                <TabsTrigger value="testimonies" className="flex-1 rounded-none sm:rounded-lg font-black text-[10px] sm:text-xs uppercase tracking-widest h-10 sm:h-11">Testimonies</TabsTrigger>
+                <TabsTrigger value="prayers" className="flex-1 rounded-none sm:rounded-lg font-black text-[10px] sm:text-xs uppercase tracking-widest h-10 sm:h-11">Prayer Requests</TabsTrigger>
             </TabsList>
           </div>
           
           <TabsContent value="testimonies" className="mt-0 sm:mt-10 outline-none">
-              <div className="flex flex-col gap-0 w-full max-w-3xl mx-auto -mx-4 sm:mx-0">
+              <div className="flex flex-col gap-0 w-full -mx-4 sm:mx-0">
                 {loading && (
                   [...Array(3)].map((_, i) => (
                     <Card key={i} className="flex flex-col h-full rounded-none sm:rounded-xl border-x-0 sm:border-x bg-card/50 backdrop-blur-sm"><CardContent className="p-6 space-y-4"><Skeleton className="h-12 w-12 rounded-full" /><div className="w-full space-y-2"><Skeleton className="h-4 w-1/4" /><Skeleton className="h-4 w-1/5" /></div><Skeleton className="h-5 w-3/4" /><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-full" /></CardContent></Card>
@@ -355,11 +355,11 @@ export default function TestimoniesPage() {
                     />
                 ))}
                  {!loading && filteredTestimonies?.length === 0 && (
-                  <div className="col-span-full text-center py-12 px-8 flex flex-col items-center">
-                    <Newspaper className="h-16 w-16 text-muted-foreground opacity-20" />
-                    <h3 className="mt-4 text-xl font-bold font-headline">No Testimonies Yet</h3>
-                    <p className="mt-2 text-sm text-muted-foreground italic">
-                      Be the first to share your story and encourage the body of Christ!
+                  <div className="col-span-full text-center py-24 px-8 flex flex-col items-center">
+                    <Newspaper className="h-20 w-20 text-muted-foreground opacity-10 mb-6" />
+                    <h3 className="text-2xl font-black font-headline tracking-tight uppercase">Your Altar of Praise</h3>
+                    <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-sm">
+                      Every miracle shared strengthens a brother. Be the first to record God's goodness in this feed!
                     </p>
                   </div>
                 )}
@@ -367,7 +367,7 @@ export default function TestimoniesPage() {
           </TabsContent>
           
           <TabsContent value="prayers" className="mt-0 sm:mt-10 outline-none">
-              <div className="flex flex-col gap-0 w-full max-w-3xl mx-auto -mx-4 sm:mx-0">
+              <div className="flex flex-col gap-0 w-full -mx-4 sm:mx-0">
                 {loading && (
                   [...Array(3)].map((_, i) => (
                     <Card key={i} className="flex flex-col h-full rounded-none sm:rounded-xl border-x-0 sm:border-x bg-card/50 backdrop-blur-sm"><CardContent className="p-6 space-y-4"><Skeleton className="h-12 w-12 rounded-full" /><div className="w-full space-y-2"><Skeleton className="h-4 w-1/4" /><Skeleton className="h-4 w-1/5" /></div><Skeleton className="h-5 w-3/4" /><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-full" /></CardContent></Card>
@@ -383,11 +383,11 @@ export default function TestimoniesPage() {
                   />
                 ))}
                 {!loading && filteredPrayerRequests?.length === 0 && (
-                  <div className="col-span-full text-center py-12 px-8 flex flex-col items-center">
-                    <HandHeart className="h-16 w-16 text-muted-foreground opacity-20" />
-                    <h3 className="mt-4 text-xl font-bold font-headline">No Prayer Requests</h3>
-                    <p className="mt-2 text-sm text-muted-foreground italic text-balance">
-                       Be the first to share a prayer need with the community.
+                  <div className="col-span-full text-center py-24 px-8 flex flex-col items-center">
+                    <HandHeart className="h-20 w-20 text-muted-foreground opacity-10 mb-6" />
+                    <h3 className="text-2xl font-black font-headline tracking-tight uppercase">United in Faith</h3>
+                    <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-sm">
+                       No one should walk through a trial alone. Share your request with the global community.
                     </p>
                   </div>
                 )}
@@ -397,16 +397,16 @@ export default function TestimoniesPage() {
       
       {/* Delete Confirmation */}
       <AlertDialog open={!!itemToDelete} onOpenChange={(open) => !open && closeDeleteDialog()}>
-          <AlertDialogContent className="w-[90vw] max-w-lg rounded-2xl">
+          <AlertDialogContent className="w-[90vw] max-w-lg rounded-[2rem] p-8">
           <AlertDialogHeader>
-              <AlertDialogTitle className="font-bold text-xl">Are you absolutely sure?</AlertDialogTitle>
-              <AlertDialogDescription>
-              This will permanently delete this {itemToDelete?.type}. This action cannot be undone and will be removed from the global feed.
+              <AlertDialogTitle className="font-black text-2xl font-headline tracking-tight">Remove from Feed?</AlertDialogTitle>
+              <AlertDialogDescription className="text-sm font-medium">
+              This will permanently delete this {itemToDelete?.type}. This action cannot be undone and the story of God's work will be removed from the global stream.
               </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter className="gap-2">
-              <AlertDialogCancel disabled={isDeleting} className="rounded-xl h-11">Cancel</AlertDialogCancel>
-              <AlertDialogAction onClick={handleConfirmDelete} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-xl h-11 font-bold">
+          <AlertDialogFooter className="gap-3 mt-6">
+              <AlertDialogCancel disabled={isDeleting} className="rounded-2xl h-12">Cancel</AlertDialogCancel>
+              <AlertDialogAction onClick={handleConfirmDelete} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold">
               {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Confirm Deletion
               </AlertDialogAction>
@@ -486,50 +486,66 @@ export default function TestimoniesPage() {
           ) : (
             <>
               <Dialog open={!!testimonyToEdit} onOpenChange={(open) => !open && closeEditDialog()}>
-                <DialogContent className="sm:max-w-lg rounded-3xl">
-                  <DialogHeader>
-                    <DialogTitle className="text-2xl font-bold">Edit Testimony</DialogTitle>
-                    <DialogDescription className="text-sm">Make changes to your testimony here. Click save when you're done.</DialogDescription>
-                  </DialogHeader>
-                  <div className="max-h-[70vh] overflow-y-auto pr-2">
-                    {testimonyToEdit && <EditTestimonyForm testimony={testimonyToEdit} onTestimonyUpdated={closeEditDialog} />}
+                <DialogContent className="sm:max-w-lg rounded-[2rem] p-0 overflow-hidden">
+                  <div className="p-6 border-b bg-muted/10">
+                    <DialogHeader>
+                        <DialogTitle className="text-2xl font-black font-headline">Edit Testimony</DialogTitle>
+                        <DialogDescription className="text-sm">Make changes to your testimony here.</DialogDescription>
+                    </DialogHeader>
                   </div>
+                  <ScrollArea className="max-h-[70vh]">
+                    <div className="p-6">
+                        {testimonyToEdit && <EditTestimonyForm testimony={testimonyToEdit} onTestimonyUpdated={closeEditDialog} />}
+                    </div>
+                  </ScrollArea>
                 </DialogContent>
               </Dialog>
 
               <Dialog open={!!prayerToEdit} onOpenChange={(open) => !open && closeEditDialog()}>
-                <DialogContent className="sm:max-w-lg rounded-3xl">
-                  <DialogHeader>
-                    <DialogTitle className="text-2xl font-bold">Edit Prayer Request</DialogTitle>
-                    <DialogDescription className="text-sm">Update the details of your request.</DialogDescription>
-                  </DialogHeader>
-                  <div className="max-h-[70vh] overflow-y-auto pr-2">
-                    {prayerToEdit && <EditPrayerRequestForm prayerRequest={prayerToEdit} onPrayerRequestUpdated={closeEditDialog} />}
+                <DialogContent className="sm:max-w-lg rounded-[2rem] p-0 overflow-hidden">
+                  <div className="p-6 border-b bg-muted/10">
+                    <DialogHeader>
+                        <DialogTitle className="text-2xl font-black font-headline">Edit Prayer Request</DialogTitle>
+                        <DialogDescription className="text-sm">Update the details of your request.</DialogDescription>
+                    </DialogHeader>
                   </div>
+                  <ScrollArea className="max-h-[70vh]">
+                    <div className="p-6">
+                        {prayerToEdit && <EditPrayerRequestForm prayerRequest={prayerToEdit} onPrayerRequestUpdated={closeEditDialog} />}
+                    </div>
+                  </ScrollArea>
                 </DialogContent>
               </Dialog>
 
               <Dialog open={isTestimonyDialogOpen} onOpenChange={(open) => !open && setIsTestimonyDialogOpen(false)}>
-                <DialogContent className="sm:max-w-lg rounded-3xl">
-                  <DialogHeader>
-                    <DialogTitle className="text-2xl font-bold">{prayerToAnswer ? 'Share Answered Prayer' : 'Share Testimony'}</DialogTitle>
-                    <DialogDescription className="text-sm">{prayerToAnswer ? "Share how God answered this prayer request." : "Encourage others by sharing God's goodness."}</DialogDescription>
-                  </DialogHeader>
-                  <div className="max-h-[70vh] overflow-y-auto pr-2">
-                    {testimonyFormContent}
+                <DialogContent className="sm:max-w-lg rounded-[2rem] p-0 overflow-hidden">
+                  <div className="p-6 border-b bg-muted/10">
+                    <DialogHeader>
+                        <DialogTitle className="text-2xl font-black font-headline">{prayerToAnswer ? 'Record Answer' : 'Share Testimony'}</DialogTitle>
+                        <DialogDescription className="text-sm">{prayerToAnswer ? "Share how God answered this prayer request." : "Encourage others by sharing God's goodness."}</DialogDescription>
+                    </DialogHeader>
                   </div>
+                  <ScrollArea className="max-h-[70vh]">
+                    <div className="p-6">
+                        {testimonyFormContent}
+                    </div>
+                  </ScrollArea>
                 </DialogContent>
               </Dialog>
 
               <Dialog open={isPrayerDialogOpen} onOpenChange={(open) => !open && setIsPrayerDialogOpen(false)}>
-                <DialogContent className="sm:max-w-lg rounded-3xl">
-                  <DialogHeader>
-                    <DialogTitle className="text-2xl font-bold">Share Prayer Request</DialogTitle>
-                    <DialogDescription className="text-sm">Share your request with the Body of Christ.</DialogDescription>
-                  </DialogHeader>
-                  <div className="max-h-[70vh] overflow-y-auto pr-2">
-                    {prayerFormContent}
+                <DialogContent className="sm:max-w-lg rounded-[2rem] p-0 overflow-hidden">
+                  <div className="p-6 border-b bg-muted/10">
+                    <DialogHeader>
+                        <DialogTitle className="text-2xl font-black font-headline">Share Prayer Request</DialogTitle>
+                        <DialogDescription className="text-sm">Share your request with the Body of Christ.</DialogDescription>
+                    </DialogHeader>
                   </div>
+                  <ScrollArea className="max-h-[70vh]">
+                    <div className="p-6">
+                        {prayerFormContent}
+                    </div>
+                  </ScrollArea>
                 </DialogContent>
               </Dialog>
             </>
