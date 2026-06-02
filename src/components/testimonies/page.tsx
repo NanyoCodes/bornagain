@@ -287,7 +287,7 @@ export default function TestimoniesPage() {
   const prayerFormContent = userProfile ? <CreatePrayerRequestForm onPrayerRequestCreated={handlePrayerRequestCreated} /> : <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin"/></div>;
 
   return (
-    <div className="space-y-6 md:space-y-12 pb-32">
+    <div className="space-y-6 md:space-y-10 max-w-3xl mx-auto w-full">
       {/* Interaction Box: Edge-to-edge breakout on mobile */}
       <div className="w-full -mx-4 sm:mx-0">
         <Card className="border shadow-sm sm:shadow-md rounded-none sm:rounded-xl border-x-0 sm:border-x bg-card/50 backdrop-blur-sm">
@@ -337,7 +337,7 @@ export default function TestimoniesPage() {
           </div>
           
           <TabsContent value="testimonies" className="mt-0 sm:mt-10 outline-none">
-              <div className="flex flex-col gap-0 w-full max-w-3xl mx-auto -mx-4 sm:mx-auto">
+              <div className="flex flex-col gap-0 w-full -mx-4 sm:mx-0">
                 {loading && (
                   [...Array(3)].map((_, i) => (
                     <Card key={i} className="flex flex-col h-full rounded-none sm:rounded-xl border-x-0 sm:border-x bg-card/50 backdrop-blur-sm"><CardContent className="p-6 space-y-4"><Skeleton className="h-12 w-12 rounded-full" /><div className="w-full space-y-2"><Skeleton className="h-4 w-1/4" /><Skeleton className="h-4 w-1/5" /></div><Skeleton className="h-5 w-3/4" /><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-full" /></CardContent></Card>
@@ -367,7 +367,7 @@ export default function TestimoniesPage() {
           </TabsContent>
           
           <TabsContent value="prayers" className="mt-0 sm:mt-10 outline-none">
-              <div className="flex flex-col gap-0 w-full max-w-3xl mx-auto -mx-4 sm:mx-auto">
+              <div className="flex flex-col gap-0 w-full -mx-4 sm:mx-0">
                 {loading && (
                   [...Array(3)].map((_, i) => (
                     <Card key={i} className="flex flex-col h-full rounded-none sm:rounded-xl border-x-0 sm:border-x bg-card/50 backdrop-blur-sm"><CardContent className="p-6 space-y-4"><Skeleton className="h-12 w-12 rounded-full" /><div className="w-full space-y-2"><Skeleton className="h-4 w-1/4" /><Skeleton className="h-4 w-1/5" /></div><Skeleton className="h-5 w-3/4" /><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-full" /></CardContent></Card>
