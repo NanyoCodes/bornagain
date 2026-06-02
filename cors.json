@@ -2,7 +2,8 @@
     {
       "origin": [
         "http://localhost:3000",
-        "https://testifyglobal.com"
+        "https://testifyglobal.com",
+        "https://6000-firebase-studio-1771339890236.cluster-64pjnskmlbaxowh5lzq6i7v4ra.cloudworkstations.dev"
       ],
       "method": [
         "GET",

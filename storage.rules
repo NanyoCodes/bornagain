@@ -2,22 +2,22 @@ rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
     
-    // Authorization helper: Ensures the user is logged in and matches the path UID
-    function canWrite(userId) {
+    // Helper function to check if the user is the owner of the path
+    function isOwner(userId) {
       return request.auth != null && request.auth.uid == userId;
     }
 
-    // Profile pictures: Publicly readable for identity verification, owner-writable
+    // Profile pictures: Publicly readable, owner-writable
     match /profile-pictures/{userId}/{allPaths=**} {
       allow read: if true;
-      allow write: if canWrite(userId);
+      allow write: if isOwner(userId);
     }
     
-    // Testimony media: Publicly readable for the miracle feed, owner-writable
-    // This allows for photos, videos, and audio evidence of God's power
+    // Testimony media: photos, videos, and audios evidence
+    // Rules strictly verify the authenticated UID matches the folder segment
     match /testimony-media/{userId}/{allPaths=**} {
       allow read: if true;
-      allow write: if canWrite(userId);
+      allow write: if isOwner(userId);
     }
   }
 }
