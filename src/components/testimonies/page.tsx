@@ -46,6 +46,7 @@ import { FirestorePermissionError } from "@/firebase/errors";
 import { EditTestimonyForm } from "@/components/testimonies/edit-testimony-form";
 import { EditPrayerRequestForm } from "@/components/prayer/EditPrayerRequestForm";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { cn } from "@/lib/utils";
 
 export default function TestimoniesPage() {
   const [isTestimonyDialogOpen, setIsTestimonyDialogOpen] = useState(false);
@@ -288,7 +289,7 @@ export default function TestimoniesPage() {
 
   return (
     <div className="space-y-6 md:space-y-10 w-full max-w-3xl mx-auto">
-      {/* Interaction Box */}
+      {/* Interaction Box - Full Width Mobile */}
       <Card className="border shadow-sm sm:shadow-md rounded-none sm:rounded-xl border-x-0 sm:border-x bg-card/50 backdrop-blur-sm -mx-4 sm:mx-0">
         <CardContent className="p-3 sm:p-6 flex justify-center">
           <div className="flex flex-row items-center justify-center gap-2 sm:gap-4 w-full">
@@ -327,6 +328,7 @@ export default function TestimoniesPage() {
       </Card>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          {/* Tabs List - Full Width Mobile */}
           <div className="-mx-4 sm:mx-0">
             <TabsList className="flex w-full rounded-none sm:rounded-xl bg-muted/10 sm:bg-muted/40 p-1 border-y sm:border-none h-12 sm:h-14">
                 <TabsTrigger value="testimonies" className="flex-1 rounded-none sm:rounded-lg font-black text-[10px] sm:text-xs uppercase tracking-widest h-full">Testimonies</TabsTrigger>
@@ -334,6 +336,7 @@ export default function TestimoniesPage() {
             </TabsList>
           </div>
           
+          {/* Feed Content - Full Width Mobile */}
           <TabsContent value="testimonies" className="mt-0 sm:mt-10 outline-none -mx-4 sm:mx-0">
               <div className="flex flex-col gap-0 w-full">
                 {loading && (

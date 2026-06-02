@@ -30,7 +30,7 @@ import {
   Hourglass,
   PartyPopper,
 } from "lucide-react";
-import { useUser, useAuth, useFirestore, useCollection, useDoc } from "@/firebase";
+import { useUser, useFirestore, useCollection, useDoc } from "@/firebase";
 import { useState, useMemo } from "react";
 import {
   DropdownMenu,
@@ -271,7 +271,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({
   return (
     <>
       <Card id={testimony.id} className={cn(
-        "flex flex-col h-full w-full overflow-hidden transition-all duration-300 scroll-mt-20 rounded-none sm:rounded-xl border-x-0 sm:border-x border-t-0 border-b-2 sm:border-b shadow-none bg-card/50 backdrop-blur-sm",
+        "flex flex-col h-full w-full overflow-hidden transition-all duration-300 scroll-mt-20 rounded-none sm:rounded-xl border-x-0 sm:border-x border-t-4 border-t-primary/10 border-b-2 sm:border-b shadow-none bg-card/50 backdrop-blur-sm",
         isPartner && "ring-1 ring-primary/20",
         testimony.answeredPrayerId && "border-l-4 border-l-amber-500"
       )}>
@@ -404,7 +404,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({
                     <CardDescription className="text-[10px] uppercase tracking-[0.2em] text-amber-600 dark:text-amber-400 font-black mb-1">
                         Answer to Prayer Request:
                     </CardDescription>
-                    <div className="border-l-2 border-amber-500/30 pl-4 italic text-sm text-muted-foreground line-clamp-2 leading-relaxed">
+                    <div className="border-l-2 border-amber-500/30 pl-4 italic text-sm text-muted-foreground line-clamp-2 leading-relaxed text-justify">
                         {testimony.answeredPrayerContent}
                     </div>
                 </CardHeader>
