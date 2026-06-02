@@ -9,7 +9,7 @@ import {
   DialogDescription, 
   DialogHeader, 
   DialogTitle, 
-} from "@/dialog";
+} from "@/components/ui/dialog";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -368,7 +368,7 @@ export default function SoulsWonPage() {
           <div className="flex flex-row items-center gap-2 sm:gap-3">
             <Button 
                 variant="outline" 
-                className="flex-1 justify-start text-muted-foreground font-normal rounded-full h-10 sm:h-11 px-4 hover:bg-muted/50 transition-colors text-sm min-w-0 border-dashed"
+                className="flex-1 justify-start text-left text-muted-foreground font-normal rounded-full h-10 sm:h-11 px-4 hover:bg-muted/50 transition-colors text-sm min-w-0 border-dashed"
                 onClick={() => setIsLogDialogOpen(true)}
                 disabled={loading}
             >
