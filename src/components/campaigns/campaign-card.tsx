@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/dialog";
 import {
   Sheet,
+  SheetTrigger,
   SheetContent,
   SheetDescription,
   SheetHeader,

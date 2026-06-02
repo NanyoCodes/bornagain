@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { useRouter, useParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useDoc, useFirestore, useUser, useCollection } from '@/firebase';
 import type { Campaign, UserProfile, CampaignParticipant, Testimony } from '@/lib/types';
 import {
@@ -96,8 +96,8 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
         if (!rawParticipants) return [];
         return [...rawParticipants].sort((a, b) => {
             const timeA = safeToDate(a.joinedAt)?.getTime() ?? 0;
-            const timeB = safeToDate(b.joinedAt)?.getTime() ?? 0;
-            return timeB - timeA;
+            const dateB = safeToDate(b.joinedAt)?.getTime() ?? 0;
+            return dateB - timeA;
         });
     }, [rawParticipants]);
 
@@ -515,9 +515,9 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                     <AlertDialogContent className="rounded-3xl p-8">
                         <AlertDialogHeader>
                             <AlertDialogTitle className="text-2xl font-bold font-headline">Delete Campaign?</AlertDialogTitle>
-                            <DialogDescription className="text-sm">
+                            <AlertDialogDescription className="text-sm">
                                 This will permanently remove "{campaignToDelete.title}" from the platform. This action cannot be undone.
-                            </DialogDescription>
+                            </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter className="mt-6 gap-3">
                             <AlertDialogCancel disabled={isDeleting} className="rounded-2xl h-11 font-bold">Cancel</AlertDialogCancel>
