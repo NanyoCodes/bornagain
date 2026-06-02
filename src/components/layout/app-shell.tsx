@@ -142,7 +142,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
                     isActive ? "text-primary font-semibold" : "text-muted-foreground"
                     )}
                 >
-                    <motion.div whileHover={{ scale: 1.1 }} className="flex items-center gap-2">
+                    <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }} className="flex items-center gap-2">
                       <item.icon className={cn("h-4 w-4 transition-transform", !isActive && item.color, isActive && "scale-110")} />
                       {item.label}
                     </motion.div>
@@ -179,24 +179,28 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
         {user ? (
           <>
             <Link href="/chats">
-                <Button variant="ghost" size="icon" className="relative group">
-                  <MessagesSquare className="h-5 w-5 transition-transform group-hover:scale-110" />
-                  {unreadChatCount > 0 && (
-                    <div className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-xs font-bold text-destructive-foreground animate-in zoom-in">
-                      {unreadChatCount}
-                    </div>
-                  )}
-                </Button>
+                <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
+                    <Button variant="ghost" size="icon" className="relative group">
+                      <MessagesSquare className="h-5 w-5 transition-transform group-hover:scale-110" />
+                      {unreadChatCount > 0 && (
+                        <div className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-xs font-bold text-destructive-foreground animate-in zoom-in">
+                          {unreadChatCount}
+                        </div>
+                      )}
+                    </Button>
+                </motion.div>
             </Link>
             <Link href="/notifications">
-                <Button variant="ghost" size="icon" className="relative group">
-                  <Bell className="h-5 w-5 transition-transform group-hover:scale-110" />
-                  {unreadNotifCount > 0 && (
-                    <div className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-xs font-bold text-destructive-foreground animate-in zoom-in">
-                      {unreadNotifCount}
-                    </div>
-                  )}
-                </Button>
+                <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
+                    <Button variant="ghost" size="icon" className="relative group">
+                      <Bell className="h-5 w-5 transition-transform group-hover:scale-110" />
+                      {unreadNotifCount > 0 && (
+                        <div className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-xs font-bold text-destructive-foreground animate-in zoom-in">
+                          {unreadNotifCount}
+                        </div>
+                      )}
+                    </Button>
+                </motion.div>
             </Link>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
