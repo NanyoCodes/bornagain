@@ -148,7 +148,6 @@ export default function RootLayout({
             __html: `
               window.addEventListener('error', (e) => {
                 const fatalKeywords = [
-                  'A listener indicated an asynchronous response by returning true',
                   'Could not establish connection',
                   'Hydration failed',
                   'Could not reach Cloud Firestore backend'

@@ -242,7 +242,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
       await updateDoc(doc(firestore, 'users', user.uid), firestoreUpdatePayload);
       await authUpdatePromise;
 
-      // Sync photo across other collections ALWAYS - "Denormalized Synchronicity"
+      // Global Denormalized Sync: Ensuring photo stays synchronized always
       const batch = writeBatch(firestore);
       const syncUrl = values.photoURL || ""; 
 
@@ -273,7 +273,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
       });
 
       await batch.commit().catch(err => {
-          console.error("Global denormalized photo sync failed:", err);
+          console.error("Denormalized sync warning:", err);
       });
       
       toast({ title: "Profile Updated" });

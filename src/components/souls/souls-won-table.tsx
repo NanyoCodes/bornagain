@@ -79,6 +79,15 @@ const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, 
     }, [soul.locationWon]);
     const latestFollowUpDate = latestFollowUp ? safeToDate(latestFollowUp.date) : null;
 
+    // Use requestAnimationFrame to ensure the dropdown menu finishes its closing cycle
+    // before the parent updates its state to open a new dialog/sheet.
+    // This prevents focus-trap and scroll-lock conflicts.
+    const triggerAction = (action: (s: Soul) => void) => {
+      requestAnimationFrame(() => {
+        action(soul);
+      });
+    };
+
     return (
         <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b shadow-none bg-card/50 backdrop-blur-sm transition-all duration-300">
             <Collapsible>
@@ -125,16 +134,16 @@ const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, 
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end" className="w-48 rounded-xl shadow-xl">
                                     <DropdownMenuLabel className="text-[10px] uppercase tracking-widest text-muted-foreground font-black">Record Control</DropdownMenuLabel>
-                                    <DropdownMenuItem onClick={() => onEdit(soul)} className="rounded-lg">
+                                    <DropdownMenuItem onClick={() => triggerAction(onEdit)} className="rounded-lg">
                                         <Edit className="mr-2 h-4 w-4" /> Edit Details
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem onClick={() => onFollowUp(soul)} className="rounded-lg">
+                                    <DropdownMenuItem onClick={() => triggerAction(onFollowUp)} className="rounded-lg">
                                         <HeartHandshake className="mr-2 h-4 w-4 text-primary" /> Log Follow-up
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem onClick={() => onViewHistory(soul)} className="rounded-lg">
+                                    <DropdownMenuItem onClick={() => triggerAction(onViewHistory)} className="rounded-lg">
                                         <History className="mr-2 h-4 w-4" /> Interaction History
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem onClick={() => onOpenAssignDialog(soul)} className="rounded-lg">
+                                    <DropdownMenuItem onClick={() => triggerAction(onOpenAssignDialog)} className="rounded-lg">
                                         <Users className="mr-2 h-4 w-4" /> Assign Community
                                     </DropdownMenuItem>
                                     <DropdownMenuSeparator />
@@ -148,7 +157,7 @@ const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, 
                                         </DropdownMenuPortal>
                                     </DropdownMenuSub>
                                     <DropdownMenuSeparator />
-                                    <DropdownMenuItem className="text-destructive focus:text-destructive focus:bg-destructive/10 rounded-lg" onClick={() => onDelete(soul)}>
+                                    <DropdownMenuItem className="text-destructive focus:text-destructive focus:bg-destructive/10 rounded-lg" onClick={() => triggerAction(onDelete)}>
                                         <Trash2 className="mr-2 h-4 w-4" /> Delete Permanently
                                     </DropdownMenuItem>
                                 </DropdownMenuContent>
@@ -178,8 +187,8 @@ const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, 
                                     <p className="text-xs text-muted-foreground italic py-2 opacity-60">No follow-up interactions recorded yet. Begin their journey today!</p>
                                 )}
                                 <div className="grid grid-cols-2 gap-2 pt-1">
-                                    <Button size="sm" className="h-9 text-[10px] font-black uppercase tracking-widest rounded-xl shadow-md" onClick={() => onFollowUp(soul)}>FOLLOW-UP</Button>
-                                    <Button size="sm" variant="outline" className="h-9 text-[10px] font-black uppercase tracking-widest rounded-xl bg-background/50" onClick={() => onViewHistory(soul)}>HISTORY</Button>
+                                    <Button size="sm" className="h-9 text-[10px] font-black uppercase tracking-widest rounded-xl shadow-md" onClick={() => triggerAction(onFollowUp)}>FOLLOW-UP</Button>
+                                    <Button size="sm" variant="outline" className="h-9 text-[10px] font-black uppercase tracking-widest rounded-xl bg-background/50" onClick={() => triggerAction(onViewHistory)}>HISTORY</Button>
                                 </div>
                             </div>
                         </div>
@@ -216,6 +225,12 @@ const SoulTableRow = React.memo(({ soul, onFollowUp, onViewHistory, onExportSing
 
     const wonAt = React.useMemo(() => safeToDate(soul.wonAt) ?? new Date(), [soul.wonAt]);
     const latestFollowUpDate = latestFollowUp ? safeToDate(latestFollowUp.date) : null;
+
+    const triggerAction = (action: (s: Soul) => void) => {
+      requestAnimationFrame(() => {
+        action(soul);
+      });
+    };
 
     return (
         <TableRow className="hover:bg-muted/30 transition-colors">
@@ -266,20 +281,20 @@ const SoulTableRow = React.memo(({ soul, onFollowUp, onViewHistory, onExportSing
                     <DropdownMenuTrigger asChild><Button size="icon" variant="ghost" className="h-8 w-8 rounded-full"><MoreHorizontal className="h-4 w-4" /></Button></DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-48 rounded-xl shadow-xl">
                         <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Soul Control</DropdownMenuLabel>
-                        <DropdownMenuItem onClick={() => onEdit(soul)}>
+                        <DropdownMenuItem onClick={() => triggerAction(onEdit)}>
                             <Edit className="mr-2 h-4 w-4" /> Edit Details
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => onFollowUp(soul)}>
+                        <DropdownMenuItem onClick={() => triggerAction(onFollowUp)}>
                             <HeartHandshake className="mr-2 h-4 w-4 text-primary" /> Log Follow-up
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => onViewHistory(soul)}>
+                        <DropdownMenuItem onClick={() => triggerAction(onViewHistory)}>
                             <History className="mr-2 h-4 w-4" /> Interaction History
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => onOpenAssignDialog(soul)}>
+                        <DropdownMenuItem onClick={() => triggerAction(onOpenAssignDialog)}>
                             <Users className="mr-2 h-4 w-4" /> Assign Community
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem className="text-destructive focus:text-destructive focus:bg-destructive/10 rounded-lg" onClick={() => onDelete(soul)}>
+                        <DropdownMenuItem className="text-destructive focus:text-destructive focus:bg-destructive/10 rounded-lg" onClick={() => triggerAction(onDelete)}>
                             <Trash2 className="mr-2 h-4 w-4" /> Delete Record
                         </DropdownMenuItem>
                     </DropdownMenuContent>
