@@ -288,14 +288,14 @@ export default function TestimoniesPage() {
 
   return (
     <div className="space-y-6 md:space-y-12 pb-32">
-      {/* Interaction Box: fill width on mobile */}
-      <div className="-mx-4 sm:mx-0">
-        <Card className="border shadow-sm sm:shadow-md rounded-none sm:rounded-lg border-x-0 sm:border-x bg-card/50 backdrop-blur-sm">
+      {/* Interaction Box: fill width on mobile, aligned on desktop */}
+      <div className="max-w-3xl mx-auto w-full -mx-4 sm:mx-auto">
+        <Card className="border shadow-sm sm:shadow-md rounded-none sm:rounded-xl border-x-0 sm:border-x bg-card/50 backdrop-blur-sm">
           <CardContent className="p-3 sm:p-4">
-            <div className="flex flex-row items-center gap-2 sm:gap-3">
+            <div className="flex flex-row items-center justify-center gap-2 sm:gap-3 w-full">
               <Button 
                 variant="outline" 
-                className="flex-1 justify-start text-muted-foreground font-normal rounded-full h-10 sm:h-11 px-4 hover:bg-muted/50 transition-colors text-sm min-w-0"
+                className="flex-1 justify-center text-center text-muted-foreground font-normal rounded-full h-10 sm:h-11 px-4 hover:bg-muted/50 transition-colors text-sm min-w-0"
                 onClick={() => setIsTestimonyDialogOpen(true)}
                 disabled={loading}
               >
@@ -329,7 +329,7 @@ export default function TestimoniesPage() {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <div className="-mx-4 sm:mx-0">
+          <div className="max-w-3xl mx-auto w-full -mx-4 sm:mx-auto">
             <TabsList className="grid w-full grid-cols-2 rounded-none sm:rounded-md bg-muted/10 sm:bg-muted p-1">
                 <TabsTrigger value="testimonies">Testimonies</TabsTrigger>
                 <TabsTrigger value="prayers">Prayer Requests</TabsTrigger>
