@@ -287,9 +287,9 @@ export default function TestimoniesPage() {
   const prayerFormContent = userProfile ? <CreatePrayerRequestForm onPrayerRequestCreated={handlePrayerRequestCreated} /> : <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin"/></div>;
 
   return (
-    <div className="space-y-6 md:space-y-12 pb-32">
+    <div className="space-y-0 sm:space-y-12 pb-32">
       {/* Interaction Box: Edge-to-edge breakout on mobile */}
-      <div className="w-full max-w-3xl mx-auto -mx-4 sm:mx-auto">
+      <div className="w-full max-w-3xl mx-auto -mx-4 sm:mx-0">
         <Card className="border shadow-sm sm:shadow-md rounded-none sm:rounded-xl border-x-0 sm:border-x bg-card/50 backdrop-blur-sm">
           <CardContent className="p-3 sm:p-4 flex justify-center">
             <div className="flex flex-row items-center justify-center gap-2 sm:gap-3 w-full max-w-2xl">
@@ -329,15 +329,15 @@ export default function TestimoniesPage() {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <div className="max-w-3xl mx-auto w-full -mx-4 sm:mx-auto">
+          <div className="max-w-3xl mx-auto w-full -mx-4 sm:mx-0">
             <TabsList className="grid w-full grid-cols-2 rounded-none sm:rounded-md bg-muted/10 sm:bg-muted p-1">
                 <TabsTrigger value="testimonies">Testimonies</TabsTrigger>
                 <TabsTrigger value="prayers">Prayer Requests</TabsTrigger>
             </TabsList>
           </div>
           
-          <TabsContent value="testimonies" className="mt-4 sm:mt-8 md:mt-10 outline-none">
-              <div className="flex flex-col gap-0 w-full max-w-3xl mx-auto -mx-4 sm:mx-auto">
+          <TabsContent value="testimonies" className="mt-0 sm:mt-10 outline-none">
+              <div className="flex flex-col gap-0 w-full max-w-3xl mx-auto -mx-4 sm:mx-0">
                 {loading && (
                   [...Array(3)].map((_, i) => (
                     <Card key={i} className="flex flex-col h-full rounded-none sm:rounded-xl border-x-0 sm:border-x bg-card/50 backdrop-blur-sm"><CardContent className="p-6 space-y-4"><Skeleton className="h-12 w-12 rounded-full" /><div className="w-full space-y-2"><Skeleton className="h-4 w-1/4" /><Skeleton className="h-4 w-1/5" /></div><Skeleton className="h-5 w-3/4" /><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-full" /></CardContent></Card>
@@ -366,8 +366,8 @@ export default function TestimoniesPage() {
               </div>
           </TabsContent>
           
-          <TabsContent value="prayers" className="mt-4 sm:mt-8 md:mt-10 outline-none">
-              <div className="flex flex-col gap-0 w-full max-w-3xl mx-auto -mx-4 sm:mx-auto">
+          <TabsContent value="prayers" className="mt-0 sm:mt-10 outline-none">
+              <div className="flex flex-col gap-0 w-full max-w-3xl mx-auto -mx-4 sm:mx-0">
                 {loading && (
                   [...Array(3)].map((_, i) => (
                     <Card key={i} className="flex flex-col h-full rounded-none sm:rounded-xl border-x-0 sm:border-x bg-card/50 backdrop-blur-sm"><CardContent className="p-6 space-y-4"><Skeleton className="h-12 w-12 rounded-full" /><div className="w-full space-y-2"><Skeleton className="h-4 w-1/4" /><Skeleton className="h-4 w-1/5" /></div><Skeleton className="h-5 w-3/4" /><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-full" /></CardContent></Card>
