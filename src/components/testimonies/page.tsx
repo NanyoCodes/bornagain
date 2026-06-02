@@ -288,7 +288,7 @@ export default function TestimoniesPage() {
 
   return (
     <div className="space-y-6 md:space-y-12 pb-32">
-      {/* Interaction Box: Full width mobile breakout */}
+      {/* Interaction Box: Edge-to-edge breakout on mobile */}
       <div className="w-full max-w-3xl mx-auto -mx-4 sm:mx-auto">
         <Card className="border shadow-sm sm:shadow-md rounded-none sm:rounded-xl border-x-0 sm:border-x bg-card/50 backdrop-blur-sm">
           <CardContent className="p-3 sm:p-4 flex justify-center">

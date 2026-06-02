@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import type { PrayerRequest, UserProfile } from "@/lib/types";
 import { format } from "date-fns";
-import { HandHeart, Users, Trash2, Loader2, User, Award, Newspaper, Edit } from "lucide-react";
+import { HandHeart, Users, Trash2, Loader2, User, Award, Newspaper, Edit, ChevronDown } from "lucide-react";
 import { useUser, useFirestore, useDoc } from "@/firebase";
 import { useState, useMemo, memo, useRef, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
@@ -167,20 +167,20 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({
                 </Dialog>
                 <div className="min-w-0 flex-1">
                      <Link href={profileLink} onClick={(e) => { if (!isClickable) e.preventDefault(); e.stopPropagation(); }} className={cn(!isClickable && 'pointer-events-none')}>
-                        <CardTitle className={cn("text-lg font-bold", isClickable && "hover:underline")}>{authorName}</CardTitle>
+                        <CardTitle className={cn("text-base sm:text-lg font-bold", isClickable && "hover:underline")}>{authorName}</CardTitle>
                     </Link>
-                    <CardDescription className="text-sm mt-1">
+                    <CardDescription className="text-[10px] sm:text-xs mt-1">
                         {displayDate}
                     </CardDescription>
-                    <div className="mt-2">
-                        <Badge variant="outline" className="w-fit text-xs uppercase tracking-widest px-2 py-0.5 h-auto bg-background/50">{prayerRequest.category}</Badge>
+                    <div className="mt-1.5">
+                        <Badge variant="outline" className="w-fit text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 h-auto bg-background/50">{prayerRequest.category}</Badge>
                     </div>
                 </div>
             </div>
         </CardHeader>
         <CardContent className="flex-grow py-0 px-4 sm:px-6">
-          <div className="text-sm text-muted-foreground whitespace-pre-wrap text-balance">
-            <p ref={contentRef} className="line-clamp-4 text-sm leading-relaxed">
+          <div className="text-sm sm:text-base text-muted-foreground whitespace-pre-wrap text-balance">
+            <p ref={contentRef} className="line-clamp-4 leading-relaxed">
               {prayerRequest.content}
             </p>
             {isTruncated && !isAuthor && (
@@ -198,14 +198,14 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({
           </div>
         </CardContent>
         <CardFooter className="pt-4 flex justify-between items-center mt-auto p-4 sm:p-6">
-          <div className="flex items-center gap-1.5 text-sm text-muted-foreground font-medium">
+          <div className="flex items-center gap-1.5 text-[11px] sm:text-sm text-muted-foreground font-medium">
               <Users className="h-4 w-4 text-primary" />
               <span>{prayerCount} believers praying</span>
           </div>
           {isAuthor ? (
             <div className="flex items-center gap-2">
                 {!isAnswered ? (
-                    <Button onClick={onAnswerPrayer} size="sm" className="font-bold">
+                    <Button onClick={onAnswerPrayer} size="sm" className="font-bold h-8 px-3">
                         <Award className="mr-2 h-4 w-4" />
                         Answered
                     </Button>
@@ -213,11 +213,11 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({
                     <Link href={`/dashboard/testimonies#${prayerRequest.answeredTestimonyId}`}>
                         <Badge variant="secondary" className="flex items-center gap-2 py-1 px-2 border-green-500 text-green-600 dark:text-green-400 cursor-pointer hover:bg-green-500/10 h-8">
                             <Award className="h-4 w-4" />
-                            <span className="font-bold uppercase tracking-tighter text-[10px]">Prayer Answered</span>
+                            <span className="font-bold uppercase tracking-tighter text-[10px]">Answered</span>
                         </Badge>
                     </Link>
                 ) : (
-                   <Button onClick={onAnswerPrayer} size="sm" className="font-bold">
+                   <Button onClick={onAnswerPrayer} size="sm" className="font-bold h-8 px-3">
                         <Newspaper className="mr-2 h-4 w-4" />
                         Testify
                     </Button>
@@ -235,7 +235,7 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({
             <Link href={`/dashboard/testimonies#${prayerRequest.answeredTestimonyId}`}>
                 <Badge variant="secondary" className="flex items-center gap-2 py-1 px-2 border-green-500 text-green-600 dark:text-green-400 cursor-pointer hover:bg-green-500/10 h-8">
                     <Award className="h-4 w-4" />
-                    <span className="font-bold uppercase tracking-tighter text-[10px]">Prayer Answered</span>
+                    <span className="font-bold uppercase tracking-tighter text-[10px]">Answered</span>
                 </Badge>
             </Link>
           ) : isAnswered ? (
@@ -244,7 +244,7 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({
                 <span className="font-bold uppercase tracking-tighter text-[10px]">Answered</span>
             </Badge>
           ) : (
-              <Button onClick={handlePray} disabled={hasPrayed || isPraying || !user} className="font-bold shadow-md transition-transform active:scale-95">
+              <Button onClick={handlePray} disabled={hasPrayed || isPraying || !user} className="font-bold shadow-md transition-transform active:scale-95 h-9">
                   {isPraying ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <HandHeart className={cn("mr-2 h-4 w-4", hasPrayed && "fill-current")} />}
                   {hasPrayed ? 'You Prayed' : 'I Will Pray'}
               </Button>
