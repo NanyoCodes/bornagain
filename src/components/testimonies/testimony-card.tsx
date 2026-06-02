@@ -29,6 +29,8 @@ import {
   UserPlus,
   Hourglass,
   PartyPopper,
+  PlayCircle,
+  Eye,
 } from "lucide-react";
 import { useUser, useFirestore, useCollection, useDoc } from "@/firebase";
 import { useState, useMemo } from "react";
@@ -52,6 +54,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { CommentSection } from "./comment-section";
 import { Separator } from "../ui/separator";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import Image from "next/image";
 
 export const TestimonyCard = React.memo(function TestimonyCard({ 
   testimony, 
@@ -142,10 +145,6 @@ export const TestimonyCard = React.memo(function TestimonyCard({
     };
   }, [testimony.content]);
 
-  /**
-   * INTERACTIVITY SAFETY HELPER
-   * Decouples dropdown close from modal open to prevent Radix body-lock conflicts.
-   */
   const triggerAction = (action: () => void) => {
     requestAnimationFrame(() => {
       action();
@@ -153,127 +152,76 @@ export const TestimonyCard = React.memo(function TestimonyCard({
   };
 
   const handleShare = async (e?: React.MouseEvent) => {
-    if (e) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
-
+    if (e) { e.preventDefault(); e.stopPropagation(); }
     const shareUrl = `${window.location.origin}/testimonies#${testimony.id}`;
     const titleText = `Testimony from ${authorFullName} on Testify!`;
     const text = `Read what God has done! "${testimony.content.substring(0, 150)}..."`;
-    
-    const shareData = {
-      title: titleText,
-      text,
-      url: shareUrl,
-    };
-
+    const shareData = { title: titleText, text, url: shareUrl };
     try {
-      if (navigator && navigator.share) {
-        await navigator.share(shareData);
-      } else {
-        throw new Error('Native share not supported');
-      }
+      if (navigator && navigator.share) await navigator.share(shareData);
+      else throw new Error();
     } catch (err: any) {
         if (err.name === 'AbortError') return;
-        
         try {
           await navigator.clipboard.writeText(`${titleText} ${shareUrl}`);
-          toast({
-            title: "Link Copied!",
-            description: "Testimony link copied to your clipboard.",
-          });
-        } catch (clipErr) {
-          console.error("Clipboard fallback failed", clipErr);
-        }
+          toast({ title: "Link Copied!" });
+        } catch (clipErr) {}
     }
   };
 
   const handleReaction = (type: 'amen' | 'inspired' | 'connect') => {
     if (!user || !firestore) return;
-
-    const hasReacted = 
-      (type === 'amen' && hasAmened) || 
-      (type === 'inspired' && hasInspired) || 
-      (type === 'connect' && hasConnected);
-
+    const hasReacted = (type === 'amen' && hasAmened) || (type === 'inspired' && hasInspired) || (type === 'connect' && hasConnected);
     setIsProcessingReaction(type);
-    
     const testimonyRef = doc(firestore, 'testimonies', testimony.id);
     const field = type === 'amen' ? 'supporters' : type === 'inspired' ? 'inspiredBy' : 'connectedBy';
-    
-    const updatePayload = { 
-      [field]: hasReacted ? arrayRemove(user.uid) : arrayUnion(user.uid) 
-    };
-
+    const updatePayload = { [field]: hasReacted ? arrayRemove(user.uid) : arrayUnion(user.uid) };
     updateDoc(testimonyRef, updatePayload)
         .catch(() => {
-            const permissionError = new FirestorePermissionError({
-              path: testimonyRef.path,
-              operation: 'update',
-              requestResourceData: updatePayload,
-            }, user);
+            const permissionError = new FirestorePermissionError({ path: testimonyRef.path, operation: 'update', requestResourceData: updatePayload }, user);
             errorEmitter.emit('permission-error', permissionError);
         })
-        .finally(() => {
-            setIsProcessingReaction(null);
-        });
+        .finally(() => setIsProcessingReaction(null));
   }
 
   const handleSendPartnerRequest = async (e: React.MouseEvent) => {
     e.stopPropagation();
     if (!user || !firestore || !currentUserProfile || isAuthor || isPartner || hasPendingRequest) return;
-    
     setIsRequestingPartner(true);
-    
     const participantIds = [user.uid, testimony.authorId].sort();
     const requestId = participantIds.join('_');
     const requestRef = doc(firestore, 'accountabilityRequests', requestId);
-
-    const newRequestData = {
-        fromUserId: user.uid,
-        fromUserFirstName: currentUserProfile.firstName || '',
-        fromUserLastName: currentUserProfile.lastName || '',
-        fromUserPhotoURL: currentUserProfile.photoURL || '',
-        toUserId: testimony.authorId,
-        toUserFirstName: authorFirstName || '',
-        toUserLastName: authorLastName || '',
-        toUserPhotoURL: authorAvatarUrl || '',
-        status: 'pending' as const,
-        createdAt: serverTimestamp(),
-        participantIds,
-    };
-
-    const notificationData = {
-        userId: testimony.authorId,
-        type: 'accountability_request' as const,
-        title: 'New Accountability Request',
-        message: `${currentUserProfile.firstName} ${currentUserProfile.lastName} wants to be your partner after seeing your testimony!`,
-        link: '/dashboard/accountability',
-        isRead: false,
-        createdAt: serverTimestamp(),
-    };
-
+    const newRequestData = { fromUserId: user.uid, fromUserFirstName: currentUserProfile.firstName || '', fromUserLastName: currentUserProfile.lastName || '', fromUserPhotoURL: currentUserProfile.photoURL || '', toUserId: testimony.authorId, toUserFirstName: authorFirstName || '', toUserLastName: authorLastName || '', toUserPhotoURL: authorAvatarUrl || '', status: 'pending' as const, createdAt: serverTimestamp(), participantIds };
+    const notificationData = { userId: testimony.authorId, type: 'accountability_request' as const, title: 'New Accountability Request', message: `${currentUserProfile.firstName} ${currentUserProfile.lastName} wants to be your partner after seeing your testimony!`, link: '/dashboard/accountability', isRead: false, createdAt: serverTimestamp() };
     try {
         await setDoc(requestRef, newRequestData);
         await addDoc(collection(firestore, 'users', testimony.authorId, 'notifications'), notificationData);
-        toast({ title: 'Request Sent!', description: `Request sent to ${authorFirstName}.` });
+        toast({ title: 'Request Sent!' });
     } catch (error) {
-        const permissionError = new FirestorePermissionError({
-            path: requestRef.path,
-            operation: 'create',
-            requestResourceData: newRequestData
-        }, user);
-        errorEmitter.emit('permission-error', permissionError);
-    } finally {
-        setIsRequestingPartner(false);
-    }
+        errorEmitter.emit('permission-error', new FirestorePermissionError({ path: requestRef.path, operation: 'create', requestResourceData: newRequestData }, user));
+    } finally { setIsRequestingPartner(false); }
   };
 
   const fullTextContent = (
     <ScrollArea className={cn("pr-4", isMobile ? "h-full" : "max-h-[60vh]")}>
-      <div className="text-base text-muted-foreground whitespace-pre-wrap leading-relaxed pb-6 text-justify">
-        {testimony.content}
+      <div className="space-y-6 pb-6">
+        {testimony.mediaUrl && (
+            <div className="relative rounded-[2rem] overflow-hidden bg-black shadow-2xl border-4 border-white/5 aspect-video flex items-center justify-center">
+                {testimony.mediaType === 'image' ? (
+                    <Image src={testimony.mediaUrl} alt="Miracle Evidence" fill className="object-contain" unoptimized />
+                ) : (
+                    <video src={testimony.mediaUrl} controls className="w-full h-full object-contain" />
+                )}
+                <div className="absolute top-4 right-4">
+                    <Badge className="bg-black/60 backdrop-blur-md border-white/10 uppercase tracking-widest text-[9px] font-black h-7">
+                        Evidence
+                    </Badge>
+                </div>
+            </div>
+        )}
+        <div className="text-base sm:text-lg text-muted-foreground whitespace-pre-wrap leading-relaxed text-justify px-2">
+            {testimony.content}
+        </div>
       </div>
     </ScrollArea>
   );
@@ -289,7 +237,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({
           <div className="flex items-center gap-3 min-w-0 flex-1">
             <Dialog>
               <DialogTrigger asChild onClick={(e) => e.stopPropagation()}>
-                <div className="relative cursor-pointer hover:opacity-90 transition-opacity active:scale-95">
+                <div className="relative cursor-pointer hover:opacity-90 transition-opacity active:scale-95 shrink-0">
                     <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border shadow-sm">
                         <AvatarImage src={authorAvatarUrl} className="object-cover" />
                         <AvatarFallback className="bg-primary/10 text-primary font-bold">{initials || 'U'}</AvatarFallback>
@@ -298,16 +246,11 @@ export const TestimonyCard = React.memo(function TestimonyCard({
               </DialogTrigger>
               {authorAvatarUrl && (
                 <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center">
-                    <DialogHeader className="sr-only">
-                        <DialogTitle>Profile photo of {authorFullName}</DialogTitle>
-                        <DialogDescription>Full screen view of the user's profile photo.</DialogDescription>
-                    </DialogHeader>
+                    <DialogHeader className="sr-only"><DialogTitle>Profile photo of {authorFullName}</DialogTitle></DialogHeader>
                     <div className="relative h-full w-full flex items-center justify-center p-4">
                         <Avatar className="h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] rounded-2xl sm:rounded-[3rem] shadow-2xl ring-4 ring-white/10">
                             <AvatarImage src={authorAvatarUrl} className="object-cover" />
-                            <AvatarFallback className="text-4xl lg:text-5xl font-black bg-primary/10 text-primary">
-                                {initials || 'U'}
-                            </AvatarFallback>
+                            <AvatarFallback className="text-4xl lg:text-5xl font-black bg-primary/10 text-primary">{initials || 'U'}</AvatarFallback>
                         </Avatar>
                     </div>
                 </DialogContent>
@@ -315,40 +258,19 @@ export const TestimonyCard = React.memo(function TestimonyCard({
             </Dialog>
             <div className="min-w-0 flex-1">
                <div className="flex items-center gap-2 flex-wrap">
-                    <Link href={profileLink} onClick={(e) => { e.stopPropagation(); }} className="hover:underline decoration-primary/30 underline-offset-2">
-                        <CardTitle className="text-base sm:text-lg font-bold truncate">{authorFullName}</CardTitle>
+                    <Link href={profileLink} onClick={(e) => e.stopPropagation()} className="hover:underline decoration-primary/30 underline-offset-2 shrink-0">
+                        <CardTitle className="text-base sm:text-lg font-bold truncate max-w-[150px] sm:max-w-[200px]">{authorFullName}</CardTitle>
                     </Link>
-                    {isPartner && (
-                        <Badge variant="secondary" className="h-4 px-1.5 text-[9px] uppercase font-bold tracking-tighter bg-primary/10 text-primary border-primary/20">
-                            Partner
-                        </Badge>
-                    )}
+                    {isPartner && <Badge variant="secondary" className="h-4 px-1.5 text-[9px] uppercase font-bold tracking-tighter bg-primary/10 text-primary border-primary/20 shrink-0">Partner</Badge>}
                     {!isAuthor && !isPartner && currentUserProfile && (
                         <TooltipProvider>
                             <Tooltip>
                                 <TooltipTrigger asChild>
-                                    <Button 
-                                        variant="ghost" 
-                                        size="icon" 
-                                        className={cn(
-                                            "h-6 w-6 rounded-full transition-colors",
-                                            hasPendingRequest ? "text-muted-foreground" : "text-primary hover:bg-primary/10"
-                                        )}
-                                        onClick={handleSendPartnerRequest}
-                                        disabled={isRequestingPartner || hasPendingRequest}
-                                    >
-                                        {isRequestingPartner ? (
-                                            <Loader2 className="h-3 w-3 animate-spin" />
-                                        ) : hasPendingRequest ? (
-                                            <Hourglass className="h-3 w-3" />
-                                        ) : (
-                                            <UserPlus className="h-3 w-3" />
-                                        )}
+                                    <Button variant="ghost" size="icon" className={cn("h-6 w-6 rounded-full transition-colors", hasPendingRequest ? "text-muted-foreground" : "text-primary hover:bg-primary/10")} onClick={handleSendPartnerRequest} disabled={isRequestingPartner || hasPendingRequest}>
+                                        {isRequestingPartner ? <Loader2 className="h-3 w-3 animate-spin" /> : hasPendingRequest ? <Hourglass className="h-3 w-3" /> : <UserPlus className="h-3 w-3" />}
                                     </Button>
                                 </TooltipTrigger>
-                                <TooltipContent>
-                                    <p>{hasPendingRequest ? "Request Pending" : "Add Accountability Partner"}</p>
-                                </TooltipContent>
+                                <TooltipContent><p>{hasPendingRequest ? "Request Pending" : "Add Accountability Partner"}</p></TooltipContent>
                             </Tooltip>
                         </TooltipProvider>
                     )}
@@ -356,69 +278,56 @@ export const TestimonyCard = React.memo(function TestimonyCard({
               <div className="text-muted-foreground text-sm mt-1 flex flex-col gap-0.5">
                   <div className="truncate text-[10px] sm:text-xs opacity-70">{displayDate}</div>
                   <div className="flex items-center gap-1 mt-0.5 opacity-80 text-[10px] sm:text-xs font-medium"><Globe className="h-3 w-3 text-primary shrink-0" /> {locationString}</div>
-                  <div className="mt-1.5">
-                    <Badge variant="outline" className="w-fit text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 h-auto bg-background/50">{testimony.category}</Badge>
-                  </div>
+                  <div className="mt-1.5"><Badge variant="outline" className="w-fit text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 h-auto bg-background/50">{testimony.category}</Badge></div>
               </div>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="icon" className="h-8 w-8" onClick={handleShare}>
-              <Share2 className="h-4 w-4" />
-              <span className="sr-only">Share Testimony</span>
+          <div className="flex items-center gap-1.5">
+            <Button variant="outline" size="icon" className="h-8 w-8 rounded-full bg-background" onClick={handleShare}>
+              <Share2 className="h-3.5 w-3.5" /><span className="sr-only">Share</span>
             </Button>
             {isAuthor && (
               <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => e.stopPropagation()}>
-                    <MoreVertical className="h-4 w-4" />
-                    <span className="sr-only">More options</span>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-48">
-                  <DropdownMenuLabel className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Manage Story</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onSelect={() => triggerAction(onEdit)}>
-                    <Edit className="mr-2 h-4 w-4 text-primary" />
-                    <span>Edit Testimony</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onSelect={() => triggerAction(onDelete)} className="text-destructive focus:text-destructive focus:bg-destructive/5">
-                    <Trash2 className="mr-2 h-4 w-4" />
-                    <span>Delete Permanently</span>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
+                <DropdownMenuTrigger asChild><Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" onClick={(e) => e.stopPropagation()}><MoreVertical className="h-4 w-4" /><span className="sr-only">Options</span></Button></DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48 rounded-xl"><DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Manage Story</DropdownMenuLabel><DropdownMenuSeparator /><DropdownMenuItem onSelect={() => triggerAction(onEdit)} className="rounded-lg"><Edit className="mr-2 h-4 w-4 text-primary" /><span>Edit Testimony</span></DropdownMenuItem><DropdownMenuItem onSelect={() => triggerAction(onDelete)} className="text-destructive focus:text-destructive focus:bg-destructive/5 rounded-lg"><Trash2 className="mr-2 h-4 w-4" /><span>Delete Permanently</span></DropdownMenuItem></DropdownMenuContent>
               </DropdownMenu>
             )}
           </div>
         </CardHeader>
         
         <CardContent className="flex-grow pt-0 px-4 sm:px-6 space-y-4">
+          {testimony.mediaUrl && (
+              <div className="relative group cursor-pointer" onClick={() => setShowFullText(true)}>
+                <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-black/5 shadow-sm border border-primary/5">
+                    {testimony.mediaType === 'image' ? (
+                        <Image src={testimony.mediaUrl} alt="Miracle Evidence" fill className="object-cover transition-transform group-hover:scale-105 duration-500" unoptimized />
+                    ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-black/80">
+                            <PlayCircle className="h-12 w-12 text-white/80 group-hover:scale-110 transition-transform" />
+                        </div>
+                    )}
+                </div>
+                <div className="absolute top-2 right-2 flex gap-1">
+                    <Badge className="bg-black/60 backdrop-blur-md border-white/20 uppercase tracking-widest text-[8px] font-black h-5 px-2">
+                        {testimony.mediaType === 'image' ? 'PHOTO' : 'VIDEO'}
+                    </Badge>
+                </div>
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
+                    <Button variant="secondary" size="sm" className="h-8 rounded-full text-[10px] font-black uppercase tracking-widest shadow-xl">
+                        <Eye className="mr-1.5 h-3.5 w-3.5" /> View Evidence
+                    </Button>
+                </div>
+              </div>
+          )}
           <div className="text-sm sm:text-base text-muted-foreground whitespace-pre-wrap leading-relaxed text-justify">
-            <p ref={contentRef} className="line-clamp-6">
-              {testimony.content}
-            </p>
-            {isTruncated && (
-              <Button
-                variant="link"
-                className="p-0 h-auto text-sm text-primary font-bold mt-1"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setShowFullText(true);
-                }}
-              >
-                Read Full Story
-              </Button>
-            )}
+            <p ref={contentRef} className="line-clamp-6 leading-relaxed">{testimony.content}</p>
+            {isTruncated && <Button variant="link" className="p-0 h-auto text-sm text-primary font-bold mt-1" onClick={(e) => { e.stopPropagation(); setShowFullText(true); }}>Read Full Story</Button>}
           </div>
           {testimony.answeredPrayerId && testimony.answeredPrayerContent && (
             <Card className="rounded-2xl border-amber-500/40 bg-amber-500/5 dark:bg-amber-500/10 shadow-inner">
                 <CardHeader className="p-4">
-                    <CardDescription className="text-[10px] uppercase tracking-[0.2em] text-amber-600 dark:text-amber-400 font-black mb-1">
-                        Answer to Prayer Request:
-                    </CardDescription>
-                    <div className="border-l-2 border-amber-500/30 pl-4 italic text-sm text-muted-foreground line-clamp-2 leading-relaxed text-justify">
-                        {testimony.answeredPrayerContent}
-                    </div>
+                    <CardDescription className="text-[10px] uppercase tracking-[0.2em] text-amber-600 dark:text-amber-400 font-black mb-1">Answer to Prayer Request:</CardDescription>
+                    <div className="border-l-2 border-amber-500/30 pl-4 italic text-sm text-muted-foreground line-clamp-2 leading-relaxed text-justify">{testimony.answeredPrayerContent}</div>
                 </CardHeader>
             </Card>
            )}
@@ -433,64 +342,24 @@ export const TestimonyCard = React.memo(function TestimonyCard({
                     </div>
                     <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-tight">{totalReactions}</span>
                 </div>
-                {testimony.campaignTitle && (
-                   <span className="text-[10px] font-medium text-muted-foreground truncate italic opacity-60 bg-muted/50 px-2 py-0.5 rounded-full border">In mission: {testimony.campaignTitle}</span>
-                )}
+                {testimony.campaignTitle && <span className="text-[9px] font-black uppercase text-muted-foreground/60 truncate italic bg-muted/50 px-2 py-0.5 rounded-full border max-w-[150px]">RE: {testimony.campaignTitle}</span>}
              </div>
            )}
         </CardContent>
 
         <Separator className="mx-4 sm:mx-6 w-auto opacity-50" />
-        
         <CardFooter className="py-2 sm:py-3 px-2 sm:px-6 grid grid-cols-4 gap-1 sm:gap-2">
-            <Button 
-                onClick={(e) => { e.stopPropagation(); handleReaction('amen'); }} 
-                disabled={isProcessingReaction !== null || !user} 
-                variant="ghost" 
-                size="sm" 
-                className={cn("flex flex-col items-center justify-center h-auto sm:h-10 py-2 sm:py-0 gap-0.5 sm:gap-2 text-[9px] sm:text-sm font-bold uppercase sm:capitalize tracking-tight text-muted-foreground hover:bg-muted/50 rounded-xl transition-all", hasAmened && "text-primary hover:text-primary bg-primary/5")}
-            >
-                {isProcessingReaction === 'amen' ? <Loader2 className="h-3 w-3 sm:h-4 sm:w-4 animate-spin" /> : <HandHeart className={cn("h-3 w-3 sm:h-4 sm:w-4", hasAmened && "fill-current")} />}
-                <span>Amen</span>
+            <Button onClick={(e) => { e.stopPropagation(); handleReaction('amen'); }} disabled={isProcessingReaction !== null || !user} variant="ghost" size="sm" className={cn("flex flex-col items-center justify-center h-auto sm:h-10 py-2 sm:py-0 gap-0.5 sm:gap-2 text-[9px] sm:text-sm font-bold uppercase sm:capitalize tracking-tight text-muted-foreground hover:bg-muted/50 rounded-xl transition-all", hasAmened && "text-primary hover:text-primary bg-primary/5")}>
+                {isProcessingReaction === 'amen' ? <Loader2 className="h-3 w-3 sm:h-4 sm:w-4 animate-spin" /> : <HandHeart className={cn("h-3 w-3 sm:h-4 sm:w-4", hasAmened && "fill-current")} />}<span>Amen</span>
             </Button>
-
-            <Button 
-                onClick={(e) => { e.stopPropagation(); handleReaction('inspired'); }} 
-                disabled={isProcessingReaction !== null || !user} 
-                variant="ghost" 
-                size="sm" 
-                className={cn("flex flex-col items-center justify-center h-auto sm:h-10 py-2 sm:py-0 gap-0.5 sm:gap-2 text-[9px] sm:text-sm font-bold uppercase sm:capitalize tracking-tight text-muted-foreground hover:bg-muted/50 rounded-xl transition-all", hasInspired && "text-chart-3 hover:text-chart-3 bg-chart-3/5")}
-            >
-                {isProcessingReaction === 'inspired' ? <Loader2 className="h-3 w-3 sm:h-4 sm:w-4 animate-spin" /> : <Sparkles className={cn("h-3 w-3 sm:h-4 sm:w-4", hasInspired && "fill-current")} />}
-                <span>Hallelujah</span>
+            <Button onClick={(e) => { e.stopPropagation(); handleReaction('inspired'); }} disabled={isProcessingReaction !== null || !user} variant="ghost" size="sm" className={cn("flex flex-col items-center justify-center h-auto sm:h-10 py-2 sm:py-0 gap-0.5 sm:gap-2 text-[9px] sm:text-sm font-bold uppercase sm:capitalize tracking-tight text-muted-foreground hover:bg-muted/50 rounded-xl transition-all", hasInspired && "text-chart-3 hover:text-chart-3 bg-chart-3/5")}>
+                {isProcessingReaction === 'inspired' ? <Loader2 className="h-3 w-3 sm:h-4 sm:w-4 animate-spin" /> : <Sparkles className={cn("h-3 w-3 sm:h-4 sm:w-4", hasInspired && "fill-current")} />}<span>Hallelujah</span>
             </Button>
-
-            <Button 
-                onClick={(e) => { e.stopPropagation(); handleReaction('connect'); }} 
-                disabled={isProcessingReaction !== null || !user} 
-                variant="ghost" 
-                size="sm" 
-                className={cn("flex flex-col items-center justify-center h-auto sm:h-10 py-2 sm:py-0 gap-0.5 sm:gap-2 text-[9px] sm:text-sm font-bold uppercase sm:capitalize tracking-tight text-muted-foreground hover:bg-muted/50 rounded-xl transition-all", hasConnected && "text-blue-500 hover:text-blue-500 bg-blue-500/5")}
-            >
-                {isProcessingReaction === 'connect' ? <Loader2 className="h-3 w-3 sm:h-4 sm:w-4 animate-spin" /> : <PartyPopper className={cn("h-3 w-3 sm:h-4 sm:w-4", hasConnected && "fill-current")} />}
-                <span>Celebrate</span>
+            <Button onClick={(e) => { e.stopPropagation(); handleReaction('connect'); }} disabled={isProcessingReaction !== null || !user} variant="ghost" size="sm" className={cn("flex flex-col items-center justify-center h-auto sm:h-10 py-2 sm:py-0 gap-0.5 sm:gap-2 text-[9px] sm:text-sm font-bold uppercase sm:capitalize tracking-tight text-muted-foreground hover:bg-muted/50 rounded-xl transition-all", hasConnected && "text-blue-500 hover:text-blue-500 bg-blue-500/5")}>
+                {isProcessingReaction === 'connect' ? <Loader2 className="h-3 w-3 sm:h-4 sm:w-4 animate-spin" /> : <PartyPopper className={cn("h-3 w-3 sm:h-4 sm:w-4", hasConnected && "fill-current")} />}<span>Celebrate</span>
             </Button>
-
-            <Button 
-                variant="ghost" 
-                size="sm" 
-                className={cn("flex flex-col items-center justify-center h-auto sm:h-10 py-2 sm:py-0 gap-0.5 sm:gap-2 text-[9px] sm:text-sm font-bold uppercase sm:capitalize tracking-tight text-muted-foreground hover:bg-muted/50 rounded-xl transition-all", isCommentsOpen && "text-primary hover:text-primary bg-primary/5")}
-                onClick={(e) => { e.stopPropagation(); setIsCommentsOpen(true); }}
-            >
-                <div className="relative">
-                    <MessageSquare className={cn("h-3 w-3 sm:h-4 sm:w-4", isCommentsOpen && "fill-current")} />
-                    {commentCount > 0 && (
-                        <span className="absolute -top-1.5 -right-1.5 flex h-3 w-3 sm:h-4 sm:w-4 items-center justify-center rounded-full bg-primary text-[7px] sm:text-[8px] font-black text-primary-foreground border-background border-2 shadow-sm">
-                            {commentCount}
-                        </span>
-                    )}
-                </div>
-                <span>Comment</span>
+            <Button variant="ghost" size="sm" className={cn("flex flex-col items-center justify-center h-auto sm:h-10 py-2 sm:py-0 gap-0.5 sm:gap-2 text-[9px] sm:text-sm font-bold uppercase sm:capitalize tracking-tight text-muted-foreground hover:bg-muted/50 rounded-xl transition-all", isCommentsOpen && "text-primary hover:text-primary bg-primary/5")} onClick={(e) => { e.stopPropagation(); setIsCommentsOpen(true); }}>
+                <div className="relative"><MessageSquare className={cn("h-3 w-3 sm:h-4 sm:w-4", isCommentsOpen && "fill-current")} />{commentCount > 0 && <span className="absolute -top-1.5 -right-1.5 flex h-3 w-3 sm:h-4 sm:w-4 items-center justify-center rounded-full bg-primary text-[7px] sm:text-[8px] font-black text-primary-foreground border-background border-2 shadow-sm">{commentCount}</span>}</div><span>Comment</span>
             </Button>
         </CardFooter>
       </Card>
@@ -500,61 +369,22 @@ export const TestimonyCard = React.memo(function TestimonyCard({
             {isMobile ? (
                 <>
                     <Sheet open={showFullText} onOpenChange={setShowFullText}>
-                        <SheetContent side="bottom" className="h-[80dvh] flex flex-col p-0 rounded-t-[2.5rem]">
-                            <div className="p-8 border-b shrink-0 bg-muted/20">
-                                <SheetHeader className="text-left">
-                                    <SheetTitle className="text-2xl font-black font-headline tracking-tight">Testimony by {authorFullName}</SheetTitle>
-                                    <SheetDescription className="text-sm font-medium">{displayDate}</SheetDescription>
-                                </SheetHeader>
-                            </div>
-                            <div className="flex-grow min-h-0 p-8 overflow-y-auto">
-                                {fullTextContent}
-                            </div>
+                        <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+                            <div className="p-8 border-b shrink-0 bg-muted/20"><SheetHeader className="text-left"><SheetTitle className="text-2xl font-black font-headline tracking-tight uppercase">Full Story</SheetTitle><SheetDescription className="text-xs font-bold uppercase tracking-widest">Shared by {authorFullName} • {displayDate}</SheetDescription></SheetHeader></div>
+                            <div className="flex-grow min-h-0 p-8 overflow-y-auto">{fullTextContent}</div>
                         </SheetContent>
                     </Sheet>
-
                     <Sheet open={isCommentsOpen} onOpenChange={setIsCommentsOpen}>
-                        <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
-                            <div className="p-8 border-b shrink-0 bg-muted/20">
-                                <SheetHeader className="text-left">
-                                    <SheetTitle className="text-2xl font-black font-headline tracking-tight">Gathered Responses</SheetTitle>
-                                    <SheetDescription className="text-sm font-medium">Sharing the joy of {authorFullName}'s victory.</SheetDescription>
-                                </SheetHeader>
-                            </div>
-                            <div className="flex-grow min-h-0">
-                                <CommentSection testimonyId={testimony.id} />
-                            </div>
-                        </SheetContent>
+                        <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]"><div className="p-8 border-b shrink-0 bg-muted/20"><SheetHeader className="text-left"><SheetTitle className="text-2xl font-black font-headline tracking-tight uppercase">Responses</SheetTitle><SheetDescription className="text-xs font-bold uppercase tracking-widest">GATHERED JOY FOR {authorFullName}</SheetDescription></SheetHeader></div><div className="flex-grow min-h-0"><CommentSection testimonyId={testimony.id} /></div></SheetContent>
                     </Sheet>
                 </>
             ) : (
                 <>
                     <Dialog open={showFullText} onOpenChange={setShowFullText}>
-                        <DialogContent className="sm:max-w-2xl rounded-3xl overflow-hidden p-0">
-                            <div className="p-8 border-b bg-muted/10">
-                                <DialogHeader>
-                                    <DialogTitle className="text-3xl font-black font-headline tracking-tight">Testimony by {authorFullName}</DialogTitle>
-                                    <DialogDescription className="text-sm font-medium">{displayDate}</DialogDescription>
-                                </DialogHeader>
-                            </div>
-                            <div className="p-8">
-                                {fullTextContent}
-                            </div>
-                        </DialogContent>
+                        <DialogContent className="sm:max-w-3xl rounded-3xl overflow-hidden p-0"><div className="p-8 border-b bg-muted/10"><DialogHeader><DialogTitle className="text-3xl font-black font-headline tracking-tight uppercase">Kingdom Testimony</DialogTitle><DialogDescription className="text-sm font-bold uppercase tracking-widest">BY {authorFullName} • {displayDate}</DialogDescription></DialogHeader></div><div className="p-8">{fullTextContent}</div></DialogContent>
                     </Dialog>
-
                     <Dialog open={isCommentsOpen} onOpenChange={setIsCommentsOpen}>
-                        <DialogContent className="sm:max-w-lg flex flex-col max-h-[85vh] p-0 overflow-hidden rounded-3xl">
-                            <div className="p-8 border-b shrink-0 bg-muted/10">
-                                <DialogHeader>
-                                    <DialogTitle className="text-2xl font-black font-headline tracking-tight">Gathered Responses</DialogTitle>
-                                    <DialogDescription className="text-sm font-medium">Community responses to this miracle.</DialogDescription>
-                                </DialogHeader>
-                            </div>
-                            <div className="flex-1 min-h-0">
-                                <CommentSection testimonyId={testimony.id} />
-                            </div>
-                        </DialogContent>
+                        <DialogContent className="sm:max-w-lg flex flex-col max-h-[85vh] p-0 overflow-hidden rounded-3xl"><div className="p-8 border-b shrink-0 bg-muted/10"><DialogHeader><DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase">Gathered Responses</DialogTitle><DialogDescription className="text-xs font-bold uppercase tracking-widest">COMMUNITY RESPONSES TO THIS MIRACLE</DialogDescription></DialogHeader></div><div className="flex-1 min-h-0"><CommentSection testimonyId={testimony.id} /></div></DialogContent>
                     </Dialog>
                 </>
             )}

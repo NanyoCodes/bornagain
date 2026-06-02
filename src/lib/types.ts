@@ -154,6 +154,8 @@ export type Testimony = {
   connectedBy?: string[];
   answeredPrayerId?: string;
   answeredPrayerContent?: string;
+  mediaUrl?: string;
+  mediaType?: 'image' | 'video';
 };
 
 export type TestimonyComment = {
