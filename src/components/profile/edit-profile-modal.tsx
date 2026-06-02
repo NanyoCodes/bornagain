@@ -1,4 +1,3 @@
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -243,10 +242,10 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
       await updateDoc(doc(firestore, 'users', user.uid), firestoreUpdatePayload);
       await authUpdatePromise;
 
-      // Sync photo across other collections if it changed
+      // Sync photo across other collections if it changed - "UPDATE ALWAYS" Logic
       if (values.photoURL !== userProfile.photoURL) {
           const batch = writeBatch(firestore);
-          const syncUrl = values.photoURL || ""; // Handle potential removal
+          const syncUrl = values.photoURL || ""; 
 
           // 1. Sync Testimonies
           const testimoniesSnap = await getDocs(query(collection(firestore, 'testimonies'), where('authorId', '==', user.uid)));
@@ -266,8 +265,16 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
               batch.update(fDoc.ref, { organizerPhotoURL: syncUrl });
           });
 
+          // 4. Sync Chats (where user is a participant)
+          const chatsSnap = await getDocs(query(collection(firestore, 'chats'), where('participantIds', 'array-contains', user.uid)));
+          chatsSnap.forEach(cDoc => {
+              batch.update(cDoc.ref, {
+                  [`participantInfo.${user.uid}.photoURL`]: syncUrl
+              });
+          });
+
           await batch.commit().catch(err => {
-              console.error("Denormalized sync failed:", err);
+              console.error("Global denormalized photo sync failed:", err);
           });
       }
       
