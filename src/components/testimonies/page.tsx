@@ -288,9 +288,9 @@ export default function TestimoniesPage() {
 
   return (
     <div className="space-y-6 md:space-y-12 pb-32">
-      {/* Interaction Box: matches the dashboard pattern */}
-      <div className="px-4 sm:px-0">
-        <Card className="border shadow-sm sm:shadow-md rounded-lg bg-card/50 backdrop-blur-sm">
+      {/* Interaction Box: matches the full-width mobile pattern */}
+      <div className="-mx-4 sm:mx-0">
+        <Card className="border shadow-sm sm:shadow-md rounded-none sm:rounded-lg border-x-0 sm:border-x bg-card/50 backdrop-blur-sm">
           <CardContent className="p-3 sm:p-4">
             <div className="flex flex-row items-center gap-2 sm:gap-3">
               <Button 
@@ -329,8 +329,8 @@ export default function TestimoniesPage() {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <div className="px-4 sm:px-0">
-            <TabsList className="grid w-full grid-cols-2">
+          <div className="-mx-4 sm:mx-0">
+            <TabsList className="grid w-full grid-cols-2 rounded-none sm:rounded-md bg-muted/10 sm:bg-muted p-1">
                 <TabsTrigger value="testimonies">Testimonies</TabsTrigger>
                 <TabsTrigger value="prayers">Prayer Requests</TabsTrigger>
             </TabsList>

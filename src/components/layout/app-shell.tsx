@@ -52,7 +52,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 const navItems = [
   { href: "/progress", label: "Progress", icon: TrendingUp, color: "text-chart-1" },
   { href: "/souls-won", label: "Souls Won", icon: UserPlus, color: "text-chart-2" },
-  { href: "/testimonies", label: "Testimonies", icon: Newspaper, color: "text-chart-3" },
+  { href: "/testimonies", label: "Testimonies", icon: Newspaper, iconColor: "text-chart-3" },
   { href: "/campaigns", label: "Campaigns", icon: Target, color: "text-chart-4" },
   { href: "/fellowships", label: "Fellowship", icon: Users, color: "text-primary" },
   { href: "/accountability", label: "Accountability", icon: HeartHandshake, color: "text-primary" },
@@ -440,9 +440,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         )}
         <main className={cn(
           "flex-1 w-full mx-auto relative flex flex-col min-h-0",
-          isTakeoverPage ? "h-full overflow-hidden" : "pb-32 md:pb-8 p-4 md:p-8 max-w-7xl"
+          isTakeoverPage ? "h-full overflow-hidden" : "pb-32 md:pb-8 p-0 sm:p-4 md:p-8 max-w-7xl"
         )}>
-            <div className={cn("flex-grow w-full flex flex-col min-h-0")}>
+            <div className={cn("flex-grow w-full flex flex-col min-h-0", !isTakeoverPage && "p-4 sm:p-0")}>
                 <PageTransition>{children}</PageTransition>
             </div>
         </main>

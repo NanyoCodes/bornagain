@@ -271,8 +271,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({
   return (
     <>
       <Card id={testimony.id} className={cn(
-        "flex flex-col h-full w-full overflow-hidden transition-all duration-300 scroll-mt-20 border-x-0 sm:border-x border-t-0 border-b-2 sm:border-b shadow-none bg-card/50 backdrop-blur-sm",
-        isMobile ? "rounded-none" : "rounded-xl",
+        "flex flex-col h-full w-full overflow-hidden transition-all duration-300 scroll-mt-20 border-x-0 sm:border-x border-t-0 border-b-2 sm:border-b shadow-none bg-card/50 backdrop-blur-sm rounded-none sm:rounded-xl",
         isPartner && "ring-1 ring-primary/20",
         testimony.answeredPrayerId && "border-l-4 border-l-amber-500"
       )}>
