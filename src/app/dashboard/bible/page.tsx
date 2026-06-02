@@ -515,7 +515,7 @@ export default function BibleReaderPage() {
                   <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full"><ArrowLeft className="h-5 w-5" /></Button>
                   <div className="hidden sm:flex items-center gap-2">
                     <BookOpen className="h-5 w-5 text-primary" />
-                    <span className="font-headline font-bold text-lg">Testify Bible</span>
+                    <span className="font-headline font-bold text-lg">Bible</span>
                   </div>
                 </div>
                 
