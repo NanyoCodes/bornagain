@@ -45,6 +45,20 @@ function getYouTubeEmbedUrl(url: string | undefined) {
   return null;
 }
 
+function LiveAuthorAvatar({ userId, fallbackInitials, className }: { userId: string, fallbackInitials: string, className?: string }) {
+    const firestore = useFirestore();
+    const userRef = React.useMemo(() => userId ? doc(firestore, 'users', userId) : null, [firestore, userId]);
+    const { data: profile } = useDoc<UserProfile>(userRef);
+    const photoURL = profile?.photoURL;
+    
+    return (
+        <Avatar className={className}>
+            <AvatarImage src={photoURL} className="object-cover" />
+            <AvatarFallback className="bg-primary/10 text-primary font-bold">{fallbackInitials || 'U'}</AvatarFallback>
+        </Avatar>
+    );
+}
+
 export default function UserProfileClient({ userId }: { userId: string }) {
   const firestore = useFirestore();
   const router = useRouter();
@@ -214,7 +228,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                     </DialogHeader>
                     <div className="relative">
                         <LiveAuthorAvatar 
-                            userId={testimony.authorId} 
+                            userId={userId} 
                             fallbackInitials={initials} 
                             className="h-[300px] w-[300px] sm:h-[450px] sm:w-[450px] rounded-3xl"
                         />
@@ -322,7 +336,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                 </div>
                 
                 {testimonies.length > 0 ? (
-                    <div className="flex flex-col gap-4 sm:gap-6 w-full max-w-2xl mx-auto -mx-4 sm:mx-auto">
+                    <div className="flex flex-col gap-0 w-full max-w-2xl mx-auto -mx-4 sm:mx-auto">
                         {testimonies.map(testimony => (
                             <TestimonyCard 
                                 key={testimony.id} 

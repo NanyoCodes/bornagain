@@ -272,9 +272,9 @@ export const TestimonyCard = React.memo(function TestimonyCard({
   return (
     <>
       <Card id={testimony.id} className={cn(
-        "flex flex-col h-full w-full overflow-hidden shadow-sm hover:shadow-md transition-all scroll-mt-20 rounded-none sm:rounded-lg border-x-0 sm:border-x border-y sm:border-y shadow-none bg-card/50 backdrop-blur-sm",
-        testimony.answeredPrayerId ? "border-l-4 border-l-amber-500" : "border-l-4 border-l-primary/40",
-        isPartner && "border-l-primary ring-1 ring-primary/20"
+        "flex flex-col h-full w-full overflow-hidden transition-all scroll-mt-20 rounded-none sm:rounded-xl border-x-0 sm:border-x border-t-0 border-b shadow-none bg-card/50 backdrop-blur-sm",
+        isPartner && "ring-1 ring-primary/20",
+        testimony.answeredPrayerId && "border-l-4 border-l-amber-500"
       )}>
         <CardHeader className="flex flex-row items-start justify-between gap-3 p-4 sm:p-6">
           <div className="flex items-center gap-3 min-w-0 flex-1">
