@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
@@ -69,14 +70,19 @@ export default function SoulsWonPage() {
   const [mounted, setMounted] = useState(false);
   const [isLogDialogOpen, setIsLogDialogOpen] = useState(false);
   
-  // Data states as source of truth for modals
+  // Modals for History and Follow-up (using object state)
   const [soulForFollowUp, setSoulForFollowUp] = useState<Soul | null>(null);
   const [soulForHistory, setSoulForHistory] = useState<Soul | null>(null);
 
-  // LIVE SOUL TRACKING: Store only the ID to prevent staleness when Firestore updates
-  const [soulToAssignId, setSoulToAssignId] = useState<string | null>(null);
-  const [soulToEditId, setSoulToEditId] = useState<string | null>(null);
-  const [soulToDeleteId, setSoulToDeleteId] = useState<string | null>(null);
+  // Modals for Edit, Assign, Delete (using separate boolean + data to ensure clean exit animations)
+  const [soulToAssign, setSoulToAssign] = useState<Soul | null>(null);
+  const [isAssignOpen, setIsAssignOpen] = useState(false);
+
+  const [soulToEdit, setSoulToEdit] = useState<Soul | null>(null);
+  const [isEditOpen, setIsEditOpen] = useState(false);
+
+  const [soulToDelete, setSoulToDelete] = useState<Soul | null>(null);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -95,10 +101,6 @@ export default function SoulsWonPage() {
     return query(collection(firestore, `users/${user.uid}/souls`), orderBy("wonAt", "desc"));
   }, [user?.uid, firestore]);
   const { data: souls, loading: soulsLoading } = useCollection<Soul>(soulsQuery);
-
-  const soulToAssign = useMemo(() => souls?.find(s => s.id === soulToAssignId) || null, [soulToAssignId, souls]);
-  const soulToEdit = useMemo(() => souls?.find(s => s.id === soulToEditId) || null, [soulToEditId, souls]);
-  const soulToDelete = useMemo(() => souls?.find(s => s.id === soulToDeleteId) || null, [soulToDeleteId, souls]);
 
   const campaignsQuery = useMemo(() => {
     if (!user?.uid || !firestore) return null;
@@ -122,13 +124,50 @@ export default function SoulsWonPage() {
     return allFellowshipsData.filter(f => f.status === 'active');
   }, [allFellowshipsData]);
 
+  const userDocRef = useMemo(() => user ? doc(firestore, 'users', user.uid) : null, [user, firestore]);
+  const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userDocRef);
+
   const loading = userLoading || soulsLoading;
 
   const handleOpenFollowUp = useCallback((soul: Soul) => setSoulForFollowUp(soul), []);
   const handleOpenHistory = useCallback((soul: Soul) => setSoulForHistory(soul), []);
-  const handleOpenAssign = useCallback((soul: Soul) => setSoulToAssignId(soul.id), []);
-  const handleOpenEdit = useCallback((soul: Soul) => setSoulToEditId(soul.id), []);
-  const handleOpenDelete = useCallback((soul: Soul) => setSoulToDeleteId(soul.id), []);
+  
+  const handleOpenAssign = useCallback((soul: Soul) => {
+    setSoulToAssign(soul);
+    setIsAssignOpen(true);
+  }, []);
+
+  const handleOpenEdit = useCallback((soul: Soul) => {
+    setSoulToEdit(soul);
+    setIsEditOpen(true);
+  }, []);
+
+  const handleOpenDelete = useCallback((soul: Soul) => {
+    setSoulToDelete(soul);
+    setIsDeleteOpen(true);
+  }, []);
+
+  const handleCloseEdit = useCallback((open: boolean) => {
+    setIsEditOpen(open);
+    if (!open) {
+      // Small delay to allow exit animation to complete before clearing data
+      setTimeout(() => setSoulToEdit(null), 300);
+    }
+  }, []);
+
+  const handleCloseAssign = useCallback((open: boolean) => {
+    setIsAssignOpen(open);
+    if (!open) {
+      setTimeout(() => setSoulToAssign(null), 300);
+    }
+  }, []);
+
+  const handleCloseDelete = useCallback((open: boolean) => {
+    setIsDeleteOpen(open);
+    if (!open) {
+      setTimeout(() => setSoulToDelete(null), 300);
+    }
+  }, []);
 
   const handleExportHarvest = async (formatType: 'csv' | 'pdf') => {
     if (!souls || souls.length === 0) return;
@@ -191,7 +230,7 @@ export default function SoulsWonPage() {
         
         await batch.commit();
         toast({ title: "Record Deleted", description: "The soul record has been permanently removed." });
-        setSoulToDeleteId(null);
+        handleCloseDelete(false);
     } catch (error) {
         const permissionError = new FirestorePermissionError({
             path: soulRef.path,
@@ -384,13 +423,13 @@ export default function SoulsWonPage() {
       <AssignFellowshipDialog 
           soul={soulToAssign} 
           fellowships={activeFellowships || []} 
-          isOpen={!!soulToAssignId} 
-          onOpenChange={(open) => !open && setSoulToAssignId(null)} 
+          isOpen={isAssignOpen} 
+          onOpenChange={handleCloseAssign} 
           onAssignGroup={handleAssignGroup} 
       />
       
       {mounted && isMobile ? (
-        <Sheet open={!!soulToEditId} onOpenChange={(open) => !open && setSoulToEditId(null)}>
+        <Sheet open={isEditOpen} onOpenChange={handleCloseEdit}>
           <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
             <div className="p-8 border-b flex-shrink-0 bg-muted/10">
               <SheetHeader className="text-left">
@@ -403,7 +442,7 @@ export default function SoulsWonPage() {
                  {soulToEdit && (
                   <EditSoulForm 
                       soul={soulToEdit} 
-                      onSoulUpdated={() => setSoulToEditId(null)} 
+                      onSoulUpdated={() => handleCloseEdit(false)} 
                       fellowships={activeFellowships || []}
                       campaigns={campaigns || []}
                   />
@@ -413,7 +452,7 @@ export default function SoulsWonPage() {
           </SheetContent>
         </Sheet>
       ) : (
-        <Dialog open={!!soulToEditId} onOpenChange={(open) => !open && setSoulToEditId(null)}>
+        <Dialog open={isEditOpen} onOpenChange={handleCloseEdit}>
             <DialogContent className="sm:max-w-lg">
                 <DialogHeader>
                     <DialogTitle className="font-headline text-2xl">Edit Soul Details</DialogTitle>
@@ -423,7 +462,7 @@ export default function SoulsWonPage() {
                     {soulToEdit && (
                       <EditSoulForm 
                           soul={soulToEdit} 
-                          onSoulUpdated={() => setSoulToEditId(null)} 
+                          onSoulUpdated={() => handleCloseEdit(false)} 
                           fellowships={activeFellowships || []}
                           campaigns={campaigns || []}
                       />
@@ -463,7 +502,7 @@ export default function SoulsWonPage() {
         </Dialog>
       )}
 
-      <AlertDialog open={!!soulToDeleteId} onOpenChange={(open) => !open && setSoulToDeleteId(null)}>
+      <AlertDialog open={isDeleteOpen} onOpenChange={handleCloseDelete}>
         <AlertDialogContent className="w-[90vw] max-w-lg rounded-lg">
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Record?</AlertDialogTitle>
