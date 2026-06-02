@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
@@ -134,6 +135,7 @@ export default function SoulsWonPage() {
   const cleanupAndRefresh = useCallback(() => {
     if (typeof document !== 'undefined') {
         document.body.style.pointerEvents = 'auto';
+        document.body.style.overflow = 'auto';
     }
     router.refresh();
   }, [router]);
@@ -159,30 +161,24 @@ export default function SoulsWonPage() {
   const handleCloseEdit = useCallback((open: boolean) => {
     setIsEditOpen(open);
     if (!open) {
-      setTimeout(() => {
-        setSoulToEdit(null);
-        cleanupAndRefresh();
-      }, 300);
+      setSoulToEdit(null);
+      cleanupAndRefresh();
     }
   }, [cleanupAndRefresh]);
 
   const handleCloseAssign = useCallback((open: boolean) => {
     setIsAssignOpen(open);
     if (!open) {
-      setTimeout(() => {
-        setSoulToAssign(null);
-        cleanupAndRefresh();
-      }, 300);
+      setSoulToAssign(null);
+      cleanupAndRefresh();
     }
   }, [cleanupAndRefresh]);
 
   const handleCloseDelete = useCallback((open: boolean) => {
     setIsDeleteOpen(open);
     if (!open) {
-      setTimeout(() => {
-        setSoulToDelete(null);
-        cleanupAndRefresh();
-      }, 300);
+      setSoulToDelete(null);
+      cleanupAndRefresh();
     }
   }, [cleanupAndRefresh]);
 
