@@ -6,7 +6,6 @@ import type { Chat, Notification } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import Link from 'next/link';
-import Image from 'next/image';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { format, isToday } from 'date-fns';
 import { useMemo } from 'react';
@@ -104,12 +103,17 @@ function ChatListItem({ chat, currentUserId, isUnread }: { chat: Chat, currentUs
                         </div>
                     </DialogTrigger>
                     {otherParticipantInfo.photoURL && (
-                    <DialogContent className="p-0 bg-transparent border-0 w-auto max-w-lg" onClick={(e) => {e.stopPropagation()}}>
+                    <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center" onClick={(e) => {e.stopPropagation()}}>
                         <DialogHeader className="sr-only">
                             <DialogTitle>Profile photo of {otherParticipantInfo.firstName} {otherParticipantInfo.lastName}</DialogTitle>
-                            <DialogDescription>A larger view of the user's profile photo.</DialogDescription>
+                            <DialogDescription>Full screen view of the user's profile photo.</DialogDescription>
                         </DialogHeader>
-                        <Image src={otherParticipantInfo.photoURL} alt={`${otherParticipantInfo.firstName} ${otherParticipantInfo.lastName}`} width={600} height={600} className="rounded-lg object-contain" unoptimized/>
+                        <div className="relative h-full w-full flex items-center justify-center p-4">
+                            <Avatar className="h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] rounded-2xl sm:rounded-[3rem] shadow-2xl ring-4 ring-white/10">
+                                <AvatarImage src={otherParticipantInfo.photoURL} className="object-cover" />
+                                <AvatarFallback className="font-bold text-lg bg-primary/10 text-primary">{otherParticipantInfo.firstName?.charAt(0)}</AvatarFallback>
+                            </Avatar>
+                        </div>
                     </DialogContent>
                     )}
                 </Dialog>

@@ -150,16 +150,16 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({
                       </div>
                   </DialogTrigger>
                   {!prayerRequest.isAnonymous && prayerRequest.authorId && (
-                      <DialogContent className="p-0 bg-transparent border-0 w-auto max-w-lg overflow-hidden rounded-3xl" onClick={(e) => {e.stopPropagation()}}>
+                      <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center" onClick={(e) => {e.stopPropagation()}}>
                           <DialogHeader className="sr-only">
                             <DialogTitle>Profile photo of {authorName}</DialogTitle>
-                            <DialogDescription>A larger view of the user's profile photo.</DialogDescription>
+                            <DialogDescription>Full screen view of the user's profile photo.</DialogDescription>
                           </DialogHeader>
-                          <div className="relative">
+                          <div className="relative h-full w-full flex items-center justify-center p-4">
                             <LiveAuthorAvatar 
                                 userId={prayerRequest.authorId} 
                                 fallbackInitials={initials} 
-                                className="h-[300px] w-[300px] sm:h-[450px] sm:w-[450px] rounded-3xl"
+                                className="h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] rounded-2xl sm:rounded-[3rem] shadow-2xl ring-4 ring-white/10"
                             />
                           </div>
                       </DialogContent>

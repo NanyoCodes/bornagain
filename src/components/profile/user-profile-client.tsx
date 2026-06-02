@@ -53,7 +53,7 @@ function LiveAuthorAvatar({ userId, fallbackInitials, className }: { userId: str
     
     return (
         <Avatar className={className}>
-            <AvatarImage src={photoURL} className="object-cover" />
+            <AvatarImage src={photoURL} />
             <AvatarFallback className="bg-primary/10 text-primary font-bold">{fallbackInitials || 'U'}</AvatarFallback>
         </Avatar>
     );
@@ -221,17 +221,18 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                 </div>
               </DialogTrigger>
               {photoURL && (
-                <DialogContent className="p-0 bg-transparent border-0 w-auto max-w-lg overflow-hidden rounded-3xl">
+                <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center">
                     <DialogHeader className="sr-only">
                         <DialogTitle>Profile photo of {displayName}</DialogTitle>
-                        <DialogDescription>A larger view of the user's profile photo.</DialogDescription>
+                        <DialogDescription>Full screen view of the user's profile photo.</DialogDescription>
                     </DialogHeader>
-                    <div className="relative">
-                        <LiveAuthorAvatar 
-                            userId={userId} 
-                            fallbackInitials={initials} 
-                            className="h-[300px] w-[300px] sm:h-[450px] sm:w-[450px] rounded-3xl"
-                        />
+                    <div className="relative h-full w-full flex items-center justify-center p-4">
+                        <Avatar className="h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] rounded-2xl sm:rounded-[3rem] shadow-2xl ring-4 ring-white/10">
+                            <AvatarImage src={photoURL} className="object-cover" />
+                            <AvatarFallback className="text-4xl lg:text-5xl font-black bg-primary/10 text-primary">
+                                {initials || 'U'}
+                            </AvatarFallback>
+                        </Avatar>
                     </div>
                 </DialogContent>
               )}
@@ -239,7 +240,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
             
             <div className="flex-grow min-w-0 space-y-4 pb-2">
                 <div className="space-y-1">
-                    <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black font-headline truncate leading-tight tracking-tight">{displayName}</h1>
+                    <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black font-headline tracking-tight truncate leading-tight tracking-tight">{displayName}</h1>
                     {(city || state || country) && (
                         <div className="flex items-center justify-center md:justify-start gap-2 text-primary font-black text-xs sm:text-sm uppercase tracking-[0.2em]">
                             <MapPin className="h-4 w-4" /> 
@@ -342,7 +343,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                                 key={testimony.id} 
                                 testimony={testimony} 
                                 onDelete={() => {}} 
-                                onEdit={() => {}}
+                                onEdit={() => {}} 
                                 isPartner={partnerIds.has(testimony.authorId)}
                                 hasPendingRequest={pendingRequestIds.has(testimony.authorId)}
                                 currentUserProfile={currentUserProfile}
