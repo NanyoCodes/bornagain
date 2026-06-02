@@ -125,16 +125,16 @@ const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, 
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end" className="w-48 rounded-xl shadow-xl">
                                     <DropdownMenuLabel className="text-[10px] uppercase tracking-widest text-muted-foreground font-black">Record Control</DropdownMenuLabel>
-                                    <DropdownMenuItem onSelect={(e) => { e.preventDefault(); onEdit(soul); }} className="rounded-lg">
+                                    <DropdownMenuItem onSelect={() => onEdit(soul)} className="rounded-lg">
                                         <Edit className="mr-2 h-4 w-4" /> Edit Details
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem onSelect={(e) => { e.preventDefault(); onFollowUp(soul); }} className="rounded-lg">
+                                    <DropdownMenuItem onSelect={() => onFollowUp(soul)} className="rounded-lg">
                                         <HeartHandshake className="mr-2 h-4 w-4 text-primary" /> Log Follow-up
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem onSelect={(e) => { e.preventDefault(); onViewHistory(soul); }} className="rounded-lg">
-                                        <History className="mr-2 h-4 w-4" /> View History
+                                    <DropdownMenuItem onSelect={() => onViewHistory(soul)} className="rounded-lg">
+                                        <History className="mr-2 h-4 w-4" /> Interaction History
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem onSelect={(e) => { e.preventDefault(); onOpenAssignDialog(soul); }} className="rounded-lg">
+                                    <DropdownMenuItem onSelect={() => onOpenAssignDialog(soul)} className="rounded-lg">
                                         <Users className="mr-2 h-4 w-4" /> Assign Community
                                     </DropdownMenuItem>
                                     <DropdownMenuSeparator />
@@ -148,7 +148,7 @@ const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, 
                                         </DropdownMenuPortal>
                                     </DropdownMenuSub>
                                     <DropdownMenuSeparator />
-                                    <DropdownMenuItem className="text-destructive focus:text-destructive focus:bg-destructive/10 rounded-lg" onSelect={(e) => { e.preventDefault(); onDelete(soul); }}>
+                                    <DropdownMenuItem className="text-destructive focus:text-destructive focus:bg-destructive/10 rounded-lg" onSelect={() => onDelete(soul)}>
                                         <Trash2 className="mr-2 h-4 w-4" /> Delete Permanently
                                     </DropdownMenuItem>
                                 </DropdownMenuContent>
@@ -266,20 +266,20 @@ const SoulTableRow = React.memo(({ soul, onFollowUp, onViewHistory, onExportSing
                     <DropdownMenuTrigger asChild><Button size="icon" variant="ghost" className="h-8 w-8 rounded-full"><MoreHorizontal className="h-4 w-4" /></Button></DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-48 rounded-xl shadow-xl">
                         <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Soul Control</DropdownMenuLabel>
-                        <DropdownMenuItem onSelect={(e) => { e.preventDefault(); onEdit(soul); }}>
+                        <DropdownMenuItem onSelect={() => onEdit(soul)}>
                             <Edit className="mr-2 h-4 w-4" /> Edit Details
                         </DropdownMenuItem>
-                        <DropdownMenuItem onSelect={(e) => { e.preventDefault(); onFollowUp(soul); }}>
+                        <DropdownMenuItem onSelect={() => onFollowUp(soul)}>
                             <HeartHandshake className="mr-2 h-4 w-4 text-primary" /> Log Follow-up
                         </DropdownMenuItem>
-                        <DropdownMenuItem onSelect={(e) => { e.preventDefault(); onViewHistory(soul); }}>
+                        <DropdownMenuItem onSelect={() => onViewHistory(soul)}>
                             <History className="mr-2 h-4 w-4" /> Interaction History
                         </DropdownMenuItem>
-                        <DropdownMenuItem onSelect={(e) => { e.preventDefault(); onOpenAssignDialog(soul); }}>
+                        <DropdownMenuItem onSelect={() => onOpenAssignDialog(soul)}>
                             <Users className="mr-2 h-4 w-4" /> Assign Community
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem className="text-destructive focus:text-destructive focus:bg-destructive/10 rounded-lg" onSelect={(e) => { e.preventDefault(); onDelete(soul); }}>
+                        <DropdownMenuItem className="text-destructive focus:text-destructive focus:bg-destructive/10 rounded-lg" onSelect={() => onDelete(soul)}>
                             <Trash2 className="mr-2 h-4 w-4" /> Delete Record
                         </DropdownMenuItem>
                     </DropdownMenuContent>

@@ -130,22 +130,6 @@ export default function SoulsWonPage() {
 
   const loading = userLoading || soulsLoading;
 
-  const restoreInteractivity = useCallback(() => {
-    if (typeof document !== 'undefined') {
-        document.body.style.pointerEvents = 'auto';
-        document.body.style.overflow = 'auto';
-    }
-  }, []);
-
-  const refreshData = useCallback(() => {
-    router.refresh();
-  }, [router]);
-
-  const cleanupAndRefresh = useCallback(() => {
-    restoreInteractivity();
-    refreshData();
-  }, [restoreInteractivity, refreshData]);
-
   const handleOpenFollowUp = useCallback((soul: Soul) => setSoulForFollowUp(soul), []);
   const handleOpenHistory = useCallback((soul: Soul) => setSoulForHistory(soul), []);
   
@@ -167,32 +151,33 @@ export default function SoulsWonPage() {
   const handleCloseEdit = useCallback((open: boolean) => {
     setIsEditOpen(open);
     if (!open) {
+      // Clear data after a delay to allow sheet/dialog close animation
       setTimeout(() => {
           setSoulToEdit(null);
-          cleanupAndRefresh();
+          router.refresh();
       }, 300);
     }
-  }, [cleanupAndRefresh]);
+  }, [router]);
 
   const handleCloseAssign = useCallback((open: boolean) => {
     setIsAssignOpen(open);
     if (!open) {
       setTimeout(() => {
           setSoulToAssign(null);
-          cleanupAndRefresh();
+          router.refresh();
       }, 300);
     }
-  }, [cleanupAndRefresh]);
+  }, [router]);
 
   const handleCloseDelete = useCallback((open: boolean) => {
     setIsDeleteOpen(open);
     if (!open) {
       setTimeout(() => {
           setSoulToDelete(null);
-          cleanupAndRefresh();
+          router.refresh();
       }, 300);
     }
-  }, [cleanupAndRefresh]);
+  }, [router]);
 
   const handleExportHarvest = async (formatType: 'csv' | 'pdf') => {
     if (!souls || souls.length === 0) return;
@@ -320,7 +305,7 @@ export default function SoulsWonPage() {
         }).catch(() => {});
     }
     
-    refreshData();
+    router.refresh();
   };
 
   const handleExportSingleSoul = useCallback(async (soul: Soul, formatType: 'csv' | 'pdf') => {
@@ -440,12 +425,12 @@ export default function SoulsWonPage() {
           onOpenChange={(isOpen) => {
               if (!isOpen) {
                   setSoulForFollowUp(null);
-                  cleanupAndRefresh();
+                  router.refresh();
               }
           }} 
           onFollowUpLogged={() => {
             setSoulForFollowUp(null);
-            cleanupAndRefresh();
+            router.refresh();
           }} 
       />
       
@@ -455,7 +440,7 @@ export default function SoulsWonPage() {
           onOpenChange={(isOpen) => {
               if (!isOpen) {
                   setSoulForHistory(null);
-                  cleanupAndRefresh();
+                  router.refresh();
               }
           }} 
       />
@@ -515,7 +500,7 @@ export default function SoulsWonPage() {
       {mounted && isMobile ? (
         <Sheet open={isLogDialogOpen} onOpenChange={(open) => {
             setIsLogDialogOpen(open);
-            if (!open) cleanupAndRefresh();
+            if (!open) router.refresh();
         }}>
           <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
             <div className="p-8 border-b flex-shrink-0 bg-muted/10">
@@ -527,7 +512,7 @@ export default function SoulsWonPage() {
             <div className="flex-grow overflow-y-auto p-8">
                 <LogSoulForm onSoulLogged={() => {
                   setIsLogDialogOpen(false);
-                  cleanupAndRefresh();
+                  router.refresh();
                 }} fellowships={activeFellowships || []} campaigns={campaigns || []} />
             </div>
           </SheetContent>
@@ -535,7 +520,7 @@ export default function SoulsWonPage() {
       ) : (
         <Dialog open={isLogDialogOpen} onOpenChange={(open) => {
             setIsLogDialogOpen(open);
-            if (!open) cleanupAndRefresh();
+            if (!open) router.refresh();
         }}>
           <DialogContent className="sm:max-w-lg">
             <DialogHeader>
@@ -547,7 +532,7 @@ export default function SoulsWonPage() {
             <div className="max-h-[70vh] overflow-y-auto pr-2">
               <LogSoulForm onSoulLogged={() => {
                 setIsLogDialogOpen(false);
-                cleanupAndRefresh();
+                router.refresh();
               }} fellowships={activeFellowships || []} campaigns={campaigns || []} />
             </div>
           </DialogContent>
