@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import Link from "next/link";
-import Image from "next/image";
 import {
   Card,
   CardContent,
@@ -272,7 +271,8 @@ export const TestimonyCard = React.memo(function TestimonyCard({
   return (
     <>
       <Card id={testimony.id} className={cn(
-        "flex flex-col h-full w-full overflow-hidden transition-all scroll-mt-20 rounded-none sm:rounded-xl border-x-0 sm:border-x border-t-0 border-b shadow-none bg-card/50 backdrop-blur-sm",
+        "flex flex-col h-full w-full overflow-hidden transition-all scroll-mt-20 border-x-0 sm:border-x border-t-0 border-b shadow-none bg-card/50 backdrop-blur-sm",
+        isMobile ? "rounded-none" : "rounded-xl",
         isPartner && "ring-1 ring-primary/20",
         testimony.answeredPrayerId && "border-l-4 border-l-amber-500"
       )}>

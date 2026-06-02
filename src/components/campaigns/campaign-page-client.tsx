@@ -192,7 +192,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
 
     return (
         <div className="space-y-8 pb-32">
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4 px-4 sm:px-0">
                 <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full">
                     <ArrowLeft className="h-5 w-5"/>
                     <span className="sr-only">Back</span>
@@ -228,7 +228,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                         </CardContent>
                     </Card>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 px-4 sm:px-0">
                         <Card className="rounded-none sm:rounded-3xl shadow-sm border-none bg-background border border-muted-foreground/10">
                             <CardHeader className="pb-3">
                                 <CardTitle className="text-sm font-bold flex items-center gap-2 uppercase tracking-widest text-muted-foreground">
@@ -255,7 +255,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                         </Card>
                     </div>
 
-                    <Card className="rounded-none sm:rounded-3xl shadow-sm border-none bg-background border border-muted-foreground/10">
+                    <Card className="rounded-none sm:rounded-3xl shadow-sm border-none bg-background border border-muted-foreground/10 overflow-hidden">
                         <CardHeader className="p-6">
                             <CardTitle className="flex items-center justify-between text-lg font-bold uppercase tracking-widest">
                                 <span className="flex items-center gap-2">
@@ -317,7 +317,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                                         />
                                     ))
                                 ) : (
-                                    <div className="col-span-full text-center py-20 bg-muted/20 rounded-[2.5rem] border-2 border-dashed">
+                                    <div className="col-span-full text-center py-20 bg-muted/20 rounded-[2.5rem] border-2 border-dashed mx-4 sm:mx-0">
                                         <Newspaper className="h-12 w-12 text-muted-foreground/10 mx-auto mb-4" />
                                         <p className="text-sm text-muted-foreground font-medium px-8 italic">No testimonies shared yet. Be the first to record God's work here!</p>
                                     </div>
@@ -327,8 +327,8 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                     </div>
                 </div>
 
-                <div className="space-y-8 flex flex-col">
-                    <Card className="rounded-none sm:rounded-3xl shadow-xl border-none bg-primary text-primary-foreground order-first sm:order-none">
+                <div className="space-y-8 flex flex-col px-4 sm:px-0">
+                    <Card className="rounded-[1.5rem] sm:rounded-3xl shadow-xl border-none bg-primary text-primary-foreground order-first sm:order-none">
                         <CardHeader className="pb-4">
                             <CardTitle className="text-base font-black uppercase tracking-[0.2em] opacity-80">Campaign Actions</CardTitle>
                         </CardHeader>
@@ -383,7 +383,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                         </CardContent>
                     </Card>
 
-                    <Card className="rounded-none sm:rounded-3xl shadow-sm border-none bg-background border border-muted-foreground/10">
+                    <Card className="rounded-[1.5rem] sm:rounded-3xl shadow-sm border-none bg-background border border-muted-foreground/10">
                         <CardHeader className="pb-3">
                             <CardTitle className="text-sm font-bold uppercase tracking-widest text-muted-foreground">Organizer</CardTitle>
                         </CardHeader>
@@ -402,7 +402,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                         </CardContent>
                     </Card>
 
-                    <Card className="rounded-none sm:rounded-3xl shadow-sm border-none bg-background border border-muted-foreground/10">
+                    <Card className="rounded-[1.5rem] sm:rounded-3xl shadow-sm border-none bg-background border border-muted-foreground/10">
                         <CardHeader className="pb-3">
                             <CardTitle className="text-sm font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
                                 <Heart className="h-4 w-4 text-primary" />

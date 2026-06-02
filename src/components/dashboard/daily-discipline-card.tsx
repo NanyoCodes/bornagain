@@ -266,7 +266,7 @@ export function DailyDisciplineCard() {
               <CardTitle className="text-xl font-semibold tracking-tight">Daily Discipline</CardTitle>
               <CardDescription className="text-sm font-medium">Your spiritual checklist for today.</CardDescription>
             </div>
-            <div className="text-[10px] font-black uppercase tracking-[0.2em] text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20">
+            <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20">
               {format(new Date(), 'PPPP')}
             </div>
           </div>
@@ -311,9 +311,9 @@ export function DailyDisciplineCard() {
                     <div className="flex items-center justify-between px-1">
                         <div className="flex items-center gap-2">
                             <HeartHandshake className="h-4 w-4 text-primary" />
-                            <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Partner Activity</h4>
+                            <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">Partner Activity</h4>
                         </div>
-                        <Button variant="ghost" asChild className="h-6 text-[9px] font-black uppercase tracking-tighter px-2">
+                        <Button variant="ghost" asChild className="h-6 text-[9px] font-bold uppercase tracking-tighter px-2">
                             <Link href="/dashboard/accountability">Full View</Link>
                         </Button>
                     </div>
