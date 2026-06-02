@@ -24,14 +24,10 @@ import {
   Globe, 
   Sparkles, 
   HandHeart, 
-  X, 
   MessageSquare,
   UserPlus,
   Hourglass,
   PartyPopper,
-  PlayCircle,
-  Eye,
-  Volume2,
 } from "lucide-react";
 import { useUser, useFirestore, useCollection, useDoc } from "@/firebase";
 import { useState, useMemo } from "react";
@@ -55,7 +51,6 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { CommentSection } from "./comment-section";
 import { Separator } from "../ui/separator";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import Image from "next/image";
 
 export const TestimonyCard = React.memo(function TestimonyCard({ 
   testimony, 
@@ -111,7 +106,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({
   
   const displayDate = useMemo(() => {
     const createdAtDate = safeToDate(testimony.createdAt);
-    return createdAtDate ? format(createdAtDate, "PPP 'at' p") : 'Shared recently';
+    return createdAtDate ? "Shared " + format(createdAtDate, "PPP 'at' p") : 'Shared recently';
   }, [testimony.createdAt]);
   
   const locationString = useMemo(() => {
@@ -206,22 +201,6 @@ export const TestimonyCard = React.memo(function TestimonyCard({
   const fullTextContent = (
     <ScrollArea className={cn("pr-4", isMobile ? "h-full" : "max-h-[60vh]")}>
       <div className="space-y-6 pb-6">
-        {testimony.mediaUrl && (
-            <div className="relative rounded-[2rem] overflow-hidden bg-black shadow-2xl border-4 border-white/5 aspect-video flex items-center justify-center">
-                {testimony.mediaType === 'image' ? (
-                    <Image src={testimony.mediaUrl} alt="Miracle Evidence" fill className="object-contain" unoptimized />
-                ) : testimony.mediaType === 'video' ? (
-                    <video src={testimony.mediaUrl} controls className="w-full h-full object-contain" />
-                ) : (
-                    <audio src={testimony.mediaUrl} controls className="w-full px-8" />
-                )}
-                <div className="absolute top-4 right-4">
-                    <Badge className="bg-black/60 backdrop-blur-md border-white/20 uppercase tracking-widest text-[9px] font-black h-7">
-                        Evidence
-                    </Badge>
-                </div>
-            </div>
-        )}
         <div className="text-base sm:text-lg text-muted-foreground whitespace-pre-wrap leading-relaxed text-justify px-2">
             {testimony.content}
         </div>
@@ -299,33 +278,6 @@ export const TestimonyCard = React.memo(function TestimonyCard({
         </CardHeader>
         
         <CardContent className="flex-grow pt-0 px-4 sm:px-6 space-y-4">
-          {testimony.mediaUrl && (
-              <div className="relative group cursor-pointer" onClick={() => setShowFullText(true)}>
-                <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-black/5 shadow-sm border border-primary/5 flex items-center justify-center">
-                    {testimony.mediaType === 'image' ? (
-                        <Image src={testimony.mediaUrl} alt="Miracle Evidence" fill className="object-cover transition-transform group-hover:scale-105 duration-500" unoptimized />
-                    ) : testimony.mediaType === 'video' ? (
-                        <div className="w-full h-full flex items-center justify-center bg-black/80">
-                            <PlayCircle className="h-12 w-12 text-white/80 group-hover:scale-110 transition-transform" />
-                        </div>
-                    ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-muted/20">
-                            <Volume2 className="h-12 w-12 text-primary opacity-60" />
-                        </div>
-                    )}
-                </div>
-                <div className="absolute top-2 right-2 flex gap-1">
-                    <Badge className="bg-black/60 backdrop-blur-md border-white/20 uppercase tracking-widest text-[8px] font-black h-5 px-2">
-                        {testimony.mediaType?.toUpperCase() || 'MEDIA'}
-                    </Badge>
-                </div>
-                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
-                    <Button variant="secondary" size="sm" className="h-8 rounded-full text-[10px] font-black uppercase tracking-widest shadow-xl">
-                        <Eye className="mr-1.5 h-3.5 w-3.5" /> View Evidence
-                    </Button>
-                </div>
-              </div>
-          )}
           <div className="text-sm sm:text-base text-muted-foreground whitespace-pre-wrap leading-relaxed text-justify">
             <p ref={contentRef} className="line-clamp-6 leading-relaxed">{testimony.content}</p>
             {isTruncated && <Button variant="link" className="p-0 h-auto text-sm text-primary font-bold mt-1" onClick={(e) => { e.stopPropagation(); setShowFullText(true); }}>Read Full Story</Button>}
@@ -333,8 +285,8 @@ export const TestimonyCard = React.memo(function TestimonyCard({
           {testimony.answeredPrayerId && testimony.answeredPrayerContent && (
             <Card className="rounded-2xl border-amber-500/40 bg-amber-500/5 dark:bg-amber-500/10 shadow-inner">
                 <CardHeader className="p-4">
-                    <CardDescription className="text-[10px] uppercase tracking-[0.2em] text-amber-600 dark:text-amber-400 font-black mb-1">Answer to Prayer Request:</CardDescription>
-                    <div className="border-l-2 border-amber-500/30 pl-4 italic text-sm text-muted-foreground line-clamp-2 leading-relaxed text-justify">{testimony.answeredPrayerContent}</div>
+                    <div className="text-[10px] uppercase tracking-[0.2em] text-amber-600 dark:text-amber-400 font-black mb-1">Answer to Prayer Request:</div>
+                    <CardDescription className="border-l-2 border-amber-500/30 pl-4 italic text-sm text-muted-foreground line-clamp-2 leading-relaxed text-justify">{testimony.answeredPrayerContent}</CardDescription>
                 </CardHeader>
             </Card>
            )}
