@@ -288,11 +288,11 @@ export default function TestimoniesPage() {
 
   return (
     <div className="space-y-6 md:space-y-12 pb-32">
-      {/* Interaction Box: fill width on mobile, aligned on desktop */}
-      <div className="max-w-3xl mx-auto w-full -mx-4 sm:mx-auto">
+      {/* Interaction Box: fill width on mobile, centered max-width on desktop */}
+      <div className="w-full max-w-3xl mx-auto -mx-4 sm:mx-auto">
         <Card className="border shadow-sm sm:shadow-md rounded-none sm:rounded-xl border-x-0 sm:border-x bg-card/50 backdrop-blur-sm">
-          <CardContent className="p-3 sm:p-4">
-            <div className="flex flex-row items-center justify-center gap-2 sm:gap-3 w-full">
+          <CardContent className="p-3 sm:p-4 flex justify-center">
+            <div className="flex flex-row items-center justify-center gap-2 sm:gap-3 w-full max-w-2xl">
               <Button 
                 variant="outline" 
                 className="flex-1 justify-center text-center text-muted-foreground font-normal rounded-full h-10 sm:h-11 px-4 hover:bg-muted/50 transition-colors text-sm min-w-0"
@@ -347,7 +347,7 @@ export default function TestimoniesPage() {
                     <TestimonyCard 
                         key={testimony.id}
                         testimony={testimony} 
-                        isPartner={partnerIds.has(testimony.authorId)}
+                        isPartner={testimony._isPartner}
                         hasPendingRequest={pendingRequestIds.has(testimony.authorId)}
                         currentUserProfile={userProfile}
                         onDelete={() => setItemToDelete({ type: 'testimony', data: testimony })}

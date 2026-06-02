@@ -11,10 +11,10 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import type { PrayerRequest } from "@/lib/types";
+import type { PrayerRequest, UserProfile } from "@/lib/types";
 import { format } from "date-fns";
 import { HandHeart, Users, Trash2, Loader2, User, Award, Newspaper, Edit } from "lucide-react";
-import { useUser, useFirestore } from "@/firebase";
+import { useUser, useFirestore, useDoc } from "@/firebase";
 import { useState, useMemo, memo, useRef, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { doc, updateDoc, arrayUnion } from "firebase/firestore";
@@ -28,6 +28,20 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { ScrollArea } from "@/components/ui/scroll-area";
+
+function LiveAuthorAvatar({ userId, fallbackInitials, className }: { userId: string, fallbackInitials: string, className?: string }) {
+    const firestore = useFirestore();
+    const userRef = React.useMemo(() => userId ? doc(firestore, 'users', userId) : null, [firestore, userId]);
+    const { data: profile } = useDoc<UserProfile>(userRef);
+    const photoURL = profile?.photoURL;
+    
+    return (
+        <Avatar className={className}>
+            <AvatarImage src={photoURL} className="object-cover" />
+            <AvatarFallback className="bg-primary/10 text-primary font-bold">{fallbackInitials || 'U'}</AvatarFallback>
+        </Avatar>
+    );
+}
 
 export const PrayerRequestCard = memo(function PrayerRequestCard({ 
   prayerRequest, 
@@ -65,6 +79,7 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({
   const authorName = prayerRequest.isAnonymous ? 'Confidential Request' : `${prayerRequest.authorFirstName || ''} ${prayerRequest.authorLastName || ''}`.trim();
   const profileLink = !prayerRequest.isAnonymous && prayerRequest.authorId ? `/dashboard/profile/${prayerRequest.authorId}` : '#';
   const isClickable = !prayerRequest.isAnonymous && prayerRequest.authorId;
+  const initials = (prayerRequest.authorFirstName?.charAt(0) || '') + (prayerRequest.authorLastName?.charAt(0) || '');
 
   useEffect(() => {
     setMounted(true);
@@ -107,7 +122,7 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({
 
   const fullTextContent = (
     <ScrollArea className={cn("pr-4", isMobile ? "h-full" : "max-h-[60vh]")}>
-      <div className="text-base text-muted-foreground whitespace-pre-wrap leading-relaxed pb-6">
+      <div className="text-base text-muted-foreground whitespace-pre-wrap leading-relaxed pb-6 text-balance">
         {prayerRequest.content}
       </div>
     </ScrollArea>
@@ -119,21 +134,34 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({
         <CardHeader className="flex flex-row items-start justify-between gap-4 p-4 sm:p-6">
             <div className="flex items-center gap-3 min-w-0 flex-1">
                 <Dialog>
-                  <DialogTrigger asChild onClick={(e) => e.stopPropagation()} disabled={prayerRequest.isAnonymous || !prayerRequest.authorAvatarUrl}>
-                      <Avatar className={cn(!prayerRequest.isAnonymous && prayerRequest.authorAvatarUrl && "cursor-pointer h-10 w-10 sm:h-12 sm:w-12 border shadow-sm")}>
-                          {!prayerRequest.isAnonymous && <AvatarImage src={prayerRequest.authorAvatarUrl} />}
-                          <AvatarFallback>
-                              {prayerRequest.isAnonymous ? <User className="h-4 w-4" /> : `${prayerRequest.authorFirstName?.charAt(0) || ''}${prayerRequest.authorLastName?.charAt(0) || ''}`}
-                          </AvatarFallback>
-                      </Avatar>
+                  <DialogTrigger asChild onClick={(e) => e.stopPropagation()} disabled={prayerRequest.isAnonymous || !prayerRequest.authorId}>
+                      <div className="relative cursor-pointer hover:opacity-90 transition-opacity active:scale-95">
+                        {prayerRequest.isAnonymous ? (
+                            <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border shadow-sm">
+                                <AvatarFallback><User className="h-5 w-5" /></AvatarFallback>
+                            </Avatar>
+                        ) : (
+                            <LiveAuthorAvatar 
+                                userId={prayerRequest.authorId!} 
+                                fallbackInitials={initials} 
+                                className="h-10 w-10 sm:h-12 sm:w-12 border shadow-sm"
+                            />
+                        )}
+                      </div>
                   </DialogTrigger>
-                  {!prayerRequest.isAnonymous && prayerRequest.authorAvatarUrl && (
+                  {!prayerRequest.isAnonymous && prayerRequest.authorId && (
                       <DialogContent className="p-0 bg-transparent border-0 w-auto max-w-lg overflow-hidden rounded-3xl" onClick={(e) => {e.stopPropagation()}}>
                           <DialogHeader className="sr-only">
                             <DialogTitle>Profile photo of {authorName}</DialogTitle>
                             <DialogDescription>A larger view of the user's profile photo.</DialogDescription>
                           </DialogHeader>
-                          <Image src={prayerRequest.authorAvatarUrl} alt={authorName} width={600} height={600} className="rounded-lg object-contain" unoptimized/>
+                          <div className="relative">
+                            <LiveAuthorAvatar 
+                                userId={prayerRequest.authorId} 
+                                fallbackInitials={initials} 
+                                className="h-[300px] w-[300px] sm:h-[450px] sm:w-[450px] rounded-3xl"
+                            />
+                          </div>
                       </DialogContent>
                   )}
                 </Dialog>
@@ -151,7 +179,7 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({
             </div>
         </CardHeader>
         <CardContent className="flex-grow py-0 px-4 sm:px-6">
-          <div className="text-sm text-muted-foreground whitespace-pre-wrap">
+          <div className="text-sm text-muted-foreground whitespace-pre-wrap text-balance">
             <p ref={contentRef} className="line-clamp-4 text-sm leading-relaxed">
               {prayerRequest.content}
             </p>
@@ -260,3 +288,4 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({
     </>
   );
 });
+PrayerRequestCard.displayName = "PrayerRequestCard";

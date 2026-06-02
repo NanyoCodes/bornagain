@@ -262,7 +262,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({
 
   const fullTextContent = (
     <ScrollArea className={cn("pr-4", isMobile ? "h-full" : "max-h-[60vh]")}>
-      <div className="text-base text-muted-foreground whitespace-pre-wrap leading-relaxed pb-6">
+      <div className="text-base text-muted-foreground whitespace-pre-wrap leading-relaxed pb-6 text-balance">
         {testimony.content}
       </div>
     </ScrollArea>
@@ -381,7 +381,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({
         </CardHeader>
         
         <CardContent className="flex-grow pt-0 px-4 sm:px-6 space-y-4">
-          <div className="text-sm sm:text-base text-muted-foreground whitespace-pre-wrap leading-relaxed">
+          <div className="text-sm sm:text-base text-muted-foreground whitespace-pre-wrap leading-relaxed text-balance">
             <p ref={contentRef} className="line-clamp-6">
               {testimony.content}
             </p>
