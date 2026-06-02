@@ -23,7 +23,6 @@ import {
   Loader2, 
   Globe, 
   Sparkles, 
-  PartyPopper, 
   HandHeart, 
   X, 
   MessageSquare,

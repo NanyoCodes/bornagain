@@ -287,7 +287,7 @@ export default function TestimoniesPage() {
   const prayerFormContent = userProfile ? <CreatePrayerRequestForm onPrayerRequestCreated={handlePrayerRequestCreated} /> : <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin"/></div>;
 
   return (
-    <div className="space-y-6 md:space-y-10 max-w-3xl mx-auto w-full">
+    <div className="space-y-6 md:space-y-10 w-full">
       {/* Interaction Box */}
       <Card className="border shadow-sm sm:shadow-md rounded-none sm:rounded-xl border-x-0 sm:border-x bg-card/50 backdrop-blur-sm -mx-4 sm:mx-0">
         <CardContent className="p-3 sm:p-6 flex justify-center">
