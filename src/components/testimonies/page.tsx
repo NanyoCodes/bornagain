@@ -288,7 +288,7 @@ export default function TestimoniesPage() {
 
   return (
     <div className="space-y-6 md:space-y-12 pb-32">
-      {/* Interaction Box: matches the full-width mobile pattern */}
+      {/* Interaction Box: fill width on mobile */}
       <div className="-mx-4 sm:mx-0">
         <Card className="border shadow-sm sm:shadow-md rounded-none sm:rounded-lg border-x-0 sm:border-x bg-card/50 backdrop-blur-sm">
           <CardContent className="p-3 sm:p-4">
@@ -310,7 +310,7 @@ export default function TestimoniesPage() {
                   disabled={loading}
                   title="Share Testimony"
                 >
-                  <Newspaper className="h-4 w-4" />
+                  < Newspaper className="h-4 w-4" />
                 </Button>
                 <Button 
                   variant="outline" 
@@ -336,7 +336,7 @@ export default function TestimoniesPage() {
             </TabsList>
           </div>
           
-          <TabsContent value="testimonies" className="mt-4 sm:mt-8 md:mt-10">
+          <TabsContent value="testimonies" className="mt-4 sm:mt-8 md:mt-10 outline-none">
               <div className="flex flex-col gap-0 w-full max-w-3xl mx-auto -mx-4 sm:mx-auto">
                 {loading && (
                   [...Array(3)].map((_, i) => (
@@ -366,7 +366,7 @@ export default function TestimoniesPage() {
               </div>
           </TabsContent>
           
-          <TabsContent value="prayers" className="mt-4 sm:mt-8 md:mt-10">
+          <TabsContent value="prayers" className="mt-4 sm:mt-8 md:mt-10 outline-none">
               <div className="flex flex-col gap-0 w-full max-w-3xl mx-auto -mx-4 sm:mx-auto">
                 {loading && (
                   [...Array(3)].map((_, i) => (
@@ -414,7 +414,7 @@ export default function TestimoniesPage() {
           </AlertDialogContent>
       </AlertDialog>
 
-      {/* Edit Dialogs */}
+      {/* Form Dialogs/Sheets */}
       {mounted && (
         <>
           {isMobile ? (

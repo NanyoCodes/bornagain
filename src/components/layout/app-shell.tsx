@@ -142,8 +142,10 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
                     isActive ? "text-primary font-semibold" : "text-muted-foreground"
                     )}
                 >
-                    <item.icon className={cn("h-4 w-4 transition-transform group-hover:scale-110", !isActive && item.color, isActive && "scale-110")} />
-                    {item.label}
+                    <motion.div whileHover={{ scale: 1.1 }} className="flex items-center gap-2">
+                      <item.icon className={cn("h-4 w-4 transition-transform", !isActive && item.color, isActive && "scale-110")} />
+                      {item.label}
+                    </motion.div>
                 </Link>
               );
             })}
@@ -296,7 +298,7 @@ function BottomNavBar() {
                   )}
                   <motion.div
                     animate={{ 
-                      scale: isActive ? 1.15 : 1,
+                      scale: isActive ? 1.2 : 1,
                       color: isActive ? "var(--primary)" : "var(--muted-foreground)"
                     }}
                     transition={{ duration: 0.2 }}
@@ -442,7 +444,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           "flex-1 w-full mx-auto relative flex flex-col min-h-0",
           isTakeoverPage ? "h-full overflow-hidden" : "pb-32 md:pb-8 p-0 sm:p-4 md:p-8 max-w-7xl"
         )}>
-            <div className={cn("flex-grow w-full flex flex-col min-h-0", !isTakeoverPage && "p-4 sm:p-0")}>
+            <div className={cn("flex-grow w-full flex flex-col min-h-0", !isTakeoverPage && "p-0 sm:p-0")}>
                 <PageTransition>{children}</PageTransition>
             </div>
         </main>
