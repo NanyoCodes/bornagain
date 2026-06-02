@@ -58,11 +58,11 @@ import { useIsMobile } from "@/hooks/use-mobile";
 
 const navItems = [
   { href: "/progress", label: "Progress", icon: TrendingUp, color: "text-chart-1" },
-  { href: "/dashboard/souls-won", label: "Souls Won", icon: UserPlus, color: "text-chart-2" },
-  { href: "/dashboard/testimonies", label: "Testimonies", icon: Newspaper, color: "text-chart-3" },
-  { href: "/dashboard/campaigns", label: "Campaigns", icon: Target, color: "text-chart-4" },
-  { href: "/dashboard/fellowship", label: "Fellowship", icon: Users, color: "text-primary" },
-  { href: "/dashboard/accountability", label: "Accountability", icon: HeartHandshake, color: "text-primary" },
+  { href: "/souls-won", label: "Souls Won", icon: UserPlus, color: "text-chart-2" },
+  { href: "/testimonies", label: "Testimonies", icon: Newspaper, color: "text-chart-3" },
+  { href: "/campaigns", label: "Campaigns", icon: Target, color: "text-chart-4" },
+  { href: "/fellowships", label: "Fellowship", icon: Users, color: "text-primary" },
+  { href: "/accountability", label: "Accountability", icon: HeartHandshake, color: "text-primary" },
 ];
 
 const OTHER_NOTIFICATION_TYPES = ['campaign_join', 'accountability_nudge', 'accountability_request', 'request_accepted', 'request_declined', 'accountability_partner_removed', 'new_soul_in_fellowship'];
@@ -280,7 +280,7 @@ function BottomNavBar() {
   
     return (
       <nav className="fixed bottom-0 left-0 right-0 z-40 border-t bg-background/80 backdrop-blur-lg md:hidden pb-[env(safe-area-inset-bottom)] shadow-[0_-5px_15px_-10px_rgba(0,0,0,0.1)]">
-        <div className="flex min-h-[4.5rem] h-auto items-stretch justify-around px-1 py-1.5">
+        <div className="flex h-16 items-stretch justify-around px-2">
           {navItems.map((item) => {
             const isActive = pathname.startsWith(item.href);
             return (
@@ -288,11 +288,11 @@ function BottomNavBar() {
                 key={item.href}
                 href={item.href}
                 prefetch={true}
-                className="relative flex flex-1 flex-col items-center justify-center min-w-0 px-0.5"
+                className="relative flex flex-1 flex-col items-center justify-center min-w-0"
                 aria-label={item.label}
               >
                 <motion.div
-                  className="relative flex flex-col items-center justify-center p-1.5 rounded-xl"
+                  className="relative flex items-center justify-center p-2 rounded-xl"
                   whileTap={{ scale: 0.85 }}
                 >
                   {isActive && (
@@ -304,7 +304,7 @@ function BottomNavBar() {
                   )}
                   <motion.div
                     animate={{ 
-                      scale: isActive ? 1.1 : 1,
+                      scale: isActive ? 1.2 : 1,
                       color: isActive ? "var(--primary)" : "var(--muted-foreground)"
                     }}
                     transition={{ duration: 0.2 }}
@@ -313,12 +313,9 @@ function BottomNavBar() {
                       isActive ? "text-primary" : "text-muted-foreground"
                     )}
                   >
-                    <item.icon className={cn("h-5 w-5", !isActive && item.color)} />
+                    <item.icon className={cn("h-6 w-6", !isActive && item.color)} />
                   </motion.div>
                 </motion.div>
-                <span className="text-[9px] font-black mt-1 text-center truncate w-full opacity-80 leading-none uppercase tracking-tighter">
-                    {item.label}
-                </span>
               </Link>
             )
           })}
