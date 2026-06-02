@@ -26,6 +26,7 @@ import { FirestorePermissionError } from "@/firebase/errors";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { Card, CardHeader, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
 
 const testimonyCategories: TestimonyCategory[] = [
