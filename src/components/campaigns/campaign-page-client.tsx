@@ -13,7 +13,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
+} from '@/components/ui/dialog';
 import { doc, updateDoc, serverTimestamp, collection, query, where, orderBy } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -230,13 +230,13 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                             <CardTitle className="text-lg font-bold uppercase tracking-widest text-muted-foreground">About this Mission</CardTitle>
                         </CardHeader>
                         <CardContent className="px-6 sm:px-8 pb-8">
-                            <p className="text-sm sm:text-base text-foreground leading-relaxed whitespace-pre-wrap font-medium">
+                            <p className="text-sm sm:text-base text-foreground leading-relaxed whitespace-pre-wrap font-medium text-balance">
                                 {campaign.description}
                             </p>
                             {campaign.scripture && (
                                 <div className="mt-8 p-6 bg-primary/5 rounded-[2rem] border-2 border-dashed border-primary/20 relative">
                                     <span className="absolute -top-3 left-6 bg-background px-3 text-[10px] font-black text-primary uppercase tracking-[0.2em]">Inspiration</span>
-                                    <p className="italic text-base sm:text-lg text-primary font-serif leading-relaxed">&ldquo;{campaign.scriptureTestimony || campaign.scripture}&rdquo;</p>
+                                    <p className="italic text-base sm:text-lg text-primary font-serif leading-relaxed text-justify">&ldquo;{campaign.scriptureTestimony || campaign.scripture}&rdquo;</p>
                                     <p className="text-[10px] font-black uppercase text-primary/60 text-right mt-3 tracking-widest">— {campaign.scripture}</p>
                                 </div>
                             )}
@@ -297,8 +297,8 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                                                             <AvatarFallback className="text-[10px] bg-primary/10 text-primary font-bold">{p.firstName?.charAt(0)}</AvatarFallback>
                                                         </Avatar>
                                                         <div className="min-w-0">
-                                                            <p className="text-sm font-bold truncate leading-tight">{p.firstName} {p.lastName}</p>
-                                                            {p.userId === campaign.organizerId && <span className="text-[8px] font-black uppercase text-primary tracking-widest">Organizer</span>}
+                                                            <p className="font-bold truncate leading-tight text-xs sm:text-sm">{p.firstName} {p.lastName}</p>
+                                                            {p.userId === campaign.organizerId && <span className="text-[8px] font-black uppercase text-primary tracking-widest block mt-0.5">Organizer</span>}
                                                         </div>
                                                     </Link>
                                                 ))}

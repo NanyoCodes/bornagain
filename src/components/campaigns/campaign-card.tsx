@@ -27,7 +27,6 @@ import {
   SheetDescription,
   SheetHeader,
   SheetTitle,
-  SheetTrigger,
 } from "@/components/ui/sheet";
 import { useCollection, useFirestore, useUser } from "@/firebase";
 import { collection, serverTimestamp, query, where, getDocs, addDoc, doc, getDoc } from "firebase/firestore";
@@ -439,7 +438,7 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
       <Card
         id={campaign.id}
         className={cn(
-          "flex flex-col h-full overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 scroll-mt-20 border-t-4 cursor-pointer rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b bg-card/50 backdrop-blur-sm",
+          "flex flex-col h-full w-full overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 scroll-mt-20 border-t-4 cursor-pointer rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b bg-card/50 backdrop-blur-sm",
           borderColorClass
         )}
         onClick={handleCardClick}
@@ -506,19 +505,19 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
             </div>
             
             <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
-                <div className="rounded-2xl border-2 border-dashed p-3.5 flex items-start gap-3 bg-background/30">
+                <div className="rounded-2xl border-2 border-dashed p-3.5 flex items-start gap-3 bg-background/30 h-24">
                     <MapPin className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                    <div className="min-w-0">
+                    <div className="min-w-0 flex-1">
                         <p className="font-black text-[10px] uppercase tracking-widest text-muted-foreground">Location</p>
-                        <p className="font-bold text-foreground break-words leading-snug">{campaign.location}</p>
+                        <p className="font-bold text-foreground break-words leading-snug line-clamp-2">{campaign.location}</p>
                     </div>
                 </div>
-                <div className="rounded-2xl border-2 border-dashed p-3.5 flex items-start gap-3 bg-background/30">
+                <div className="rounded-2xl border-2 border-dashed p-3.5 flex items-start gap-3 bg-background/30 h-24">
                     <CalendarDays className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                    <div className="min-w-0">
+                    <div className="min-w-0 flex-1">
                         <p className="font-black text-[10px] uppercase tracking-widest text-muted-foreground">Schedule</p>
-                        <p className="font-bold text-foreground leading-snug">{dateString}</p>
-                        <p className="text-[10px] font-black uppercase text-primary/70 mt-0.5">{timeString}</p>
+                        <p className="font-bold text-foreground leading-snug line-clamp-1">{dateString}</p>
+                        <p className="text-[10px] font-black uppercase text-primary/70 mt-0.5 truncate">{timeString}</p>
                     </div>
                 </div>
             </div>
