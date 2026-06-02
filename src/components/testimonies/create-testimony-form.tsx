@@ -17,7 +17,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect, useRef } from "react";
-import { Loader2, Image as ImageIcon, Video as VideoIcon, X, Paperclip } from "lucide-react";
+import { Loader2, Image as ImageIcon, Video as VideoIcon, Headphones, X, Paperclip } from "lucide-react";
 import type { TestimonyCategory, Campaign, UserProfile, PrayerRequest } from "@/lib/types";
 import { useUser, useFirestore, useStorage } from "@/firebase";
 import { collection, addDoc, serverTimestamp, doc, runTransaction } from "firebase/firestore";
@@ -63,7 +63,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
   const [isUploadingMedia, setIsUploadingMedia] = useState(false);
   const [mediaFile, setMediaFile] = useState<File | null>(null);
   const [mediaPreview, setMediaPreview] = useState<string | null>(null);
-  const [mediaType, setMediaType] = useState<'image' | 'video' | null>(null);
+  const [mediaType, setMediaType] = useState<'image' | 'video' | 'audio' | null>(null);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
   
@@ -100,12 +100,15 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
       return;
     }
 
-    const type = file.type.startsWith('image/') ? 'image' : file.type.startsWith('video/') ? 'video' : null;
+    const type = file.type.startsWith('image/') ? 'image' : 
+                 file.type.startsWith('video/') ? 'video' : 
+                 file.type.startsWith('audio/') ? 'audio' : null;
+
     if (!type) {
       toast({
         variant: 'destructive',
         title: 'Invalid file type',
-        description: 'Please upload an image or a video.',
+        description: 'Please upload an image, video, or audio file.',
       });
       return;
     }
@@ -256,27 +259,31 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
                     <div className="h-10 w-10 rounded-full bg-background border shadow-sm flex items-center justify-center group-hover:scale-110 transition-transform">
                         <Paperclip className="h-5 w-5 text-primary" />
                     </div>
-                    <span className="text-xs font-bold text-primary/60 uppercase tracking-widest">Attach Photo or Video</span>
+                    <span className="text-xs font-bold text-primary/60 uppercase tracking-widest">Attach Media (Img, Vid, Audio)</span>
                 </button>
               ) : (
                 <div className="relative rounded-[2rem] overflow-hidden border shadow-lg aspect-video bg-black flex items-center justify-center">
                     {mediaType === 'image' ? (
                         <Image src={mediaPreview} alt="Preview" fill className="object-contain" />
-                    ) : (
+                    ) : mediaType === 'video' ? (
                         <video src={mediaPreview} className="w-full h-full object-contain" />
+                    ) : (
+                        <audio src={mediaPreview} controls className="w-full px-8" />
                     )}
                     <Button 
                         type="button" 
                         variant="destructive" 
                         size="icon" 
-                        className="absolute top-4 right-4 h-8 w-8 rounded-full shadow-lg"
+                        className="absolute top-4 right-4 h-8 w-8 rounded-full shadow-lg z-10"
                         onClick={removeMedia}
                     >
                         <X className="h-4 w-4" />
                     </Button>
                     <div className="absolute bottom-4 left-4">
                          <Badge className="bg-black/60 backdrop-blur-md border-white/20 text-[9px] uppercase font-black tracking-widest px-3">
-                            {mediaType === 'image' ? <ImageIcon className="mr-1.5 h-3 w-3" /> : <VideoIcon className="mr-1.5 h-3 w-3" />}
+                            {mediaType === 'image' ? <ImageIcon className="mr-1.5 h-3 w-3" /> : 
+                             mediaType === 'video' ? <VideoIcon className="mr-1.5 h-3 w-3" /> :
+                             <Headphones className="mr-1.5 h-3 w-3" />}
                             Selected {mediaType}
                          </Badge>
                     </div>
@@ -287,7 +294,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
                 ref={fileInputRef} 
                 onChange={handleFileChange} 
                 className="hidden" 
-                accept="image/*,video/*"
+                accept="image/*,video/*,audio/*"
               />
           </div>
 

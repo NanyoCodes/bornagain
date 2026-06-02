@@ -155,7 +155,7 @@ export type Testimony = {
   answeredPrayerId?: string;
   answeredPrayerContent?: string;
   mediaUrl?: string;
-  mediaType?: 'image' | 'video';
+  mediaType?: 'image' | 'video' | 'audio';
 };
 
 export type TestimonyComment = {

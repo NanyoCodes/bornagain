@@ -31,6 +31,7 @@ import {
   PartyPopper,
   PlayCircle,
   Eye,
+  Volume2,
 } from "lucide-react";
 import { useUser, useFirestore, useCollection, useDoc } from "@/firebase";
 import { useState, useMemo } from "react";
@@ -209,11 +210,13 @@ export const TestimonyCard = React.memo(function TestimonyCard({
             <div className="relative rounded-[2rem] overflow-hidden bg-black shadow-2xl border-4 border-white/5 aspect-video flex items-center justify-center">
                 {testimony.mediaType === 'image' ? (
                     <Image src={testimony.mediaUrl} alt="Miracle Evidence" fill className="object-contain" unoptimized />
-                ) : (
+                ) : testimony.mediaType === 'video' ? (
                     <video src={testimony.mediaUrl} controls className="w-full h-full object-contain" />
+                ) : (
+                    <audio src={testimony.mediaUrl} controls className="w-full px-8" />
                 )}
                 <div className="absolute top-4 right-4">
-                    <Badge className="bg-black/60 backdrop-blur-md border-white/10 uppercase tracking-widest text-[9px] font-black h-7">
+                    <Badge className="bg-black/60 backdrop-blur-md border-white/20 uppercase tracking-widest text-[9px] font-black h-7">
                         Evidence
                     </Badge>
                 </div>
@@ -298,18 +301,22 @@ export const TestimonyCard = React.memo(function TestimonyCard({
         <CardContent className="flex-grow pt-0 px-4 sm:px-6 space-y-4">
           {testimony.mediaUrl && (
               <div className="relative group cursor-pointer" onClick={() => setShowFullText(true)}>
-                <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-black/5 shadow-sm border border-primary/5">
+                <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-black/5 shadow-sm border border-primary/5 flex items-center justify-center">
                     {testimony.mediaType === 'image' ? (
                         <Image src={testimony.mediaUrl} alt="Miracle Evidence" fill className="object-cover transition-transform group-hover:scale-105 duration-500" unoptimized />
-                    ) : (
+                    ) : testimony.mediaType === 'video' ? (
                         <div className="w-full h-full flex items-center justify-center bg-black/80">
                             <PlayCircle className="h-12 w-12 text-white/80 group-hover:scale-110 transition-transform" />
+                        </div>
+                    ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-muted/20">
+                            <Volume2 className="h-12 w-12 text-primary opacity-60" />
                         </div>
                     )}
                 </div>
                 <div className="absolute top-2 right-2 flex gap-1">
                     <Badge className="bg-black/60 backdrop-blur-md border-white/20 uppercase tracking-widest text-[8px] font-black h-5 px-2">
-                        {testimony.mediaType === 'image' ? 'PHOTO' : 'VIDEO'}
+                        {testimony.mediaType?.toUpperCase() || 'MEDIA'}
                     </Badge>
                 </div>
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
