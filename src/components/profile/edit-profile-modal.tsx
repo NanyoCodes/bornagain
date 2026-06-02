@@ -242,41 +242,39 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
       await updateDoc(doc(firestore, 'users', user.uid), firestoreUpdatePayload);
       await authUpdatePromise;
 
-      // Sync photo across other collections if it changed - "UPDATE ALWAYS" Logic
-      if (values.photoURL !== userProfile.photoURL) {
-          const batch = writeBatch(firestore);
-          const syncUrl = values.photoURL || ""; 
+      // Sync photo across other collections ALWAYS - "Denormalized Synchronicity"
+      const batch = writeBatch(firestore);
+      const syncUrl = values.photoURL || ""; 
 
-          // 1. Sync Testimonies
-          const testimoniesSnap = await getDocs(query(collection(firestore, 'testimonies'), where('authorId', '==', user.uid)));
-          testimoniesSnap.forEach(tDoc => {
-              batch.update(tDoc.ref, { authorAvatarUrl: syncUrl });
-          });
+      // 1. Sync Testimonies
+      const testimoniesSnap = await getDocs(query(collection(firestore, 'testimonies'), where('authorId', '==', user.uid)));
+      testimoniesSnap.forEach(tDoc => {
+          batch.update(tDoc.ref, { authorAvatarUrl: syncUrl });
+      });
 
-          // 2. Sync Prayer Requests
-          const prayersSnap = await getDocs(query(collection(firestore, 'prayerRequests'), where('authorId', '==', user.uid)));
-          prayersSnap.forEach(pDoc => {
-              batch.update(pDoc.ref, { authorAvatarUrl: syncUrl });
-          });
+      // 2. Sync Prayer Requests
+      const prayersSnap = await getDocs(query(collection(firestore, 'prayerRequests'), where('authorId', '==', user.uid)));
+      prayersSnap.forEach(pDoc => {
+          batch.update(pDoc.ref, { authorAvatarUrl: syncUrl });
+      });
 
-          // 3. Sync Fellowships (organized by user)
-          const fellowshipsSnap = await getDocs(query(collection(firestore, 'fellowships'), where('organizerId', '==', user.uid)));
-          fellowshipsSnap.forEach(fDoc => {
-              batch.update(fDoc.ref, { organizerPhotoURL: syncUrl });
-          });
+      // 3. Sync Fellowships Organized
+      const fellowshipsSnap = await getDocs(query(collection(firestore, 'fellowships'), where('organizerId', '==', user.uid)));
+      fellowshipsSnap.forEach(fDoc => {
+          batch.update(fDoc.ref, { organizerPhotoURL: syncUrl });
+      });
 
-          // 4. Sync Chats (where user is a participant)
-          const chatsSnap = await getDocs(query(collection(firestore, 'chats'), where('participantIds', 'array-contains', user.uid)));
-          chatsSnap.forEach(cDoc => {
-              batch.update(cDoc.ref, {
-                  [`participantInfo.${user.uid}.photoURL`]: syncUrl
-              });
+      // 4. Sync Chats
+      const chatsSnap = await getDocs(query(collection(firestore, 'chats'), where('participantIds', 'array-contains', user.uid)));
+      chatsSnap.forEach(cDoc => {
+          batch.update(cDoc.ref, {
+              [`participantInfo.${user.uid}.photoURL`]: syncUrl
           });
+      });
 
-          await batch.commit().catch(err => {
-              console.error("Global denormalized photo sync failed:", err);
-          });
-      }
+      await batch.commit().catch(err => {
+          console.error("Global denormalized photo sync failed:", err);
+      });
       
       toast({ title: "Profile Updated" });
       onClose();

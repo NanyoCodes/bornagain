@@ -27,9 +27,10 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { PlusCircle, Download, Loader2, Trash2, HeartHandshake } from "lucide-react";
+import { PlusCircle, Download, Loader2, Trash2 } from "lucide-react";
 import type { Soul, Campaign, Fellowship, UserProfile } from "@/lib/types";
-import { useCollection, useFirestore, useUser, useDoc } from "@/firebase";
+import { useCollection, useFirestore, useUser } from "@/firebase";
+import { useDoc } from "@/firebase/firestore/use-doc";
 import { collection, query, orderBy, doc, updateDoc, serverTimestamp, writeBatch, addDoc, deleteField, where } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -71,19 +72,12 @@ export default function SoulsWonPage() {
   const [mounted, setMounted] = useState(false);
   const [isLogDialogOpen, setIsLogDialogOpen] = useState(false);
   
-  // Modals for History and Follow-up
+  // Triggers for specific records
   const [soulForFollowUp, setSoulForFollowUp] = useState<Soul | null>(null);
   const [soulForHistory, setSoulForHistory] = useState<Soul | null>(null);
-
-  // Modals for Edit, Assign, Delete
   const [soulToAssign, setSoulToAssign] = useState<Soul | null>(null);
-  const [isAssignOpen, setIsAssignOpen] = useState(false);
-
   const [soulToEdit, setSoulToEdit] = useState<Soul | null>(null);
-  const [isEditOpen, setIsEditOpen] = useState(false);
-
   const [soulToDelete, setSoulToDelete] = useState<Soul | null>(null);
-  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -96,18 +90,6 @@ export default function SoulsWonPage() {
       setSearchTerm("");
     };
   }, [setIsSearchVisible, setSearchPlaceholder, setSearchTerm]);
-
-  // Safeguard: Ensure body interactivity and visibility are restored when all modals are closed
-  const isAnyModalOpen = useMemo(() => {
-    return isLogDialogOpen || !!soulForFollowUp || !!soulForHistory || isAssignOpen || isEditOpen || isDeleteOpen;
-  }, [isLogDialogOpen, soulForFollowUp, soulForHistory, isAssignOpen, isEditOpen, isDeleteOpen]);
-
-  useEffect(() => {
-    if (mounted && !isAnyModalOpen) {
-      document.body.style.pointerEvents = 'auto';
-      document.body.removeAttribute('aria-hidden');
-    }
-  }, [isAnyModalOpen, mounted]);
 
   const soulsQuery = useMemo(() => {
     if (!user?.uid || !firestore) return null;
@@ -144,51 +126,9 @@ export default function SoulsWonPage() {
 
   const handleOpenFollowUp = useCallback((soul: Soul) => setSoulForFollowUp(soul), []);
   const handleOpenHistory = useCallback((soul: Soul) => setSoulForHistory(soul), []);
-  
-  const handleOpenAssign = useCallback((soul: Soul) => {
-    setSoulToAssign(soul);
-    setIsAssignOpen(true);
-  }, []);
-
-  const handleOpenEdit = useCallback((soul: Soul) => {
-    setSoulToEdit(soul);
-    setIsEditOpen(true);
-  }, []);
-
-  const handleOpenDelete = useCallback((soul: Soul) => {
-    setSoulToDelete(soul);
-    setIsDeleteOpen(true);
-  }, []);
-
-  const handleCloseEdit = useCallback((open: boolean) => {
-    setIsEditOpen(open);
-    if (!open) {
-      setTimeout(() => {
-          setSoulToEdit(null);
-          router.refresh();
-      }, 300);
-    }
-  }, [router]);
-
-  const handleCloseAssign = useCallback((open: boolean) => {
-    setIsAssignOpen(open);
-    if (!open) {
-      setTimeout(() => {
-          setSoulToAssign(null);
-          router.refresh();
-      }, 300);
-    }
-  }, [router]);
-
-  const handleCloseDelete = useCallback((open: boolean) => {
-    setIsDeleteOpen(open);
-    if (!open) {
-      setTimeout(() => {
-          setSoulToDelete(null);
-          router.refresh();
-      }, 300);
-    }
-  }, [router]);
+  const handleOpenAssign = useCallback((soul: Soul) => setSoulToAssign(soul), []);
+  const handleOpenEdit = useCallback((soul: Soul) => setSoulToEdit(soul), []);
+  const handleOpenDelete = useCallback((soul: Soul) => setSoulToDelete(soul), []);
 
   const handleExportHarvest = async (formatType: 'csv' | 'pdf') => {
     if (!souls || souls.length === 0) return;
@@ -250,8 +190,9 @@ export default function SoulsWonPage() {
         batch.delete(globalSoulRef);
         
         await batch.commit();
-        toast({ title: "Record Deleted", description: "The soul record has been permanently removed." });
-        handleCloseDelete(false);
+        toast({ title: "Record Deleted" });
+        setSoulToDelete(null);
+        router.refresh();
     } catch (error) {
         const permissionError = new FirestorePermissionError({
             path: soulRef.path,
@@ -371,10 +312,7 @@ export default function SoulsWonPage() {
 
   return (
     <>
-      <div 
-        className="space-y-6 md:space-y-12 pb-32" 
-        inert={isAnyModalOpen ? true : undefined}
-      >
+      <div className="space-y-6 md:space-y-12 pb-32">
         <Card className="border shadow-sm sm:shadow-md rounded-none sm:rounded-lg border-x-0 sm:border-x -mx-4 sm:mx-0">
           <CardContent className="p-3 sm:p-4">
             <div className="flex flex-row items-center gap-2 sm:gap-3">
@@ -439,10 +377,8 @@ export default function SoulsWonPage() {
           soul={soulForFollowUp} 
           isOpen={!!soulForFollowUp} 
           onOpenChange={(isOpen) => {
-              if (!isOpen) {
-                  setSoulForFollowUp(null);
-                  router.refresh();
-              }
+              if (!isOpen) setSoulForFollowUp(null);
+              router.refresh();
           }} 
           onFollowUpLogged={() => {
             setSoulForFollowUp(null);
@@ -454,23 +390,24 @@ export default function SoulsWonPage() {
           soul={soulForHistory} 
           isOpen={!!soulForHistory} 
           onOpenChange={(isOpen) => {
-              if (!isOpen) {
-                  setSoulForHistory(null);
-                  router.refresh();
-              }
+              if (!isOpen) setSoulForHistory(null);
+              router.refresh();
           }} 
       />
       
       <AssignFellowshipDialog 
           soul={soulToAssign} 
           fellowships={activeFellowships || []} 
-          isOpen={isAssignOpen} 
-          onOpenChange={handleCloseAssign} 
+          isOpen={!!soulToAssign} 
+          onOpenChange={(isOpen) => {
+              if (!isOpen) setSoulToAssign(null);
+              router.refresh();
+          }} 
           onAssignGroup={handleAssignGroup} 
       />
       
       {mounted && isMobile ? (
-        <Sheet open={isEditOpen} onOpenChange={handleCloseEdit}>
+        <Sheet open={!!soulToEdit} onOpenChange={(open) => { if(!open) setSoulToEdit(null); router.refresh(); }}>
           <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
             <div className="p-8 border-b flex-shrink-0 bg-muted/10">
               <SheetHeader className="text-left">
@@ -483,7 +420,7 @@ export default function SoulsWonPage() {
                  {soulToEdit && (
                   <EditSoulForm 
                       soul={soulToEdit} 
-                      onSoulUpdated={() => handleCloseEdit(false)} 
+                      onSoulUpdated={() => { setSoulToEdit(null); router.refresh(); }} 
                       fellowships={activeFellowships || []}
                       campaigns={campaigns || []}
                   />
@@ -493,7 +430,7 @@ export default function SoulsWonPage() {
           </SheetContent>
         </Sheet>
       ) : (
-        <Dialog open={isEditOpen} onOpenChange={handleCloseEdit}>
+        <Dialog open={!!soulToEdit} onOpenChange={(open) => { if(!open) setSoulToEdit(null); router.refresh(); }}>
             <DialogContent className="sm:max-w-lg">
                 <DialogHeader>
                     <DialogTitle className="font-headline text-2xl">Edit Soul Details</DialogTitle>
@@ -503,7 +440,7 @@ export default function SoulsWonPage() {
                     {soulToEdit && (
                       <EditSoulForm 
                           soul={soulToEdit} 
-                          onSoulUpdated={() => handleCloseEdit(false)} 
+                          onSoulUpdated={() => { setSoulToEdit(null); router.refresh(); }} 
                           fellowships={activeFellowships || []}
                           campaigns={campaigns || []}
                       />
@@ -516,7 +453,7 @@ export default function SoulsWonPage() {
       {mounted && isMobile ? (
         <Sheet open={isLogDialogOpen} onOpenChange={(open) => {
             setIsLogDialogOpen(open);
-            if (!open) router.refresh();
+            router.refresh();
         }}>
           <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
             <div className="p-8 border-b flex-shrink-0 bg-muted/10">
@@ -536,7 +473,7 @@ export default function SoulsWonPage() {
       ) : (
         <Dialog open={isLogDialogOpen} onOpenChange={(open) => {
             setIsLogDialogOpen(open);
-            if (!open) router.refresh();
+            router.refresh();
         }}>
           <DialogContent className="sm:max-w-lg">
             <DialogHeader>
@@ -555,7 +492,7 @@ export default function SoulsWonPage() {
         </Dialog>
       )}
 
-      <AlertDialog open={isDeleteOpen} onOpenChange={handleCloseDelete}>
+      <AlertDialog open={!!soulToDelete} onOpenChange={(open) => { if(!open) setSoulToDelete(null); }}>
         <AlertDialogContent className="w-[90vw] max-w-lg rounded-lg">
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Record?</AlertDialogTitle>
