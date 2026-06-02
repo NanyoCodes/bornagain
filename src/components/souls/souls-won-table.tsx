@@ -37,7 +37,6 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { cn, safeToDate } from "@/lib/utils";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/collapsible";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { actionItems } from "@/lib/follow-up-data";
 import { Label } from "../ui/label";
 
@@ -179,7 +178,7 @@ const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, 
                                     <p className="text-xs text-muted-foreground italic py-2 opacity-60">No follow-up interactions recorded yet. Begin their journey today!</p>
                                 )}
                                 <div className="grid grid-cols-2 gap-2 pt-1">
-                                    <Button size="sm" className="h-9 text-[10px] font-black uppercase tracking-widest rounded-xl shadow-md" onClick={() => onFollowUp(soul)}>LOG CONTACT</Button>
+                                    <Button size="sm" className="h-9 text-[10px] font-black uppercase tracking-widest rounded-xl shadow-md" onClick={() => onFollowUp(soul)}>FOLLOW-UP</Button>
                                     <Button size="sm" variant="outline" className="h-9 text-[10px] font-black uppercase tracking-widest rounded-xl bg-background/50" onClick={() => onViewHistory(soul)}>HISTORY</Button>
                                 </div>
                             </div>
