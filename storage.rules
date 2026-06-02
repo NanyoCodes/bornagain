@@ -2,23 +2,16 @@ rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
     
-    // Helper function to check if the user is the owner of the path
-    function isOwner(userId) {
-      return request.auth != null && request.auth.uid == userId;
-    }
-
     // Profile pictures: Publicly readable, owner-writable
     match /profile-pictures/{userId}/{allPaths=**} {
       allow read: if true;
-      allow write: if isOwner(userId);
+      allow write: if request.auth != null && request.auth.uid == userId;
     }
     
-    // Testimony media: photos, videos, and audios evidence
-    // We explicitly allow 'write' (which covers create, update, delete) 
-    // for the authenticated owner of the folder segment.
+    // Testimony media: Publicly readable, owner-writable
     match /testimony-media/{userId}/{allPaths=**} {
       allow read: if true;
-      allow write: if isOwner(userId);
+      allow write: if request.auth != null && request.auth.uid == userId;
     }
   }
 }

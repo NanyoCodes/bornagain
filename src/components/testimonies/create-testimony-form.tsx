@@ -139,7 +139,6 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
       // 1. Handle Media Upload if exists
       if (mediaFile && storage) {
         setIsUploadingMedia(true);
-        // Standardize filename to prevent path issues
         const extension = mediaFile.name.split('.').pop();
         const safeName = `${Date.now()}.${extension}`;
         const mediaRef = ref(storage, `testimony-media/${user.uid}/${safeName}`);
@@ -150,7 +149,14 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
         } catch (storageErr: any) {
             console.error("Storage Error:", storageErr);
             if (storageErr.code === 'storage/unauthorized') {
-                throw new Error("Storage Permission Denied. Please ensure your project settings authorize media uploads.");
+                toast({
+                    variant: 'destructive',
+                    title: 'Storage Permission Denied',
+                    description: 'You do not have permission to upload files. Please check your account status or contact support.',
+                });
+                setIsSubmitting(false);
+                setIsUploadingMedia(false);
+                return;
             }
             throw storageErr;
         } finally {
@@ -233,7 +239,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
           <FormField control={form.control} name="category" render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1">Category</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value} disabled={!!prayerRequest}>
+                  <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger className="h-12 rounded-2xl border-2">
                         <SelectValue placeholder="What kind of miracle?" />
@@ -313,7 +319,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
           </div>
 
           <Button type="submit" className="w-full h-14 rounded-2xl font-black text-lg shadow-xl shadow-primary/20 tracking-widest uppercase" disabled={isSubmitting || isUploadingMedia}>
-            {isSubmitting || isUploadingMedia ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : null}
+            {isSubmitting || isUploadingMedia ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
             {isUploadingMedia ? 'UPLOADING EVIDENCE...' : isSubmitting ? 'SUBMITTING miracle...' : 'PUBLISH TESTIMONY'}
           </Button>
         </form>
