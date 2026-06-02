@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useMemo, useState, useEffect, Fragment } from "react";
@@ -48,6 +49,7 @@ import { useToast } from "@/hooks/use-toast";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useRouter } from "next/navigation";
 
 function CampaignSkeletons() {
   return (
@@ -119,6 +121,7 @@ export default function CampaignsPage() {
   const { user, loading: userLoading } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
+  const router = useRouter();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const isMobile = useIsMobile();
@@ -133,6 +136,19 @@ export default function CampaignsPage() {
   const [campaignForSoul, setCampaignForSoul] = useState<Campaign | null>(null);
   const [campaignToDelete, setCampaignToDelete] = useState<Campaign | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  // Interactivity Safety Valve
+  const isAnyModalOpen = !!(isCreateOpen || campaignToManage || campaignForTestimony || campaignForSoul || campaignToDelete);
+
+  useEffect(() => {
+    if (!isAnyModalOpen && typeof document !== 'undefined') {
+      const timer = setTimeout(() => {
+        document.body.style.pointerEvents = 'auto';
+        document.body.removeAttribute('aria-hidden');
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [isAnyModalOpen]);
 
   useEffect(() => {
     setMounted(true);
@@ -186,16 +202,19 @@ export default function CampaignsPage() {
 
   const handleCampaignCreated = () => {
     setIsCreateOpen(false);
+    router.refresh();
   };
   
   const handleTestimonyCreated = () => {
     setCampaignForTestimony(null);
     toast({ title: "Testimony Shared!", description: "Thank you for sharing." });
+    router.refresh();
   };
   
   const handleSoulLogged = () => {
     setCampaignForSoul(null);
     toast({ title: "Soul Logged!", description: "The new soul has been added to your personal dashboard." });
+    router.refresh();
   };
 
   const handleDeleteCampaign = async () => {
@@ -212,6 +231,7 @@ export default function CampaignsPage() {
         await updateDoc(campaignRef, deleteData);
         toast({ title: 'Campaign Deleted', description: 'The campaign has been successfully deleted.' });
         setCampaignToDelete(null);
+        router.refresh();
     } catch (error) {
         const permissionError = new FirestorePermissionError({
             path: campaignRef.path,
@@ -352,96 +372,101 @@ export default function CampaignsPage() {
     }
 
   return (
-    <div className="space-y-8 pb-32">
-      {/* Responsive Single-Row Interaction Box */}
-      <Card className="border shadow-sm sm:shadow-md rounded-none sm:rounded-lg border-x-0 sm:border-x -mx-4 sm:mx-0">
-        <CardContent className="p-3 sm:p-4">
-          <div className="flex flex-row items-center gap-2 sm:gap-3">
-            <Button 
-              variant="outline" 
-              className="flex-1 justify-start text-muted-foreground font-normal rounded-full h-10 sm:h-11 px-4 hover:bg-muted/50 transition-colors text-sm min-w-0"
-              onClick={() => setIsCreateOpen(true)}
-              disabled={!user || profileLoading}
-            >
-              <span className="truncate">
-                {profileLoading ? "Preparing..." : "Launch a mission for the Kingdom?"}
-              </span>
-            </Button>
-            <div className="flex items-center gap-2 shrink-0">
+    <>
+      <div 
+        className="space-y-8 pb-32"
+        inert={isAnyModalOpen ? true : undefined}
+      >
+        {/* Responsive Single-Row Interaction Box */}
+        <Card className="border shadow-sm sm:shadow-md rounded-none sm:rounded-lg border-x-0 sm:border-x -mx-4 sm:mx-0">
+          <CardContent className="p-3 sm:p-4">
+            <div className="flex flex-row items-center gap-2 sm:gap-3">
               <Button 
-                variant="secondary" 
-                size="icon" 
-                className="h-10 sm:h-11 w-10 sm:w-11 rounded-full"
+                variant="outline" 
+                className="flex-1 justify-start text-muted-foreground font-normal rounded-full h-10 sm:h-11 px-4 hover:bg-muted/50 transition-colors text-sm min-w-0"
                 onClick={() => setIsCreateOpen(true)}
                 disabled={!user || profileLoading}
-                title="New Campaign"
               >
-                {profileLoading ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <Target className="h-4 w-4" />
-                )}
+                <span className="truncate">
+                  {profileLoading ? "Preparing..." : "Launch a mission for the Kingdom?"}
+                </span>
               </Button>
+              <div className="flex items-center gap-2 shrink-0">
+                <Button 
+                  variant="secondary" 
+                  size="icon" 
+                  className="h-10 sm:h-11 w-10 sm:w-11 rounded-full"
+                  onClick={() => setIsCreateOpen(true)}
+                  disabled={!user || profileLoading}
+                  title="New Campaign"
+                >
+                  {profileLoading ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Target className="h-4 w-4" />
+                  )}
+                </Button>
+              </div>
             </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
 
-      <div className="flex flex-wrap gap-4 items-center">
-        <Tabs value={filter} onValueChange={setFilter} className="w-full sm:w-auto">
-            <TabsList className="grid w-full grid-cols-3 h-11 bg-muted/40 p-1 rounded-xl">
-                <TabsTrigger value="all" className="font-black text-[10px] sm:text-xs uppercase tracking-widest rounded-lg">All Campaigns</TabsTrigger>
-                <TabsTrigger value="created" className="font-black text-[10px] sm:text-xs uppercase tracking-widest rounded-lg">My Campaigns</TabsTrigger>
-                <TabsTrigger value="joined" className="font-black text-[10px] sm:text-xs uppercase tracking-widest rounded-lg">Joined</TabsTrigger>
-            </TabsList>
-        </Tabs>
-        <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-full sm:w-[180px]">
-                <SelectValue placeholder="Filter by status" />
-            </SelectTrigger>
-            <SelectContent>
-                <SelectItem value="all">All Statuses</SelectItem>
-                <SelectItem value="ongoing">Ongoing</SelectItem>
-                <SelectItem value="upcoming">Upcoming</SelectItem>
-                <SelectItem value="past">Past</SelectItem>
-            </SelectContent>
-        </Select>
-      </div>
+        <div className="flex flex-wrap gap-4 items-center">
+          <Tabs value={filter} onValueChange={setFilter} className="w-full sm:w-auto">
+              <TabsList className="grid w-full grid-cols-3 h-11 bg-muted/40 p-1 rounded-xl">
+                  <TabsTrigger value="all" className="font-black text-[10px] sm:text-xs uppercase tracking-widest rounded-lg">All Campaigns</TabsTrigger>
+                  <TabsTrigger value="created" className="font-black text-[10px] sm:text-xs uppercase tracking-widest rounded-lg">My Campaigns</TabsTrigger>
+                  <TabsTrigger value="joined" className="font-black text-[10px] sm:text-xs uppercase tracking-widest rounded-lg">Joined</TabsTrigger>
+              </TabsList>
+          </Tabs>
+          <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="w-full sm:w-[180px]">
+                  <SelectValue placeholder="Filter by status" />
+              </SelectTrigger>
+              <SelectContent>
+                  <SelectItem value="all">All Statuses</SelectItem>
+                  <SelectItem value="ongoing">Ongoing</SelectItem>
+                  <SelectItem value="upcoming">Upcoming</SelectItem>
+                  <SelectItem value="past">Past</SelectItem>
+              </SelectContent>
+          </Select>
+        </div>
 
 
-      {/* Flush cards on mobile stack */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 -mx-4 sm:mx-0">
-        {loading && <CampaignSkeletons />}
-        {!loading && sortedAndFilteredCampaigns?.map((campaign) => (
-          <CampaignCard 
-            key={campaign.id}
-            campaign={campaign} 
-            userId={user?.uid}
-            userProfile={userProfile}
-            isJoined={joinedCampaignIds.has(campaign.id)}
-            distance={campaign._distance}
-            onManage={() => setCampaignToManage(campaign)}
-            onShareTestimony={() => setCampaignForTestimony(campaign)}
-            onDelete={() => setCampaignToDelete(campaign)}
-            onLogSoul={() => setCampaignForSoul(campaign)}
-          />
-        ))}
-         {!loading && sortedAndFilteredCampaigns?.length === 0 && (
-          <div className="col-span-full text-center py-12 flex flex-col items-center">
-            <Target className="h-16 w-16 text-muted-foreground" />
-            <h3 className="mt-4 text-xl font-semibold">{noResultsMessage}</h3>
-            <p className="mt-2 text-sm text-muted-foreground">
-              {filter === 'created'
-                ? 'Why not start a new one to reach your community?'
-                : filter === 'joined' ? 'Explore all campaigns and join one!' : 'Try a different search term or create a new campaign.'}
-            </p>
-          </div>
-        )}
+        {/* Flush cards on mobile stack */}
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 -mx-4 sm:mx-0">
+          {loading && <CampaignSkeletons />}
+          {!loading && sortedAndFilteredCampaigns?.map((campaign) => (
+            <CampaignCard 
+              key={campaign.id}
+              campaign={campaign} 
+              userId={user?.uid}
+              userProfile={userProfile}
+              isJoined={joinedCampaignIds.has(campaign.id)}
+              distance={campaign._distance}
+              onManage={() => setCampaignToManage(campaign)}
+              onShareTestimony={() => setCampaignForTestimony(campaign)}
+              onDelete={() => setCampaignToDelete(campaign)}
+              onLogSoul={() => setCampaignForSoul(campaign)}
+            />
+          ))}
+          {!loading && sortedAndFilteredCampaigns?.length === 0 && (
+            <div className="col-span-full text-center py-12 flex flex-col items-center">
+              <Target className="h-16 w-16 text-muted-foreground" />
+              <h3 className="mt-4 text-xl font-semibold">{noResultsMessage}</h3>
+              <p className="mt-2 text-sm text-muted-foreground">
+                {filter === 'created'
+                  ? 'Why not start a new one to reach your community?'
+                  : filter === 'joined' ? 'Explore all campaigns and join one!' : 'Try a different search term or create a new campaign.'}
+              </p>
+            </div>
+          )}
+        </div>
       </div>
       
       {/* Campaign Creation */}
       {mounted && isMobile ? (
-        <Sheet open={isCreateOpen} onOpenChange={setIsCreateOpen}>
+        <Sheet open={isCreateOpen} onOpenChange={(open) => { setIsCreateOpen(open); if(!open) router.refresh(); }}>
           <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
             <div className="p-8 border-b flex-shrink-0 bg-muted/10">
               <SheetHeader className="text-left">
@@ -457,7 +482,7 @@ export default function CampaignsPage() {
           </SheetContent>
         </Sheet>
       ) : (
-        <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
+        <Dialog open={isCreateOpen} onOpenChange={(open) => { setIsCreateOpen(open); if(!open) router.refresh(); }}>
           <DialogContent className="sm:max-w-2xl">
             <DialogHeader>
               <DialogTitle>Create a New Campaign</DialogTitle>
@@ -474,7 +499,7 @@ export default function CampaignsPage() {
 
       {/* Campaign Management */}
       {mounted && isMobile ? (
-        <Sheet open={!!campaignToManage} onOpenChange={(open) => !open && setCampaignToManage(null)}>
+        <Sheet open={!!campaignToManage} onOpenChange={(open) => { if (!open) setCampaignToManage(null); router.refresh(); }}>
           <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
             <div className="p-8 border-b flex-shrink-0 bg-muted/10">
               <SheetHeader className="text-left">
@@ -487,10 +512,11 @@ export default function CampaignsPage() {
                 {campaignToManage && (
                   <ManageCampaignForm 
                     campaign={campaignToManage} 
-                    onCampaignUpdated={() => { setCampaignToManage(null); }} 
+                    onCampaignUpdated={() => { setCampaignToManage(null); router.refresh(); }} 
                     onDelete={() => {
-                      setCampaignToDelete(campaignToManage);
+                      const campaign = campaignToManage;
                       setCampaignToManage(null);
+                      setTimeout(() => setCampaignToDelete(campaign), 150);
                     }}
                   />
                 )}
@@ -499,17 +525,18 @@ export default function CampaignsPage() {
           </SheetContent>
         </Sheet>
       ) : (
-        <Dialog open={!!campaignToManage} onOpenChange={(open) => !open && setCampaignToManage(null)}>
+        <Dialog open={!!campaignToManage} onOpenChange={(open) => { if (!open) setCampaignToManage(null); router.refresh(); }}>
           <DialogContent className="sm:max-w-2xl">
             <DialogHeader><DialogTitle>Manage Campaign</DialogTitle><DialogDescription>Update the details or progress of your campaign.</DialogDescription></DialogHeader>
             <div className="max-h-[80vh] overflow-y-auto pr-2">
               {campaignToManage && (
                 <ManageCampaignForm 
                   campaign={campaignToManage} 
-                  onCampaignUpdated={() => { setCampaignToManage(null); }} 
+                  onCampaignUpdated={() => { setCampaignToManage(null); router.refresh(); }} 
                   onDelete={() => {
-                    setCampaignToDelete(campaignToManage);
+                    const campaign = campaignToManage;
                     setCampaignToManage(null);
+                    setTimeout(() => setCampaignToDelete(campaign), 150);
                   }}
                 />
               )}
@@ -519,17 +546,17 @@ export default function CampaignsPage() {
       )}
 
       {/* Delete Confirmation */}
-      <AlertDialog open={!!campaignToDelete} onOpenChange={(open) => !open && setCampaignToDelete(null)}>
+      <AlertDialog open={!!campaignToDelete} onOpenChange={(open) => { if (!open) setCampaignToDelete(null); router.refresh(); }}>
         <AlertDialogContent className="w-[90vw] max-lg rounded-lg">
           <AlertDialogHeader>
-              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-              <AlertDialogDescription>
+              <AlertDialogTitle className="text-2xl font-black font-headline leading-tight">Are you absolutely sure?</AlertDialogTitle>
+              <AlertDialogDescription className="text-sm font-medium">
                   This will mark the campaign as deleted and hide it from public view. This action cannot be undone.
               </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-              <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
-              <AlertDialogAction onClick={handleDeleteCampaign} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90">
+              <AlertDialogCancel disabled={isDeleting} className="rounded-xl h-11">Cancel</AlertDialogCancel>
+              <AlertDialogAction onClick={handleDeleteCampaign} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-xl h-11 font-bold">
                   {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   Confirm Deletion
               </AlertDialogAction>
@@ -539,7 +566,7 @@ export default function CampaignsPage() {
 
       {/* Share Testimony */}
       {mounted && isMobile ? (
-        <Sheet open={!!campaignForTestimony} onOpenChange={(open) => !open && setCampaignForTestimony(null)}>
+        <Sheet open={!!campaignForTestimony} onOpenChange={(open) => { if (!open) setCampaignForTestimony(null); router.refresh(); }}>
           <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
             <div className="p-8 border-b flex-shrink-0 bg-muted/10">
               <SheetHeader className="text-left">
@@ -561,7 +588,7 @@ export default function CampaignsPage() {
           </SheetContent>
         </Sheet>
       ) : (
-        <Dialog open={!!campaignForTestimony} onOpenChange={(open) => !open && setCampaignForTestimony(null)}>
+        <Dialog open={!!campaignForTestimony} onOpenChange={(open) => { if (!open) setCampaignForTestimony(null); router.refresh(); }}>
             <DialogContent className="sm:max-w-lg">
                 <DialogHeader>
                     <DialogTitle>Share Testimony for "{campaignForTestimony?.title}"</DialogTitle>
@@ -584,7 +611,7 @@ export default function CampaignsPage() {
 
       {/* Log Soul */}
       {mounted && isMobile ? (
-        <Sheet open={!!campaignForSoul} onOpenChange={(open) => !open && setCampaignForSoul(null)}>
+        <Sheet open={!!campaignForSoul} onOpenChange={(open) => { if (!open) setCampaignForSoul(null); router.refresh(); }}>
           <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
             <div className="p-8 border-b flex-shrink-0 bg-muted/10">
               <SheetHeader className="text-left">
@@ -607,7 +634,7 @@ export default function CampaignsPage() {
           </SheetContent>
         </Sheet>
       ) : (
-        <Dialog open={!!campaignForSoul} onOpenChange={(open) => !open && setCampaignForSoul(null)}>
+        <Dialog open={!!campaignForSoul} onOpenChange={(open) => { if (!open) setCampaignForSoul(null); router.refresh(); }}>
             <DialogContent className="sm:max-w-lg">
                 <DialogHeader>
                     <DialogTitle>Log a Soul Won in "{campaignForSoul?.title}"</DialogTitle>
@@ -628,7 +655,6 @@ export default function CampaignsPage() {
             </DialogContent>
         </Dialog>
       )}
-
-    </div>
+    </>
   );
 }

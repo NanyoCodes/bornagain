@@ -17,7 +17,7 @@ import {
 import { doc, updateDoc, serverTimestamp, collection, query, where, orderBy } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Loader2, ArrowLeft, MapPin, CalendarDays, Share2, Edit, UserCheck, PlayCircle, Users, Heart, Newspaper, Info } from 'lucide-react';
+import { Loader2, ArrowLeft, MapPin, CalendarDays, Share2, Edit, UserCheck, PlayCircle, Users, Heart, Newspaper, Info, BarChart3 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
@@ -34,7 +34,7 @@ import { FirestorePermissionError } from '@/firebase/errors';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { JoinCampaignDialog } from './join-campaign-dialog';
 import { ScrollArea } from '../ui/scroll-area';
-import { Separator } from '../ui/separator';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip';
 
 export default function CampaignPageClient({ campaignId }: { campaignId: string }) {
     const router = useRouter();
@@ -50,6 +50,18 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
     const [isJoinDialogOpen, setIsJoinDialogOpen] = useState(false);
     const [campaignToDelete, setCampaignToDelete] = useState<Campaign | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
+
+    const isAnyModalOpen = !!(isManageOpen || isLogSoulOpen || isTestimonyOpen || isJoinDialogOpen || campaignToDelete);
+
+    useEffect(() => {
+      if (!isAnyModalOpen && typeof document !== 'undefined') {
+        const timer = setTimeout(() => {
+          document.body.style.pointerEvents = 'auto';
+          document.body.removeAttribute('aria-hidden');
+        }, 300);
+        return () => clearTimeout(timer);
+      }
+    }, [isAnyModalOpen]);
 
     useEffect(() => { setMounted(true); }, []);
 
@@ -191,7 +203,10 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
     if (campaignError || !campaign || campaign.status === 'deleted') return <div className="text-center p-12"><Loader2 className="mx-auto h-12 w-12 opacity-20" /><h2 className="mt-4 text-xl font-bold">Campaign Not Found</h2><Button asChild variant="outline" className="mt-4"><Link href="/dashboard/campaigns">Return to Campaigns</Link></Button></div>;
 
     return (
-        <div className="space-y-8 pb-32">
+        <div 
+            className="space-y-8 pb-32"
+            {...(isAnyModalOpen ? { inert: true } : {})}
+        >
             <div className="flex items-center gap-4 px-4 sm:px-0">
                 <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full">
                     <ArrowLeft className="h-5 w-5"/>
@@ -253,77 +268,77 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                                 <p className="text-xs text-muted-foreground font-medium uppercase">{timeString}</p>
                             </CardContent>
                         </Card>
-                    </div>
 
-                    <Card className="rounded-none sm:rounded-3xl shadow-sm border-none bg-background border border-muted-foreground/10 overflow-hidden">
-                        <CardHeader className="p-6">
-                            <CardTitle className="flex items-center justify-between text-lg font-bold uppercase tracking-widest">
-                                <span className="flex items-center gap-2">
-                                    <Users className="h-5 w-5 text-primary" />
-                                    Participants Directory
-                                </span>
-                                <Badge variant="secondary" className="rounded-full px-3 h-6 font-bold">{participants?.length || 0}</Badge>
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent className="px-6 pb-6">
-                            {!isJoined ? (
-                                <div className="text-center py-10 bg-muted/20 rounded-2xl border-2 border-dashed">
-                                    <p className="text-sm text-muted-foreground px-8 leading-relaxed italic">Join this campaign to connect with fellow laborers in the field.</p>
-                                </div>
+                        <Card className="rounded-none sm:rounded-3xl shadow-sm border-none bg-background border border-muted-foreground/10 overflow-hidden">
+                            <CardHeader className="p-6">
+                                <CardTitle className="flex items-center justify-between text-lg font-bold uppercase tracking-widest">
+                                    <span className="flex items-center gap-2">
+                                        <Users className="h-5 w-5 text-primary" />
+                                        Participants Directory
+                                    </span>
+                                    <Badge variant="secondary" className="rounded-full px-3 h-6 font-bold">{participants?.length || 0}</Badge>
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent className="px-6 pb-6">
+                                {!isJoined ? (
+                                    <div className="text-center py-10 bg-muted/20 rounded-2xl border-2 border-dashed">
+                                        <p className="text-sm text-muted-foreground px-8 leading-relaxed italic">Join this campaign to connect with fellow laborers in the field.</p>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-4">
+                                        {participantsLoading ? (
+                                            <div className="flex justify-center py-8"><Loader2 className="animate-spin h-6 w-6 opacity-20" /></div>
+                                        ) : (
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                                {participants?.map(p => (
+                                                    <Link key={p.id} href={`/dashboard/profile/${p.userId}`} className="flex items-center gap-3 p-3 rounded-2xl border bg-muted/5 hover:bg-muted/10 transition-colors">
+                                                        <Avatar className="h-8 w-8 border shadow-sm">
+                                                            <AvatarImage src={p.photoURL} />
+                                                            <AvatarFallback className="text-[10px] bg-primary/10 text-primary font-bold">{p.firstName?.charAt(0)}</AvatarFallback>
+                                                        </Avatar>
+                                                        <div className="min-w-0">
+                                                            <p className="text-sm font-bold truncate leading-tight">{p.firstName} {p.lastName}</p>
+                                                            {p.userId === campaign.organizerId && <span className="text-[8px] font-black uppercase text-primary tracking-widest">Organizer</span>}
+                                                        </div>
+                                                    </Link>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+                            </CardContent>
+                        </Card>
+
+                        <div className="space-y-6">
+                            <div className="flex items-center justify-between px-4 sm:px-0">
+                                <h3 className="text-xl font-black font-headline uppercase tracking-tight flex items-center gap-2">
+                                    <Newspaper className="h-5 w-5 text-primary" />
+                                    Campaign Testimonies
+                                </h3>
+                            </div>
+                            {testimoniesLoading ? (
+                                <div className="flex justify-center py-8"><Loader2 className="animate-spin h-6 w-6 opacity-20" /></div>
                             ) : (
-                                <div className="space-y-4">
-                                    {participantsLoading ? (
-                                        <div className="flex justify-center py-8"><Loader2 className="animate-spin h-6 w-6 opacity-20" /></div>
+                                <div className="flex flex-col gap-0 w-full max-w-2xl mx-auto -mx-4 sm:mx-auto">
+                                    {testimonies && testimonies.length > 0 ? (
+                                        testimonies.map(t => (
+                                            <TestimonyCard 
+                                                key={t.id} 
+                                                testimony={t} 
+                                                onDelete={() => {}} 
+                                                onEdit={() => {}} 
+                                                currentUserProfile={userProfile}
+                                            />
+                                        ))
                                     ) : (
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                            {participants?.map(p => (
-                                                <Link key={p.id} href={`/dashboard/profile/${p.userId}`} className="flex items-center gap-3 p-3 rounded-2xl border bg-muted/5 hover:bg-muted/10 transition-colors">
-                                                    <Avatar className="h-8 w-8 border shadow-sm">
-                                                        <AvatarImage src={p.photoURL} />
-                                                        <AvatarFallback className="text-[10px] bg-primary/10 text-primary font-bold">{p.firstName?.charAt(0)}</AvatarFallback>
-                                                    </Avatar>
-                                                    <div className="min-w-0">
-                                                        <p className="text-sm font-bold truncate leading-tight">{p.firstName} {p.lastName}</p>
-                                                        {p.userId === campaign.organizerId && <span className="text-[8px] font-black uppercase text-primary tracking-widest">Organizer</span>}
-                                                    </div>
-                                                </Link>
-                                            ))}
+                                        <div className="col-span-full text-center py-20 bg-muted/20 rounded-[2.5rem] border-2 border-dashed mx-4 sm:mx-0">
+                                            <Newspaper className="h-12 w-12 text-muted-foreground/10 mx-auto mb-4" />
+                                            <p className="text-sm text-muted-foreground font-medium px-8 italic">No testimonies shared yet. Be the first to record God's work here!</p>
                                         </div>
                                     )}
                                 </div>
                             )}
-                        </CardContent>
-                    </Card>
-
-                    <div className="space-y-6">
-                        <div className="flex items-center justify-between px-4 sm:px-0">
-                             <h3 className="text-xl font-black font-headline uppercase tracking-tight flex items-center gap-2">
-                                <Newspaper className="h-5 w-5 text-primary" />
-                                Campaign Testimonies
-                             </h3>
                         </div>
-                        {testimoniesLoading ? (
-                            <div className="flex justify-center py-8"><Loader2 className="animate-spin h-6 w-6 opacity-20" /></div>
-                        ) : (
-                            <div className="flex flex-col gap-0 w-full max-w-2xl mx-auto -mx-4 sm:mx-auto">
-                                {testimonies && testimonies.length > 0 ? (
-                                    testimonies.map(t => (
-                                        <TestimonyCard 
-                                            key={t.id} 
-                                            testimony={t} 
-                                            onDelete={() => {}} 
-                                            onEdit={() => {}} 
-                                            currentUserProfile={userProfile}
-                                        />
-                                    ))
-                                ) : (
-                                    <div className="col-span-full text-center py-20 bg-muted/20 rounded-[2.5rem] border-2 border-dashed mx-4 sm:mx-0">
-                                        <Newspaper className="h-12 w-12 text-muted-foreground/10 mx-auto mb-4" />
-                                        <p className="text-sm text-muted-foreground font-medium px-8 italic">No testimonies shared yet. Be the first to record God's work here!</p>
-                                    </div>
-                                )}
-                            </div>
-                        )}
                     </div>
                 </div>
 
@@ -392,7 +407,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                                 <Avatar className="h-12 w-12 border-2 border-primary/20">
                                     <AvatarFallback className="font-black text-lg">{campaign.organizerFirstName?.charAt(0)}{campaign.organizerLastName?.charAt(0)}</AvatarFallback>
                                 </Avatar>
-                                <div className="min-w-0">
+                                <div className="min-w-0 flex-1">
                                     <span className="font-black text-base group-hover:text-primary transition-colors block leading-tight">
                                         {campaign.organizerFirstName} {campaign.organizerLastName}
                                     </span>
@@ -423,7 +438,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                 </div>
             </div>
 
-            <Dialog open={isLogSoulOpen} onOpenChange={setIsLogSoulOpen}>
+            <Dialog open={isLogSoulOpen} onOpenChange={(open) => { setIsLogSoulOpen(open); if(!open) router.refresh(); }}>
                 <DialogContent className="sm:max-w-lg rounded-3xl p-0 overflow-hidden">
                     <div className="p-6 border-b bg-muted/10">
                         <DialogHeader>
@@ -439,7 +454,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                 </DialogContent>
             </Dialog>
 
-            <Dialog open={isTestimonyOpen} onOpenChange={setIsTestimonyOpen}>
+            <Dialog open={isTestimonyOpen} onOpenChange={(open) => { setIsTestimonyOpen(open); if(!open) router.refresh(); }}>
                 <DialogContent className="sm:max-w-lg rounded-3xl p-0 overflow-hidden">
                     <div className="p-6 border-b bg-muted/10">
                         <DialogHeader>
@@ -455,7 +470,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                 </DialogContent>
             </Dialog>
 
-            <Dialog open={isManageOpen} onOpenChange={setIsManageOpen}>
+            <Dialog open={isManageOpen} onOpenChange={(open) => { setIsManageOpen(open); if(!open) router.refresh(); }}>
                 <DialogContent className="sm:max-w-2xl rounded-3xl p-0 overflow-hidden">
                     <div className="p-6 border-b bg-muted/10">
                         <DialogHeader>
@@ -468,7 +483,11 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                             <ManageCampaignForm 
                                 campaign={campaign} 
                                 onCampaignUpdated={() => setIsManageOpen(false)} 
-                                onDelete={() => { setCampaignToDelete(campaign); setIsManageOpen(false); }} 
+                                onDelete={() => {
+                                  const c = campaign;
+                                  setIsManageOpen(false);
+                                  setTimeout(() => setCampaignToDelete(c), 150);
+                                }} 
                             />
                         </div>
                     </ScrollArea>
@@ -477,22 +496,22 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
 
             {userProfile && (
                 <JoinCampaignDialog
-                  campaign={campaign}
-                  userProfile={userProfile}
-                  isOpen={isJoinDialogOpen}
-                  onOpenChange={setIsJoinDialogOpen}
-                  onCampaignJoined={() => {}}
+                campaign={campaign}
+                userProfile={userProfile}
+                isOpen={isJoinDialogOpen}
+                onOpenChange={setIsJoinDialogOpen}
+                onCampaignJoined={() => { router.refresh(); }}
                 />
             )}
 
             {campaignToDelete && (
-                <AlertDialog open={!!campaignToDelete} onOpenChange={() => setCampaignToDelete(null)}>
+                <AlertDialog open={!!campaignToDelete} onOpenChange={(open) => { if (!open) setCampaignToDelete(null); router.refresh(); }}>
                     <AlertDialogContent className="rounded-3xl p-8">
                         <AlertDialogHeader>
-                            <AlertDialogTitle className="text-2xl font-bold font-headline">Delete Campaign?</AlertDialogTitle>
-                            <AlertDialogDescription className="text-sm">
+                            <DialogTitle className="text-2xl font-bold font-headline">Delete Campaign?</DialogTitle>
+                            <DialogDescription className="text-sm">
                                 This will permanently remove "{campaignToDelete.title}" from the platform. This action cannot be undone.
-                            </AlertDialogDescription>
+                            </DialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter className="mt-6 gap-3">
                             <AlertDialogCancel disabled={isDeleting} className="rounded-2xl h-11 font-bold">Cancel</AlertDialogCancel>
