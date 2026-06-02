@@ -1,3 +1,4 @@
+
 {
   "entities": {
     "UserProfile": {
@@ -253,6 +254,7 @@
         "email": { "type": "string", "format": "email" },
         "phone": { "type": "string" },
         "church": { "type": "string" },
+        "relationship": { "type": "string", "enum": ["Family", "Friend", "Colleague", "Neighbor", "Stranger", "Other"] },
         "source": { "type": "string", "enum": ["Personal", "Campaign"] },
         "sourceDetails": { "type": "string" },
         "campaignId": { "type": "string" },

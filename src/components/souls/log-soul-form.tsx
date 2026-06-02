@@ -38,6 +38,7 @@ const formSchema = z.object({
   email: z.string().email("Please enter a valid email address.").optional().or(z.literal('')),
   phone: z.string().optional(),
   church: z.string().optional(),
+  relationship: z.string({ required_error: "Please select your relationship." }),
   locationWonCity: z.string().optional(),
   locationWonState: z.string().optional(),
   locationWonCountry: z.string().optional(),
@@ -79,6 +80,7 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign, fellowships, campai
       email: "",
       phone: "",
       church: "",
+      relationship: "Other",
       locationWonCity: "",
       locationWonState: "",
       locationWonCountry: "",
@@ -126,6 +128,7 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign, fellowships, campai
       lastName: values.lastName,
       gender: values.gender || null,
       nationality: values.nationality || null,
+      relationship: values.relationship,
       source: values.source as 'Campaign' | 'Personal',
       wonAt: values.wonAt,
       status: "New",
@@ -255,20 +258,23 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign, fellowships, campai
             />
             <FormField
               control={form.control}
-              name="nationality"
+              name="relationship"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Nationality</FormLabel>
+                  <FormLabel>Relationship</FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger className="text-base">
-                        <SelectValue placeholder="Select Country" />
+                        <SelectValue placeholder="How do you know them?" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {countriesList.map(c => (
-                        <SelectItem key={c.isoCode} value={c.name}>{c.name}</SelectItem>
-                      ))}
+                      <SelectItem value="Family">Family Member</SelectItem>
+                      <SelectItem value="Friend">Friend</SelectItem>
+                      <SelectItem value="Colleague">Colleague</SelectItem>
+                      <SelectItem value="Neighbor">Neighbor</SelectItem>
+                      <SelectItem value="Stranger">Stranger / Outreach</SelectItem>
+                      <SelectItem value="Other">Other</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -395,6 +401,28 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign, fellowships, campai
                             <FormControl>
                                 <Input placeholder="e.g., New Life Church" {...field} value={field.value || ""} className="text-base"/>
                             </FormControl>
+                            <FormMessage />
+                            </FormItem>
+                        )}
+                        />
+                        <FormField
+                        control={form.control}
+                        name="nationality"
+                        render={({ field }) => (
+                            <FormItem>
+                            <FormLabel>Nationality</FormLabel>
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <FormControl>
+                                <SelectTrigger className="text-base">
+                                    <SelectValue placeholder="Select Country" />
+                                </SelectTrigger>
+                                </FormControl>
+                                <SelectContent className="max-h-[300px]">
+                                {countriesList.map(c => (
+                                    <SelectItem key={c.isoCode} value={c.name}>{c.name}</SelectItem>
+                                ))}
+                                </SelectContent>
+                            </Select>
                             <FormMessage />
                             </FormItem>
                         )}

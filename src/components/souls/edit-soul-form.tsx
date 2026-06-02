@@ -38,6 +38,7 @@ const formSchema = z.object({
   email: z.string().email("Please enter a valid email address.").optional().or(z.literal('')),
   phone: z.string().optional(),
   church: z.string().optional(),
+  relationship: z.string().optional(),
   locationWonCity: z.string().optional(),
   locationWonState: z.string().optional(),
   locationWonCountry: z.string().optional(),
@@ -75,6 +76,7 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
       email: soul.email || "",
       phone: soul.phone || "",
       church: soul.church || "",
+      relationship: soul.relationship || "Other",
       locationWonCity: soul.locationWon?.city || "",
       locationWonState: soul.locationWon?.state || "",
       locationWonCountry: soul.locationWon?.country || "",
@@ -99,6 +101,7 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
             email: soul.email || "",
             phone: soul.phone || "",
             church: soul.church || "",
+            relationship: soul.relationship || "Other",
             locationWonCity: soul.locationWon?.city || "",
             locationWonState: soul.locationWon?.state || "",
             locationWonCountry: soul.locationWon?.country || "",
@@ -135,6 +138,7 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
       lastName: values.lastName,
       gender: values.gender || null,
       nationality: values.nationality || null,
+      relationship: values.relationship || null,
       source: values.source as 'Personal' | 'Campaign',
       wonAt: values.wonAt,
       updatedAt: serverTimestamp(),
@@ -269,20 +273,23 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
             />
             <FormField
               control={form.control}
-              name="nationality"
+              name="relationship"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Nationality</FormLabel>
+                  <FormLabel>Relationship</FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
                     <FormControl>
                       <SelectTrigger className="text-base">
-                        <SelectValue placeholder="Select Country" />
+                        <SelectValue placeholder="How do you know them?" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {countriesList.map(c => (
-                        <SelectItem key={c.isoCode} value={c.name}>{c.name}</SelectItem>
-                      ))}
+                      <SelectItem value="Family">Family Member</SelectItem>
+                      <SelectItem value="Friend">Friend</SelectItem>
+                      <SelectItem value="Colleague">Colleague</SelectItem>
+                      <SelectItem value="Neighbor">Neighbor</SelectItem>
+                      <SelectItem value="Stranger">Stranger / Outreach</SelectItem>
+                      <SelectItem value="Other">Other</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -413,6 +420,28 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
                                 </FormItem>
                             )}
                             />
+                        <FormField
+                            control={form.control}
+                            name="nationality"
+                            render={({ field }) => (
+                                <FormItem>
+                                <FormLabel>Nationality</FormLabel>
+                                <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
+                                    <FormControl>
+                                    <SelectTrigger className="text-base">
+                                        <SelectValue placeholder="Select Country" />
+                                    </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent className="max-h-[300px]">
+                                    {countriesList.map(c => (
+                                        <SelectItem key={c.isoCode} value={c.name}>{c.name}</SelectItem>
+                                    ))}
+                                    </SelectContent>
+                                </Select>
+                                <FormMessage />
+                                </FormItem>
+                            )}
+                        />
                     </div>
                 </AccordionContent>
             </AccordionItem>

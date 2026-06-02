@@ -1,3 +1,4 @@
+
 import type { Timestamp } from "firebase/firestore";
 
 export type ReadingHistoryItem = {
@@ -248,6 +249,8 @@ export type FollowUpLogItem = {
   memberName?: string;
 };
 
+export type SoulRelationship = 'Family' | 'Friend' | 'Colleague' | 'Neighbor' | 'Stranger' | 'Other';
+
 export type Soul = {
   id: string;
   userId: string;
@@ -258,6 +261,7 @@ export type Soul = {
   church?: string;
   gender?: string;
   nationality?: string;
+  relationship?: SoulRelationship;
   source: 'Campaign' | 'Personal';
   sourceDetails?: string;
   campaignId?: string;

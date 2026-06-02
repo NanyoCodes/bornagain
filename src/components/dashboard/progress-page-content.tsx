@@ -1,3 +1,4 @@
+
 'use client';
 
 import dynamic from 'next/dynamic';
@@ -26,6 +27,8 @@ import {
   Sparkles,
   BookOpen,
   Info,
+  Users,
+  Home,
 } from 'lucide-react';
 import { useCollection, useFirestore, useUser, useDoc } from '@/firebase';
 import {
@@ -54,6 +57,7 @@ import { ProgressOverview } from '@/components/dashboard/progress-overview';
 import AdsenseAd from '@/components/common/adsense-ad';
 import { useToast } from '@/hooks/use-toast';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Progress } from '@/components/ui/progress';
 
 const MonthlyStatsChart = dynamic(() => import('@/components/dashboard/monthly-stats-chart').then(m => m.MonthlyStatsChart), {
   loading: () => <Skeleton className="h-[300px] w-full" />,
@@ -242,6 +246,79 @@ function ActionAnalyticsCard({ souls }: { souls: Soul[] }) {
   );
 }
 
+function FamilyFriendsTrackerCard({ souls }: { souls: Soul[] }) {
+    const stats = useMemo(() => {
+        const familyCount = souls.filter(s => s.relationship === 'Family').length;
+        const friendsCount = souls.filter(s => s.relationship === 'Friend').length;
+        const innerCircleCount = souls.filter(s => ['Colleague', 'Neighbor'].includes(s.relationship || '')).length;
+        
+        return {
+            family: familyCount,
+            friends: friendsCount,
+            innerCircle: innerCircleCount,
+            totalInner: familyCount + friendsCount + innerCircleCount
+        };
+    }, [souls]);
+
+    return (
+        <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-sm border-t-4 border-t-blue-500">
+            <CardHeader className="pb-3">
+                <CardTitle className="text-lg flex items-center gap-2">
+                    <Home className="h-5 w-5 text-blue-500" />
+                    Kingdom Circle Tracker
+                </CardTitle>
+                <CardDescription>
+                    Ensuring your closest circles are saved and nurtured in faith.
+                </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+                <div className="space-y-4">
+                    <div className="space-y-1.5">
+                        <div className="flex justify-between items-center text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                            <span>Family Harvest</span>
+                            <span className="text-blue-500">{stats.family} Souls</span>
+                        </div>
+                        <Progress value={Math.min((stats.family / 5) * 100, 100)} className="h-2 bg-blue-100 dark:bg-blue-900/20" indicatorClassName="bg-blue-500" />
+                        <p className="text-[10px] text-muted-foreground leading-tight italic">"Believe in the Lord Jesus, and you will be saved—you and your household." — Acts 16:31</p>
+                    </div>
+
+                    <div className="space-y-1.5 pt-2">
+                        <div className="flex justify-between items-center text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                            <span>Friends & Inner Circle</span>
+                            <span className="text-primary">{stats.friends + stats.innerCircle} Souls</span>
+                        </div>
+                        <Progress value={Math.min(((stats.friends + stats.innerCircle) / 10) * 100, 100)} className="h-2" />
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-3 gap-2">
+                    <div className="p-3 rounded-2xl bg-muted/30 border text-center space-y-1">
+                        <p className="text-[10px] font-black text-muted-foreground uppercase tracking-tighter">Family</p>
+                        <p className="text-xl font-black text-blue-500">{stats.family}</p>
+                    </div>
+                    <div className="p-3 rounded-2xl bg-muted/30 border text-center space-y-1">
+                        <p className="text-[10px] font-black text-muted-foreground uppercase tracking-tighter">Friends</p>
+                        <p className="text-xl font-black text-primary">{stats.friends}</p>
+                    </div>
+                    <div className="p-3 rounded-2xl bg-muted/30 border text-center space-y-1">
+                        <p className="text-[10px] font-black text-muted-foreground uppercase tracking-tighter">Circle</p>
+                        <p className="text-xl font-black text-foreground">{stats.innerCircle}</p>
+                    </div>
+                </div>
+
+                {stats.family === 0 && (
+                    <div className="p-4 bg-blue-50 dark:bg-blue-900/10 rounded-2xl border border-blue-200 dark:border-blue-800 flex items-start gap-3">
+                        <Sparkles className="h-5 w-5 text-blue-500 shrink-0 mt-0.5" />
+                        <p className="text-xs text-blue-700 dark:text-blue-400 font-medium leading-relaxed">
+                            Have you shared the Gospel with your household? Log your family members here to prioritize their spiritual growth.
+                        </p>
+                    </div>
+                )}
+            </CardContent>
+        </Card>
+    );
+}
+
 function LastBibleReadCard({ history }: { history: ReadingHistoryItem[] }) {
   const lastRead = useMemo(() => {
     if (!history || history.length === 0) return null;
@@ -293,10 +370,6 @@ function LastBibleReadCard({ history }: { history: ReadingHistoryItem[] }) {
             <ArrowRight className="ml-2 h-3.5 w-3.5" />
           </Link>
         </Button>
-        <p className="text-[9px] text-muted-foreground mt-3 flex items-start gap-1.5 leading-tight italic">
-          <Info className="h-3 w-3 shrink-0 mt-0.5" />
-          Last read is detected when you finish a chapter and click "Mark as Read" in the Bible Reader.
-        </p>
       </CardContent>
     </Card>
   );
@@ -466,6 +539,8 @@ export function ProgressPageContent() {
                 </Card>
 
                 <div className="-mx-4 sm:mx-0"><ActionAnalyticsCard souls={soulsWon || []} /></div>
+                
+                <div className="-mx-4 sm:mx-0"><FamilyFriendsTrackerCard souls={soulsWon || []} /></div>
             </div>
             
             <div className="space-y-6 md:space-y-8 pb-16 lg:pb-0">
