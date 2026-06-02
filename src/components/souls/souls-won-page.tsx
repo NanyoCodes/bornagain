@@ -31,7 +31,7 @@ import {
 import { PlusCircle, Download, Loader2, Trash2, HeartHandshake } from "lucide-react";
 import type { Soul, Campaign, Fellowship, UserProfile } from "@/lib/types";
 import { useCollection, useFirestore, useUser, useDoc } from "@/firebase";
-import { collection, query, orderBy, doc, serverTimestamp, updateDoc, writeBatch, addDoc, deleteField, where } from "firebase/firestore";
+import { collection, query, orderBy, doc, updateDoc, serverTimestamp, writeBatch, addDoc, deleteField, where } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useSearch } from "@/context/search-context";
@@ -47,6 +47,7 @@ import { FirestorePermissionError } from "@/firebase/errors";
 import { safeToDate } from "@/lib/utils";
 import { Card, CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useRouter } from "next/navigation";
 
 // Performance: Dynamically import heavy components
 const SoulsWonTable = dynamic(() => import('@/components/souls/souls-won-table').then(m => m.SoulsWonTable), {
@@ -64,17 +65,18 @@ export default function SoulsWonPage() {
   const { user, loading: userLoading } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
+  const router = useRouter();
   const isMobile = useIsMobile();
   const { searchTerm, setSearchPlaceholder, setIsSearchVisible, setSearchTerm } = useSearch();
 
   const [mounted, setMounted] = useState(false);
   const [isLogDialogOpen, setIsLogDialogOpen] = useState(false);
   
-  // Modals for History and Follow-up (using object state)
+  // Modals for History and Follow-up
   const [soulForFollowUp, setSoulForFollowUp] = useState<Soul | null>(null);
   const [soulForHistory, setSoulForHistory] = useState<Soul | null>(null);
 
-  // Modals for Edit, Assign, Delete (using separate boolean + data to ensure clean exit animations)
+  // Modals for Edit, Assign, Delete
   const [soulToAssign, setSoulToAssign] = useState<Soul | null>(null);
   const [isAssignOpen, setIsAssignOpen] = useState(false);
 
@@ -147,27 +149,41 @@ export default function SoulsWonPage() {
     setIsDeleteOpen(true);
   }, []);
 
+  // Force restore interactivity and refresh data
+  const cleanupAndRefresh = useCallback(() => {
+    document.body.style.pointerEvents = 'auto';
+    router.refresh();
+  }, [router]);
+
   const handleCloseEdit = useCallback((open: boolean) => {
     setIsEditOpen(open);
     if (!open) {
-      // Small delay to allow exit animation to complete before clearing data
-      setTimeout(() => setSoulToEdit(null), 300);
+      setTimeout(() => {
+        setSoulToEdit(null);
+        cleanupAndRefresh();
+      }, 300);
     }
-  }, []);
+  }, [cleanupAndRefresh]);
 
   const handleCloseAssign = useCallback((open: boolean) => {
     setIsAssignOpen(open);
     if (!open) {
-      setTimeout(() => setSoulToAssign(null), 300);
+      setTimeout(() => {
+        setSoulToAssign(null);
+        cleanupAndRefresh();
+      }, 300);
     }
-  }, []);
+  }, [cleanupAndRefresh]);
 
   const handleCloseDelete = useCallback((open: boolean) => {
     setIsDeleteOpen(open);
     if (!open) {
-      setTimeout(() => setSoulToDelete(null), 300);
+      setTimeout(() => {
+        setSoulToDelete(null);
+        cleanupAndRefresh();
+      }, 300);
     }
-  }, []);
+  }, [cleanupAndRefresh]);
 
   const handleExportHarvest = async (formatType: 'csv' | 'pdf') => {
     if (!souls || souls.length === 0) return;
@@ -294,6 +310,9 @@ export default function SoulsWonPage() {
             createdAt: serverTimestamp(),
         }).catch(() => {});
     }
+    
+    // Refresh to ensure everything reflects correctly
+    cleanupAndRefresh();
   };
 
   const handleExportSingleSoul = useCallback(async (soul: Soul, formatType: 'csv' | 'pdf') => {
@@ -411,7 +430,10 @@ export default function SoulsWonPage() {
           soul={soulForFollowUp} 
           isOpen={!!soulForFollowUp} 
           onOpenChange={(isOpen) => !isOpen && setSoulForFollowUp(null)} 
-          onFollowUpLogged={() => setSoulForFollowUp(null)} 
+          onFollowUpLogged={() => {
+            setSoulForFollowUp(null);
+            cleanupAndRefresh();
+          }} 
       />
       
       <ViewHistoryDialog 
@@ -482,7 +504,10 @@ export default function SoulsWonPage() {
                 </SheetHeader>
             </div>
             <div className="flex-grow overflow-y-auto p-8">
-                <LogSoulForm onSoulLogged={() => setIsLogDialogOpen(false)} fellowships={activeFellowships || []} campaigns={campaigns || []} />
+                <LogSoulForm onSoulLogged={() => {
+                  setIsLogDialogOpen(false);
+                  cleanupAndRefresh();
+                }} fellowships={activeFellowships || []} campaigns={campaigns || []} />
             </div>
           </SheetContent>
         </Sheet>
@@ -496,7 +521,10 @@ export default function SoulsWonPage() {
               </DialogDescription>
             </DialogHeader>
             <div className="max-h-[70vh] overflow-y-auto pr-2">
-              <LogSoulForm onSoulLogged={() => setIsLogDialogOpen(false)} fellowships={activeFellowships || []} campaigns={campaigns || []} />
+              <LogSoulForm onSoulLogged={() => {
+                setIsLogDialogOpen(false);
+                cleanupAndRefresh();
+              }} fellowships={activeFellowships || []} campaigns={campaigns || []} />
             </div>
           </DialogContent>
         </Dialog>

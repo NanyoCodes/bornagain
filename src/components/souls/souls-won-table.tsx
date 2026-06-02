@@ -268,16 +268,16 @@ const SoulTableRow = React.memo(({ soul, onFollowUp, onViewHistory, onExportSing
                     <DropdownMenuTrigger asChild><Button size="icon" variant="ghost" className="h-8 w-8 rounded-full"><MoreHorizontal className="h-4 w-4" /></Button></DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-48 rounded-xl shadow-xl">
                         <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Soul Control</DropdownMenuLabel>
-                        <DropdownMenuItem onSelect={(e) => { e.preventDefault(); onEdit(soul); }} className="rounded-lg">
+                        <DropdownMenuItem onSelect={(e) => { e.preventDefault(); onEdit(soul); }}>
                             <Edit className="mr-2 h-4 w-4" /> Edit Details
                         </DropdownMenuItem>
-                        <DropdownMenuItem onSelect={(e) => { e.preventDefault(); onFollowUp(soul); }} className="rounded-lg">
+                        <DropdownMenuItem onSelect={(e) => { e.preventDefault(); onFollowUp(soul); }}>
                             <HeartHandshake className="mr-2 h-4 w-4 text-primary" /> Log Follow-up
                         </DropdownMenuItem>
-                        <DropdownMenuItem onSelect={(e) => { e.preventDefault(); onViewHistory(soul); }} className="rounded-lg">
+                        <DropdownMenuItem onSelect={(e) => { e.preventDefault(); onViewHistory(soul); }}>
                             <History className="mr-2 h-4 w-4" /> Interaction History
                         </DropdownMenuItem>
-                        <DropdownMenuItem onSelect={(e) => { e.preventDefault(); onOpenAssignDialog(soul); }} className="rounded-lg">
+                        <DropdownMenuItem onSelect={(e) => { e.preventDefault(); onOpenAssignDialog(soul); }}>
                             <Users className="mr-2 h-4 w-4" /> Assign Community
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
