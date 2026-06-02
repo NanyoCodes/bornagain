@@ -9,6 +9,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import React, { useEffect, useMemo, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft,
   Bell,
@@ -279,7 +280,7 @@ function BottomNavBar() {
   
     return (
       <nav className="fixed bottom-0 left-0 right-0 z-40 border-t bg-background/80 backdrop-blur-lg md:hidden pb-[env(safe-area-inset-bottom)] shadow-[0_-5px_15px_-10px_rgba(0,0,0,0.1)]">
-        <div className="flex h-16 items-center justify-around px-2">
+        <div className="flex min-h-[4.5rem] h-auto items-stretch justify-around px-1 py-1.5">
           {navItems.map((item) => {
             const isActive = pathname.startsWith(item.href);
             return (
@@ -287,14 +288,37 @@ function BottomNavBar() {
                 key={item.href}
                 href={item.href}
                 prefetch={true}
-                className={cn(
-                  "relative flex flex-col items-center justify-center p-2 rounded-xl transition-all duration-200",
-                  isActive ? "text-primary bg-primary/10" : "text-muted-foreground hover:bg-muted"
-                )}
+                className="relative flex flex-1 flex-col items-center justify-center min-w-0 px-0.5"
                 aria-label={item.label}
               >
-                <item.icon className={cn("h-6 w-6", !isActive && item.color)} />
-                <span className="sr-only">{item.label}</span>
+                <motion.div
+                  className="relative flex flex-col items-center justify-center p-1.5 rounded-xl"
+                  whileTap={{ scale: 0.85 }}
+                >
+                  {isActive && (
+                    <motion.div
+                      layoutId="nav-active-pill-db"
+                      className="absolute inset-0 bg-primary/10 rounded-xl"
+                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                    />
+                  )}
+                  <motion.div
+                    animate={{ 
+                      scale: isActive ? 1.1 : 1,
+                      color: isActive ? "var(--primary)" : "var(--muted-foreground)"
+                    }}
+                    transition={{ duration: 0.2 }}
+                    className={cn(
+                      "relative z-10",
+                      isActive ? "text-primary" : "text-muted-foreground"
+                    )}
+                  >
+                    <item.icon className={cn("h-5 w-5", !isActive && item.color)} />
+                  </motion.div>
+                </motion.div>
+                <span className="text-[9px] font-black mt-1 text-center truncate w-full opacity-80 leading-none uppercase tracking-tighter">
+                    {item.label}
+                </span>
               </Link>
             )
           })}
