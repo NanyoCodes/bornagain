@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useMemo, useState, useEffect, Fragment } from "react";
@@ -176,14 +175,14 @@ export default function CampaignsPage() {
     if (!firestore) return null;
     return query(collection(firestore, 'fellowships'), orderBy('name', 'asc'));
   }, [firestore]);
-  const { data: allFellowships, loading: loadingFellowships } = useCollection<Fellowship>(fellowshipsQuery);
+  const { data: allFellowshipsData } = useCollection<Fellowship>(fellowshipsQuery);
   
   const fellowships = useMemo(() => {
-    if (!allFellowships) return [];
-    return allFellowships.filter(f => f.status !== 'deleted');
-  }, [allFellowships]);
+    if (!allFellowshipsData) return [];
+    return allFellowshipsData.filter(f => f.status !== 'deleted');
+  }, [allFellowshipsData]);
   
-  const loading = userLoading || profileLoading || campaignsLoading || joinedCampaignsLoading || loadingFellowships;
+  const loading = userLoading || profileLoading || campaignsLoading || joinedCampaignsLoading;
 
   const handleCampaignCreated = () => {
     setIsCreateOpen(false);
@@ -391,9 +390,9 @@ export default function CampaignsPage() {
       <div className="flex flex-wrap gap-4 items-center">
         <Tabs value={filter} onValueChange={setFilter} className="w-full sm:w-auto">
             <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="all">All Campaigns</TabsTrigger>
-                <TabsTrigger value="created">My Campaigns</TabsTrigger>
-                <TabsTrigger value="joined">Joined</TabsTrigger>
+                <TabsTrigger value="all" className="font-black text-[10px] sm:text-xs uppercase tracking-widest">All Campaigns</TabsTrigger>
+                <TabsTrigger value="created" className="font-black text-[10px] sm:text-xs uppercase tracking-widest">My Campaigns</TabsTrigger>
+                <TabsTrigger value="joined" className="font-black text-[10px] sm:text-xs uppercase tracking-widest">Joined</TabsTrigger>
             </TabsList>
         </Tabs>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
@@ -599,7 +598,7 @@ export default function CampaignsPage() {
                   <LogSoulForm
                         onSoulLogged={handleSoulLogged}
                         defaultCampaign={campaignForSoul}
-                        fellowships={fellowships || []}
+                        fellowships={[]}
                         campaigns={activeCampaignsList || []}
                     />
                 )}
@@ -621,7 +620,7 @@ export default function CampaignsPage() {
                       <LogSoulForm
                             onSoulLogged={handleSoulLogged}
                             defaultCampaign={campaignForSoul}
-                            fellowships={fellowships || []}
+                            fellowships={[]}
                             campaigns={activeCampaignsList || []}
                         />
                     )}
