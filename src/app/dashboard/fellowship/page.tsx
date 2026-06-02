@@ -44,7 +44,7 @@ import {
 import { useRouter } from 'next/navigation';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { FellowshipCard } from '@/components/fellowship/fellowship-card';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useSearch } from '@/context/search-context';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
@@ -833,7 +833,7 @@ export default function FellowshipPage() {
                         <div className="p-8 border-b flex-shrink-0 bg-muted/10">
                             <SheetHeader className="text-left">
                                 <SheetTitle className="text-2xl font-black font-headline">New Community Group</SheetTitle>
-                                <SheetDescription className="text-sm">Create a space for community and growth.</SheetDescription>
+                                <SheetDescription className="text-sm font-medium">Create a space for community and growth.</SheetDescription>
                             </SheetHeader>
                         </div>
                         <div className="flex-grow overflow-y-auto p-8">
