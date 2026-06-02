@@ -288,56 +288,54 @@ export default function TestimoniesPage() {
 
   return (
     <div className="space-y-6 md:space-y-10 max-w-3xl mx-auto w-full">
-      {/* Interaction Box: Edge-to-edge breakout on mobile */}
-      <div className="w-full -mx-4 sm:mx-0">
-        <Card className="border shadow-sm sm:shadow-md rounded-none sm:rounded-xl border-x-0 sm:border-x bg-card/50 backdrop-blur-sm">
-          <CardContent className="p-3 sm:p-6 flex justify-center">
-            <div className="flex flex-row items-center justify-center gap-2 sm:gap-4 w-full max-w-2xl">
+      {/* Interaction Box */}
+      <Card className="border shadow-sm sm:shadow-md rounded-none sm:rounded-xl border-x-0 sm:border-x bg-card/50 backdrop-blur-sm -mx-4 sm:mx-0">
+        <CardContent className="p-3 sm:p-6 flex justify-center">
+          <div className="flex flex-row items-center justify-center gap-2 sm:gap-4 w-full max-w-2xl">
+            <Button 
+              variant="outline" 
+              className="flex-1 justify-center text-center text-muted-foreground font-normal rounded-full h-10 sm:h-12 px-6 hover:bg-muted/50 transition-colors text-sm sm:text-base min-w-0 border-dashed"
+              onClick={() => setIsTestimonyDialogOpen(true)}
+              disabled={loading}
+            >
+              <span className="truncate">What has God done today?</span>
+            </Button>
+            <div className="flex items-center gap-2 shrink-0">
               <Button 
-                variant="outline" 
-                className="flex-1 justify-center text-center text-muted-foreground font-normal rounded-full h-10 sm:h-12 px-6 hover:bg-muted/50 transition-colors text-sm sm:text-base min-w-0 border-dashed"
+                variant="secondary" 
+                size="icon" 
+                className="h-10 sm:h-12 w-10 sm:w-12 rounded-full shadow-lg"
                 onClick={() => setIsTestimonyDialogOpen(true)}
                 disabled={loading}
+                title="Share Testimony"
               >
-                <span className="truncate">What has God done today?</span>
+                < Newspaper className="h-5 w-5" />
               </Button>
-              <div className="flex items-center gap-2 shrink-0">
-                <Button 
-                  variant="secondary" 
-                  size="icon" 
-                  className="h-10 sm:h-12 w-10 sm:w-12 rounded-full shadow-lg"
-                  onClick={() => setIsTestimonyDialogOpen(true)}
-                  disabled={loading}
-                  title="Share Testimony"
-                >
-                  < Newspaper className="h-5 w-5" />
-                </Button>
-                <Button 
-                  variant="outline" 
-                  size="icon" 
-                  className="h-10 sm:h-12 w-10 sm:w-12 rounded-full shadow-md bg-background"
-                  onClick={() => setIsPrayerDialogOpen(true)}
-                  disabled={loading}
-                  title="Request Prayer"
-                >
-                  <HandHeart className="h-5 w-5" />
-                </Button>
-              </div>
+              <Button 
+                variant="outline" 
+                size="icon" 
+                className="h-10 sm:h-12 w-10 sm:w-12 rounded-full shadow-md bg-background"
+                onClick={() => setIsPrayerDialogOpen(true)}
+                disabled={loading}
+                title="Request Prayer"
+              >
+                <HandHeart className="h-5 w-5" />
+              </Button>
             </div>
-          </CardContent>
-        </Card>
-      </div>
+          </div>
+        </CardContent>
+      </Card>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <div className="w-full -mx-4 sm:mx-0">
+          <div className="-mx-4 sm:mx-0">
             <TabsList className="flex w-full rounded-none sm:rounded-xl bg-muted/10 sm:bg-muted/40 p-1 border-y sm:border-none">
                 <TabsTrigger value="testimonies" className="flex-1 rounded-none sm:rounded-lg font-black text-[10px] sm:text-xs uppercase tracking-widest h-10 sm:h-11">Testimonies</TabsTrigger>
                 <TabsTrigger value="prayers" className="flex-1 rounded-none sm:rounded-lg font-black text-[10px] sm:text-xs uppercase tracking-widest h-10 sm:h-11">Prayer Requests</TabsTrigger>
             </TabsList>
           </div>
           
-          <TabsContent value="testimonies" className="mt-0 sm:mt-10 outline-none">
-              <div className="flex flex-col gap-0 w-full -mx-4 sm:mx-0">
+          <TabsContent value="testimonies" className="mt-0 sm:mt-10 outline-none -mx-4 sm:mx-0">
+              <div className="flex flex-col gap-0 w-full">
                 {loading && (
                   [...Array(3)].map((_, i) => (
                     <Card key={i} className="flex flex-col h-full rounded-none sm:rounded-xl border-x-0 sm:border-x bg-card/50 backdrop-blur-sm"><CardContent className="p-6 space-y-4"><Skeleton className="h-12 w-12 rounded-full" /><div className="w-full space-y-2"><Skeleton className="h-4 w-1/4" /><Skeleton className="h-4 w-1/5" /></div><Skeleton className="h-5 w-3/4" /><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-full" /></CardContent></Card>
@@ -366,8 +364,8 @@ export default function TestimoniesPage() {
               </div>
           </TabsContent>
           
-          <TabsContent value="prayers" className="mt-0 sm:mt-10 outline-none">
-              <div className="flex flex-col gap-0 w-full -mx-4 sm:mx-0">
+          <TabsContent value="prayers" className="mt-0 sm:mt-10 outline-none -mx-4 sm:mx-0">
+              <div className="flex flex-col gap-0 w-full">
                 {loading && (
                   [...Array(3)].map((_, i) => (
                     <Card key={i} className="flex flex-col h-full rounded-none sm:rounded-xl border-x-0 sm:border-x bg-card/50 backdrop-blur-sm"><CardContent className="p-6 space-y-4"><Skeleton className="h-12 w-12 rounded-full" /><div className="w-full space-y-2"><Skeleton className="h-4 w-1/4" /><Skeleton className="h-4 w-1/5" /></div><Skeleton className="h-5 w-3/4" /><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-full" /></CardContent></Card>
