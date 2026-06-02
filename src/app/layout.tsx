@@ -125,6 +125,8 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://maps.googleapis.com" />
         <link rel="preconnect" href="https://pagead2.googlesyndication.com" />
+        
+        {/* Favicon / Touch Icon Fallbacks */}
         <link rel="icon" href={testifyLogoUrl} />
         <link rel="apple-touch-icon" href={testifyLogoUrl} />
 
@@ -152,14 +154,12 @@ export default function RootLayout({
                   'Could not reach Cloud Firestore backend'
                 ];
                 if (e.message && fatalKeywords.some(key => e.message.includes(key))) {
-                  // Automatic refresh mechanism for persistent network or state errors
                   const reloadCountKey = 'app_reload_count';
                   const lastReloadKey = 'app_last_reload';
                   const now = Date.now();
                   const lastReload = parseInt(localStorage.getItem(lastReloadKey) || '0', 10);
                   const reloadCount = parseInt(localStorage.getItem(reloadCountKey) || '0', 10);
 
-                  // Prevent infinite loop by allowing only 2 refreshes within a 30s window
                   if (now - lastReload < 30000 && reloadCount >= 2) {
                     console.error('Persistent fatal error detected. Stopping auto-refresh.');
                     return;

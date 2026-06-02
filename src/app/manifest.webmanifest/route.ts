@@ -1,6 +1,11 @@
 import { NextResponse } from 'next/server';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 
+/**
+ * @fileOverview Dynamically generates the Web App Manifest.
+ * Ensures the PWA icon is always synchronized with the current app logo.
+ */
+
 const logo = PlaceHolderImages.find((img) => img.id === 'logo');
 const testifyLogoUrl = logo?.imageUrl || '';
 
@@ -41,5 +46,10 @@ export async function GET() {
     ],
   };
 
-  return NextResponse.json(manifest);
+  return new NextResponse(JSON.stringify(manifest), {
+    headers: {
+      'Content-Type': 'application/manifest+json',
+      'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=59',
+    },
+  });
 }
