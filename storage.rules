@@ -14,6 +14,7 @@ service firebase.storage {
     }
     
     // Testimony media: Publicly readable for the miracle feed, owner-writable
+    // This allows for photos, videos, and audio evidence of God's power
     match /testimony-media/{userId}/{allPaths=**} {
       allow read: if true;
       allow write: if canWrite(userId);
