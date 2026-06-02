@@ -114,18 +114,18 @@ function AppHeader({ unreadChatCount }: { unreadChatCount: number }) {
 
   if (showMobileSearch) {
     return (
-      <header className="sticky top-0 z-30 flex h-16 items-center border-b bg-background px-4 md:px-6">
+      <header className="sticky top-0 z-30 flex min-h-[4rem] h-auto py-2 items-center border-b bg-background px-4 md:px-6 shrink-0">
         <div className="flex w-full items-center gap-2">
-          <Button variant="ghost" size="icon" onClick={() => setShowMobileSearch(false)}>
+          <Button variant="ghost" size="icon" onClick={() => setShowMobileSearch(false)} className="shrink-0">
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <form className="w-full" onSubmit={(e) => e.preventDefault()}>
             <div className="relative">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 type="search"
                 placeholder={searchPlaceholder}
-                className="w-full pl-8 h-11"
+                className="w-full pl-8 h-10"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 autoFocus
@@ -138,18 +138,18 @@ function AppHeader({ unreadChatCount }: { unreadChatCount: number }) {
   }
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b bg-background px-4 md:px-6">
+    <header className="sticky top-0 z-30 flex min-h-[4rem] h-auto py-2 items-center justify-between border-b bg-background px-4 md:px-6 shrink-0">
       <div className="flex items-center gap-2 md:gap-6">
-        <Link href="/dashboard/testimonies" className="flex items-center gap-2 text-lg font-semibold">
+        <Link href="/dashboard/testimonies" className="flex items-center gap-2 text-lg font-semibold shrink-0">
           {logo && (
-            <Avatar className="h-11 w-11">
+            <Avatar className="h-10 w-10 sm:h-11 sm:w-11">
               <AvatarImage src={logo.imageUrl} alt={logo.description} />
               <AvatarFallback>T</AvatarFallback>
             </Avatar>
           )}
           <span className="sr-only">Testify</span>
         </Link>
-        <nav className="hidden items-center gap-5 text-sm font-medium md:flex lg:gap-6">
+        <nav className="hidden items-center gap-4 lg:gap-6 text-sm font-medium md:flex overflow-x-auto no-scrollbar">
             {navItems.map((item) => {
               const isActive = pathname.startsWith(item.href);
               return (
@@ -158,7 +158,7 @@ function AppHeader({ unreadChatCount }: { unreadChatCount: number }) {
                     href={item.href}
                     prefetch={true}
                     className={cn(
-                    "transition-colors hover:text-primary whitespace-nowrap flex items-center gap-2",
+                    "transition-colors hover:text-primary whitespace-nowrap flex items-center gap-2 py-1",
                     isActive ? "text-primary font-semibold" : "text-muted-foreground"
                     )}
                 >
@@ -170,16 +170,16 @@ function AppHeader({ unreadChatCount }: { unreadChatCount: number }) {
         </nav>
       </div>
         
-      <div className="flex items-center gap-2 md:gap-3">
+      <div className="flex items-center gap-1.5 md:gap-3 shrink-0">
         {isSearchVisible && (
           <div className="hidden sm:block">
             <form onSubmit={(e) => e.preventDefault()}>
               <div className="relative">
-                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   type="search"
                   placeholder={searchPlaceholder}
-                  className="pl-8 sm:w-auto md:w-[250px] lg:w-[300px] h-10"
+                  className="pl-8 sm:w-[150px] md:w-[200px] lg:w-[250px] h-9"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
@@ -188,27 +188,27 @@ function AppHeader({ unreadChatCount }: { unreadChatCount: number }) {
           </div>
         )}
         {isSearchVisible && (
-          <Button variant="ghost" size="icon" className="sm:hidden" onClick={() => setShowMobileSearch(true)}>
-            <Search className="h-5 w-5" />
+          <Button variant="ghost" size="icon" className="sm:hidden h-9 w-9" onClick={() => setShowMobileSearch(true)}>
+            <Search className="h-4 w-4" />
             <span className="sr-only">Search</span>
           </Button>
         )}
-        <Link href="/dashboard/chats">
-            <Button variant="ghost" size="icon" className="relative h-10 w-10">
-              <MessagesSquare className="h-5 w-5" />
+        <Link href="/dashboard/chats" className="shrink-0">
+            <Button variant="ghost" size="icon" className="relative h-9 w-9">
+              <MessagesSquare className="h-4 w-4" />
               {unreadChatCount > 0 && (
-                <div className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[10px] font-bold text-destructive-foreground">
+                <div className="absolute -top-0.5 -right-0.5 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-destructive text-[9px] font-bold text-destructive-foreground">
                   {unreadChatCount}
                 </div>
               )}
               <span className="sr-only">View chats</span>
             </Button>
         </Link>
-        <Link href="/dashboard/notifications">
-            <Button variant="ghost" size="icon" className="relative h-10 w-10">
-              <Bell className="h-5 w-5" />
+        <Link href="/dashboard/notifications" className="shrink-0">
+            <Button variant="ghost" size="icon" className="relative h-9 w-9">
+              <Bell className="h-4 w-4" />
               {unreadCount > 0 && (
-                <div className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[10px] font-bold text-destructive-foreground">
+                <div className="absolute -top-0.5 -right-0.5 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-destructive text-[9px] font-bold text-destructive-foreground">
                   {unreadCount}
                 </div>
               )}
@@ -217,15 +217,15 @@ function AppHeader({ unreadChatCount }: { unreadChatCount: number }) {
         </Link>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="rounded-full h-10 w-10 relative">
-              <Avatar className="h-8 w-8">
+            <Button variant="ghost" size="icon" className="rounded-full h-9 w-9 relative shrink-0">
+              <Avatar className="h-7 w-7">
                 <AvatarImage src={user.photoURL ?? undefined} alt={user.displayName || "User avatar"} />
-                <AvatarFallback>{user.displayName?.charAt(0) || user.email?.charAt(0) || 'U'}</AvatarFallback>
+                <AvatarFallback className="text-[10px]">{user.displayName?.charAt(0) || user.email?.charAt(0) || 'U'}</AvatarFallback>
               </Avatar>
               {isProfileIncomplete && (
-                <span className="absolute top-1 right-1 flex h-2.5 w-2.5">
+                <span className="absolute top-0 right-0 flex h-2 w-2">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-600 border border-background"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-red-600 border border-background"></span>
                 </span>
               )}
             </Button>
@@ -280,7 +280,7 @@ function BottomNavBar() {
   
     return (
       <nav className="fixed bottom-0 left-0 right-0 z-40 border-t bg-background/80 backdrop-blur-lg md:hidden pb-[env(safe-area-inset-bottom)] shadow-[0_-5px_15px_-10px_rgba(0,0,0,0.1)]">
-        <div className="flex h-16 items-stretch justify-around px-2">
+        <div className="flex min-h-[4rem] h-auto items-stretch justify-around px-2 py-1">
           {navItems.map((item) => {
             const isActive = pathname.startsWith(item.href);
             return (
