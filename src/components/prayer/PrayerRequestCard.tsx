@@ -115,7 +115,7 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({
 
   return (
     <>
-      <Card className="flex flex-col h-full overflow-hidden shadow-md bg-card/50 backdrop-blur-sm border-b-2 sm:border-b rounded-none sm:rounded-lg border-x-0 sm:border-x">
+      <Card className="flex flex-col h-full w-full overflow-hidden shadow-md transition-all duration-300 scroll-mt-20 border-x-0 sm:border-x border-t-0 border-b-2 sm:border-b bg-card/50 backdrop-blur-sm rounded-none sm:rounded-lg">
         <CardHeader className="flex flex-row items-start justify-between gap-4 p-4 sm:p-6">
             <div className="flex items-center gap-3 min-w-0 flex-1">
                 <Dialog>
@@ -128,7 +128,7 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({
                       </Avatar>
                   </DialogTrigger>
                   {!prayerRequest.isAnonymous && prayerRequest.authorAvatarUrl && (
-                      <DialogContent className="p-0 bg-transparent border-0 w-auto max-w-lg overflow-hidden rounded-3xl" onClick={(e) => e.stopPropagation()}>
+                      <DialogContent className="p-0 bg-transparent border-0 w-auto max-w-lg overflow-hidden rounded-3xl" onClick={(e) => {e.stopPropagation()}}>
                           <DialogHeader className="sr-only">
                             <DialogTitle>Profile photo of {authorName}</DialogTitle>
                             <DialogDescription>A larger view of the user's profile photo.</DialogDescription>
