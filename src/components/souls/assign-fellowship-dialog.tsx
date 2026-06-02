@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -7,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Card, CardContent } from '@/components/ui/card';
-import { Filter, Info, MapPin, UserPlus, UserMinus } from 'lucide-react';
+import { Filter, Info, MapPin, UserPlus, UserMinus, Loader2 } from 'lucide-react';
 import type { Soul, Fellowship } from '@/lib/types';
 import { haversineDistance } from '@/lib/utils';
 import { cn } from '@/lib/utils';
@@ -28,6 +29,7 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
   const [country, setCountry] = React.useState<string>('');
   const [state, setState] = React.useState<string>('');
   const [typeFilter, setTypeFilter] = React.useState<string>('all');
+  const [processingId, setProcessingId] = React.useState<string | null>(null);
   const isMobile = useIsMobile();
   const [mounted, setMounted] = React.useState(false);
 
@@ -96,6 +98,7 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
         setCountry(soul.locationWon?.country || '');
         setState('');
         setTypeFilter('all');
+        setProcessingId(null);
     }
   }, [isOpen, soul?.id]);
 
@@ -109,6 +112,12 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
     return fellowships.some(f => f.id === soul.associationId && f.groupType === 'Association');
   }, [soul?.associationId, fellowships]);
 
+  const handleAction = (id: string, groupId: string, type: 'Fellowship' | 'Association') => {
+    if (!soul) return;
+    setProcessingId(id);
+    onAssignGroup(soul, groupId, type);
+  };
+
   if (!soul) {
     return null;
   }
@@ -120,7 +129,8 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
                 const groupType = f.groupType || 'Fellowship';
                 const isCurrentlyAssigned = groupType === 'Association' ? soul.associationId === f.id : soul.fellowshipId === f.id;
                 const typeAlreadyHasAssignment = groupType === 'Association' ? hasAssignedAssociation : hasAssignedFellowship;
-                const isDisabled = !isCurrentlyAssigned && typeAlreadyHasAssignment;
+                const isDisabled = (processingId !== null) || (!isCurrentlyAssigned && typeAlreadyHasAssignment);
+                const isThisProcessing = processingId === f.id;
 
                 return (
                 <Card key={f.id} className={cn(
@@ -150,10 +160,11 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
                                         type="button"
                                         size="icon"
                                         variant="ghost"
-                                        onClick={(e) => { e.stopPropagation(); onAssignGroup(soul, 'none', groupType); }}
+                                        onClick={(e) => { e.stopPropagation(); handleAction(f.id, 'none', groupType); }}
+                                        disabled={processingId !== null}
                                         className="h-8 w-8 sm:h-9 sm:w-9 text-destructive hover:bg-destructive/10 rounded-full transition-all active:scale-90"
                                     >
-                                        <UserMinus className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                                        {isThisProcessing ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <UserMinus className="h-3.5 w-3.5 sm:h-4 sm:w-4" />}
                                         <span className="sr-only">Unassign</span>
                                     </Button>
                                   </TooltipTrigger>
@@ -162,23 +173,23 @@ export function AssignFellowshipDialog({ soul, fellowships, isOpen, onOpenChange
                               </TooltipProvider>
                           ) : (
                               <TooltipProvider>
-                                <Tooltip open={isDisabled ? undefined : false}>
+                                <Tooltip open={isDisabled && processingId === null ? undefined : false}>
                                   <TooltipTrigger asChild>
                                     <div className="inline-block">
                                       <Button
                                           type="button"
                                           size="icon"
-                                          onClick={(e) => { e.stopPropagation(); onAssignGroup(soul, f.id, groupType); }}
+                                          onClick={(e) => { e.stopPropagation(); handleAction(f.id, f.id, groupType); }}
                                           disabled={isDisabled}
                                           className="h-8 w-8 sm:h-9 sm:w-9 rounded-full shadow-md transition-all active:scale-90"
                                       >
-                                          <UserPlus className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                                          {isThisProcessing ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <UserPlus className="h-3.5 w-3.5 sm:h-4 sm:w-4" />}
                                           <span className="sr-only">Assign</span>
                                       </Button>
                                     </div>
                                   </TooltipTrigger>
                                   <TooltipContent className="max-w-[200px] rounded-xl p-3 border-primary/20 shadow-xl" side="left">
-                                    {isDisabled ? (
+                                    {isDisabled && processingId === null ? (
                                       <p className="text-[10px] font-bold leading-tight uppercase tracking-tight text-center">Already assigned to a {groupType}.<br/><span className="text-primary">Unassign it first.</span></p>
                                     ) : (
                                       <p className="text-[10px] sm:text-xs">Assign to this {groupType}</p>

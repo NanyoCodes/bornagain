@@ -150,10 +150,6 @@ export default function SoulsWonPage() {
   const handleOpenEdit = useCallback((soul: Soul) => setSoulToEdit(soul), []);
   const handleOpenDelete = useCallback((soul: Soul) => setSoulToDelete(soul), []);
 
-  const cleanupAndRefresh = useCallback(() => {
-    router.refresh();
-  }, [router]);
-
   const handleExportHarvest = async (formatType: 'csv' | 'pdf') => {
     if (!souls || souls.length === 0) return;
 
@@ -216,7 +212,6 @@ export default function SoulsWonPage() {
         await batch.commit();
         toast({ title: "Record Deleted" });
         setSoulToDelete(null);
-        cleanupAndRefresh();
     } catch (error) {
         const permissionError = new FirestorePermissionError({
             path: soulRef.path,
@@ -281,7 +276,7 @@ export default function SoulsWonPage() {
         }).catch(() => {});
     }
     
-    cleanupAndRefresh();
+    setSoulToAssign(null);
   };
 
   const handleExportSingleSoul = useCallback(async (soul: Soul, formatType: 'csv' | 'pdf') => {
@@ -338,7 +333,7 @@ export default function SoulsWonPage() {
     <>
       <div 
         className="space-y-6 md:space-y-12 pb-32" 
-        inert={isAnyModalOpen}
+        inert={isAnyModalOpen ? true : undefined}
       >
         <Card className="border shadow-sm sm:shadow-md rounded-none sm:rounded-lg border-x-0 sm:border-x -mx-4 sm:mx-0">
           <CardContent className="p-3 sm:p-4">
@@ -405,11 +400,9 @@ export default function SoulsWonPage() {
           isOpen={!!soulForFollowUp} 
           onOpenChange={(isOpen) => {
               if (!isOpen) setSoulForFollowUp(null);
-              cleanupAndRefresh();
           }} 
           onFollowUpLogged={() => {
             setSoulForFollowUp(null);
-            cleanupAndRefresh();
           }} 
       />
       
@@ -418,7 +411,6 @@ export default function SoulsWonPage() {
           isOpen={!!soulForHistory} 
           onOpenChange={(isOpen) => {
               if (!isOpen) setSoulForHistory(null);
-              cleanupAndRefresh();
           }} 
       />
       
@@ -428,13 +420,12 @@ export default function SoulsWonPage() {
           isOpen={!!soulToAssign} 
           onOpenChange={(isOpen) => {
               if (!isOpen) setSoulToAssign(null);
-              cleanupAndRefresh();
           }} 
           onAssignGroup={handleAssignGroup} 
       />
       
       {mounted && isMobile ? (
-        <Sheet open={!!soulToEdit} onOpenChange={(open) => { if(!open) setSoulToEdit(null); cleanupAndRefresh(); }}>
+        <Sheet open={!!soulToEdit} onOpenChange={(open) => { if(!open) setSoulToEdit(null); }}>
           <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
             <div className="p-8 border-b flex-shrink-0 bg-muted/10">
               <SheetHeader className="text-left">
@@ -447,7 +438,7 @@ export default function SoulsWonPage() {
                  {soulToEdit && (
                   <EditSoulForm 
                       soul={soulToEdit} 
-                      onSoulUpdated={() => { setSoulToEdit(null); cleanupAndRefresh(); }} 
+                      onSoulUpdated={() => { setSoulToEdit(null); }} 
                       fellowships={activeFellowships || []}
                       campaigns={campaigns || []}
                   />
@@ -457,7 +448,7 @@ export default function SoulsWonPage() {
           </SheetContent>
         </Sheet>
       ) : (
-        <Dialog open={!!soulToEdit} onOpenChange={(open) => { if(!open) setSoulToEdit(null); cleanupAndRefresh(); }}>
+        <Dialog open={!!soulToEdit} onOpenChange={(open) => { if(!open) setSoulToEdit(null); }}>
             <DialogContent className="sm:max-w-lg">
                 <DialogHeader>
                     <DialogTitle className="font-headline text-2xl">Edit Soul Details</DialogTitle>
@@ -467,7 +458,7 @@ export default function SoulsWonPage() {
                     {soulToEdit && (
                       <EditSoulForm 
                           soul={soulToEdit} 
-                          onSoulUpdated={() => { setSoulToEdit(null); cleanupAndRefresh(); }} 
+                          onSoulUpdated={() => { setSoulToEdit(null); }} 
                           fellowships={activeFellowships || []}
                           campaigns={campaigns || []}
                       />
@@ -478,10 +469,7 @@ export default function SoulsWonPage() {
       )}
 
       {mounted && isMobile ? (
-        <Sheet open={isLogDialogOpen} onOpenChange={(open) => {
-            setIsLogDialogOpen(open);
-            cleanupAndRefresh();
-        }}>
+        <Sheet open={isLogDialogOpen} onOpenChange={setIsLogDialogOpen}>
           <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
             <div className="p-8 border-b flex-shrink-0 bg-muted/10">
                 <SheetHeader className="text-left">
@@ -492,16 +480,12 @@ export default function SoulsWonPage() {
             <div className="flex-grow overflow-y-auto p-8">
                 <LogSoulForm onSoulLogged={() => {
                   setIsLogDialogOpen(false);
-                  cleanupAndRefresh();
                 }} fellowships={activeFellowships || []} campaigns={campaigns || []} />
             </div>
           </SheetContent>
         </Sheet>
       ) : (
-        <Dialog open={isLogDialogOpen} onOpenChange={(open) => {
-            setIsLogDialogOpen(open);
-            cleanupAndRefresh();
-        }}>
+        <Dialog open={isLogDialogOpen} onOpenChange={setIsLogDialogOpen}>
           <DialogContent className="sm:max-w-lg">
             <DialogHeader>
               <DialogTitle>Log a New Soul</DialogTitle>
@@ -512,7 +496,6 @@ export default function SoulsWonPage() {
             <div className="max-h-[70vh] overflow-y-auto pr-2">
               <LogSoulForm onSoulLogged={() => {
                 setIsLogDialogOpen(false);
-                cleanupAndRefresh();
               }} fellowships={activeFellowships || []} campaigns={campaigns || []} />
             </div>
           </DialogContent>
