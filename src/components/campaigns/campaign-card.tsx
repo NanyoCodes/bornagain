@@ -329,7 +329,7 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
       e.stopPropagation();
     }
 
-    const shareUrl = `${window.location.origin}/dashboard/campaigns/${campaign.id}`;
+    const shareUrl = `${window.location.origin}/campaigns/${campaign.id}`;
     const shareData = {
       title: `Join the '${campaign.title}' campaign on Testify!`,
       text: `Join me in the '${campaign.title}' evangelism campaign. Let's make an impact together!`,

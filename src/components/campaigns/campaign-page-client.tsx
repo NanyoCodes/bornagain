@@ -158,7 +158,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
 
     const handleShare = async () => {
         if (!campaign) return;
-        const shareUrl = `${window.location.origin}/dashboard/campaigns/${campaign.id}`;
+        const shareUrl = `${window.location.origin}/campaigns/${campaign.id}`;
         const titleText = `Join the '${campaign.title}' campaign on Testify!`;
         const text = `Join me in the '${campaign.title}' evangelism campaign. Let's make an impact together!`;
 

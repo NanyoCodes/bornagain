@@ -158,7 +158,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({
       e.stopPropagation();
     }
 
-    const shareUrl = `${window.location.origin}/dashboard/testimonies#${testimony.id}`;
+    const shareUrl = `${window.location.origin}/testimonies#${testimony.id}`;
     const titleText = `Testimony from ${authorFullName} on Testify!`;
     const text = `Read what God has done! "${testimony.content.substring(0, 150)}..."`;
     
