@@ -1,3 +1,4 @@
+
 "use client"
 
 import * as React from "react"
@@ -12,7 +13,7 @@ const Avatar = React.forwardRef<
   <AvatarPrimitive.Root
     ref={ref}
     className={cn(
-      "relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full",
+      "relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full bg-muted shadow-sm",
       className
     )}
     {...props}
@@ -28,11 +29,10 @@ const AvatarImage = React.forwardRef<
     return null
   }
 
-  // priority is destructured to prevent it being passed to the underlying DOM element
   return (
     <AvatarPrimitive.Image
       ref={ref}
-      className={cn("aspect-square h-full w-full", className)}
+      className={cn("aspect-square h-full w-full object-cover", className)}
       {...props}
     />
   )
@@ -46,7 +46,7 @@ const AvatarFallback = React.forwardRef<
   <AvatarPrimitive.Fallback
     ref={ref}
     className={cn(
-      "flex h-full w-full items-center justify-center rounded-full bg-muted",
+      "flex h-full w-full items-center justify-center rounded-full bg-muted font-bold text-muted-foreground",
       className
     )}
     {...props}
