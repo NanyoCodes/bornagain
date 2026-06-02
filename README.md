@@ -28,21 +28,6 @@ To ensure the **App Logo** appears as the profile photo when users receive verif
     *   In the **Templates** tab, ensure your "Public-facing name" is set to "Testify".
     *   If using custom SMTP, ensure the logo is embedded in the HTML templates.
 
-### Monetization: Going Live with Ads
-
-The app is ready to display Christian-themed advertisements. To enable them:
-
-1.  **AdSense Console Settings**:
-    *   To ensure **only Christian ads** appear, go to your [Google AdSense Console](https://adsense.google.com/).
-    *   Use the **Blocking controls** in the side menu.
-    *   Under **All sites**, select **Sensitive categories** and block categories that are not faith-aligned.
-    *   Under **General categories**, you can further refine the types of ads allowed.
-    *   We have included metadata hints like `data-ad-channel="christian-content"` in the code to help Google's crawlers understand your site's context.
-
-2.  **Timeline**: 
-    *   **Review**: Google reviews new sites which can take 2-4 weeks.
-    *   **Serving**: Once approved, ads usually appear within 24-48 hours of your site receiving traffic.
-
 ### Troubleshooting (If needed)
 
 If you ever see "Invalid Request" or 404 errors in the future, verify these settings in the Google and Firebase consoles:

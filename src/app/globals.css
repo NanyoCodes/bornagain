@@ -47,7 +47,7 @@
     --popover: 20 14% 4%;
     --popover-foreground: 210 20% 98%;
     --primary: 25 95% 53%;
-    --primary-foreground: 210 20% 98%;
+    --primary-foreground: 210 40% 98%;
     --primary-hsl: 25, 95%, 53%;
     --secondary: 215 27.9% 16.9%;
     --secondary-foreground: 210 20% 98%;
@@ -101,6 +101,13 @@
 }
 
 @layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
   .highlight-red {
     @apply bg-red-200/60 dark:bg-red-800/50;
   }

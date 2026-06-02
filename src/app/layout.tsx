@@ -1,4 +1,3 @@
-
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
@@ -11,9 +10,6 @@ import Script from 'next/script';
 
 const logo = PlaceHolderImages.find((img) => img.id === 'logo');
 const testifyLogoUrl = logo?.imageUrl || '';
-
-// AdSense Configuration
-const ADSENSE_PUB_ID = 'ca-pub-5186166468494737';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://testifyglobal.com'),
@@ -125,7 +121,6 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://maps.googleapis.com" />
-        <link rel="preconnect" href="https://pagead2.googlesyndication.com" />
         
         {/* Favicon / Touch Icon Fallbacks */}
         <link rel="icon" href={testifyLogoUrl} />
@@ -134,14 +129,6 @@ export default function RootLayout({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
-
-        {/* Global Google AdSense Script (Auto Ads) */}
-        <Script
-          async
-          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_PUB_ID}`}
-          crossOrigin="anonymous"
-          strategy="afterInteractive"
         />
 
         <script
