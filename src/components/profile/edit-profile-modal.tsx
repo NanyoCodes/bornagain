@@ -1,4 +1,3 @@
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -207,6 +206,17 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
     setIsSubmitting(true);
 
     const displayName = `${values.firstName} ${values.lastName}`;
+    const authorLocation = {
+      city: values.city || "",
+      state: values.state || "",
+      country: values.country || "",
+      city_lowercase: (values.city || "").toLowerCase(),
+      state_lowercase: (values.state || "").toLowerCase(),
+      country_lowercase: (values.country || "").toLowerCase(),
+      latitude: values.latitude ?? null,
+      longitude: values.longitude ?? null,
+    };
+
     const firestoreUpdatePayload = {
         firstName: values.firstName,
         lastName: values.lastName,
@@ -215,16 +225,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
         bio: values.bio || "",
         personalMessage: values.personalMessage || "",
         videoTestimonies: values.videoTestimonies,
-        location: {
-          city: values.city || "",
-          state: values.state || "",
-          country: values.country || "",
-          city_lowercase: (values.city || "").toLowerCase(),
-          state_lowercase: (values.state || "").toLowerCase(),
-          country_lowercase: (values.country || "").toLowerCase(),
-          latitude: values.latitude ?? null,
-          longitude: values.longitude ?? null,
-        },
+        location: authorLocation,
         phone: values.phone || "",
         photoURL: values.photoURL || "",
         defaultMeetingLink: values.defaultMeetingLink || null,
@@ -244,10 +245,10 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
       await authUpdatePromise;
 
       /**
-       * GLOBAL DENORMALIZED PHOTO SYNC
+       * GLOBAL DENORMALIZED DATA SYNC
        * 
-       * Ensures that updating the profile photo propagates to all related collections
-       * where the photo is stored as a performance optimization.
+       * Ensures that updating the profile (photo, location) propagates to all related 
+       * collections where this data is stored as a performance optimization.
        */
       const batch = writeBatch(firestore);
       const syncUrl = values.photoURL || ""; 
@@ -255,7 +256,15 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
       // 1. Sync Testimonies
       const testimoniesSnap = await getDocs(query(collection(firestore, 'testimonies'), where('authorId', '==', user.uid)));
       testimoniesSnap.forEach(tDoc => {
-          batch.update(tDoc.ref, { authorAvatarUrl: syncUrl });
+          batch.update(tDoc.ref, { 
+              authorAvatarUrl: syncUrl,
+              authorLocation: {
+                  city: authorLocation.city || null,
+                  country: authorLocation.country || null,
+                  latitude: authorLocation.latitude ?? null,
+                  longitude: authorLocation.longitude ?? null,
+              }
+          });
       });
 
       // 2. Sync Prayer Requests

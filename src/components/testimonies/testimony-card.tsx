@@ -53,20 +53,6 @@ import { CommentSection } from "./comment-section";
 import { Separator } from "../ui/separator";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
-function LiveAuthorAvatar({ userId, fallbackInitials, className }: { userId: string, fallbackInitials: string, className?: string }) {
-    const firestore = useFirestore();
-    const userRef = React.useMemo(() => userId ? doc(firestore, 'users', userId) : null, [firestore, userId]);
-    const { data: profile } = useDoc<UserProfile>(userRef);
-    const photoURL = profile?.photoURL;
-    
-    return (
-        <Avatar className={className}>
-            <AvatarImage src={photoURL} className="object-cover" />
-            <AvatarFallback className="bg-primary/10 text-primary font-bold">{fallbackInitials || 'U'}</AvatarFallback>
-        </Avatar>
-    );
-}
-
 export const TestimonyCard = React.memo(function TestimonyCard({ 
   testimony, 
   onDelete, 
@@ -95,10 +81,19 @@ export const TestimonyCard = React.memo(function TestimonyCard({
   const [showFullText, setShowFullText] = React.useState(false);
   const [isCommentsOpen, setIsCommentsOpen] = useState(false);
 
+  // Live Author Profile Sync
+  const authorProfileRef = useMemo(() => testimony.authorId ? doc(firestore, 'users', testimony.authorId) : null, [firestore, testimony.authorId]);
+  const { data: authorProfile } = useDoc<UserProfile>(authorProfileRef);
+
   const isAuthor = user?.uid === testimony.authorId;
-  const authorFullName = [testimony.authorFirstName, testimony.authorLastName].filter(Boolean).join(' ').trim() || 'Anonymous';
+  
+  const authorFirstName = authorProfile?.firstName || testimony.authorFirstName;
+  const authorLastName = authorProfile?.lastName || testimony.authorLastName;
+  const authorFullName = [authorFirstName, authorLastName].filter(Boolean).join(' ').trim() || 'Anonymous';
+  const authorAvatarUrl = authorProfile?.photoURL || testimony.authorAvatarUrl;
+  
   const profileLink = isAuthor ? "/dashboard/profile" : `/dashboard/profile/${testimony.authorId}`;
-  const initials = (testimony.authorFirstName?.charAt(0) || '') + (testimony.authorLastName?.charAt(0) || '');
+  const initials = (authorFirstName?.charAt(0) || '') + (authorLastName?.charAt(0) || '');
 
   const supporters = testimony.supporters || [];
   const inspiredBy = testimony.inspiredBy || [];
@@ -116,9 +111,14 @@ export const TestimonyCard = React.memo(function TestimonyCard({
   }, [testimony.createdAt]);
   
   const locationString = useMemo(() => {
-    const { city, country } = testimony.authorLocation || {};
+    const profileLoc = authorProfile?.location;
+    const testimonyLoc = testimony.authorLocation;
+    
+    const city = profileLoc?.city || testimonyLoc?.city;
+    const country = profileLoc?.country || testimonyLoc?.country;
+    
     return [city, country].filter(Boolean).join(', ') || 'Global Community';
-  }, [testimony.authorLocation]);
+  }, [authorProfile, testimony.authorLocation]);
 
   const commentsQuery = useMemo(() => {
     if (!firestore) return null;
@@ -236,9 +236,9 @@ export const TestimonyCard = React.memo(function TestimonyCard({
         fromUserLastName: currentUserProfile.lastName || '',
         fromUserPhotoURL: currentUserProfile.photoURL || '',
         toUserId: testimony.authorId,
-        toUserFirstName: testimony.authorFirstName || '',
-        toUserLastName: testimony.authorLastName || '',
-        toUserPhotoURL: testimony.authorAvatarUrl || '',
+        toUserFirstName: authorFirstName || '',
+        toUserLastName: authorLastName || '',
+        toUserPhotoURL: authorAvatarUrl || '',
         status: 'pending' as const,
         createdAt: serverTimestamp(),
         participantIds,
@@ -257,7 +257,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({
     try {
         await setDoc(requestRef, newRequestData);
         await addDoc(collection(firestore, 'users', testimony.authorId, 'notifications'), notificationData);
-        toast({ title: 'Request Sent!', description: `Request sent to ${testimony.authorFirstName}.` });
+        toast({ title: 'Request Sent!', description: `Request sent to ${authorFirstName}.` });
     } catch (error) {
         const permissionError = new FirestorePermissionError({
             path: requestRef.path,
@@ -290,26 +290,28 @@ export const TestimonyCard = React.memo(function TestimonyCard({
             <Dialog>
               <DialogTrigger asChild onClick={(e) => e.stopPropagation()}>
                 <div className="relative cursor-pointer hover:opacity-90 transition-opacity active:scale-95">
-                    <LiveAuthorAvatar 
-                        userId={testimony.authorId} 
-                        fallbackInitials={initials} 
-                        className="h-10 w-10 sm:h-12 sm:w-12 border shadow-sm"
-                    />
+                    <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border shadow-sm">
+                        <AvatarImage src={authorAvatarUrl} className="object-cover" />
+                        <AvatarFallback className="bg-primary/10 text-primary font-bold">{initials || 'U'}</AvatarFallback>
+                    </Avatar>
                 </div>
               </DialogTrigger>
-              <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center">
-                <DialogHeader className="sr-only">
-                    <DialogTitle>Profile photo of {authorFullName}</DialogTitle>
-                    <DialogDescription>Full screen view of the user's profile photo.</DialogDescription>
-                </DialogHeader>
-                <div className="relative h-full w-full flex items-center justify-center p-4">
-                    <LiveAuthorAvatar 
-                        userId={testimony.authorId} 
-                        fallbackInitials={initials} 
-                        className="h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] rounded-2xl sm:rounded-[3rem] shadow-2xl ring-4 ring-white/10"
-                    />
-                </div>
-              </DialogContent>
+              {authorAvatarUrl && (
+                <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center">
+                    <DialogHeader className="sr-only">
+                        <DialogTitle>Profile photo of {authorFullName}</DialogTitle>
+                        <DialogDescription>Full screen view of the user's profile photo.</DialogDescription>
+                    </DialogHeader>
+                    <div className="relative h-full w-full flex items-center justify-center p-4">
+                        <Avatar className="h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] rounded-2xl sm:rounded-[3rem] shadow-2xl ring-4 ring-white/10">
+                            <AvatarImage src={authorAvatarUrl} className="object-cover" />
+                            <AvatarFallback className="text-4xl lg:text-5xl font-black bg-primary/10 text-primary">
+                                {initials || 'U'}
+                            </AvatarFallback>
+                        </Avatar>
+                    </div>
+                </DialogContent>
+              )}
             </Dialog>
             <div className="min-w-0 flex-1">
                <div className="flex items-center gap-2 flex-wrap">
