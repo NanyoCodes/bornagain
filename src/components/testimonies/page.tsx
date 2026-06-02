@@ -288,7 +288,7 @@ export default function TestimoniesPage() {
 
   return (
     <div className="space-y-6 md:space-y-12 pb-32">
-      {/* Interaction Box: fill width on mobile, centered max-width on desktop */}
+      {/* Interaction Box: Full width mobile breakout */}
       <div className="w-full max-w-3xl mx-auto -mx-4 sm:mx-auto">
         <Card className="border shadow-sm sm:shadow-md rounded-none sm:rounded-xl border-x-0 sm:border-x bg-card/50 backdrop-blur-sm">
           <CardContent className="p-3 sm:p-4 flex justify-center">
@@ -340,7 +340,7 @@ export default function TestimoniesPage() {
               <div className="flex flex-col gap-0 w-full max-w-3xl mx-auto -mx-4 sm:mx-auto">
                 {loading && (
                   [...Array(3)].map((_, i) => (
-                    <Card key={i} className="flex flex-col h-full rounded-none sm:rounded-lg border-x-0 sm:border-x bg-card/50 backdrop-blur-sm"><CardContent className="p-6 space-y-4"><Skeleton className="h-12 w-12 rounded-full" /><div className="w-full space-y-2"><Skeleton className="h-4 w-1/4" /><Skeleton className="h-4 w-1/5" /></div><Skeleton className="h-5 w-3/4" /><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-full" /></CardContent></Card>
+                    <Card key={i} className="flex flex-col h-full rounded-none sm:rounded-xl border-x-0 sm:border-x bg-card/50 backdrop-blur-sm"><CardContent className="p-6 space-y-4"><Skeleton className="h-12 w-12 rounded-full" /><div className="w-full space-y-2"><Skeleton className="h-4 w-1/4" /><Skeleton className="h-4 w-1/5" /></div><Skeleton className="h-5 w-3/4" /><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-full" /></CardContent></Card>
                   ))
                 )}
                 {!loading && filteredTestimonies.map((testimony) => (
@@ -370,7 +370,7 @@ export default function TestimoniesPage() {
               <div className="flex flex-col gap-0 w-full max-w-3xl mx-auto -mx-4 sm:mx-auto">
                 {loading && (
                   [...Array(3)].map((_, i) => (
-                    <Card key={i} className="flex flex-col h-full rounded-none sm:rounded-lg border-x-0 sm:border-x bg-card/50 backdrop-blur-sm"><CardContent className="p-6 space-y-4"><Skeleton className="h-12 w-12 rounded-full" /><div className="w-full space-y-2"><Skeleton className="h-4 w-1/4" /><Skeleton className="h-4 w-1/5" /></div><Skeleton className="h-5 w-3/4" /><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-full" /></CardContent></Card>
+                    <Card key={i} className="flex flex-col h-full rounded-none sm:rounded-xl border-x-0 sm:border-x bg-card/50 backdrop-blur-sm"><CardContent className="p-6 space-y-4"><Skeleton className="h-12 w-12 rounded-full" /><div className="w-full space-y-2"><Skeleton className="h-4 w-1/4" /><Skeleton className="h-4 w-1/5" /></div><Skeleton className="h-5 w-3/4" /><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-full" /></CardContent></Card>
                   ))
                 )}
                 {!loading && filteredPrayerRequests?.map((req) => (
