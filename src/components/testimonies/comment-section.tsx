@@ -7,7 +7,7 @@ import type { TestimonyComment, UserProfile } from '@/lib/types';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Loader2, Send, Trash2, HandHeart, Sparkles, PartyPopper, X } from 'lucide-react';
+import { Loader2, Send, Trash2, HandHeart, Sparkles, PartyPopper, X, Edit } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { cn, safeToDate } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
@@ -46,8 +46,11 @@ function CommentItem({
     const { toast } = useToast();
     const isMobile = useIsMobile();
     const [isReacting, setIsReacting] = useState<string | null>(null);
+    const [isEditing, setIsEditing] = useState(false);
+    const [editedText, setEditedText] = useState(comment.text);
 
     const createdAt = safeToDate(comment.createdAt);
+    const updatedAt = safeToDate(comment.updatedAt);
     const isAuthor = user?.uid === comment.authorId;
 
     const supporters = comment.supporters || [];
@@ -89,6 +92,23 @@ function CommentItem({
         }
     };
 
+    const handleUpdate = () => {
+        if (!editedText.trim()) return;
+        if (editedText.trim() === comment.text) {
+            setIsEditing(false);
+            return;
+        }
+
+        const commentRef = doc(firestore, 'testimonies', testimonyId, 'comments', comment.id);
+        updateDoc(commentRef, { 
+            text: editedText.trim(),
+            updatedAt: serverTimestamp() 
+        }).catch(() => {
+            toast({ variant: 'destructive', title: 'Error', description: 'Failed to update comment.' });
+        });
+        setIsEditing(false);
+    };
+
     const authorName = `${comment.authorFirstName || 'User'} ${comment.authorLastName || ''}`.trim();
     const profileLink = isAuthor ? "/dashboard/profile" : `/dashboard/profile/${comment.authorId}`;
     const initials = comment.authorFirstName?.charAt(0) || 'U';
@@ -117,23 +137,58 @@ function CommentItem({
                                 </Link>
                                 <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 opacity-70">
                                     {createdAt ? formatDistanceToNow(createdAt, { addSuffix: true }) : 'just now'}
+                                    {updatedAt && <span className="ml-2">• edited</span>}
                                 </p>
                             </div>
-                            {isAuthor && (
-                                <button
-                                    className={cn(
-                                        "h-6 w-6 shrink-0 text-destructive/60 hover:text-destructive transition-all rounded-full hover:bg-destructive/10 flex items-center justify-center",
-                                        isMobile ? "opacity-100" : "opacity-0 group-hover:opacity-100"
-                                    )}
-                                    onClick={handleDelete}
-                                >
-                                    <Trash2 className="h-3.5 w-3.5" />
-                                </button>
+                            {isAuthor && !isEditing && (
+                                <div className={cn(
+                                    "flex items-center gap-1 shrink-0",
+                                    isMobile ? "opacity-100" : "opacity-0 group-hover:opacity-100 transition-opacity"
+                                )}>
+                                    <button
+                                        className="h-6 w-6 text-muted-foreground hover:text-primary transition-all rounded-full hover:bg-primary/10 flex items-center justify-center"
+                                        onClick={() => setIsEditing(true)}
+                                    >
+                                        <Edit className="h-3.5 w-3.5" />
+                                    </button>
+                                    <button
+                                        className="h-6 w-6 text-destructive/60 hover:text-destructive transition-all rounded-full hover:bg-destructive/10 flex items-center justify-center"
+                                        onClick={handleDelete}
+                                    >
+                                        <Trash2 className="h-3.5 w-3.5" />
+                                    </button>
+                                </div>
                             )}
                         </div>
-                        <p className="text-sm sm:text-base text-muted-foreground leading-relaxed whitespace-pre-wrap break-words">
-                            {comment.text}
-                        </p>
+                        
+                        {isEditing ? (
+                            <div className="space-y-3 py-1">
+                                <Input 
+                                    value={editedText}
+                                    onChange={(e) => setEditedText(e.target.value)}
+                                    className="h-9 text-sm bg-background"
+                                    autoFocus
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') handleUpdate();
+                                        if (e.key === 'Escape') {
+                                            setIsEditing(false);
+                                            setEditedText(comment.text);
+                                        }
+                                    }}
+                                />
+                                <div className="flex justify-end gap-2">
+                                    <Button size="sm" variant="ghost" className="h-7 text-[10px] font-bold uppercase tracking-widest" onClick={() => {
+                                        setIsEditing(false);
+                                        setEditedText(comment.text);
+                                    }}>Cancel</Button>
+                                    <Button size="sm" className="h-7 text-[10px] font-bold uppercase tracking-widest" onClick={handleUpdate}>Save</Button>
+                                </div>
+                            </div>
+                        ) : (
+                            <p className="text-sm sm:text-base text-muted-foreground leading-relaxed whitespace-pre-wrap break-words">
+                                {comment.text}
+                            </p>
+                        )}
                         
                         {(supporters.length > 0 || inspiredBy.length > 0 || connectedBy.length > 0) && (
                             <div className="absolute -bottom-2.5 right-2 flex items-center gap-1 bg-background border rounded-full px-1.5 py-0.5 shadow-sm z-10">
@@ -172,12 +227,14 @@ function CommentItem({
                             >
                                 Celebrate
                             </button>
-                            <button 
-                                onClick={() => onReply(comment)}
-                                className="text-xs font-bold text-muted-foreground hover:text-foreground transition-colors py-1"
-                            >
-                                Reply
-                            </button>
+                            {!isEditing && (
+                                <button 
+                                    onClick={() => onReply(comment)}
+                                    className="text-xs font-bold text-muted-foreground hover:text-foreground transition-colors py-1"
+                                >
+                                    Reply
+                                </button>
+                            )}
                         </div>
                     </div>
                 </div>
