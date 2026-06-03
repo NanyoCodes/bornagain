@@ -23,7 +23,8 @@ import {
   Utensils,
   Gift,
   UserPlus,
-  Search
+  Search,
+  PlusCircle
 } from 'lucide-react';
 import { cn, safeToDate } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
