@@ -358,7 +358,7 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted, userP
                 placeholder="What is the Spirit saying to you today?"
                 value={content}
                 onChange={(e) => { setContent(e.target.value); setIsDirty(true); }}
-                className="flex-grow min-h-0 text-lg sm:text-xl leading-relaxed p-6 rounded-[2rem] bg-muted/10 resize-none border-dashed overflow-y-auto"
+                className="flex-grow min-h-0 text-xl sm:text-2xl leading-relaxed p-8 rounded-[2rem] bg-muted/10 resize-none border-dashed overflow-y-auto"
             />
         </div>
       </div>
