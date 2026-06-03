@@ -2,9 +2,9 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
-import { useUser, useFirestore, useDoc } from '@/firebase';
-import { doc, serverTimestamp, writeBatch } from 'firebase/firestore';
-import type { UserProfile } from '@/lib/types';
+import { useUser, useFirestore, useDoc, useCollection, useUserProfile } from '@/firebase';
+import { doc, serverTimestamp, writeBatch, arrayUnion, query, collection, orderBy } from 'firebase/firestore';
+import type { UserProfile, Soul } from '@/lib/types';
 import { isToday, format } from 'date-fns';
 import { Skeleton } from '@/components/ui/skeleton';
 import { 
@@ -22,7 +22,8 @@ import {
   Calendar,
   Utensils,
   Gift,
-  UserPlus
+  UserPlus,
+  Search
 } from 'lucide-react';
 import { cn, safeToDate } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
@@ -33,6 +34,16 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { actionItems } from '@/lib/follow-up-data';
 import Link from 'next/link';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 const iconMap: Record<string, any> = {
     'prayed_together': Sparkles,
@@ -47,19 +58,103 @@ const iconMap: Record<string, any> = {
     'invited_to_event': Calendar,
 };
 
+function SoulSelectionDialog({ 
+  isOpen, 
+  onOpenChange, 
+  souls, 
+  onSelect,
+  actionLabel,
+  isLoading
+}: { 
+  isOpen: boolean; 
+  onOpenChange: (open: boolean) => void; 
+  souls: Soul[] | null; 
+  onSelect: (soul: Soul) => void;
+  actionLabel: string;
+  isLoading: boolean;
+}) {
+    const [search, setSearch] = useState('');
+    const filteredSouls = useMemo(() => {
+        if (!souls) return [];
+        if (!search) return souls;
+        const term = search.toLowerCase();
+        return souls.filter(s => `${s.firstName} ${s.lastName}`.toLowerCase().includes(term));
+    }, [souls, search]);
+
+    return (
+        <Dialog open={isOpen} onOpenChange={onOpenChange}>
+            <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl">
+                <DialogHeader className="p-8 border-b bg-muted/10">
+                    <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase">Who did you {actionLabel.toLowerCase()}?</DialogTitle>
+                    <DialogDescription className="text-sm font-medium">Select a convert to link this action to their record.</DialogDescription>
+                </DialogHeader>
+                <div className="p-6 space-y-6">
+                    <div className="relative">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50" />
+                        <Input 
+                            placeholder="Search by name..." 
+                            value={search} 
+                            onChange={e => setSearch(e.target.value)}
+                            className="rounded-2xl h-12 pl-10 bg-muted/20 border-none shadow-inner"
+                        />
+                    </div>
+                    <ScrollArea className="h-[40vh] border rounded-3xl bg-muted/5">
+                        <div className="p-2 space-y-1.5">
+                            {filteredSouls.length > 0 ? (
+                                filteredSouls.map(soul => (
+                                    <Button 
+                                        key={soul.id} 
+                                        variant="ghost" 
+                                        className="w-full justify-start h-16 px-4 rounded-2xl hover:bg-primary/5 hover:text-primary transition-all gap-4 group"
+                                        onClick={() => onSelect(soul)}
+                                        disabled={isLoading}
+                                    >
+                                        <Avatar className="h-10 w-10 border-2 group-hover:border-primary/20 transition-colors shadow-sm">
+                                            <AvatarFallback className="font-bold bg-primary/5">{soul.firstName?.charAt(0)}</AvatarFallback>
+                                        </Avatar>
+                                        <div className="text-left min-w-0 flex-1">
+                                            <p className="font-black text-sm truncate uppercase tracking-tight">{soul.firstName} {soul.lastName}</p>
+                                            <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest opacity-60">{soul.status}</p>
+                                        </div>
+                                        <div className="h-8 w-8 rounded-full bg-muted/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <PlusCircle className="h-4 w-4" />
+                                        </div>
+                                    </Button>
+                                ))
+                            ) : (
+                                <div className="text-center py-16 px-8 space-y-3">
+                                    <div className="h-12 w-12 rounded-2xl bg-muted/20 flex items-center justify-center mx-auto">
+                                        <Users className="h-6 w-6 text-muted-foreground opacity-20" />
+                                    </div>
+                                    <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground opacity-60">
+                                        {search ? "No matches found" : "Log your first soul to begin tracking"}
+                                    </p>
+                                </div>
+                            )}
+                        </div>
+                    </ScrollArea>
+                </div>
+            </DialogContent>
+        </Dialog>
+    );
+}
+
 export function RelationshipTrackerCard() {
   const { user, loading: userLoading } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
   const [completedToday, setCompletedToday] = useState<string[]>([]);
   const [togglingId, setTogglingId] = useState<string | null>(null);
+  const [selectedActionId, setSelectedActionId] = useState<string | null>(null);
+  const [isSoulDialogOpen, setIsSoulDialogOpen] = useState(false);
 
-  const userDocRef = useMemo(() => {
+  const { userProfile, loading: profileLoading } = useUserProfile();
+
+  const soulsQuery = useMemo(() => {
     if (!user?.uid || !firestore) return null;
-    return doc(firestore, 'users', user.uid);
+    return query(collection(firestore, `users/${user.uid}/souls`), orderBy("wonAt", "desc"));
   }, [user?.uid, firestore]);
-  
-  const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userDocRef);
+  const { data: souls, loading: soulsLoading } = useCollection<Soul>(soulsQuery);
 
   useEffect(() => {
     if (userProfile?.dailyDiscipline) {
@@ -72,27 +167,34 @@ export function RelationshipTrackerCard() {
     }
   }, [userProfile]);
 
-  const toggleRelation = async (id: string) => {
-    if (!user || !firestore) return;
-    setTogglingId(id);
+  const handleActionClick = (id: string) => {
+      setSelectedActionId(id);
+      setIsSoulDialogOpen(true);
+  };
 
-    const wasCompleted = completedToday.includes(id);
-    const newCompleted = wasCompleted
-      ? completedToday.filter((itemId) => itemId !== id)
-      : [...completedToday, id];
+  const handleSoulSelected = async (soul: Soul) => {
+    if (!user || !firestore || !selectedActionId) return;
+    
+    setIsSoulDialogOpen(false);
+    setTogglingId(selectedActionId);
+
+    const action = actionItems.find(a => a.id === selectedActionId);
+    if (!action) return;
 
     const today = new Date();
     const dateString = format(today, 'yyyy-MM-dd');
     const batch = writeBatch(firestore);
 
+    // 1. Update user's daily discipline (habit tracking)
+    const wasCompleted = completedToday.includes(selectedActionId);
+    const newCompleted = [...completedToday];
+    if (!wasCompleted) newCompleted.push(selectedActionId);
+
     const userRef = doc(firestore, 'users', user.uid);
-    const updateData = {
-      dailyDiscipline: {
-        completed: newCompleted,
-        lastUpdated: serverTimestamp(),
-      },
-    };
-    batch.update(userRef, updateData);
+    batch.update(userRef, {
+      'dailyDiscipline.completed': newCompleted,
+      'dailyDiscipline.lastUpdated': serverTimestamp(),
+    });
 
     const historyRef = doc(firestore, 'users', user.uid, 'disciplineHistory', dateString);
     batch.set(historyRef, {
@@ -100,28 +202,53 @@ export function RelationshipTrackerCard() {
         date: serverTimestamp()
     }, { merge: true });
 
+    // 2. Update soul's history
+    const memberName = `${userProfile?.firstName || ''} ${userProfile?.lastName || ''}`.trim() || user.displayName || 'Member';
+    const logEntry = {
+        date: new Date(),
+        note: `Logged via Kingdom Connections: ${action.label}`,
+        actions: [selectedActionId],
+        memberId: user.uid,
+        memberName: memberName,
+    };
+
+    const soulUserRef = doc(firestore, `users/${soul.userId}/souls`, soul.id);
+    const globalSoulRef = doc(firestore, 'souls', soul.id);
+    
+    batch.update(soulUserRef, {
+        followUpLog: arrayUnion(logEntry),
+        lastUpdatedAt: serverTimestamp(),
+    });
+    batch.update(globalSoulRef, {
+        followUpLog: arrayUnion(logEntry),
+        lastUpdatedAt: serverTimestamp(),
+    });
+
     try {
         await batch.commit();
         setCompletedToday(newCompleted);
-        if (!wasCompleted) {
-            toast({ 
-              title: 'Kingdom Connection Logged!',
-              description: 'God is glorified in our unity.'
-            });
-        }
+        toast({ 
+            title: 'Kingdom Impact Saved!', 
+            description: `Logged '${action.label}' for ${soul.firstName}.` 
+        });
     } catch (err: any) {
+        console.error("Batch update failed:", err);
         const permissionError = new FirestorePermissionError({
-            path: userRef.path,
-            operation: 'update',
-            requestResourceData: updateData,
+            path: `BATCH_WRITE:RELATION_TRACKER:${soul.id}`,
+            operation: 'write',
         }, user);
         errorEmitter.emit('permission-error', permissionError);
     } finally {
         setTogglingId(null);
+        setSelectedActionId(null);
     }
   };
 
-  if (userLoading || profileLoading) {
+  const activeActionLabel = useMemo(() => 
+    actionItems.find(a => a.id === selectedActionId)?.label || "Connect", 
+  [selectedActionId]);
+
+  if (userLoading || profileLoading || soulsLoading) {
     return (
       <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b">
         <CardHeader className="p-4 sm:p-6">
@@ -138,115 +265,126 @@ export function RelationshipTrackerCard() {
   }
 
   return (
-    <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b overflow-hidden relative group/card">
-      <div className="absolute top-0 right-0 p-8 opacity-[0.02] pointer-events-none group-hover/card:opacity-[0.05] transition-opacity">
-        <Users className="h-32 w-32 text-primary rotate-12" />
-      </div>
-
-      <CardHeader className="p-4 sm:p-6 pb-4 relative z-10">
-        <div className="flex justify-between items-start">
-            <div className="space-y-1">
-                <CardTitle className="text-base sm:text-lg font-black font-headline uppercase tracking-tight flex items-center gap-2">
-                    <Sparkles className="h-5 w-5 text-primary" />
-                    Kingdom Connections
-                </CardTitle>
-                <CardDescription className="text-[10px] sm:text-xs font-bold uppercase tracking-widest opacity-60">Daily Relational Efforts</CardDescription>
-            </div>
-            <TooltipProvider>
-                <Tooltip>
-                    <TooltipTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full opacity-40 hover:opacity-100">
-                            <Info className="h-4 w-4" />
-                        </Button>
-                    </TooltipTrigger>
-                    <TooltipContent className="max-w-[200px] rounded-xl p-3 border-primary/20 shadow-xl">
-                        <p className="text-[10px] font-bold uppercase leading-relaxed text-center">
-                            Track your relational impact for the day. These are shared actions to nurture the Body.
-                        </p>
-                    </TooltipContent>
-                </Tooltip>
-            </TooltipProvider>
+    <>
+      <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b overflow-hidden relative group/card">
+        <div className="absolute top-0 right-0 p-8 opacity-[0.02] pointer-events-none group-hover/card:opacity-[0.05] transition-opacity">
+          <Users className="h-32 w-32 text-primary rotate-12" />
         </div>
-      </CardHeader>
 
-      <CardContent className="px-4 sm:px-6 pb-2 relative z-10">
-        <div className="grid grid-cols-2 gap-2 sm:gap-3">
-            {actionItems.map(action => {
-                const isCompleted = completedToday.includes(action.id);
-                const Icon = iconMap[action.id] || Heart;
-                return (
-                    <TooltipProvider key={action.id}>
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                                <motion.div whileTap={{ scale: 0.95 }} whileHover={{ y: -2 }}>
-                                    <Button
-                                        variant="outline"
-                                        className={cn(
-                                            "relative flex flex-col items-center justify-center gap-2 p-3 h-24 w-full text-center transition-all duration-500 rounded-3xl border-2 overflow-hidden",
-                                            isCompleted 
-                                                ? "bg-primary/[0.03] border-primary/40 shadow-inner ring-1 ring-primary/10" 
-                                                : "bg-background/40 hover:bg-muted/50 hover:border-primary/30"
-                                        )}
-                                        onClick={() => toggleRelation(action.id)}
-                                        disabled={togglingId === action.id}
-                                    >
-                                        <AnimatePresence>
-                                            {isCompleted && togglingId !== action.id && (
-                                                <motion.div 
-                                                    initial={{ scale: 0, opacity: 0 }}
-                                                    animate={{ scale: 1, opacity: 1 }}
-                                                    exit={{ scale: 0, opacity: 0 }}
-                                                    className="absolute top-2 right-2 bg-primary rounded-full p-0.5 shadow-lg z-20"
-                                                >
-                                                    <CheckCircle2 className="h-3 w-3 text-primary-foreground fill-current" />
-                                                </motion.div>
-                                            )}
-                                        </AnimatePresence>
+        <CardHeader className="p-4 sm:p-6 pb-4 relative z-10">
+          <div className="flex justify-between items-start">
+              <div className="space-y-1">
+                  <CardTitle className="text-base sm:text-lg font-black font-headline uppercase tracking-tight flex items-center gap-2">
+                      <Sparkles className="h-5 w-5 text-primary" />
+                      Kingdom Connections
+                  </CardTitle>
+                  <CardDescription className="text-[10px] sm:text-xs font-bold uppercase tracking-widest opacity-60">Daily Relational Efforts</CardDescription>
+              </div>
+              <TooltipProvider>
+                  <Tooltip>
+                      <TooltipTrigger asChild>
+                          <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full opacity-40 hover:opacity-100">
+                              <Info className="h-4 w-4" />
+                          </Button>
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-[200px] rounded-xl p-3 border-primary/20 shadow-xl">
+                          <p className="text-[10px] font-bold uppercase leading-relaxed text-center">
+                              Select a convert to link these relational actions to their spiritual history.
+                          </p>
+                      </TooltipContent>
+                  </Tooltip>
+              </TooltipProvider>
+          </div>
+        </CardHeader>
 
-                                        {togglingId === action.id ? (
-                                            <Loader2 className="h-6 w-6 animate-spin text-primary" />
-                                        ) : (
-                                            <>
-                                                <div className={cn(
-                                                    "h-8 w-8 rounded-2xl flex items-center justify-center transition-all duration-500",
-                                                    isCompleted ? "bg-primary/20 scale-110 shadow-lg" : "bg-muted/30"
-                                                )}>
-                                                    <Icon className={cn("h-5 w-5 transition-all", isCompleted ? "text-primary fill-current" : "text-primary/60")} />
-                                                </div>
-                                                <div className="space-y-0.5 min-w-0 w-full">
-                                                    <span className={cn(
-                                                        "text-[10px] font-black uppercase tracking-tight block truncate",
-                                                        isCompleted ? "text-primary" : "text-foreground"
-                                                    )}>
-                                                        {action.label}
-                                                    </span>
-                                                </div>
-                                            </>
-                                        )}
-                                    </Button>
-                                </motion.div>
-                            </TooltipTrigger>
-                            <TooltipContent className="rounded-xl border-primary/20 shadow-xl" side="bottom">
-                                <p className="text-[10px] font-bold uppercase text-primary">Kingdom Action</p>
-                                <p className="text-xs font-medium max-w-[150px] leading-relaxed italic">{action.label}</p>
-                            </TooltipContent>
-                        </Tooltip>
-                    </TooltipProvider>
-                );
-            })}
-        </div>
-      </CardContent>
-      <CardFooter className="px-4 sm:px-6 pb-6 pt-4 flex flex-col gap-4 border-t mt-4 bg-muted/5">
-            <Button asChild variant="default" className="w-full font-black h-12 rounded-2xl shadow-xl shadow-primary/20 tracking-widest uppercase">
-                <Link href="/dashboard/souls-won">
-                    <UserPlus className="mr-2 h-4 w-4" />
-                    MANAGE SOULS WON
-                </Link>
-            </Button>
-            <p className="text-[8px] text-center text-muted-foreground font-bold uppercase tracking-[0.2em] opacity-40">
-                Unity • Growth • Love
-            </p>
-      </CardFooter>
-    </Card>
+        <CardContent className="px-4 sm:px-6 pb-2 relative z-10">
+          <div className="grid grid-cols-2 gap-2 sm:gap-3">
+              {actionItems.map(action => {
+                  const isCompleted = completedToday.includes(action.id);
+                  const Icon = iconMap[action.id] || Heart;
+                  return (
+                      <TooltipProvider key={action.id}>
+                          <Tooltip>
+                              <TooltipTrigger asChild>
+                                  <motion.div whileTap={{ scale: 0.95 }} whileHover={{ y: -2 }}>
+                                      <Button
+                                          variant="outline"
+                                          className={cn(
+                                              "relative flex flex-col items-center justify-center gap-2 p-3 h-24 w-full text-center transition-all duration-500 rounded-3xl border-2 overflow-hidden",
+                                              isCompleted 
+                                                  ? "bg-primary/[0.03] border-primary/40 shadow-inner ring-1 ring-primary/10" 
+                                                  : "bg-background/40 hover:bg-muted/50 hover:border-primary/30"
+                                          )}
+                                          onClick={() => handleActionClick(action.id)}
+                                          disabled={togglingId === action.id}
+                                      >
+                                          <AnimatePresence>
+                                              {isCompleted && togglingId !== action.id && (
+                                                  <motion.div 
+                                                      initial={{ scale: 0, opacity: 0 }}
+                                                      animate={{ scale: 1, opacity: 1 }}
+                                                      exit={{ scale: 0, opacity: 0 }}
+                                                      className="absolute top-2 right-2 bg-primary rounded-full p-0.5 shadow-lg z-20"
+                                                  >
+                                                      <CheckCircle2 className="h-3 w-3 text-primary-foreground fill-current" />
+                                                  </motion.div>
+                                              )}
+                                          </AnimatePresence>
+
+                                          {togglingId === action.id ? (
+                                              <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                                          ) : (
+                                              <>
+                                                  <div className={cn(
+                                                      "h-8 w-8 rounded-2xl flex items-center justify-center transition-all duration-500",
+                                                      isCompleted ? "bg-primary/20 scale-110 shadow-lg" : "bg-muted/30"
+                                                  )}>
+                                                      <Icon className={cn("h-5 w-5 transition-all", isCompleted ? "text-primary fill-current" : "text-primary/60")} />
+                                                  </div>
+                                                  <div className="space-y-0.5 min-w-0 w-full">
+                                                      <span className={cn(
+                                                          "text-[10px] font-black uppercase tracking-tight block truncate",
+                                                          isCompleted ? "text-primary" : "text-foreground"
+                                                      )}>
+                                                          {action.label}
+                                                      </span>
+                                                  </div>
+                                              </>
+                                          )}
+                                      </Button>
+                                  </motion.div>
+                              </TooltipTrigger>
+                              <TooltipContent className="rounded-xl border-primary/20 shadow-xl" side="bottom">
+                                  <p className="text-[10px] font-bold uppercase text-primary">Kingdom Action</p>
+                                  <p className="text-xs font-medium max-w-[150px] leading-relaxed italic">{action.label}</p>
+                              </TooltipContent>
+                          </Tooltip>
+                      </TooltipProvider>
+                  );
+              })}
+          </div>
+        </CardContent>
+        <CardFooter className="px-4 sm:px-6 pb-6 pt-4 flex flex-col gap-4 border-t mt-4 bg-muted/5">
+              <Button asChild variant="default" className="w-full font-black h-12 rounded-2xl shadow-xl shadow-primary/20 tracking-widest uppercase">
+                  <Link href="/dashboard/souls-won">
+                      <UserPlus className="mr-2 h-4 w-4" />
+                      MANAGE SOULS WON
+                  </Link>
+              </Button>
+              <p className="text-[8px] text-center text-muted-foreground font-bold uppercase tracking-[0.2em] opacity-40">
+                  Unity • Growth • Love
+              </p>
+        </CardFooter>
+      </Card>
+
+      <SoulSelectionDialog 
+          isOpen={isSoulDialogOpen} 
+          onOpenChange={setIsSoulDialogOpen} 
+          souls={souls} 
+          onSelect={handleSoulSelected} 
+          actionLabel={activeActionLabel}
+          isLoading={togglingId !== null}
+      />
+    </>
   );
 }
