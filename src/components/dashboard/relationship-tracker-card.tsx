@@ -15,10 +15,10 @@ import { FirestorePermissionError } from '@/firebase/errors';
 import { Button } from '@/components/ui/button';
 
 const relations = [
-  { id: 'rel_nurture', label: 'Nurture', Icon: Heart, color: 'text-red-500', desc: 'Checked on a convert' },
-  { id: 'rel_encourage', label: 'Encourage', Icon: MessageSquare, color: 'text-blue-500', desc: 'Spoke a word of life' },
-  { id: 'rel_outreach', label: 'Outreach', Icon: Flame, color: 'text-orange-500', desc: 'Shared the Gospel' },
-  { id: 'rel_sync', label: 'Sync Up', Icon: Users, color: 'text-purple-500', desc: 'Met with partner' },
+  { id: 'rel_nurture', label: 'Nurture', Icon: Heart, color: 'text-red-500', desc: 'Convert Check' },
+  { id: 'rel_encourage', label: 'Encourage', Icon: MessageSquare, color: 'text-blue-500', desc: 'Speak Life' },
+  { id: 'rel_outreach', label: 'Outreach', Icon: Flame, color: 'text-orange-500', desc: 'Share Gospel' },
+  { id: 'rel_sync', label: 'Sync Up', Icon: Users, color: 'text-purple-500', desc: 'Partner Meet' },
 ];
 
 export function RelationshipTrackerCard() {
@@ -95,13 +95,13 @@ export function RelationshipTrackerCard() {
   if (userLoading || profileLoading) {
     return (
       <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b">
-        <CardHeader>
-          <Skeleton className="h-6 w-48" />
-          <Skeleton className="h-4 w-64" />
+        <CardHeader className="p-4 sm:p-6">
+          <Skeleton className="h-5 w-32 mb-2" />
+          <Skeleton className="h-3 w-48" />
         </CardHeader>
-        <CardContent className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <CardContent className="grid grid-cols-2 gap-3 px-4 sm:px-6 pb-6">
           {[...Array(4)].map((_, i) => (
-            <Skeleton key={i} className="h-24 w-full rounded-2xl" />
+            <Skeleton key={i} className="h-20 w-full rounded-2xl" />
           ))}
         </CardContent>
       </Card>
@@ -110,14 +110,17 @@ export function RelationshipTrackerCard() {
 
   return (
     <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b">
-      <CardHeader>
+      <CardHeader className="p-4 sm:p-6 pb-4">
         <div className="space-y-1">
-          <CardTitle className="text-xl font-semibold tracking-tight">Relationship Tracker</CardTitle>
-          <CardDescription className="text-sm font-medium">Nurture the harvest through consistent connection.</CardDescription>
+          <CardTitle className="text-base sm:text-lg font-bold flex items-center gap-2">
+              <Users className="h-5 w-5 text-primary" />
+              Relationship Tracker
+          </CardTitle>
+          <CardDescription className="text-[10px] sm:text-xs font-medium uppercase tracking-tight">Nurturing the Harvest</CardDescription>
         </div>
       </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <CardContent className="px-4 sm:px-6 pb-6">
+        <div className="grid grid-cols-2 gap-2 sm:gap-3">
             {relations.map(rel => {
                 const isCompleted = completedToday.includes(rel.id);
                 const { Icon, color } = rel;
@@ -126,25 +129,25 @@ export function RelationshipTrackerCard() {
                         key={rel.id}
                         variant="outline"
                         className={cn(
-                            "relative flex flex-col items-center justify-center gap-3 p-4 h-24 text-center transition-all duration-300 rounded-3xl border-2 group",
+                            "relative flex flex-col items-center justify-center gap-2 p-3 h-20 text-center transition-all duration-300 rounded-2xl border-2 group",
                             isCompleted ? "bg-primary/5 border-primary/30 shadow-inner" : "hover:bg-muted/50 hover:border-primary/20 hover:-translate-y-1"
                         )}
                         onClick={() => toggleRelation(rel.id)}
                         disabled={togglingId === rel.id}
                     >
                         {isCompleted && togglingId !== rel.id && (
-                            <div className="absolute top-2 right-2 bg-primary rounded-full p-0.5 shadow-lg animate-in zoom-in">
-                                <CheckCircle2 className="h-3 w-3 text-primary-foreground fill-current" />
+                            <div className="absolute top-1.5 right-1.5 bg-primary rounded-full p-0.5 shadow-lg animate-in zoom-in">
+                                <CheckCircle2 className="h-2.5 w-2.5 text-primary-foreground fill-current" />
                             </div>
                         )}
                         {togglingId === rel.id ? (
-                            <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                            <Loader2 className="h-5 w-5 animate-spin text-primary" />
                         ) : (
                             <>
-                                <Icon className={cn("h-6 w-6 transition-transform group-hover:scale-110", isCompleted ? "text-primary fill-current opacity-40" : color)} />
-                                <div className="space-y-0.5">
-                                  <span className={cn("text-[10px] font-black uppercase tracking-widest block", isCompleted ? "text-primary" : "text-foreground")}>{rel.label}</span>
-                                  <span className="text-[8px] text-muted-foreground uppercase font-medium opacity-60 leading-none block">{rel.desc}</span>
+                                <Icon className={cn("h-5 w-5 transition-transform group-hover:scale-110", isCompleted ? "text-primary fill-current opacity-40" : color)} />
+                                <div className="space-y-0.5 min-w-0 w-full">
+                                  <span className={cn("text-[9px] font-black uppercase tracking-tighter block truncate", isCompleted ? "text-primary" : "text-foreground")}>{rel.label}</span>
+                                  <span className="text-[7px] text-muted-foreground uppercase font-medium opacity-60 leading-none block truncate">{rel.desc}</span>
                                 </div>
                             </>
                         )}

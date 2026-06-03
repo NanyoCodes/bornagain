@@ -521,7 +521,6 @@ export function ProgressPageContent() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
             <div className="lg:col-span-2 space-y-6 md:space-y-8">
                 <div className="-mx-4 sm:mx-0"><DailyDisciplineCard /></div>
-                <div className="-mx-4 sm:mx-0"><RelationshipTrackerCard /></div>
                 {userProfile && <div className="-mx-4 sm:mx-0"><ProgressOverview souls={soulsWon || []} userProfile={userProfile} testimonies={userTestimonies || []} /></div>}
                 
                 <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-sm">
@@ -548,9 +547,13 @@ export function ProgressPageContent() {
                 </div>
 
                 <div className="-mx-4 sm:mx-0">
-                  <PrayerRemindersCard souls={soulsWon || []} />
+                  <RelationshipTrackerCard />
                 </div>
 
+                <div className="-mx-4 sm:mx-0">
+                  <PrayerRemindersCard souls={soulsWon || []} />
+                </div>
+                
                 <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-sm">
                   <CardHeader>
                     <CardTitle className="text-lg">Recent Souls</CardTitle>
