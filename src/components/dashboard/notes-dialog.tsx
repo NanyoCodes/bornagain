@@ -360,7 +360,7 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted, userP
                 onChange={(e) => { setContent(e.target.value); setIsDirty(true); }}
                 className={cn(
                     "text-xl sm:text-2xl leading-relaxed p-8 rounded-[2rem] bg-muted/10 resize-none border-dashed",
-                    !isMobile ? "flex-grow min-h-0 overflow-y-auto" : "min-h-[400px]"
+                    !isMobile ? "min-h-[250px]" : "flex-grow min-h-0 overflow-y-auto"
                 )}
             />
         </div>
@@ -462,7 +462,7 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted, userP
                     disabled={isSaving || !content.trim() || !isDirty} 
                     className="w-full h-14 text-lg font-black rounded-2xl shadow-xl shadow-primary/20 tracking-widest uppercase"
                   >
-                    {isSaving && <Loader2 className="mr-2 h-5 w-5 animate-spin" />}
+                    {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                     {selectedNote ? 'SAVE CHANGES' : 'SAVE REVELATION'}
                   </Button>
                 )}

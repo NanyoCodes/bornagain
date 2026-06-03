@@ -408,7 +408,7 @@ export default function NotesPage() {
                 }}
                 className={cn(
                     "text-xl sm:text-2xl leading-relaxed p-8 rounded-[2rem] bg-muted/10 resize-none border-dashed",
-                    !isMobile ? "min-h-[400px]" : "flex-grow min-h-0 overflow-y-auto"
+                    !isMobile ? "min-h-[250px]" : "flex-grow min-h-0 overflow-y-auto"
                 )}
             />
         </div>
