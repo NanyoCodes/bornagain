@@ -3,6 +3,8 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
+    // Deployment trigger comment: Refined soul deletion permissions
+    
     function isOwner(userId) {
       return request.auth != null && request.auth.uid == userId;
     }
@@ -35,7 +37,8 @@ service cloud.firestore {
 
       match /souls/{soulId} {
         allow read: if isOwner(userId) || isFellowshipMember(resource.data.get('fellowshipId', '')) || isFellowshipMember(resource.data.get('associationId', ''));
-        allow create, delete: if isOwner(userId);
+        allow create: if isOwner(userId);
+        allow delete: if request.auth != null && request.auth.uid == userId;
         allow update: if request.auth != null && (request.auth.uid == userId || isFellowshipMember(resource.data.get('fellowshipId', '')) || isFellowshipMember(resource.data.get('associationId', '')));
       }
       
