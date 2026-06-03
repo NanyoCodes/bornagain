@@ -450,7 +450,7 @@ export function ProgressPageContent() {
   const userDocRef = useMemo(() => user?.uid ? doc(firestore, 'users', user.uid) : null, [user?.uid, firestore]);
   const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userDocRef);
   const soulsQuery = useMemo(() => user?.uid ? query(collection(firestore, `users/${user.uid}/souls`)) : null, [user?.uid, firestore]);
-  const { data: soulsWon, loading: soulsLoading } = useCollection<Soul>(soulsQuery);
+  const { data: soulsWon, loading: soulsLoading } = useCollection<Soul>( soulsQuery);
   const testimoniesQuery = useMemo(() => user?.uid ? query(collection(firestore, 'testimonies'), where('authorId', '==', user.uid)) : null, [user?.uid, firestore]);
   const { data: userTestimonies } = useCollection<Testimony>(testimoniesQuery);
 
