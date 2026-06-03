@@ -62,12 +62,12 @@ export function PwaInstallCard() {
       if (isIos) {
           toast({
               title: "iOS Installation",
-              description: "Tap 'Share' and then 'Add to Home Screen'.",
+              description: "Tap 'Share' and then 'Add to Home Screen' in Safari.",
           });
       } else {
           toast({
-            title: "Installation Instructions",
-            description: "To install, open your browser menu and select 'Install App' or 'Add to Home Screen'.",
+            title: "Installation Required",
+            description: "Please open your browser menu and select 'Install App' or 'Add to Home Screen'.",
           });
       }
       return;
@@ -153,10 +153,10 @@ export function PwaInstallCard() {
                     <Button 
                         onClick={handleInstallClick} 
                         className="w-full font-black h-12 rounded-2xl shadow-xl shadow-primary/20 tracking-widest uppercase py-3"
-                        variant={deferredPrompt ? "default" : "outline"}
+                        variant="default"
                     >
                         <Download className="mr-2 h-5 w-5" />
-                        {deferredPrompt ? "INSTALL NOW" : "CHECK COMPATIBILITY"}
+                        INSTALL ON HOME SCREEN
                     </Button>
                     
                     {!deferredPrompt && (
