@@ -35,7 +35,7 @@ service cloud.firestore {
 
       match /souls/{soulId} {
         allow read: if isOwner(userId) || isFellowshipMember(resource.data.get('fellowshipId', '')) || isFellowshipMember(resource.data.get('associationId', ''));
-        allow create: if isOwner(userId);
+        allow create, delete: if isOwner(userId);
         allow update: if request.auth != null && (request.auth.uid == userId || isFellowshipMember(resource.data.get('fellowshipId', '')) || isFellowshipMember(resource.data.get('associationId', '')));
       }
       
