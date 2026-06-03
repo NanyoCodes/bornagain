@@ -1,4 +1,3 @@
-
 'use client';
 
 import dynamic from 'next/dynamic';
@@ -39,7 +38,6 @@ import {
   limit,
   where,
   getCountFromServer,
-  getDocs,
 } from 'firebase/firestore';
 import type { Soul, UserProfile, Testimony, ReadingHistoryItem } from '@/lib/types';
 import { useMemo, useEffect, useState, useCallback } from 'react';
@@ -52,7 +50,6 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { safeToDate, cn } from '@/lib/utils';
-import { actionItems } from '@/lib/follow-up-data';
 import { welcomeScriptures } from '@/lib/verses';
 import { ProgressOverview } from '@/components/dashboard/progress-overview';
 import { useToast } from '@/hooks/use-toast';
@@ -219,6 +216,78 @@ function CityImpactCard({ location, userSouls }: { location: { city?: string; co
       </CardContent>
     </Card>
   );
+}
+
+function FamilyFriendsTrackerCard({ souls }: { souls: Soul[] }) {
+    const stats = useMemo(() => {
+        const familyCount = souls.filter(s => s.relationship === 'Family').length;
+        const friendsCount = souls.filter(s => ['Friend', 'Colleague', 'Neighbor'].includes(s.relationship || '')).length;
+        const outreachCount = souls.filter(s => ['Stranger', 'Other'].includes(s.relationship || '') || !s.relationship).length;
+        
+        return {
+            family: familyCount,
+            friends: friendsCount,
+            outreach: outreachCount,
+        };
+    }, [souls]);
+
+    return (
+        <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-sm border-t-4 border-t-blue-500">
+            <CardHeader className="pb-3">
+                <CardTitle className="text-lg flex items-center gap-2">
+                    <Home className="h-5 w-5 text-blue-500" />
+                    Kingdom Circle Tracker
+                </CardTitle>
+                <CardDescription>
+                    Ensuring your closest circles are saved and nurtured in faith.
+                </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+                <div className="space-y-4">
+                    <div className="space-y-1.5">
+                        <div className="flex justify-between items-center text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                            <span>Family Harvest</span>
+                            <span className="text-blue-500">{stats.family} Souls</span>
+                        </div>
+                        <Progress value={Math.min((stats.family / 5) * 100, 100)} className="h-2 bg-blue-100 dark:bg-blue-900/20" indicatorClassName="bg-blue-500" />
+                        <p className="text-[10px] text-muted-foreground leading-tight italic">"Believe in the Lord Jesus, and you will be saved—you and your household." — Acts 16:31</p>
+                    </div>
+
+                    <div className="space-y-1.5 pt-2">
+                        <div className="flex justify-between items-center text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                            <span>Friends & Connections</span>
+                            <span className="text-primary">{stats.friends} Souls</span>
+                        </div>
+                        <Progress value={Math.min((stats.friends / 10) * 100, 100)} className="h-2" />
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-3 gap-2">
+                    <div className="p-3 rounded-2xl bg-muted/30 border text-center space-y-1">
+                        <p className="text-[10px] font-black text-muted-foreground uppercase tracking-tighter">Family</p>
+                        <p className="text-xl font-black text-blue-500">{stats.family}</p>
+                    </div>
+                    <div className="p-3 rounded-2xl bg-muted/30 border text-center space-y-1">
+                        <p className="text-[10px] font-black text-muted-foreground uppercase tracking-tighter">Friends</p>
+                        <p className="text-xl font-black text-primary">{stats.friends}</p>
+                    </div>
+                    <div className="p-3 rounded-2xl bg-muted/30 border text-center space-y-1">
+                        <p className="text-[10px] font-black text-muted-foreground uppercase tracking-tighter">Outreach</p>
+                        <p className="text-xl font-black text-foreground">{stats.outreach}</p>
+                    </div>
+                </div>
+
+                {stats.family === 0 && (
+                    <div className="p-4 bg-blue-50 dark:bg-blue-900/10 rounded-2xl border border-blue-200 dark:border-blue-800 flex items-start gap-3">
+                        <Sparkles className="h-5 w-5 text-blue-500 shrink-0 mt-0.5" />
+                        <p className="text-xs text-blue-700 dark:text-blue-400 font-medium leading-relaxed">
+                            Have you shared the Gospel with your household? Log your family members here to prioritize their spiritual growth.
+                        </p>
+                    </div>
+                )}
+            </CardContent>
+        </Card>
+    );
 }
 
 function LastBibleReadCard({ history }: { history: ReadingHistoryItem[] }) {
@@ -467,45 +536,7 @@ export function ProgressPageContent() {
                 </Card>
 
                 <div className="-mx-4 sm:mx-0">
-                    <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-sm">
-                        <CardHeader>
-                            <CardTitle className="text-lg">Follow-up Activity</CardTitle>
-                            <CardDescription>Interaction types logged this month.</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="space-y-2">
-                                {soulsWon && soulsWon.length > 0 ? (
-                                    <div className="space-y-2">
-                                        {actionItems.map((item, index) => {
-                                            const count = soulsWon.reduce((acc, soul) => {
-                                                return acc + (soul.followUpLog?.filter(log => {
-                                                    const logDate = safeToDate(log.date);
-                                                    return logDate && isSameMonth(logDate, new Date()) && log.actions?.includes(item.id);
-                                                }).length || 0);
-                                            }, 0);
-                                            
-                                            if (count === 0) return null;
-                                            
-                                            return (
-                                                <div key={item.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/40">
-                                                    <div className="flex items-center gap-3">
-                                                        <span className="flex h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: chartColors[index % chartColors.length] }} />
-                                                        <span className="text-sm font-medium">{item.label}</span>
-                                                    </div>
-                                                    <span className="text-sm font-bold">{count}</span>
-                                                </div>
-                                            );
-                                        })}
-                                        {soulsWon.every(s => !s.followUpLog || s.followUpLog.length === 0) && (
-                                            <p className="text-sm text-muted-foreground text-center py-6 italic">No interactions logged yet.</p>
-                                        )}
-                                    </div>
-                                ) : (
-                                    <p className="text-sm text-muted-foreground text-center py-6 italic">Log your first soul to see activity breakdown.</p>
-                                )}
-                            </div>
-                        </CardContent>
-                    </Card>
+                    <RelationshipTrackerCard />
                 </div>
                 
                 <div className="-mx-4 sm:mx-0"><FamilyFriendsTrackerCard souls={soulsWon || []} /></div>
@@ -514,10 +545,6 @@ export function ProgressPageContent() {
             <div className="space-y-6 md:space-y-8 pb-16 lg:pb-0">
                 <div className="-mx-4 sm:mx-0">
                   <LastBibleReadCard history={userProfile?.readingHistory || []} />
-                </div>
-
-                <div className="-mx-4 sm:mx-0">
-                  <RelationshipTrackerCard />
                 </div>
 
                 <div className="-mx-4 sm:mx-0">
