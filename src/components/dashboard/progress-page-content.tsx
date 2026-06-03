@@ -1,3 +1,4 @@
+
 'use client';
 
 import dynamic from 'next/dynamic';
@@ -59,7 +60,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Progress } from '@/components/ui/progress';
 
 const MonthlyStatsChart = dynamic(() => import('@/components/dashboard/monthly-stats-chart').then(m => m.MonthlyStatsChart), {
-  loading: () => <Skeleton className="h-[300px] w-full" />,
+  loading: () => <Skeleton className="h-[300px] w-full rounded-xl" />,
   ssr: false
 });
 
@@ -68,11 +69,31 @@ const chartColors = ['hsl(var(--chart-1))', 'hsl(var(--chart-2))', 'hsl(var(--ch
 function RecentSoulsList() {
   const { user } = useUser();
   const firestore = useFirestore();
-  const soulsQuery = useMemo(() => user?.uid ? query(collection(firestore, `users/${user.uid}/souls`), orderBy('wonAt', 'desc'), limit(3)) : null, [user?.uid, firestore]);
+  const soulsQuery = useMemo(() => user?.uid ? query(collection(firestore, 'users', user.uid, 'souls'), orderBy('wonAt', 'desc'), limit(3)) : null, [user?.uid, firestore]);
   const { data: souls, loading } = useCollection<Soul>( soulsQuery);
+  
   if (loading) return <div className="space-y-4">{[...Array(3)].map((_, i) => (<div key={i} className="flex items-center gap-4"><Skeleton className="h-10 w-10 rounded-full" /><div className="space-y-1 flex-1"><Skeleton className="h-4 w-2/4" /><Skeleton className="h-3 w-1/4" /></div></div>))}</div>;
-  if (!souls || souls.length === 0) return <div className="text-center py-10 border-2 border-dashed rounded-lg bg-slate-50 dark:bg-slate-900/30"><div className="mx-auto h-12 w-12 text-muted-foreground"><UserPlus strokeWidth={1.5} /></div><h3 className="mt-4 text-lg font-semibold">Log Your First Soul</h3><p className="mt-1 text-sm text-muted-foreground">Start tracking the lives you impact.</p><Button asChild size="sm" className="mt-4"><Link href="/souls-won">Get Started <ArrowRight className="ml-2 h-4 w-4" /></Link></Button></div>;
-  return (<div className="space-y-1">{souls.map((soul) => { const wonAt = safeToDate(soul.wonAt); return (<Link href="/souls-won" key={soul.id} className="flex items-center gap-4 p-2 -mx-2 rounded-lg hover:bg-muted/50 transition-colors"><Avatar className="h-10 w-10 border"><AvatarFallback>{soul.firstName?.charAt(0) || 'S'}</AvatarFallback></Avatar><div className="flex-1 min-w-0"><p className="font-semibold leading-none truncate">{soul.firstName} {soul.lastName}</p><p className="text-sm text-muted-foreground">Won on {wonAt ? format(wonAt, 'PPP') : 'N/A'}</p></div><ArrowRight className="h-4 w-4 text-muted-foreground shrink-0" /></Link>); })}</div>);
+  if (!souls || souls.length === 0) return <div className="text-center py-10 border-2 border-dashed rounded-lg bg-slate-50 dark:bg-slate-900/30"><div className="mx-auto h-12 w-12 text-muted-foreground"><UserPlus strokeWidth={1.5} /></div><h3 className="mt-4 text-lg font-semibold">Log Your First Soul</h3><p className="mt-1 text-sm text-muted-foreground">Start tracking the lives you impact.</p><Button asChild size="sm" className="mt-4"><Link href="/dashboard/souls-won">Get Started <ArrowRight className="ml-2 h-4 w-4" /></Link></Button></div>;
+  
+  return (
+    <div className="space-y-1">
+      {souls.map((soul) => { 
+        const wonAt = safeToDate(soul.wonAt); 
+        return (
+          <Link href="/dashboard/souls-won" key={soul.id} className="flex items-center gap-4 p-2 -mx-2 rounded-lg hover:bg-muted/50 transition-colors">
+            <Avatar className="h-10 w-10 border">
+              <AvatarFallback className="font-bold bg-primary/5">{soul.firstName?.charAt(0) || 'S'}</AvatarFallback>
+            </Avatar>
+            <div className="flex-1 min-w-0">
+              <p className="font-semibold leading-none truncate">{soul.firstName} {soul.lastName}</p>
+              <p className="text-xs text-muted-foreground mt-1">Won {wonAt ? format(wonAt, 'PPP') : 'Recently'}</p>
+            </div>
+            <ArrowRight className="h-4 w-4 text-muted-foreground shrink-0" />
+          </Link>
+        ); 
+      })}
+    </div>
+  );
 }
 
 function PrayerRemindersCard({ souls }: { souls: Soul[] }) {
@@ -117,7 +138,7 @@ function PrayerRemindersCard({ souls }: { souls: Soul[] }) {
                 <p className="text-xs text-muted-foreground">No contact for {soul.daysSinceContact} days</p>
               </div>
               <Button asChild variant="ghost" size="sm" className="opacity-0 group-hover:opacity-100 transition-opacity">
-                <Link href="/souls-won">Follow-up</Link>
+                <Link href="/dashboard/souls-won">Follow-up</Link>
               </Button>
             </div>
           ))
@@ -136,7 +157,11 @@ function CityImpactCard({ location, userSouls }: { location: { city?: string; co
   const firestore = useFirestore();
   const [cityCount, setCityCount] = useState(0);
   const [loading, setLoading] = useState(true);
-  const yourCityCount = useMemo(() => userSouls.filter((s) => s.userLocation?.city_lowercase === location.city?.toLowerCase()).length, [userSouls, location.city]);
+  
+  const yourCityCount = useMemo(() => 
+    userSouls.filter((s) => s.userLocation?.city_lowercase === location.city?.toLowerCase()).length, 
+  [userSouls, location.city]);
+
   const fetchCounts = useCallback(async () => {
     if (!firestore || !user || !location.city) { setLoading(false); return; }
     setLoading(true);
@@ -144,9 +169,13 @@ function CityImpactCard({ location, userSouls }: { location: { city?: string; co
       const cityQuery = query(collection(firestore, 'souls'), where('userLocation.city_lowercase', '==', location.city.toLowerCase()));
       const citySnapshot = await getCountFromServer(cityQuery);
       setCityCount(citySnapshot.data().count);
-    } catch (error) { errorEmitter.emit('permission-error', new FirestorePermissionError({ path: 'souls', operation: 'list' }, user)); }
-    finally { setLoading(false); }
+    } catch (error) { 
+      errorEmitter.emit('permission-error', new FirestorePermissionError({ path: 'souls', operation: 'list' }, user)); 
+    } finally { 
+      setLoading(false); 
+    }
   }, [firestore, user, location.city]);
+
   useEffect(() => { fetchCounts(); }, [fetchCounts]);
   
   return (
@@ -190,131 +219,6 @@ function CityImpactCard({ location, userSouls }: { location: { city?: string; co
       </CardContent>
     </Card>
   );
-}
-
-function ActionAnalyticsCard({ souls }: { souls: Soul[] }) {
-  const actionData = useMemo(() => {
-    if (!souls) return [];
-    const now = new Date();
-    const actionCounts: { [key: string]: number } = {};
-    actionItems.forEach((item) => (actionCounts[item.id] = 0));
-    
-    souls.forEach((soul) => soul.followUpLog?.forEach((log) => { 
-      const logDate = safeToDate(log.date);
-      if (logDate && isSameMonth(logDate, now)) {
-        log.actions?.forEach((a) => {
-          if (actionCounts[a] !== undefined) actionCounts[a]++;
-        });
-      }
-    }));
-
-    return actionItems
-      .map((item, index) => ({ 
-        id: item.id, 
-        label: item.label, 
-        count: actionCounts[item.id], 
-        color: chartColors[index % chartColors.length] 
-      }))
-      .sort((a, b) => b.count - a.count);
-  }, [souls]);
-
-  return (
-    <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-sm">
-      <CardHeader>
-        <CardTitle className="text-lg">Follow-up Tracker</CardTitle>
-        <CardDescription>Interaction types logged this month.</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-2">
-        {actionData.some(i => i.count > 0) ? (
-          actionData.map(i => i.count > 0 && (
-            <div key={i.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/40">
-              <div className="flex items-center gap-3">
-                <span className="flex h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: i.color }} />
-                <span className="text-sm font-medium">{i.label}</span>
-              </div>
-              <span className="text-sm font-bold">{i.count}</span>
-            </div>
-          ))
-        ) : (
-          <div className="text-center py-10 border-2 border-dashed rounded-lg bg-muted/10">
-            <p className="text-sm text-muted-foreground italic px-6">No interactions logged this month. Start follow-up to see your activity break down.</p>
-          </div>
-        )}
-      </CardContent>
-    </Card>
-  );
-}
-
-function FamilyFriendsTrackerCard({ souls }: { souls: Soul[] }) {
-    const stats = useMemo(() => {
-        const familyCount = souls.filter(s => s.relationship === 'Family').length;
-        const friendsCount = souls.filter(s => ['Friend', 'Colleague', 'Neighbor'].includes(s.relationship || '')).length;
-        const outreachCount = souls.filter(s => ['Stranger', 'Other'].includes(s.relationship || '') || !s.relationship).length;
-        
-        return {
-            family: familyCount,
-            friends: friendsCount,
-            outreach: outreachCount,
-        };
-    }, [souls]);
-
-    return (
-        <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-sm border-t-4 border-t-blue-500">
-            <CardHeader className="pb-3">
-                <CardTitle className="text-lg flex items-center gap-2">
-                    <Home className="h-5 w-5 text-blue-500" />
-                    Kingdom Circle Tracker
-                </CardTitle>
-                <CardDescription>
-                    Ensuring your closest circles are saved and nurtured in faith.
-                </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-                <div className="space-y-4">
-                    <div className="space-y-1.5">
-                        <div className="flex justify-between items-center text-xs font-bold uppercase tracking-widest text-muted-foreground">
-                            <span>Family Harvest</span>
-                            <span className="text-blue-500">{stats.family} Souls</span>
-                        </div>
-                        <Progress value={Math.min((stats.family / 5) * 100, 100)} className="h-2 bg-blue-100 dark:bg-blue-900/20" indicatorClassName="bg-blue-500" />
-                        <p className="text-[10px] text-muted-foreground leading-tight italic">"Believe in the Lord Jesus, and you will be saved—you and your household." — Acts 16:31</p>
-                    </div>
-
-                    <div className="space-y-1.5 pt-2">
-                        <div className="flex justify-between items-center text-xs font-bold uppercase tracking-widest text-muted-foreground">
-                            <span>Friends & Connections</span>
-                            <span className="text-primary">{stats.friends} Souls</span>
-                        </div>
-                        <Progress value={Math.min((stats.friends / 10) * 100, 100)} className="h-2" />
-                    </div>
-                </div>
-
-                <div className="grid grid-cols-3 gap-2">
-                    <div className="p-3 rounded-2xl bg-muted/30 border text-center space-y-1">
-                        <p className="text-[10px] font-black text-muted-foreground uppercase tracking-tighter">Family</p>
-                        <p className="text-xl font-black text-blue-500">{stats.family}</p>
-                    </div>
-                    <div className="p-3 rounded-2xl bg-muted/30 border text-center space-y-1">
-                        <p className="text-[10px] font-black text-muted-foreground uppercase tracking-tighter">Friends</p>
-                        <p className="text-xl font-black text-primary">{stats.friends}</p>
-                    </div>
-                    <div className="p-3 rounded-2xl bg-muted/30 border text-center space-y-1">
-                        <p className="text-[10px] font-black text-muted-foreground uppercase tracking-tighter">Outreach</p>
-                        <p className="text-xl font-black text-foreground">{stats.outreach}</p>
-                    </div>
-                </div>
-
-                {stats.family === 0 && (
-                    <div className="p-4 bg-blue-50 dark:bg-blue-900/10 rounded-2xl border border-blue-200 dark:border-blue-800 flex items-start gap-3">
-                        <Sparkles className="h-5 w-5 text-blue-500 shrink-0 mt-0.5" />
-                        <p className="text-xs text-blue-700 dark:text-blue-400 font-medium leading-relaxed">
-                            Have you shared the Gospel with your household? Log your family members here to prioritize their spiritual growth.
-                        </p>
-                    </div>
-                )}
-            </CardContent>
-        </Card>
-    );
 }
 
 function LastBibleReadCard({ history }: { history: ReadingHistoryItem[] }) {
@@ -445,23 +349,43 @@ export function ProgressPageContent() {
   const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
-  const [welcomeMessage, setWelcomeMessage] = useState(welcomeScriptures[0]);
+  const [welcomeMessage, setWelcomeMessage] = useState<{text: string, verse: string} | null>(null);
 
   const userDocRef = useMemo(() => user?.uid ? doc(firestore, 'users', user.uid) : null, [user?.uid, firestore]);
   const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userDocRef);
-  const soulsQuery = useMemo(() => user?.uid ? query(collection(firestore, `users/${user.uid}/souls`)) : null, [user?.uid, firestore]);
+  
+  const soulsQuery = useMemo(() => user?.uid ? query(collection(firestore, 'users', user.uid, 'souls')) : null, [user?.uid, firestore]);
   const { data: soulsWon, loading: soulsLoading } = useCollection<Soul>( soulsQuery);
+  
   const testimoniesQuery = useMemo(() => user?.uid ? query(collection(firestore, 'testimonies'), where('authorId', '==', user.uid)) : null, [user?.uid, firestore]);
   const { data: userTestimonies } = useCollection<Testimony>(testimoniesQuery);
 
-  useEffect(() => { setWelcomeMessage(welcomeScriptures[Math.floor(Math.random() * welcomeScriptures.length)]); }, []);
+  useEffect(() => { 
+    // Randomize on mount to prevent flash but ensure hydration safety
+    const randomMsg = welcomeScriptures[Math.floor(Math.random() * welcomeScriptures.length)];
+    setWelcomeMessage(randomMsg);
+  }, []);
 
   const progressData = useMemo(() => {
     if (!soulsWon) return [];
     const monthlyData: { [key: string]: { date: string; soulsWon: number } } = {};
-    const threeMonthsAgo = new Date(); threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 2); threeMonthsAgo.setDate(1);
-    for (let i = 0; i < 3; i++) { const d = new Date(threeMonthsAgo.getFullYear(), threeMonthsAgo.getMonth() + i, 1); const k = format(d, 'MMM'); monthlyData[k] = { date: k, soulsWon: 0 }; }
-    soulsWon.forEach(s => { const d = safeToDate(s.wonAt); if (d && d >= threeMonthsAgo) { const k = format(d, 'MMM'); if (monthlyData[k]) monthlyData[k].soulsWon++; } });
+    const threeMonthsAgo = new Date(); 
+    threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 2); 
+    threeMonthsAgo.setDate(1);
+
+    for (let i = 0; i < 3; i++) { 
+        const d = new Date(threeMonthsAgo.getFullYear(), threeMonthsAgo.getMonth() + i, 1); 
+        const k = format(d, 'MMM'); 
+        monthlyData[k] = { date: k, soulsWon: 0 }; 
+    }
+
+    soulsWon.forEach(s => { 
+        const d = safeToDate(s.wonAt); 
+        if (d && d >= threeMonthsAgo) { 
+            const k = format(d, 'MMM'); 
+            if (monthlyData[k]) monthlyData[k].soulsWon++; 
+        } 
+    });
     return Object.values(monthlyData);
   }, [soulsWon]);
 
@@ -484,23 +408,29 @@ export function ProgressPageContent() {
             break;
     }
 
-    toast({
-        title: title,
-        description: description,
-    });
+    toast({ title: title, description: description });
   };
 
-  if (profileLoading || soulsLoading) return <div className="flex justify-center py-20"><Loader2 className="h-10 w-10 animate-spin text-primary" /></div>;
+  if (profileLoading || soulsLoading) return <div className="flex justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
 
   return (
     <div className="space-y-8 pb-12">
         <header className="text-center space-y-4 px-4">
-            <h1 className="text-2xl sm:text-4xl font-bold italic font-headline leading-tight">
-              {welcomeMessage.text.replace('{name}', userProfile?.firstName || 'Soldier')}
-            </h1>
-            <p className="text-primary font-black uppercase text-[10px] sm:text-xs tracking-[0.2em]">
-              {welcomeMessage.verse}
-            </p>
+            {welcomeMessage ? (
+                <>
+                    <h1 className="text-2xl sm:text-4xl font-bold italic font-headline leading-tight animate-in fade-in slide-in-from-top-4 duration-700">
+                    {welcomeMessage.text.replace('{name}', userProfile?.firstName || 'Soldier')}
+                    </h1>
+                    <p className="text-primary font-black uppercase text-[10px] sm:text-xs tracking-[0.2em] animate-in fade-in slide-in-from-bottom-4 duration-1000">
+                    {welcomeMessage.verse}
+                    </p>
+                </>
+            ) : (
+                <div className="space-y-3 flex flex-col items-center">
+                    <Skeleton className="h-10 w-3/4 sm:w-1/2" />
+                    <Skeleton className="h-4 w-1/3" />
+                </div>
+            )}
             
             <div className="flex flex-wrap justify-center gap-2 pt-2">
                 <AffirmationButton onClick={() => handleAffirmation('hallelujah')}>
@@ -523,7 +453,7 @@ export function ProgressPageContent() {
                 <div className="-mx-4 sm:mx-0"><DailyDisciplineCard /></div>
                 {userProfile && <div className="-mx-4 sm:mx-0"><ProgressOverview souls={soulsWon || []} userProfile={userProfile} testimonies={userTestimonies || []} /></div>}
                 
-                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-sm">
+                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-sm overflow-hidden">
                   <CardHeader>
                     <CardTitle className="text-lg flex items-center gap-2">
                       <Target className="h-5 w-5 text-primary" />
@@ -536,7 +466,47 @@ export function ProgressPageContent() {
                   </CardContent>
                 </Card>
 
-                <div className="-mx-4 sm:mx-0"><ActionAnalyticsCard souls={soulsWon || []} /></div>
+                <div className="-mx-4 sm:mx-0">
+                    <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-sm">
+                        <CardHeader>
+                            <CardTitle className="text-lg">Follow-up Activity</CardTitle>
+                            <CardDescription>Interaction types logged this month.</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="space-y-2">
+                                {soulsWon && soulsWon.length > 0 ? (
+                                    <div className="space-y-2">
+                                        {actionItems.map((item, index) => {
+                                            const count = soulsWon.reduce((acc, soul) => {
+                                                return acc + (soul.followUpLog?.filter(log => {
+                                                    const logDate = safeToDate(log.date);
+                                                    return logDate && isSameMonth(logDate, new Date()) && log.actions?.includes(item.id);
+                                                }).length || 0);
+                                            }, 0);
+                                            
+                                            if (count === 0) return null;
+                                            
+                                            return (
+                                                <div key={item.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/40">
+                                                    <div className="flex items-center gap-3">
+                                                        <span className="flex h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: chartColors[index % chartColors.length] }} />
+                                                        <span className="text-sm font-medium">{item.label}</span>
+                                                    </div>
+                                                    <span className="text-sm font-bold">{count}</span>
+                                                </div>
+                                            );
+                                        })}
+                                        {soulsWon.every(s => !s.followUpLog || s.followUpLog.length === 0) && (
+                                            <p className="text-sm text-muted-foreground text-center py-6 italic">No interactions logged yet.</p>
+                                        )}
+                                    </div>
+                                ) : (
+                                    <p className="text-sm text-muted-foreground text-center py-6 italic">Log your first soul to see activity breakdown.</p>
+                                )}
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>
                 
                 <div className="-mx-4 sm:mx-0"><FamilyFriendsTrackerCard souls={soulsWon || []} /></div>
             </div>
@@ -551,7 +521,44 @@ export function ProgressPageContent() {
                 </div>
 
                 <div className="-mx-4 sm:mx-0">
-                  <PrayerRemindersCard souls={soulsWon || []} />
+                  <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-sm">
+                    <CardHeader>
+                        <CardTitle className="text-lg flex items-center gap-2">
+                        <Heart className="h-5 w-5 text-primary" />
+                        Prayer Reminders
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-2">
+                        {soulsWon && soulsWon.length > 0 ? (
+                            soulsWon
+                                .filter(soul => soul.status !== 'Established')
+                                .map(soul => {
+                                    const lastFollowUp = (soul.followUpLog && soul.followUpLog.length > 0)
+                                        ? [...soul.followUpLog].sort((a, b) => (safeToDate(b.date)?.getTime() ?? 0) - (safeToDate(a.date)?.getTime() ?? 0))[0]
+                                        : null;
+                                    const lastContactDate = lastFollowUp ? safeToDate(lastFollowUp.date) : safeToDate(soul.wonAt);
+                                    const daysSinceContact = lastContactDate ? differenceInDays(new Date(), lastContactDate) : 0;
+                                    return { ...soul, daysSinceContact };
+                                })
+                                .filter(soul => soul.daysSinceContact > 1)
+                                .sort((a, b) => b.daysSinceContact - a.daysSinceContact)
+                                .slice(0, 3)
+                                .map(soul => (
+                                    <div key={soul.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/40 group">
+                                        <div className="min-w-0 flex-1">
+                                            <p className="font-bold text-sm truncate">{soul.firstName} {soul.lastName}</p>
+                                            <p className="text-[10px] text-muted-foreground">Idle for {soul.daysSinceContact} days</p>
+                                        </div>
+                                        <Button asChild variant="ghost" size="sm" className="opacity-0 group-hover:opacity-100 h-7 text-[10px] uppercase font-bold">
+                                            <Link href="/dashboard/souls-won">Follow-up</Link>
+                                        </Button>
+                                    </div>
+                                ))
+                        ) : (
+                            <p className="text-xs text-muted-foreground italic text-center py-4">No follow-up required.</p>
+                        )}
+                    </CardContent>
+                  </Card>
                 </div>
                 
                 <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-sm">

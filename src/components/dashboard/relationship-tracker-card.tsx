@@ -154,7 +154,7 @@ export function RelationshipTrackerCard() {
 
   const soulsQuery = useMemo(() => {
     if (!user?.uid || !firestore) return null;
-    return query(collection(firestore, `users/${user.uid}/souls`), orderBy("wonAt", "desc"));
+    return query(collection(firestore, 'users', user.uid, 'souls'), orderBy("wonAt", "desc"));
   }, [user?.uid, firestore]);
   const { data: souls, loading: soulsLoading } = useCollection<Soul>(soulsQuery);
 
@@ -204,7 +204,7 @@ export function RelationshipTrackerCard() {
         date: serverTimestamp()
     }, { merge: true });
 
-    // 2. Update soul's history - use direct user UID for guaranteed subcollection path access
+    // 2. Update soul's history
     const memberName = `${userProfile?.firstName || ''} ${userProfile?.lastName || ''}`.trim() || user.displayName || 'Member';
     const logEntry = {
         date: new Date(),
@@ -214,7 +214,8 @@ export function RelationshipTrackerCard() {
         memberName: memberName,
     };
 
-    const soulUserRef = doc(firestore, `users/${user.uid}/souls`, soul.id);
+    // Use direct user UID for guaranteed subcollection path access
+    const soulUserRef = doc(firestore, 'users', user.uid, 'souls', soul.id);
     const globalSoulRef = doc(firestore, 'souls', soul.id);
     
     batch.update(soulUserRef, {
