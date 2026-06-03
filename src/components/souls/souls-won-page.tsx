@@ -197,30 +197,32 @@ export default function SoulsWonPage() {
   };
 
 
-  const handleDeleteSoul = async () => {
+  const handleDeleteSoul = () => {
     if (!soulToDelete || !user || !firestore) return;
     setIsDeleting(true);
 
     const soulRef = doc(firestore, `users/${user.uid}/souls`, soulToDelete.id);
     const globalSoulRef = doc(firestore, 'souls', soulToDelete.id);
 
-    try {
-        const batch = writeBatch(firestore);
-        batch.delete(soulRef);
-        batch.delete(globalSoulRef);
-        
-        await batch.commit();
-        toast({ title: "Record Deleted" });
-        setDeleteSoulId(null);
-    } catch (error) {
-        const permissionError = new FirestorePermissionError({
-            path: soulRef.path,
-            operation: 'delete',
-        }, user);
-        errorEmitter.emit('permission-error', permissionError);
-    } finally {
-        setIsDeleting(false);
-    }
+    const batch = writeBatch(firestore);
+    batch.delete(soulRef);
+    batch.delete(globalSoulRef);
+    
+    batch.commit()
+        .then(() => {
+            toast({ title: "Record Deleted" });
+        })
+        .catch(async (error) => {
+            const permissionError = new FirestorePermissionError({
+                path: soulRef.path,
+                operation: 'delete',
+            }, user);
+            errorEmitter.emit('permission-error', permissionError);
+        })
+        .finally(() => {
+            setIsDeleting(false);
+            setDeleteSoulId(null);
+        });
   };
 
   const handleAssignGroup = (soul: Soul, groupId: string, groupType: 'Fellowship' | 'Association') => {

@@ -3,7 +3,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger comment: Fix soul deletion permissions in subcollection
+    // Deployment trigger comment: Fix soul deletion permissions in subcollection and global records
     
     function isOwner(userId) {
       return request.auth != null && request.auth.uid == userId;
@@ -37,9 +37,8 @@ service cloud.firestore {
 
       match /souls/{soulId} {
         allow read: if isOwner(userId) || isFellowshipMember(resource.data.get('fellowshipId', '')) || isFellowshipMember(resource.data.get('associationId', ''));
-        allow create: if isOwner(userId);
-        allow delete: if isOwner(userId);
-        allow update: if request.auth != null && (isOwner(userId) || isFellowshipMember(resource.data.get('fellowshipId', '')) || isFellowshipMember(resource.data.get('associationId', '')));
+        allow write: if isOwner(userId);
+        allow update: if request.auth != null && (isFellowshipMember(resource.data.get('fellowshipId', '')) || isFellowshipMember(resource.data.get('associationId', '')));
       }
       
       match /joinedCampaigns/{campaignId} {
@@ -152,7 +151,7 @@ service cloud.firestore {
     match /accountabilityRequests/{requestId} {
       allow read: if request.auth != null && request.auth.uid in resource.data.participantIds;
       allow create: if request.auth != null && request.resource.data.fromUserId == request.auth.uid;
-      allow update: if request.auth != null && (request.auth.uid == resource.data.toUserId || request.auth.uid == resource.data.fromUserId);
+      allow update: if request.auth != null && (request.auth.uid == resource.data.toUserId || request.auth.uid == request.resource.data.fromUserId);
       allow delete: if request.auth != null && request.auth.uid in resource.data.participantIds;
     }
     
