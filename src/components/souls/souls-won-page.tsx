@@ -212,12 +212,16 @@ export default function SoulsWonPage() {
         .then(() => {
             toast({ title: "Record Deleted" });
         })
-        .catch(async (error) => {
-            const permissionError = new FirestorePermissionError({
-                path: soulRef.path,
-                operation: 'delete',
-            }, user);
-            errorEmitter.emit('permission-error', permissionError);
+        .catch(async (serverError) => {
+            if (serverError.code === 'permission-denied') {
+                const permissionError = new FirestorePermissionError({
+                    path: `BATCH_DELETE: ${soulRef.path} & ${globalSoulRef.path}`,
+                    operation: 'delete',
+                }, user);
+                errorEmitter.emit('permission-error', permissionError);
+            } else {
+                toast({ variant: 'destructive', title: "Delete Failed", description: serverError.message });
+            }
         })
         .finally(() => {
             setIsDeleting(false);

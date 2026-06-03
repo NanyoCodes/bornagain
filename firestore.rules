@@ -3,7 +3,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger comment: Fix soul deletion permissions in subcollection and global records
+    // Deployment trigger comment: Explicitly allow soul deletion for record owners in both collections
     
     function isOwner(userId) {
       return request.auth != null && request.auth.uid == userId;
@@ -37,7 +37,7 @@ service cloud.firestore {
 
       match /souls/{soulId} {
         allow read: if isOwner(userId) || isFellowshipMember(resource.data.get('fellowshipId', '')) || isFellowshipMember(resource.data.get('associationId', ''));
-        allow write: if isOwner(userId);
+        allow create, update, delete: if isOwner(userId);
         allow update: if request.auth != null && (isFellowshipMember(resource.data.get('fellowshipId', '')) || isFellowshipMember(resource.data.get('associationId', '')));
       }
       
@@ -71,12 +71,11 @@ service cloud.firestore {
     match /souls/{soulId} {
       allow get, list: if request.auth != null;
       allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
-      allow update: if request.auth != null && (
+      allow update, delete: if request.auth != null && (
         (resource.data.get('userId', '') == request.auth.uid) || 
         isFellowshipMember(resource.data.get('fellowshipId', '')) ||
         isFellowshipMember(resource.data.get('associationId', ''))
       );
-      allow delete: if request.auth != null && resource.data.get('userId', '') == request.auth.uid;
     }
 
     match /testimonies/{testimonyId} {
