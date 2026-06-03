@@ -1,55 +1,51 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { useUser, useFirestore, useDoc } from '@/firebase';
 import { doc, serverTimestamp, writeBatch } from 'firebase/firestore';
 import type { UserProfile } from '@/lib/types';
 import { isToday, format } from 'date-fns';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Heart, MessageSquare, Flame, Users, CheckCircle2, Loader2, Sparkles, Info } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { 
+  Heart, 
+  MessageSquare, 
+  Flame, 
+  Users, 
+  CheckCircle2, 
+  Loader2, 
+  Sparkles, 
+  Info, 
+  BookOpen,
+  Home,
+  Phone,
+  Calendar,
+  Utensils,
+  Gift,
+  UserPlus
+} from 'lucide-react';
+import { cn, safeToDate } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { actionItems } from '@/lib/follow-up-data';
+import Link from 'next/link';
 
-const relations = [
-  { 
-    id: 'rel_nurture', 
-    label: 'Nurture', 
-    Icon: Heart, 
-    color: 'text-red-500', 
-    desc: 'Convert Check',
-    tip: 'Ask about their week and if they have any prayer points.'
-  },
-  { 
-    id: 'rel_encourage', 
-    label: 'Encourage', 
-    Icon: MessageSquare, 
-    color: 'text-blue-500', 
-    desc: 'Speak Life',
-    tip: 'Send a scripture or a word of life to a brother or sister.'
-  },
-  { 
-    id: 'rel_outreach', 
-    label: 'Outreach', 
-    Icon: Flame, 
-    color: 'text-orange-500', 
-    desc: 'Share Gospel',
-    tip: 'Share your testimony or the Gospel with a stranger today.'
-  },
-  { 
-    id: 'rel_sync', 
-    label: 'Sync Up', 
-    Icon: Users, 
-    color: 'text-purple-500', 
-    desc: 'Partner Meet',
-    tip: 'Connect with your accountability partner for a quick check-in.'
-  },
-];
+const iconMap: Record<string, any> = {
+    'prayed_together': Sparkles,
+    'studied_bible': BookOpen,
+    'shared_meal': Utensils,
+    'visited_home': Home,
+    'introduced_friend': Users,
+    'gave_gift': Gift,
+    'phone_call': Phone,
+    'text_message': MessageSquare,
+    'helped_with_need': Heart,
+    'invited_to_event': Calendar,
+};
 
 export function RelationshipTrackerCard() {
   const { user, loading: userLoading } = useUser();
@@ -67,7 +63,7 @@ export function RelationshipTrackerCard() {
 
   useEffect(() => {
     if (userProfile?.dailyDiscipline) {
-      const lastUpdatedDate = userProfile.dailyDiscipline.lastUpdated?.toDate();
+      const lastUpdatedDate = safeToDate(userProfile.dailyDiscipline.lastUpdated);
       if (lastUpdatedDate && isToday(lastUpdatedDate)) {
         setCompletedToday(userProfile.dailyDiscipline.completed || []);
       } else {
@@ -154,7 +150,7 @@ export function RelationshipTrackerCard() {
                     <Sparkles className="h-5 w-5 text-primary" />
                     Kingdom Connections
                 </CardTitle>
-                <CardDescription className="text-[10px] sm:text-xs font-bold uppercase tracking-widest opacity-60">Nurturing the Body of Christ</CardDescription>
+                <CardDescription className="text-[10px] sm:text-xs font-bold uppercase tracking-widest opacity-60">Daily Relational Efforts</CardDescription>
             </div>
             <TooltipProvider>
                 <Tooltip>
@@ -165,8 +161,7 @@ export function RelationshipTrackerCard() {
                     </TooltipTrigger>
                     <TooltipContent className="max-w-[200px] rounded-xl p-3 border-primary/20 shadow-xl">
                         <p className="text-[10px] font-bold uppercase leading-relaxed text-center">
-                            Track your relational impact.<br/>
-                            <span className="text-primary">Unity is our strength.</span>
+                            Track your relational impact for the day. These are shared actions to nurture the Body.
                         </p>
                     </TooltipContent>
                 </Tooltip>
@@ -174,13 +169,13 @@ export function RelationshipTrackerCard() {
         </div>
       </CardHeader>
 
-      <CardContent className="px-4 sm:px-6 pb-6 relative z-10">
+      <CardContent className="px-4 sm:px-6 pb-2 relative z-10">
         <div className="grid grid-cols-2 gap-2 sm:gap-3">
-            {relations.map(rel => {
-                const isCompleted = completedToday.includes(rel.id);
-                const { Icon, color } = rel;
+            {actionItems.map(action => {
+                const isCompleted = completedToday.includes(action.id);
+                const Icon = iconMap[action.id] || Heart;
                 return (
-                    <TooltipProvider key={rel.id}>
+                    <TooltipProvider key={action.id}>
                         <Tooltip>
                             <TooltipTrigger asChild>
                                 <motion.div whileTap={{ scale: 0.95 }} whileHover={{ y: -2 }}>
@@ -192,11 +187,11 @@ export function RelationshipTrackerCard() {
                                                 ? "bg-primary/[0.03] border-primary/40 shadow-inner ring-1 ring-primary/10" 
                                                 : "bg-background/40 hover:bg-muted/50 hover:border-primary/30"
                                         )}
-                                        onClick={() => toggleRelation(rel.id)}
-                                        disabled={togglingId === rel.id}
+                                        onClick={() => toggleRelation(action.id)}
+                                        disabled={togglingId === action.id}
                                     >
                                         <AnimatePresence>
-                                            {isCompleted && togglingId !== rel.id && (
+                                            {isCompleted && togglingId !== action.id && (
                                                 <motion.div 
                                                     initial={{ scale: 0, opacity: 0 }}
                                                     animate={{ scale: 1, opacity: 1 }}
@@ -208,7 +203,7 @@ export function RelationshipTrackerCard() {
                                             )}
                                         </AnimatePresence>
 
-                                        {togglingId === rel.id ? (
+                                        {togglingId === action.id ? (
                                             <Loader2 className="h-6 w-6 animate-spin text-primary" />
                                         ) : (
                                             <>
@@ -216,17 +211,14 @@ export function RelationshipTrackerCard() {
                                                     "h-8 w-8 rounded-2xl flex items-center justify-center transition-all duration-500",
                                                     isCompleted ? "bg-primary/20 scale-110 shadow-lg" : "bg-muted/30"
                                                 )}>
-                                                    <Icon className={cn("h-5 w-5 transition-all", isCompleted ? "text-primary fill-current" : color)} />
+                                                    <Icon className={cn("h-5 w-5 transition-all", isCompleted ? "text-primary fill-current" : "text-primary/60")} />
                                                 </div>
                                                 <div className="space-y-0.5 min-w-0 w-full">
                                                     <span className={cn(
                                                         "text-[10px] font-black uppercase tracking-tight block truncate",
                                                         isCompleted ? "text-primary" : "text-foreground"
                                                     )}>
-                                                        {rel.label}
-                                                    </span>
-                                                    <span className="text-[8px] text-muted-foreground uppercase font-black opacity-60 leading-none block truncate tracking-tighter">
-                                                        {rel.desc}
+                                                        {action.label}
                                                     </span>
                                                 </div>
                                             </>
@@ -235,18 +227,26 @@ export function RelationshipTrackerCard() {
                                 </motion.div>
                             </TooltipTrigger>
                             <TooltipContent className="rounded-xl border-primary/20 shadow-xl" side="bottom">
-                                <p className="text-[10px] font-bold uppercase text-primary mb-1">Kingdom Tip</p>
-                                <p className="text-xs font-medium max-w-[150px] leading-relaxed italic">{rel.tip}</p>
+                                <p className="text-[10px] font-bold uppercase text-primary">Kingdom Action</p>
+                                <p className="text-xs font-medium max-w-[150px] leading-relaxed italic">{action.label}</p>
                             </TooltipContent>
                         </Tooltip>
                     </TooltipProvider>
                 );
             })}
         </div>
-        <p className="text-[8px] text-center text-muted-foreground mt-4 font-bold uppercase tracking-[0.2em] opacity-40">
-            Unity • Growth • Love
-        </p>
       </CardContent>
+      <CardFooter className="px-4 sm:px-6 pb-6 pt-4 flex flex-col gap-4 border-t mt-4 bg-muted/5">
+            <Button asChild variant="default" className="w-full font-black h-12 rounded-2xl shadow-xl shadow-primary/20 tracking-widest uppercase">
+                <Link href="/dashboard/souls-won">
+                    <UserPlus className="mr-2 h-4 w-4" />
+                    MANAGE SOULS WON
+                </Link>
+            </Button>
+            <p className="text-[8px] text-center text-muted-foreground font-bold uppercase tracking-[0.2em] opacity-40">
+                Unity • Growth • Love
+            </p>
+      </CardFooter>
     </Card>
   );
 }
