@@ -15,10 +15,10 @@ import { FirestorePermissionError } from '@/firebase/errors';
 import { Button } from '@/components/ui/button';
 
 const relations = [
-  { id: 'nurture', label: 'Nurture', Icon: Heart, color: 'text-red-500' },
-  { id: 'encourage', label: 'Encourage', Icon: MessageSquare, color: 'text-blue-500' },
-  { id: 'outreach', label: 'Outreach', Icon: Flame, color: 'text-orange-500' },
-  { id: 'partner_sync', label: 'Sync Up', Icon: Users, color: 'text-purple-500' },
+  { id: 'rel_nurture', label: 'Nurture', Icon: Heart, color: 'text-red-500', desc: 'Checked on a convert' },
+  { id: 'rel_encourage', label: 'Encourage', Icon: MessageSquare, color: 'text-blue-500', desc: 'Spoke a word of life' },
+  { id: 'rel_outreach', label: 'Outreach', Icon: Flame, color: 'text-orange-500', desc: 'Shared the Gospel' },
+  { id: 'rel_sync', label: 'Sync Up', Icon: Users, color: 'text-purple-500', desc: 'Met with partner' },
 ];
 
 export function RelationshipTrackerCard() {
@@ -126,7 +126,7 @@ export function RelationshipTrackerCard() {
                         key={rel.id}
                         variant="outline"
                         className={cn(
-                            "relative flex flex-col items-center justify-center gap-3 p-4 h-24 text-center transition-all duration-300 rounded-3xl border-2",
+                            "relative flex flex-col items-center justify-center gap-3 p-4 h-24 text-center transition-all duration-300 rounded-3xl border-2 group",
                             isCompleted ? "bg-primary/5 border-primary/30 shadow-inner" : "hover:bg-muted/50 hover:border-primary/20 hover:-translate-y-1"
                         )}
                         onClick={() => toggleRelation(rel.id)}
@@ -141,8 +141,11 @@ export function RelationshipTrackerCard() {
                             <Loader2 className="h-6 w-6 animate-spin text-primary" />
                         ) : (
                             <>
-                                <Icon className={cn("h-6 w-6 transition-transform", isCompleted ? "text-primary fill-current opacity-40" : color)} />
-                                <span className={cn("text-[10px] font-black uppercase tracking-widest", isCompleted ? "text-primary" : "text-foreground")}>{rel.label}</span>
+                                <Icon className={cn("h-6 w-6 transition-transform group-hover:scale-110", isCompleted ? "text-primary fill-current opacity-40" : color)} />
+                                <div className="space-y-0.5">
+                                  <span className={cn("text-[10px] font-black uppercase tracking-widest block", isCompleted ? "text-primary" : "text-foreground")}>{rel.label}</span>
+                                  <span className="text-[8px] text-muted-foreground uppercase font-medium opacity-60 leading-none block">{rel.desc}</span>
+                                </div>
                             </>
                         )}
                     </Button>
