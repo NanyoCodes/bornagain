@@ -226,14 +226,14 @@ export default function NotesPage() {
         return;
     }
     
-    const newTitle = title.trim() || content.split('\n')[0].substring(0, 50) || 'Untitled Note';
+    const finalTitle = title.trim() || content.split('\n')[0].substring(0, 50) || 'Untitled Note';
 
     setIsSaving(true);
     try {
       if (selectedNote) {
         const noteRef = doc(firestore, 'users', user.uid, 'notes', selectedNote.id);
         const updatedData = {
-          title: newTitle,
+          title: finalTitle,
           content: content,
           category,
           updatedAt: serverTimestamp(),
@@ -359,13 +359,13 @@ export default function NotesPage() {
   );
   
   const NoteEditor = (
-    <div className="flex flex-col h-full overflow-hidden min-w-0" key={selectedNote?.id || (isCreatingNew ? 'new-note' : 'empty-editor')}>
+    <div className={cn("flex flex-col min-w-0", !isMobile && "h-full overflow-hidden")} key={selectedNote?.id || (isCreatingNew ? 'new-note' : 'empty-editor')}>
       {isMobile && (
-        <Button onClick={handleBackToList} variant="ghost" size="sm" className="mb-2 self-start pl-0 text-primary font-bold uppercase tracking-widest text-[10px]">
+        <Button onClick={handleBackToList} variant="ghost" size="sm" className="mb-4 self-start pl-0 text-primary font-bold uppercase tracking-widest text-[10px]">
             <CornerUpLeft className="mr-2 h-3.5 w-3.5" /> Back to List
         </Button>
       )}
-      <div className="space-y-4 flex-grow flex flex-col min-h-0">
+      <div className={cn("space-y-4", !isMobile && "flex-grow flex flex-col min-h-0")}>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 shrink-0">
             <div className="space-y-1.5">
                 <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Note Title</Label>
@@ -397,7 +397,7 @@ export default function NotesPage() {
             </div>
         </div>
         
-        <div className="flex-grow flex flex-col min-h-0 space-y-1.5">
+        <div className={cn("space-y-1.5", !isMobile && "flex-grow flex flex-col min-h-0")}>
             <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Journal Content</Label>
             <Textarea
                 placeholder="What has the Spirit placed on your heart?"
@@ -406,7 +406,10 @@ export default function NotesPage() {
                     setContent(e.target.value);
                     setIsDirty(true);
                 }}
-                className="flex-grow min-h-0 text-xl sm:text-2xl leading-relaxed p-8 rounded-[2rem] bg-muted/10 resize-none border-dashed overflow-y-auto"
+                className={cn(
+                    "text-xl sm:text-2xl leading-relaxed p-8 rounded-[2rem] bg-muted/10 resize-none border-dashed",
+                    !isMobile ? "min-h-[400px]" : "flex-grow min-h-0 overflow-y-auto"
+                )}
             />
         </div>
       </div>
@@ -486,15 +489,15 @@ export default function NotesPage() {
                   } else {
                       setActiveTab(newTab);
                   }
-                }} className="h-full flex flex-col min-w-0">
+                }} className="flex flex-col min-w-0">
                     <TabsList className="grid w-full grid-cols-2 shrink-0 h-12 p-1 bg-muted/30 rounded-2xl mb-4 sm:mb-6">
                         <TabsTrigger value="list" className="rounded-xl font-bold">Past Records</TabsTrigger>
                         <TabsTrigger value="editor" className="rounded-xl font-bold">{selectedNote ? 'Edit Entry' : 'New Entry'}</TabsTrigger>
                     </TabsList>
-                    <TabsContent value="list" className="flex-grow min-h-0 overflow-hidden h-full data-[state=inactive]:hidden">
+                    <TabsContent value="list" className="data-[state=inactive]:hidden">
                         {NoteList}
                     </TabsContent>
-                    <TabsContent value="editor" className="flex-grow flex flex-col min-h-0 h-full overflow-hidden data-[state=inactive]:hidden">
+                    <TabsContent value="editor" className="data-[state=inactive]:hidden">
                         {editorVisible ? NoteEditor : (
                             <div className="text-center text-muted-foreground py-20 flex flex-col items-center justify-center h-full border-2 border-dashed rounded-[2rem] bg-muted/5 mx-1">
                                <p className="font-black uppercase tracking-tight">No note selected</p>
@@ -508,7 +511,7 @@ export default function NotesPage() {
                 </Tabs>
             )}
        </div>
-        <AlertDialog open={isDiscardAlertOpen} onOpenChange={setIsDiscardAlertOpen}>
+        <AlertDialog open={isDiscardAlertOpen} onOpenChange={isDiscardAlertOpen => setIsDiscardAlertOpen(isDiscardAlertOpen)}>
           <AlertDialogContent className="rounded-3xl p-8">
             <AlertDialogHeader>
               <AlertDialogTitle className="text-xl font-bold">Unsaved Revelations</AlertDialogTitle>

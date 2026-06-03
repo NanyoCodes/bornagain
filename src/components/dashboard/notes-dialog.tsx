@@ -309,7 +309,7 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted, userP
                     <FileText className="h-8 w-8 text-muted-foreground opacity-20" />
                 </div>
                 <h3 className="font-bold text-lg">{searchTerm ? 'No matches' : 'Empty Spiritual Journal'}</h3>
-                <p className="text-sm text-muted-foreground mt-1 px-12 leading-relaxed text-balance">Start writing your revelations and prayers today to track God's faithfulness.</p>
+                <p className="text-sm text-muted-foreground mt-1 px-12 leading-relaxed text-balance">Start journaling your revelations and prayers today to track God's faithfulness.</p>
                 <Button onClick={handleNewNote} variant="outline" className="mt-6 h-10 rounded-full font-bold px-8">
                     <Plus className="mr-2 h-4 w-4" /> Start Journaling
                 </Button>
@@ -321,13 +321,13 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted, userP
   );
   
   const NoteEditor = (
-    <div className="flex flex-col h-full overflow-hidden min-w-0">
+    <div className={cn("flex flex-col min-w-0", !isMobile && "h-full overflow-hidden")} key={selectedNote?.id || (isCreatingNew ? 'new-note' : 'empty-editor')}>
       {isMobile && (
-        <Button onClick={handleBackToList} variant="ghost" size="sm" className="mb-2 self-start pl-0 text-primary font-bold uppercase tracking-widest text-[10px]">
+        <Button onClick={handleBackToList} variant="ghost" size="sm" className="mb-4 self-start pl-0 text-primary font-bold uppercase tracking-widest text-[10px]">
             <CornerUpLeft className="mr-2 h-3.5 w-3.5" /> Back to Journal
         </Button>
       )}
-      <div className="space-y-4 flex-grow flex flex-col min-h-0">
+      <div className={cn("space-y-4", !isMobile && "flex-grow flex flex-col min-h-0")}>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 shrink-0">
             <div className="space-y-1.5">
                 <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Title</Label>
@@ -352,13 +352,16 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted, userP
                 </Select>
             </div>
         </div>
-        <div className="flex-grow flex flex-col min-h-0 space-y-1.5">
+        <div className={cn("space-y-1.5", !isMobile && "flex-grow flex flex-col min-h-0")}>
             <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Content</Label>
             <Textarea
                 placeholder="What is the Spirit saying to you today?"
                 value={content}
                 onChange={(e) => { setContent(e.target.value); setIsDirty(true); }}
-                className="flex-grow min-h-0 text-xl sm:text-2xl leading-relaxed p-8 rounded-[2rem] bg-muted/10 resize-none border-dashed overflow-y-auto"
+                className={cn(
+                    "text-xl sm:text-2xl leading-relaxed p-8 rounded-[2rem] bg-muted/10 resize-none border-dashed",
+                    !isMobile ? "flex-grow min-h-0 overflow-y-auto" : "min-h-[400px]"
+                )}
             />
         </div>
       </div>
@@ -397,17 +400,17 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted, userP
   );
 
   const innerContent = !mounted ? null : isMobile ? (
-    <Tabs value={mobileTab} onValueChange={setMobileTab} className="flex-grow flex flex-col min-h-0 min-w-0 h-full">
+    <Tabs value={mobileTab} onValueChange={setMobileTab} className="flex flex-col min-w-0">
         <TabsList className="grid w-full grid-cols-2 shrink-0 h-11 p-1 bg-muted/30 rounded-2xl mb-4">
             <TabsTrigger value="list" className="rounded-xl font-bold">Past Notes</TabsTrigger>
             <TabsTrigger value="editor" disabled={!editorVisible} className="rounded-xl font-bold">
                 {selectedNote ? 'Edit Entry' : 'New Entry'}
             </TabsTrigger>
         </TabsList>
-        <TabsContent value="list" className="flex-grow min-h-0 overflow-hidden h-full data-[state=inactive]:hidden">
+        <TabsContent value="list" className="data-[state=inactive]:hidden">
             {NoteList}
         </TabsContent>
-        <TabsContent value="editor" className="flex-grow flex flex-col min-h-0 h-full overflow-hidden data-[state=inactive]:hidden">
+        <TabsContent value="editor" className="data-[state=inactive]:hidden">
             {editorVisible ? NoteEditor : (
                 <div className="text-center text-muted-foreground py-20 flex flex-col items-center justify-center h-full">
                     <p>Select a note to edit.</p>
@@ -447,9 +450,11 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted, userP
                   <SheetDescription className="text-sm font-medium mt-1">Capture your reflections and revelations.</SheetDescription>
               </SheetHeader>
             </div>
-            <div className="p-6 flex-grow min-h-0 overflow-hidden">
-              {innerContent}
-            </div>
+            <ScrollArea className="flex-grow">
+              <div className="p-6">
+                {innerContent}
+              </div>
+            </ScrollArea>
             <div className="p-6 border-t flex-shrink-0 bg-background/80 backdrop-blur-sm flex flex-col gap-3">
                 {mobileTab === 'editor' && editorVisible && (
                   <Button 
