@@ -3,7 +3,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Updated soul deletion permissions for record owners - 2025-05-20T14:30:00Z
+    // Deployment trigger: Refined soul deletion permissions for record owners - 2025-05-20T16:00:00Z
     
     function isOwner(userId) {
       return request.auth != null && request.auth.uid == userId;
