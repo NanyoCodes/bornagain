@@ -102,7 +102,7 @@ function AppHeader({ unreadChatCount }: { unreadChatCount: number }) {
   const { data: unreadOtherNotifications } = useCollection<Notification>(otherNotificationsQuery);
   const unreadCount = unreadOtherNotifications?.length ?? 0;
 
-  const isProfileIncomplete = userProfile && (!userProfile.firstName || !userProfile.lastName || !userProfile.photoURL);
+  const isProfileIncomplete = userProfile && (!userProfile.firstName?.trim() || !userProfile.lastName?.trim() || !userProfile.photoURL?.trim());
 
   const handleLogout = async () => {
     if (!auth) return;
@@ -223,9 +223,9 @@ function AppHeader({ unreadChatCount }: { unreadChatCount: number }) {
                 <AvatarFallback className="text-[10px]">{user.displayName?.charAt(0) || user.email?.charAt(0) || 'U'}</AvatarFallback>
               </Avatar>
               {isProfileIncomplete && (
-                <span className="absolute top-0 right-0 flex h-2 w-2">
+                <span className="absolute top-0 right-0 flex h-2.5 w-2.5">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-red-600 border border-background"></span>
+                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-600 border border-background"></span>
                 </span>
               )}
             </Button>
@@ -380,7 +380,7 @@ export default function DashboardClientLayout({ children }: { children: React.Re
     if (profileLoading || !userProfile) return;
     const isNewUserSession = sessionStorage.getItem('isNewUserSession') === 'true';
     const welcomePopupShown = sessionStorage.getItem('welcomePopupShown');
-    const isProfileComplete = !!(userProfile.firstName && userProfile.lastName);
+    const isProfileComplete = !!(userProfile.firstName && userProfile.lastName && userProfile.photoURL);
     if (isNewUserSession && isProfileComplete && !welcomePopupShown) {
         const timer = setTimeout(() => {
             setShowWelcomePopup(true);
@@ -409,7 +409,7 @@ export default function DashboardClientLayout({ children }: { children: React.Re
     );
   }
 
-  const isProfileIncomplete = userProfile && (!userProfile.firstName || !userProfile.lastName);
+  const isProfileIncomplete = userProfile && (!userProfile.firstName?.trim() || !userProfile.lastName?.trim() || !userProfile.photoURL?.trim());
 
   // Bottom Nav is shown on regular pages and on chat module pages
   const showBottomNav = !isTakeoverPage || pathname.includes('/chats');
@@ -451,7 +451,7 @@ export default function DashboardClientLayout({ children }: { children: React.Re
               <div className="p-6 border-b bg-muted/10">
                 <DialogHeader>
                     <DialogTitle className="text-2xl font-bold">Complete Your Profile</DialogTitle>
-                    <DialogDescription className="text-sm">Please provide your name to continue.</DialogDescription>
+                    <DialogDescription className="text-sm">Please provide your name and photo to continue.</DialogDescription>
                 </DialogHeader>
               </div>
               <div className="p-6 max-h-[70vh] overflow-y-auto">

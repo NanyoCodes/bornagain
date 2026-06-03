@@ -83,7 +83,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
   const { searchTerm, setSearchTerm, searchPlaceholder, isSearchVisible } = useSearch();
   const [showMobileSearch, setShowMobileSearch] = useState(false);
 
-  const isProfileIncomplete = userProfile && (!userProfile.firstName || !userProfile.lastName || !userProfile.photoURL);
+  const isProfileIncomplete = userProfile && (!userProfile.firstName?.trim() || !userProfile.lastName?.trim() || !userProfile.photoURL?.trim());
 
   const handleLogout = async () => {
     if (!auth) return;
@@ -210,9 +210,9 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
                     <AvatarFallback className="text-[10px]">{user.displayName?.charAt(0) || 'U'}</AvatarFallback>
                   </Avatar>
                   {isProfileIncomplete && (
-                    <span className="absolute top-0 right-0 flex h-2 w-2">
+                    <span className="absolute top-0 right-0 flex h-2.5 w-2.5">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-2 w-2 bg-red-600 border border-background"></span>
+                      <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-600 border border-background"></span>
                     </span>
                   )}
                 </Button>
@@ -429,7 +429,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     );
   }
 
-  const isProfileIncomplete = user && userProfile && (!userProfile.firstName || !userProfile.lastName);
+  const isProfileIncomplete = user && userProfile && (!userProfile.firstName?.trim() || !userProfile.lastName?.trim() || !userProfile.photoURL?.trim());
 
   // Takeover pages hide the global bottom nav to manage their own viewports
   const showBottomNav = !isTakeoverPage;
@@ -475,7 +475,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <DialogContent hideCloseButton className="sm:max-w-lg">
               <DialogHeader>
                   <DialogTitle>Complete Your Profile</DialogTitle>
-                  <DialogDescription>Please provide your name to join the Kingdom workforce.</DialogDescription>
+                  <DialogDescription>Please provide your name and photo to join the Kingdom workforce.</DialogDescription>
               </DialogHeader>
               {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
             </DialogContent>
