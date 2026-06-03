@@ -1,4 +1,3 @@
-
 'use client';
 
 import dynamic from 'next/dynamic';
@@ -44,6 +43,7 @@ import {
 import type { Soul, UserProfile, Testimony, ReadingHistoryItem } from '@/lib/types';
 import { useMemo, useEffect, useState, useCallback } from 'react';
 import { DailyDisciplineCard } from '@/components/dashboard/daily-discipline-card';
+import { RelationshipTrackerCard } from '@/components/dashboard/relationship-tracker-card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -54,7 +54,6 @@ import { safeToDate, cn } from '@/lib/utils';
 import { actionItems } from '@/lib/follow-up-data';
 import { welcomeScriptures } from '@/lib/verses';
 import { ProgressOverview } from '@/components/dashboard/progress-overview';
-import AdsenseAd from '@/components/common/adsense-ad';
 import { useToast } from '@/hooks/use-toast';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Progress } from '@/components/ui/progress';
@@ -451,7 +450,7 @@ export function ProgressPageContent() {
   const userDocRef = useMemo(() => user?.uid ? doc(firestore, 'users', user.uid) : null, [user?.uid, firestore]);
   const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userDocRef);
   const soulsQuery = useMemo(() => user?.uid ? query(collection(firestore, `users/${user.uid}/souls`)) : null, [user?.uid, firestore]);
-  const { data: soulsWon, loading: soulsLoading } = useCollection<Soul>(soulsQuery);
+  const { data: soulsWon, loading: soulsLoading } = useCollection<Soul>( soulsQuery);
   const testimoniesQuery = useMemo(() => user?.uid ? query(collection(firestore, 'testimonies'), where('authorId', '==', user.uid)) : null, [user?.uid, firestore]);
   const { data: userTestimonies } = useCollection<Testimony>(testimoniesQuery);
 
@@ -548,13 +547,13 @@ export function ProgressPageContent() {
                 </div>
 
                 <div className="-mx-4 sm:mx-0">
+                  <RelationshipTrackerCard />
+                </div>
+
+                <div className="-mx-4 sm:mx-0">
                   <PrayerRemindersCard souls={soulsWon || []} />
                 </div>
                 
-                <div className="-mx-4 sm:mx-0">
-                  <AdsenseAd adSlot="progress-sidebar-ad" className="h-auto" />
-                </div>
-
                 <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-sm">
                   <CardHeader>
                     <CardTitle className="text-lg">Recent Souls</CardTitle>
@@ -575,4 +574,3 @@ export function ProgressPageContent() {
     </div>
   );
 }
-
