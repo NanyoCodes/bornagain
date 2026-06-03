@@ -3,7 +3,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Refined soul ownership and connection permissions - 2025-05-22T09:30:00Z
+    // Deployment trigger: Refined soul ownership for batch relational updates - 2025-05-22T10:15:00Z
     
     function isOwner(userId) {
       return request.auth != null && request.auth.uid == userId;
@@ -72,6 +72,7 @@ service cloud.firestore {
       allow get, list: if request.auth != null;
       allow create: if request.auth != null && request.resource.data.get('userId', '') == request.auth.uid;
       allow update, delete: if request.auth != null && (
+        (resource.data.get('userId', '') == request.auth.uid) || 
         (resource.data.userId == request.auth.uid) || 
         isFellowshipMember(resource.data.get('fellowshipId', '')) ||
         isFellowshipMember(resource.data.get('associationId', ''))
