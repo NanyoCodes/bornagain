@@ -208,25 +208,22 @@ export default function SoulsWonPage() {
     batch.delete(soulRef);
     batch.delete(globalSoulRef);
     
-    batch.commit()
-        .then(() => {
-            toast({ title: "Record Deleted" });
-        })
-        .catch(async (serverError) => {
-            if (serverError.code === 'permission-denied') {
-                const permissionError = new FirestorePermissionError({
-                    path: `BATCH_DELETE: ${soulRef.path} & ${globalSoulRef.path}`,
-                    operation: 'delete',
-                }, user);
-                errorEmitter.emit('permission-error', permissionError);
-            } else {
-                toast({ variant: 'destructive', title: "Delete Failed", description: serverError.message });
-            }
-        })
-        .finally(() => {
-            setIsDeleting(false);
-            setDeleteSoulId(null);
-        });
+    // Non-blocking mutation to ensure immediate UI responsiveness
+    batch.commit().catch(async (serverError) => {
+        if (serverError.code === 'permission-denied') {
+            const permissionError = new FirestorePermissionError({
+                path: `BATCH_DELETE: ${soulRef.path} & ${globalSoulRef.path}`,
+                operation: 'delete',
+            }, user);
+            errorEmitter.emit('permission-error', permissionError);
+        } else {
+            toast({ variant: 'destructive', title: "Delete Failed", description: serverError.message });
+        }
+    });
+
+    toast({ title: "Record Removed" });
+    setIsDeleting(false);
+    setDeleteSoulId(null);
   };
 
   const handleAssignGroup = (soul: Soul, groupId: string, groupType: 'Fellowship' | 'Association') => {
@@ -258,6 +255,7 @@ export default function SoulsWonPage() {
         }
     }
 
+    // Non-blocking updates
     updateDoc(soulRef, updateData).catch(async (serverError) => {
         const permissionError = new FirestorePermissionError({
             path: soulRef.path,

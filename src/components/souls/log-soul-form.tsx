@@ -22,7 +22,7 @@ import type { Campaign, Soul, UserProfile, Fellowship } from "@/lib/types";
 import { Textarea } from "@/components/ui/textarea";
 import { format } from "date-fns";
 import { useFirestore, useUser, useDoc } from "@/firebase";
-import { collection, serverTimestamp, doc, runTransaction } from "firebase/firestore";
+import { collection, serverTimestamp, doc, writeBatch, increment } from "firebase/firestore";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -157,39 +157,37 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign, fellowships, campai
     soulData.campaignId = campaignId || null;
 
     try {
-        await runTransaction(firestore, async (transaction) => {
-            let currentSoulsLogged = 0;
-            if (campaignId) {
-                const campaignRef = doc(firestore, 'campaigns', campaignId);
-                const campaignDoc = await transaction.get(campaignRef);
-                if (campaignDoc.exists()) {
-                    currentSoulsLogged = campaignDoc.data().soulsLogged || 0;
-                }
-            }
+        const batch = writeBatch(firestore);
+        
+        batch.set(newSoulRef, soulData);
+        batch.set(globalSoulRef, soulData);
 
-            transaction.set(newSoulRef, soulData);
-            transaction.set(globalSoulRef, soulData);
+        if (campaignId) {
+            const campaignRef = doc(firestore, 'campaigns', campaignId);
+            batch.update(campaignRef, { soulsLogged: increment(1) });
+        }
 
-            if (campaignId) {
-                const campaignRef = doc(firestore, 'campaigns', campaignId);
-                transaction.update(campaignRef, { soulsLogged: currentSoulsLogged + 1 });
-            }
+        // Non-blocking mutation to allow immediate dashboard update
+        batch.commit().catch(async (serverError: any) => {
+            console.error("Log Soul Server Error:", serverError);
+            const permissionError = new FirestorePermissionError({
+                path: `BATCH_WRITE:LOG_SOUL`,
+                operation: 'write',
+                requestResourceData: { soulData, campaignId },
+            }, user);
+            errorEmitter.emit('permission-error', permissionError);
         });
 
         toast({
             title: "Soul Logged",
             description: "A new soul has been added successfully.",
         });
+        setIsLoading(false);
         onSoulLogged();
-    } catch (serverError: any) {
-        console.error("Log Soul Error:", serverError);
-        const permissionError = new FirestorePermissionError({
-            path: `TRANSACTION:LOG_SOUL`,
-            operation: 'write',
-            requestResourceData: { soulData, campaignId },
-        }, user);
-        errorEmitter.emit('permission-error', permissionError);
-    } finally {
+
+    } catch (err: any) {
+        console.error("Log Soul Error:", err);
+        toast({ variant: 'destructive', title: "Submission Failed", description: err.message });
         setIsLoading(false);
     }
   }
@@ -445,7 +443,7 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign, fellowships, campai
             </AccordionItem>
         </Accordion>
 
-        <Button type="submit" className="w-full" disabled={isLoading || userLoading || profileLoading}>
+        <Button type="submit" className="w-full h-12 text-lg font-bold" disabled={isLoading || userLoading || profileLoading}>
           {(isLoading || userLoading || profileLoading) && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           Log Soul
         </Button>

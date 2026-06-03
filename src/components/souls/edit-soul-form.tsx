@@ -21,7 +21,7 @@ import { Loader2 } from "lucide-react";
 import type { Soul, Campaign, Fellowship } from "@/lib/types";
 import { format } from "date-fns";
 import { useFirestore, useUser } from "@/firebase";
-import { doc, serverTimestamp, runTransaction } from "firebase/firestore";
+import { doc, serverTimestamp, writeBatch } from "firebase/firestore";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -164,28 +164,22 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
     }
 
     try {
-        await runTransaction(firestore, async (transaction) => {
-            // Read both documents before writing to satisfy security rules and ensure existence.
-            const soulDoc = await transaction.get(soulRef);
-            const globalSoulDoc = await transaction.get(globalSoulRef);
-            
-            if (!soulDoc.exists()) {
-                throw new Error("Soul record not found in your personal collection.");
-            }
+        const batch = writeBatch(firestore);
+        
+        // Update both user and global records
+        batch.update(soulRef, soulUpdateData);
+        batch.update(globalSoulRef, soulUpdateData);
 
-            // Update user's personal record
-            transaction.update(soulRef, soulUpdateData);
-            
-            // Update or Create the global record (Self-healing logic)
-            if (globalSoulDoc.exists()) {
-                transaction.update(globalSoulRef, soulUpdateData);
-            } else {
-                // If global doc is missing, recreate it with current data + updates
-                transaction.set(globalSoulRef, { 
-                    ...soulDoc.data(), 
-                    ...soulUpdateData,
-                    createdAt: soulDoc.data().createdAt || serverTimestamp()
-                });
+        // Non-blocking mutation for immediate feel
+        batch.commit().catch(async (serverError: any) => {
+            console.error("Failed to update soul record:", serverError);
+            if (serverError.code === 'permission-denied') {
+                const permissionError = new FirestorePermissionError({
+                    path: soulRef.path,
+                    operation: 'update',
+                    requestResourceData: soulUpdateData,
+                }, user);
+                errorEmitter.emit('permission-error', permissionError);
             }
         });
 
@@ -194,26 +188,17 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
             description: "Record has been updated successfully.",
         });
 
+        setIsLoading(false);
         onSoulUpdated();
 
     } catch (error: any) {
-      console.error("Failed to update soul record:", error);
-      if (error.code === 'permission-denied') {
-          const permissionError = new FirestorePermissionError({
-            path: soulRef.path,
-            operation: 'update',
-            requestResourceData: soulUpdateData,
-          }, user);
-          errorEmitter.emit('permission-error', permissionError);
-      } else {
-          toast({
-              variant: "destructive",
-              title: "Update Failed",
-              description: error.message || "An unexpected error occurred. Please try again."
-          });
-      }
-    } finally {
-        setIsLoading(false);
+      console.error("Edit Soul UI Error:", error);
+      toast({
+          variant: "destructive",
+          title: "Update Failed",
+          description: error.message || "An unexpected error occurred. Please try again."
+      });
+      setIsLoading(false);
     }
   }
 
@@ -447,7 +432,7 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
             </AccordionItem>
         </Accordion>
 
-        <Button type="submit" className="w-full" disabled={isLoading}>
+        <Button type="submit" className="w-full h-12 text-lg font-bold" disabled={isLoading}>
           {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           Save Changes
         </Button>
