@@ -1,8 +1,9 @@
+
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
-import { useUser, useFirestore, useDoc, useCollection, useUserProfile } from '@/firebase';
+import { useUser, useFirestore, useCollection, useUserProfile } from '@/firebase';
 import { doc, serverTimestamp, writeBatch, arrayUnion, query, collection, orderBy } from 'firebase/firestore';
 import type { UserProfile, Soul } from '@/lib/types';
 import { isToday, format } from 'date-fns';
@@ -203,7 +204,7 @@ export function RelationshipTrackerCard() {
         date: serverTimestamp()
     }, { merge: true });
 
-    // 2. Update soul's history
+    // 2. Update soul's history - use direct user UID for guaranteed subcollection path access
     const memberName = `${userProfile?.firstName || ''} ${userProfile?.lastName || ''}`.trim() || user.displayName || 'Member';
     const logEntry = {
         date: new Date(),
@@ -213,7 +214,7 @@ export function RelationshipTrackerCard() {
         memberName: memberName,
     };
 
-    const soulUserRef = doc(firestore, `users/${soul.userId}/souls`, soul.id);
+    const soulUserRef = doc(firestore, `users/${user.uid}/souls`, soul.id);
     const globalSoulRef = doc(firestore, 'souls', soul.id);
     
     batch.update(soulUserRef, {
