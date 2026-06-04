@@ -1,3 +1,4 @@
+
 'use client';
 
 import dynamic from 'next/dynamic';
@@ -28,6 +29,7 @@ import {
   Info,
   Users,
   Home,
+  PlusCircle,
 } from 'lucide-react';
 import { useCollection, useFirestore, useUser, useDoc } from '@/firebase';
 import {
@@ -39,7 +41,7 @@ import {
   where,
   getCountFromServer,
 } from 'firebase/firestore';
-import type { Soul, UserProfile, Testimony, ReadingHistoryItem } from '@/lib/types';
+import type { Soul, UserProfile, Testimony, ReadingHistoryItem, Campaign, Fellowship, SoulRelationship } from '@/lib/types';
 import { useMemo, useEffect, useState, useCallback } from 'react';
 import { DailyDisciplineCard } from '@/components/dashboard/daily-discipline-card';
 import { RelationshipTrackerCard } from '@/components/dashboard/relationship-tracker-card';
@@ -73,6 +75,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { LogSoulForm } from '@/components/souls/log-soul-form';
 
 const MonthlyStatsChart = dynamic(() => import('@/components/dashboard/monthly-stats-chart').then(m => m.MonthlyStatsChart), {
   loading: () => <Skeleton className="h-[300px] w-full rounded-xl" />,
@@ -328,8 +331,18 @@ function CategorySoulList({ souls }: { souls: Soul[] }) {
   );
 }
 
-function FamilyFriendsTrackerCard({ souls }: { souls: Soul[] }) {
+function FamilyFriendsTrackerCard({ 
+  souls,
+  campaigns,
+  fellowships
+}: { 
+  souls: Soul[],
+  campaigns: Campaign[],
+  fellowships: Fellowship[]
+}) {
     const [selectedCategory, setSelectedCategory] = useState<{name: string, souls: Soul[]} | null>(null);
+    const [isLogSoulOpen, setIsLogSoulOpen] = useState(false);
+    const [logSoulCategoryName, setLogSoulCategoryName] = useState<string>('');
     const isMobile = useIsMobile();
 
     const stats = useMemo(() => {
@@ -348,20 +361,45 @@ function FamilyFriendsTrackerCard({ souls }: { souls: Soul[] }) {
         setSelectedCategory({ name, souls: soulList });
     };
 
+    const handleOpenLogFromCircle = (e: React.MouseEvent, name: string) => {
+        e.stopPropagation();
+        setLogSoulCategoryName(name);
+        setIsLogSoulOpen(true);
+    };
+
+    const relationshipType = useMemo(() => {
+        const map: Record<string, SoulRelationship> = {
+            'Family': 'Family',
+            'Friends': 'Friend',
+            'Outreach': 'Stranger'
+        };
+        return map[logSoulCategoryName] || 'Other';
+    }, [logSoulCategoryName]);
+
     const dialogContent = selectedCategory && (
         <>
             {isMobile ? (
                 <Sheet open={!!selectedCategory} onOpenChange={(open) => !open && setSelectedCategory(null)}>
                     <SheetContent side="bottom" className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem]">
                         <div className="p-8 border-b flex-shrink-0 bg-muted/10">
-                            <SheetHeader className="text-left">
-                                <div className="flex items-center gap-2 mb-2">
-                                    <Users className="h-4 w-4 text-primary" />
-                                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Relationship Directory</span>
+                            <div className="flex items-center justify-between gap-4">
+                                <div className="min-w-0">
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <Users className="h-4 w-4 text-primary" />
+                                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Relationship Directory</span>
+                                    </div>
+                                    <SheetTitle className="text-2xl font-black font-headline tracking-tight uppercase leading-tight">{selectedCategory.name} Circle</SheetTitle>
+                                    <SheetDescription className="text-sm font-medium mt-1">Viewing all converts in your {selectedCategory.name.toLowerCase()} group.</SheetDescription>
                                 </div>
-                                <SheetTitle className="text-2xl font-black font-headline tracking-tight uppercase leading-tight">{selectedCategory.name} Circle</SheetTitle>
-                                <SheetDescription className="text-sm font-medium mt-1">Viewing all converts in your {selectedCategory.name.toLowerCase()} group.</SheetDescription>
-                            </SheetHeader>
+                                <Button 
+                                    onClick={(e) => handleOpenLogFromCircle(e, selectedCategory.name)}
+                                    size="sm"
+                                    className="shrink-0 rounded-full font-black uppercase tracking-widest text-[10px] h-9 px-4 shadow-lg"
+                                >
+                                    <PlusCircle className="mr-2 h-4 w-4" />
+                                    Log {selectedCategory.name}
+                                </Button>
+                            </div>
                         </div>
                         <div className="flex-grow overflow-hidden relative">
                             <ScrollArea className="h-full px-8 pt-6">
@@ -375,10 +413,22 @@ function FamilyFriendsTrackerCard({ souls }: { souls: Soul[] }) {
                 <Dialog open={!!selectedCategory} onOpenChange={(open) => !open && setSelectedCategory(null)}>
                     <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl">
                         <div className="p-8 border-b bg-muted/10">
-                            <DialogHeader>
-                                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">{selectedCategory.name} Directory</DialogTitle>
-                                <DialogDescription className="text-sm font-medium">Souls won within your {selectedCategory.name.toLowerCase()} circle.</DialogDescription>
-                            </DialogHeader>
+                            <div className="flex items-center justify-between gap-4">
+                                <div className="min-w-0">
+                                    <DialogHeader>
+                                        <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">{selectedCategory.name} Directory</DialogTitle>
+                                        <DialogDescription className="text-sm font-medium">Souls won within your {selectedCategory.name.toLowerCase()} circle.</DialogDescription>
+                                    </DialogHeader>
+                                </div>
+                                <Button 
+                                    onClick={(e) => handleOpenLogFromCircle(e, selectedCategory.name)}
+                                    size="sm"
+                                    className="shrink-0 rounded-full font-black uppercase tracking-widest text-[10px] h-9 px-4 shadow-lg"
+                                >
+                                    <PlusCircle className="mr-2 h-4 w-4" />
+                                    Log {selectedCategory.name}
+                                </Button>
+                            </div>
                         </div>
                         <ScrollArea className="max-h-[60vh] p-6">
                             <CategorySoulList souls={selectedCategory.souls} />
@@ -387,6 +437,46 @@ function FamilyFriendsTrackerCard({ souls }: { souls: Soul[] }) {
                 </Dialog>
             )}
         </>
+    );
+
+    const logSoulView = isLogSoulOpen && (
+        isMobile ? (
+            <Sheet open={isLogSoulOpen} onOpenChange={setIsLogSoulOpen}>
+                <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+                    <div className="p-8 border-b flex-shrink-0 bg-muted/10">
+                        <SheetHeader className="text-left">
+                            <SheetTitle className="text-2xl font-black font-headline">Log {logSoulCategoryName} Soul</SheetTitle>
+                            <SheetDescription className="text-sm font-medium">Record a new life won in your {logSoulCategoryName.toLowerCase()} circle.</SheetDescription>
+                        </SheetHeader>
+                    </div>
+                    <div className="flex-grow overflow-y-auto p-8">
+                        <LogSoulForm 
+                            onSoulLogged={() => setIsLogSoulOpen(false)} 
+                            fellowships={fellowships} 
+                            campaigns={campaigns}
+                            defaultRelationship={relationshipType}
+                        />
+                    </div>
+                </SheetContent>
+            </Sheet>
+        ) : (
+            <Dialog open={isLogSoulOpen} onOpenChange={setIsLogSoulOpen}>
+                <DialogContent className="sm:max-w-lg">
+                    <DialogHeader>
+                        <DialogTitle>Log {logSoulCategoryName} Soul</DialogTitle>
+                        <DialogDescription>Record a new life won in your {logSoulCategoryName.toLowerCase()} circle.</DialogDescription>
+                    </DialogHeader>
+                    <div className="max-h-[70vh] overflow-y-auto pr-2">
+                        <LogSoulForm 
+                            onSoulLogged={() => setIsLogSoulOpen(false)} 
+                            fellowships={fellowships} 
+                            campaigns={campaigns}
+                            defaultRelationship={relationshipType}
+                        />
+                    </div>
+                </DialogContent>
+            </Dialog>
+        )
     );
 
     return (
@@ -456,6 +546,7 @@ function FamilyFriendsTrackerCard({ souls }: { souls: Soul[] }) {
                 </CardContent>
             </Card>
             {dialogContent}
+            {logSoulView}
         </>
     );
 }
@@ -599,6 +690,18 @@ export function ProgressPageContent() {
   const testimoniesQuery = useMemo(() => user?.uid ? query(collection(firestore, 'testimonies'), where('authorId', '==', user.uid)) : null, [user?.uid, firestore]);
   const { data: userTestimonies } = useCollection<Testimony>(testimoniesQuery);
 
+  const fellowshipsQuery = useMemo(() => {
+    if (!firestore) return null;
+    return query(collection(firestore, 'fellowships'), where('status', '==', 'active'));
+  }, [firestore]);
+  const { data: activeFellowships } = useCollection<Fellowship>(fellowshipsQuery);
+
+  const campaignsQuery = useMemo(() => {
+    if (!firestore) return null;
+    return query(collection(firestore, 'campaigns'), where('status', '==', 'active'));
+  }, [firestore]);
+  const { data: activeCampaigns } = useCollection<Campaign>(campaignsQuery);
+
   useEffect(() => { 
     const randomMsg = welcomeScriptures[Math.floor(Math.random() * welcomeScriptures.length)];
     setWelcomeMessage(randomMsg);
@@ -690,6 +793,13 @@ export function ProgressPageContent() {
             <div className="lg:col-span-2 space-y-6 md:space-y-8">
                 <div className="-mx-4 sm:mx-0"><DailyDisciplineCard /></div>
                 <div className="-mx-4 sm:mx-0"><RelationshipTrackerCard /></div>
+                <div className="-mx-4 sm:mx-0">
+                    <FamilyFriendsTrackerCard 
+                        souls={soulsWon || []} 
+                        campaigns={activeCampaigns || []} 
+                        fellowships={activeFellowships || []} 
+                    />
+                </div>
                 {userProfile && <div className="-mx-4 sm:mx-0"><ProgressOverview souls={soulsWon || []} userProfile={userProfile} testimonies={userTestimonies || []} /></div>}
                 
                 <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-sm overflow-hidden">
@@ -706,8 +816,6 @@ export function ProgressPageContent() {
                 </Card>
 
                 <div className="-mx-4 sm:mx-0"><ActionAnalyticsCard souls={soulsWon || []} /></div>
-                
-                <div className="-mx-4 sm:mx-0"><FamilyFriendsTrackerCard souls={soulsWon || []} /></div>
             </div>
             
             <div className="space-y-6 md:space-y-8 pb-16 lg:pb-0">

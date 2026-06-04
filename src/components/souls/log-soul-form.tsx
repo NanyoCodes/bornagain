@@ -18,7 +18,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { useState, useMemo, useEffect } from "react";
 import { Loader2 } from "lucide-react";
-import type { Campaign, Soul, UserProfile, Fellowship } from "@/lib/types";
+import type { Campaign, Soul, UserProfile, Fellowship, SoulRelationship } from "@/lib/types";
 import { Textarea } from "@/components/ui/textarea";
 import { format } from "date-fns";
 import { useFirestore, useUser, useDoc } from "@/firebase";
@@ -55,11 +55,12 @@ const formSchema = z.object({
 type LogSoulFormProps = {
   onSoulLogged: () => void;
   defaultCampaign?: Campaign;
+  defaultRelationship?: SoulRelationship;
   fellowships: Fellowship[];
   campaigns: Campaign[];
 };
 
-export function LogSoulForm({ onSoulLogged, defaultCampaign, fellowships, campaigns }: LogSoulFormProps) {
+export function LogSoulForm({ onSoulLogged, defaultCampaign, defaultRelationship, fellowships, campaigns }: LogSoulFormProps) {
   const { toast } = useToast();
   const { user, loading: userLoading } = useUser();
   const firestore = useFirestore();
@@ -80,7 +81,7 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign, fellowships, campai
       email: "",
       phone: "",
       church: "",
-      relationship: "Other",
+      relationship: defaultRelationship || "Other",
       locationWonCity: "",
       locationWonState: "",
       locationWonCountry: "",
