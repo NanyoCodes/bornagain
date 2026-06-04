@@ -339,9 +339,8 @@ function FamilyFriendsTrackerCard({
   campaigns: Campaign[],
   fellowships: Fellowship[]
 }) {
-    const [selectedCategory, setSelectedCategory] = useState<{name: string, souls: Soul[]} | null>(null);
+    const [selectedCategoryName, setSelectedCategoryName] = useState<string | null>(null);
     const [isLogSoulOpen, setIsLogSoulOpen] = useState(false);
-    const [logSoulCategoryName, setLogSoulCategoryName] = useState<string>('');
     const isMobile = useIsMobile();
 
     const stats = useMemo(() => {
@@ -356,13 +355,21 @@ function FamilyFriendsTrackerCard({
         };
     }, [souls]);
 
-    const handleCategoryClick = (name: string, soulList: Soul[]) => {
-        setSelectedCategory({ name, souls: soulList });
+    const activeCategorySouls = useMemo(() => {
+        if (!selectedCategoryName) return [];
+        if (selectedCategoryName === 'Family') return stats.family.list;
+        if (selectedCategoryName === 'Friends') return stats.friends.list;
+        if (selectedCategoryName === 'Outreach') return stats.outreach.list;
+        return [];
+    }, [selectedCategoryName, stats]);
+
+    const handleCategoryClick = (name: string) => {
+        setSelectedCategoryName(name);
     };
 
     const handleOpenLogFromCircle = (e: React.MouseEvent, name: string) => {
         e.stopPropagation();
-        setLogSoulCategoryName(name);
+        setSelectedCategoryName(name);
         setIsLogSoulOpen(true);
     };
 
@@ -372,13 +379,13 @@ function FamilyFriendsTrackerCard({
             'Friends': 'Friend',
             'Outreach': 'Stranger'
         };
-        return map[logSoulCategoryName] || 'Other';
-    }, [logSoulCategoryName]);
+        return map[selectedCategoryName || ''] || 'Other';
+    }, [selectedCategoryName]);
 
-    const dialogContent = selectedCategory && (
+    const dialogContent = selectedCategoryName && (
         <>
             {isMobile ? (
-                <Sheet open={!!selectedCategory} onOpenChange={(open) => !open && setSelectedCategory(null)}>
+                <Sheet open={!!selectedCategoryName && !isLogSoulOpen} onOpenChange={(open) => !open && setSelectedCategoryName(null)}>
                     <SheetContent side="bottom" className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem]">
                         <div className="p-8 border-b flex-shrink-0 bg-muted/10">
                             <div className="flex items-center justify-between gap-4">
@@ -387,52 +394,52 @@ function FamilyFriendsTrackerCard({
                                         <Users className="h-4 w-4 text-primary" />
                                         <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Relationship Directory</span>
                                     </div>
-                                    <SheetTitle className="text-2xl font-black font-headline tracking-tight uppercase leading-tight">{selectedCategory.name} Circle</SheetTitle>
-                                    <SheetDescription className="text-sm font-medium mt-1">Viewing all converts in your {selectedCategory.name.toLowerCase()} group.</SheetDescription>
+                                    <SheetTitle className="text-2xl font-black font-headline tracking-tight uppercase leading-tight">{selectedCategoryName} Circle</SheetTitle>
+                                    <SheetDescription className="text-sm font-medium mt-1">Viewing all converts in your {selectedCategoryName.toLowerCase()} group.</SheetDescription>
                                 </div>
                                 <Button 
-                                    onClick={(e) => handleOpenLogFromCircle(e, selectedCategory.name)}
+                                    onClick={(e) => handleOpenLogFromCircle(e, selectedCategoryName)}
                                     size="icon"
                                     className="shrink-0 rounded-full shadow-lg h-10 w-10"
-                                    title={`Log ${selectedCategory.name}`}
+                                    title={`Log ${selectedCategoryName}`}
                                 >
                                     <PlusCircle className="h-5 w-5" />
-                                    <span className="sr-only">Log {selectedCategory.name}</span>
+                                    <span className="sr-only">Log {selectedCategoryName}</span>
                                 </Button>
                             </div>
                         </div>
                         <div className="flex-grow overflow-hidden relative">
                             <ScrollArea className="h-full px-8 pt-6">
-                                <CategorySoulList souls={selectedCategory.souls} />
+                                <CategorySoulList souls={activeCategorySouls} />
                                 <div className="h-24" />
                             </ScrollArea>
                         </div>
                     </SheetContent>
                 </Sheet>
             ) : (
-                <Dialog open={!!selectedCategory} onOpenChange={(open) => !open && setSelectedCategory(null)}>
+                <Dialog open={!!selectedCategoryName && !isLogSoulOpen} onOpenChange={(open) => !open && setSelectedCategoryName(null)}>
                     <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl">
                         <div className="p-8 border-b bg-muted/10">
                             <div className="flex items-center justify-between gap-4">
                                 <div className="min-w-0">
                                     <DialogHeader>
-                                        <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">{selectedCategory.name} Directory</DialogTitle>
-                                        <DialogDescription className="text-sm font-medium">Souls won within your {selectedCategory.name.toLowerCase()} circle.</DialogDescription>
+                                        <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">{selectedCategoryName} Directory</DialogTitle>
+                                        <DialogDescription className="text-sm font-medium">Souls won within your {selectedCategoryName.toLowerCase()} circle.</DialogDescription>
                                     </DialogHeader>
                                 </div>
                                 <Button 
-                                    onClick={(e) => handleOpenLogFromCircle(e, selectedCategory.name)}
+                                    onClick={(e) => handleOpenLogFromCircle(e, selectedCategoryName)}
                                     size="icon"
                                     className="shrink-0 rounded-full shadow-lg h-10 w-10"
-                                    title={`Log ${selectedCategory.name}`}
+                                    title={`Log ${selectedCategoryName}`}
                                 >
                                     <PlusCircle className="h-5 w-5" />
-                                    <span className="sr-only">Log {selectedCategory.name}</span>
+                                    <span className="sr-only">Log {selectedCategoryName}</span>
                                 </Button>
                             </div>
                         </div>
                         <ScrollArea className="max-h-[60vh] p-6">
-                            <CategorySoulList souls={selectedCategory.souls} />
+                            <CategorySoulList souls={activeCategorySouls} />
                         </ScrollArea>
                     </DialogContent>
                 </Dialog>
@@ -446,8 +453,8 @@ function FamilyFriendsTrackerCard({
                 <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
                     <div className="p-8 border-b flex-shrink-0 bg-muted/10">
                         <SheetHeader className="text-left">
-                            <SheetTitle className="text-2xl font-black font-headline">Log {logSoulCategoryName} Soul</SheetTitle>
-                            <SheetDescription className="text-sm font-medium">Record a new life won in your {logSoulCategoryName.toLowerCase()} circle.</SheetDescription>
+                            <SheetTitle className="text-2xl font-black font-headline">Log {selectedCategoryName} Soul</SheetTitle>
+                            <SheetDescription className="text-sm font-medium">Record a new life won in your {selectedCategoryName?.toLowerCase()} circle.</SheetDescription>
                         </SheetHeader>
                     </div>
                     <div className="flex-grow overflow-y-auto p-8">
@@ -464,8 +471,8 @@ function FamilyFriendsTrackerCard({
             <Dialog open={isLogSoulOpen} onOpenChange={setIsLogSoulOpen}>
                 <DialogContent className="sm:max-w-lg">
                     <DialogHeader>
-                        <DialogTitle>Log {logSoulCategoryName} Soul</DialogTitle>
-                        <DialogDescription>Record a new life won in your {logSoulCategoryName.toLowerCase()} circle.</DialogDescription>
+                        <DialogTitle>Log {selectedCategoryName} Soul</DialogTitle>
+                        <DialogDescription>Record a new life won in your {selectedCategoryName?.toLowerCase()} circle.</DialogDescription>
                     </DialogHeader>
                     <div className="max-h-[70vh] overflow-y-auto pr-2">
                         <LogSoulForm 
@@ -494,7 +501,7 @@ function FamilyFriendsTrackerCard({
                 </CardHeader>
                 <CardContent className="space-y-6">
                     <div className="space-y-4">
-                        <div className="space-y-1.5 cursor-pointer group" onClick={() => handleCategoryClick('Family', stats.family.list)}>
+                        <div className="space-y-1.5 cursor-pointer group" onClick={() => handleCategoryClick('Family')}>
                             <div className="flex justify-between items-center text-xs font-bold uppercase tracking-widest text-muted-foreground transition-colors group-hover:text-primary">
                                 <span>Family Harvest</span>
                                 <span className="text-primary font-black">{stats.family.count} Souls</span>
@@ -503,7 +510,7 @@ function FamilyFriendsTrackerCard({
                             <p className="text-[10px] text-muted-foreground leading-tight italic">"Believe in the Lord Jesus, and you will be saved—you and your household." — Acts 16:31</p>
                         </div>
 
-                        <div className="space-y-1.5 pt-2 cursor-pointer group" onClick={() => handleCategoryClick('Friends', stats.friends.list)}>
+                        <div className="space-y-1.5 pt-2 cursor-pointer group" onClick={() => handleCategoryClick('Friends')}>
                             <div className="flex justify-between items-center text-xs font-bold uppercase tracking-widest text-muted-foreground transition-colors group-hover:text-primary">
                                 <span>Friends & Connections</span>
                                 <span className="text-primary font-black">{stats.friends.count} Souls</span>
@@ -515,21 +522,21 @@ function FamilyFriendsTrackerCard({
                     <div className="grid grid-cols-3 gap-2">
                         <div 
                             className="p-3 rounded-2xl bg-muted/30 border text-center space-y-1 cursor-pointer hover:bg-primary/5 hover:border-primary/20 transition-all active:scale-95 group shadow-sm"
-                            onClick={() => handleCategoryClick('Family', stats.family.list)}
+                            onClick={() => handleCategoryClick('Family')}
                         >
                             <p className="text-[10px] font-black text-muted-foreground uppercase tracking-tighter group-hover:text-primary">Family</p>
                             <p className="text-xl font-black text-primary">{stats.family.count}</p>
                         </div>
                         <div 
                             className="p-3 rounded-2xl bg-muted/30 border text-center space-y-1 cursor-pointer hover:bg-primary/5 hover:border-primary/20 transition-all active:scale-95 group shadow-sm"
-                            onClick={() => handleCategoryClick('Friends', stats.friends.list)}
+                            onClick={() => handleCategoryClick('Friends')}
                         >
                             <p className="text-[10px] font-black text-muted-foreground uppercase tracking-tighter group-hover:text-primary">Friends</p>
                             <p className="text-xl font-black text-primary">{stats.friends.count}</p>
                         </div>
                         <div 
                             className="p-3 rounded-2xl bg-muted/30 border text-center space-y-1 cursor-pointer hover:bg-primary/5 hover:border-primary/20 transition-all active:scale-95 group shadow-sm"
-                            onClick={() => handleCategoryClick('Outreach', stats.outreach.list)}
+                            onClick={() => handleCategoryClick('Outreach')}
                         >
                             <p className="text-[10px] font-black text-muted-foreground uppercase tracking-tighter group-hover:text-primary">Outreach</p>
                             <p className="text-xl font-black text-foreground">{stats.outreach.count}</p>
