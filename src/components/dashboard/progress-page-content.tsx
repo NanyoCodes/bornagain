@@ -286,10 +286,10 @@ function FamilyFriendsTrackerCard({ souls }: { souls: Soul[] }) {
     }, [souls]);
 
     return (
-        <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-sm border-t-4 border-t-blue-500">
+        <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-sm border-t-4 border-t-primary">
             <CardHeader className="pb-3">
                 <CardTitle className="text-lg flex items-center gap-2">
-                    <Home className="h-5 w-5 text-blue-500" />
+                    <Home className="h-5 w-5 text-primary" />
                     Relationship Circle Tracker
                 </CardTitle>
                 <CardDescription>
@@ -301,9 +301,9 @@ function FamilyFriendsTrackerCard({ souls }: { souls: Soul[] }) {
                     <div className="space-y-1.5">
                         <div className="flex justify-between items-center text-xs font-bold uppercase tracking-widest text-muted-foreground">
                             <span>Family Harvest</span>
-                            <span className="text-blue-500">{stats.family} Souls</span>
+                            <span className="text-primary">{stats.family} Souls</span>
                         </div>
-                        <Progress value={Math.min((stats.family / 5) * 100, 100)} className="h-2 bg-blue-100 dark:bg-blue-900/20" indicatorClassName="bg-blue-500" />
+                        <Progress value={Math.min((stats.family / 5) * 100, 100)} className="h-2 bg-primary/10" indicatorClassName="bg-primary" />
                         <p className="text-[10px] text-muted-foreground leading-tight italic">"Believe in the Lord Jesus, and you will be saved—you and your household." — Acts 16:31</p>
                     </div>
 
@@ -319,7 +319,7 @@ function FamilyFriendsTrackerCard({ souls }: { souls: Soul[] }) {
                 <div className="grid grid-cols-3 gap-2">
                     <div className="p-3 rounded-2xl bg-muted/30 border text-center space-y-1">
                         <p className="text-[10px] font-black text-muted-foreground uppercase tracking-tighter">Family</p>
-                        <p className="text-xl font-black text-blue-500">{stats.family}</p>
+                        <p className="text-xl font-black text-primary">{stats.family}</p>
                     </div>
                     <div className="p-3 rounded-2xl bg-muted/30 border text-center space-y-1">
                         <p className="text-[10px] font-black text-muted-foreground uppercase tracking-tighter">Friends</p>
@@ -332,9 +332,9 @@ function FamilyFriendsTrackerCard({ souls }: { souls: Soul[] }) {
                 </div>
 
                 {stats.family === 0 && (
-                    <div className="p-4 bg-blue-50 dark:bg-blue-900/10 rounded-2xl border border-blue-200 dark:border-blue-800 flex items-start gap-3">
-                        <Sparkles className="h-5 w-5 text-blue-500 shrink-0 mt-0.5" />
-                        <p className="text-xs text-blue-700 dark:text-blue-400 font-medium leading-relaxed">
+                    <div className="p-4 bg-primary/5 rounded-2xl border border-primary/20 flex items-start gap-3">
+                        <Sparkles className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                        <p className="text-xs text-primary font-medium leading-relaxed">
                             Have you shared the Gospel with your household? Log your family members here to prioritize their spiritual growth.
                         </p>
                     </div>
