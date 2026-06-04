@@ -50,6 +50,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { safeToDate, cn } from '@/lib/utils';
+import { actionItems } from '@/lib/follow-up-data';
 import { welcomeScriptures } from '@/lib/verses';
 import { ProgressOverview } from '@/components/dashboard/progress-overview';
 import { useToast } from '@/hooks/use-toast';
@@ -218,6 +219,59 @@ function CityImpactCard({ location, userSouls }: { location: { city?: string; co
   );
 }
 
+function ActionAnalyticsCard({ souls }: { souls: Soul[] }) {
+  const actionData = useMemo(() => {
+    if (!souls) return [];
+    const now = new Date();
+    const actionCounts: { [key: string]: number } = {};
+    actionItems.forEach((item) => (actionCounts[item.id] = 0));
+    
+    souls.forEach((soul) => soul.followUpLog?.forEach((log) => { 
+      const logDate = safeToDate(log.date);
+      if (logDate && isSameMonth(logDate, now)) {
+        log.actions?.forEach((a) => {
+          if (actionCounts[a] !== undefined) actionCounts[a]++;
+        });
+      }
+    }));
+
+    return actionItems
+      .map((item, index) => ({ 
+        id: item.id, 
+        label: item.label, 
+        count: actionCounts[item.id], 
+        color: chartColors[index % chartColors.length] 
+      }))
+      .sort((a, b) => b.count - a.count);
+  }, [souls]);
+
+  return (
+    <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-sm">
+      <CardHeader>
+        <CardTitle className="text-lg">Follow-up Tracker</CardTitle>
+        <CardDescription>Interaction types logged this month.</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-2">
+        {actionData.some(i => i.count > 0) ? (
+          actionData.map(i => i.count > 0 && (
+            <div key={i.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/40">
+              <div className="flex items-center gap-3">
+                <span className="flex h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: i.color }} />
+                <span className="text-sm font-medium">{i.label}</span>
+              </div>
+              <span className="text-sm font-bold">{i.count}</span>
+            </div>
+          ))
+        ) : (
+          <div className="text-center py-10 border-2 border-dashed rounded-lg bg-muted/10">
+            <p className="text-sm text-muted-foreground italic px-6">No interactions logged this month. Start follow-up to see your activity break down.</p>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
 function FamilyFriendsTrackerCard({ souls }: { souls: Soul[] }) {
     const stats = useMemo(() => {
         const familyCount = souls.filter(s => s.relationship === 'Family').length;
@@ -236,7 +290,7 @@ function FamilyFriendsTrackerCard({ souls }: { souls: Soul[] }) {
             <CardHeader className="pb-3">
                 <CardTitle className="text-lg flex items-center gap-2">
                     <Home className="h-5 w-5 text-blue-500" />
-                    Kingdom Circle Tracker
+                    Relationship Circle Tracker
                 </CardTitle>
                 <CardDescription>
                     Ensuring your closest circles are saved and nurtured in faith.
@@ -430,7 +484,6 @@ export function ProgressPageContent() {
   const { data: userTestimonies } = useCollection<Testimony>(testimoniesQuery);
 
   useEffect(() => { 
-    // Randomize on mount to prevent flash but ensure hydration safety
     const randomMsg = welcomeScriptures[Math.floor(Math.random() * welcomeScriptures.length)];
     setWelcomeMessage(randomMsg);
   }, []);
@@ -536,6 +589,8 @@ export function ProgressPageContent() {
                   </CardContent>
                 </Card>
 
+                <div className="-mx-4 sm:mx-0"><ActionAnalyticsCard souls={soulsWon || []} /></div>
+                
                 <div className="-mx-4 sm:mx-0"><FamilyFriendsTrackerCard souls={soulsWon || []} /></div>
             </div>
             
