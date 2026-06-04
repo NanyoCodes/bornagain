@@ -46,7 +46,7 @@ import { DailyDisciplineCard } from '@/components/dashboard/daily-discipline-car
 import { RelationshipTrackerCard } from '@/components/dashboard/relationship-tracker-card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
@@ -500,25 +500,6 @@ function FamilyFriendsTrackerCard({
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                    <div className="space-y-4">
-                        <div className="space-y-1.5 cursor-pointer group" onClick={() => handleCategoryClick('Family')}>
-                            <div className="flex justify-between items-center text-xs font-bold uppercase tracking-widest text-muted-foreground transition-colors group-hover:text-primary">
-                                <span>Family Harvest</span>
-                                <span className="text-primary font-black">{stats.family.count} Souls</span>
-                            </div>
-                            <Progress value={Math.min((stats.family.count / 5) * 100, 100)} className="h-2 bg-primary/10" indicatorClassName="bg-primary" />
-                            <p className="text-[10px] text-muted-foreground leading-tight italic">"Believe in the Lord Jesus, and you will be saved—you and your household." — Acts 16:31</p>
-                        </div>
-
-                        <div className="space-y-1.5 pt-2 cursor-pointer group" onClick={() => handleCategoryClick('Friends')}>
-                            <div className="flex justify-between items-center text-xs font-bold uppercase tracking-widest text-muted-foreground transition-colors group-hover:text-primary">
-                                <span>Friends & Connections</span>
-                                <span className="text-primary font-black">{stats.friends.count} Souls</span>
-                            </div>
-                            <Progress value={Math.min((stats.friends.count / 10) * 100, 100)} className="h-2" />
-                        </div>
-                    </div>
-
                     <div className="grid grid-cols-3 gap-2">
                         <div 
                             className="p-3 rounded-2xl bg-muted/30 border text-center space-y-1 cursor-pointer hover:bg-primary/5 hover:border-primary/20 transition-all active:scale-95 group shadow-sm"
