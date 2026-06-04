@@ -1,4 +1,3 @@
-
 'use client';
 
 import dynamic from 'next/dynamic';
@@ -393,11 +392,12 @@ function FamilyFriendsTrackerCard({
                                 </div>
                                 <Button 
                                     onClick={(e) => handleOpenLogFromCircle(e, selectedCategory.name)}
-                                    size="sm"
-                                    className="shrink-0 rounded-full font-black uppercase tracking-widest text-[10px] h-9 px-4 shadow-lg"
+                                    size="icon"
+                                    className="shrink-0 rounded-full shadow-lg h-10 w-10"
+                                    title={`Log ${selectedCategory.name}`}
                                 >
-                                    <PlusCircle className="mr-2 h-4 w-4" />
-                                    Log {selectedCategory.name}
+                                    <PlusCircle className="h-5 w-5" />
+                                    <span className="sr-only">Log {selectedCategory.name}</span>
                                 </Button>
                             </div>
                         </div>
@@ -422,11 +422,12 @@ function FamilyFriendsTrackerCard({
                                 </div>
                                 <Button 
                                     onClick={(e) => handleOpenLogFromCircle(e, selectedCategory.name)}
-                                    size="sm"
-                                    className="shrink-0 rounded-full font-black uppercase tracking-widest text-[10px] h-9 px-4 shadow-lg"
+                                    size="icon"
+                                    className="shrink-0 rounded-full shadow-lg h-10 w-10"
+                                    title={`Log ${selectedCategory.name}`}
                                 >
-                                    <PlusCircle className="mr-2 h-4 w-4" />
-                                    Log {selectedCategory.name}
+                                    <PlusCircle className="h-5 w-5" />
+                                    <span className="sr-only">Log {selectedCategory.name}</span>
                                 </Button>
                             </div>
                         </div>
