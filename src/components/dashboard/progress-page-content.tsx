@@ -45,7 +45,7 @@ import { DailyDisciplineCard } from '@/components/dashboard/daily-discipline-car
 import { RelationshipTrackerCard } from '@/components/dashboard/relationship-tracker-card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
@@ -56,6 +56,23 @@ import { ProgressOverview } from '@/components/dashboard/progress-overview';
 import { useToast } from '@/hooks/use-toast';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Progress } from '@/components/ui/progress';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
+import { Badge } from '@/components/ui/badge';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const MonthlyStatsChart = dynamic(() => import('@/components/dashboard/monthly-stats-chart').then(m => m.MonthlyStatsChart), {
   loading: () => <Skeleton className="h-[300px] w-full rounded-xl" />,
@@ -272,75 +289,174 @@ function ActionAnalyticsCard({ souls }: { souls: Soul[] }) {
   );
 }
 
+function CategorySoulList({ souls }: { souls: Soul[] }) {
+  if (!souls || souls.length === 0) {
+    return (
+      <div className="text-center py-10">
+        <p className="text-sm text-muted-foreground italic">No souls logged in this category yet.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-2 pb-4">
+      {souls.map((soul) => {
+        const wonAt = safeToDate(soul.wonAt);
+        return (
+          <Link 
+            href="/dashboard/souls-won" 
+            key={soul.id} 
+            className="flex items-center gap-4 p-3 rounded-2xl hover:bg-primary/5 transition-all border bg-background/50 group"
+          >
+            <Avatar className="h-10 w-10 border shadow-sm shrink-0 group-hover:border-primary/30 transition-colors">
+              <AvatarFallback className="font-black bg-primary/5 text-primary text-xs">{soul.firstName?.charAt(0) || 'S'}</AvatarFallback>
+            </Avatar>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2">
+                <p className="font-black text-sm truncate uppercase tracking-tight">{soul.firstName} {soul.lastName}</p>
+                <Badge variant="outline" className="text-[8px] h-4 px-1 uppercase font-black tracking-tighter shrink-0">{soul.status}</Badge>
+              </div>
+              <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest mt-1">
+                Won {wonAt ? format(wonAt, 'PPP') : 'Recently'}
+              </p>
+            </div>
+            <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
+          </Link>
+        );
+      })}
+    </div>
+  );
+}
+
 function FamilyFriendsTrackerCard({ souls }: { souls: Soul[] }) {
+    const [selectedCategory, setSelectedCategory] = useState<{name: string, souls: Soul[]} | null>(null);
+    const isMobile = useIsMobile();
+
     const stats = useMemo(() => {
-        const familyCount = souls.filter(s => s.relationship === 'Family').length;
-        const friendsCount = souls.filter(s => ['Friend', 'Colleague', 'Neighbor'].includes(s.relationship || '')).length;
-        const outreachCount = souls.filter(s => ['Stranger', 'Other'].includes(s.relationship || '') || !s.relationship).length;
+        const family = souls.filter(s => s.relationship === 'Family');
+        const friends = souls.filter(s => ['Friend', 'Colleague', 'Neighbor'].includes(s.relationship || ''));
+        const outreach = souls.filter(s => ['Stranger', 'Other'].includes(s.relationship || '') || !s.relationship);
         
         return {
-            family: familyCount,
-            friends: friendsCount,
-            outreach: outreachCount,
+            family: { count: family.length, list: family },
+            friends: { count: friends.length, list: friends },
+            outreach: { count: outreach.length, list: outreach },
         };
     }, [souls]);
 
+    const handleCategoryClick = (name: string, soulList: Soul[]) => {
+        setSelectedCategory({ name, souls: soulList });
+    };
+
+    const dialogContent = selectedCategory && (
+        <>
+            {isMobile ? (
+                <Sheet open={!!selectedCategory} onOpenChange={(open) => !open && setSelectedCategory(null)}>
+                    <SheetContent side="bottom" className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+                        <div className="p-8 border-b flex-shrink-0 bg-muted/10">
+                            <SheetHeader className="text-left">
+                                <div className="flex items-center gap-2 mb-2">
+                                    <Users className="h-4 w-4 text-primary" />
+                                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Relationship Directory</span>
+                                </div>
+                                <SheetTitle className="text-2xl font-black font-headline tracking-tight uppercase leading-tight">{selectedCategory.name} Circle</SheetTitle>
+                                <SheetDescription className="text-sm font-medium mt-1">Viewing all converts in your {selectedCategory.name.toLowerCase()} group.</SheetDescription>
+                            </SheetHeader>
+                        </div>
+                        <div className="flex-grow overflow-hidden relative">
+                            <ScrollArea className="h-full px-8 pt-6">
+                                <CategorySoulList souls={selectedCategory.souls} />
+                                <div className="h-24" />
+                            </ScrollArea>
+                        </div>
+                    </SheetContent>
+                </Sheet>
+            ) : (
+                <Dialog open={!!selectedCategory} onOpenChange={(open) => !open && setSelectedCategory(null)}>
+                    <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl">
+                        <div className="p-8 border-b bg-muted/10">
+                            <DialogHeader>
+                                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">{selectedCategory.name} Directory</DialogTitle>
+                                <DialogDescription className="text-sm font-medium">Souls won within your {selectedCategory.name.toLowerCase()} circle.</DialogDescription>
+                            </DialogHeader>
+                        </div>
+                        <ScrollArea className="max-h-[60vh] p-6">
+                            <CategorySoulList souls={selectedCategory.souls} />
+                        </ScrollArea>
+                    </DialogContent>
+                </Dialog>
+            )}
+        </>
+    );
+
     return (
-        <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-sm border-t-4 border-t-primary">
-            <CardHeader className="pb-3">
-                <CardTitle className="text-lg flex items-center gap-2">
-                    <Home className="h-5 w-5 text-primary" />
-                    Relationship Circle Tracker
-                </CardTitle>
-                <CardDescription>
-                    Ensuring your closest circles are saved and nurtured in faith.
-                </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-                <div className="space-y-4">
-                    <div className="space-y-1.5">
-                        <div className="flex justify-between items-center text-xs font-bold uppercase tracking-widest text-muted-foreground">
-                            <span>Family Harvest</span>
-                            <span className="text-primary">{stats.family} Souls</span>
+        <>
+            <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-sm border-t-4 border-t-primary overflow-hidden">
+                <CardHeader className="pb-3">
+                    <CardTitle className="text-lg flex items-center gap-2">
+                        <Home className="h-5 w-5 text-primary" />
+                        Relationship Circle Tracker
+                    </CardTitle>
+                    <CardDescription>
+                        Ensuring your closest circles are saved and nurtured in faith.
+                    </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                    <div className="space-y-4">
+                        <div className="space-y-1.5 cursor-pointer group" onClick={() => handleCategoryClick('Family', stats.family.list)}>
+                            <div className="flex justify-between items-center text-xs font-bold uppercase tracking-widest text-muted-foreground transition-colors group-hover:text-primary">
+                                <span>Family Harvest</span>
+                                <span className="text-primary font-black">{stats.family.count} Souls</span>
+                            </div>
+                            <Progress value={Math.min((stats.family.count / 5) * 100, 100)} className="h-2 bg-primary/10" indicatorClassName="bg-primary" />
+                            <p className="text-[10px] text-muted-foreground leading-tight italic">"Believe in the Lord Jesus, and you will be saved—you and your household." — Acts 16:31</p>
                         </div>
-                        <Progress value={Math.min((stats.family / 5) * 100, 100)} className="h-2 bg-primary/10" indicatorClassName="bg-primary" />
-                        <p className="text-[10px] text-muted-foreground leading-tight italic">"Believe in the Lord Jesus, and you will be saved—you and your household." — Acts 16:31</p>
-                    </div>
 
-                    <div className="space-y-1.5 pt-2">
-                        <div className="flex justify-between items-center text-xs font-bold uppercase tracking-widest text-muted-foreground">
-                            <span>Friends & Connections</span>
-                            <span className="text-primary">{stats.friends} Souls</span>
+                        <div className="space-y-1.5 pt-2 cursor-pointer group" onClick={() => handleCategoryClick('Friends', stats.friends.list)}>
+                            <div className="flex justify-between items-center text-xs font-bold uppercase tracking-widest text-muted-foreground transition-colors group-hover:text-primary">
+                                <span>Friends & Connections</span>
+                                <span className="text-primary font-black">{stats.friends.count} Souls</span>
+                            </div>
+                            <Progress value={Math.min((stats.friends.count / 10) * 100, 100)} className="h-2" />
                         </div>
-                        <Progress value={Math.min((stats.friends / 10) * 100, 100)} className="h-2" />
                     </div>
-                </div>
 
-                <div className="grid grid-cols-3 gap-2">
-                    <div className="p-3 rounded-2xl bg-muted/30 border text-center space-y-1">
-                        <p className="text-[10px] font-black text-muted-foreground uppercase tracking-tighter">Family</p>
-                        <p className="text-xl font-black text-primary">{stats.family}</p>
+                    <div className="grid grid-cols-3 gap-2">
+                        <div 
+                            className="p-3 rounded-2xl bg-muted/30 border text-center space-y-1 cursor-pointer hover:bg-primary/5 hover:border-primary/20 transition-all active:scale-95 group shadow-sm"
+                            onClick={() => handleCategoryClick('Family', stats.family.list)}
+                        >
+                            <p className="text-[10px] font-black text-muted-foreground uppercase tracking-tighter group-hover:text-primary">Family</p>
+                            <p className="text-xl font-black text-primary">{stats.family.count}</p>
+                        </div>
+                        <div 
+                            className="p-3 rounded-2xl bg-muted/30 border text-center space-y-1 cursor-pointer hover:bg-primary/5 hover:border-primary/20 transition-all active:scale-95 group shadow-sm"
+                            onClick={() => handleCategoryClick('Friends', stats.friends.list)}
+                        >
+                            <p className="text-[10px] font-black text-muted-foreground uppercase tracking-tighter group-hover:text-primary">Friends</p>
+                            <p className="text-xl font-black text-primary">{stats.friends.count}</p>
+                        </div>
+                        <div 
+                            className="p-3 rounded-2xl bg-muted/30 border text-center space-y-1 cursor-pointer hover:bg-primary/5 hover:border-primary/20 transition-all active:scale-95 group shadow-sm"
+                            onClick={() => handleCategoryClick('Outreach', stats.outreach.list)}
+                        >
+                            <p className="text-[10px] font-black text-muted-foreground uppercase tracking-tighter group-hover:text-primary">Outreach</p>
+                            <p className="text-xl font-black text-foreground">{stats.outreach.count}</p>
+                        </div>
                     </div>
-                    <div className="p-3 rounded-2xl bg-muted/30 border text-center space-y-1">
-                        <p className="text-[10px] font-black text-muted-foreground uppercase tracking-tighter">Friends</p>
-                        <p className="text-xl font-black text-primary">{stats.friends}</p>
-                    </div>
-                    <div className="p-3 rounded-2xl bg-muted/30 border text-center space-y-1">
-                        <p className="text-[10px] font-black text-muted-foreground uppercase tracking-tighter">Outreach</p>
-                        <p className="text-xl font-black text-foreground">{stats.outreach}</p>
-                    </div>
-                </div>
 
-                {stats.family === 0 && (
-                    <div className="p-4 bg-primary/5 rounded-2xl border border-primary/20 flex items-start gap-3">
-                        <Sparkles className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                        <p className="text-xs text-primary font-medium leading-relaxed">
-                            Have you shared the Gospel with your household? Log your family members here to prioritize their spiritual growth.
-                        </p>
-                    </div>
-                )}
-            </CardContent>
-        </Card>
+                    {stats.family.count === 0 && (
+                        <div className="p-4 bg-primary/5 rounded-2xl border border-primary/20 flex items-start gap-3 shadow-inner">
+                            <Sparkles className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                            <p className="text-xs text-primary font-medium leading-relaxed">
+                                Have you shared the Gospel with your household? Log your family members here to prioritize their spiritual growth.
+                            </p>
+                        </div>
+                    )}
+                </CardContent>
+            </Card>
+            {dialogContent}
+        </>
     );
 }
 
