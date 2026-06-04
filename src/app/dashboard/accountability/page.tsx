@@ -142,10 +142,15 @@ function PartnerCard({
                                   <DialogDescription>Full screen view of the user's profile photo.</DialogDescription>
                               </DialogHeader>
                               <div className="relative h-full w-full flex items-center justify-center p-4">
-                                <Avatar className="h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] rounded-2xl sm:rounded-[3rem] shadow-2xl ring-4 ring-white/10">
-                                    <AvatarImage src={partner.photoURL} className="object-cover" />
-                                    <AvatarFallback className="font-bold text-lg bg-primary/10 text-primary">{partner.firstName?.charAt(0)}</AvatarFallback>
-                                </Avatar>
+                                <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center">
+                                    <Image 
+                                        src={partner.photoURL} 
+                                        alt={`${partner.firstName} ${partner.lastName}`} 
+                                        fill 
+                                        className="object-contain shadow-2xl ring-4 ring-white/10" 
+                                        unoptimized 
+                                    />
+                                </div>
                               </div>
                           </DialogContent>
                       )}

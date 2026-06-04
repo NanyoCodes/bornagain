@@ -415,10 +415,15 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                                         <DialogDescription>Full screen view of the user's profile photo.</DialogDescription>
                                     </DialogHeader>
                                     <div className="relative h-full w-full flex items-center justify-center p-4">
-                                        <Avatar className="h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] rounded-2xl sm:rounded-[3rem] shadow-2xl ring-4 ring-white/10">
-                                            <AvatarImage src={otherParticipantInfo.photoURL} className="object-cover" />
-                                            <AvatarFallback className="font-bold text-lg bg-primary/10 text-primary">{otherParticipantInfo.firstName?.charAt(0)}</AvatarFallback>
-                                        </Avatar>
+                                        <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center">
+                                            <Image 
+                                                src={otherParticipantInfo.photoURL} 
+                                                alt={`${otherParticipantInfo.firstName} ${otherParticipantInfo.lastName}`} 
+                                                fill 
+                                                className="object-contain shadow-2xl ring-4 ring-white/10" 
+                                                unoptimized 
+                                            />
+                                        </div>
                                     </div>
                                 </DialogContent>
                             )}

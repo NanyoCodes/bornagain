@@ -51,6 +51,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { CommentSection } from "./comment-section";
 import { Separator } from "../ui/separator";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import Image from 'next/image';
 
 export const TestimonyCard = React.memo(function TestimonyCard({ 
   testimony, 
@@ -230,10 +231,15 @@ export const TestimonyCard = React.memo(function TestimonyCard({
                 <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center">
                     <DialogHeader className="sr-only"><DialogTitle>Profile photo of {authorFullName}</DialogTitle></DialogHeader>
                     <div className="relative h-full w-full flex items-center justify-center p-4">
-                        <Avatar className="h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] rounded-2xl sm:rounded-[3rem] shadow-2xl ring-4 ring-white/10">
-                            <AvatarImage src={authorAvatarUrl} className="object-cover" />
-                            <AvatarFallback className="text-4xl lg:text-5xl font-black bg-primary/10 text-primary">{initials || 'U'}</AvatarFallback>
-                        </Avatar>
+                        <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center">
+                            <Image 
+                                src={authorAvatarUrl} 
+                                alt={authorFullName} 
+                                fill 
+                                className="object-contain shadow-2xl ring-4 ring-white/10" 
+                                unoptimized 
+                            />
+                        </div>
                     </div>
                 </DialogContent>
               )}

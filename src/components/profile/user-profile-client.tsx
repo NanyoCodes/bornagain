@@ -227,12 +227,15 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                         <DialogDescription>Full screen view of the user's profile photo.</DialogDescription>
                     </DialogHeader>
                     <div className="relative h-full w-full flex items-center justify-center p-4">
-                        <Avatar className="h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] rounded-2xl sm:rounded-[3rem] shadow-2xl ring-4 ring-white/10">
-                            <AvatarImage src={photoURL} className="object-cover" />
-                            <AvatarFallback className="text-4xl lg:text-5xl font-black bg-primary/10 text-primary">
-                                {initials || 'U'}
-                            </AvatarFallback>
-                        </Avatar>
+                        <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center">
+                            <Image 
+                                src={photoURL} 
+                                alt={displayName} 
+                                fill 
+                                className="object-contain shadow-2xl ring-4 ring-white/10" 
+                                unoptimized 
+                            />
+                        </div>
                     </div>
                 </DialogContent>
               )}

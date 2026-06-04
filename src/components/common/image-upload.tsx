@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
@@ -194,7 +193,7 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
           ) : (
             <div className="relative w-full max-w-xs aspect-video rounded-2xl border-2 border-dashed bg-muted/20 flex items-center justify-center overflow-hidden shadow-md">
               {previewUrl ? (
-                <Image src={previewUrl} alt="Preview" fill className="object-cover" unoptimized />
+                <Image src={previewUrl} alt="Preview" fill className="object-contain" unoptimized />
               ) : (
                 <Camera className="h-10 w-10 text-muted-foreground/20" />
               )}
