@@ -175,19 +175,29 @@ function CityImpactCard({ location, userSouls }: { location: { city?: string; co
   const [cityCount, setCityCount] = useState(0);
   const [loading, setLoading] = useState(true);
   
-  const yourCityCount = useMemo(() => 
-    userSouls.filter((s) => s.userLocation?.city_lowercase === location.city?.toLowerCase()).length, 
-  [userSouls, location.city]);
+  const yourCityCount = useMemo(() => {
+    const soulCount = userSouls.filter((s) => s.userLocation?.city_lowercase === location.city?.toLowerCase()).length;
+    // Including current user as a believer
+    return soulCount + 1;
+  }, [userSouls, location.city]);
 
   const fetchCounts = useCallback(async () => {
     if (!firestore || !user || !location.city) { setLoading(false); return; }
     setLoading(true);
     try {
-      const cityQuery = query(collection(firestore, 'souls'), where('userLocation.city_lowercase', '==', location.city.toLowerCase()));
-      const citySnapshot = await getCountFromServer(cityQuery);
-      setCityCount(citySnapshot.data().count);
+      const cityLower = location.city.toLowerCase();
+      
+      const soulsQuery = query(collection(firestore, 'souls'), where('userLocation.city_lowercase', '==', cityLower));
+      const usersQuery = query(collection(firestore, 'users'), where('location.city_lowercase', '==', cityLower));
+      
+      const [soulsSnapshot, usersSnapshot] = await Promise.all([
+        getCountFromServer(soulsQuery),
+        getCountFromServer(usersQuery)
+      ]);
+      
+      setCityCount(soulsSnapshot.data().count + usersSnapshot.data().count);
     } catch (error) { 
-      errorEmitter.emit('permission-error', new FirestorePermissionError({ path: 'souls', operation: 'list' }, user)); 
+      errorEmitter.emit('permission-error', new FirestorePermissionError({ path: 'souls/users', operation: 'list' }, user)); 
     } finally { 
       setLoading(false); 
     }
@@ -200,7 +210,7 @@ function CityImpactCard({ location, userSouls }: { location: { city?: string; co
       <CardHeader className="flex flex-row items-start justify-between pb-4">
         <div className="min-w-0 pr-4">
           <CardTitle className="text-lg">City Impact</CardTitle>
-          <CardDescription className="truncate">Souls won in your area.</CardDescription>
+          <CardDescription className="truncate">Souls and Believers in your area.</CardDescription>
         </div>
         <Button variant="ghost" size="icon" onClick={fetchCounts} disabled={loading} className="shrink-0">
           {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
@@ -214,7 +224,7 @@ function CityImpactCard({ location, userSouls }: { location: { city?: string; co
               <span className="font-bold text-xs uppercase tracking-widest text-muted-foreground flex items-center gap-1.5 mb-1">
                 <Globe className="h-3 w-3" /> Area: {location.city}
               </span>
-              <p className="text-sm text-muted-foreground">Total harvest in this city.</p>
+              <p className="text-sm text-muted-foreground leading-snug">Total Kingdom force (Souls & Believers).</p>
             </div>
             <div className="flex flex-row sm:flex-col items-baseline sm:items-end justify-between sm:justify-center gap-2">
               <div className="font-black text-3xl text-primary leading-none">
