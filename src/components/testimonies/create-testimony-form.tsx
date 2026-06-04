@@ -175,9 +175,9 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
             )}
           />
 
-          <Button type="submit" className="w-full h-14 rounded-2xl font-black text-lg shadow-xl shadow-primary/20 tracking-widest uppercase" disabled={isSubmitting}>
-            {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-            {isSubmitting ? 'SUBMITTING miracle...' : 'PUBLISH TESTIMONY'}
+          <Button type="submit" className="w-full h-12 rounded-xl font-bold shadow-md tracking-wider uppercase" disabled={isSubmitting}>
+            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {isSubmitting ? 'Publishing...' : 'Publish Testimony'}
           </Button>
         </form>
       </Form>
