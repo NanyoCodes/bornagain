@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -149,6 +148,7 @@ export function RelationshipTrackerCard() {
   const [togglingId, setTogglingId] = useState<string | null>(null);
   const [selectedActionId, setSelectedActionId] = useState<string | null>(null);
   const [isSoulDialogOpen, setIsSoulDialogOpen] = useState(false);
+  const [currentDate, setCurrentDate] = useState<Date | null>(null);
 
   const { userProfile, loading: profileLoading } = useUserProfile();
 
@@ -157,6 +157,10 @@ export function RelationshipTrackerCard() {
     return query(collection(firestore, 'users', user.uid, 'souls'), orderBy("wonAt", "desc"));
   }, [user?.uid, firestore]);
   const { data: souls, loading: soulsLoading } = useCollection<Soul>(soulsQuery);
+
+  useEffect(() => {
+    setCurrentDate(new Date());
+  }, []);
 
   useEffect(() => {
     if (userProfile?.dailyDiscipline) {
@@ -214,7 +218,6 @@ export function RelationshipTrackerCard() {
         memberName: memberName,
     };
 
-    // Use direct user UID for guaranteed subcollection path access
     const soulUserRef = doc(firestore, 'users', user.uid, 'souls', soul.id);
     const globalSoulRef = doc(firestore, 'souls', soul.id);
     
@@ -275,7 +278,7 @@ export function RelationshipTrackerCard() {
         </div>
 
         <CardHeader className="p-4 sm:p-6 pb-4 relative z-10">
-          <div className="flex justify-between items-start">
+          <div className="flex flex-col items-start gap-2 sm:flex-row sm:justify-between">
               <div className="space-y-1">
                   <CardTitle className="text-base sm:text-lg font-black font-headline uppercase tracking-tight flex items-center gap-2">
                       <Sparkles className="h-5 w-5 text-primary" />
@@ -283,20 +286,27 @@ export function RelationshipTrackerCard() {
                   </CardTitle>
                   <CardDescription className="text-[10px] sm:text-xs font-bold uppercase tracking-widest opacity-60">Daily Relational Efforts</CardDescription>
               </div>
-              <TooltipProvider>
-                  <Tooltip>
-                      <TooltipTrigger asChild>
-                          <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full opacity-40 hover:opacity-100">
-                              <Info className="h-4 w-4" />
-                          </Button>
-                      </TooltipTrigger>
-                      <TooltipContent className="max-w-[200px] rounded-xl p-3 border-primary/20 shadow-xl">
-                          <p className="text-[10px] font-bold uppercase leading-relaxed text-center">
-                              Select a convert to link these relational actions to their spiritual history.
-                          </p>
-                      </TooltipContent>
-                  </Tooltip>
-              </TooltipProvider>
+              <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
+                {currentDate && (
+                  <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20">
+                    {format(currentDate, 'PPPP')}
+                  </div>
+                )}
+                <TooltipProvider>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full opacity-40 hover:opacity-100">
+                                <Info className="h-4 w-4" />
+                            </Button>
+                        </TooltipTrigger>
+                        <TooltipContent className="max-w-[200px] rounded-xl p-3 border-primary/20 shadow-xl" side="bottom">
+                            <p className="text-[10px] font-bold uppercase leading-relaxed text-center">
+                                Select a convert to link these relational actions to their spiritual history.
+                            </p>
+                        </TooltipContent>
+                    </Tooltip>
+                </TooltipProvider>
+              </div>
           </div>
         </CardHeader>
 
