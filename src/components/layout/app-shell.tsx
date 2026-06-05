@@ -47,6 +47,7 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "
 import { EditProfileModal } from "@/components/profile/edit-profile-modal";
 import { PageTransition } from "../page-transition";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { SplashScreen } from "../common/splash-screen";
 
 const navItems = [
   { href: "/progress", label: "Progress", icon: TrendingUp, color: "text-chart-1" },
@@ -333,10 +334,30 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const [showWelcomePopup, setShowWelcomePopup] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState("");
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  
+  const [showSplash, setShowSplash] = useState(false);
+  const [contentVisible, setContentVisible] = useState(false);
 
   useEffect(() => { 
     setMounted(true); 
     setLoadingMessage(inspirationalMessages[Math.floor(Math.random() * inspirationalMessages.length)]);
+
+    // Splash logic: Show if not shown in last 12 hours
+    const SPLASH_COOLDOWN = 12 * 60 * 60 * 1000;
+    const lastShown = localStorage.getItem('testify_splash_last_shown');
+    const now = Date.now();
+
+    if (!lastShown || now - parseInt(lastShown, 10) > SPLASH_COOLDOWN) {
+        setShowSplash(true);
+        const timer = setTimeout(() => {
+            setShowSplash(false);
+            localStorage.setItem('testify_splash_last_shown', now.toString());
+            setContentVisible(true);
+        }, 10000); // 10 seconds
+        return () => clearTimeout(timer);
+    } else {
+        setContentVisible(true);
+    }
   }, []);
 
   // Global scroll to top on navigation
@@ -445,29 +466,41 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <SearchProvider>
       <div className={cn("flex w-full flex-col overflow-x-hidden", isTakeoverPage ? "h-dvh" : "min-h-dvh")}>
-        {!isTakeoverPage && (
-          <AppHeader 
-            unreadChatCount={unreadChatNotifications?.length || 0} 
-            unreadNotifCount={unreadOtherNotifications?.length || 0}
-            isPublicRoute={isPublicRoute}
-          />
-        )}
-        <div className="flex-1 relative min-h-0">
-          <main 
-            ref={scrollContainerRef}
-            className={cn(
-                "absolute inset-0", 
-                !isTakeoverPage ? "overflow-y-auto" : "overflow-hidden"
+        <AnimatePresence>
+            {showSplash && <SplashScreen />}
+        </AnimatePresence>
+
+        <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: contentVisible ? 1 : 0 }}
+            transition={{ duration: 1 }}
+            className="flex-1 flex flex-col min-h-0"
+        >
+            {!isTakeoverPage && (
+            <AppHeader 
+                unreadChatCount={unreadChatNotifications?.length || 0} 
+                unreadNotifCount={unreadOtherNotifications?.length || 0}
+                isPublicRoute={isPublicRoute}
+            />
             )}
-          >
-            <div className={cn(
-              "mx-auto h-full", 
-              !isTakeoverPage ? "max-w-7xl p-4 md:p-8 pb-32 md:pb-8" : "w-full"
-            )}>
-                <PageTransition>{children}</PageTransition>
+            <div className="flex-1 relative min-h-0">
+            <main 
+                ref={scrollContainerRef}
+                className={cn(
+                    "absolute inset-0", 
+                    !isTakeoverPage ? "overflow-y-auto" : "overflow-hidden"
+                )}
+            >
+                <div className={cn(
+                "mx-auto h-full", 
+                !isTakeoverPage ? "max-w-7xl p-4 md:p-8 pb-32 md:pb-8" : "w-full"
+                )}>
+                    <PageTransition>{children}</PageTransition>
+                </div>
+            </main>
             </div>
-          </main>
-        </div>
+        </motion.div>
+
         {user && showBottomNav && <BottomNavBar />}
         
         {user && !isProfileIncomplete && <WelcomePopup isOpen={showWelcomePopup} onClose={() => setShowWelcomePopup(false)} userName={userProfile?.firstName} />}
