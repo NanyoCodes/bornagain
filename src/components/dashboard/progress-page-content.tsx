@@ -754,7 +754,7 @@ export function ProgressPageContent() {
   if (profileLoading || soulsLoading) return <div className="flex justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
 
   return (
-    <div className="space-y-8 pb-32">
+    <div className="space-y-8 pb-12">
         <header className="text-center space-y-4 px-4">
             {welcomeMessage ? (
                 <>
@@ -874,9 +874,6 @@ export function ProgressPageContent() {
                 )}
             </div>
         </div>
-        
-        {/* Mobile Spacer to clear navbar */}
-        <div className="h-20 lg:hidden" />
     </div>
   );
 }
