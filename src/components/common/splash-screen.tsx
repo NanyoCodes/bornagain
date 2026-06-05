@@ -72,10 +72,10 @@ export function SplashScreen({ onDismiss }: SplashScreenProps) {
           >
             <Button 
               onClick={onDismiss}
-              className="w-full h-14 rounded-2xl font-black tracking-widest uppercase shadow-xl shadow-primary/20 text-lg group"
+              className="w-full h-11 rounded-xl font-black tracking-widest uppercase shadow-lg shadow-primary/10 text-xs group"
             >
-              <Newspaper className="mr-2 h-5 w-5 transition-transform group-hover:scale-110" />
-              Share Your Testimony
+              <Newspaper className="mr-2 h-4 w-4 transition-transform group-hover:scale-110" />
+              Share the Greatness of GOD
             </Button>
           </motion.div>
         )}
