@@ -56,18 +56,24 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
         setShowSplash(false);
         localStorage.setItem('testify_splash_last_shown', now.toString());
         setContentVisible(true);
-      }, 10000); // 10 seconds
+      }, 10000); // 10 seconds only
       return () => clearTimeout(timer);
     } else {
       setContentVisible(true);
     }
   }, []);
 
+  const handleDismissSplash = () => {
+    setShowSplash(false);
+    localStorage.setItem('testify_splash_last_shown', Date.now().toString());
+    setContentVisible(true);
+  };
+
   return (
     <div className="relative w-full min-h-screen overflow-hidden">
       <AnimatePresence>
         {showSplash && (
-          <SplashScreen />
+          <SplashScreen onDismiss={handleDismissSplash} />
         )}
       </AnimatePresence>
 

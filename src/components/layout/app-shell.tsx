@@ -357,12 +357,18 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             setShowSplash(false);
             localStorage.setItem('testify_splash_last_shown', now.toString());
             setContentVisible(true);
-        }, 10000); // 10 seconds
+        }, 10000); // 10 seconds only
         return () => clearTimeout(timer);
     } else {
         setContentVisible(true);
     }
   }, []);
+
+  const handleDismissSplash = () => {
+    setShowSplash(false);
+    localStorage.setItem('testify_splash_last_shown', Date.now().toString());
+    setContentVisible(true);
+  };
 
   // Global scroll to top on navigation
   useEffect(() => {
@@ -471,7 +477,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     <SearchProvider>
       <div className={cn("flex w-full flex-col overflow-x-hidden", isTakeoverPage ? "h-dvh" : "min-h-dvh")}>
         <AnimatePresence>
-            {showSplash && <SplashScreen />}
+            {showSplash && <SplashScreen onDismiss={handleDismissSplash} />}
         </AnimatePresence>
 
         <motion.div 

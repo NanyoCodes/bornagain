@@ -3,13 +3,19 @@
 import { motion } from 'framer-motion';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
+import { Button } from '../ui/button';
+import { Newspaper, Sparkles } from 'lucide-react';
 
 /**
  * @fileOverview A high-fidelity splash screen for the Testify platform.
- * Displays the logo and mission statement with elegant animations.
+ * Displays the logo, mission statement, and a call to action.
  */
 
-export function SplashScreen() {
+interface SplashScreenProps {
+  onDismiss?: () => void;
+}
+
+export function SplashScreen({ onDismiss }: SplashScreenProps) {
   const logo = PlaceHolderImages.find((img) => img.id === 'logo');
   const logoUrl = logo?.imageUrl;
 
@@ -24,7 +30,7 @@ export function SplashScreen() {
         initial={{ scale: 0.8, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 1.5, ease: "easeOut" }}
-        className="flex flex-col items-center gap-8"
+        className="flex flex-col items-center gap-8 w-full max-w-sm"
       >
         <div className="relative">
             <motion.div 
@@ -59,14 +65,31 @@ export function SplashScreen() {
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 1.2, duration: 1 }}
-                className="text-muted-foreground uppercase font-black tracking-[0.4em] text-[10px] sm:text-xs max-w-[280px] mx-auto leading-relaxed"
+                className="text-muted-foreground uppercase font-black tracking-[0.2em] text-[10px] sm:text-xs max-w-[280px] mx-auto leading-relaxed"
             >
                 Give praise to the Lord, proclaim his name; make known among the nations what he has done.
             </motion.p>
         </div>
+
+        {onDismiss && (
+          <motion.div
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 1.8, duration: 1 }}
+            className="w-full pt-4"
+          >
+            <Button 
+              onClick={onDismiss}
+              className="w-full h-14 rounded-2xl font-black tracking-widest uppercase shadow-xl shadow-primary/20 text-lg group"
+            >
+              <Newspaper className="mr-2 h-5 w-5 transition-transform group-hover:scale-110" />
+              Share Your Testimony
+            </Button>
+          </motion.div>
+        )}
       </motion.div>
 
-      <div className="absolute bottom-16 flex flex-col items-center gap-4">
+      <div className="absolute bottom-12 flex flex-col items-center gap-4">
           <div className="flex gap-2">
               {[...Array(3)].map((_, i) => (
                   <motion.div
@@ -80,7 +103,10 @@ export function SplashScreen() {
                   />
               ))}
           </div>
-          <p className="text-[9px] font-bold text-muted-foreground/40 uppercase tracking-[0.2em]">Kingdom Network Active</p>
+          <p className="text-[9px] font-bold text-muted-foreground/40 uppercase tracking-[0.2em] flex items-center gap-2">
+            <Sparkles className="h-3 w-3" />
+            Kingdom Network Active
+          </p>
       </div>
     </motion.div>
   );
