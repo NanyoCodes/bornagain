@@ -14,6 +14,7 @@ const FontSizeContext = createContext<FontSizeContextType | undefined>(undefined
 export function FontSizeProvider({ children }: { children: React.ReactNode }) {
   const [fontSize, setFontSizeState] = useState<FontSize>('base');
   const [mounted, setMounted] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -21,6 +22,15 @@ export function FontSizeProvider({ children }: { children: React.ReactNode }) {
     if (savedSize && ['sm', 'base', 'lg', 'xl'].includes(savedSize)) {
       setFontSizeState(savedSize);
     }
+
+    // Detect initial screen size and listen for changes
+    const mql = window.matchMedia('(max-width: 767px)');
+    setIsMobile(mql.matches);
+    
+    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    mql.addEventListener('change', handler);
+    
+    return () => mql.removeEventListener('change', handler);
   }, []);
 
   useEffect(() => {
@@ -29,15 +39,20 @@ export function FontSizeProvider({ children }: { children: React.ReactNode }) {
     const root = document.documentElement;
     localStorage.setItem('app-font-size', fontSize);
     
-    const sizeMap: Record<FontSize, string> = {
-      sm: '14px',
-      base: '16px',
-      lg: '18px',
-      xl: '20px',
+    /**
+     * Scaling Matrix
+     * Optimized to ensure 'Large' and 'XL' are readable but not intrusive on mobile.
+     */
+    const sizeMap: Record<FontSize, { mobile: string; desktop: string }> = {
+      sm: { mobile: '13px', desktop: '14px' },
+      base: { mobile: '15px', desktop: '16px' },
+      lg: { mobile: '16.5px', desktop: '18px' },
+      xl: { mobile: '18px', desktop: '21px' },
     };
     
-    root.style.fontSize = sizeMap[fontSize];
-  }, [fontSize, mounted]);
+    const targetSize = isMobile ? sizeMap[fontSize].mobile : sizeMap[fontSize].desktop;
+    root.style.fontSize = targetSize;
+  }, [fontSize, mounted, isMobile]);
 
   // Prevent hydration mismatch
   if (!mounted) {
