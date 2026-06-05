@@ -61,7 +61,7 @@ export function SplashScreen() {
                 transition={{ delay: 1.2, duration: 1 }}
                 className="text-muted-foreground uppercase font-black tracking-[0.4em] text-[10px] sm:text-xs max-w-[280px] mx-auto leading-relaxed"
             >
-                Empowering the Harvest through Technology
+                Give praise to the Lord, proclaim his name; make known among the nations what he has done.
             </motion.p>
         </div>
       </motion.div>
