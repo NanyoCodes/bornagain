@@ -1,4 +1,3 @@
-
 'use client';
 
 import Image from 'next/image';
@@ -35,13 +34,13 @@ function SplashScreen({ logoUrl }: { logoUrl?: string }) {
     <motion.div 
       initial={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.8 }}
+      transition={{ duration: 1 }}
       className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-background p-6"
     >
       <motion.div
         initial={{ scale: 0.8, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        transition={{ duration: 1.2, ease: "easeOut" }}
+        transition={{ duration: 1.5, ease: "easeOut" }}
         className="flex flex-col items-center gap-8"
       >
         <div className="relative">
@@ -68,7 +67,7 @@ function SplashScreen({ logoUrl }: { logoUrl?: string }) {
             <motion.h1 
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.5, duration: 0.8 }}
+                transition={{ delay: 0.8, duration: 1 }}
                 className="text-4xl sm:text-6xl font-black font-headline tracking-tighter text-primary uppercase"
             >
                 Testify
@@ -76,7 +75,7 @@ function SplashScreen({ logoUrl }: { logoUrl?: string }) {
             <motion.p 
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.8, duration: 0.8 }}
+                transition={{ delay: 1.2, duration: 1 }}
                 className="text-muted-foreground uppercase font-black tracking-[0.4em] text-[10px] sm:text-xs max-w-[280px] mx-auto leading-relaxed"
             >
                 Empowering the Harvest through Technology
@@ -126,7 +125,7 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
         setShowSplash(false);
         sessionStorage.setItem('auth_splash_shown', 'true');
         setContentVisible(true);
-      }, 7000);
+      }, 10000); // Set to 10 seconds
       return () => clearTimeout(timer);
     } else {
       setContentVisible(true);
@@ -153,7 +152,7 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
             style={{ 
             backgroundImage: `linear-gradient(to bottom, rgba(0,0,0,0.5), rgba(0,0,0,0.8)), url(${gospelCollageUrl})`,
             }}
-            data-ai-hint="gospel background"
+            data-ai-hint="bible scriptures"
         />
 
         <div className="relative z-10 w-full lg:grid lg:grid-cols-2 min-h-screen bg-transparent">
