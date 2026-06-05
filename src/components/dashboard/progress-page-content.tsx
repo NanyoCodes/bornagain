@@ -77,7 +77,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { LogSoulForm } from '@/components/souls/log-soul-form';
 
 const MonthlyStatsChart = dynamic(() => import('@/components/dashboard/monthly-stats-chart').then(m => m.MonthlyStatsChart), {
-  loading: () => <Skeleton className="h-[300px] w-full rounded-xl" />,
+  loading: () => <Skeleton className="h-[300px] w-full" />,
   ssr: false
 });
 
@@ -136,7 +136,7 @@ function PrayerRemindersCard({ souls }: { souls: Soul[] }) {
   }, [souls]);
 
   return (
-    <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-sm">
+    <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b">
       <CardHeader>
         <CardTitle className="text-lg flex items-center gap-2">
           <Heart className="h-5 w-5 text-primary" />
@@ -206,7 +206,7 @@ function CityImpactCard({ location, userSouls }: { location: { city?: string; co
   useEffect(() => { fetchCounts(); }, [fetchCounts]);
   
   return (
-    <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-sm">
+    <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b">
       <CardHeader className="flex flex-row items-start justify-between pb-4">
         <div className="min-w-0 pr-4">
           <CardTitle className="text-lg">City Impact</CardTitle>
@@ -275,7 +275,7 @@ function ActionAnalyticsCard({ souls }: { souls: Soul[] }) {
   }, [souls]);
 
   return (
-    <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-sm">
+    <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b">
       <CardHeader>
         <CardTitle className="text-lg">Follow-up Tracker</CardTitle>
         <CardDescription>Interaction types logged this month.</CardDescription>
@@ -499,7 +499,7 @@ function FamilyFriendsTrackerCard({
 
     return (
         <>
-            <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-sm border-t-4 border-t-primary overflow-hidden">
+            <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b overflow-hidden">
                 <CardHeader className="pb-3">
                     <CardTitle className="text-lg flex items-center gap-2">
                         <Home className="h-5 w-5 text-primary" />
@@ -558,7 +558,7 @@ function LastBibleReadCard({ history }: { history: ReadingHistoryItem[] }) {
 
   if (!lastRead) {
     return (
-      <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-sm bg-muted/10">
+      <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b bg-muted/10">
         <CardHeader className="pb-3">
           <CardTitle className="text-base flex items-center gap-2">
             <BookOpen className="h-4 w-4 text-primary" />
@@ -578,7 +578,7 @@ function LastBibleReadCard({ history }: { history: ReadingHistoryItem[] }) {
   const readDate = safeToDate(lastRead.readAt);
 
   return (
-    <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-sm border-l-4 border-l-chart-2">
+    <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b border-l-4 border-l-chart-2">
       <CardHeader className="pb-3">
         <CardTitle className="text-base flex items-center gap-2">
           <BookOpen className="h-4 w-4 text-chart-2" />
@@ -788,20 +788,18 @@ export function ProgressPageContent() {
             </div>
         </header>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
-            <div className="lg:col-span-2 space-y-6 md:space-y-8">
-                <div className="-mx-4 sm:mx-0"><DailyDisciplineCard /></div>
-                <div className="-mx-4 sm:mx-0"><RelationshipTrackerCard /></div>
-                <div className="-mx-4 sm:mx-0">
-                    <FamilyFriendsTrackerCard 
-                        souls={soulsWon || []} 
-                        campaigns={activeCampaigns || []} 
-                        fellowships={activeFellowships || []} 
-                    />
-                </div>
-                {userProfile && <div className="-mx-4 sm:mx-0"><ProgressOverview souls={soulsWon || []} userProfile={userProfile} testimonies={userTestimonies || []} /></div>}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-0 rounded-none sm:rounded-[2.5rem] overflow-hidden bg-card/50 backdrop-blur-sm border-y sm:border">
+            <div className="lg:col-span-2 flex flex-col divide-y">
+                <DailyDisciplineCard />
+                <RelationshipTrackerCard />
+                <FamilyFriendsTrackerCard 
+                    souls={soulsWon || []} 
+                    campaigns={activeCampaigns || []} 
+                    fellowships={activeFellowships || []} 
+                />
+                {userProfile && <ProgressOverview souls={soulsWon || []} userProfile={userProfile} testimonies={userTestimonies || []} />}
                 
-                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-sm overflow-hidden">
+                <Card className="rounded-none border-x-0 shadow-none border-b-2 sm:border-b-0 overflow-hidden bg-transparent">
                   <CardHeader>
                     <CardTitle className="text-lg flex items-center gap-2">
                       <Target className="h-5 w-5 text-primary" />
@@ -814,56 +812,52 @@ export function ProgressPageContent() {
                   </CardContent>
                 </Card>
 
-                <div className="-mx-4 sm:mx-0"><ActionAnalyticsCard souls={soulsWon || []} /></div>
+                <ActionAnalyticsCard souls={soulsWon || []} />
             </div>
             
-            <div className="space-y-6 md:space-y-8 pb-16 lg:pb-0">
-                <div className="-mx-4 sm:mx-0">
-                  <LastBibleReadCard history={userProfile?.readingHistory || []} />
-                </div>
+            <div className="flex flex-col divide-y lg:border-l bg-muted/5">
+                <LastBibleReadCard history={userProfile?.readingHistory || []} />
 
-                <div className="-mx-4 sm:mx-0">
-                  <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-sm">
-                    <CardHeader>
-                        <CardTitle className="text-lg flex items-center gap-2">
-                        <Heart className="h-5 w-5 text-primary" />
-                        Prayer Reminders
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-2">
-                        {soulsWon && soulsWon.length > 0 ? (
-                            soulsWon
-                                .filter(soul => soul.status !== 'Established')
-                                .map(soul => {
-                                    const lastFollowUp = (soul.followUpLog && soul.followUpLog.length > 0)
-                                        ? [...soul.followUpLog].sort((a, b) => (safeToDate(b.date)?.getTime() ?? 0) - (safeToDate(a.date)?.getTime() ?? 0))[0]
-                                        : null;
-                                    const lastContactDate = lastFollowUp ? safeToDate(lastFollowUp.date) : safeToDate(soul.wonAt);
-                                    const daysSinceContact = lastContactDate ? differenceInDays(new Date(), lastContactDate) : 0;
-                                    return { ...soul, daysSinceContact };
-                                })
-                                .filter(soul => soul.daysSinceContact > 1)
-                                .sort((a, b) => b.daysSinceContact - a.daysSinceContact)
-                                .slice(0, 3)
-                                .map(soul => (
-                                    <div key={soul.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/40 group">
-                                        <div className="min-w-0 flex-1">
-                                            <p className="font-bold text-sm truncate">{soul.firstName} {soul.lastName}</p>
-                                            <p className="text-[10px] text-muted-foreground">Idle for {soul.daysSinceContact} days</p>
-                                        </div>
-                                        <Button asChild variant="ghost" size="sm" className="opacity-0 group-hover:opacity-100 h-7 text-[10px] uppercase font-bold">
-                                            <Link href="/dashboard/souls-won">Follow-up</Link>
-                                        </Button>
-                                    </div>
-                                ))
-                        ) : (
-                            <p className="text-xs text-muted-foreground italic text-center py-4">No follow-up required.</p>
-                        )}
-                    </CardContent>
-                  </Card>
-                </div>
+                <Card className="rounded-none border-x-0 shadow-none border-b-2 sm:border-b bg-transparent">
+                  <CardHeader>
+                      <CardTitle className="text-lg flex items-center gap-2">
+                      <Heart className="h-5 w-5 text-primary" />
+                      Prayer Reminders
+                      </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-2">
+                      {soulsWon && soulsWon.length > 0 ? (
+                          soulsWon
+                              .filter(soul => soul.status !== 'Established')
+                              .map(soul => {
+                                  const lastFollowUp = (soul.followUpLog && soul.followUpLog.length > 0)
+                                      ? [...soul.followUpLog].sort((a, b) => (safeToDate(b.date)?.getTime() ?? 0) - (safeToDate(a.date)?.getTime() ?? 0))[0]
+                                      : null;
+                                  const lastContactDate = lastFollowUp ? safeToDate(lastFollowUp.date) : safeToDate(soul.wonAt);
+                                  const daysSinceContact = lastContactDate ? differenceInDays(new Date(), lastContactDate) : 0;
+                                  return { ...soul, daysSinceContact };
+                              })
+                              .filter(soul => soul.daysSinceContact > 1)
+                              .sort((a, b) => b.daysSinceContact - a.daysSinceContact)
+                              .slice(0, 3)
+                              .map(soul => (
+                                  <div key={soul.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/40 group">
+                                      <div className="min-w-0 flex-1">
+                                          <p className="font-bold text-sm truncate">{soul.firstName} {soul.lastName}</p>
+                                          <p className="text-[10px] text-muted-foreground">Idle for {soul.daysSinceContact} days</p>
+                                      </div>
+                                      <Button asChild variant="ghost" size="sm" className="opacity-0 group-hover:opacity-100 h-7 text-[10px] uppercase font-bold">
+                                          <Link href="/dashboard/souls-won">Follow-up</Link>
+                                      </Button>
+                                  </div>
+                              ))
+                      ) : (
+                          <p className="text-xs text-muted-foreground italic text-center py-4">No follow-up required.</p>
+                      )}
+                  </CardContent>
+                </Card>
                 
-                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-sm">
+                <Card className="rounded-none border-x-0 shadow-none border-b-2 sm:border-b bg-transparent">
                   <CardHeader>
                     <CardTitle className="text-lg">Recent Souls</CardTitle>
                     <CardDescription>Your latest harvest entries.</CardDescription>
@@ -874,9 +868,7 @@ export function ProgressPageContent() {
                 </Card>
 
                 {userProfile?.location && (
-                  <div className="-mx-4 sm:mx-0">
-                    <CityImpactCard location={userProfile.location} userSouls={soulsWon || []} />
-                  </div>
+                  <CityImpactCard location={userProfile.location} userSouls={soulsWon || []} />
                 )}
             </div>
         </div>
