@@ -84,6 +84,9 @@ export default function Page() {
         title: 'Success',
         description: 'You are now logged in.',
       });
+
+      // Force splash screen on dashboard mount
+      sessionStorage.setItem('testify_force_splash', 'true');
       router.push('/dashboard/testimonies');
     } catch (error) {
       const authError = error as AuthError;

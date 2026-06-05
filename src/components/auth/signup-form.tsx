@@ -51,17 +51,6 @@ export function SignUpForm() {
   const auth = useAuth();
   const firestore = useFirestore();
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      firstName: "",
-      lastName: "",
-      email: "",
-      password: "",
-      acceptTerms: false,
-    },
-  });
-
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
     if (!auth || !firestore) {
@@ -112,6 +101,9 @@ export function SignUpForm() {
         title: "Account Created!",
         description: "A verification email has been sent. Please verify your account before logging in.",
       });
+      
+      // Force splash screen on next entry
+      sessionStorage.setItem('testify_force_splash', 'true');
       router.push("/login");
 
     } catch (error) {
@@ -141,6 +133,17 @@ export function SignUpForm() {
       setIsLoading(false);
     }
   }
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      password: "",
+      acceptTerms: false,
+    },
+  });
 
   return (
     <Form {...form}>

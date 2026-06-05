@@ -58,7 +58,7 @@ const navItems = [
   { href: "/accountability", label: "Accountability", icon: HeartHandshake, color: "text-primary" },
 ];
 
-const NOTIFICATION_TYPES = ['campaign_join', 'accountability_nudge', 'accountability_request', 'request_accepted', 'request_declined', 'accountability_partner_removed', 'new_soul_in_fellowship'];
+const NOTIFICATION_TYPES = ['campaign_join', 'new_chat_message', 'accountability_nudge', 'accountability_request', 'request_accepted', 'request_declined', 'accountability_partner_removed', 'new_soul_in_fellowship'];
 
 const inspirationalMessages = [
   "GOD FIRST",
@@ -342,12 +342,16 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     setMounted(true); 
     setLoadingMessage(inspirationalMessages[Math.floor(Math.random() * inspirationalMessages.length)]);
 
-    // Splash logic: Show if not shown in last 12 hours
+    // Splash logic: Show if not shown in last 12 hours OR if forced by sign-in
     const SPLASH_COOLDOWN = 12 * 60 * 60 * 1000;
     const lastShown = localStorage.getItem('testify_splash_last_shown');
+    const forceSplash = sessionStorage.getItem('testify_force_splash') === 'true';
     const now = Date.now();
 
-    if (!lastShown || now - parseInt(lastShown, 10) > SPLASH_COOLDOWN) {
+    if (forceSplash || !lastShown || now - parseInt(lastShown, 10) > SPLASH_COOLDOWN) {
+        if (forceSplash) {
+          sessionStorage.removeItem('testify_force_splash');
+        }
         setShowSplash(true);
         const timer = setTimeout(() => {
             setShowSplash(false);
