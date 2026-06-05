@@ -53,18 +53,10 @@ export function SplashScreen({ onDismiss }: SplashScreenProps) {
         </div>
         
         <div className="text-center space-y-4">
-            <motion.h1 
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.8, duration: 1 }}
-                className="text-4xl sm:text-6xl font-black font-headline tracking-tighter text-primary uppercase"
-            >
-                Testify
-            </motion.h1>
             <motion.p 
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 1.2, duration: 1 }}
+                transition={{ delay: 0.8, duration: 1 }}
                 className="text-muted-foreground uppercase font-black tracking-[0.2em] text-[10px] sm:text-xs max-w-[280px] mx-auto leading-relaxed"
             >
                 Give praise to the Lord, proclaim his name; make known among the nations what he has done.
@@ -75,7 +67,7 @@ export function SplashScreen({ onDismiss }: SplashScreenProps) {
           <motion.div
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 1.8, duration: 1 }}
+            transition={{ delay: 1.2, duration: 1 }}
             className="w-full pt-4"
           >
             <Button 
