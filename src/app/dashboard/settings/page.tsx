@@ -74,6 +74,10 @@ const backgroundPresets = [
   { id: 'dawn', label: 'Dawn of Hope', url: 'https://images.unsplash.com/photo-1470252649358-96940c93f319?q=80&w=2070&auto=format&fit=crop' },
   { id: 'harvest', label: 'Global Harvest', url: 'https://images.unsplash.com/photo-1521295121783-8a321d551ad2?q=80&w=2070&auto=format&fit=crop' },
   { id: 'waters', label: 'Still Waters', url: 'https://images.unsplash.com/photo-1505118380757-91f5f45d8de4?q=80&w=2070&auto=format&fit=crop' },
+  { id: 'majesty', label: 'Majesty Mountains', url: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=2070&auto=format&fit=crop' },
+  { id: 'stained-glass', label: 'Stained Glass', url: 'https://images.unsplash.com/photo-1438032005730-c779502df39b?q=80&w=2071&auto=format&fit=crop' },
+  { id: 'garden', label: 'Garden of Peace', url: 'https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?q=80&w=2070&auto=format&fit=crop' },
+  { id: 'morning', label: 'Morning Grace', url: 'https://images.unsplash.com/photo-1470770841072-f978cf4d019e?q=80&w=2070&auto=format&fit=crop' },
   { id: 'midnight', label: 'Midnight Grace', url: 'linear-gradient(135deg, #09090b 0%, #18181b 100%)' },
 ];
 
