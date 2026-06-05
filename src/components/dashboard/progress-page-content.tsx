@@ -46,7 +46,7 @@ import { DailyDisciplineCard } from '@/components/dashboard/daily-discipline-car
 import { RelationshipTrackerCard } from '@/components/dashboard/relationship-tracker-card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
@@ -754,7 +754,7 @@ export function ProgressPageContent() {
   if (profileLoading || soulsLoading) return <div className="flex justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
 
   return (
-    <div className="space-y-8 pb-12">
+    <div className="space-y-8 pb-32">
         <header className="text-center space-y-4 px-4">
             {welcomeMessage ? (
                 <>
@@ -868,10 +868,15 @@ export function ProgressPageContent() {
                 </Card>
 
                 {userProfile?.location && (
-                  <CityImpactCard location={userProfile.location} userSouls={soulsWon || []} />
+                  <div className="mt-auto">
+                    <CityImpactCard location={userProfile.location} userSouls={soulsWon || []} />
+                  </div>
                 )}
             </div>
         </div>
+        
+        {/* Mobile Spacer to clear navbar */}
+        <div className="h-20 lg:hidden" />
     </div>
   );
 }
