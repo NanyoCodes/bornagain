@@ -70,6 +70,10 @@ const backgroundPresets = [
   { id: 'ancient-church', label: 'Ancient Church', url: 'https://images.unsplash.com/photo-1507692049790-de58290a4334?q=80&w=2070&auto=format&fit=crop' },
   { id: 'worship', label: 'Worship Atmosphere', url: 'https://images.unsplash.com/photo-1515162305285-0293e4767cc2?q=80&w=2070&auto=format&fit=crop' },
   { id: 'cross', label: 'Cross at Sunset', url: 'https://images.unsplash.com/photo-1438232992991-995b7058bbb3?q=80&w=2070&auto=format&fit=crop' },
+  { id: 'bible', label: 'The Living Word', url: 'https://images.unsplash.com/photo-1504052434569-70ad58ebb96d?q=80&w=2070&auto=format&fit=crop' },
+  { id: 'dawn', label: 'Dawn of Hope', url: 'https://images.unsplash.com/photo-1470252649358-96940c93f319?q=80&w=2070&auto=format&fit=crop' },
+  { id: 'harvest', label: 'Global Harvest', url: 'https://images.unsplash.com/photo-1521295121783-8a321d551ad2?q=80&w=2070&auto=format&fit=crop' },
+  { id: 'waters', label: 'Still Waters', url: 'https://images.unsplash.com/photo-1505118380757-91f5f45d8de4?q=80&w=2070&auto=format&fit=crop' },
   { id: 'midnight', label: 'Midnight Grace', url: 'linear-gradient(135deg, #09090b 0%, #18181b 100%)' },
 ];
 
@@ -343,17 +347,20 @@ function AccountSettingsCard() {
             <AlertDialogContent className="w-[90vw] max-w-lg rounded-2xl">
                 <AlertDialogHeader>
                     <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                    <AlertDialogDescription>
-                        This action cannot be undone. This will permanently delete your account and remove all your data from our servers.
-                    </AlertDialogDescription>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            This action cannot be undone. This will permanently delete your account and remove all your data from our servers.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleDelete} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-11 font-bold">
+                            {isDeleting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                            Confirm Deletion
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
                 </AlertDialogHeader>
-                <AlertDialogFooter>
-                    <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleDelete} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90">
-                        {isDeleting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                        Confirm Deletion
-                    </AlertDialogAction>
-                </AlertDialogFooter>
             </AlertDialogContent>
         </AlertDialog>
       </CardContent>
