@@ -12,26 +12,35 @@ type FirebaseServices = {
 };
 
 // Use a module-level variable to store the initialized services.
-// This is a more robust singleton pattern for Next.js hot-reloading.
 let firebaseServices: FirebaseServices | null = null;
 
 export function initializeFirebase(): FirebaseServices {
-  if (firebaseServices) {
+  // Return existing services if already initialized on the client.
+  if (typeof window !== 'undefined' && firebaseServices) {
     return firebaseServices;
   }
   
   const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
   const auth = getAuth(app);
   
-  // Use initializeFirestore to enable experimentalForceLongPolling.
-  // This is a critical fix for "Could not reach backend" errors in proxied environments.
-  const firestore = initializeFirestore(app, {
-    experimentalForceLongPolling: true,
-  });
+  let firestore: Firestore;
+  try {
+    // Attempt to initialize with long polling for proxy/station compatibility.
+    firestore = initializeFirestore(app, {
+      experimentalForceLongPolling: true,
+    });
+  } catch (e: any) {
+    // If Firestore is already initialized, get the existing instance.
+    firestore = getFirestore(app);
+  }
   
   const storage = getStorage(app);
   
-  firebaseServices = { app, auth, firestore, storage };
+  const services = { app, auth, firestore, storage };
 
-  return firebaseServices;
+  if (typeof window !== 'undefined') {
+    firebaseServices = services;
+  }
+
+  return services;
 }

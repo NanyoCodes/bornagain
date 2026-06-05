@@ -138,12 +138,11 @@ export default function RootLayout({
             __html: `
               window.addEventListener('error', (e) => {
                 const fatalKeywords = [
-                  'A listener indicated an asynchronous response by returning true',
                   'Could not establish connection',
-                  'Hydration failed',
                   'Could not reach Cloud Firestore backend'
                 ];
                 if (e.message && fatalKeywords.some(key => e.message.includes(key))) {
+                  // Ignore common browser extension noise
                   if (e.message.includes('A listener indicated')) return;
 
                   const reloadCountKey = 'app_reload_count';
