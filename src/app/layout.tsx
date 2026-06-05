@@ -89,6 +89,7 @@ export const viewport: Viewport = {
   themeColor: '#f97416',
   width: 'device-width',
   initialScale: 1,
+  viewportFit: 'cover',
 };
 
 export default function RootLayout({
@@ -143,7 +144,6 @@ export default function RootLayout({
                   'Could not reach Cloud Firestore backend'
                 ];
                 if (e.message && fatalKeywords.some(key => e.message.includes(key))) {
-                  // Filter out common browser extension errors that aren't fatal
                   if (e.message.includes('A listener indicated')) return;
 
                   const reloadCountKey = 'app_reload_count';

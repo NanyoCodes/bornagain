@@ -1,9 +1,8 @@
-// Comprehensive takeover detection for modules that require internal scrolling (Chat, Notes, Bible, Notifications)
 'use client';
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft,
@@ -40,7 +39,7 @@ import { useUser, useAuth, useFirestore, useCollection, useUserProfile } from "@
 import { signOut } from "firebase/auth";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { SearchProvider, useSearch } from "@/context/search-context";
-import { collection, doc, query, where } from "firebase/firestore";
+import { collection, doc, query, where, updateDoc, serverTimestamp } from "firebase/firestore";
 import type { Notification } from "@/lib/types";
 import { WelcomePopup } from "@/components/auth/welcome-popup";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -93,7 +92,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
   
   if (showMobileSearch) {
     return (
-      <header className="sticky top-0 z-30 flex min-h-[4rem] h-auto py-2 items-center border-b bg-background px-4 md:px-6 shrink-0">
+      <header className="sticky top-0 z-30 flex min-h-[4rem] h-auto py-2 items-center border-b bg-background px-4 md:px-6 shrink-0 pt-[env(safe-area-inset-top)]">
         <div className="flex w-full items-center gap-2">
           <Button variant="ghost" size="icon" onClick={() => setShowMobileSearch(false)} className="shrink-0">
             <ArrowLeft className="h-5 w-5" />
@@ -119,9 +118,9 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
   const showGuestButtons = isPublicRoute && !authLoading && !user;
 
   return (
-    <header className="sticky top-0 z-30 flex min-h-[4rem] h-auto py-2 items-center justify-between border-b bg-background px-4 md:px-6 shrink-0">
+    <header className="sticky top-0 z-30 flex min-h-[4rem] h-auto py-2 items-center justify-between border-b bg-background px-4 md:px-6 shrink-0 pt-[env(safe-area-inset-top)]">
       <div className="flex items-center gap-2 md:gap-6">
-        <Link href={user ? "/testimonies" : "/"} className="flex items-center gap-2 text-lg font-semibold shrink-0">
+        <Link href={user ? "/progress" : "/"} className="flex items-center gap-2 text-lg font-semibold shrink-0">
           {logo && (
             <Avatar className="h-10 w-10 sm:h-11 sm:w-11">
               <AvatarImage src={logo.imageUrl} alt={logo.description} />
@@ -278,7 +277,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
 function BottomNavBar() {
     const pathname = usePathname();
     return (
-      <nav className="fixed bottom-0 left-0 right-0 z-40 border-t bg-background/80 backdrop-blur-lg md:hidden pb-[env(safe-area-inset-bottom)] shadow-[0_-5px_15px_-10px_rgba(0,0,0,0.1)]">
+      <nav className="fixed bottom-0 left-0 right-0 z-40 border-t bg-background/80 backdrop-blur-lg md:hidden pb-[calc(env(safe-area-inset-bottom)+0.5rem)] shadow-[0_-5px_15px_-10px_rgba(0,0,0,0.1)]">
         <div className="flex min-h-[4rem] h-auto items-stretch justify-around px-2 py-1">
           {navItems.map((item) => {
             const isActive = pathname.startsWith(item.href);
@@ -333,11 +332,20 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const [mounted, setMounted] = useState(false);
   const [showWelcomePopup, setShowWelcomePopup] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState("");
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => { 
     setMounted(true); 
     setLoadingMessage(inspirationalMessages[Math.floor(Math.random() * inspirationalMessages.length)]);
   }, []);
+
+  // Global scroll to top on navigation
+  useEffect(() => {
+    if (scrollContainerRef.current) {
+        scrollContainerRef.current.scrollTop = 0;
+    }
+    window.scrollTo(0, 0);
+  }, [pathname]);
 
   // Update background image based on user profile
   useEffect(() => {
@@ -367,7 +375,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   ];
   const isPublicRoute = publicRoutes.some(route => pathname === route || pathname.startsWith(route + '/')) || pathname === '/';
 
-  // Comprehensive takeover detection for modules that require internal scrolling (Chat, Notes, Bible, Notifications)
   const isTakeoverPage = useMemo(() => {
     return (
       pathname.startsWith('/chats') ||
@@ -404,8 +411,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         const isNewUserSession = sessionStorage.getItem('isNewUserSession') === 'true';
         const welcomePopupShown = sessionStorage.getItem('welcomePopupShown');
         if (isNewUserSession && userProfile.firstName && !welcomePopupShown) {
-            setShowWelcomePopup(true);
-            sessionStorage.setItem('welcomePopupShown', 'true');
+            const timer = setTimeout(() => {
+                setShowWelcomePopup(true);
+                sessionStorage.setItem('welcomePopupShown', 'true');
+            }, 500);
+            return () => clearTimeout(timer);
         }
     }
   }, [profileLoading, userProfile]);
@@ -430,8 +440,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   }
 
   const isProfileIncomplete = user && userProfile && (!userProfile.firstName?.trim() || !userProfile.lastName?.trim() || !userProfile.photoURL?.trim());
-
-  // Takeover pages hide the global bottom nav to manage their own viewports
   const showBottomNav = !isTakeoverPage;
 
   return (
@@ -444,14 +452,22 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             isPublicRoute={isPublicRoute}
           />
         )}
-        <main className={cn(
-          "flex-1 w-full mx-auto relative flex flex-col min-h-0",
-          isTakeoverPage ? "h-full overflow-hidden" : "p-4 md:p-8 pb-32 md:pb-8 max-w-7xl"
-        )}>
-            <div className={cn("flex-grow w-full flex flex-col min-h-0", !isTakeoverPage && "p-0 sm:p-0")}>
+        <div className="flex-1 relative min-h-0">
+          <main 
+            ref={scrollContainerRef}
+            className={cn(
+                "absolute inset-0", 
+                !isTakeoverPage ? "overflow-y-auto" : "overflow-hidden"
+            )}
+          >
+            <div className={cn(
+              "mx-auto h-full", 
+              !isTakeoverPage ? "max-w-7xl p-4 md:p-8 pb-32 md:pb-8" : "w-full"
+            )}>
                 <PageTransition>{children}</PageTransition>
             </div>
-        </main>
+          </main>
+        </div>
         {user && showBottomNav && <BottomNavBar />}
         
         {user && !isProfileIncomplete && <WelcomePopup isOpen={showWelcomePopup} onClose={() => setShowWelcomePopup(false)} userName={userProfile?.firstName} />}
@@ -459,7 +475,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         {user && mounted && isMobile ? (
           <Sheet open={!!isProfileIncomplete}>
             <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-2xl">
-              <div className="p-6 border-b flex-shrink-0 bg-muted/10">
+              <div className="p-6 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)]">
                 <SheetHeader className="text-left">
                   <SheetTitle className="text-xl font-bold">Complete Your Profile</SheetTitle>
                   <SheetDescription className="text-xs">Join the global movement by introducing yourself.</SheetDescription>
