@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { type UseFormReturn } from 'react-hook-form';
-import { Country, State, City } from 'country-state-city';
+import { Country, State } from 'country-state-city';
 import {
   Select,
   SelectContent,
@@ -10,7 +10,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { FormField, FormItem, FormLabel, FormMessage, FormControl } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
 
 interface LocationWonInputProps {
   form: UseFormReturn<any>;
@@ -19,7 +20,6 @@ interface LocationWonInputProps {
 export function LocationWonInput({ form }: LocationWonInputProps) {
   const [countries] = React.useState(Country.getAllCountries());
   
-  // Need to find codes to fetch sub-data
   const selectedCountryName = form.watch('locationWonCountry');
   const selectedStateName = form.watch('locationWonState');
 
@@ -30,16 +30,6 @@ export function LocationWonInput({ form }: LocationWonInputProps) {
   const states = React.useMemo(() => 
     selectedCountry ? State.getStatesOfCountry(selectedCountry.isoCode) : []
   , [selectedCountry]);
-
-  const selectedState = React.useMemo(() => 
-    states.find(s => s.name === selectedStateName)
-  , [states, selectedStateName]);
-
-  const cities = React.useMemo(() => 
-    (selectedCountry && selectedState) 
-      ? City.getCitiesOfState(selectedCountry.isoCode, selectedState.isoCode) 
-      : []
-  , [selectedCountry, selectedState]);
 
   return (
     <div className="grid grid-cols-1 gap-4">
@@ -110,22 +100,9 @@ export function LocationWonInput({ form }: LocationWonInputProps) {
           render={({ field }) => (
             <FormItem>
               <FormLabel className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">City</FormLabel>
-              <Select
-                onValueChange={field.onChange}
-                value={field.value}
-                disabled={!selectedStateName || cities.length === 0}
-              >
-                <SelectTrigger className="text-sm h-11">
-                  <SelectValue placeholder={cities.length === 0 ? "N/A" : "Select City"} />
-                </SelectTrigger>
-                <SelectContent className="max-h-[300px] overflow-y-auto">
-                  {cities.map((c) => (
-                    <SelectItem key={c.name} value={c.name}>
-                      {c.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <FormControl>
+                <Input placeholder="Enter City" {...field} value={field.value ?? ''} className="text-sm h-11" />
+              </FormControl>
               <FormMessage />
             </FormItem>
           )}

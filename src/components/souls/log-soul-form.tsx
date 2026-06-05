@@ -1,4 +1,3 @@
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -168,15 +167,16 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign, defaultRelationship
             batch.update(campaignRef, { soulsLogged: increment(1) });
         }
 
-        // Non-blocking mutation to allow immediate dashboard update
         batch.commit().catch(async (serverError: any) => {
             console.error("Log Soul Server Error:", serverError);
-            const permissionError = new FirestorePermissionError({
-                path: `BATCH_WRITE:LOG_SOUL`,
-                operation: 'write',
-                requestResourceData: { soulData, campaignId },
-            }, user);
-            errorEmitter.emit('permission-error', permissionError);
+            if (serverError.code === 'permission-denied') {
+                const permissionError = new FirestorePermissionError({
+                    path: `BATCH_WRITE:LOG_SOUL`,
+                    operation: 'write',
+                    requestResourceData: { soulData, campaignId },
+                }, user);
+                errorEmitter.emit('permission-error', permissionError);
+            }
         });
 
         toast({

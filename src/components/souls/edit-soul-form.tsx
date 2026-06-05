@@ -1,4 +1,3 @@
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -166,11 +165,9 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
     try {
         const batch = writeBatch(firestore);
         
-        // Update both user and global records
         batch.update(soulRef, soulUpdateData);
         batch.update(globalSoulRef, soulUpdateData);
 
-        // Non-blocking mutation for immediate feel
         batch.commit().catch(async (serverError: any) => {
             console.error("Failed to update soul record:", serverError);
             if (serverError.code === 'permission-denied') {
@@ -215,7 +212,9 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
                 <FormControl>
                     <Input placeholder="John" {...field} value={field.value ?? ""} className="text-base"/>
                 </FormControl>
-                <FormMessage />
+                <FormItem>
+                  <FormMessage />
+                </FormItem>
                 </FormItem>
             )}
             />
@@ -228,7 +227,9 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
                 <FormControl>
                     <Input placeholder="Doe" {...field} value={field.value ?? ""} className="text-base"/>
                 </FormControl>
-                <FormMessage />
+                <FormItem>
+                  <FormMessage />
+                </FormItem>
                 </FormItem>
             )}
             />

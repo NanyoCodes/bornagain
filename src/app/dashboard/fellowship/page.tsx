@@ -50,7 +50,7 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Country, State, City } from 'country-state-city';
+import { Country, State } from 'country-state-city';
 
 const formSchema = z.object({
   name: z.string().min(3, "Name must be at least 3 characters.").max(100),
@@ -99,15 +99,11 @@ function FellowshipForm({
     });
 
     const watchedCountryName = form.watch('country');
-    const watchedStateName = form.watch('state');
 
     const countriesList = useMemo(() => Country.getAllCountries(), []);
     const selectedCountry = useMemo(() => countriesList.find(c => c.name === watchedCountryName), [countriesList, watchedCountryName]);
 
     const statesList = useMemo(() => selectedCountry ? State.getStatesOfCountry(selectedCountry.isoCode) : [], [selectedCountry]);
-    const selectedState = useMemo(() => statesList.find(s => s.name === watchedStateName), [statesList, watchedStateName]);
-
-    const citiesList = useMemo(() => (selectedCountry && selectedState) ? City.getCitiesOfState(selectedCountry.isoCode, selectedState.isoCode) : [], [selectedCountry, selectedState]);
 
     useEffect(() => {
         form.setValue('groupType', defaultType);
@@ -255,22 +251,9 @@ function FellowshipForm({
                             <FormField control={form.control} name="city" render={({ field }) => (
                                 <FormItem>
                                     <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">City</FormLabel>
-                                    <Select 
-                                        onValueChange={field.onChange} 
-                                        value={field.value} 
-                                        disabled={!watchedStateName || citiesList.length === 0}
-                                    >
-                                        <FormControl>
-                                            <SelectTrigger className="text-base h-11">
-                                                <SelectValue placeholder={citiesList.length === 0 ? "N/A" : "Select City"} />
-                                            </SelectTrigger>
-                                        </FormControl>
-                                        <SelectContent className="max-h-[300px] overflow-y-auto">
-                                            {citiesList.map(city => (
-                                                <SelectItem key={city.name} value={city.name}>{city.name}</SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
+                                    <FormControl>
+                                        <Input placeholder="Enter City" {...field} value={field.value ?? ''} className="text-base h-11" />
+                                    </FormControl>
                                     <FormMessage />
                                 </FormItem>
                             )} />
@@ -303,7 +286,6 @@ function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting, onDelete
   const firestore = useFirestore();
   const { user } = useUser();
   const router = useRouter();
-  const { toast } = useToast();
 
   const membersQuery = useMemo(() => {
     if (!firestore || !fellowship.id) return null;
@@ -327,15 +309,11 @@ function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting, onDelete
   });
 
   const watchedCountryName = form.watch('country');
-  const watchedStateName = form.watch('state');
 
   const countriesList = useMemo(() => Country.getAllCountries(), []);
   const selectedCountry = useMemo(() => countriesList.find(c => c.name === watchedCountryName), [countriesList, watchedCountryName]);
 
   const statesList = useMemo(() => selectedCountry ? State.getStatesOfCountry(selectedCountry.isoCode) : [], [selectedCountry]);
-  const selectedState = useMemo(() => statesList.find(s => s.name === watchedStateName), [statesList, watchedStateName]);
-
-  const citiesList = useMemo(() => (selectedCountry && selectedState) ? City.getCitiesOfState(selectedCountry.isoCode, selectedState.isoCode) : [], [selectedCountry, selectedState]);
 
   const handleCreateMeet = () => {
     window.open('https://meet.google.com/new', '_blank');
@@ -469,22 +447,9 @@ function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting, onDelete
                         <FormField control={form.control} name="city" render={({ field }) => (
                             <FormItem>
                                 <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">City</FormLabel>
-                                <Select 
-                                    onValueChange={field.onChange} 
-                                    value={field.value} 
-                                    disabled={!watchedStateName || citiesList.length === 0}
-                                >
-                                    <FormControl>
-                                        <SelectTrigger className="text-base h-11">
-                                            <SelectValue placeholder={citiesList.length === 0 ? "N/A" : "Select City"} />
-                                        </SelectTrigger>
-                                    </FormControl>
-                                    <SelectContent className="max-h-[300px] overflow-y-auto">
-                                        {citiesList.map(city => (
-                                            <SelectItem key={city.name} value={city.name}>{city.name}</SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
+                                <FormControl>
+                                    <Input placeholder="Enter City" {...field} value={field.value ?? ''} className="text-base h-11" />
+                                </FormControl>
                                 <FormMessage />
                             </FormItem>
                         )} />

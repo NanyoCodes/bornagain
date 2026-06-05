@@ -165,16 +165,6 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
     [selectedCountry]
   );
 
-  const selectedState = useMemo(() => 
-    statesList.find(s => s.name === watchedStateName), 
-    [statesList, watchedStateName]
-  );
-
-  const citiesList = useMemo(() => 
-    (selectedCountry && selectedState) ? City.getCitiesOfState(selectedCountry.isoCode, selectedState.isoCode) : [], 
-    [selectedCountry, selectedState]
-  );
-
   const markerPosition = useMemo(() => {
     if (watchedLat != null && watchedLng != null) {
       return { lat: watchedLat, lng: watchedLng };
@@ -244,16 +234,9 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
       await updateDoc(doc(firestore, 'users', user.uid), firestoreUpdatePayload);
       await authUpdatePromise;
 
-      /**
-       * GLOBAL DENORMALIZED DATA SYNC
-       * 
-       * Ensures that updating the profile (photo, location) propagates to all related 
-       * collections where this data is stored as a performance optimization.
-       */
       const batch = writeBatch(firestore);
       const syncUrl = values.photoURL || ""; 
 
-      // 1. Sync Testimonies
       const testimoniesSnap = await getDocs(query(collection(firestore, 'testimonies'), where('authorId', '==', user.uid)));
       testimoniesSnap.forEach(tDoc => {
           batch.update(tDoc.ref, { 
@@ -267,19 +250,16 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
           });
       });
 
-      // 2. Sync Prayer Requests
       const prayersSnap = await getDocs(query(collection(firestore, 'prayerRequests'), where('authorId', '==', user.uid)));
       prayersSnap.forEach(pDoc => {
           batch.update(pDoc.ref, { authorAvatarUrl: syncUrl });
       });
 
-      // 3. Sync Fellowships Organized
       const fellowshipsSnap = await getDocs(query(collection(firestore, 'fellowships'), where('organizerId', '==', user.uid)));
       fellowshipsSnap.forEach(fDoc => {
           batch.update(fDoc.ref, { organizerPhotoURL: syncUrl });
       });
 
-      // 4. Sync Chats
       const chatsSnap = await getDocs(query(collection(firestore, 'chats'), where('participantIds', 'array-contains', user.uid)));
       chatsSnap.forEach(cDoc => {
           batch.update(cDoc.ref, {
@@ -571,24 +551,9 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                     <FormField control={form.control} name="city" render={({ field }) => (
                         <FormItem>
                           <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">City</FormLabel>
-                          <Select 
-                            onValueChange={field.onChange} 
-                            value={field.value}
-                            disabled={!watchedStateName || citiesList.length === 0}
-                          >
-                            <FormControl>
-                              <SelectTrigger className="text-base h-11">
-                                <SelectValue placeholder={citiesList.length === 0 ? "N/A" : "Select City"} />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent className="max-h-[300px] overflow-y-auto">
-                              {citiesList.map((c) => (
-                                <SelectItem key={c.name} value={c.name}>
-                                  {c.name}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
+                          <FormControl>
+                            <Input placeholder="Enter City" {...field} value={field.value ?? ''} className="text-base h-11" />
+                          </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
