@@ -90,6 +90,7 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted, userP
   const [searchTerm, setSearchTerm] = useState('');
   const [mobileTab, setMobileTab] = useState('list');
   const [isDirty, setIsDirty] = useState(false);
+  const [noteToDelete, setNoteToDelete] = useState<Note | null>(null);
 
   const notesQuery = useMemo(() => {
     if (!user) return null;
@@ -229,16 +230,19 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted, userP
   };
   
   const handleDeleteNote = async () => {
-    if (!user || !firestore || !selectedNote) return;
+    if (!user || !firestore || !noteToDelete) return;
 
     setIsDeleting(true);
-    const noteId = selectedNote.id;
+    const noteId = noteToDelete.id;
+    const noteTitle = noteToDelete.title;
     const noteRef = doc(firestore, 'users', user.uid, 'notes', noteId);
 
     try {
         // Atomic UI reset before background deletion
-        const noteTitle = selectedNote.title;
-        handleBackToList();
+        if (selectedNote?.id === noteId) {
+            handleBackToList();
+        }
+        setNoteToDelete(null);
         
         await deleteDoc(noteRef);
         toast({ title: 'Note Deleted', description: `"${noteTitle}" has been removed.` });
@@ -377,25 +381,15 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted, userP
         <div className="flex justify-between items-center py-6 shrink-0 border-t mt-auto">
             <div>
             {selectedNote && (
-                <AlertDialog>
-                <AlertDialogTrigger asChild>
-                    <Button variant="ghost" size="icon" disabled={isDeleting} className="text-destructive hover:bg-destructive/10 h-11 w-11 rounded-full">
-                    {isDeleting ? <Loader2 className="h-5 w-5 animate-spin" /> : <Trash2 className="h-5 w-5" />}
-                    </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent className="rounded-3xl p-8">
-                    <AlertDialogHeader>
-                    <AlertDialogTitle className="text-xl font-bold font-headline">Delete Journal Entry?</AlertDialogTitle>
-                    <AlertDialogDescription className="text-sm">
-                        This will permanently remove "{selectedNote?.title || 'this note'}" from your Kingdom record.
-                    </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter className="mt-6 gap-3">
-                    <AlertDialogCancel className="rounded-2xl h-11">Keep it</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleDeleteNote} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-11 font-bold">Delete permanently</AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-                </AlertDialog>
+                <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    disabled={isDeleting} 
+                    className="text-destructive hover:bg-destructive/10 h-11 w-11 rounded-full"
+                    onClick={() => setNoteToDelete(selectedNote)}
+                >
+                    <Trash2 className="h-5 w-5" />
+                </Button>
             )}
             </div>
             <Button onClick={handleSaveNote} disabled={isSaving || !content.trim() || !isDirty} className="px-10 h-12 rounded-2xl font-black shadow-lg shadow-primary/20">
@@ -448,52 +442,70 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted, userP
     </div>
   );
 
-  if (isMobile) {
-    return (
-      <Sheet open={isOpen} onOpenChange={onOpenChange}>
-        <SheetContent side="bottom" className="p-0 flex flex-col h-[95dvh] rounded-t-[2.5rem]">
-            <div className="p-6 border-b flex-shrink-0 bg-muted/10">
-              <SheetHeader className="text-left">
-                  <SheetTitle className="text-2xl font-black font-headline">Journal</SheetTitle>
-                  <SheetDescription className="text-sm font-medium mt-1">Capture your reflections and revelations.</SheetDescription>
-              </SheetHeader>
-            </div>
-            <ScrollArea className="flex-grow">
-              <div className="p-6">
-                {innerContent}
-              </div>
-            </ScrollArea>
-            <div className="p-6 border-t flex-shrink-0 bg-background/80 backdrop-blur-sm flex flex-col gap-3">
-                {mobileTab === 'editor' && editorVisible && (
-                  <Button 
-                    onClick={handleSaveNote} 
-                    disabled={isSaving || !content.trim() || !isDirty} 
-                    className="w-full h-14 text-lg font-black rounded-2xl shadow-xl shadow-primary/20 tracking-widest uppercase"
-                  >
-                    {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    {selectedNote ? 'SAVE CHANGES' : 'SAVE REVELATION'}
-                  </Button>
-                )}
-                <Button variant="outline" onClick={() => onOpenChange(false)} className="w-full h-12 rounded-2xl font-bold">
-                  Close Journal
-                </Button>
-            </div>
-        </SheetContent>
-      </Sheet>
-    );
-  }
-
   return (
-    <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-5xl h-[85vh] flex flex-col p-8 rounded-3xl overflow-hidden">
-        <DialogHeader className="shrink-0 mb-2">
-          <DialogTitle className="text-3xl font-black font-headline">Journal</DialogTitle>
-          <DialogDescription className="text-base font-medium">A place for your thoughts, reflections, and revelations.</DialogDescription>
-        </DialogHeader>
-        <div className="flex-grow min-h-0 overflow-hidden">
-            {innerContent}
-        </div>
-      </DialogContent>
-    </Dialog>
+    <>
+      {isMobile ? (
+        <Sheet open={isOpen} onOpenChange={onOpenChange}>
+          <SheetContent side="bottom" className="p-0 flex flex-col h-[95dvh] rounded-t-[2.5rem]">
+              <div className="p-6 border-b flex-shrink-0 bg-muted/10">
+                <SheetHeader className="text-left">
+                    <SheetTitle className="text-2xl font-black font-headline">Journal</SheetTitle>
+                    <SheetDescription className="text-sm font-medium mt-1">Capture your reflections and revelations.</SheetDescription>
+                </SheetHeader>
+              </div>
+              <ScrollArea className="flex-grow">
+                <div className="p-6">
+                  {innerContent}
+                </div>
+              </ScrollArea>
+              <div className="p-6 border-t flex-shrink-0 bg-background/80 backdrop-blur-sm flex flex-col gap-3">
+                  {mobileTab === 'editor' && editorVisible && (
+                    <Button 
+                      onClick={handleSaveNote} 
+                      disabled={isSaving || !content.trim() || !isDirty} 
+                      className="w-full h-14 text-lg font-black rounded-2xl shadow-xl shadow-primary/20 tracking-widest uppercase"
+                    >
+                      {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                      {selectedNote ? 'SAVE CHANGES' : 'SAVE REVELATION'}
+                    </Button>
+                  )}
+                  <Button variant="outline" onClick={() => onOpenChange(false)} className="w-full h-12 rounded-2xl font-bold">
+                    Close Journal
+                  </Button>
+              </div>
+          </SheetContent>
+        </Sheet>
+      ) : (
+        <Dialog open={isOpen} onOpenChange={onOpenChange}>
+          <DialogContent className="sm:max-w-5xl h-[85vh] flex flex-col p-8 rounded-3xl overflow-hidden">
+            <DialogHeader className="shrink-0 mb-2">
+              <DialogTitle className="text-3xl font-black font-headline">Journal</DialogTitle>
+              <DialogDescription className="text-base font-medium">A place for your thoughts, reflections, and revelations.</DialogDescription>
+            </DialogHeader>
+            <div className="flex-grow min-h-0 overflow-hidden">
+                {innerContent}
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
+
+      <AlertDialog open={!!noteToDelete} onOpenChange={open => !open && setNoteToDelete(null)}>
+          <AlertDialogContent className="rounded-3xl p-8">
+              <AlertDialogHeader>
+              <AlertDialogTitle className="text-xl font-bold font-headline">Delete Journal Entry?</AlertDialogTitle>
+              <AlertDialogDescription className="text-sm">
+                  This will permanently remove "{noteToDelete?.title || 'this note'}" from your spiritual record.
+              </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter className="mt-6 gap-3">
+              <AlertDialogCancel className="rounded-2xl h-11" disabled={isDeleting}>Cancel</AlertDialogCancel>
+              <AlertDialogAction onClick={handleDeleteNote} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-11 font-bold" disabled={isDeleting}>
+                  {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  Confirm Delete
+              </AlertDialogAction>
+              </AlertDialogFooter>
+          </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }

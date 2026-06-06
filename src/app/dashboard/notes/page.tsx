@@ -32,7 +32,7 @@ import {
 import type { Note, NoteCategory } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
-import { cn } from '@/lib/utils';
+import { cn, safeToDate } from '@/lib/utils';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -67,6 +67,7 @@ export default function NotesPage() {
   const [activeTab, setActiveTab] = useState('editor');
   
   const [isDiscardAlertOpen, setIsDiscardAlertOpen] = useState(false);
+  const [noteToDelete, setNoteToDelete] = useState<Note | null>(null);
   const [navigationTarget, setNavigationTarget] = useState<'list' | 'editor' | null>(null);
   const router = useRouter();
 
@@ -274,17 +275,20 @@ export default function NotesPage() {
   };
   
   const handleDeleteNote = async () => {
-    if (!user || !firestore || !selectedNote) return;
+    if (!user || !firestore || !noteToDelete) return;
 
     setIsDeleting(true);
-    const noteId = selectedNote.id;
+    const noteId = noteToDelete.id;
+    const noteTitle = noteToDelete.title;
     const noteRef = doc(firestore, 'users', user.uid, 'notes', noteId);
 
     try {
-        // Immediate UI feedback and reset before awaiting server response
-        // This prevents the page from "hanging" while waiting for Firestore
-        const noteTitle = selectedNote.title;
-        handleBackToList(); 
+        // Atomic UI reset before background deletion
+        // This ensures the editor unmounts and dialogs close properly
+        if (selectedNote?.id === noteId) {
+            handleBackToList();
+        }
+        setNoteToDelete(null);
         
         await deleteDoc(noteRef);
         toast({ title: 'Note Deleted', description: `"${noteTitle}" has been removed.` });
@@ -430,25 +434,15 @@ export default function NotesPage() {
         <div className="flex gap-2">
             {selectedNote && (
                 <>
-                <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                        <Button variant="ghost" size="icon" disabled={isDeleting} className="text-destructive hover:bg-destructive/10 h-11 w-11 rounded-full">
-                            {isDeleting ? <Loader2 className="h-5 w-5 animate-spin" /> : <Trash2 className="h-5 w-5" />}
-                        </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent className="rounded-3xl p-8">
-                        <AlertDialogHeader>
-                        <AlertDialogTitle className="text-xl font-bold font-headline">Delete Journal Entry?</AlertDialogTitle>
-                        <AlertDialogDescription className="text-sm">
-                            This will permanently remove "{selectedNote?.title || 'this note'}" from your spiritual record.
-                        </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter className="mt-6 gap-3">
-                        <AlertDialogCancel className="rounded-2xl h-11">Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleDeleteNote} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-11 font-bold">Confirm Delete</AlertDialogAction>
-                        </AlertDialogFooter>
-                    </AlertDialogContent>
-                </AlertDialog>
+                <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    disabled={isDeleting} 
+                    className="text-destructive hover:bg-destructive/10 h-11 w-11 rounded-full"
+                    onClick={() => setNoteToDelete(selectedNote)}
+                >
+                    <Trash2 className="h-5 w-5" />
+                </Button>
                 <Button variant="outline" size="icon" onClick={handleExportPdf} className="h-11 w-11 rounded-full" title="Export as PDF">
                     <Download className="h-4 w-4" />
                 </Button>
@@ -524,7 +518,8 @@ export default function NotesPage() {
                 </Tabs>
             )}
        </div>
-        <AlertDialog open={isDiscardAlertOpen} onOpenChange={isDiscardAlertOpen => setIsDiscardAlertOpen(isDiscardAlertOpen)}>
+
+        <AlertDialog open={isDiscardAlertOpen} onOpenChange={setIsDiscardAlertOpen}>
           <AlertDialogContent className="rounded-3xl p-8">
             <AlertDialogHeader>
               <AlertDialogTitle className="text-xl font-bold">Unsaved Revelations</AlertDialogTitle>
@@ -539,6 +534,24 @@ export default function NotesPage() {
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
+        </AlertDialog>
+
+        <AlertDialog open={!!noteToDelete} onOpenChange={open => !open && setNoteToDelete(null)}>
+            <AlertDialogContent className="rounded-3xl p-8">
+                <AlertDialogHeader>
+                <AlertDialogTitle className="text-xl font-bold font-headline">Delete Journal Entry?</AlertDialogTitle>
+                <AlertDialogDescription className="text-sm">
+                    This will permanently remove "{noteToDelete?.title || 'this note'}" from your spiritual record.
+                </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter className="mt-6 gap-3">
+                <AlertDialogCancel className="rounded-2xl h-11" disabled={isDeleting}>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={handleDeleteNote} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-11 font-bold" disabled={isDeleting}>
+                    {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    Confirm Delete
+                </AlertDialogAction>
+                </AlertDialogFooter>
+            </AlertDialogContent>
         </AlertDialog>
     </div>
   )

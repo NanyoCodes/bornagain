@@ -342,6 +342,22 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     setMounted(true); 
     setLoadingMessage(inspirationalMessages[Math.floor(Math.random() * inspirationalMessages.length)]);
 
+    // Interactivity Safety Valve
+    // Radix UI sometimes fails to remove scroll locks or pointer-events if a modal unmounts unexpectedly.
+    const interval = setInterval(() => {
+        if (typeof document !== 'undefined') {
+            const hasModals = !!document.querySelector('[role="dialog"], [role="menu"], [data-radix-portal]');
+            if (!hasModals) {
+                if (document.body.style.pointerEvents === 'none') {
+                    document.body.style.pointerEvents = 'auto';
+                }
+                if (document.body.style.overflow === 'hidden' && !pathname.includes('/chats')) {
+                    document.body.style.overflow = 'auto';
+                }
+            }
+        }
+    }, 1000);
+
     // Splash logic: Show if not shown in last 12 hours OR if forced by sign-in
     const SPLASH_COOLDOWN = 12 * 60 * 60 * 1000;
     const lastShown = localStorage.getItem('testify_splash_last_shown');
@@ -358,11 +374,15 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             localStorage.setItem('testify_splash_last_shown', now.toString());
             setContentVisible(true);
         }, 10000); // 10 seconds only
-        return () => clearTimeout(timer);
+        return () => {
+            clearTimeout(timer);
+            clearInterval(interval);
+        };
     } else {
         setContentVisible(true);
     }
-  }, []);
+    return () => clearInterval(interval);
+  }, [pathname]);
 
   const handleDismissSplash = () => {
     setShowSplash(false);
