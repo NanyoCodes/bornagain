@@ -127,6 +127,10 @@ export default function NotesPage() {
   const handleBackToList = () => {
     setSelectedNote(null);
     setIsCreatingNew(false);
+    setTitle('');
+    setContent('');
+    setCategory('Personal');
+    setIsDirty(false);
     if (isMobile) {
       setActiveTab('list');
     }
@@ -273,15 +277,22 @@ export default function NotesPage() {
     if (!user || !firestore || !selectedNote) return;
 
     setIsDeleting(true);
-    const noteRef = doc(firestore, 'users', user.uid, 'notes', selectedNote.id);
+    const noteId = selectedNote.id;
+    const noteRef = doc(firestore, 'users', user.uid, 'notes', noteId);
 
     try {
         await deleteDoc(noteRef);
         toast({ title: 'Note Deleted' });
+        
+        // Safety: clear the editor state before closing to prevent null errors during unmount/render
         handleBackToList();
-    } catch(e) {
-        const permissionError = new FirestorePermissionError({ path: noteRef.path, operation: 'delete' }, user);
-        errorEmitter.emit('permission-error', permissionError);
+    } catch(e: any) {
+        if (e.code === 'permission-denied') {
+            const permissionError = new FirestorePermissionError({ path: noteRef.path, operation: 'delete' }, user);
+            errorEmitter.emit('permission-error', permissionError);
+        } else {
+            toast({ variant: 'destructive', title: 'Error', description: 'Failed to delete note. Please try again.' });
+        }
     } finally {
         setIsDeleting(false);
     }
@@ -427,7 +438,7 @@ export default function NotesPage() {
                         <AlertDialogHeader>
                         <AlertDialogTitle className="text-xl font-bold font-headline">Delete Journal Entry?</AlertDialogTitle>
                         <AlertDialogDescription className="text-sm">
-                            This will permanently remove "{selectedNote.title}" from your spiritual record.
+                            This will permanently remove "{selectedNote?.title || title}" from your spiritual record.
                         </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter className="mt-6 gap-3">

@@ -232,15 +232,22 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted, userP
     if (!user || !firestore || !selectedNote) return;
 
     setIsDeleting(true);
-    const noteRef = doc(firestore, 'users', user.uid, 'notes', selectedNote.id);
+    const noteId = selectedNote.id;
+    const noteRef = doc(firestore, 'users', user.uid, 'notes', noteId);
 
     try {
         await deleteDoc(noteRef);
         toast({ title: 'Note Deleted' });
+        
+        // Safety: clear state to prevent null reference errors during re-render
         handleBackToList();
-    } catch(e) {
-        const permissionError = new FirestorePermissionError({ path: noteRef.path, operation: 'delete' }, user);
-        errorEmitter.emit('permission-error', permissionError);
+    } catch(e: any) {
+        if (e.code === 'permission-denied') {
+            const permissionError = new FirestorePermissionError({ path: noteRef.path, operation: 'delete' }, user);
+            errorEmitter.emit('permission-error', permissionError);
+        } else {
+            toast({ variant: 'destructive', title: 'Error', description: 'Failed to delete note.' });
+        }
     } finally {
         setIsDeleting(false);
     }
@@ -379,7 +386,7 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted, userP
                     <AlertDialogHeader>
                     <AlertDialogTitle className="text-xl font-bold font-headline">Delete Journal Entry?</AlertDialogTitle>
                     <AlertDialogDescription className="text-sm">
-                        This action is permanent and your reflection will be removed from your Kingdom record.
+                        This will permanently remove "{selectedNote?.title || title}" from your Kingdom record.
                     </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter className="mt-6 gap-3">
