@@ -16,7 +16,7 @@ import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { cn } from '@/lib/utils';
+import { cn, safeToDate } from '@/lib/utils';
 import { NotesDialog } from './notes-dialog';
 import { Separator } from '@/components/ui/separator';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -197,7 +197,19 @@ export function DailyDisciplineCard() {
     setTogglingId(disciplineId);
     try {
         if (disciplineId === 'read_bible') {
-            router.push('/dashboard/bible');
+            let targetUrl = '/dashboard/bible';
+            if (userProfile?.readingHistory?.length) {
+              const sortedHistory = [...userProfile.readingHistory].sort((a, b) => {
+                const timeA = safeToDate(a.readAt)?.getTime() ?? 0;
+                const timeB = safeToDate(b.readAt)?.getTime() ?? 0;
+                return timeB - timeA;
+              });
+              const lastRead = sortedHistory[0];
+              if (lastRead) {
+                targetUrl = `/dashboard/bible?book=${encodeURIComponent(lastRead.book)}&chapter=${lastRead.chapter}`;
+              }
+            }
+            router.push(targetUrl);
             return; 
         }
         if (disciplineId === 'pray') {
@@ -245,8 +257,8 @@ export function DailyDisciplineCard() {
     return (
       <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b">
         <CardHeader>
-          <CardTitle className="text-lg">Daily Discipline</CardTitle>
-          <CardDescription>Your spiritual checklist for today.</CardDescription>
+          <CardTitle className="text-xl font-semibold tracking-tight">Daily Discipline</CardTitle>
+          <CardDescription className="text-sm font-medium">Your spiritual checklist for today.</CardDescription>
         </CardHeader>
         <CardContent className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[...Array(4)].map((_, i) => (
