@@ -281,11 +281,13 @@ export default function NotesPage() {
     const noteRef = doc(firestore, 'users', user.uid, 'notes', noteId);
 
     try {
-        await deleteDoc(noteRef);
-        toast({ title: 'Note Deleted' });
+        // Immediate UI feedback and reset before awaiting server response
+        // This prevents the page from "hanging" while waiting for Firestore
+        const noteTitle = selectedNote.title;
+        handleBackToList(); 
         
-        // Safety: clear the editor state before closing to prevent null errors during unmount/render
-        handleBackToList();
+        await deleteDoc(noteRef);
+        toast({ title: 'Note Deleted', description: `"${noteTitle}" has been removed.` });
     } catch(e: any) {
         if (e.code === 'permission-denied') {
             const permissionError = new FirestorePermissionError({ path: noteRef.path, operation: 'delete' }, user);
@@ -380,14 +382,14 @@ export default function NotesPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 shrink-0">
             <div className="space-y-1.5">
                 <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Note Title</Label>
-                <Input
+                <input
                     placeholder="Untitled Revelation"
                     value={title}
                     onChange={(e) => {
                         setTitle(e.target.value);
                         setIsDirty(true);
                     }}
-                    className="text-lg font-bold h-12 rounded-2xl bg-muted/20"
+                    className="flex h-12 w-full rounded-2xl border-none bg-muted/20 px-4 text-lg font-bold ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 disabled:cursor-not-allowed disabled:opacity-50"
                 />
             </div>
             <div className="space-y-1.5">
@@ -438,7 +440,7 @@ export default function NotesPage() {
                         <AlertDialogHeader>
                         <AlertDialogTitle className="text-xl font-bold font-headline">Delete Journal Entry?</AlertDialogTitle>
                         <AlertDialogDescription className="text-sm">
-                            This will permanently remove "{selectedNote?.title || title}" from your spiritual record.
+                            This will permanently remove "{selectedNote?.title || 'this note'}" from your spiritual record.
                         </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter className="mt-6 gap-3">

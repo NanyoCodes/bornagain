@@ -236,11 +236,12 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted, userP
     const noteRef = doc(firestore, 'users', user.uid, 'notes', noteId);
 
     try {
-        await deleteDoc(noteRef);
-        toast({ title: 'Note Deleted' });
-        
-        // Safety: clear state to prevent null reference errors during re-render
+        // Atomic UI reset before background deletion
+        const noteTitle = selectedNote.title;
         handleBackToList();
+        
+        await deleteDoc(noteRef);
+        toast({ title: 'Note Deleted', description: `"${noteTitle}" has been removed.` });
     } catch(e: any) {
         if (e.code === 'permission-denied') {
             const permissionError = new FirestorePermissionError({ path: noteRef.path, operation: 'delete' }, user);
@@ -338,11 +339,11 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted, userP
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 shrink-0">
             <div className="space-y-1.5">
                 <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Title</Label>
-                <Input
+                <input
                     placeholder="E.g., Morning Revelation"
                     value={title}
                     onChange={(e) => { setTitle(e.target.value); setIsDirty(true); }}
-                    className="font-bold text-lg h-12 rounded-2xl bg-muted/20"
+                    className="flex h-12 w-full rounded-2xl border-none bg-muted/20 px-4 text-lg font-bold ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 disabled:cursor-not-allowed disabled:opacity-50"
                 />
             </div>
             <div className="space-y-1.5">
@@ -386,7 +387,7 @@ export function NotesDialog({ isOpen, onOpenChange, onDisciplineCompleted, userP
                     <AlertDialogHeader>
                     <AlertDialogTitle className="text-xl font-bold font-headline">Delete Journal Entry?</AlertDialogTitle>
                     <AlertDialogDescription className="text-sm">
-                        This will permanently remove "{selectedNote?.title || title}" from your Kingdom record.
+                        This will permanently remove "{selectedNote?.title || 'this note'}" from your Kingdom record.
                     </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter className="mt-6 gap-3">
