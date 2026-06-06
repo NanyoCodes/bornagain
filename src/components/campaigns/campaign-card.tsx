@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { format, parse, isSameDay, differenceInDays } from "date-fns";
-import { CalendarDays, MapPin, Users, Share2, Edit, MoreVertical, Loader2, MessagesSquare, UserCheck, PlayCircle, Newspaper, UserPlus, ChevronDown, BarChart3 } from "lucide-react";
+import { CalendarDays, MapPin, Users, Share2, Edit, MoreVertical, Loader2, MessagesSquare, UserCheck, PlayCircle, Newspaper, UserPlus, ChevronDown, BarChart3, Target, Info } from "lucide-react";
 import type { Campaign, CampaignParticipant, UserProfile } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -161,6 +161,118 @@ function ParticipantsDialog({ campaign, children }: { campaign: Campaign; childr
   );
 }
 
+function FullDescriptionDialog({ campaign, children }: { campaign: Campaign, children: React.ReactNode }) {
+    const isMobile = useIsMobile();
+    const [isOpen, setIsOpen] = useState(false);
+    const [mounted, setMounted] = useState(false);
+    useEffect(() => setMounted(true), []);
+
+    const startDate = safeToDate(campaign.startDate);
+    const endDate = safeToDate(campaign.endDate);
+    const dateStr = useMemo(() => {
+        if (startDate && endDate) {
+            if (isSameDay(startDate, endDate)) return format(startDate, "PPP");
+            return `${format(startDate, "MMM d")} - ${format(endDate, "MMM d, yyyy")}`;
+        }
+        return "Date not set";
+    }, [startDate, endDate]);
+
+    const stopPropagation = (e: React.MouseEvent) => {
+        e.stopPropagation();
+    };
+
+    const dialogContent = (
+        <div className="space-y-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="p-3.5 rounded-2xl bg-muted/30 border border-dashed flex items-start gap-3">
+                    <MapPin className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                    <div className="min-w-0">
+                        <p className="text-[10px] font-black uppercase text-muted-foreground mb-1 tracking-widest">Meeting Point</p>
+                        <p className="text-xs font-bold leading-snug">{campaign.location}</p>
+                    </div>
+                </div>
+                <div className="p-3.5 rounded-2xl bg-muted/30 border border-dashed flex items-start gap-3">
+                    <CalendarDays className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                    <div className="min-w-0">
+                        <p className="text-[10px] font-black uppercase text-muted-foreground mb-1 tracking-widest">Campaign Dates</p>
+                        <p className="text-xs font-bold leading-snug">{dateStr}</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div className="p-6 rounded-[2rem] bg-background border shadow-inner relative overflow-hidden group/text">
+                <div className="absolute top-0 right-0 p-4 opacity-[0.03] pointer-events-none">
+                    <Newspaper className="h-20 w-20 text-primary rotate-12" />
+                </div>
+                <p className="text-sm sm:text-base text-muted-foreground whitespace-pre-wrap leading-relaxed font-medium relative z-10">
+                    {campaign.description}
+                </p>
+            </div>
+
+            {campaign.scripture && (
+                <div className="p-6 bg-primary/5 rounded-[2rem] border-2 border-dashed border-primary/20 relative">
+                    <span className="absolute -top-3 left-6 bg-background px-3 text-[10px] font-black text-primary uppercase tracking-[0.2em]">Inspirational Word</span>
+                    <p className="italic text-base text-primary font-serif leading-relaxed">&ldquo;{campaign.scriptureTestimony || campaign.scripture}&rdquo;</p>
+                    <p className="text-[10px] font-black uppercase text-primary/60 text-right mt-3 tracking-widest">— {campaign.scripture}</p>
+                </div>
+            )}
+        </div>
+    );
+
+    if (!mounted) return <>{children}</>;
+
+    if (isMobile) {
+        return (
+            <Sheet open={isOpen} onOpenChange={setIsOpen}>
+                <SheetTrigger asChild onClick={stopPropagation}>{children}</SheetTrigger>
+                <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+                    <div className="p-8 border-b bg-muted/10 flex-shrink-0">
+                        <div className="flex items-center gap-3 mb-2">
+                            <Target className="h-5 w-5 text-primary" />
+                            <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Mission Overview</span>
+                        </div>
+                        <SheetHeader className="text-left">
+                            <SheetTitle className="text-2xl font-black font-headline leading-tight">{campaign.title}</SheetTitle>
+                            <SheetDescription className="text-sm font-medium">Full Mission Details & Vision</SheetDescription>
+                        </SheetHeader>
+                    </div>
+                    <ScrollArea className="flex-grow">
+                        <div className="p-8 pb-32">
+                            {dialogContent}
+                        </div>
+                    </ScrollArea>
+                </SheetContent>
+            </Sheet>
+        );
+    }
+
+    return (
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
+            <DialogTrigger asChild onClick={stopPropagation}>{children}</DialogTrigger>
+            <DialogContent className="sm:max-w-2xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl">
+                <div className="p-8 border-b bg-muted/10">
+                    <div className="flex items-center gap-3 mb-2">
+                        <Target className="h-5 w-5 text-primary" />
+                        <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Mission Overview</span>
+                    </div>
+                    <DialogHeader>
+                        <DialogTitle className="text-2xl font-black font-headline truncate">{campaign.title}</DialogTitle>
+                        <DialogDescription className="text-sm font-medium">Full Campaign Description</DialogDescription>
+                    </DialogHeader>
+                </div>
+                <ScrollArea className="max-h-[70vh]">
+                    <div className="p-8">
+                        {dialogContent}
+                    </div>
+                </ScrollArea>
+                <div className="p-6 border-t bg-muted/5 flex justify-end gap-3">
+                    <Button variant="outline" onClick={() => setIsOpen(false)} className="rounded-full px-8 font-bold">Close Details</Button>
+                </div>
+            </DialogContent>
+        </Dialog>
+    );
+}
+
 type CampaignCardProps = {
   campaign: Campaign;
   userId?: string;
@@ -185,7 +297,6 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
 
   const descriptionRef = useRef<HTMLParagraphElement>(null);
   const [isDescriptionTruncated, setIsDescriptionTruncated] = useState(false);
-  const [showFullDescription, setShowFullDescription] = useState(false);
 
   const handleCardClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (
@@ -486,22 +597,9 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
             <div className="space-y-1">
                 <p ref={descriptionRef} className="text-muted-foreground text-sm line-clamp-3 leading-relaxed font-medium">{campaign.description}</p>
                 {isDescriptionTruncated && (
-                    <Dialog open={showFullDescription} onOpenChange={setShowFullDescription}>
-                        <DialogTrigger asChild>
-                          <Button variant="link" className="p-0 h-auto text-sm font-bold text-primary" onClick={stopPropagation}>Read More</Button>
-                        </DialogTrigger>
-                        <DialogContent className="sm:max-w-md rounded-3xl overflow-hidden p-0">
-                            <div className="p-8 border-b bg-muted/10">
-                                <DialogHeader>
-                                    <DialogTitle className="text-2xl font-black font-headline truncate">{campaign.title}</DialogTitle>
-                                    <DialogDescription className="text-sm font-medium">Full Campaign Description</DialogDescription>
-                                </DialogHeader>
-                            </div>
-                            <div className="p-8 max-h-[60vh] overflow-y-auto overscroll-contain">
-                                <p className="text-sm sm:text-base text-muted-foreground whitespace-pre-wrap leading-relaxed font-medium">{campaign.description}</p>
-                            </div>
-                        </DialogContent>
-                    </Dialog>
+                    <FullDescriptionDialog campaign={campaign}>
+                        <Button variant="link" className="p-0 h-auto text-sm font-bold text-primary">Read More</Button>
+                    </FullDescriptionDialog>
                 )}
             </div>
             
