@@ -172,7 +172,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
           if (navigator && navigator.share) {
             await navigator.share(shareData);
           } else {
-            throw new Error('Native share not supported');
+            throw new Error('Share API not supported');
           }
         } catch (err: any) {
             if (err.name === 'AbortError') return;
@@ -214,12 +214,12 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
             inert={isAnyModalOpen ? true : undefined}
         >
             <div className="flex items-center gap-4 px-4 sm:px-0">
-                <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full">
+                <Button variant="ghost" size="icon" onClick={() => router.back()} className="shrink-0 h-9 w-9 sm:h-10 sm:w-10 rounded-full">
                     <ArrowLeft className="h-5 w-5"/>
                     <span className="sr-only">Back</span>
                 </Button>
                 <div className="min-w-0 flex-1">
-                    <h1 className="text-2xl sm:text-3xl font-black font-headline tracking-tight truncate leading-tight">{campaign.title}</h1>
+                    <h1 className="text-xl sm:text-2xl md:text-3xl font-black font-headline tracking-tight leading-tight">{campaign.title}</h1>
                     <div className="flex items-center gap-2 mt-1">
                         <Badge variant={status === 'Ongoing' ? 'default' : status === 'Upcoming' ? 'secondary' : 'outline'} className="uppercase font-bold tracking-widest text-[10px]">
                             {status}

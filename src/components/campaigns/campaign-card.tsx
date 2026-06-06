@@ -127,7 +127,7 @@ function ParticipantsDialog({ campaign, children }: { campaign: Campaign; childr
         <SheetContent side="bottom" className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem]">
           <div className="p-8 border-b flex-shrink-0 bg-muted/10">
             <SheetHeader className="text-left flex-shrink-0">
-                <SheetTitle className="text-2xl font-black font-headline leading-tight">Participants Directory</SheetTitle>
+                <SheetTitle className="text-xl sm:text-2xl font-black font-headline leading-tight">Participants Directory</SheetTitle>
                 <SheetDescription className="text-sm font-medium">
                 {campaign.participants || 0} believers mobilized for "{campaign.title}".
                 </SheetDescription>
@@ -147,7 +147,7 @@ function ParticipantsDialog({ campaign, children }: { campaign: Campaign; childr
       <DialogContent className="rounded-3xl overflow-hidden p-0">
         <div className="p-8 border-b bg-muted/10">
             <DialogHeader>
-                <DialogTitle className="text-2xl font-black font-headline">Participants for "{campaign.title}"</DialogTitle>
+                <DialogTitle className="text-xl sm:text-2xl font-black font-headline leading-tight">Participants for "{campaign.title}"</DialogTitle>
                 <DialogDescription className="text-sm font-medium">
                     {campaign.participants || 0} people have joined this campaign.
                 </DialogDescription>
@@ -232,7 +232,7 @@ function FullDescriptionDialog({ campaign, children }: { campaign: Campaign, chi
                             <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Mission Overview</span>
                         </div>
                         <SheetHeader className="text-left">
-                            <SheetTitle className="text-2xl font-black font-headline leading-tight">{campaign.title}</SheetTitle>
+                            <SheetTitle className="text-xl sm:text-2xl font-black font-headline leading-tight">{campaign.title}</SheetTitle>
                             <SheetDescription className="text-sm font-medium">Full Mission Details & Vision</SheetDescription>
                         </SheetHeader>
                     </div>
@@ -256,7 +256,7 @@ function FullDescriptionDialog({ campaign, children }: { campaign: Campaign, chi
                         <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Mission Overview</span>
                     </div>
                     <DialogHeader>
-                        <DialogTitle className="text-2xl font-black font-headline truncate">{campaign.title}</DialogTitle>
+                        <DialogTitle className="text-xl sm:text-2xl font-black font-headline leading-tight">{campaign.title}</DialogTitle>
                         <DialogDescription className="text-sm font-medium">Full Campaign Description</DialogDescription>
                     </DialogHeader>
                 </div>
