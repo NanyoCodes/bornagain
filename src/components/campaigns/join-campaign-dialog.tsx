@@ -1,11 +1,10 @@
-
 'use client';
 
 import { useState } from 'react';
 import { useFirestore, useUser } from '@/firebase';
 import type { Campaign, UserProfile } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
-import { doc, runTransaction, serverTimestamp, collection, getDoc } from 'firebase/firestore';
+import { doc, runTransaction, serverTimestamp, collection } from 'firebase/firestore';
 import {
   Dialog,
   DialogContent,
@@ -154,27 +153,28 @@ export function JoinCampaignDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent className="rounded-3xl">
         <DialogHeader>
-          <DialogTitle>Join: {campaign.title}</DialogTitle>
-          <DialogDescription>
+          <DialogTitle className="text-xl sm:text-2xl font-black font-headline leading-tight text-balance">Join Mission: {campaign.title}</DialogTitle>
+          <DialogDescription className="text-sm font-medium">
             You're about to join this campaign. You can add an optional note for the organizer.
           </DialogDescription>
         </DialogHeader>
-        <div className="py-4 space-y-2">
-          <Label htmlFor="joinReason">Why do you want to join? (Optional)</Label>
+        <div className="py-4 space-y-3">
+          <Label htmlFor="joinReason" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Why do you want to join? (Optional)</Label>
           <Textarea
             id="joinReason"
             placeholder="Let the organizer know why you're interested in joining..."
             value={joinReason}
             onChange={(e) => setJoinReason(e.target.value)}
+            className="rounded-2xl min-h-[100px] bg-muted/20"
           />
         </div>
-        <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isJoining}>
+        <DialogFooter className="gap-3">
+          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isJoining} className="rounded-xl h-11">
             Cancel
           </Button>
-          <Button onClick={handleJoin} disabled={isButtonDisabled}>
+          <Button onClick={handleJoin} disabled={isButtonDisabled} className="rounded-xl h-11 font-bold shadow-md">
             {(isJoining || userLoading) && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Confirm Join
           </Button>

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { useDoc, useFirestore, useUser, useCollection } from '@/firebase';
 import type { Campaign, UserProfile, CampaignParticipant, Testimony } from '@/lib/types';
 import {
@@ -40,7 +40,7 @@ import { FirestorePermissionError } from '@/firebase/errors';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { JoinCampaignDialog } from './join-campaign-dialog';
 import { ScrollArea } from '../ui/scroll-area';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@radix-ui/react-tooltip';
 
 export default function CampaignPageClient({ campaignId }: { campaignId: string }) {
     const router = useRouter();
@@ -219,7 +219,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                     <span className="sr-only">Back</span>
                 </Button>
                 <div className="min-w-0 flex-1">
-                    <h1 className="text-xl sm:text-2xl md:text-3xl font-black font-headline tracking-tight leading-tight">{campaign.title}</h1>
+                    <h1 className="text-xl sm:text-2xl md:text-3xl font-black font-headline tracking-tight leading-tight text-balance">{campaign.title}</h1>
                     <div className="flex items-center gap-2 mt-1">
                         <Badge variant={status === 'Ongoing' ? 'default' : status === 'Upcoming' ? 'secondary' : 'outline'} className="uppercase font-bold tracking-widest text-[10px]">
                             {status}
@@ -242,7 +242,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                             {campaign.scripture && (
                                 <div className="mt-8 p-6 bg-primary/5 rounded-[2rem] border-2 border-dashed border-primary/20 relative">
                                     <span className="absolute -top-3 left-6 bg-background px-3 text-[10px] font-black text-primary uppercase tracking-[0.2em]">Inspiration</span>
-                                    <p className="italic text-base sm:text-lg text-primary font-serif leading-relaxed text-justify">&ldquo;{campaign.scriptureTestimony || campaign.scripture}&rdquo;</p>
+                                    <p className="italic text-base sm:text-lg text-primary font-serif leading-relaxed text-justify text-balance">&ldquo;{campaign.scriptureTestimony || campaign.scripture}&rdquo;</p>
                                     <p className="text-[10px] font-black uppercase text-primary/60 text-right mt-3 tracking-widest">— {campaign.scripture}</p>
                                 </div>
                             )}
@@ -258,7 +258,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                                 </CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <p className="text-sm font-bold text-foreground">{campaign.location}</p>
+                                <p className="text-sm font-bold text-foreground text-balance">{campaign.location}</p>
                                 <p className="text-[10px] text-muted-foreground mt-1 font-medium uppercase tracking-tighter">Physical Meeting Point</p>
                             </CardContent>
                         </Card>
@@ -464,7 +464,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                 <DialogContent className="sm:max-w-lg rounded-3xl p-0 overflow-hidden">
                     <div className="p-6 border-b bg-muted/10">
                         <DialogHeader>
-                            <DialogTitle className="text-2xl font-bold font-headline">Share Victory</DialogTitle>
+                            <DialogTitle className="text-2xl font-bold font-headline text-balance">Share Victory</DialogTitle>
                             <DialogDescription className="text-sm">What miracles occurred during "{campaign.title}"?</DialogDescription>
                         </DialogHeader>
                     </div>
@@ -480,7 +480,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                 <DialogContent className="sm:max-w-2xl rounded-3xl p-0 overflow-hidden">
                     <div className="p-6 border-b bg-muted/10">
                         <DialogHeader>
-                            <DialogTitle className="text-2xl font-bold font-headline">Manage Mission</DialogTitle>
+                            <DialogTitle className="text-2xl font-bold font-headline text-balance">Manage Mission</DialogTitle>
                             <DialogDescription className="text-sm">Update the details of your active campaign.</DialogDescription>
                         </DialogHeader>
                     </div>
@@ -514,8 +514,8 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                 <AlertDialog open={!!campaignToDelete} onOpenChange={(open) => { if (!open) setCampaignToDelete(null); router.refresh(); }}>
                     <AlertDialogContent className="rounded-3xl p-8">
                         <AlertDialogHeader>
-                            <AlertDialogTitle className="text-2xl font-bold font-headline">Delete Campaign?</AlertDialogTitle>
-                            <AlertDialogDescription className="text-sm">
+                            <AlertDialogTitle className="text-2xl font-bold font-headline text-balance">Delete Campaign?</AlertDialogTitle>
+                            <AlertDialogDescription className="text-sm font-medium">
                                 This will permanently remove "{campaignToDelete.title}" from the platform. This action cannot be undone.
                             </AlertDialogDescription>
                         </AlertDialogHeader>
