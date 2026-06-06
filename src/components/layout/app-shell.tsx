@@ -121,7 +121,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
   return (
     <header className="sticky top-0 z-30 flex min-h-[4rem] h-auto py-2 items-center justify-between border-b bg-background px-4 md:px-6 shrink-0 pt-[env(safe-area-inset-top)]">
       <div className="flex items-center gap-2 md:gap-6">
-        <Link href={user ? "/progress" : "/"} className="flex items-center gap-2 text-lg font-semibold shrink-0">
+        <Link href={user ? "/testimonies" : "/"} className="flex items-center gap-2 text-lg font-semibold shrink-0">
           {logo && (
             <Avatar className="h-10 w-10 sm:h-11 sm:w-11">
               <AvatarImage src={logo.imageUrl} alt={logo.description} />
