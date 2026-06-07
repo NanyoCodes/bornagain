@@ -119,7 +119,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
   const showGuestButtons = isPublicRoute && !authLoading && !user;
 
   return (
-    <header className="sticky top-0 z-30 flex min-h-[3.5rem] md:min-h-[4rem] h-auto py-1 items-center justify-between border-b bg-background px-3 md:px-6 shrink-0 pt-[env(safe-area-inset-top)] relative">
+    <header className="sticky top-0 z-30 flex min-h-[3.5rem] md:min-h-[4.5rem] h-auto py-1 items-center justify-between border-b bg-background px-3 md:px-6 shrink-0 pt-[env(safe-area-inset-top)] relative">
       {/* Left: Logo */}
       <div className="flex items-center shrink-0">
         <Link href={user ? "/testimonies" : "/"} className="flex items-center gap-2 text-lg font-semibold shrink-0">
@@ -133,9 +133,9 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
         </Link>
       </div>
 
-      {/* Center: Navigation - Similar to modern social platforms */}
-      <nav className="hidden items-center absolute left-1/2 -translate-x-1/2 md:flex overflow-x-auto no-scrollbar max-w-[50%] lg:max-w-none">
-        <div className="flex items-center gap-1 lg:gap-2">
+      {/* Center: Centered Nav with Vertical Icon/Text Stack */}
+      <nav className="hidden items-center absolute left-1/2 -translate-x-1/2 md:flex overflow-x-auto no-scrollbar max-w-[50%] lg:max-w-none h-full">
+        <div className="flex items-center gap-1 lg:gap-1.5 h-full">
           {navItems.map((item) => {
             const isActive = pathname.startsWith(item.href);
             return (
@@ -143,19 +143,26 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
                   key={item.href}
                   href={item.href}
                   className={cn(
-                    "transition-all hover:bg-muted/50 px-3 py-2 rounded-full whitespace-nowrap flex items-center gap-2 group",
+                    "transition-all hover:bg-muted/50 px-2.5 lg:px-4 h-[85%] rounded-2xl whitespace-nowrap flex flex-col items-center justify-center group",
                     isActive ? "text-primary" : "text-muted-foreground"
                   )}
               >
-                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="flex items-center gap-2">
+                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="flex flex-col items-center gap-1">
                   <item.icon className={cn("h-5 w-5 shrink-0 transition-transform", !isActive && item.color, isActive && "scale-110")} />
                   <span className={cn(
-                    "text-sm font-bold hidden xl:inline-block transition-all",
-                    isActive ? "opacity-100" : "opacity-80 group-hover:opacity-100"
+                    "text-[9px] font-black uppercase tracking-tighter transition-all",
+                    isActive ? "opacity-100" : "opacity-60 group-hover:opacity-100"
                   )}>
                     {item.label}
                   </span>
                 </motion.div>
+                {isActive && (
+                    <motion.div
+                      layoutId="header-nav-active-bar"
+                      className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full"
+                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                    />
+                )}
               </Link>
             );
           })}
