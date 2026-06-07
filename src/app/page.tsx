@@ -2,6 +2,7 @@
 
 import React, { useMemo, useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { 
@@ -65,6 +66,8 @@ export default function LandingPage() {
   const { user, loading: authLoading } = useUser();
   const firestore = useFirestore();
   const logo = PlaceHolderImages.find((img) => img.id === 'logo');
+  const gospelCollage = PlaceHolderImages.find((img) => img.id === 'gospel-collage');
+  const gospelCollageUrl = gospelCollage?.imageUrl || 'https://images.unsplash.com/photo-1504052434569-70ad58ebb96d?q=80&w=2070&auto=format&fit=crop';
 
   // Redirect authenticated users
   useEffect(() => {
@@ -113,9 +116,18 @@ export default function LandingPage() {
 
       <main className="flex-grow pt-16">
         {/* Hero Section */}
-        <section className="relative h-[85vh] min-h-[500px] sm:min-h-[600px] flex items-center overflow-hidden bg-zinc-950">
+        <section className="relative h-[85vh] min-h-[500px] sm:min-h-[600px] flex items-center overflow-hidden">
           <div className="absolute inset-0 z-0">
-             <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-transparent" />
+             <Image 
+               src={gospelCollageUrl}
+               alt="Gospel Background"
+               fill
+               className="object-cover"
+               priority
+               data-ai-hint="bible scriptures"
+             />
+             <div className="absolute inset-0 bg-zinc-950/80" />
+             <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-transparent" />
           </div>
           
           <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
