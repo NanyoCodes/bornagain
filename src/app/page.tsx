@@ -17,6 +17,7 @@ import {
   BookOpen,
   Quote,
   Loader2,
+  Instagram,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -103,7 +104,7 @@ export default function LandingPage() {
             <Button variant="ghost" asChild className="hidden sm:inline-flex font-bold">
               <Link href="/login">Sign In</Link>
             </Button>
-            <Button asChild className="rounded-full px-3 sm:px-5 font-black tracking-widest uppercase text-[10px] sm:text-xs h-8 sm:h-9">
+            <Button asChild className="rounded-full px-3 sm:px-4 font-black tracking-widest uppercase text-[10px] sm:text-xs h-8 sm:h-9">
               <Link href="/signup">Join Movement</Link>
             </Button>
           </div>
@@ -118,7 +119,7 @@ export default function LandingPage() {
           </div>
           
           <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-            <div className="max-w-3xl space-y-6 sm:space-y-8">
+            <div className="max-w-3xl space-y-6 sm:space-y-8 text-center sm:text-left">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -142,12 +143,12 @@ export default function LandingPage() {
                 transition={{ duration: 0.8, delay: 0.2 }}
                 className="flex flex-col sm:flex-row gap-3 sm:gap-4"
               >
-                <Button asChild size="lg" className="h-10 sm:h-11 px-4 sm:px-6 text-sm sm:text-base font-black rounded-2xl shadow-xl shadow-primary/30 uppercase tracking-widest w-full sm:w-auto">
+                <Button asChild size="lg" className="h-10 sm:h-11 px-4 sm:px-5 text-sm sm:text-base font-black rounded-2xl shadow-xl shadow-primary/30 uppercase tracking-widest w-full sm:w-auto">
                   <Link href="/signup">
                     Get Started Free <ArrowRight className="ml-2 h-5 w-5" />
                   </Link>
                 </Button>
-                <Button asChild variant="outline" size="lg" className="h-10 sm:h-11 px-4 sm:px-6 text-sm sm:text-base font-bold rounded-2xl bg-white/5 backdrop-blur-md border-white/20 text-white hover:bg-white/10 w-full sm:w-auto">
+                <Button asChild variant="outline" size="lg" className="h-10 sm:h-11 px-4 sm:px-5 text-sm sm:text-base font-bold rounded-2xl bg-white/5 backdrop-blur-md border-white/20 text-white hover:bg-white/10 w-full sm:w-auto">
                   <Link href="/about">Our Mission</Link>
                 </Button>
               </motion.div>
@@ -276,7 +277,7 @@ export default function LandingPage() {
                 Record miracles, reach cities, and track the greatness of God.
               </p>
               <div className="flex justify-center pt-2 sm:pt-4">
-                <Button asChild size="lg" className="h-12 sm:h-14 px-5 sm:px-8 text-base sm:text-lg font-black bg-white text-primary hover:bg-white/90 rounded-2xl shadow-2xl uppercase tracking-widest w-full sm:w-auto">
+                <Button asChild size="lg" className="h-11 sm:h-12 px-5 sm:px-6 text-base sm:text-lg font-black bg-white text-primary hover:bg-white/90 rounded-2xl shadow-2xl uppercase tracking-widest w-full sm:w-auto">
                   <Link href="/signup">
                     START TESTIFYING <ArrowRight className="ml-3 h-5 w-5 sm:h-6 sm:w-6" />
                   </Link>
@@ -304,14 +305,11 @@ export default function LandingPage() {
                 Testify is built for believers to share the greatness of Jesus Christ who gave his life as an offering to reconcile the world to GOD.
               </p>
               <div className="flex gap-4">
-                <Button variant="outline" size="icon" className="rounded-full h-10 w-10 bg-background border-muted hover:border-primary/50 transition-colors shadow-sm">
-                  <Globe className="h-4 w-4" />
-                </Button>
-                <Button variant="outline" size="icon" className="rounded-full h-10 w-10 bg-background border-muted hover:border-primary/50 transition-colors shadow-sm">
-                  <Users className="h-4 w-4" />
-                </Button>
-                <Button variant="outline" size="icon" className="rounded-full h-10 w-10 bg-background border-muted hover:border-primary/50 transition-colors shadow-sm">
-                  <Flame className="h-4 w-4" />
+                <Button variant="outline" size="icon" asChild className="rounded-full h-10 w-10 bg-background border-muted hover:border-primary/50 transition-colors shadow-sm">
+                  <Link href="https://instagram.com/testifyglobal360" target="_blank" rel="noopener noreferrer">
+                    <Instagram className="h-4 w-4" />
+                    <span className="sr-only">Instagram</span>
+                  </Link>
                 </Button>
               </div>
             </div>
@@ -333,6 +331,8 @@ export default function LandingPage() {
                 <li><Link href="/contact" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Partner With Us</Link></li>
                 <li><Link href="/guide" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">App Guide</Link></li>
                 <li><Link href="/resources" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Resources</Link></li>
+                <li><Link href="/terms-of-service" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Terms</Link></li>
+                <li><Link href="/privacy-policy" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Privacy</Link></li>
               </ul>
             </div>
           </div>
