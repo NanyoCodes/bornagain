@@ -66,7 +66,6 @@ export default function LandingPage() {
   const { user, loading: authLoading } = useUser();
   const firestore = useFirestore();
   const logo = PlaceHolderImages.find((img) => img.id === 'logo');
-  const heroImage = PlaceHolderImages.find((img) => img.id === 'white-gospel');
 
   // Redirect authenticated users
   useEffect(() => {
@@ -91,19 +90,6 @@ export default function LandingPage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-background selection:bg-primary/30 overflow-x-hidden relative">
-      {/* Landing Page Wide White Gospel Background Texture */}
-      {heroImage && (
-        <div 
-          className="fixed inset-0 z-[-1] opacity-5 pointer-events-none grayscale brightness-125"
-          style={{ 
-            backgroundImage: `url(${heroImage.imageUrl})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-          }}
-          data-ai-hint="white church"
-        />
-      )}
-
       {/* Navigation */}
       <nav className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-md border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
@@ -128,20 +114,10 @@ export default function LandingPage() {
 
       <main className="flex-grow pt-16">
         {/* Hero Section */}
-        <section className="relative h-[85vh] min-h-[500px] sm:min-h-[600px] flex items-center overflow-hidden">
-          {heroImage && (
-            <div className="absolute inset-0 z-0">
-              <Image 
-                src={heroImage.imageUrl} 
-                alt={heroImage.description} 
-                fill 
-                priority
-                className="object-cover" 
-                data-ai-hint="white church"
-              />
-              <div className="absolute inset-0 bg-gradient-to-bottom from-black/20 via-black/40 to-black/80" />
-            </div>
-          )}
+        <section className="relative h-[85vh] min-h-[500px] sm:min-h-[600px] flex items-center overflow-hidden bg-zinc-950">
+          <div className="absolute inset-0 z-0">
+             <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-transparent" />
+          </div>
           
           <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
             <div className="max-w-3xl space-y-6 sm:space-y-8">
