@@ -51,11 +51,11 @@ import { SplashScreen } from "../common/splash-screen";
 
 const navItems = [
   { href: "/progress", label: "Progress", icon: TrendingUp, color: "text-chart-1" },
-  { href: "/souls-won", label: "Souls Won", icon: UserPlus, color: "text-chart-2" },
-  { href: "/testimonies", label: "Testimonies", icon: Newspaper, color: "text-chart-3" },
-  { href: "/campaigns", label: "Campaigns", icon: Target, color: "text-chart-4" },
-  { href: "/fellowships", label: "Fellowship", icon: Users, color: "text-primary" },
-  { href: "/accountability", label: "Accountability", icon: HeartHandshake, color: "text-primary" },
+  { href: "/souls-won", label: "Souls", icon: UserPlus, color: "text-chart-2" },
+  { href: "/testimonies", label: "Feed", icon: Newspaper, color: "text-chart-3" },
+  { href: "/campaigns", label: "Missions", icon: Target, color: "text-chart-4" },
+  { href: "/fellowships", label: "Groups", icon: Users, color: "text-primary" },
+  { href: "/accountability", label: "Partners", icon: HeartHandshake, color: "text-primary" },
 ];
 
 const NOTIFICATION_TYPES = ['campaign_join', 'new_chat_message', 'accountability_nudge', 'accountability_request', 'request_accepted', 'request_declined', 'accountability_partner_removed', 'new_soul_in_fellowship'];
@@ -119,8 +119,9 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
   const showGuestButtons = isPublicRoute && !authLoading && !user;
 
   return (
-    <header className="sticky top-0 z-30 flex min-h-[3.5rem] md:min-h-[4rem] h-auto py-1 items-center justify-between border-b bg-background px-3 md:px-6 shrink-0 pt-[env(safe-area-inset-top)]">
-      <div className="flex items-center gap-2 md:gap-4 lg:gap-6">
+    <header className="sticky top-0 z-30 flex min-h-[3.5rem] md:min-h-[4rem] h-auto py-1 items-center justify-between border-b bg-background px-3 md:px-6 shrink-0 pt-[env(safe-area-inset-top)] relative">
+      {/* Left: Logo */}
+      <div className="flex items-center shrink-0">
         <Link href={user ? "/testimonies" : "/"} className="flex items-center gap-2 text-lg font-semibold shrink-0">
           {logo && (
             <Avatar className="h-9 w-9 md:h-10 md:w-10">
@@ -130,38 +131,48 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
           )}
           <span className="sr-only">Testify</span>
         </Link>
-        <nav className="hidden items-center gap-4 lg:gap-5 text-sm font-medium md:flex overflow-x-auto no-scrollbar">
-            {navItems.map((item) => {
-              const isActive = pathname.startsWith(item.href);
-              return (
-                <Link
-                    key={item.href}
-                    href={item.href}
-                    className={cn(
-                    "transition-all hover:text-primary whitespace-nowrap flex items-center gap-1.5 group py-1",
-                    isActive ? "text-primary font-semibold" : "text-muted-foreground"
-                    )}
-                >
-                    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="flex items-center gap-1.5">
-                      <item.icon className={cn("h-4 w-4 transition-transform", !isActive && item.color, isActive && "scale-110")} />
-                      <span className="hidden lg:inline">{item.label}</span>
-                    </motion.div>
-                </Link>
-              );
-            })}
-        </nav>
       </div>
+
+      {/* Center: Navigation - Similar to modern social platforms */}
+      <nav className="hidden items-center absolute left-1/2 -translate-x-1/2 md:flex overflow-x-auto no-scrollbar max-w-[50%] lg:max-w-none">
+        <div className="flex items-center gap-1 lg:gap-2">
+          {navItems.map((item) => {
+            const isActive = pathname.startsWith(item.href);
+            return (
+              <Link
+                  key={item.href}
+                  href={item.href}
+                  className={cn(
+                    "transition-all hover:bg-muted/50 px-3 py-2 rounded-full whitespace-nowrap flex items-center gap-2 group",
+                    isActive ? "text-primary" : "text-muted-foreground"
+                  )}
+              >
+                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="flex items-center gap-2">
+                  <item.icon className={cn("h-5 w-5 shrink-0 transition-transform", !isActive && item.color, isActive && "scale-110")} />
+                  <span className={cn(
+                    "text-sm font-bold hidden xl:inline-block transition-all",
+                    isActive ? "opacity-100" : "opacity-80 group-hover:opacity-100"
+                  )}>
+                    {item.label}
+                  </span>
+                </motion.div>
+              </Link>
+            );
+          })}
+        </div>
+      </nav>
         
+      {/* Right: Actions */}
       <div className="flex items-center gap-1 sm:gap-2 md:gap-3 shrink-0">
         {isSearchVisible && (
-          <div className="hidden md:block">
+          <div className="hidden lg:block">
             <form onSubmit={(e) => e.preventDefault()}>
               <div className="relative">
                 <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
                 <Input
                   type="search"
                   placeholder={searchPlaceholder}
-                  className="pl-8 sm:w-[120px] md:w-[180px] lg:w-[220px] h-8 text-xs"
+                  className="pl-8 sm:w-[120px] md:w-[150px] lg:w-[180px] h-8 text-xs bg-muted/20 border-none"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
@@ -170,7 +181,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
           </div>
         )}
         {isSearchVisible && (
-          <Button variant="ghost" size="icon" className="md:hidden h-8 w-8" onClick={() => setShowMobileSearch(true)}>
+          <Button variant="ghost" size="icon" className="lg:hidden h-8 w-8" onClick={() => setShowMobileSearch(true)}>
             <Search className="h-4 w-4" />
             <span className="sr-only">Search</span>
           </Button>
