@@ -239,23 +239,6 @@ export default function LandingPage() {
                   </p>
                 </div>
                 
-                <div className="flex items-center justify-center lg:justify-start gap-4 sm:gap-8">
-                  <div className="text-center">
-                    <p className="text-3xl sm:text-4xl font-black font-headline text-primary">10k+</p>
-                    <p className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground">Souls Won</p>
-                  </div>
-                  <div className="h-8 sm:h-10 w-px bg-muted" />
-                  <div className="text-center">
-                    <p className="text-3xl sm:text-4xl font-black font-headline text-primary">500+</p>
-                    <p className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground">Campaigns</p>
-                  </div>
-                  <div className="h-8 sm:h-10 w-px bg-muted" />
-                  <div className="text-center">
-                    <p className="text-3xl sm:text-4xl font-black font-headline text-primary">150+</p>
-                    <p className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground">Nations</p>
-                  </div>
-                </div>
-
                 <Button asChild size="lg" variant="outline" className="h-11 sm:h-12 rounded-full font-bold border-primary/20 text-primary hover:bg-primary/5 px-8 w-full sm:w-auto">
                   <Link href="/testimonies">View Glory Feed</Link>
                 </Button>
