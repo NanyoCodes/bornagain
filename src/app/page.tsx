@@ -66,7 +66,7 @@ export default function LandingPage() {
   const { user, loading: authLoading } = useUser();
   const firestore = useFirestore();
   const logo = PlaceHolderImages.find((img) => img.id === 'logo');
-  const heroImage = PlaceHolderImages.find((img) => img.id === 'gospel-collage');
+  const heroImage = PlaceHolderImages.find((img) => img.id === 'white-gospel');
 
   // Redirect authenticated users
   useEffect(() => {
@@ -90,7 +90,20 @@ export default function LandingPage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-background selection:bg-primary/30 overflow-x-hidden">
+    <div className="flex flex-col min-h-screen bg-background selection:bg-primary/30 overflow-x-hidden relative">
+      {/* Landing Page Wide White Gospel Background Texture */}
+      {heroImage && (
+        <div 
+          className="fixed inset-0 z-[-1] opacity-5 pointer-events-none grayscale brightness-125"
+          style={{ 
+            backgroundImage: `url(${heroImage.imageUrl})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+          }}
+          data-ai-hint="white church"
+        />
+      )}
+
       {/* Navigation */}
       <nav className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-md border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
@@ -124,9 +137,9 @@ export default function LandingPage() {
                 fill 
                 priority
                 className="object-cover" 
-                data-ai-hint="bible scriptures"
+                data-ai-hint="white church"
               />
-              <div className="absolute inset-0 bg-gradient-to-bottom from-black/40 via-black/60 to-black/90" />
+              <div className="absolute inset-0 bg-gradient-to-bottom from-black/20 via-black/40 to-black/80" />
             </div>
           )}
           
@@ -180,7 +193,7 @@ export default function LandingPage() {
         </section>
 
         {/* Feature Grid */}
-        <section className="py-16 sm:py-24 bg-muted/30">
+        <section className="py-16 sm:py-24 bg-muted/30 relative">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12 sm:mb-16 space-y-4">
               <h2 className="text-3xl sm:text-5xl font-black font-headline tracking-tight uppercase text-balance">Kingdom Ready Workforce</h2>
@@ -211,8 +224,8 @@ export default function LandingPage() {
 
         {/* Glory Feed Section */}
         <section className="py-16 sm:py-24 relative overflow-hidden">
-          <div className="absolute top-0 right-0 p-24 opacity-[0.03] pointer-events-none">
-            <Flame className="h-64 w-64 text-primary" />
+          <div className="absolute top-0 right-0 p-24 opacity-[0.03] pointer-events-none text-primary">
+            <Flame className="h-64 w-64" />
           </div>
           
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -318,7 +331,7 @@ export default function LandingPage() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-muted/50 border-t py-12 sm:py-16">
+      <footer className="bg-muted/50 border-t py-12 sm:py-16 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-12 mb-12">
             <div className="col-span-1 sm:col-span-2 space-y-6">
@@ -367,7 +380,7 @@ export default function LandingPage() {
             </div>
           </div>
           
-          <Separator className="bg-muted opacity-50 mb-8" />
+          <div className="h-px w-full bg-muted opacity-50 mb-8" />
           
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">
             <p className="text-center md:text-left">© {new Date().getFullYear()} TESTIFY GLOBAL. Built for the Great Commission.</p>
@@ -381,7 +394,3 @@ export default function LandingPage() {
     </div>
   );
 }
-
-const Separator = ({ className }: { className?: string }) => (
-  <div className={cn("h-px w-full bg-border", className)} />
-);
