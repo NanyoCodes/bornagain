@@ -100,7 +100,6 @@ export default function LandingPage() {
                 <AvatarFallback>T</AvatarFallback>
               </Avatar>
             )}
-            <span className="text-xl font-black font-headline tracking-tight uppercase">Testify</span>
           </Link>
           <div className="flex items-center gap-4">
             <Button variant="ghost" asChild className="hidden sm:inline-flex font-bold">
@@ -322,7 +321,6 @@ export default function LandingPage() {
                     <AvatarFallback>T</AvatarFallback>
                   </Avatar>
                 )}
-                <span className="text-xl font-black font-headline uppercase tracking-tight">Testify</span>
               </Link>
               <p className="text-muted-foreground text-sm max-w-sm font-medium leading-relaxed italic">
                 Testify is built for believers to share the greatness of Jesus Christ who gave his life as an offering to reconcile the world to GOD.
@@ -357,6 +355,8 @@ export default function LandingPage() {
                 <li><Link href="/contact" className="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">Partner With Us</Link></li>
                 <li><Link href="/guide" className="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">App Guide</Link></li>
                 <li><Link href="/resources" className="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">Resources</Link></li>
+                <li><Link href="/terms-of-service" className="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">Terms</Link></li>
+                <li><Link href="/privacy-policy" className="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">Privacy</Link></li>
               </ul>
             </div>
           </div>
