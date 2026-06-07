@@ -93,9 +93,9 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
   
   if (showMobileSearch) {
     return (
-      <header className="sticky top-0 z-30 flex min-h-[4rem] h-auto py-2 items-center border-b bg-background px-4 md:px-6 shrink-0 pt-[env(safe-area-inset-top)]">
+      <header className="sticky top-0 z-30 flex min-h-[3.5rem] md:min-h-[4rem] h-auto py-1 items-center border-b bg-background px-3 md:px-6 shrink-0 pt-[env(safe-area-inset-top)]">
         <div className="flex w-full items-center gap-2">
-          <Button variant="ghost" size="icon" onClick={() => setShowMobileSearch(false)} className="shrink-0">
+          <Button variant="ghost" size="icon" onClick={() => setShowMobileSearch(false)} className="shrink-0 h-9 w-9">
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <form className="w-full" onSubmit={(e) => e.preventDefault()}>
@@ -104,7 +104,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
               <Input
                 type="search"
                 placeholder={searchPlaceholder}
-                className="w-full pl-8 h-10"
+                className="w-full pl-8 h-9"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 autoFocus
@@ -119,18 +119,18 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
   const showGuestButtons = isPublicRoute && !authLoading && !user;
 
   return (
-    <header className="sticky top-0 z-30 flex min-h-[4rem] h-auto py-2 items-center justify-between border-b bg-background px-4 md:px-6 shrink-0 pt-[env(safe-area-inset-top)]">
-      <div className="flex items-center gap-2 md:gap-6">
+    <header className="sticky top-0 z-30 flex min-h-[3.5rem] md:min-h-[4rem] h-auto py-1 items-center justify-between border-b bg-background px-3 md:px-6 shrink-0 pt-[env(safe-area-inset-top)]">
+      <div className="flex items-center gap-2 md:gap-4 lg:gap-6">
         <Link href={user ? "/testimonies" : "/"} className="flex items-center gap-2 text-lg font-semibold shrink-0">
           {logo && (
-            <Avatar className="h-10 w-10 sm:h-11 sm:w-11">
+            <Avatar className="h-9 w-9 md:h-10 md:w-10">
               <AvatarImage src={logo.imageUrl} alt={logo.description} />
               <AvatarFallback>T</AvatarFallback>
             </Avatar>
           )}
           <span className="sr-only">Testify</span>
         </Link>
-        <nav className="hidden items-center gap-4 lg:gap-6 text-sm font-medium md:flex overflow-x-auto no-scrollbar">
+        <nav className="hidden items-center gap-4 lg:gap-5 text-sm font-medium md:flex overflow-x-auto no-scrollbar">
             {navItems.map((item) => {
               const isActive = pathname.startsWith(item.href);
               return (
@@ -138,13 +138,13 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
                     key={item.href}
                     href={item.href}
                     className={cn(
-                    "transition-all hover:text-primary whitespace-nowrap flex items-center gap-2 group py-1",
+                    "transition-all hover:text-primary whitespace-nowrap flex items-center gap-1.5 group py-1",
                     isActive ? "text-primary font-semibold" : "text-muted-foreground"
                     )}
                 >
-                    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="flex items-center gap-2">
+                    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="flex items-center gap-1.5">
                       <item.icon className={cn("h-4 w-4 transition-transform", !isActive && item.color, isActive && "scale-110")} />
-                      {item.label}
+                      <span className="hidden lg:inline">{item.label}</span>
                     </motion.div>
                 </Link>
               );
@@ -152,16 +152,16 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
         </nav>
       </div>
         
-      <div className="flex items-center gap-1.5 md:gap-3 shrink-0">
+      <div className="flex items-center gap-1 sm:gap-2 md:gap-3 shrink-0">
         {isSearchVisible && (
-          <div className="hidden sm:block">
+          <div className="hidden md:block">
             <form onSubmit={(e) => e.preventDefault()}>
               <div className="relative">
-                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
                 <Input
                   type="search"
                   placeholder={searchPlaceholder}
-                  className="pl-8 sm:w-[150px] md:w-[200px] lg:w-[250px] h-9"
+                  className="pl-8 sm:w-[120px] md:w-[180px] lg:w-[220px] h-8 text-xs"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
@@ -170,7 +170,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
           </div>
         )}
         {isSearchVisible && (
-          <Button variant="ghost" size="icon" className="sm:hidden h-9 w-9" onClick={() => setShowMobileSearch(true)}>
+          <Button variant="ghost" size="icon" className="md:hidden h-8 w-8" onClick={() => setShowMobileSearch(true)}>
             <Search className="h-4 w-4" />
             <span className="sr-only">Search</span>
           </Button>
@@ -180,10 +180,10 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
           <>
             <Link href="/chats">
                 <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-                    <Button variant="ghost" size="icon" className="relative group h-9 w-9">
+                    <Button variant="ghost" size="icon" className="relative group h-8 w-8">
                       <MessagesSquare className="h-4 w-4 transition-transform group-hover:scale-110" />
                       {unreadChatCount > 0 && (
-                        <div className="absolute -top-0.5 -right-0.5 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-destructive text-[9px] font-bold text-destructive-foreground animate-in zoom-in">
+                        <div className="absolute -top-0.5 -right-0.5 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-destructive text-[8px] font-bold text-destructive-foreground animate-in zoom-in">
                           {unreadChatCount}
                         </div>
                       )}
@@ -192,10 +192,10 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
             </Link>
             <Link href="/notifications">
                 <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-                    <Button variant="ghost" size="icon" className="relative group h-9 w-9">
+                    <Button variant="ghost" size="icon" className="relative group h-8 w-8">
                       <Bell className="h-4 w-4 transition-transform group-hover:scale-110" />
                       {unreadNotifCount > 0 && (
-                        <div className="absolute -top-0.5 -right-0.5 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-destructive text-[9px] font-bold text-destructive-foreground animate-in zoom-in">
+                        <div className="absolute -top-0.5 -right-0.5 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-destructive text-[8px] font-bold text-destructive-foreground animate-in zoom-in">
                           {unreadNotifCount}
                         </div>
                       )}
@@ -204,15 +204,15 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
             </Link>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="rounded-full relative hover:scale-105 transition-transform h-9 w-9">
-                  <Avatar className="h-7 w-7">
+                <Button variant="ghost" size="icon" className="rounded-full relative hover:scale-105 transition-transform h-8 w-8">
+                  <Avatar className="h-6 w-6">
                     <AvatarImage src={user.photoURL ?? undefined} />
-                    <AvatarFallback className="text-[10px]">{user.displayName?.charAt(0) || 'U'}</AvatarFallback>
+                    <AvatarFallback className="text-[9px]">{user.displayName?.charAt(0) || 'U'}</AvatarFallback>
                   </Avatar>
                   {isProfileIncomplete && (
-                    <span className="absolute top-0 right-0 flex h-2.5 w-2.5">
+                    <span className="absolute top-0 right-0 flex h-2 w-2">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-600 border border-background"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-red-600 border border-background"></span>
                     </span>
                   )}
                 </Button>
@@ -259,11 +259,11 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
             </DropdownMenu>
           </>
         ) : showGuestButtons ? (
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" asChild size="sm" className="hidden sm:inline-flex">
+          <div className="flex items-center gap-1.5">
+            <Button variant="ghost" asChild size="sm" className="hidden sm:inline-flex h-8 px-3">
               <Link href="/login">Sign In</Link>
             </Button>
-            <Button asChild size="sm">
+            <Button asChild size="sm" className="h-8 px-3">
               <Link href="/">Get Started</Link>
             </Button>
           </div>
@@ -278,8 +278,8 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
 function BottomNavBar() {
     const pathname = usePathname();
     return (
-      <nav className="fixed bottom-0 left-0 right-0 z-40 border-t bg-background/80 backdrop-blur-lg md:hidden pb-[calc(env(safe-area-inset-bottom)+0.5rem)] shadow-[0_-5px_15px_-10px_rgba(0,0,0,0.1)]">
-        <div className="flex min-h-[4rem] h-auto items-stretch justify-around px-2 py-1">
+      <nav className="fixed bottom-0 left-0 right-0 z-40 border-t bg-background/80 backdrop-blur-lg md:hidden pb-[calc(env(safe-area-inset-bottom)+0.25rem)] shadow-[0_-5px_15px_-10px_rgba(0,0,0,0.1)]">
+        <div className="flex min-h-[3.5rem] h-auto items-stretch justify-around px-1 py-1">
           {navItems.map((item) => {
             const isActive = pathname.startsWith(item.href);
             return (
@@ -291,7 +291,7 @@ function BottomNavBar() {
                 aria-label={item.label}
               >
                 <motion.div
-                  className="relative flex items-center justify-center p-2 rounded-xl"
+                  className="relative flex items-center justify-center p-1.5 rounded-xl"
                   whileTap={{ scale: 0.85 }}
                 >
                   {isActive && (
@@ -303,7 +303,7 @@ function BottomNavBar() {
                   )}
                   <motion.div
                     animate={{ 
-                      scale: isActive ? 1.2 : 1,
+                      scale: isActive ? 1.1 : 1,
                       color: isActive ? "var(--primary)" : "var(--muted-foreground)"
                     }}
                     transition={{ duration: 0.2 }}
@@ -312,7 +312,7 @@ function BottomNavBar() {
                       isActive ? "text-primary" : "text-muted-foreground"
                     )}
                   >
-                    <item.icon className={cn("h-6 w-6", !isActive && item.color)} />
+                    <item.icon className={cn("h-5 w-5", !isActive && item.color)} />
                   </motion.div>
                 </motion.div>
               </Link>
@@ -343,7 +343,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     setLoadingMessage(inspirationalMessages[Math.floor(Math.random() * inspirationalMessages.length)]);
 
     // Interactivity Safety Valve
-    // Radix UI sometimes fails to remove scroll locks or pointer-events if a modal unmounts unexpectedly.
     const interval = setInterval(() => {
         if (typeof document !== 'undefined') {
             const hasModals = !!document.querySelector('[role="dialog"], [role="menu"], [data-radix-portal]');
@@ -358,7 +357,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         }
     }, 1000);
 
-    // Splash logic: Show if not shown in last 12 hours OR if forced by sign-in
     const SPLASH_COOLDOWN = 12 * 60 * 60 * 1000;
     const lastShown = localStorage.getItem('testify_splash_last_shown');
     const forceSplash = sessionStorage.getItem('testify_force_splash') === 'true';
@@ -373,7 +371,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             setShowSplash(false);
             localStorage.setItem('testify_splash_last_shown', now.toString());
             setContentVisible(true);
-        }, 10000); // 10 seconds only
+        }, 10000);
         return () => {
             clearTimeout(timer);
             clearInterval(interval);
@@ -390,7 +388,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     setContentVisible(true);
   };
 
-  // Global scroll to top on navigation
   useEffect(() => {
     if (scrollContainerRef.current) {
         scrollContainerRef.current.scrollTop = 0;
@@ -398,7 +395,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     window.scrollTo(0, 0);
   }, [pathname]);
 
-  // Update background image based on user profile
   useEffect(() => {
     if (!mounted) return;
     const root = document.documentElement;
@@ -523,7 +519,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             >
                 <div className={cn(
                 "mx-auto min-h-full", 
-                !isTakeoverPage ? "max-w-7xl p-4 md:p-8 pb-32 md:pb-8" : "w-full"
+                !isTakeoverPage ? "max-w-7xl p-3 md:p-6 pb-28 md:pb-6" : "w-full"
                 )}>
                     <PageTransition>{children}</PageTransition>
                 </div>
