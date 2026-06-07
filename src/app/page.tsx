@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useMemo, useState, useEffect } from 'react';
@@ -67,7 +68,7 @@ export default function LandingPage() {
   const firestore = useFirestore();
   const logo = PlaceHolderImages.find((img) => img.id === 'logo');
   const gospelCollage = PlaceHolderImages.find((img) => img.id === 'gospel-collage');
-  const gospelCollageUrl = gospelCollage?.imageUrl || 'https://images.unsplash.com/photo-1504052434569-70ad58ebb96d?q=80&w=2070&auto=format&fit=crop';
+  const gospelCollageUrl = gospelCollage?.imageUrl || 'https://images.unsplash.com/photo-1624884252467-9e57b4b0f751?q=80&w=2070&auto=format&fit=crop';
 
   // Redirect authenticated users
   useEffect(() => {
@@ -124,7 +125,7 @@ export default function LandingPage() {
                fill
                className="object-cover"
                priority
-               data-ai-hint="bible scriptures"
+               data-ai-hint="JESUS"
              />
              <div className="absolute inset-0 bg-zinc-950/80" />
              <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-transparent" />
