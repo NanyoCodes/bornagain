@@ -306,7 +306,7 @@ export default function LandingPage() {
               </p>
               <div className="flex gap-4">
                 <Button variant="outline" size="icon" asChild className="rounded-full h-10 w-10 bg-background border-muted hover:border-primary/50 transition-colors shadow-sm">
-                  <Link href="https://instagram.com/testifyglobal360" target="_blank" rel="noopener noreferrer">
+                  <Link href="https://instagram.com/testifyglobal2026" target="_blank" rel="noopener noreferrer">
                     <Instagram className="h-4 w-4" />
                     <span className="sr-only">Instagram</span>
                   </Link>
