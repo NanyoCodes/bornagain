@@ -105,7 +105,7 @@ export default function LandingPage() {
             <Button variant="ghost" asChild className="hidden sm:inline-flex font-bold">
               <Link href="/login">Sign In</Link>
             </Button>
-            <Button asChild className="rounded-full px-4 sm:px-6 font-black tracking-widest uppercase text-[10px] sm:text-xs h-9 sm:h-10">
+            <Button asChild className="rounded-full px-4 sm:px-6 font-black tracking-widest uppercase text-[10px] sm:text-xs h-8 sm:h-9">
               <Link href="/signup">Join Movement</Link>
             </Button>
           </div>
@@ -144,12 +144,12 @@ export default function LandingPage() {
                 transition={{ duration: 0.8, delay: 0.2 }}
                 className="flex flex-col sm:flex-row gap-3 sm:gap-4"
               >
-                <Button asChild size="lg" className="h-12 sm:h-14 px-8 sm:px-10 text-base sm:text-lg font-black rounded-2xl shadow-xl shadow-primary/30 uppercase tracking-widest">
+                <Button asChild size="lg" className="h-10 sm:h-11 px-6 sm:px-8 text-sm sm:text-base font-black rounded-2xl shadow-xl shadow-primary/30 uppercase tracking-widest">
                   <Link href="/signup">
                     Get Started Free <ArrowRight className="ml-2 h-5 w-5" />
                   </Link>
                 </Button>
-                <Button asChild variant="outline" size="lg" className="h-12 sm:h-14 px-8 sm:px-10 text-base sm:text-lg font-bold rounded-2xl bg-white/5 backdrop-blur-md border-white/20 text-white hover:bg-white/10">
+                <Button asChild variant="outline" size="lg" className="h-10 sm:h-11 px-6 sm:px-8 text-sm sm:text-base font-bold rounded-2xl bg-white/5 backdrop-blur-md border-white/20 text-white hover:bg-white/10">
                   <Link href="/about">Our Mission</Link>
                 </Button>
               </motion.div>
@@ -215,7 +215,7 @@ export default function LandingPage() {
                   </p>
                 </div>
                 
-                <Button asChild size="lg" variant="outline" className="h-11 sm:h-12 rounded-full font-bold border-primary/20 text-primary hover:bg-primary/5 px-8 w-full sm:w-auto">
+                <Button asChild size="lg" variant="outline" className="h-9 sm:h-10 rounded-full font-bold border-primary/20 text-primary hover:bg-primary/5 px-6 w-full sm:w-auto">
                   <Link href="/testimonies">View Glory Feed</Link>
                 </Button>
               </div>
@@ -278,7 +278,7 @@ export default function LandingPage() {
                 Record miracles, reach cities, and track the greatness of God.
               </p>
               <div className="flex justify-center pt-2 sm:pt-4">
-                <Button asChild size="lg" className="h-14 sm:h-16 px-8 sm:px-12 text-lg sm:text-xl font-black bg-white text-primary hover:bg-white/90 rounded-2xl shadow-2xl uppercase tracking-widest w-full sm:w-auto">
+                <Button asChild size="lg" className="h-12 sm:h-14 px-6 sm:px-10 text-base sm:text-lg font-black bg-white text-primary hover:bg-white/90 rounded-2xl shadow-2xl uppercase tracking-widest w-full sm:w-auto">
                   <Link href="/signup">
                     START TESTIFYING <ArrowRight className="ml-3 h-5 w-5 sm:h-6 sm:w-6" />
                   </Link>
