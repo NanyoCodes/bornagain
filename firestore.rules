@@ -3,7 +3,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Synchronizing devotional write permissions for organizers - 2025-05-22T15:35:00Z
+    // Deployment trigger: Synchronizing robust devotional permissions - 2025-05-22T15:55:00Z
     
     function isOwner(userId) {
       return request.auth != null && request.auth.uid == userId;
@@ -94,7 +94,7 @@ service cloud.firestore {
            (request.resource.data.inspiredBy.size() == resource.data.get('inspiredBy', []).size() - 1 && !(request.auth.uid in request.resource.data.inspiredBy))
          )) ||
         (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['connectedBy']) && 
-         ( (request.resource.data.connectedBy.size() == resource.data.get('connectedBy', []).size() + 1 && request.auth.uid in request.resource.data.connectedBy) ||
+         ( (request.resource.data.connectedBy.size() == request.auth.uid in request.resource.data.connectedBy) ||
            (request.resource.data.connectedBy.size() == resource.data.get('connectedBy', []).size() - 1 && !(request.auth.uid in request.resource.data.connectedBy))
          ))
       );
@@ -168,7 +168,8 @@ service cloud.firestore {
 
       match /devotionals/{date} {
         allow read: if true;
-        allow write: if request.auth != null && request.auth.uid == get(/databases/$(database)/documents/fellowships/$(fellowshipId)).data.organizerId;
+        allow write: if request.auth != null && 
+                     request.auth.uid == get(/databases/$(database)/documents/fellowships/$(fellowshipId)).data.get('organizerId', '');
       }
     }
 

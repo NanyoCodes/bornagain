@@ -165,7 +165,7 @@ export default function FellowshipPageClient() {
 
     const loading = fellowshipLoading || profileLoading || organizerLoading || loadingMembers || soulsLoading || todayDevoLoading;
 
-    const handleSaveDevotional = async (values: z.infer<typeof devotionalSchema>) => {
+    const handleSaveDevotional = (values: z.infer<typeof devotionalSchema>) => {
         if (!user || !firestore || !fellowship || !isOrganizer) return;
         setIsSavingDevotional(true);
 
@@ -180,20 +180,27 @@ export default function FellowshipPageClient() {
             createdAt: serverTimestamp() as any,
         };
 
-        try {
-            await setDoc(devotionalRef, devotionalData, { merge: true });
-            toast({ title: 'Devotional Saved', description: `Word for ${format(new Date(values.scheduledDate), 'MMM d')} has been updated.` });
-            form.reset({
-                title: '',
-                scripture: '',
-                text: '',
-                scheduledDate: values.scheduledDate,
+        setDoc(devotionalRef, devotionalData, { merge: true })
+            .then(() => {
+                toast({ title: 'Devotional Saved', description: `Word for ${format(new Date(values.scheduledDate), 'MMM d')} has been updated.` });
+                form.reset({
+                    title: '',
+                    scripture: '',
+                    text: '',
+                    scheduledDate: values.scheduledDate,
+                });
+            })
+            .catch(async (serverError) => {
+                const permissionError = new FirestorePermissionError({ 
+                    path: devotionalRef.path, 
+                    operation: 'write',
+                    requestResourceData: devotionalData
+                }, user);
+                errorEmitter.emit('permission-error', permissionError);
+            })
+            .finally(() => {
+                setIsSavingDevotional(false);
             });
-        } catch (e) {
-            errorEmitter.emit('permission-error', new FirestorePermissionError({ path: devotionalRef.path, operation: 'write' }, user));
-        } finally {
-            setIsSavingDevotional(false);
-        }
     };
 
     const handleDeleteDevotional = async (date: string) => {
