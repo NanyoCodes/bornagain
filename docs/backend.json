@@ -1,3 +1,4 @@
+
 {
   "entities": {
     "UserProfile": {
@@ -292,18 +293,23 @@
         "organizerId": { "type": "string" },
         "organizerName": { "type": "string" },
         "memberCount": { "type": "number" },
-        "memberIds": { "type": "array", "items": { "type": "string" } },
-        "dailyDevotional": {
-          "type": "object",
-          "properties": {
-            "title": { "type": "string" },
-            "text": { "type": "string" },
-            "scripture": { "type": "string" },
-            "authorName": { "type": "string" },
-            "createdAt": { "type": "object" }
-          }
-        }
+        "memberIds": { "type": "array", "items": { "type": "string" } }
       }
+    },
+    "DailyDevotional": {
+      "title": "Daily Devotional",
+      "description": "A daily word of encouragement for a group.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "text": { "type": "string" },
+        "scripture": { "type": "string" },
+        "authorId": { "type": "string" },
+        "authorName": { "type": "string" },
+        "scheduledDate": { "type": "string", "description": "Date string in YYYY-MM-DD format." },
+        "createdAt": { "type": "object" }
+      },
+      "required": ["title", "text", "scripture", "authorId", "scheduledDate"]
     }
   },
   "auth": {
@@ -330,7 +336,13 @@
       "schema": {
           "$ref": "#/entities/Fellowship"
       },
-      "description": "Stores fellowship group data and the daily devotional."
+      "description": "Stores fellowship group data."
+    },
+    "/fellowships/{fellowshipId}/devotionals/{date}": {
+      "schema": {
+          "$ref": "#/entities/DailyDevotional"
+      },
+      "description": "Stores scheduled daily devotionals for the group, keyed by YYYY-MM-DD."
     }
   }
 }

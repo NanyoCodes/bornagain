@@ -1,3 +1,4 @@
+
 import type { Timestamp } from "firebase/firestore";
 
 export type ReadingHistoryItem = {
@@ -363,11 +364,13 @@ export type Mail = {
 };
 
 export type DailyDevotional = {
+  id: string; // YYYY-MM-DD
   title: string;
   text: string;
   scripture: string;
   authorId: string;
   authorName: string;
+  scheduledDate: string; // YYYY-MM-DD
   createdAt: Timestamp;
 };
 
@@ -392,7 +395,6 @@ export type Fellowship = {
   status?: 'active' | 'deleted';
   streamUrl?: string;
   hasGroupChat?: boolean;
-  dailyDevotional?: DailyDevotional;
 };
 
 export type FellowshipMember = {
