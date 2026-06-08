@@ -6,7 +6,7 @@ import { useRouter, useParams } from 'next/navigation';
 import { useDoc, useFirestore, useUser, useCollection, useUserProfile } from '@/firebase';
 import type { Fellowship, UserProfile, FellowshipMember, Soul, DailyDevotional } from '@/lib/types';
 import { doc, collection, query, orderBy, where, writeBatch, serverTimestamp, updateDoc, arrayRemove, increment, deleteField, setDoc, deleteDoc, limit } from 'firebase/firestore';
-import { Loader2, ArrowLeft, Users, Calendar, PlayCircle, MapPin, Heart, Phone, Mail, Church, History, PlusCircle, Award, MessagesSquare, User, Info, Sparkles, UserMinus, Trash2, BookOpen, Quote, Edit, CalendarClock } from 'lucide-react';
+import { Loader2, ArrowLeft, Users, Calendar, PlayCircle, MapPin, Heart, Phone, Mail, Church, History, PlusCircle, Award, MessagesSquare, User, Info, Sparkles, UserMinus, Trash2, BookOpen, Quote, Edit, CalendarClock, ChevronLeft, ChevronRight, CalendarDays } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -14,10 +14,10 @@ import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { format, addDays, isSameDay } from 'date-fns';
+import { format, addDays, isSameDay, subDays, parseISO } from 'date-fns';
 import { safeToDate, cn } from '@/lib/utils';
 import { LogFollowUpDialog } from '@/components/souls/log-follow-up-dialog';
 import { actionItems, statusOptions } from '@/lib/follow-up-data';
@@ -80,8 +80,12 @@ export default function FellowshipPageClient() {
     const [isSoulDetailsOpen, setIsSoulDetailsOpen] = useState(false);
     const [isLogFollowUpOpen, setIsLogFollowUpOpen] = useState(false);
     const [isChatLoading, setIsChatLoading] = useState(false);
+    
+    // Devotional State
+    const [viewDate, setViewDate] = useState(new Date());
     const [isDevotionalDialogOpen, setIsDevotionalDialogOpen] = useState(false);
     const [isSavingDevotional, setIsSavingDevotional] = useState(false);
+    const [isScheduleViewOpen, setIsScheduleViewOpen] = useState(false);
     
     const [memberToRemove, setMemberToRemove] = useState<FellowshipMember | null>(null);
     const [soulToUnassign, setSoulToUnassign] = useState<Soul | null>(null);
@@ -111,17 +115,17 @@ export default function FellowshipPageClient() {
         return fellowship.organizerId === user.uid;
     }, [user, fellowship]);
 
-    const todayStr = format(new Date(), 'yyyy-MM-dd');
-    const todayDevotionalRef = useMemo(() => {
+    const viewDateStr = format(viewDate, 'yyyy-MM-dd');
+    const activeDevotionalRef = useMemo(() => {
         if (!firestore || !fellowshipId) return null;
-        return doc(firestore, 'fellowships', fellowshipId, 'devotionals', todayStr);
-    }, [firestore, fellowshipId, todayStr]);
-    const { data: todayDevotional, loading: todayDevoLoading } = useDoc<DailyDevotional>(todayDevotionalRef);
+        return doc(firestore, 'fellowships', fellowshipId, 'devotionals', viewDateStr);
+    }, [firestore, fellowshipId, viewDateStr]);
+    const { data: activeDevotional, loading: devoLoading } = useDoc<DailyDevotional>(activeDevotionalRef);
 
     const scheduledDevotionalsQuery = useMemo(() => {
-        if (!firestore || !fellowshipId || !isOrganizer) return null;
+        if (!firestore || !fellowshipId || !(isMember || isOrganizer)) return null;
         return query(collection(firestore, 'fellowships', fellowshipId, 'devotionals'), orderBy('scheduledDate', 'asc'), limit(60));
-    }, [firestore, fellowshipId, isOrganizer]);
+    }, [firestore, fellowshipId, isMember, isOrganizer]);
     const { data: scheduledDevotionals, loading: loadingSchedule } = useCollection<DailyDevotional>(scheduledDevotionalsQuery);
 
     const form = useForm<z.infer<typeof devotionalSchema>>({
@@ -130,7 +134,7 @@ export default function FellowshipPageClient() {
             title: '',
             scripture: '',
             text: '',
-            scheduledDate: todayStr,
+            scheduledDate: viewDateStr,
         },
     });
 
@@ -163,7 +167,7 @@ export default function FellowshipPageClient() {
 
     const totalDirectoryCount = (members?.length || 0) + (assignedSouls?.length || 0);
 
-    const loading = fellowshipLoading || profileLoading || organizerLoading || loadingMembers || soulsLoading || todayDevoLoading;
+    const loading = fellowshipLoading || profileLoading || organizerLoading || loadingMembers || soulsLoading || devoLoading;
 
     const handleSaveDevotional = (values: z.infer<typeof devotionalSchema>) => {
         if (!user || !firestore || !fellowship || !isOrganizer) return;
@@ -306,6 +310,10 @@ export default function FellowshipPageClient() {
         }
     };
 
+    const handleDateNav = (direction: 'prev' | 'next') => {
+        setViewDate(prev => direction === 'prev' ? subDays(prev, 1) : addDays(prev, 1));
+    };
+
     if (loading || !mounted) {
         return (
             <div className="flex items-center justify-center h-full py-20">
@@ -425,6 +433,43 @@ export default function FellowshipPageClient() {
       </div>
     ) : null;
 
+    const ScheduleList = (
+        <div className="space-y-4">
+            {loadingSchedule ? (
+                <div className="py-12 flex justify-center"><Loader2 className="h-8 w-8 animate-spin opacity-20" /></div>
+            ) : scheduledDevotionals && scheduledDevotionals.length > 0 ? (
+                <div className="grid gap-3">
+                    {scheduledDevotionals.map(devo => {
+                        const isSelected = isSameDay(parseISO(devo.scheduledDate), viewDate);
+                        return (
+                            <button
+                                key={devo.scheduledDate}
+                                onClick={() => { setViewDate(parseISO(devo.scheduledDate)); setIsScheduleViewOpen(false); }}
+                                className={cn(
+                                    "text-left p-4 rounded-2xl border transition-all relative overflow-hidden group",
+                                    isSelected ? "bg-primary/5 border-primary/40 ring-1 ring-primary/20" : "bg-card hover:bg-muted/30 hover:border-primary/10"
+                                )}
+                            >
+                                <div className="flex justify-between items-center mb-1">
+                                    <span className="text-[10px] font-black uppercase tracking-widest text-primary/70">{format(parseISO(devo.scheduledDate), 'EEEE, MMM d')}</span>
+                                    {isSameDay(parseISO(devo.scheduledDate), new Date()) && <Badge className="h-4 text-[7px] font-black uppercase">Today</Badge>}
+                                </div>
+                                <p className="font-bold text-sm truncate pr-6">{devo.title}</p>
+                                <p className="text-[9px] text-muted-foreground mt-1 uppercase font-bold tracking-tighter italic">Ref: {devo.scripture}</p>
+                                <ChevronRight className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-primary opacity-0 group-hover:opacity-100 transition-opacity" />
+                            </button>
+                        );
+                    })}
+                </div>
+            ) : (
+                <div className="py-16 text-center text-muted-foreground italic border-2 border-dashed rounded-3xl">
+                    <CalendarDays className="h-10 w-10 mx-auto opacity-10 mb-4" />
+                    <p className="text-sm font-medium">No future words scheduled yet.</p>
+                </div>
+            )}
+        </div>
+    );
+
     return (
         <div className="space-y-6 max-w-6xl mx-auto pb-32">
             <div className="flex items-center gap-3 sm:gap-4 px-4 sm:px-0">
@@ -529,57 +574,114 @@ export default function FellowshipPageClient() {
                 <div className="lg:col-span-2 space-y-6 sm:order-last lg:order-first px-0 sm:px-0">
                     {/* Daily Devotional Section */}
                     <Card className="rounded-none sm:rounded-[2.5rem] border-x-0 sm:border-x shadow-none sm:shadow-lg border-none bg-primary text-primary-foreground overflow-hidden">
-                        <CardHeader className="p-6 sm:p-10 pb-4 flex flex-row items-center justify-between">
+                        <CardHeader className="p-6 sm:p-10 pb-4 flex flex-row items-center justify-between gap-4">
                             <div className="space-y-1">
                                 <div className="flex items-center gap-2 mb-1.5">
                                     <BookOpen className="h-4 w-4 opacity-80" />
                                     <span className="text-[10px] font-black uppercase tracking-[0.3em] opacity-80">Daily Devotional</span>
                                 </div>
                                 <CardTitle className="text-2xl sm:text-3xl font-black font-headline tracking-tight uppercase leading-tight">
-                                    {todayDevotional?.title || 'The Daily Word'}
+                                    {activeDevotional?.title || (devoLoading ? 'Checking...' : 'The Daily Word')}
                                 </CardTitle>
+                                <p className="text-[10px] font-black uppercase tracking-widest opacity-60">
+                                    {format(viewDate, 'EEEE, MMMM d, yyyy')}
+                                </p>
                             </div>
-                            {isOrganizer && (
-                                <Button 
-                                    variant="outline" 
-                                    size="icon" 
-                                    className="h-10 w-10 sm:h-12 sm:w-12 rounded-2xl bg-white/10 border-white/20 hover:bg-white/20 text-white shrink-0"
-                                    onClick={() => setIsDevotionalDialogOpen(true)}
-                                >
-                                    <CalendarClock className="h-5 w-5" />
-                                </Button>
-                            )}
+                            <div className="flex gap-2 shrink-0">
+                                <TooltipProvider>
+                                    <Tooltip>
+                                        <TooltipTrigger asChild>
+                                            <Button 
+                                                variant="outline" 
+                                                size="icon" 
+                                                className="h-10 w-10 sm:h-12 sm:w-12 rounded-2xl bg-white/10 border-white/20 hover:bg-white/20 text-white"
+                                                onClick={() => setIsScheduleViewOpen(true)}
+                                            >
+                                                <CalendarClock className="h-5 w-5" />
+                                            </Button>
+                                        </TooltipTrigger>
+                                        <TooltipContent><p className="text-[10px] font-bold uppercase">View Schedule</p></TooltipContent>
+                                    </Tooltip>
+                                </TooltipProvider>
+                                {isOrganizer && (
+                                    <TooltipProvider>
+                                        <Tooltip>
+                                            <TooltipTrigger asChild>
+                                                <Button 
+                                                    variant="outline" 
+                                                    size="icon" 
+                                                    className="h-10 w-10 sm:h-12 sm:w-12 rounded-2xl bg-white/10 border-white/20 hover:bg-white/20 text-white"
+                                                    onClick={() => {
+                                                        if (activeDevotional) handleEditDevotional(activeDevotional);
+                                                        setIsDevotionalDialogOpen(true);
+                                                    }}
+                                                >
+                                                    <Edit className="h-5 w-5" />
+                                                </Button>
+                                            </TooltipTrigger>
+                                            <TooltipContent><p className="text-[10px] font-bold uppercase">Arrange Word</p></TooltipContent>
+                                        </Tooltip>
+                                    </TooltipProvider>
+                                )}
+                            </div>
                         </CardHeader>
                         <CardContent className="px-6 sm:p-10 pt-0 pb-8 sm:pb-10 space-y-6">
-                            {todayDevoLoading ? (
+                            {devoLoading ? (
                                 <div className="py-12 flex justify-center"><Loader2 className="h-8 w-8 animate-spin opacity-20" /></div>
-                            ) : todayDevotional ? (
+                            ) : activeDevotional ? (
                                 <>
                                     <div className="bg-white/5 rounded-[1.5rem] p-6 sm:p-8 border border-white/10 relative shadow-inner group">
                                         <Quote className="absolute top-4 right-6 h-10 w-10 opacity-10 rotate-12 transition-transform group-hover:scale-110" />
-                                        <p className="text-lg sm:text-xl font-serif italic leading-relaxed text-justify text-balance">&ldquo;{todayDevotional.text}&rdquo;</p>
-                                        <p className="text-[10px] sm:text-xs font-black uppercase text-white/60 text-right mt-6 tracking-widest">— {todayDevotional.scripture}</p>
+                                        <p className="text-lg sm:text-xl font-serif italic leading-relaxed text-justify text-balance">&ldquo;{activeDevotional.text}&rdquo;</p>
+                                        <p className="text-[10px] sm:text-xs font-black uppercase text-white/60 text-right mt-6 tracking-widest">— {activeDevotional.scripture}</p>
                                     </div>
                                     <div className="flex items-center justify-between pt-2">
                                         <div className="flex items-center gap-2">
                                             <Sparkles className="h-3.5 w-3.5 opacity-60" />
-                                            <span className="text-[9px] font-black uppercase tracking-widest opacity-60">Shared by {todayDevotional.authorName}</span>
+                                            <span className="text-[9px] font-black uppercase tracking-widest opacity-60">Shared by {activeDevotional.authorName}</span>
+                                        </div>
+                                        <div className="flex items-center gap-1 bg-white/10 rounded-xl p-1 border border-white/10 shadow-lg">
+                                            <Button variant="ghost" size="icon" className="h-8 w-8 text-white hover:bg-white/10 rounded-lg" onClick={() => handleDateNav('prev')}>
+                                                <ChevronLeft className="h-4 w-4" />
+                                            </Button>
+                                            <span className="text-[8px] font-black uppercase tracking-tighter px-1 min-w-[70px] text-center">Nav Daily</span>
+                                            <Button variant="ghost" size="icon" className="h-8 w-8 text-white hover:bg-white/10 rounded-lg" onClick={() => handleDateNav('next')}>
+                                                <ChevronRight className="h-4 w-4" />
+                                            </Button>
                                         </div>
                                     </div>
+                                    {!isSameDay(viewDate, new Date()) && (
+                                        <Button 
+                                            variant="ghost" 
+                                            className="w-full text-[10px] font-black uppercase tracking-widest text-white/60 hover:text-white hover:bg-white/5 h-8 rounded-full"
+                                            onClick={() => setViewDate(new Date())}
+                                        >
+                                            Return to Today
+                                        </Button>
+                                    )}
                                 </>
                             ) : (
                                 <div className="text-center py-10 sm:py-16 bg-white/5 rounded-[2rem] border-2 border-dashed border-white/10 mx-auto flex flex-col items-center">
                                     <BookOpen className="h-10 w-10 opacity-20 mb-4" />
-                                    <p className="text-sm sm:text-base font-medium opacity-60 px-8 italic">No word shared for today yet.</p>
-                                    {isOrganizer && (
-                                        <Button 
-                                            variant="secondary" 
-                                            className="mt-6 font-black rounded-xl h-10 px-8"
-                                            onClick={() => setIsDevotionalDialogOpen(true)}
-                                        >
-                                            POST TODAY'S WORD
-                                        </Button>
-                                    )}
+                                    <p className="text-sm sm:text-base font-medium opacity-60 px-8 italic text-balance">
+                                        No word arranged for {isSameDay(viewDate, new Date()) ? 'today' : format(viewDate, 'MMM d')} yet.
+                                    </p>
+                                    <div className="flex flex-col sm:flex-row gap-3 mt-8">
+                                        <Button variant="outline" className="bg-white/10 border-white/20 text-white rounded-xl h-10 px-6 font-bold" onClick={() => handleDateNav('prev')}><ChevronLeft className="mr-2 h-4 w-4" /> Previous</Button>
+                                        {isOrganizer && (
+                                            <Button 
+                                                variant="secondary" 
+                                                className="font-black rounded-xl h-10 px-8 shadow-xl"
+                                                onClick={() => {
+                                                    form.setValue('scheduledDate', viewDateStr);
+                                                    setIsDevotionalDialogOpen(true);
+                                                }}
+                                            >
+                                                ARRANGE WORD
+                                            </Button>
+                                        )}
+                                        <Button variant="outline" className="bg-white/10 border-white/20 text-white rounded-xl h-10 px-6 font-bold" onClick={() => handleDateNav('next')}>Next <ChevronRight className="ml-2 h-4 w-4" /></Button>
+                                    </div>
                                 </div>
                             )}
                         </CardContent>
@@ -717,177 +819,168 @@ export default function FellowshipPageClient() {
                 </div>
             </div>
 
-            {/* Devotional Management Hub */}
-            {isOrganizer && (
-                mounted && isMobile ? (
-                    <Sheet open={isDevotionalDialogOpen} onOpenChange={setIsDevotionalDialogOpen}>
-                        <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
-                            <div className="p-8 border-b flex-shrink-0 bg-muted/10">
-                                <SheetHeader className="text-left">
-                                    <SheetTitle className="text-2xl font-black font-headline">Spiritual Hub</SheetTitle>
-                                    <SheetDescription className="text-sm font-medium">Schedule daily devotionals for your group.</SheetDescription>
-                                </SheetHeader>
+            {/* Devotional Hub Modal */}
+            {mounted && isMobile ? (
+                <Sheet open={isDevotionalDialogOpen} onOpenChange={setIsDevotionalDialogOpen}>
+                    <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+                        <div className="p-8 border-b flex-shrink-0 bg-muted/10">
+                            <SheetHeader className="text-left">
+                                <SheetTitle className="text-2xl font-black font-headline">Devotional Hub</SheetTitle>
+                                <SheetDescription className="text-sm font-medium">Arrange the Word for your group.</SheetDescription>
+                            </SheetHeader>
+                        </div>
+                        <ScrollArea className="flex-grow">
+                            <div className="p-8 space-y-10">
+                                <Form {...form}>
+                                    <form id="devotional-form-mobile" onSubmit={form.handleSubmit(handleSaveDevotional)} className="space-y-6">
+                                        <FormField control={form.control} name="scheduledDate" render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Pin to Date</FormLabel>
+                                                <FormControl><Input type="date" min={todayStr} {...field} className="h-12 rounded-2xl bg-muted/20 border-none font-bold" /></FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )} />
+                                        <FormField control={form.control} name="title" render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Title</FormLabel>
+                                                <FormControl><Input placeholder="e.g., Favor & Grace" {...field} className="h-12 rounded-2xl bg-muted/20 border-none font-bold" /></FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )} />
+                                        <FormField control={form.control} name="scripture" render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Primary Scripture</FormLabel>
+                                                <FormControl><Input placeholder="e.g., Psalm 23:1" {...field} className="h-12 rounded-2xl bg-muted/20 border-none font-bold" /></FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )} />
+                                        <FormField control={form.control} name="text" render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Message Content</FormLabel>
+                                                <FormControl><Textarea placeholder="Share the revelation..." className="min-h-[150px] rounded-2xl bg-muted/20 border-none text-base" {...field} /></FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )} />
+                                        <Button type="submit" form="devotional-form-mobile" disabled={isSavingDevotional} className="w-full h-14 font-black shadow-xl rounded-2xl tracking-widest uppercase">
+                                            {isSavingDevotional && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                            PUBLISH WORD
+                                        </Button>
+                                    </form>
+                                </Form>
+                                
+                                <div className="pt-6 border-t">
+                                    <h3 className="font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground mb-4">Advance Planner</h3>
+                                    {ScheduleList}
+                                </div>
                             </div>
-                            <ScrollArea className="flex-grow">
-                                <div className="p-8 space-y-10">
-                                    <Form {...form}>
-                                        <form id="devotional-form-mobile" onSubmit={form.handleSubmit(handleSaveDevotional)} className="space-y-6">
-                                            <FormField control={form.control} name="scheduledDate" render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>Scheduled Date</FormLabel>
-                                                    <FormControl><Input type="date" min={todayStr} {...field} /></FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )} />
-                                            <FormField control={form.control} name="title" render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>Title</FormLabel>
-                                                    <FormControl><Input placeholder="e.g., Favor & Grace" {...field} /></FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )} />
-                                            <FormField control={form.control} name="scripture" render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>Scripture</FormLabel>
-                                                    <FormControl><Input placeholder="e.g., Psalm 23:1" {...field} /></FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )} />
-                                            <FormField control={form.control} name="text" render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>Daily Word</FormLabel>
-                                                    <FormControl><Textarea placeholder="Share the revelation..." className="min-h-[150px]" {...field} /></FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )} />
-                                            <Button type="submit" form="devotional-form-mobile" disabled={isSavingDevotional} className="w-full h-12 font-black shadow-lg">
-                                                {isSavingDevotional && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                                SAVE WORD
-                                            </Button>
-                                        </form>
-                                    </Form>
+                        </ScrollArea>
+                    </SheetContent>
+                </Sheet>
+            ) : (
+                <Dialog open={isDevotionalDialogOpen} onOpenChange={setIsDevotionalDialogOpen}>
+                    <DialogContent className="sm:max-w-4xl p-0 overflow-hidden rounded-[2rem] shadow-2xl border-none">
+                        <div className="p-8 border-b bg-muted/10">
+                            <DialogHeader>
+                                <DialogTitle className="text-3xl font-black font-headline tracking-tight uppercase">Devotional Hub</DialogTitle>
+                                <DialogDescription className="text-base font-medium">Prepare and schedule spiritual nourishment for your group.</DialogDescription>
+                            </DialogHeader>
+                        </div>
+                        <div className="flex h-[70vh]">
+                            <div className="w-1/2 border-r flex flex-col bg-muted/5">
+                                <div className="p-4 border-b bg-muted/10 flex items-center gap-2">
+                                    <History className="h-4 w-4 text-primary" />
+                                    <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Advance Planner</span>
+                                </div>
+                                <ScrollArea className="flex-1">
+                                    <div className="p-6">
+                                        {ScheduleList}
+                                    </div>
+                                </ScrollArea>
+                            </div>
+                            <div className="w-1/2 flex flex-col">
+                                <div className="p-4 border-b bg-muted/10 flex items-center gap-2">
+                                    <PlusCircle className="h-4 w-4 text-primary" />
+                                    <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Arrange The Word</span>
+                                </div>
+                                <ScrollArea className="flex-1">
+                                    <div className="p-8">
+                                        <Form {...form}>
+                                            <form id="devotional-form-desktop" onSubmit={form.handleSubmit(handleSaveDevotional)} className="space-y-6">
+                                                <FormField control={form.control} name="scheduledDate" render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Pin to Date</FormLabel>
+                                                        <FormControl><Input type="date" min={todayStr} {...field} className="h-11 rounded-xl bg-muted/20 border-none font-bold" /></FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )} />
+                                                <FormField control={form.control} name="title" render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Title</FormLabel>
+                                                        <FormControl><Input placeholder="e.g., Power of Prayer" {...field} className="h-11 rounded-xl bg-muted/20 border-none font-bold" /></FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )} />
+                                                <FormField control={form.control} name="scripture" render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Primary Scripture</FormLabel>
+                                                        <FormControl><Input placeholder="e.g., Matthew 6:33" {...field} className="h-11 rounded-xl bg-muted/20 border-none font-bold" /></FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )} />
+                                                <FormField control={form.control} name="text" render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Message Content</FormLabel>
+                                                        <FormControl><Textarea placeholder="Type the daily word here..." className="min-h-[150px] rounded-xl bg-muted/20 border-none text-base" {...field} /></FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )} />
+                                                <Button type="submit" form="devotional-form-desktop" disabled={isSavingDevotional} className="w-full h-12 rounded-xl font-black shadow-xl tracking-widest uppercase">
+                                                    {isSavingDevotional && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                                    PUBLISH TO SCHEDULE
+                                                </Button>
+                                            </form>
+                                        </Form>
+                                    </div>
+                                </ScrollArea>
+                            </div>
+                        </div>
+                    </DialogContent>
+                </Dialog>
+            )}
 
-                                    <div className="space-y-4 pt-4 border-t">
-                                        <h3 className="font-black text-xs uppercase tracking-widest text-muted-foreground">Planned Schedule</h3>
-                                        <div className="space-y-3">
-                                            {loadingSchedule ? (
-                                                <Loader2 className="h-6 w-6 animate-spin mx-auto opacity-20" />
-                                            ) : scheduledDevotionals && scheduledDevotionals.length > 0 ? (
-                                                scheduledDevotionals.map(devo => (
-                                                    <div key={devo.scheduledDate} className="p-4 border rounded-2xl bg-muted/5 flex items-center justify-between gap-4">
-                                                        <div className="min-w-0">
-                                                            <p className="text-[10px] font-black uppercase text-primary mb-0.5">{format(new Date(devo.scheduledDate), 'MMM d, yyyy')}</p>
-                                                            <p className="font-bold text-sm truncate">{devo.title}</p>
-                                                        </div>
-                                                        <div className="flex items-center gap-1">
-                                                            <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => handleEditDevotional(devo)}><Edit className="h-4 w-4" /></Button>
-                                                            <Button size="icon" variant="ghost" className="h-8 w-8 text-destructive" onClick={() => handleDeleteDevotional(devo.scheduledDate)}><Trash2 className="h-4 w-4" /></Button>
-                                                        </div>
-                                                    </div>
-                                                ))
-                                            ) : (
-                                                <p className="text-xs text-muted-foreground italic text-center py-6">No words scheduled yet.</p>
-                                            )}
-                                        </div>
-                                    </div>
+            {/* Schedule Viewer (For members to peek ahead) */}
+            {mounted && isMobile ? (
+                <Sheet open={isScheduleViewOpen} onOpenChange={setIsScheduleViewOpen}>
+                    <SheetContent side="bottom" className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+                        <div className="p-8 border-b flex-shrink-0 bg-muted/10">
+                            <SheetHeader className="text-left">
+                                <div className="flex items-center gap-2 mb-2">
+                                    <CalendarClock className="h-4 w-4 text-primary" />
+                                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Spiritual Schedule</span>
                                 </div>
-                            </ScrollArea>
-                        </SheetContent>
-                    </Sheet>
-                ) : (
-                    <Dialog open={isDevotionalDialogOpen} onOpenChange={setIsDevotionalDialogOpen}>
-                        <DialogContent className="sm:max-w-4xl p-0 overflow-hidden rounded-[2rem] shadow-2xl">
-                            <div className="p-8 border-b bg-muted/10">
-                                <DialogHeader>
-                                    <DialogTitle className="text-3xl font-black font-headline tracking-tight uppercase">Devotional Hub</DialogTitle>
-                                    <DialogDescription className="text-base font-medium">Prepare and schedule spiritual nourishment for your group.</DialogDescription>
-                                </DialogHeader>
-                            </div>
-                            <div className="flex h-[70vh]">
-                                <div className="w-1/2 border-r flex flex-col bg-muted/5">
-                                    <div className="p-4 border-b bg-muted/10 flex items-center gap-2">
-                                        <History className="h-4 w-4 text-primary" />
-                                        <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Scheduled Word</span>
-                                    </div>
-                                    <ScrollArea className="flex-1">
-                                        <div className="p-4 space-y-3">
-                                            {loadingSchedule ? (
-                                                <div className="py-20 flex justify-center"><Loader2 className="h-8 w-8 animate-spin opacity-20" /></div>
-                                            ) : scheduledDevotionals && scheduledDevotionals.length > 0 ? (
-                                                scheduledDevotionals.map(devo => (
-                                                    <div key={devo.scheduledDate} className={cn("p-4 border rounded-2xl transition-all group", isSameDay(new Date(devo.scheduledDate), new Date()) ? "bg-primary/5 border-primary/20 shadow-sm" : "bg-background hover:border-primary/20")}>
-                                                        <div className="flex justify-between items-start mb-2">
-                                                            <Badge variant={isSameDay(new Date(devo.scheduledDate), new Date()) ? "default" : "secondary"} className="h-5 text-[9px] font-black uppercase tracking-widest px-2">
-                                                                {format(new Date(devo.scheduledDate), 'MMM d, yyyy')}
-                                                            </Badge>
-                                                            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                                <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => handleEditDevotional(devo)}><Edit className="h-3.5 w-3.5" /></Button>
-                                                                <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive" onClick={() => handleDeleteDevotional(devo.scheduledDate)}><Trash2 className="h-3.5 w-3.5" /></Button>
-                                                            </div>
-                                                        </div>
-                                                        <p className="font-bold text-sm truncate">{devo.title}</p>
-                                                        <p className="text-[10px] text-muted-foreground font-medium uppercase mt-1 tracking-tighter italic">Ref: {devo.scripture}</p>
-                                                    </div>
-                                                ))
-                                            ) : (
-                                                <div className="py-20 text-center text-muted-foreground">
-                                                    <BookOpen className="h-10 w-10 mx-auto opacity-10 mb-4" />
-                                                    <p className="text-sm font-medium italic">Your schedule is empty.</p>
-                                                </div>
-                                            )}
-                                        </div>
-                                    </ScrollArea>
-                                </div>
-                                <div className="w-1/2 flex flex-col">
-                                    <div className="p-4 border-b bg-muted/10 flex items-center gap-2">
-                                        <PlusCircle className="h-4 w-4 text-primary" />
-                                        <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Create / Edit Word</span>
-                                    </div>
-                                    <ScrollArea className="flex-1">
-                                        <div className="p-8">
-                                            <Form {...form}>
-                                                <form id="devotional-form-desktop" onSubmit={form.handleSubmit(handleSaveDevotional)} className="space-y-6">
-                                                    <FormField control={form.control} name="scheduledDate" render={({ field }) => (
-                                                        <FormItem>
-                                                            <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Pin to Date</FormLabel>
-                                                            <FormControl><Input type="date" min={todayStr} {...field} className="h-11 rounded-xl" /></FormControl>
-                                                            <FormMessage />
-                                                        </FormItem>
-                                                    )} />
-                                                    <FormField control={form.control} name="title" render={({ field }) => (
-                                                        <FormItem>
-                                                            <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Title</FormLabel>
-                                                            <FormControl><Input placeholder="e.g., Power of Prayer" {...field} className="h-11 rounded-xl" /></FormControl>
-                                                            <FormMessage />
-                                                        </FormItem>
-                                                    )} />
-                                                    <FormField control={form.control} name="scripture" render={({ field }) => (
-                                                        <FormItem>
-                                                            <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Primary Scripture</FormLabel>
-                                                            <FormControl><Input placeholder="e.g., Matthew 6:33" {...field} className="h-11 rounded-xl" /></FormControl>
-                                                            <FormMessage />
-                                                        </FormItem>
-                                                    )} />
-                                                    <FormField control={form.control} name="text" render={({ field }) => (
-                                                        <FormItem>
-                                                            <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Message Content</FormLabel>
-                                                            <FormControl><Textarea placeholder="Type the daily word here..." className="min-h-[150px] rounded-xl" {...field} /></FormControl>
-                                                            <FormMessage />
-                                                        </FormItem>
-                                                    )} />
-                                                    <Button type="submit" form="devotional-form-desktop" disabled={isSavingDevotional} className="w-full h-12 rounded-xl font-black shadow-xl tracking-widest">
-                                                        {isSavingDevotional && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                                        PUBLISH TO SCHEDULE
-                                                    </Button>
-                                                </form>
-                                            </Form>
-                                        </div>
-                                    </ScrollArea>
-                                </div>
-                            </div>
-                        </DialogContent>
-                    </Dialog>
-                )
+                                <SheetTitle className="text-2xl font-black font-headline">Planned Word</SheetTitle>
+                                <SheetDescription className="text-sm font-medium">Browse scheduled meditations for this group.</SheetDescription>
+                            </SheetHeader>
+                        </div>
+                        <ScrollArea className="flex-grow px-8 pt-6">
+                            {ScheduleList}
+                        </ScrollArea>
+                    </SheetContent>
+                </Sheet>
+            ) : (
+                <Dialog open={isScheduleViewOpen} onOpenChange={setIsScheduleViewOpen}>
+                    <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl">
+                        <div className="p-8 border-b bg-muted/10">
+                            <DialogHeader>
+                                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Spiritual Schedule</DialogTitle>
+                                <DialogDescription className="text-sm font-medium">Peek ahead at scheduled meditations.</DialogDescription>
+                            </DialogHeader>
+                        </div>
+                        <ScrollArea className="max-h-[60vh] p-6">
+                            {ScheduleList}
+                        </ScrollArea>
+                    </DialogContent>
+                </Dialog>
             )}
 
             {isMobile ? (
@@ -936,7 +1029,7 @@ export default function FellowshipPageClient() {
                 userProfile={userProfile}
             />
 
-            {/* Member Removal Confirmation */}
+            {/* Admin Overlays */}
             <AlertDialog open={!!memberToRemove} onOpenChange={(open) => !open && setMemberToRemove(null)}>
                 <AlertDialogContent className="rounded-3xl p-8">
                     <AlertDialogHeader>
@@ -955,7 +1048,6 @@ export default function FellowshipPageClient() {
                 </AlertDialogContent>
             </AlertDialog>
 
-            {/* Soul Unassignment Confirmation */}
             <AlertDialog open={!!soulToUnassign} onOpenChange={(open) => !open && setSoulToUnassign(null)}>
                 <AlertDialogContent className="rounded-3xl p-8">
                     <AlertDialogHeader>
