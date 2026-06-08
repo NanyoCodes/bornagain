@@ -1,4 +1,3 @@
-
 "use client";
 
 import * as React from "react";
@@ -222,7 +221,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({
             <Dialog>
               <DialogTrigger asChild onClick={(e) => e.stopPropagation()}>
                 <div className="relative cursor-pointer hover:opacity-90 transition-opacity active:scale-95 shrink-0">
-                    <Avatar className="h-12 w-12 sm:h-16 sm:w-16 border shadow-sm">
+                    <Avatar className="h-11 w-11 sm:h-14 sm:w-14 border shadow-sm">
                         <AvatarImage src={authorAvatarUrl} className="object-cover" />
                         <AvatarFallback className="bg-primary/10 text-primary font-bold">{initials || 'U'}</AvatarFallback>
                     </Avatar>

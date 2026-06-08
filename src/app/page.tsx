@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useMemo, useState, useEffect } from 'react';
@@ -96,7 +95,7 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
             {logo && (
-              <Avatar className="h-10 w-10 sm:h-12 sm:w-12">
+              <Avatar className="h-10 w-10 sm:h-11 sm:w-11">
                 <AvatarImage src={logo.imageUrl} alt="Testify Logo" />
                 <AvatarFallback>T</AvatarFallback>
               </Avatar>
@@ -240,7 +239,7 @@ export default function LandingPage() {
                             "{t.content}"
                           </p>
                           <div className="flex items-center gap-3">
-                            <Avatar className="h-12 w-12 border shrink-0">
+                            <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border shrink-0">
                               <AvatarFallback className="text-[10px] sm:text-xs bg-primary/10 text-primary font-black uppercase">{t.authorFirstName?.charAt(0)}{t.authorLastName?.charAt(0)}</AvatarFallback>
                             </Avatar>
                             <div className="min-w-0">

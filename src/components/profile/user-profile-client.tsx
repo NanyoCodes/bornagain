@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useMemo, useState, useEffect } from 'react';
@@ -211,7 +210,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
               <DialogTrigger asChild disabled={!photoURL}>
                 <div className="relative group shrink-0">
                     <Avatar className={cn(
-                        "h-40 w-40 sm:h-56 sm:w-56 lg:h-72 lg:w-72 border-[6px] border-background shrink-0 shadow-2xl transition-all duration-500", 
+                        "h-36 w-36 sm:h-48 sm:w-48 lg:h-64 lg:w-64 border-[6px] border-background shrink-0 shadow-2xl transition-all duration-500", 
                         photoURL && "cursor-pointer hover:scale-105 active:scale-95 ring-2 ring-primary/10"
                     )}>
                     <AvatarImage src={photoURL ?? undefined} alt={displayName || 'user'} className="object-cover" />
@@ -241,7 +240,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
             
             <div className="flex-grow min-w-0 space-y-4 pb-2">
                 <div className="space-y-1">
-                    <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black font-headline tracking-tight truncate leading-tight tracking-tight">{displayName}</h1>
+                    <h1 className="text-3xl sm:text-4xl font-black font-headline tracking-tight truncate leading-tight tracking-tight">{displayName}</h1>
                     {(city || state || country) && (
                         <div className="flex items-center justify-center md:justify-start gap-2 text-primary font-black text-xs sm:text-sm uppercase tracking-[0.2em]">
                             <MapPin className="h-4 w-4" /> 
