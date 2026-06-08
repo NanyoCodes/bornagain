@@ -83,6 +83,18 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
   const { searchTerm, setSearchTerm, searchPlaceholder, isSearchVisible } = useSearch();
   const [showMobileSearch, setShowMobileSearch] = useState(false);
 
+  const otherNotificationsQuery = useMemo(() => {
+    if (!user?.uid || !firestore) return null;
+    return query(
+      collection(firestore, `users/${user.uid}/notifications`),
+      where('type', 'in', NOTIFICATION_TYPES),
+      where('isRead', '==', false)
+    );
+  }, [user?.uid, firestore]);
+
+  const { data: unreadOtherNotifications } = useCollection<Notification>(otherNotificationsQuery);
+  const unreadCount = unreadOtherNotifications?.length ?? 0;
+
   const isProfileIncomplete = userProfile && (!userProfile.firstName?.trim() || !userProfile.lastName?.trim() || !userProfile.photoURL?.trim());
 
   const handleLogout = async () => {
@@ -169,23 +181,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
         
       <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3 shrink-0">
         {isSearchVisible && (
-          <div className="hidden lg:block">
-            <form onSubmit={(e) => e.preventDefault()}>
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground opacity-50" />
-                <Input
-                  type="search"
-                  placeholder={searchPlaceholder}
-                  className="pl-9 lg:w-[180px] xl:w-[250px] h-9 text-xs bg-muted/20 border-none rounded-xl"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-              </div>
-            </form>
-          </div>
-        )}
-        {isSearchVisible && (
-          <Button variant="ghost" size="icon" className="lg:hidden h-10 w-10 md:h-12 md:w-12 rounded-full transition-transform active:scale-95" onClick={() => setShowMobileSearch(true)}>
+          <Button variant="ghost" size="icon" className="h-10 w-10 md:h-12 md:w-12 rounded-full transition-transform active:scale-95" onClick={() => setShowMobileSearch(true)}>
             <Search className="h-5 w-5 md:h-6 md:w-6" />
             <span className="sr-only">Search</span>
           </Button>
