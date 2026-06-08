@@ -5,7 +5,7 @@ import { useRouter, useParams } from 'next/navigation';
 import { useDoc, useFirestore, useUser, useCollection, useUserProfile } from '@/firebase';
 import type { Fellowship, UserProfile, FellowshipMember, Soul, DailyDevotional } from '@/lib/types';
 import { doc, collection, query, orderBy, where, writeBatch, serverTimestamp, updateDoc, arrayRemove, increment, deleteField, setDoc, deleteDoc, limit } from 'firebase/firestore';
-import { Loader2, ArrowLeft, Users, Calendar, PlayCircle, MapPin, Heart, Phone, Mail, Church, History, PlusCircle, Award, MessagesSquare, User, Info, Sparkles, UserMinus, Trash2, BookOpen, Quote, Edit, CalendarClock, ChevronLeft, ChevronRight, CalendarDays } from 'lucide-react';
+import { Loader2, ArrowLeft, Users, Calendar, PlayCircle, MapPin, Heart, Phone, Mail, Church, History, PlusCircle, Award, MessagesSquare, User, Info, Sparkles, UserMinus, Trash2, BookOpen, Quote, Edit, CalendarClock, ChevronLeft, ChevronRight, CalendarDays, CheckCircle2 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -116,6 +116,7 @@ export default function FellowshipPageClient() {
 
     const viewDateStr = format(viewDate, 'yyyy-MM-dd');
     const todayStr = format(new Date(), 'yyyy-MM-dd');
+    const isViewingToday = isSameDay(viewDate, new Date());
     
     const activeDevotionalRef = useMemo(() => {
         if (!firestore || !fellowshipId) return null;
@@ -194,6 +195,7 @@ export default function FellowshipPageClient() {
                     text: '',
                     scheduledDate: values.scheduledDate,
                 });
+                setIsDevotionalDialogOpen(false);
             })
             .catch(async (serverError) => {
                 const permissionError = new FirestorePermissionError({ 
@@ -575,16 +577,23 @@ export default function FellowshipPageClient() {
                 <div className="lg:col-span-2 space-y-6 sm:order-last lg:order-first px-0 sm:px-0">
                     {/* Daily Devotional Section */}
                     <Card className="rounded-none sm:rounded-[2.5rem] border-x-0 sm:border-x shadow-none sm:shadow-lg border-none bg-primary text-primary-foreground overflow-hidden">
-                        <CardHeader className="p-6 sm:p-10 pb-4 flex flex-row items-center justify-between gap-4">
-                            <div className="space-y-1">
-                                <div className="flex items-center gap-2 mb-1.5">
-                                    <BookOpen className="h-4 w-4 opacity-80" />
-                                    <span className="text-[10px] font-black uppercase tracking-[0.3em] opacity-80">Daily Devotional</span>
+                        <CardHeader className="p-6 sm:p-10 pb-6 flex flex-row items-center justify-between gap-4">
+                            <div className="space-y-1.5">
+                                <div className="flex items-center gap-3 mb-1">
+                                    <div className="flex items-center justify-center h-5 w-5 bg-white/10 rounded-full">
+                                        <BookOpen className="h-3 w-3 opacity-80" />
+                                    </div>
+                                    <span className="text-[10px] font-black uppercase tracking-[0.3em] opacity-80">Daily Word</span>
+                                    {isViewingToday && (
+                                        <Badge className="bg-white text-primary h-4 px-1.5 font-black uppercase text-[7px] tracking-widest animate-pulse border-none">
+                                            Today
+                                        </Badge>
+                                    )}
                                 </div>
-                                <CardTitle className="text-2xl sm:text-3xl font-black font-headline tracking-tight uppercase leading-tight">
-                                    {activeDevotional?.title || (devoLoading ? 'Checking...' : 'The Daily Word')}
+                                <CardTitle className="text-3xl sm:text-4xl font-black font-headline tracking-tight uppercase leading-none break-words max-w-[250px] sm:max-w-none">
+                                    {activeDevotional?.title || (devoLoading ? 'Checking...' : 'The Living Word')}
                                 </CardTitle>
-                                <p className="text-[10px] font-black uppercase tracking-widest opacity-60">
+                                <p className="text-[10px] sm:text-xs font-black uppercase tracking-[0.15em] opacity-70 mt-2">
                                     {format(viewDate, 'EEEE, MMMM d, yyyy')}
                                 </p>
                             </div>
@@ -595,10 +604,10 @@ export default function FellowshipPageClient() {
                                             <Button 
                                                 variant="outline" 
                                                 size="icon" 
-                                                className="h-10 w-10 sm:h-12 sm:w-12 rounded-2xl bg-white/10 border-white/20 hover:bg-white/20 text-white"
+                                                className="h-10 w-10 sm:h-14 sm:w-14 rounded-[1.25rem] bg-white/10 border-white/20 hover:bg-white/20 text-white shadow-xl"
                                                 onClick={() => setIsScheduleViewOpen(true)}
                                             >
-                                                <CalendarClock className="h-5 w-5" />
+                                                <CalendarClock className="h-5 w-5 sm:h-6 sm:w-6" />
                                             </Button>
                                         </TooltipTrigger>
                                         <TooltipContent><p className="text-[10px] font-bold uppercase">View Schedule</p></TooltipContent>
@@ -611,13 +620,13 @@ export default function FellowshipPageClient() {
                                                 <Button 
                                                     variant="outline" 
                                                     size="icon" 
-                                                    className="h-10 w-10 sm:h-12 sm:w-12 rounded-2xl bg-white/10 border-white/20 hover:bg-white/20 text-white"
+                                                    className="h-10 w-10 sm:h-14 sm:w-14 rounded-[1.25rem] bg-white/10 border-white/20 hover:bg-white/20 text-white shadow-xl"
                                                     onClick={() => {
                                                         if (activeDevotional) handleEditDevotional(activeDevotional);
                                                         setIsDevotionalDialogOpen(true);
                                                     }}
                                                 >
-                                                    <Edit className="h-5 w-5" />
+                                                    <Edit className="h-5 w-5 sm:h-6 sm:w-6" />
                                                 </Button>
                                             </TooltipTrigger>
                                             <TooltipContent><p className="text-[10px] font-bold uppercase">Arrange Word</p></TooltipContent>
@@ -626,53 +635,61 @@ export default function FellowshipPageClient() {
                                 )}
                             </div>
                         </CardHeader>
-                        <CardContent className="px-6 sm:p-10 pt-0 pb-8 sm:pb-10 space-y-6">
+                        <CardContent className="px-6 sm:px-10 pt-0 pb-8 sm:pb-12 space-y-8">
                             {devoLoading ? (
-                                <div className="py-12 flex justify-center"><Loader2 className="h-8 w-8 animate-spin opacity-20" /></div>
+                                <div className="py-20 flex flex-col items-center gap-4">
+                                    <Loader2 className="h-10 w-10 animate-spin opacity-20" />
+                                    <p className="text-[10px] font-black uppercase tracking-widest opacity-20">Accessing Records...</p>
+                                </div>
                             ) : activeDevotional ? (
                                 <>
-                                    <div className="bg-white/5 rounded-[1.5rem] p-6 sm:p-8 border border-white/10 relative shadow-inner group">
-                                        <Quote className="absolute top-4 right-6 h-10 w-10 opacity-10 rotate-12 transition-transform group-hover:scale-110" />
-                                        <p className="text-lg sm:text-xl font-serif italic leading-relaxed text-justify text-balance">&ldquo;{activeDevotional.text}&rdquo;</p>
-                                        <p className="text-[10px] sm:text-xs font-black uppercase text-white/60 text-right mt-6 tracking-widest">— {activeDevotional.scripture}</p>
+                                    <div className="bg-white/5 rounded-[2rem] p-8 sm:p-12 border border-white/10 relative shadow-2xl group overflow-hidden">
+                                        <div className="absolute -top-6 -right-6 h-24 w-24 bg-white/5 rounded-full blur-2xl" />
+                                        <Quote className="absolute top-6 right-8 h-12 w-12 opacity-10 rotate-12 transition-transform group-hover:scale-110" />
+                                        <p className="text-xl sm:text-2xl font-serif italic leading-relaxed text-justify text-balance relative z-10">&ldquo;{activeDevotional.text}&rdquo;</p>
+                                        <p className="text-xs sm:text-sm font-black uppercase text-white/80 text-right mt-10 tracking-widest border-t border-white/10 pt-4 relative z-10">— {activeDevotional.scripture}</p>
                                     </div>
-                                    <div className="flex items-center justify-between pt-2">
-                                        <div className="flex items-center gap-2">
-                                            <Sparkles className="h-3.5 w-3.5 opacity-60" />
-                                            <span className="text-[9px] font-black uppercase tracking-widest opacity-60">Shared by {activeDevotional.authorName}</span>
+                                    
+                                    <div className="flex flex-col sm:flex-row items-center justify-between gap-6 pt-2">
+                                        <div className="flex items-center gap-3 bg-white/10 px-4 py-2 rounded-full border border-white/10">
+                                            <Sparkles className="h-4 w-4 text-white/80 fill-current" />
+                                            <span className="text-[10px] font-black uppercase tracking-widest text-white/80">Messenger: {activeDevotional.authorName}</span>
                                         </div>
-                                        <div className="flex items-center gap-1 bg-white/10 rounded-xl p-1 border border-white/10 shadow-lg">
-                                            <Button variant="ghost" size="icon" className="h-8 w-8 text-white hover:bg-white/10 rounded-lg" onClick={() => handleDateNav('prev')}>
-                                                <ChevronLeft className="h-4 w-4" />
+                                        
+                                        <div className="flex items-center gap-2 bg-white/10 rounded-2xl p-1.5 border border-white/10 shadow-2xl w-full sm:w-auto">
+                                            <Button variant="ghost" className="flex-1 sm:flex-none h-10 px-4 text-white hover:bg-white/10 rounded-xl gap-2 font-black text-[10px] uppercase tracking-widest" onClick={() => handleDateNav('prev')}>
+                                                <ChevronLeft className="h-4 w-4" /> Previous
                                             </Button>
-                                            <span className="text-[8px] font-black uppercase tracking-tighter px-1 min-w-[70px] text-center">Nav Daily</span>
-                                            <Button variant="ghost" size="icon" className="h-8 w-8 text-white hover:bg-white/10 rounded-lg" onClick={() => handleDateNav('next')}>
-                                                <ChevronRight className="h-4 w-4" />
+                                            <Separator orientation="vertical" className="h-6 bg-white/20" />
+                                            <Button variant="ghost" className="flex-1 sm:flex-none h-10 px-4 text-white hover:bg-white/10 rounded-xl gap-2 font-black text-[10px] uppercase tracking-widest" onClick={() => handleDateNav('next')}>
+                                                Next <ChevronRight className="h-4 w-4" />
                                             </Button>
                                         </div>
                                     </div>
-                                    {!isSameDay(viewDate, new Date()) && (
+                                    
+                                    {!isViewingToday && (
                                         <Button 
                                             variant="ghost" 
-                                            className="w-full text-[10px] font-black uppercase tracking-widest text-white/60 hover:text-white hover:bg-white/5 h-8 rounded-full"
+                                            className="w-full text-[11px] font-black uppercase tracking-[0.3em] text-white/40 hover:text-white hover:bg-white/5 h-10 rounded-2xl border border-white/5 border-dashed"
                                             onClick={() => setViewDate(new Date())}
                                         >
-                                            Return to Today
+                                            <CalendarDays className="mr-2 h-4 w-4" /> Jump to Today
                                         </Button>
                                     )}
                                 </>
                             ) : (
-                                <div className="text-center py-10 sm:py-16 bg-white/5 rounded-[2rem] border-2 border-dashed border-white/10 mx-auto flex flex-col items-center">
-                                    <BookOpen className="h-10 w-10 opacity-20 mb-4" />
-                                    <p className="text-sm sm:text-base font-medium opacity-60 px-8 italic text-balance">
-                                        No word arranged for {isSameDay(viewDate, new Date()) ? 'today' : format(viewDate, 'MMM d')} yet.
+                                <div className="text-center py-20 sm:py-24 bg-white/5 rounded-[2.5rem] border-2 border-dashed border-white/10 mx-auto flex flex-col items-center px-8 shadow-inner">
+                                    <BookOpen className="h-16 w-16 opacity-10 mb-6" />
+                                    <h4 className="text-xl font-black uppercase tracking-tight opacity-40">Spiritual Silence</h4>
+                                    <p className="text-sm font-medium opacity-40 mt-2 italic max-w-sm text-balance">
+                                        No word arranged for {isViewingToday ? 'today' : format(viewDate, 'MMM d')} yet.
                                     </p>
-                                    <div className="flex flex-col sm:flex-row gap-3 mt-8">
-                                        <Button variant="outline" className="bg-white/10 border-white/20 text-white rounded-xl h-10 px-6 font-bold" onClick={() => handleDateNav('prev')}><ChevronLeft className="mr-2 h-4 w-4" /> Previous</Button>
+                                    <div className="flex flex-col sm:flex-row gap-4 mt-12 w-full sm:w-auto">
+                                        <Button variant="outline" className="bg-white/5 border-white/10 text-white rounded-2xl h-12 px-8 font-black uppercase tracking-widest text-[10px] shadow-lg" onClick={() => handleDateNav('prev')}><ChevronLeft className="mr-2 h-4 w-4" /> PREVIOUS</Button>
                                         {isOrganizer && (
                                             <Button 
                                                 variant="secondary" 
-                                                className="font-black rounded-xl h-10 px-8 shadow-xl"
+                                                className="font-black rounded-2xl h-12 px-10 shadow-2xl text-[10px] uppercase tracking-[0.2em]"
                                                 onClick={() => {
                                                     form.setValue('scheduledDate', viewDateStr);
                                                     setIsDevotionalDialogOpen(true);
@@ -681,7 +698,7 @@ export default function FellowshipPageClient() {
                                                 ARRANGE WORD
                                             </Button>
                                         )}
-                                        <Button variant="outline" className="bg-white/10 border-white/20 text-white rounded-xl h-10 px-6 font-bold" onClick={() => handleDateNav('next')}>Next <ChevronRight className="ml-2 h-4 w-4" /></Button>
+                                        <Button variant="outline" className="bg-white/5 border-white/10 text-white rounded-2xl h-12 px-8 font-black uppercase tracking-widest text-[10px] shadow-lg" onClick={() => handleDateNav('next')}>NEXT <ChevronRight className="ml-2 h-4 w-4" /></Button>
                                     </div>
                                 </div>
                             )}
