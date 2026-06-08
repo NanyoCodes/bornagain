@@ -536,8 +536,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 )}
             >
                 <div className={cn(
-                "mx-auto min-h-full", 
-                !isTakeoverPage ? "max-w-7xl p-3 md:p-6 pb-28 md:pb-6" : "w-full"
+                "mx-auto h-full", // Changed from min-h-full to h-full for propagation
+                !isTakeoverPage ? "max-w-7xl p-3 md:p-6 pb-28 md:pb-6" : "w-full flex flex-col" // Added flex-col for takeover pages
                 )}>
                     <PageTransition>{children}</PageTransition>
                 </div>

@@ -146,7 +146,7 @@ export default function NotificationsPage() {
       <div className="flex-1 min-h-0 px-0 sm:px-6 md:px-8 pb-4">
         <Card className="h-full flex flex-col overflow-hidden border-x-0 sm:border-x rounded-none sm:rounded-3xl shadow-xl bg-card border-y sm:border-y-0">
             <ScrollArea className="flex-1 w-full">
-                <div className="flex flex-col h-full">
+                <div className="flex flex-col">
                     {loading && (
                         <div className="divide-y p-4">
                         {[...Array(5)].map((_, i) => (
