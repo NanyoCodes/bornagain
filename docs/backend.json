@@ -1,4 +1,3 @@
-
 {
   "entities": {
     "UserProfile": {
@@ -281,6 +280,30 @@
         "participantIds": { "type": "array", "items": { "type": "string" } }
       },
       "required": ["fromUserId", "toUserId", "status", "createdAt", "participantIds"]
+    },
+    "Fellowship": {
+      "title": "Fellowship",
+      "description": "A spiritual community group for discipleship and fellowship.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "groupType": { "type": "string", "enum": ["Fellowship", "Association"] },
+        "organizerId": { "type": "string" },
+        "organizerName": { "type": "string" },
+        "memberCount": { "type": "number" },
+        "memberIds": { "type": "array", "items": { "type": "string" } },
+        "dailyDevotional": {
+          "type": "object",
+          "properties": {
+            "title": { "type": "string" },
+            "text": { "type": "string" },
+            "scripture": { "type": "string" },
+            "authorName": { "type": "string" },
+            "createdAt": { "type": "object" }
+          }
+        }
+      }
     }
   },
   "auth": {
@@ -302,6 +325,12 @@
         "$ref": "#/entities/AccountabilityRequest"
       },
       "description": "Stores accountability partnership requests between users."
+    },
+    "/fellowships/{fellowshipId}": {
+      "schema": {
+          "$ref": "#/entities/Fellowship"
+      },
+      "description": "Stores fellowship group data and the daily devotional."
     }
   }
 }

@@ -362,6 +362,15 @@ export type Mail = {
   };
 };
 
+export type DailyDevotional = {
+  title: string;
+  text: string;
+  scripture: string;
+  authorId: string;
+  authorName: string;
+  createdAt: Timestamp;
+};
+
 export type Fellowship = {
   id: string;
   name: string;
@@ -383,6 +392,7 @@ export type Fellowship = {
   status?: 'active' | 'deleted';
   streamUrl?: string;
   hasGroupChat?: boolean;
+  dailyDevotional?: DailyDevotional;
 };
 
 export type FellowshipMember = {

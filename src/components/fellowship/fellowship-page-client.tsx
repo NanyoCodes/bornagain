@@ -1,12 +1,11 @@
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useDoc, useFirestore, useUser, useCollection, useUserProfile } from '@/firebase';
-import type { Fellowship, UserProfile, FellowshipMember, Soul } from '@/lib/types';
+import type { Fellowship, UserProfile, FellowshipMember, Soul, DailyDevotional } from '@/lib/types';
 import { doc, collection, query, orderBy, where, writeBatch, serverTimestamp, updateDoc, arrayRemove, increment, deleteField } from 'firebase/firestore';
-import { Loader2, ArrowLeft, Users, Calendar, PlayCircle, MapPin, Heart, Phone, Mail, Church, History, PlusCircle, Award, MessagesSquare, User, Info, Sparkles, UserMinus, Trash2 } from 'lucide-react';
+import { Loader2, ArrowLeft, Users, Calendar, PlayCircle, MapPin, Heart, Phone, Mail, Church, History, PlusCircle, Award, MessagesSquare, User, Info, Sparkles, UserMinus, Trash2, BookOpen, Quote, Edit } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -14,7 +13,7 @@ import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { format } from 'date-fns';
@@ -35,6 +34,19 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Label } from '../ui/label';
+import { Input } from '../ui/input';
+import { Textarea } from '../ui/textarea';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form';
+
+const devotionalSchema = z.object({
+  title: z.string().min(3, "Title must be at least 3 characters.").max(100),
+  scripture: z.string().min(3, "Scripture is required.").max(100),
+  text: z.string().min(20, "Devotional text is too short.").max(5000),
+});
 
 function SoulWinnerInfo({ userId }: { userId: string }) {
     const firestore = useFirestore();
@@ -60,11 +72,14 @@ export default function FellowshipPageClient() {
     const { user } = useUser();
     const { userProfile, loading: profileLoading } = useUserProfile();
     const isMobile = useIsMobile();
+    const [mounted, setMounted] = useState(false);
 
     const [selectedSoulId, setSelectedSoulId] = useState<string | null>(null);
     const [isSoulDetailsOpen, setIsSoulDetailsOpen] = useState(false);
     const [isLogFollowUpOpen, setIsLogFollowUpOpen] = useState(false);
     const [isChatLoading, setIsChatLoading] = useState(false);
+    const [isDevotionalDialogOpen, setIsDevotionalDialogOpen] = useState(false);
+    const [isSavingDevotional, setIsSavingDevotional] = useState(false);
     
     const [memberToRemove, setMemberToRemove] = useState<FellowshipMember | null>(null);
     const [soulToUnassign, setSoulToUnassign] = useState<Soul | null>(null);
@@ -92,6 +107,25 @@ export default function FellowshipPageClient() {
         return fellowship.organizerId === user.uid;
     }, [user, fellowship]);
 
+    const form = useForm<z.infer<typeof devotionalSchema>>({
+        resolver: zodResolver(devotionalSchema),
+        defaultValues: {
+            title: fellowship?.dailyDevotional?.title || '',
+            scripture: fellowship?.dailyDevotional?.scripture || '',
+            text: fellowship?.dailyDevotional?.text || '',
+        },
+    });
+
+    useEffect(() => {
+        if (fellowship?.dailyDevotional) {
+            form.reset({
+                title: fellowship.dailyDevotional.title,
+                scripture: fellowship.dailyDevotional.scripture,
+                text: fellowship.dailyDevotional.text,
+            });
+        }
+    }, [fellowship?.dailyDevotional, form]);
+
     const membersQuery = useMemo(() => {
         if (!firestore || !fellowshipId || !(isMember || isOrganizer)) return null;
         return query(collection(firestore, 'fellowships', fellowshipId, 'members'), orderBy('joinedAt', 'desc'));
@@ -105,13 +139,35 @@ export default function FellowshipPageClient() {
     }, [firestore, fellowshipId, isMember, isOrganizer, fellowship?.groupType]);
     const { data: assignedSouls, loading: soulsLoading } = useCollection<Soul>(soulsQuery);
 
-    // Live update for the selected soul
     const activeSoul = useMemo(() => {
         if (!selectedSoulId || !assignedSouls) return null;
         return assignedSouls.find(s => s.id === selectedSoulId) || null;
     }, [selectedSoulId, assignedSouls]);
 
     const totalDirectoryCount = (members?.length || 0) + (assignedSouls?.length || 0);
+
+    const handleSaveDevotional = async (values: z.infer<typeof devotionalSchema>) => {
+        if (!user || !firestore || !fellowship || !isOrganizer) return;
+        setIsSavingDevotional(true);
+
+        const fellowshipRef = doc(firestore, 'fellowships', fellowshipId);
+        const devotionalData: DailyDevotional = {
+            ...values,
+            authorId: user.uid,
+            authorName: `${userProfile?.firstName} ${userProfile?.lastName}`,
+            createdAt: serverTimestamp() as any,
+        };
+
+        try {
+            await updateDoc(fellowshipRef, { dailyDevotional: devotionalData });
+            toast({ title: 'Devotional Posted', description: 'Your daily word has been shared with the group.' });
+            setIsDevotionalDialogOpen(false);
+        } catch (e) {
+            errorEmitter.emit('permission-error', new FirestorePermissionError({ path: fellowshipRef.path, operation: 'update' }, user));
+        } finally {
+            setIsSavingDevotional(false);
+        }
+    };
 
     const handleRemoveMember = async () => {
         if (!user || !firestore || !fellowship || !isOrganizer || !memberToRemove) return;
@@ -120,16 +176,11 @@ export default function FellowshipPageClient() {
         const memberId = memberToRemove.userId;
         const batch = writeBatch(firestore);
         
-        // 1. Remove from fellowship subcollection
         batch.delete(doc(firestore, 'fellowships', fellowshipId, 'members', memberId));
-        
-        // 2. Update fellowship doc
         batch.update(doc(firestore, 'fellowships', fellowshipId), {
             memberIds: arrayRemove(memberId),
             memberCount: increment(-1)
         });
-        
-        // 3. Remove from user's fellowships subcollection
         batch.delete(doc(firestore, 'users', memberId, 'fellowships', fellowshipId));
 
         try {
@@ -210,9 +261,9 @@ export default function FellowshipPageClient() {
         }
     };
 
-    const loading = fellowshipLoading || organizerLoading || profileLoading;
+    useEffect(() => { setMounted(true); }, []);
 
-    if (loading) {
+    if (loading || !mounted) {
         return (
             <div className="flex items-center justify-center h-full py-20">
                 <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -335,7 +386,7 @@ export default function FellowshipPageClient() {
         <div className="space-y-6 max-w-6xl mx-auto pb-32">
             <div className="flex items-center gap-3 sm:gap-4 px-4 sm:px-0">
                 <Button variant="ghost" size="icon" onClick={() => router.back()} className="shrink-0 h-9 w-9 sm:h-10 sm:w-10 rounded-full border bg-background shadow-sm hover:bg-muted/50">
-                    <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5"/>
+                    <ArrowLeft className="h-4 w-4 sm:h-5 w-5"/>
                     <span className="sr-only">Back</span>
                 </Button>
                 <div className="min-w-0 flex-1">
@@ -433,6 +484,62 @@ export default function FellowshipPageClient() {
                 </div>
 
                 <div className="lg:col-span-2 space-y-6 sm:order-last lg:order-first px-0 sm:px-0">
+                    {/* Daily Devotional Section */}
+                    <Card className="rounded-none sm:rounded-[2.5rem] border-x-0 sm:border-x shadow-none sm:shadow-lg border-none bg-primary text-primary-foreground overflow-hidden">
+                        <CardHeader className="p-6 sm:p-10 pb-4 flex flex-row items-center justify-between">
+                            <div className="space-y-1">
+                                <div className="flex items-center gap-2 mb-1.5">
+                                    <BookOpen className="h-4 w-4 opacity-80" />
+                                    <span className="text-[10px] font-black uppercase tracking-[0.3em] opacity-80">Daily Devotional</span>
+                                </div>
+                                <CardTitle className="text-2xl sm:text-3xl font-black font-headline tracking-tight uppercase leading-tight">
+                                    {fellowship.dailyDevotional?.title || 'The Daily Word'}
+                                </CardTitle>
+                            </div>
+                            {isOrganizer && (
+                                <Button 
+                                    variant="outline" 
+                                    size="icon" 
+                                    className="h-10 w-10 sm:h-12 sm:w-12 rounded-2xl bg-white/10 border-white/20 hover:bg-white/20 text-white shrink-0"
+                                    onClick={() => setIsDevotionalDialogOpen(true)}
+                                >
+                                    <Edit className="h-5 w-5" />
+                                </Button>
+                            )}
+                        </CardHeader>
+                        <CardContent className="px-6 sm:p-10 pt-0 pb-8 sm:pb-10 space-y-6">
+                            {fellowship.dailyDevotional ? (
+                                <>
+                                    <div className="bg-white/5 rounded-[1.5rem] p-6 sm:p-8 border border-white/10 relative shadow-inner group">
+                                        <Quote className="absolute top-4 right-6 h-10 w-10 opacity-10 rotate-12 transition-transform group-hover:scale-110" />
+                                        <p className="text-lg sm:text-xl font-serif italic leading-relaxed text-justify text-balance">&ldquo;{fellowship.dailyDevotional.text}&rdquo;</p>
+                                        <p className="text-[10px] sm:text-xs font-black uppercase text-white/60 text-right mt-6 tracking-widest">— {fellowship.dailyDevotional.scripture}</p>
+                                    </div>
+                                    <div className="flex items-center justify-between pt-2">
+                                        <div className="flex items-center gap-2">
+                                            <Sparkles className="h-3.5 w-3.5 opacity-60" />
+                                            <span className="text-[9px] font-black uppercase tracking-widest opacity-60">Shared by {fellowship.dailyDevotional.authorName}</span>
+                                        </div>
+                                    </div>
+                                </>
+                            ) : (
+                                <div className="text-center py-10 sm:py-16 bg-white/5 rounded-[2rem] border-2 border-dashed border-white/10 mx-auto flex flex-col items-center">
+                                    <BookOpen className="h-10 w-10 opacity-20 mb-4" />
+                                    <p className="text-sm sm:text-base font-medium opacity-60 px-8 italic">No word shared for today yet.</p>
+                                    {isOrganizer && (
+                                        <Button 
+                                            variant="secondary" 
+                                            className="mt-6 font-black rounded-xl h-10 px-8"
+                                            onClick={() => setIsDevotionalDialogOpen(true)}
+                                        >
+                                            POST TODAY'S WORD
+                                        </Button>
+                                    )}
+                                </div>
+                            )}
+                        </CardContent>
+                    </Card>
+
                     <Card className="rounded-none sm:rounded-[2.5rem] border-x-0 sm:border-x shadow-none sm:shadow-sm border-none bg-muted/20">
                         <CardHeader className="p-6 sm:p-8">
                             <CardTitle className="text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">About this Group</CardTitle>
@@ -564,6 +671,99 @@ export default function FellowshipPageClient() {
                     </Card>
                 </div>
             </div>
+
+            {/* Devotional Dialog */}
+            {isOrganizer && (
+                mounted && isMobile ? (
+                    <Sheet open={isDevotionalDialogOpen} onOpenChange={setIsDevotionalDialogOpen}>
+                        <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+                            <div className="p-8 border-b flex-shrink-0 bg-muted/10">
+                                <SheetHeader className="text-left">
+                                    <SheetTitle className="text-2xl font-black font-headline">Post Today's Word</SheetTitle>
+                                    <SheetDescription className="text-sm font-medium">Share a devotional to encourage the group.</SheetDescription>
+                                </SheetHeader>
+                            </div>
+                            <ScrollArea className="flex-grow p-8">
+                                <Form {...form}>
+                                    <form id="devotional-form-mobile" onSubmit={form.handleSubmit(handleSaveDevotional)} className="space-y-6">
+                                        <FormField control={form.control} name="title" render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Devotional Title</FormLabel>
+                                                <FormControl><Input placeholder="e.g., Walking in Favor" {...field} /></FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )} />
+                                        <FormField control={form.control} name="scripture" render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Main Scripture</FormLabel>
+                                                <FormControl><Input placeholder="e.g., Psalm 23:1" {...field} /></FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )} />
+                                        <FormField control={form.control} name="text" render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Message Content</FormLabel>
+                                                <FormControl><Textarea placeholder="Type the daily word here..." className="min-h-[200px]" {...field} /></FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )} />
+                                    </form>
+                                </Form>
+                            </ScrollArea>
+                            <div className="p-8 border-t flex-shrink-0 bg-background/80 backdrop-blur-sm">
+                                <Button type="submit" form="devotional-form-mobile" disabled={isSavingDevotional} className="w-full h-14 text-lg font-black rounded-2xl shadow-xl shadow-primary/20 tracking-widest uppercase">
+                                    {isSavingDevotional && <Loader2 className="mr-2 h-5 w-5 animate-spin" />}
+                                    PUBLISH WORD
+                                </Button>
+                            </div>
+                        </SheetContent>
+                    </Sheet>
+                ) : (
+                    <Dialog open={isDevotionalDialogOpen} onOpenChange={setIsDevotionalDialogOpen}>
+                        <DialogContent className="sm:max-w-lg p-0 overflow-hidden rounded-3xl shadow-2xl">
+                            <div className="p-6 border-b bg-muted/10">
+                                <DialogHeader>
+                                    <DialogTitle className="text-2xl font-bold font-headline">Share Daily Devotional</DialogTitle>
+                                    <DialogDescription className="text-sm font-medium">Encourage your group members with a daily word.</DialogDescription>
+                                </DialogHeader>
+                            </div>
+                            <ScrollArea className="max-h-[70vh] p-6">
+                                <Form {...form}>
+                                    <form id="devotional-form-desktop" onSubmit={form.handleSubmit(handleSaveDevotional)} className="space-y-6">
+                                        <FormField control={form.control} name="title" render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Devotional Title</FormLabel>
+                                                <FormControl><Input placeholder="e.g., Faith that Moves Mountains" {...field} /></FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )} />
+                                        <FormField control={form.control} name="scripture" render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Primary Scripture</FormLabel>
+                                                <FormControl><Input placeholder="e.g., John 3:16" {...field} /></FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )} />
+                                        <FormField control={form.control} name="text" render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Your Message</FormLabel>
+                                                <FormControl><Textarea placeholder="Share the revelation..." className="min-h-[150px]" {...field} /></FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )} />
+                                    </form>
+                                </Form>
+                            </ScrollArea>
+                            <DialogFooter className="p-6 border-t">
+                                <Button type="submit" form="devotional-form-desktop" disabled={isSavingDevotional} className="w-full h-12 rounded-xl font-bold">
+                                    {isSavingDevotional && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                    Publish Devotional
+                                </Button>
+                            </DialogFooter>
+                        </DialogContent>
+                    </Dialog>
+                )
+            )}
 
             {isMobile ? (
               <Sheet open={isSoulDetailsOpen} onOpenChange={setIsSoulDetailsOpen}>
