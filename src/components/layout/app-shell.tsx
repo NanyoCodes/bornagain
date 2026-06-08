@@ -133,7 +133,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
   return (
     <header className="sticky top-0 z-30 flex min-h-[4rem] md:min-h-[4.5rem] h-auto py-1 items-center justify-between border-b bg-background px-3 md:px-6 shrink-0 pt-[env(safe-area-inset-top)] relative">
       <div className="flex items-center shrink-0">
-        <Link href={user ? "/testimonies" : "/"} className="flex items-center gap-2 text-lg font-semibold shrink-0">
+        <Link href={user ? "/dashboard/testimonies" : "/"} className="flex items-center gap-2 text-lg font-semibold shrink-0">
           {logo && (
             <Avatar className="h-11 w-11 md:h-14 md:w-14 shadow-sm transition-transform hover:scale-105 active:scale-95 border border-transparent">
               <AvatarImage src={logo.imageUrl} alt={logo.description} className="object-cover" />
@@ -304,7 +304,7 @@ function BottomNavBar() {
                 <motion.div
                   className="relative flex items-center justify-center p-1.5 rounded-xl"
                   whileTap={{ scale: 0.85 }}
-                />
+                >
                   {isActive && (
                     <motion.div
                       layoutId="nav-active-pill"
