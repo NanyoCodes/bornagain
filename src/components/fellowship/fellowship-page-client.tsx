@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -116,6 +115,8 @@ export default function FellowshipPageClient() {
     }, [user, fellowship]);
 
     const viewDateStr = format(viewDate, 'yyyy-MM-dd');
+    const todayStr = format(new Date(), 'yyyy-MM-dd');
+    
     const activeDevotionalRef = useMemo(() => {
         if (!firestore || !fellowshipId) return null;
         return doc(firestore, 'fellowships', fellowshipId, 'devotionals', viewDateStr);
