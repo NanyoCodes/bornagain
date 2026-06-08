@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from "next/link";
@@ -94,7 +93,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
   
   if (showMobileSearch) {
     return (
-      <header className="sticky top-0 z-30 flex min-h-[3.5rem] md:min-h-[4rem] h-auto py-1 items-center border-b bg-background px-3 md:px-6 shrink-0 pt-[env(safe-area-inset-top)]">
+      <header className="sticky top-0 z-30 flex min-h-[3.5rem] md:min-h-[4rem] h-auto py-2 items-center border-b bg-background px-4 md:px-6 shrink-0 pt-[env(safe-area-inset-top)]">
         <div className="flex w-full items-center gap-2">
           <Button variant="ghost" size="icon" onClick={() => setShowMobileSearch(false)} className="shrink-0 h-9 w-9">
             <ArrowLeft className="h-5 w-5" />
@@ -105,7 +104,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
               <Input
                 type="search"
                 placeholder={searchPlaceholder}
-                className="w-full pl-8 h-9"
+                className="w-full pl-8 h-10"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 autoFocus
@@ -125,16 +124,16 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
       <div className="flex items-center shrink-0">
         <Link href={user ? "/testimonies" : "/"} className="flex items-center gap-2 text-lg font-semibold shrink-0">
           {logo && (
-            <Avatar className="h-10 w-10 md:h-12 md:w-12 shadow-sm transition-transform hover:scale-105 active:scale-95">
-              <AvatarImage src={logo.imageUrl} alt={logo.description} />
-              <AvatarFallback>T</AvatarFallback>
+            <Avatar className="h-11 w-11 md:h-14 md:w-14 shadow-sm transition-transform hover:scale-105 active:scale-95 border border-transparent">
+              <AvatarImage src={logo.imageUrl} alt={logo.description} className="object-cover" />
+              <AvatarFallback className="font-bold">T</AvatarFallback>
             </Avatar>
           )}
           <span className="sr-only">Testify</span>
         </Link>
       </div>
 
-      {/* Center: Centered Nav with Vertical Icon/Text Stack */}
+      {/* Center: Centered Nav */}
       <nav className="hidden items-center absolute left-1/2 -translate-x-1/2 md:flex overflow-x-auto no-scrollbar max-w-[50%] lg:max-w-none h-full pt-1">
         <div className="flex items-center gap-1.5 lg:gap-3 h-full">
           {navItems.map((item) => {
@@ -537,8 +536,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 )}
             >
                 <div className={cn(
-                "mx-auto h-full", // Changed from min-h-full to h-full for propagation
-                !isTakeoverPage ? "max-w-7xl p-3 md:p-6 pb-28 md:pb-6" : "w-full flex flex-col" // Added flex-col for takeover pages
+                "mx-auto h-full", 
+                !isTakeoverPage ? "max-w-7xl p-3 md:p-6 pb-28 md:pb-6" : "w-full flex flex-col" 
                 )}>
                     <PageTransition>{children}</PageTransition>
                 </div>
