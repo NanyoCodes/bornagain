@@ -53,7 +53,7 @@ const navItems = [
   { href: "/progress", label: "Progress", icon: TrendingUp, color: "text-chart-1" },
   { href: "/souls-won", label: "Souls", icon: UserPlus, color: "text-chart-2" },
   { href: "/testimonies", label: "Feed", icon: Newspaper, color: "text-chart-3" },
-  { href: "/campaigns", label: "Missions", icon: Target, color: "text-chart-4" },
+  { href: "/campaigns", label: "Campaigns", icon: Target, color: "text-chart-4" },
   { href: "/fellowships", label: "Groups", icon: Users, color: "text-primary" },
   { href: "/accountability", label: "Partners", icon: HeartHandshake, color: "text-primary" },
 ];
@@ -304,7 +304,7 @@ function BottomNavBar() {
                 <motion.div
                   className="relative flex items-center justify-center p-1.5 rounded-xl"
                   whileTap={{ scale: 0.85 }}
-                >
+                />
                   {isActive && (
                     <motion.div
                       layoutId="nav-active-pill"
