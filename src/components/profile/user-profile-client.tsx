@@ -4,7 +4,7 @@ import { useMemo, useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useDoc, useFirestore, useUser, useCollection } from '@/firebase';
 import type { Testimony, Campaign, UserProfile, AccountabilityRequest } from '@/lib/types';
-import { doc, collection, query, where, orderBy } from 'firebase/firestore';
+import { doc, collection, query, where, orderBy, setDoc, serverTimestamp, addDoc } from 'firebase/firestore';
 import { 
     Loader2, 
     MapPin, 
@@ -20,7 +20,9 @@ import {
     Sparkles,
     CalendarDays,
     Video,
-    MessageSquare
+    MessageSquare,
+    UserPlus,
+    Hourglass
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -34,6 +36,9 @@ import { cn, safeToDate, haversineDistance } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '../ui/separator';
 import { ScrollArea } from '../ui/scroll-area';
+import { useToast } from '@/hooks/use-toast';
+import { FirestorePermissionError } from '@/firebase/errors';
+import { errorEmitter } from '@/firebase/error-emitter';
 
 function getYouTubeEmbedUrl(url: string | undefined) {
   if (!url) return null;
@@ -45,25 +50,13 @@ function getYouTubeEmbedUrl(url: string | undefined) {
   return null;
 }
 
-function LiveAuthorAvatar({ userId, fallbackInitials, className }: { userId: string, fallbackInitials: string, className?: string }) {
-    const firestore = useFirestore();
-    const userRef = React.useMemo(() => userId ? doc(firestore, 'users', userId) : null, [firestore, userId]);
-    const { data: profile } = useDoc<UserProfile>(userRef);
-    const photoURL = profile?.photoURL;
-    
-    return (
-        <Avatar className={className}>
-            <AvatarImage src={photoURL} />
-            <AvatarFallback className="bg-primary/10 text-primary font-bold">{fallbackInitials || 'U'}</AvatarFallback>
-        </Avatar>
-    );
-}
-
 export default function UserProfileClient({ userId }: { userId: string }) {
   const firestore = useFirestore();
   const router = useRouter();
   const { user: currentUser, loading: userLoading } = useUser();
+  const { toast } = useToast();
   const [mounted, setMounted] = useState(false);
+  const [isRequestingPartner, setIsRequestingPartner] = useState(false);
 
   useEffect(() => { setMounted(true); }, []);
 
@@ -113,6 +106,8 @@ export default function UserProfileClient({ userId }: { userId: string }) {
   }, [accountabilityRequests, currentUser?.uid]);
 
   const partnerIds = useMemo(() => new Set(currentUserProfile?.partnerIds || []), [currentUserProfile?.partnerIds]);
+  const isPartner = partnerIds.has(userId);
+  const hasPendingRequest = pendingRequestIds.has(userId);
 
   const testimonies = useMemo(() => {
     if (!userTestimonies) return [];
@@ -142,6 +137,52 @@ export default function UserProfileClient({ userId }: { userId: string }) {
         return timeB - timeA;
       });
   }, [allCampaigns, currentUserProfile]);
+
+  const handleSendPartnerRequest = async () => {
+    if (!currentUser || !firestore || !currentUserProfile || isOwnProfile || isPartner || hasPendingRequest) return;
+    setIsRequestingPartner(true);
+    const participantIds = [currentUser.uid, userId].sort();
+    const requestId = participantIds.join('_');
+    const requestRef = doc(firestore, 'accountabilityRequests', requestId);
+    
+    const newRequestData = {
+      fromUserId: currentUser.uid,
+      fromUserFirstName: currentUserProfile.firstName || '',
+      fromUserLastName: currentUserProfile.lastName || '',
+      fromUserPhotoURL: currentUserProfile.photoURL || '',
+      toUserId: userId,
+      toUserFirstName: userProfile?.firstName || '',
+      toUserLastName: userProfile?.lastName || '',
+      toUserPhotoURL: userProfile?.photoURL || '',
+      status: 'pending' as const,
+      createdAt: serverTimestamp(),
+      participantIds
+    };
+
+    const notificationData = {
+      userId: userId,
+      type: 'accountability_request' as const,
+      title: 'New Accountability Request',
+      message: `${currentUserProfile.firstName} ${currentUserProfile.lastName} wants to be your partner after viewing your profile!`,
+      link: '/dashboard/accountability',
+      isRead: false,
+      createdAt: serverTimestamp()
+    };
+
+    try {
+      await setDoc(requestRef, newRequestData);
+      await addDoc(collection(firestore, 'users', userId, 'notifications'), notificationData);
+      toast({ title: 'Request Sent!', description: `Accountability request sent to ${userProfile?.firstName}.` });
+    } catch (error) {
+      errorEmitter.emit('permission-error', new FirestorePermissionError({
+        path: requestRef.path,
+        operation: 'create',
+        requestResourceData: newRequestData
+      }, currentUser));
+    } finally {
+      setIsRequestingPartner(false);
+    }
+  };
 
   const loading = profileLoading || testimoniesLoading || campaignsLoading || userLoading;
   
@@ -239,12 +280,39 @@ export default function UserProfileClient({ userId }: { userId: string }) {
             </Dialog>
             
             <div className="flex-grow min-w-0 space-y-4 pb-2">
-                <div className="space-y-1">
-                    <h1 className="text-3xl sm:text-4xl font-black font-headline tracking-tight truncate leading-tight tracking-tight">{displayName}</h1>
-                    {(city || state || country) && (
-                        <div className="flex items-center justify-center md:justify-start gap-2 text-primary font-black text-xs sm:text-sm uppercase tracking-[0.2em]">
-                            <MapPin className="h-4 w-4" /> 
-                            {[city, state].filter(Boolean).join(', ') || country}
+                <div className="flex flex-col sm:flex-row justify-between items-center sm:items-start gap-4">
+                    <div className="min-w-0">
+                        <h1 className="text-3xl sm:text-4xl font-black font-headline tracking-tight truncate leading-tight">{displayName}</h1>
+                        {(city || state || country) && (
+                            <div className="flex items-center justify-center md:justify-start gap-2 text-primary font-black text-xs sm:text-sm uppercase tracking-[0.2em]">
+                                <MapPin className="h-4 w-4" /> 
+                                {[city, state].filter(Boolean).join(', ') || country}
+                            </div>
+                        )}
+                    </div>
+
+                    {!isOwnProfile && currentUserProfile && (
+                        <div className="shrink-0 flex gap-2">
+                            {isPartner ? (
+                                <Badge variant="secondary" className="h-10 px-6 rounded-full font-bold bg-primary/10 text-primary border-primary/20 flex items-center gap-2">
+                                    <HeartHandshake className="h-4 w-4" />
+                                    PARTNER
+                                </Badge>
+                            ) : hasPendingRequest ? (
+                                <Button variant="outline" className="h-10 px-6 rounded-full font-bold opacity-70" disabled>
+                                    <Hourglass className="mr-2 h-4 w-4" />
+                                    PENDING
+                                </Button>
+                            ) : (
+                                <Button 
+                                    className="h-10 px-6 rounded-full font-black shadow-lg shadow-primary/20 uppercase tracking-widest"
+                                    onClick={handleSendPartnerRequest}
+                                    disabled={isRequestingPartner}
+                                >
+                                    {isRequestingPartner ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <UserPlus className="mr-2 h-4 w-4" />}
+                                    ADD PARTNER
+                                </Button>
+                            )}
                         </div>
                     )}
                 </div>
