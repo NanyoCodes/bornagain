@@ -120,7 +120,6 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
 
   return (
     <header className="sticky top-0 z-30 flex min-h-[4rem] md:min-h-[4.5rem] h-auto py-1 items-center justify-between border-b bg-background px-3 md:px-6 shrink-0 pt-[env(safe-area-inset-top)] relative">
-      {/* Left: Logo */}
       <div className="flex items-center shrink-0">
         <Link href={user ? "/testimonies" : "/"} className="flex items-center gap-2 text-lg font-semibold shrink-0">
           {logo && (
@@ -133,7 +132,6 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
         </Link>
       </div>
 
-      {/* Center: Centered Nav */}
       <nav className="hidden items-center absolute left-1/2 -translate-x-1/2 md:flex overflow-x-auto no-scrollbar max-w-[50%] lg:max-w-none h-full pt-1">
         <div className="flex items-center gap-1.5 lg:gap-3 h-full">
           {navItems.map((item) => {
@@ -169,17 +167,16 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
         </div>
       </nav>
         
-      {/* Right: Actions */}
       <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3 shrink-0">
         {isSearchVisible && (
           <div className="hidden lg:block">
             <form onSubmit={(e) => e.preventDefault()}>
               <div className="relative">
-                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground opacity-50" />
                 <Input
                   type="search"
                   placeholder={searchPlaceholder}
-                  className="pl-8 sm:w-[130px] md:w-[160px] lg:w-[200px] h-9 text-xs bg-muted/20 border-none rounded-xl"
+                  className="pl-9 lg:w-[180px] xl:w-[250px] h-9 text-xs bg-muted/20 border-none rounded-xl"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
