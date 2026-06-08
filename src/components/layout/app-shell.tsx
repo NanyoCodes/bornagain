@@ -93,18 +93,18 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
   
   if (showMobileSearch) {
     return (
-      <header className="sticky top-0 z-30 flex min-h-[3.5rem] md:min-h-[4rem] h-auto py-2 items-center border-b bg-background px-4 md:px-6 shrink-0 pt-[env(safe-area-inset-top)]">
-        <div className="flex w-full items-center gap-2">
-          <Button variant="ghost" size="icon" onClick={() => setShowMobileSearch(false)} className="shrink-0 h-9 w-9">
-            <ArrowLeft className="h-5 w-5" />
+      <header className="sticky top-0 z-30 flex min-h-[4rem] md:min-h-[4.5rem] h-auto py-2 items-center border-b bg-background px-4 md:px-6 shrink-0 pt-[env(safe-area-inset-top)] animate-in fade-in slide-in-from-top-4 duration-300">
+        <div className="flex w-full items-center gap-3">
+          <Button variant="ghost" size="icon" onClick={() => setShowMobileSearch(false)} className="shrink-0 h-10 w-10 md:h-12 md:w-12 rounded-full hover:bg-muted/50 transition-colors">
+            <ArrowLeft className="h-5 w-5 md:h-6 md:w-6" />
           </Button>
           <form className="w-full" onSubmit={(e) => e.preventDefault()}>
             <div className="relative">
-              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 md:h-5 md:w-5 text-muted-foreground opacity-50" />
               <Input
                 type="search"
                 placeholder={searchPlaceholder}
-                className="w-full pl-8 h-10"
+                className="w-full pl-10 md:pl-12 h-11 md:h-12 rounded-2xl bg-muted/20 border-none shadow-inner text-base"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 autoFocus
@@ -188,8 +188,8 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
           </div>
         )}
         {isSearchVisible && (
-          <Button variant="ghost" size="icon" className="lg:hidden h-9 w-9 rounded-full" onClick={() => setShowMobileSearch(true)}>
-            <Search className="h-5 w-5" />
+          <Button variant="ghost" size="icon" className="lg:hidden h-10 w-10 md:h-12 md:w-12 rounded-full transition-transform active:scale-95" onClick={() => setShowMobileSearch(true)}>
+            <Search className="h-5 w-5 md:h-6 md:w-6" />
             <span className="sr-only">Search</span>
           </Button>
         )}
@@ -198,10 +198,10 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
           <>
             <Link href="/chats">
                 <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-                    <Button variant="ghost" size="icon" className="relative group h-9 w-9 md:h-10 md:w-10 rounded-full">
-                      <MessagesSquare className="h-5 w-5 transition-transform group-hover:scale-110" />
+                    <Button variant="ghost" size="icon" className="relative group h-10 w-10 md:h-12 md:w-12 rounded-full">
+                      <MessagesSquare className="h-5 w-5 md:h-6 md:w-6 transition-transform group-hover:scale-110" />
                       {unreadChatCount > 0 && (
-                        <div className="absolute top-0 right-0 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[9px] font-bold text-destructive-foreground animate-in zoom-in border-2 border-background">
+                        <div className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[9px] font-bold text-destructive-foreground animate-in zoom-in border-2 border-background">
                           {unreadChatCount}
                         </div>
                       )}
@@ -210,10 +210,10 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
             </Link>
             <Link href="/notifications">
                 <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-                    <Button variant="ghost" size="icon" className="relative group h-9 w-9 md:h-10 md:w-10 rounded-full">
-                      <Bell className="h-5 w-5 transition-transform group-hover:scale-110" />
+                    <Button variant="ghost" size="icon" className="relative group h-10 w-10 md:h-12 md:w-12 rounded-full">
+                      <Bell className="h-5 w-5 md:h-6 md:w-6 transition-transform group-hover:scale-110" />
                       {unreadNotifCount > 0 && (
-                        <div className="absolute top-0 right-0 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[9px] font-bold text-destructive-foreground animate-in zoom-in border-2 border-background">
+                        <div className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[9px] font-bold text-destructive-foreground animate-in zoom-in border-2 border-background">
                           {unreadNotifCount}
                         </div>
                       )}
@@ -222,7 +222,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
             </Link>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="rounded-full relative hover:scale-105 transition-transform h-11 w-11 md:h-14 md:w-14">
+                <Button variant="ghost" size="icon" className="rounded-full relative hover:scale-105 transition-transform h-11 w-11 md:h-14 md:w-14 shrink-0">
                   <Avatar className="h-10 w-10 md:h-12 md:w-12 border shadow-sm">
                     <AvatarImage src={user.photoURL ?? undefined} className="object-cover" />
                     <AvatarFallback className="text-xs font-bold">{user.displayName?.charAt(0) || 'U'}</AvatarFallback>
@@ -286,7 +286,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
             </Button>
           </div>
         ) : (
-          <div className="h-9 w-9 animate-pulse rounded-full bg-muted" />
+          <div className="h-10 w-10 md:h-12 md:w-12 animate-pulse rounded-full bg-muted" />
         )}
       </div>
     </header>
