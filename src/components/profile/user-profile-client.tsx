@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useMemo, useState, useEffect } from 'react';
@@ -210,7 +211,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
               <DialogTrigger asChild disabled={!photoURL}>
                 <div className="relative group shrink-0">
                     <Avatar className={cn(
-                        "h-32 w-32 sm:h-44 sm:w-44 lg:h-56 lg:w-56 border-[6px] border-background shrink-0 shadow-2xl transition-all duration-500", 
+                        "h-40 w-40 sm:h-56 sm:w-56 lg:h-72 lg:w-72 border-[6px] border-background shrink-0 shadow-2xl transition-all duration-500", 
                         photoURL && "cursor-pointer hover:scale-105 active:scale-95 ring-2 ring-primary/10"
                     )}>
                     <AvatarImage src={photoURL ?? undefined} alt={displayName || 'user'} className="object-cover" />
@@ -222,10 +223,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
               </DialogTrigger>
               {photoURL && (
                 <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center">
-                    <DialogHeader className="sr-only">
-                        <DialogTitle>Profile photo of {displayName}</DialogTitle>
-                        <DialogDescription>Full screen view of the user's profile photo.</DialogDescription>
-                    </DialogHeader>
+                    <DialogHeader className="sr-only"><DialogTitle>Profile photo of {displayName}</DialogTitle></DialogHeader>
                     <div className="relative h-full w-full flex items-center justify-center p-4">
                         <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center">
                             <Image 

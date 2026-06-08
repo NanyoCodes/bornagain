@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from "next/link";
@@ -222,15 +223,15 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
             </Link>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="rounded-full relative hover:scale-105 transition-transform h-9 w-9 md:h-10 md:w-10">
-                  <Avatar className="h-8 w-8 md:h-9 md:w-9 border shadow-sm">
+                <Button variant="ghost" size="icon" className="rounded-full relative hover:scale-105 transition-transform h-11 w-11 md:h-14 md:w-14">
+                  <Avatar className="h-10 w-10 md:h-12 md:w-12 border shadow-sm">
                     <AvatarImage src={user.photoURL ?? undefined} className="object-cover" />
                     <AvatarFallback className="text-xs font-bold">{user.displayName?.charAt(0) || 'U'}</AvatarFallback>
                   </Avatar>
                   {isProfileIncomplete && (
-                    <span className="absolute top-0 right-0 flex h-3 w-3">
+                    <span className="absolute top-0 right-0 flex h-3.5 w-3.5">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-3 w-3 bg-red-600 border-2 border-background"></span>
+                      <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-red-600 border-2 border-background"></span>
                     </span>
                   )}
                 </Button>
