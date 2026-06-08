@@ -146,6 +146,8 @@ export default function FellowshipPageClient() {
 
     const totalDirectoryCount = (members?.length || 0) + (assignedSouls?.length || 0);
 
+    const loading = fellowshipLoading || profileLoading || organizerLoading || loadingMembers || soulsLoading;
+
     const handleSaveDevotional = async (values: z.infer<typeof devotionalSchema>) => {
         if (!user || !firestore || !fellowship || !isOrganizer) return;
         setIsSavingDevotional(true);
