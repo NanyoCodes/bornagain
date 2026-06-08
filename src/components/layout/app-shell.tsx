@@ -119,12 +119,12 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
   const showGuestButtons = isPublicRoute && !authLoading && !user;
 
   return (
-    <header className="sticky top-0 z-30 flex min-h-[3.5rem] md:min-h-[4.5rem] h-auto py-1 items-center justify-between border-b bg-background px-3 md:px-6 shrink-0 pt-[env(safe-area-inset-top)] relative">
+    <header className="sticky top-0 z-30 flex min-h-[4rem] md:min-h-[4.5rem] h-auto py-1 items-center justify-between border-b bg-background px-3 md:px-6 shrink-0 pt-[env(safe-area-inset-top)] relative">
       {/* Left: Logo */}
       <div className="flex items-center shrink-0">
         <Link href={user ? "/testimonies" : "/"} className="flex items-center gap-2 text-lg font-semibold shrink-0">
           {logo && (
-            <Avatar className="h-9 w-9 md:h-10 md:w-10">
+            <Avatar className="h-10 w-10 md:h-12 md:w-12 shadow-sm transition-transform hover:scale-105 active:scale-95">
               <AvatarImage src={logo.imageUrl} alt={logo.description} />
               <AvatarFallback>T</AvatarFallback>
             </Avatar>
@@ -134,8 +134,8 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
       </div>
 
       {/* Center: Centered Nav with Vertical Icon/Text Stack */}
-      <nav className="hidden items-center absolute left-1/2 -translate-x-1/2 md:flex overflow-x-auto no-scrollbar max-w-[50%] lg:max-w-none h-full">
-        <div className="flex items-center gap-1 lg:gap-1.5 h-full">
+      <nav className="hidden items-center absolute left-1/2 -translate-x-1/2 md:flex overflow-x-auto no-scrollbar max-w-[50%] lg:max-w-none h-full pt-1">
+        <div className="flex items-center gap-1.5 lg:gap-3 h-full">
           {navItems.map((item) => {
             const isActive = pathname.startsWith(item.href);
             return (
@@ -143,14 +143,14 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
                   key={item.href}
                   href={item.href}
                   className={cn(
-                    "transition-all hover:bg-muted/50 px-2.5 lg:px-4 h-[85%] rounded-2xl whitespace-nowrap flex flex-col items-center justify-center group",
+                    "transition-all hover:bg-muted/50 px-2 lg:px-4 h-[90%] rounded-2xl whitespace-nowrap flex flex-col items-center justify-center group relative",
                     isActive ? "text-primary" : "text-muted-foreground"
                   )}
               >
                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="flex flex-col items-center gap-1">
-                  <item.icon className={cn("h-5 w-5 shrink-0 transition-transform", !isActive && item.color, isActive && "scale-110")} />
+                  <item.icon className={cn("h-5.5 w-5.5 shrink-0 transition-transform", !isActive && item.color, isActive && "scale-110")} />
                   <span className={cn(
-                    "text-[9px] font-black uppercase tracking-tighter transition-all",
+                    "text-[9px] font-black uppercase tracking-tighter transition-all leading-none",
                     isActive ? "opacity-100" : "opacity-60 group-hover:opacity-100"
                   )}>
                     {item.label}
@@ -170,16 +170,16 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
       </nav>
         
       {/* Right: Actions */}
-      <div className="flex items-center gap-1 sm:gap-2 md:gap-3 shrink-0">
+      <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3 shrink-0">
         {isSearchVisible && (
           <div className="hidden lg:block">
             <form onSubmit={(e) => e.preventDefault()}>
               <div className="relative">
-                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   type="search"
                   placeholder={searchPlaceholder}
-                  className="pl-8 sm:w-[120px] md:w-[150px] lg:w-[180px] h-8 text-xs bg-muted/20 border-none"
+                  className="pl-8 sm:w-[130px] md:w-[160px] lg:w-[200px] h-9 text-xs bg-muted/20 border-none rounded-xl"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
@@ -188,8 +188,8 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
           </div>
         )}
         {isSearchVisible && (
-          <Button variant="ghost" size="icon" className="lg:hidden h-8 w-8" onClick={() => setShowMobileSearch(true)}>
-            <Search className="h-4 w-4" />
+          <Button variant="ghost" size="icon" className="lg:hidden h-9 w-9 rounded-full" onClick={() => setShowMobileSearch(true)}>
+            <Search className="h-5 w-5" />
             <span className="sr-only">Search</span>
           </Button>
         )}
@@ -198,10 +198,10 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
           <>
             <Link href="/chats">
                 <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-                    <Button variant="ghost" size="icon" className="relative group h-8 w-8">
-                      <MessagesSquare className="h-4 w-4 transition-transform group-hover:scale-110" />
+                    <Button variant="ghost" size="icon" className="relative group h-9 w-9 md:h-10 md:w-10 rounded-full">
+                      <MessagesSquare className="h-5 w-5 transition-transform group-hover:scale-110" />
                       {unreadChatCount > 0 && (
-                        <div className="absolute -top-0.5 -right-0.5 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-destructive text-[8px] font-bold text-destructive-foreground animate-in zoom-in">
+                        <div className="absolute top-0 right-0 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[9px] font-bold text-destructive-foreground animate-in zoom-in border-2 border-background">
                           {unreadChatCount}
                         </div>
                       )}
@@ -210,10 +210,10 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
             </Link>
             <Link href="/notifications">
                 <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-                    <Button variant="ghost" size="icon" className="relative group h-8 w-8">
-                      <Bell className="h-4 w-4 transition-transform group-hover:scale-110" />
+                    <Button variant="ghost" size="icon" className="relative group h-9 w-9 md:h-10 md:w-10 rounded-full">
+                      <Bell className="h-5 w-5 transition-transform group-hover:scale-110" />
                       {unreadNotifCount > 0 && (
-                        <div className="absolute -top-0.5 -right-0.5 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-destructive text-[8px] font-bold text-destructive-foreground animate-in zoom-in">
+                        <div className="absolute top-0 right-0 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[9px] font-bold text-destructive-foreground animate-in zoom-in border-2 border-background">
                           {unreadNotifCount}
                         </div>
                       )}
@@ -222,54 +222,54 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
             </Link>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="rounded-full relative hover:scale-105 transition-transform h-8 w-8">
-                  <Avatar className="h-6 w-6">
-                    <AvatarImage src={user.photoURL ?? undefined} />
-                    <AvatarFallback className="text-[9px]">{user.displayName?.charAt(0) || 'U'}</AvatarFallback>
+                <Button variant="ghost" size="icon" className="rounded-full relative hover:scale-105 transition-transform h-9 w-9 md:h-10 md:w-10">
+                  <Avatar className="h-8 w-8 md:h-9 md:w-9 border shadow-sm">
+                    <AvatarImage src={user.photoURL ?? undefined} className="object-cover" />
+                    <AvatarFallback className="text-xs font-bold">{user.displayName?.charAt(0) || 'U'}</AvatarFallback>
                   </Avatar>
                   {isProfileIncomplete && (
-                    <span className="absolute top-0 right-0 flex h-2 w-2">
+                    <span className="absolute top-0 right-0 flex h-3 w-3">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-2 w-2 bg-red-600 border border-background"></span>
+                      <span className="relative inline-flex rounded-full h-3 w-3 bg-red-600 border-2 border-background"></span>
                     </span>
                   )}
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56" align="end">
-                <DropdownMenuLabel className="font-normal">
+              <DropdownMenuContent className="w-56 rounded-2xl shadow-xl" align="end">
+                <DropdownMenuLabel className="font-normal p-4">
                   <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium">{user.displayName || 'User'}</p>
+                    <p className="text-sm font-bold leading-tight truncate">{user.displayName || 'User'}</p>
                     <p className="text-xs text-muted-foreground truncate">{user.email}</p>
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
+                <DropdownMenuItem asChild className="rounded-lg mx-1">
                   <Link href="/profile">
                     <User className="mr-2 h-4 w-4" />
                     <span>Profile</span>
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild>
+                <DropdownMenuItem asChild className="rounded-lg mx-1">
                   <Link href="/settings">
                     <Settings className="mr-2 h-4 w-4" />
                     <span>Settings</span>
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
+                <DropdownMenuItem asChild className="rounded-lg mx-1">
                     <Link href="/guide" className="cursor-pointer">
                     <BookOpen className="mr-2 h-4 w-4" />
                     <span>App Guide</span>
                     </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild>
+                <DropdownMenuItem asChild className="rounded-lg mx-1">
                     <Link href="/resources" className="cursor-pointer">
                     <BookMarked className="mr-2 h-4 w-4" />
                     <span>Spiritual Resources</span>
                     </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleLogout}>
+                <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive focus:bg-destructive/5 rounded-lg mx-1">
                   <LogOut className="mr-2 h-4 w-4" />
                   <span>Logout</span>
                 </DropdownMenuItem>
@@ -277,16 +277,16 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
             </DropdownMenu>
           </>
         ) : showGuestButtons ? (
-          <div className="flex items-center gap-1.5">
-            <Button variant="ghost" asChild size="sm" className="hidden sm:inline-flex h-8 px-3">
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" asChild size="sm" className="hidden sm:inline-flex h-9 px-4 rounded-full font-bold">
               <Link href="/login">Sign In</Link>
             </Button>
-            <Button asChild size="sm" className="h-8 px-3">
+            <Button asChild size="sm" className="h-9 px-5 rounded-full font-black uppercase text-[10px] tracking-widest shadow-lg shadow-primary/20">
               <Link href="/">Get Started</Link>
             </Button>
           </div>
         ) : (
-          <div className="h-8 w-8 animate-pulse rounded-full bg-muted" />
+          <div className="h-9 w-9 animate-pulse rounded-full bg-muted" />
         )}
       </div>
     </header>
@@ -330,7 +330,7 @@ function BottomNavBar() {
                       isActive ? "text-primary" : "text-muted-foreground"
                     )}
                   >
-                    <item.icon className={cn("h-5 w-5", !isActive && item.color)} />
+                    <item.icon className={cn("h-5.5 w-5.5", !isActive && item.color)} />
                   </motion.div>
                 </motion.div>
               </Link>
@@ -565,12 +565,16 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </Sheet>
         ) : user ? (
           <Dialog open={!!isProfileIncomplete}>
-            <DialogContent hideCloseButton className="sm:max-w-lg">
-              <DialogHeader>
-                  <DialogTitle>Complete Your Profile</DialogTitle>
-                  <DialogDescription>Please provide your name and photo to join the Kingdom workforce.</DialogDescription>
-              </DialogHeader>
-              {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
+            <DialogContent hideCloseButton className="sm:max-w-lg rounded-[2rem] overflow-hidden p-0">
+              <div className="p-6 border-b bg-muted/10">
+                <DialogHeader>
+                    <DialogTitle>Complete Your Profile</DialogTitle>
+                    <DialogDescription>Please provide your name and photo to join the Kingdom workforce.</DialogDescription>
+                </DialogHeader>
+              </div>
+              <div className="p-6 max-h-[70vh] overflow-y-auto">
+                {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
+              </div>
             </DialogContent>
           </Dialog>
         ) : null}
