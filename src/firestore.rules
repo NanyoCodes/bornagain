@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Universal Authenticated Devotional Write Access - 2025-06-13T12:30:00Z
+    // Deployment trigger: Universal Authenticated Devotional Write Access - 2025-06-13T12:55:00Z
     
     function isOwner(userId) {
       return request.auth != null && request.auth.uid == userId;

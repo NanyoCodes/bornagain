@@ -468,7 +468,7 @@ export default function FellowshipPageClient() {
                                     <div className="flex items-center justify-center h-5 w-5 bg-white/10 rounded-full">
                                         <BookOpen className="h-3 w-3 opacity-80" />
                                     </div>
-                                    <span className="text-[10px] font-black uppercase tracking-[0.3em] opacity-80">DEVOTIONAL</span>
+                                    <span className="text-[10px] font-black uppercase tracking-0.3em opacity-80">DEVOTIONAL</span>
                                     {isViewingToday && (
                                         <Badge className="bg-white text-primary h-4 px-1.5 font-black uppercase text-[7px] tracking-widest animate-pulse border-none">
                                             Today
@@ -551,7 +551,7 @@ export default function FellowshipPageClient() {
                                                 <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-full bg-white/20 flex items-center justify-center">
                                                     <HandHeart className="h-4 w-4 text-white" />
                                                 </div>
-                                                <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-white/90">PRAYER FOR TODAY</span>
+                                                <span className="text-[10px] sm:text-xs font-black uppercase tracking-0.3em text-white/90">PRAYER FOR TODAY</span>
                                             </div>
                                             <p className="text-base sm:text-lg font-medium text-white leading-relaxed text-justify italic break-words [overflow-wrap:anywhere] text-balance">
                                                 {activeDevotional.prayer}
@@ -579,7 +579,7 @@ export default function FellowshipPageClient() {
                                     {!isViewingToday && (
                                         <Button 
                                             variant="ghost" 
-                                            className="w-full text-[11px] font-black uppercase tracking-[0.3em] text-white/60 hover:text-white hover:bg-white/10 h-10 rounded-2xl border border-white/10 border-dashed"
+                                            className="w-full text-[11px] font-black uppercase tracking-0.3em text-white/60 hover:text-white hover:bg-white/10 h-10 rounded-2xl border border-white/10 border-dashed"
                                             onClick={() => setViewDate(new Date())}
                                         >
                                             <CalendarDays className="mr-2 h-4 w-4" /> Jump to Today
@@ -875,7 +875,7 @@ export default function FellowshipPageClient() {
                             <SheetHeader className="text-left">
                                 <div className="flex items-center gap-2 mb-2">
                                     <CalendarClock className="h-4 w-4 text-primary" />
-                                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Spiritual Schedule</span>
+                                    <span className="text-[10px] font-black uppercase tracking-0.3em text-primary">Spiritual Schedule</span>
                                 </div>
                                 <SheetTitle className="text-2xl font-black font-headline">Planned Word</SheetTitle>
                                 <SheetDescription className="text-sm font-medium">Browse scheduled meditations for this group.</SheetDescription>
