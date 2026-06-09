@@ -300,127 +300,6 @@ export default function FellowshipPageClient() {
         setViewDate(prev => direction === 'prev' ? subDays(prev, 1) : addDays(prev, 1));
     };
 
-    const loading = fellowshipLoading || profileLoading || organizerLoading || !mounted;
-
-    if (loading) {
-        return (
-            <div className="flex items-center justify-center h-full py-20">
-                <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            </div>
-        );
-    }
-    
-    if (fellowshipError || !fellowship || fellowship.status === 'deleted') {
-        return (
-            <div className="text-center py-12 flex flex-col items-center px-4">
-                <Users className="h-16 w-16 text-muted-foreground opacity-20" />
-                <h3 className="mt-4 text-xl font-bold font-headline">Group Not Found</h3>
-                <p className="mt-2 text-sm text-muted-foreground px-6 leading-relaxed">
-                   This group may have been removed or the link is incorrect.
-                </p>
-                <Button asChild variant="outline" className="mt-6 rounded-full font-bold">
-                    <Link href="/dashboard/fellowship"><ArrowLeft className="mr-2 h-4 w-4" /> Back to Directory</Link>
-                </Button>
-            </div>
-        );
-    }
-
-    const soulDetailsContent = activeSoul ? (
-      <div className="space-y-8 pt-4 pb-24 sm:pb-6">
-          <div className="flex items-center gap-4 border-2 rounded-[2rem] sm:rounded-[2.5rem] p-6 bg-muted/20 border-dashed">
-              <div className="h-12 w-12 sm:h-14 sm:w-14 border-2 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                  <Heart className="h-6 w-6 sm:h-7 sm:w-7 text-primary fill-current" />
-              </div>
-              <div className="flex-1 min-w-0">
-                  <h3 className="text-lg sm:xl font-black font-headline truncate leading-tight text-balance">{activeSoul.firstName} {activeSoul.lastName}</h3>
-                  <Badge className={cn("mt-1.5 h-5 text-[9px] sm:text-[10px] uppercase font-bold tracking-widest")} variant="secondary">{activeSoul.status}</Badge>
-              </div>
-              <TooltipProvider>
-                <Tooltip>
-                    <TooltipTrigger asChild>
-                        <Button onClick={() => setIsLogFollowUpOpen(true)} size="icon" className="shrink-0 h-10 w-10 sm:h-11 sm:w-11 rounded-2xl shadow-lg transition-transform active:scale-90">
-                            <PlusCircle className="h-5 w-5" />
-                            <span className="sr-only">Log Follow-up</span>
-                        </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                        <p>Log Follow-up</p>
-                    </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-          </div>
-
-          <div className="grid gap-8">
-              <div className="space-y-4">
-                  <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-2">Context & Accountability</h4>
-                  <div className="space-y-3 px-1">
-                      <div className="text-sm flex items-center gap-3 p-4 rounded-[1.5rem] bg-background border shadow-sm min-w-0">
-                          <span className="font-bold text-muted-foreground text-[9px] sm:text-[10px] uppercase tracking-widest shrink-0 ml-1">Won By:</span>
-                          <SoulWinnerInfo userId={activeSoul.userId} />
-                      </div>
-                      {activeSoul.email && (
-                          <div className="flex items-center gap-3 text-sm p-4 rounded-[1.5rem] bg-background border shadow-sm min-w-0">
-                              <Mail className="h-4 w-4 text-primary shrink-0" />
-                              <a href={`mailto:${activeSoul.email}`} className="hover:underline truncate text-sm font-medium">{activeSoul.email}</a>
-                          </div>
-                      )}
-                      {activeSoul.phone && (
-                          <div className="flex items-center gap-3 text-sm p-4 rounded-[1.5rem] bg-background border shadow-sm min-w-0">
-                              <Phone className="h-4 w-4 text-primary shrink-0" />
-                              <a href={`tel:${activeSoul.phone}`} className="hover:underline text-sm font-medium">{activeSoul.phone}</a>
-                          </div>
-                      )}
-                      {activeSoul.church && (
-                          <div className="flex items-start gap-3 text-sm p-4 rounded-[1.5rem] bg-background border shadow-sm min-w-0">
-                              <Church className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-                              <span className="leading-snug text-sm font-medium line-clamp-2">Attends: {activeSoul.church}</span>
-                          </div>
-                      )}
-                  </div>
-              </div>
-
-              <div className="space-y-4">
-                  <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2 ml-2">
-                      <History className="h-3.5 w-3.5" /> Interaction History
-                  </h4>
-                  <div className="border rounded-[1.5rem] sm:rounded-[2rem] bg-muted/10 overflow-hidden shadow-inner mx-1">
-                      {activeSoul.followUpLog && activeSoul.followUpLog.length > 0 ? (
-                          <div className="divide-y max-h-[40vh] sm:max-h-[50vh] overflow-y-auto overscroll-contain">
-                              {[...activeSoul.followUpLog].reverse().map((log, i) => {
-                                  const date = safeToDate(log.date);
-                                  return (
-                                      <div key={i} className="p-4 sm:p-5 text-xs space-y-3 bg-background/50">
-                                          <div className="flex justify-between items-center text-muted-foreground mb-1">
-                                              <span className="font-black text-[9px] sm:text-[10px] uppercase tracking-widest text-primary/70">{date ? format(date, 'MMM d, yyyy') : 'N/A'}</span>
-                                              {log.memberName && (
-                                                <span className="text-[8px] sm:text-[9px] font-bold bg-muted px-2 py-0.5 rounded-full border truncate max-w-[100px] sm:max-w-[120px] uppercase tracking-tighter">By {log.memberName}</span>
-                                              )}
-                                          </div>
-                                          {log.actions && log.actions.length > 0 && (
-                                              <div className="flex flex-wrap gap-1.5 py-1">
-                                                  {log.actions.map(id => {
-                                                      const action = actionItems.find(a => a.id === id);
-                                                      return action ? <Badge key={id} variant="outline" className="text-[8px] sm:text-[9px] px-1.5 sm:px-2 h-4 uppercase font-bold tracking-tight leading-none bg-background/80">{action.label}</Badge> : null;
-                                                  })}
-                                              </div>
-                                          )}
-                                          {log.note && <p className="italic text-muted-foreground leading-relaxed text-xs sm:text-sm text-balance">&ldquo;{log.note}&rdquo;</p>}
-                                      </div>
-                                  );
-                              })}
-                          </div>
-                      ) : (
-                          <div className="text-center py-16 sm:py-20 text-xs text-muted-foreground italic px-10 space-y-3">
-                              <History className="h-8 w-8 mx-auto opacity-10" />
-                              <p>No shared interactions yet.</p>
-                          </div>
-                      )}
-                  </div>
-              </div>
-          </div>
-      </div>
-    ) : null;
-
     const ScheduleList = (
         <div className="space-y-4">
             {loadingSchedule ? (
@@ -442,8 +321,8 @@ export default function FellowshipPageClient() {
                                     <span className="text-[10px] font-black uppercase tracking-widest text-primary/70">{format(parseISO(devo.scheduledDate), 'EEEE, MMM d')}</span>
                                     {isSameDay(parseISO(devo.scheduledDate), new Date()) && <Badge className="bg-white text-primary h-4 px-1.5 font-black uppercase text-[7px] tracking-widest animate-pulse border-none">Today</Badge>}
                                 </div>
-                                <p className="font-bold text-sm truncate pr-6">{devo.title}</p>
-                                <p className="text-[9px] text-muted-foreground mt-1 uppercase font-bold tracking-tighter italic">Ref: {devo.scripture}</p>
+                                <p className="font-bold text-sm truncate pr-6 break-words">{devo.title}</p>
+                                <p className="text-[9px] text-muted-foreground mt-1 uppercase font-bold tracking-tighter italic break-words">Ref: {devo.scripture}</p>
                                 <ChevronRight className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-primary opacity-0 group-hover:opacity-100 transition-opacity" />
                             </button>
                         );
@@ -515,7 +394,7 @@ export default function FellowshipPageClient() {
                             {fellowship.schedule && (
                                 <div className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-muted/30 border border-dashed">
                                     <p className="font-black text-[8px] sm:text-[9px] uppercase tracking-[0.2em] text-muted-foreground mb-1.5">Schedule</p>
-                                    <p className="text-foreground font-bold text-xs sm:text-sm leading-tight text-balance">{fellowship.schedule}</p>
+                                    <p className="text-foreground font-bold text-xs sm:text-sm leading-tight text-balance break-words">{fellowship.schedule}</p>
                                 </div>
                             )}
                             {fellowship.location && (
@@ -631,8 +510,8 @@ export default function FellowshipPageClient() {
                                     <div className="bg-white/5 rounded-[2rem] p-8 sm:p-12 border border-white/10 relative shadow-2xl group overflow-hidden">
                                         <div className="absolute -top-6 -right-6 h-24 w-24 bg-white/5 rounded-full blur-2xl" />
                                         <Quote className="absolute top-6 right-8 h-12 w-12 opacity-10 rotate-12 transition-transform group-hover:scale-110" />
-                                        <p className="text-xl sm:text-2xl font-serif italic leading-relaxed text-justify text-balance relative z-10">&ldquo;{activeDevotional.text}&rdquo;</p>
-                                        <p className="text-xs sm:text-sm font-black uppercase text-white/80 text-right mt-10 tracking-widest border-t border-white/10 pt-4 relative z-10">— {activeDevotional.scripture}</p>
+                                        <p className="text-xl sm:text-2xl font-serif italic leading-relaxed text-justify text-balance relative z-10 break-words">&ldquo;{activeDevotional.text}&rdquo;</p>
+                                        <p className="text-xs sm:text-sm font-black uppercase text-white/80 text-right mt-10 tracking-widest border-t border-white/10 pt-4 relative z-10 break-words">— {activeDevotional.scripture}</p>
                                     </div>
                                     
                                     {activeDevotional.prayer && (
@@ -643,7 +522,7 @@ export default function FellowshipPageClient() {
                                                 </div>
                                                 <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-white/90">PRAYER FOR TODAY</span>
                                             </div>
-                                            <p className="text-base sm:text-lg font-medium text-white/90 leading-relaxed text-justify italic">
+                                            <p className="text-base sm:text-lg font-medium text-white/90 leading-relaxed text-justify italic break-words">
                                                 {activeDevotional.prayer}
                                             </p>
                                         </div>
@@ -709,7 +588,7 @@ export default function FellowshipPageClient() {
                             <CardTitle className="text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">About this Group</CardTitle>
                         </CardHeader>
                         <CardContent className="px-6 sm:px-8 pb-8">
-                            <p className="text-sm sm:text-base text-foreground leading-relaxed whitespace-pre-wrap font-medium text-balance">
+                            <p className="text-sm sm:text-base text-foreground leading-relaxed whitespace-pre-wrap font-medium text-balance break-words">
                                 {fellowship.description}
                             </p>
                         </CardContent>
@@ -748,7 +627,7 @@ export default function FellowshipPageClient() {
                                                             <AvatarFallback className="text-[10px] font-black bg-primary/10 text-primary">{member.firstName?.charAt(0)}</AvatarFallback>
                                                         </Avatar>
                                                         <div className="flex-1 min-w-0">
-                                                            <p className="font-bold truncate text-xs sm:text-sm leading-tight">{member.firstName} {member.lastName}</p>
+                                                            <p className="font-bold truncate text-xs sm:text-sm leading-tight break-words">{member.firstName} {member.lastName}</p>
                                                             {member.userId === fellowship.organizerId && <span className="text-[8px] font-black uppercase text-primary tracking-widest block mt-0.5">Organizer</span>}
                                                         </div>
                                                         <div className="flex items-center gap-1 shrink-0">
@@ -785,7 +664,7 @@ export default function FellowshipPageClient() {
                                                             <Heart className="h-4 w-4 sm:h-5 sm:w-5 text-primary fill-current" />
                                                         </div>
                                                         <div className="flex-1 min-w-0">
-                                                            <p className="font-bold truncate text-xs sm:text-sm leading-tight">{soul.firstName} {soul.lastName}</p>
+                                                            <p className="font-bold truncate text-xs sm:text-sm leading-tight break-words">{soul.firstName} {soul.lastName}</p>
                                                             <Badge className="mt-1 h-3.5 text-[7px] sm:text-[8px] uppercase tracking-tighter" variant="secondary">{soul.status}</Badge>
                                                         </div>
                                                         <div className="flex items-center gap-2 shrink-0">

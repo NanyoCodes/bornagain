@@ -44,7 +44,7 @@ function FullDevotionalDialog({ devotional, children }: { devotional: DailyDevot
             <div className="bg-primary/5 rounded-[2rem] p-8 sm:p-12 border-2 border-dashed border-primary/20 relative shadow-inner overflow-hidden">
                 <Quote className="absolute top-6 right-8 h-12 w-12 opacity-10 rotate-12" />
                 <p className="text-xl sm:text-2xl font-serif italic leading-relaxed text-justify text-balance relative z-10 break-words">{devotional.text}</p>
-                <p className="text-xs sm:text-sm font-black uppercase text-primary/80 text-right mt-10 tracking-widest border-t border-primary/10 pt-4 relative z-10">— {devotional.scripture}</p>
+                <p className="text-xs sm:text-sm font-black uppercase text-primary/80 text-right mt-10 tracking-widest border-t border-primary/10 pt-4 relative z-10 break-words">— {devotional.scripture}</p>
             </div>
             
             {devotional.prayer && (
@@ -334,7 +334,7 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
                         <div className="space-y-1">
                             <p 
                                 ref={devotionalTextRef}
-                                className="text-[10px] sm:text-xs text-muted-foreground italic line-clamp-2 font-medium leading-relaxed break-words"
+                                className="text-[10px] sm:text-xs text-muted-foreground italic line-clamp-2 font-medium leading-relaxed break-all"
                             >
                                 &ldquo;{todayDevotional.text}&rdquo;
                             </p>
@@ -346,7 +346,7 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
                                 </FullDevotionalDialog>
                             )}
                         </div>
-                        <p className="text-[8px] font-black uppercase text-primary/60 text-right mt-2 tracking-widest">— {todayDevotional.scripture}</p>
+                        <p className="text-[8px] font-black uppercase text-primary/60 text-right mt-2 tracking-widest break-words">— {todayDevotional.scripture}</p>
                     </div>
                 )}
 
