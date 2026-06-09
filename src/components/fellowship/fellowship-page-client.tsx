@@ -41,6 +41,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form';
+import { Separator } from '@/components/ui/separator';
 
 const devotionalSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters.").max(100),
@@ -114,8 +115,8 @@ export default function FellowshipPageClient() {
         return fellowship.organizerId === user.uid;
     }, [user, fellowship]);
 
+    const todayStr = useMemo(() => format(new Date(), 'yyyy-MM-dd'), []);
     const viewDateStr = format(viewDate, 'yyyy-MM-dd');
-    const todayStr = format(new Date(), 'yyyy-MM-dd');
     const isViewingToday = isSameDay(viewDate, new Date());
     
     const activeDevotionalRef = useMemo(() => {
@@ -168,8 +169,6 @@ export default function FellowshipPageClient() {
     }, [selectedSoulId, assignedSouls]);
 
     const totalDirectoryCount = (members?.length || 0) + (assignedSouls?.length || 0);
-
-    const loading = fellowshipLoading || profileLoading || organizerLoading || loadingMembers || soulsLoading || devoLoading;
 
     const handleSaveDevotional = (values: z.infer<typeof devotionalSchema>) => {
         if (!user || !firestore || !fellowship || !isOrganizer) return;
@@ -317,7 +316,7 @@ export default function FellowshipPageClient() {
         setViewDate(prev => direction === 'prev' ? subDays(prev, 1) : addDays(prev, 1));
     };
 
-    if (loading || !mounted) {
+    if (fellowshipLoading || profileLoading || organizerLoading || !mounted) {
         return (
             <div className="flex items-center justify-center h-full py-20">
                 <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -473,6 +472,36 @@ export default function FellowshipPageClient() {
         </div>
     );
 
+    const HeaderActions = (isMember || isOrganizer) && (
+        <TooltipProvider>
+            <Tooltip>
+                <TooltipTrigger asChild>
+                    <Button 
+                        variant={fellowship.hasGroupChat ? "default" : "outline"}
+                        size="icon" 
+                        onClick={fellowship.hasGroupChat ? () => router.push(`/dashboard/chats/${fellowshipId}`) : handleStartGroupChat}
+                        disabled={isChatLoading || (!fellowship.hasGroupChat && isOrganizer && (!members || members.length < 2))}
+                        className={cn(
+                            "h-9 w-9 sm:h-12 sm:w-12 rounded-full shadow-lg transition-all active:scale-90 relative shrink-0",
+                            fellowship.hasGroupChat && "bg-primary text-primary-foreground border-primary hover:bg-primary/90"
+                        )}
+                    >
+                        {isChatLoading ? <Loader2 className="h-4 w-4 sm:h-5 w-5 animate-spin" /> : <MessagesSquare className="h-4 w-4 sm:h-5 w-5" />}
+                        {!fellowship.hasGroupChat && isOrganizer && members && members.length >= 2 && (
+                            <span className="absolute -top-1 -right-1 flex h-3 w-3">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
+                            </span>
+                        )}
+                    </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                    <p>{fellowship.hasGroupChat ? "Open Group Chat" : isOrganizer ? "Start Group Chat" : "Chat coming soon"}</p>
+                </TooltipContent>
+            </Tooltip>
+        </TooltipProvider>
+    );
+
     return (
         <div className="space-y-6 max-w-6xl mx-auto pb-32">
             <div className="flex items-center gap-3 sm:gap-4 px-4 sm:px-0">
@@ -487,36 +516,7 @@ export default function FellowshipPageClient() {
                         <span className="text-[9px] sm:text-xs text-muted-foreground font-medium uppercase tracking-widest opacity-60 truncate">Global Community</span>
                     </div>
                 </div>
-
-                {(isMember || isOrganizer) && (
-                    <TooltipProvider>
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                                <Button 
-                                    variant={fellowship.hasGroupChat ? "default" : "outline"}
-                                    size="icon" 
-                                    onClick={fellowship.hasGroupChat ? () => router.push(`/dashboard/chats/${fellowshipId}`) : handleStartGroupChat}
-                                    disabled={isChatLoading || (!fellowship.hasGroupChat && isOrganizer && (!members || members.length < 2))}
-                                    className={cn(
-                                        "h-9 w-9 sm:h-12 sm:w-12 rounded-full shadow-lg transition-all active:scale-90 relative shrink-0",
-                                        fellowship.hasGroupChat && "bg-primary text-primary-foreground border-primary hover:bg-primary/90"
-                                    )}
-                                >
-                                    {isChatLoading ? <Loader2 className="h-4 w-4 sm:h-5 sm:w-5 animate-spin" /> : <MessagesSquare className="h-4 w-4 sm:h-5 sm:w-5" />}
-                                    {!fellowship.hasGroupChat && isOrganizer && members && members.length >= 2 && (
-                                        <span className="absolute -top-1 -right-1 flex h-3 w-3">
-                                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                                            <span className="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
-                                        </span>
-                                    )}
-                                </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                                <p>{fellowship.hasGroupChat ? "Open Group Chat" : isOrganizer ? "Start Group Chat" : "Chat coming soon"}</p>
-                            </TooltipContent>
-                        </Tooltip>
-                    </TooltipProvider>
-                )}
+                {HeaderActions}
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
@@ -528,13 +528,13 @@ export default function FellowshipPageClient() {
                         <CardContent className="px-5 sm:px-8 pb-6 sm:pb-8 space-y-4 sm:space-y-5 pt-1 sm:pt-2">
                             {fellowship.schedule && (
                                 <div className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-muted/30 border border-dashed">
-                                    <p className="font-black text-[8px] sm:text-[9px] uppercase tracking-[0.2em] text-muted-foreground mb-1 sm:mb-1.5">Schedule</p>
+                                    <p className="font-black text-[8px] sm:text-[9px] uppercase tracking-[0.2em] text-muted-foreground mb-1.5">Schedule</p>
                                     <p className="text-foreground font-bold text-xs sm:text-sm leading-tight text-balance">{fellowship.schedule}</p>
                                 </div>
                             )}
                             {fellowship.location && (
                                 <div className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-muted/30 border border-dashed">
-                                    <p className="font-black text-[8px] sm:text-[9px] uppercase tracking-[0.2em] text-muted-foreground mb-1 sm:mb-1.5">Location Area</p>
+                                    <p className="font-black text-[8px] sm:text-[9px] uppercase tracking-[0.2em] text-muted-foreground mb-1.5">Location Area</p>
                                     <p className="text-foreground font-bold text-xs sm:text-sm flex items-start gap-1.5 leading-tight break-words text-balance">
                                         <MapPin className="h-3 sm:h-3.5 w-3 sm:w-3.5 text-primary shrink-0 mt-0.5" /> {fellowship.location}
                                     </p>
@@ -575,7 +575,6 @@ export default function FellowshipPageClient() {
                 </div>
 
                 <div className="lg:col-span-2 space-y-6 sm:order-last lg:order-first px-0 sm:px-0">
-                    {/* Daily Devotional Section */}
                     <Card className="rounded-none sm:rounded-[2.5rem] border-x-0 sm:border-x shadow-none sm:shadow-lg border-none bg-primary text-primary-foreground overflow-hidden">
                         <CardHeader className="p-6 sm:p-10 pb-6 flex flex-row items-center justify-between gap-4">
                             <div className="space-y-1.5">
@@ -723,7 +722,7 @@ export default function FellowshipPageClient() {
                                     <Users className="h-5 w-5 text-primary" />
                                     Directory
                                 </span>
-                                <Badge variant="secondary" className="rounded-full px-3 h-6 font-bold">{totalDirectoryCount}</Badge>
+                                <Badge variant="secondary" className="rounded-full px-3 h-6 font-bold">{(members?.length || 0) + (assignedSouls?.length || 0)}</Badge>
                             </CardTitle>
                              <CardDescription className="text-[11px] sm:text-sm font-medium mt-2 leading-relaxed text-balance">
                                 {isMember || isOrganizer 
