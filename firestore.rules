@@ -25,7 +25,7 @@ service cloud.firestore {
     function isFellowshipOrganizer(fId) {
       return request.auth != null && 
              exists(/databases/$(database)/documents/fellowships/$(fId)) &&
-             get(/databases/$(database)/documents/fellowships/$(fId)).data.get('organizerId', '') == request.auth.uid;
+             get(/databases/$(database)/documents/fellowships/$(fId)).data.organizerId == request.auth.uid;
     }
 
     match /users/{userId} {
