@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useDoc, useFirestore, useUser, useCollection, useUserProfile } from '@/firebase';
 import type { Fellowship, UserProfile, FellowshipMember, Soul, DailyDevotional } from '@/lib/types';
@@ -347,7 +347,7 @@ export default function FellowshipPageClient() {
                   <Heart className="h-6 w-6 sm:h-7 sm:w-7 text-primary fill-current" />
               </div>
               <div className="flex-1 min-w-0">
-                  <h3 className="text-lg sm:text-xl font-black font-headline truncate leading-tight text-balance">{activeSoul.firstName} {activeSoul.lastName}</h3>
+                  <h3 className="text-lg sm:xl font-black font-headline truncate leading-tight text-balance">{activeSoul.firstName} {activeSoul.lastName}</h3>
                   <Badge className={cn("mt-1.5 h-5 text-[9px] sm:text-[10px] uppercase font-bold tracking-widest")} variant="secondary">{activeSoul.status}</Badge>
               </div>
               <TooltipProvider>
@@ -455,7 +455,7 @@ export default function FellowshipPageClient() {
                             >
                                 <div className="flex justify-between items-center mb-1">
                                     <span className="text-[10px] font-black uppercase tracking-widest text-primary/70">{format(parseISO(devo.scheduledDate), 'EEEE, MMM d')}</span>
-                                    {isSameDay(parseISO(devo.scheduledDate), new Date()) && <Badge className="h-4 text-[7px] font-black uppercase">Today</Badge>}
+                                    {isSameDay(parseISO(devo.scheduledDate), new Date()) && <Badge className="bg-white text-primary h-4 px-1.5 font-black uppercase text-[7px] tracking-widest animate-pulse border-none">Today</Badge>}
                                 </div>
                                 <p className="font-bold text-sm truncate pr-6">{devo.title}</p>
                                 <p className="text-[9px] text-muted-foreground mt-1 uppercase font-bold tracking-tighter italic">Ref: {devo.scripture}</p>
