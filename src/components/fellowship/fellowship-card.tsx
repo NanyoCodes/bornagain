@@ -2,21 +2,22 @@
 
 import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
-import { useUser, useFirestore } from '@/firebase';
-import type { Fellowship, UserProfile } from '@/lib/types';
+import { useUser, useFirestore, useDoc } from '@/firebase';
+import type { Fellowship, UserProfile, DailyDevotional } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
-import { doc, runTransaction, arrayUnion, increment, serverTimestamp } from 'firebase/firestore';
+import { doc, runTransaction, arrayUnion, arrayRemove, increment, serverTimestamp, deleteDoc } from 'firebase/firestore';
 import { haversineDistance, cn } from '@/lib/utils';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Loader2, Users, MoreVertical, PlayCircle, Edit, Trash2, Group, MapPin, BarChart3 } from 'lucide-react';
+import { Loader2, Users, MoreVertical, PlayCircle, Edit, Trash2, Group, MapPin, BarChart3, BookOpen, LogOut, Quote } from 'lucide-react';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useRouter } from 'next/navigation';
+import { format } from 'date-fns';
 
 type FellowshipCardProps = {
   fellowship: Fellowship;
@@ -32,6 +33,7 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
     const { toast } = useToast();
     const router = useRouter();
     const [isJoining, setIsJoining] = useState(false);
+    const [isLeaving, setIsLeaving] = useState(false);
     
     const isMember = useMemo(() => {
         if (!user || !fellowship.memberIds) return false;
@@ -43,6 +45,15 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
         return fellowship.organizerId === user.uid;
     }, [user, fellowship.organizerId]);
 
+    // Fetch Today's Word for members/organizers
+    const todayStr = useMemo(() => format(new Date(), 'yyyy-MM-dd'), []);
+    const devotionalRef = useMemo(() => {
+        if (!firestore || !fellowship.id || !(isMember || isOrganizer)) return null;
+        return doc(firestore, 'fellowships', fellowship.id, 'devotionals', todayStr);
+    }, [firestore, fellowship.id, isMember, isOrganizer, todayStr]);
+    
+    const { data: todayDevotional } = useDoc<DailyDevotional>(devotionalRef);
+
     const distance = useMemo(() => {
         if (!userProfile?.location?.latitude || !userProfile?.location?.longitude || !fellowship.latitude || !fellowship.longitude) {
             return null;
@@ -53,10 +64,6 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
         );
     }, [userProfile?.location?.latitude, userProfile?.location?.longitude, fellowship.latitude, fellowship.longitude]);
 
-    /**
-     * INTERACTIVITY SAFETY HELPER
-     * Decouples dropdown close from modal open to prevent Radix body-lock conflicts.
-     */
     const triggerAction = (action: () => void) => {
         requestAnimationFrame(() => {
             action();
@@ -100,6 +107,31 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
             }
         } finally {
             setIsJoining(false);
+        }
+    };
+
+    const handleLeave = async (e: any) => {
+        if (!user || !firestore || isOrganizer || !isMember) return;
+        setIsLeaving(true);
+
+        const fellowshipRef = doc(firestore, "fellowships", fellowship.id);
+        const userFellowshipRef = doc(firestore, 'users', user.uid, 'fellowships', fellowship.id);
+        const fellowshipMemberRef = doc(firestore, 'fellowships', fellowship.id, 'members', user.uid);
+
+        try {
+            await runTransaction(firestore, async (transaction) => {
+                transaction.update(fellowshipRef, {
+                    memberIds: arrayRemove(user.uid),
+                    memberCount: increment(-1)
+                });
+                transaction.delete(userFellowshipRef);
+                transaction.delete(fellowshipMemberRef);
+            });
+            toast({ title: "Left Group", description: `You have left ${fellowship.name}.` });
+        } catch (e: any) {
+            toast({ variant: 'destructive', title: 'Action Failed', description: 'Could not leave group.' });
+        } finally {
+            setIsLeaving(false);
         }
     };
     
@@ -163,7 +195,7 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
                                 </TooltipContent>
                             </Tooltip>
                         </TooltipProvider>
-                        {isOrganizer && (
+                        {(isOrganizer || isMember) && (
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                     <Button variant="ghost" size="icon" className="h-9 w-9 -mr-2 rounded-full">
@@ -171,15 +203,24 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
                                     </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end" className="rounded-xl">
-                                    <DropdownMenuItem onSelect={() => triggerAction(onManage)} className="rounded-lg">
-                                        <Edit className="mr-2 h-4 w-4" />
-                                        Manage
-                                    </DropdownMenuItem>
-                                    <DropdownMenuSeparator />
-                                    <DropdownMenuItem onSelect={() => triggerAction(onDelete)} className="text-destructive focus:text-destructive focus:bg-destructive/10 rounded-lg">
-                                        <Trash2 className="mr-2 h-4 w-4" />
-                                        Delete Group
-                                    </DropdownMenuItem>
+                                    {isOrganizer ? (
+                                        <>
+                                            <DropdownMenuItem onSelect={() => triggerAction(onManage)} className="rounded-lg">
+                                                <Edit className="mr-2 h-4 w-4" />
+                                                Manage
+                                            </DropdownMenuItem>
+                                            <DropdownMenuSeparator />
+                                            <DropdownMenuItem onSelect={() => triggerAction(onDelete)} className="text-destructive focus:text-destructive focus:bg-destructive/10 rounded-lg">
+                                                <Trash2 className="mr-2 h-4 w-4" />
+                                                Delete Group
+                                            </DropdownMenuItem>
+                                        </>
+                                    ) : (
+                                        <DropdownMenuItem onSelect={handleLeave} className="text-destructive focus:text-destructive focus:bg-destructive/5 rounded-lg">
+                                            {isLeaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <LogOut className="mr-2 h-4 w-4" />}
+                                            Leave Fellowship
+                                        </DropdownMenuItem>
+                                    )}
                                 </DropdownMenuContent>
                             </DropdownMenu>
                         )}
@@ -188,6 +229,26 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
             </CardHeader>
             <CardContent className="px-5 sm:px-6 pb-4 space-y-4">
                 <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2 leading-relaxed font-medium">{fellowship.description}</p>
+                
+                {(isMember || isOrganizer) && todayDevotional && (
+                    <div className="bg-primary/5 rounded-2xl p-4 border border-primary/10 relative group/devo overflow-hidden shadow-inner">
+                        <div className="absolute top-0 right-0 p-3 opacity-[0.03] pointer-events-none group-hover/devo:opacity-[0.06] transition-opacity">
+                            <BookOpen className="h-12 w-12 text-primary rotate-12" />
+                        </div>
+                        <div className="flex items-center gap-2 mb-2">
+                            <div className="h-4 w-4 bg-primary/20 rounded-full flex items-center justify-center">
+                                <Sparkles className="h-2.5 w-2.5 text-primary" />
+                            </div>
+                            <span className="text-[8px] font-black uppercase tracking-[0.2em] text-primary">Daily Word</span>
+                        </div>
+                        <p className="font-bold text-xs sm:text-sm mb-1 truncate text-foreground">{todayDevotional.title}</p>
+                        <p className="text-[10px] sm:text-xs text-muted-foreground italic line-clamp-2 font-medium">
+                            &ldquo;{todayDevotional.text}&rdquo;
+                        </p>
+                        <p className="text-[8px] font-black uppercase text-primary/60 text-right mt-2 tracking-widest">— {todayDevotional.scripture}</p>
+                    </div>
+                )}
+
                 <div className="text-[11px] sm:text-xs space-y-2 p-4 bg-muted/30 rounded-2xl border border-dashed">
                     <div className="flex items-start gap-2.5">
                         <span className="font-black text-[9px] sm:text-[10px] text-muted-foreground shrink-0 uppercase tracking-widest pt-0.5">Schedule</span>
