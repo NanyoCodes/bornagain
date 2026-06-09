@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Direct Property Validation for Robust Organizer Authority - 2025-06-12T11:45:00Z
+    // Deployment trigger: Direct Organizer Authority Validation for Spiritual Schedule - 2025-06-12T12:30:00Z
     
     function isOwner(userId) {
       return request.auth != null && request.auth.uid == userId;
@@ -26,8 +26,7 @@ service cloud.firestore {
       return request.auth != null && 
              fId != null &&
              fId != "" &&
-             exists(/databases/$(database)/documents/fellowships/$(fId)) &&
-             get(/databases/$(database)/documents/fellowships/$(fId)).data.get('organizerId', '') == request.auth.uid;
+             get(/databases/$(database)/documents/fellowships/$(fId)).data.organizerId == request.auth.uid;
     }
 
     match /users/{userId} {

@@ -591,7 +591,13 @@ export default function FellowshipPageClient() {
                                                 variant="secondary" 
                                                 className="font-black rounded-2xl h-12 px-10 shadow-2xl text-[10px] uppercase tracking-[0.2em]"
                                                 onClick={() => {
-                                                    form.setValue('scheduledDate', viewDateStr);
+                                                    form.reset({
+                                                        title: '',
+                                                        scripture: '',
+                                                        text: '',
+                                                        prayer: '',
+                                                        scheduledDate: viewDateStr,
+                                                    });
                                                     setIsDevotionalDialogOpen(true);
                                                 }}
                                             >
