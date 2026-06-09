@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -22,7 +21,7 @@ import { safeToDate, cn } from '@/lib/utils';
 import { LogFollowUpDialog } from '@/components/souls/log-follow-up-dialog';
 import { actionItems } from '@/lib/follow-up-data';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Skeleton } from '../ui/skeleton';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import {
@@ -190,13 +189,6 @@ export default function FellowshipPageClient() {
         setDoc(devotionalRef, devotionalData, { merge: true })
             .then(() => {
                 toast({ title: 'Devotional Saved', description: `Word for ${format(new Date(values.scheduledDate), 'MMM d')} has been updated.` });
-                form.reset({
-                    title: '',
-                    scripture: '',
-                    text: '',
-                    prayer: '',
-                    scheduledDate: values.scheduledDate,
-                });
                 setIsDevotionalDialogOpen(false);
             })
             .catch(async (serverError) => {
@@ -576,7 +568,7 @@ export default function FellowshipPageClient() {
                                     <div className="flex items-center justify-center h-5 w-5 bg-white/10 rounded-full">
                                         <BookOpen className="h-3 w-3 opacity-80" />
                                     </div>
-                                    <span className="text-[10px] font-black uppercase tracking-[0.3em] opacity-80">Daily Word</span>
+                                    <span className="text-[10px] font-black uppercase tracking-[0.3em] opacity-80">DEVOTIONAL</span>
                                     {isViewingToday && (
                                         <Badge className="bg-white text-primary h-4 px-1.5 font-black uppercase text-[7px] tracking-widest animate-pulse border-none">
                                             Today
@@ -894,7 +886,7 @@ export default function FellowshipPageClient() {
                                         )} />
                                         <Button type="submit" form="devotional-form-mobile" disabled={isSavingDevotional} className="w-full h-14 font-black shadow-xl rounded-2xl tracking-widest uppercase">
                                             {isSavingDevotional && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                            PUBLISH WORD
+                                            {activeDevotional ? 'UPDATE WORD' : 'PUBLISH WORD'}
                                         </Button>
                                     </form>
                                 </Form>
@@ -976,7 +968,7 @@ export default function FellowshipPageClient() {
                                                 )} />
                                                 <Button type="submit" form="devotional-form-desktop" disabled={isSavingDevotional} className="w-full h-12 rounded-xl font-black shadow-xl tracking-widest uppercase">
                                                     {isSavingDevotional && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                                    PUBLISH TO SCHEDULE
+                                                    {activeDevotional ? 'UPDATE WORD' : 'PUBLISH WORD'}
                                                 </Button>
                                             </form>
                                         </Form>
