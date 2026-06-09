@@ -31,10 +31,9 @@ import { safeToDate, cn } from '@/lib/utils';
 import { LogFollowUpDialog } from '@/components/souls/log-follow-up-dialog';
 import { actionItems } from '@/lib/follow-up-data';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { Skeleton } from '../ui/skeleton';
-import { getBibleChapter, type BibleChapterOutput } from '@/ai/flows/get-bible-chapter-flow';
-import { Input } from '../ui/input';
-import { Textarea } from '../ui/textarea';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -227,7 +226,7 @@ export default function FellowshipPageClient() {
     }, [selectedSoulId, assignedSouls]);
 
     const handleSaveDevotional = async (values: z.infer<typeof devotionalSchema>) => {
-        if (!user || !firestore || !fellowship || !isOrganizer) return;
+        if (!user || !firestore || !fellowship) return;
         setIsSavingDevotional(true);
 
         const devotionalRef = doc(firestore, 'fellowships', fellowshipId, 'devotionals', values.scheduledDate);
