@@ -426,7 +426,7 @@ export default function FellowshipPageClient() {
                           </div>
                       ) : (
                           <div className="text-center py-16 sm:py-20 text-xs text-muted-foreground italic px-10 space-y-3">
-                              <Info className="h-8 w-8 mx-auto opacity-10" />
+                              <History className="h-8 w-8 mx-auto opacity-10" />
                               <p>No shared interactions yet.</p>
                           </div>
                       )}
