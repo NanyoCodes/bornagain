@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useMemo, useEffect, useRef } from 'react';
@@ -44,7 +43,7 @@ function FullDevotionalDialog({ devotional, children }: { devotional: DailyDevot
         <div className="space-y-8">
             <div className="bg-primary/5 rounded-[2rem] p-8 sm:p-12 border-2 border-dashed border-primary/20 relative shadow-inner overflow-hidden">
                 <Quote className="absolute top-6 right-8 h-12 w-12 opacity-10 rotate-12" />
-                <p className="text-xl sm:text-2xl font-serif italic leading-relaxed text-justify text-balance relative z-10">&ldquo;{devotional.text}&rdquo;</p>
+                <p className="text-xl sm:text-2xl font-serif italic leading-relaxed text-justify text-balance relative z-10 break-words">{devotional.text}</p>
                 <p className="text-xs sm:text-sm font-black uppercase text-primary/80 text-right mt-10 tracking-widest border-t border-primary/10 pt-4 relative z-10">— {devotional.scripture}</p>
             </div>
             
@@ -56,7 +55,7 @@ function FullDevotionalDialog({ devotional, children }: { devotional: DailyDevot
                         </div>
                         <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-muted-foreground">PRAYER FOR TODAY</span>
                     </div>
-                    <p className="text-lg sm:text-xl font-medium leading-relaxed italic text-muted-foreground text-balance">
+                    <p className="text-lg sm:text-xl font-medium leading-relaxed italic text-muted-foreground text-balance break-words">
                         &ldquo;{devotional.prayer}&rdquo;
                     </p>
                 </div>
@@ -76,7 +75,7 @@ function FullDevotionalDialog({ devotional, children }: { devotional: DailyDevot
                 <SheetContent side="bottom" className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem]">
                     <div className="p-8 border-b flex-shrink-0 bg-muted/10">
                         <SheetHeader className="text-left">
-                            <SheetTitle className="text-2xl font-black font-headline uppercase leading-tight">{devotional.title}</SheetTitle>
+                            <SheetTitle className="text-2xl font-black font-headline uppercase leading-tight break-words">{devotional.title}</SheetTitle>
                             <SheetDescription className="text-sm font-medium mt-1">Word for {format(parseISO(devotional.scheduledDate), 'PPPP')}</SheetDescription>
                         </SheetHeader>
                     </div>
@@ -96,7 +95,7 @@ function FullDevotionalDialog({ devotional, children }: { devotional: DailyDevot
             <DialogContent className="sm:max-w-2xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl">
                 <div className="p-8 border-b bg-muted/10">
                     <DialogHeader>
-                        <DialogTitle className="text-2xl font-black font-headline uppercase leading-tight">{devotional.title}</DialogTitle>
+                        <DialogTitle className="text-2xl font-black font-headline uppercase leading-tight break-words">{devotional.title}</DialogTitle>
                         <DialogDescription className="text-sm font-medium mt-1">Daily Word • {format(parseISO(devotional.scheduledDate), 'PPPP')}</DialogDescription>
                     </DialogHeader>
                 </div>
@@ -153,16 +152,6 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
             return () => window.removeEventListener('resize', checkTruncation);
         }
     }, [todayDevotional]);
-
-    const distance = useMemo(() => {
-        if (!userProfile?.location?.latitude || !userProfile?.location?.longitude || !fellowship.latitude || !fellowship.longitude) {
-            return null;
-        }
-        return haversineDistance(
-            { lat: userProfile.location.latitude, lng: userProfile.location.longitude },
-            { lat: fellowship.latitude, lng: fellowship.longitude }
-        );
-    }, [userProfile?.location?.latitude, userProfile?.location?.longitude, fellowship.latitude, fellowship.longitude]);
 
     const triggerAction = (action: () => void) => {
         requestAnimationFrame(() => {
@@ -244,7 +233,7 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
             <CardHeader className="p-5 sm:p-6">
                 <div className="flex justify-between items-start gap-4">
                     <div className="min-w-0 flex-1">
-                        <CardTitle className="text-lg sm:text-xl font-black leading-tight mb-2 uppercase tracking-tight">
+                        <CardTitle className="text-lg sm:text-xl font-black leading-tight mb-2 uppercase tracking-tight break-words">
                           {fellowship.name}
                         </CardTitle>
                         <div className="space-y-2">
@@ -253,7 +242,7 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
                                   <AvatarImage src={fellowship.organizerPhotoURL} />
                                   <AvatarFallback className="text-[8px] font-black bg-primary/10 text-primary">{fellowship.organizerName?.charAt(0)}</AvatarFallback>
                               </Avatar>
-                              <span className="leading-tight">
+                              <span className="leading-tight truncate">
                                 Organized by{" "}
                                 <Link 
                                     href={isOrganizer ? '/dashboard/profile' : `/dashboard/profile/${fellowship.organizerId}`}
@@ -328,7 +317,7 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
                 </div>
             </CardHeader>
             <CardContent className="px-5 sm:px-6 pb-4 space-y-4">
-                <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2 leading-relaxed font-medium">{fellowship.description}</p>
+                <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2 leading-relaxed font-medium break-words">{fellowship.description}</p>
                 
                 {(isMember || isOrganizer) && todayDevotional && (
                     <div className="bg-primary/5 rounded-2xl p-4 border border-primary/10 relative group/devo overflow-hidden shadow-inner">
@@ -341,11 +330,11 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
                             </div>
                             <span className="text-[8px] font-black uppercase tracking-[0.2em] text-primary">DEVOTIONAL</span>
                         </div>
-                        <p className="font-bold text-xs sm:text-sm mb-1 truncate text-foreground">{todayDevotional.title}</p>
+                        <p className="font-bold text-xs sm:text-sm mb-1 truncate text-foreground break-words">{todayDevotional.title}</p>
                         <div className="space-y-1">
                             <p 
                                 ref={devotionalTextRef}
-                                className="text-[10px] sm:text-xs text-muted-foreground italic line-clamp-2 font-medium leading-relaxed"
+                                className="text-[10px] sm:text-xs text-muted-foreground italic line-clamp-2 font-medium leading-relaxed break-words"
                             >
                                 &ldquo;{todayDevotional.text}&rdquo;
                             </p>
@@ -364,7 +353,7 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
                 <div className="text-[11px] sm:text-xs space-y-2 p-4 bg-muted/30 rounded-2xl border border-dashed">
                     <div className="flex items-start gap-2.5">
                         <span className="font-black text-[9px] sm:text-[10px] text-muted-foreground shrink-0 uppercase tracking-widest pt-0.5">Schedule</span>
-                        <span className="text-foreground font-bold leading-tight">{fellowship.schedule}</span>
+                        <span className="text-foreground font-bold leading-tight break-words">{fellowship.schedule}</span>
                     </div>
                     {fellowship.location && (
                         <div className="flex items-start gap-2.5 pt-1 border-t border-muted-foreground/10 mt-1">
