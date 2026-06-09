@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -316,7 +317,9 @@ export default function FellowshipPageClient() {
         setViewDate(prev => direction === 'prev' ? subDays(prev, 1) : addDays(prev, 1));
     };
 
-    if (fellowshipLoading || profileLoading || organizerLoading || !mounted) {
+    const loading = fellowshipLoading || profileLoading || organizerLoading || !mounted;
+
+    if (loading) {
         return (
             <div className="flex items-center justify-center h-full py-20">
                 <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -506,7 +509,7 @@ export default function FellowshipPageClient() {
         <div className="space-y-6 max-w-6xl mx-auto pb-32">
             <div className="flex items-center gap-3 sm:gap-4 px-4 sm:px-0">
                 <Button variant="ghost" size="icon" onClick={() => router.back()} className="shrink-0 h-9 w-9 sm:h-10 sm:w-10 rounded-full border bg-background shadow-sm hover:bg-muted/50">
-                    <ArrowLeft className="h-4 w-4 sm:h-5 w-5"/>
+                    <ArrowLeft className="h-5 w-5 sm:h-6 sm:w-6"/>
                     <span className="sr-only">Back</span>
                 </Button>
                 <div className="min-w-0 flex-1">

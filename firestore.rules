@@ -26,7 +26,7 @@ service cloud.firestore {
     function isFellowshipOrganizer(fellowshipId) {
       return request.auth != null && 
              exists(/databases/$(database)/documents/fellowships/$(fellowshipId)) &&
-             request.auth.uid == get(/databases/$(database)/documents/fellowships/$(fellowshipId)).data.organizerId;
+             request.auth.uid == get(/databases/$(database)/documents/fellowships/$(fellowshipId)).data.get('organizerId', '');
     }
 
     match /users/{userId} {
@@ -174,7 +174,7 @@ service cloud.firestore {
 
       match /devotionals/{date} {
         allow read: if true;
-        allow write: if request.auth != null && request.auth.uid == get(/databases/$(database)/documents/fellowships/$(fellowshipId)).data.organizerId;
+        allow write: if isFellowshipOrganizer(fellowshipId);
       }
     }
 
