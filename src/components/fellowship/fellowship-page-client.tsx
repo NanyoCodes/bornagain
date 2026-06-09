@@ -508,7 +508,17 @@ export default function FellowshipPageClient() {
                                                     size="icon" 
                                                     className="h-10 w-10 sm:h-14 sm:w-14 rounded-[1.25rem] bg-white/10 border-white/20 hover:bg-white/20 text-white shadow-xl"
                                                     onClick={() => {
-                                                        if (activeDevotional) handleEditDevotional(activeDevotional);
+                                                        if (activeDevotional) {
+                                                            handleEditDevotional(activeDevotional);
+                                                        } else {
+                                                            form.reset({
+                                                                title: '',
+                                                                scripture: '',
+                                                                text: '',
+                                                                prayer: '',
+                                                                scheduledDate: viewDateStr,
+                                                            });
+                                                        }
                                                         setIsDevotionalDialogOpen(true);
                                                     }}
                                                 >
@@ -529,7 +539,7 @@ export default function FellowshipPageClient() {
                                 </div>
                             ) : activeDevotional ? (
                                 <div className="space-y-8">
-                                    <div className="bg-black/40 rounded-[2rem] p-8 sm:p-12 border border-white/20 relative shadow-2xl group overflow-hidden">
+                                    <div className="bg-black/60 rounded-[2rem] p-8 sm:p-12 border border-white/20 relative shadow-2xl group overflow-hidden">
                                         <div className="absolute -top-6 -right-6 h-24 w-24 bg-white/5 rounded-full blur-2xl" />
                                         <Quote className="absolute top-6 right-8 h-12 w-12 opacity-10 rotate-12 transition-transform group-hover:scale-110" />
                                         <p className="text-xl sm:text-2xl font-serif italic leading-relaxed text-justify text-balance relative z-10 break-words text-white font-medium">{activeDevotional.text}</p>
@@ -601,7 +611,7 @@ export default function FellowshipPageClient() {
                                                     setIsDevotionalDialogOpen(true);
                                                 }}
                                             >
-                                                {activeDevotional ? 'UPDATE WORD' : 'PUBLISH WORD'}
+                                                PUBLISH WORD
                                             </Button>
                                         )}
                                         <Button variant="outline" className="bg-white/5 border-white/10 text-white rounded-2xl h-12 px-8 font-black uppercase tracking-widest text-[10px] shadow-lg" onClick={() => handleDateNav('next')}>NEXT <ChevronRight className="ml-2 h-4 w-4" /></Button>
