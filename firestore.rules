@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Direct Property Validation for Robust Organizer Authority - 2025-06-10T12:00:00Z
+    // Deployment trigger: Direct Property Validation for Robust Organizer Authority - 2025-06-10T14:30:00Z
     
     function isOwner(userId) {
       return request.auth != null && request.auth.uid == userId;

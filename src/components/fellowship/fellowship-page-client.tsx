@@ -165,7 +165,6 @@ export default function FellowshipPageClient() {
             updatedAt: serverTimestamp(),
         };
 
-        // Only set createdAt if we are creating a new record for this date
         if (!activeDevotional || activeDevotional.scheduledDate !== values.scheduledDate) {
             devotionalData.createdAt = serverTimestamp();
         }
@@ -452,11 +451,11 @@ export default function FellowshipPageClient() {
                                 </div>
                             ) : activeDevotional ? (
                                 <div className="space-y-8">
-                                    <div className="bg-white/5 rounded-[2rem] p-8 sm:p-12 border border-white/10 relative shadow-2xl group overflow-hidden">
-                                        <div className="absolute -top-6 -right-6 h-24 w-24 bg-white/5 rounded-full blur-2xl" />
+                                    <div className="bg-white/15 rounded-[2rem] p-8 sm:p-12 border border-white/20 relative shadow-2xl group overflow-hidden">
+                                        <div className="absolute -top-6 -right-6 h-24 w-24 bg-white/10 rounded-full blur-2xl" />
                                         <Quote className="absolute top-6 right-8 h-12 w-12 opacity-10 rotate-12 transition-transform group-hover:scale-110" />
-                                        <p className="text-xl sm:text-2xl font-serif italic leading-relaxed text-justify text-balance relative z-10 break-words">{activeDevotional.text}</p>
-                                        <p className="text-xs sm:text-sm font-black uppercase text-white/80 text-right mt-10 tracking-widest border-t border-white/10 pt-4 relative z-10 break-words">— {activeDevotional.scripture}</p>
+                                        <p className="text-xl sm:text-2xl font-serif italic leading-relaxed text-justify text-balance relative z-10 break-words text-white">{activeDevotional.text}</p>
+                                        <p className="text-xs sm:text-sm font-black uppercase text-white/90 text-right mt-10 tracking-widest border-t border-white/20 pt-4 relative z-10 break-words">— {activeDevotional.scripture}</p>
                                     </div>
                                     
                                     {activeDevotional.prayer && (
@@ -467,7 +466,7 @@ export default function FellowshipPageClient() {
                                                 </div>
                                                 <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-white/90">PRAYER FOR TODAY</span>
                                             </div>
-                                            <p className="text-base sm:text-lg font-medium text-white/90 leading-relaxed text-justify italic break-words text-balance">
+                                            <p className="text-base sm:text-lg font-medium text-white leading-relaxed text-justify italic break-words text-balance">
                                                 {activeDevotional.prayer}
                                             </p>
                                         </div>
@@ -475,8 +474,8 @@ export default function FellowshipPageClient() {
                                     
                                     <div className="flex flex-col sm:flex-row items-center justify-between gap-6 pt-2">
                                         <div className="flex items-center gap-3 bg-white/10 px-4 py-2 rounded-full border border-white/10">
-                                            <Sparkles className="h-4 w-4 text-white/80 fill-current" />
-                                            <span className="text-[10px] font-black uppercase tracking-widest text-white/80">Messenger: {activeDevotional.authorName}</span>
+                                            <Sparkles className="h-4 w-4 text-white fill-current" />
+                                            <span className="text-[10px] font-black uppercase tracking-widest text-white">Messenger: {activeDevotional.authorName}</span>
                                         </div>
                                         
                                         <div className="flex items-center gap-2 bg-white/10 rounded-2xl p-1.5 border border-white/10 shadow-2xl w-full sm:w-auto">
@@ -493,7 +492,7 @@ export default function FellowshipPageClient() {
                                     {!isViewingToday && (
                                         <Button 
                                             variant="ghost" 
-                                            className="w-full text-[11px] font-black uppercase tracking-[0.3em] text-white/40 hover:text-white hover:bg-white/5 h-10 rounded-2xl border border-white/5 border-dashed"
+                                            className="w-full text-[11px] font-black uppercase tracking-[0.3em] text-white/60 hover:text-white hover:bg-white/10 h-10 rounded-2xl border border-white/10 border-dashed"
                                             onClick={() => setViewDate(new Date())}
                                         >
                                             <CalendarDays className="mr-2 h-4 w-4" /> Jump to Today
@@ -780,7 +779,7 @@ export default function FellowshipPageClient() {
                 <Sheet open={isScheduleViewOpen} onOpenChange={setIsScheduleViewOpen}>
                     <SheetContent side="bottom" className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem]">
                         <div className="p-8 border-b flex-shrink-0 bg-muted/10">
-                            <SheetHeader className="text-left">
+                            <SheetHeader classNametext-left">
                                 <div className="flex items-center gap-2 mb-2">
                                     <CalendarClock className="h-4 w-4 text-primary" />
                                     <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Spiritual Schedule</span>
@@ -847,7 +846,7 @@ export default function FellowshipPageClient() {
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter className="gap-3 mt-6">
-                        <AlertDialogCancel rounded-2xl h-11 font-bold>Cancel</AlertDialogCancel>
+                        <AlertDialogCancel className="rounded-2xl h-11 font-bold">Cancel</AlertDialogCancel>
                         <AlertDialogAction onClick={handleRemoveSoul} disabled={isProcessingRemoval} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-11 font-bold">
                             {isProcessingRemoval && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                             Confirm Unassign
