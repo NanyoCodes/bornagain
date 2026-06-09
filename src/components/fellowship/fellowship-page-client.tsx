@@ -62,8 +62,8 @@ function FullDevotionalDialog({ devotional, children }: { devotional: DailyDevot
         <div className="space-y-8">
             <div className="bg-primary/5 rounded-[2rem] p-8 sm:p-12 border-2 border-dashed border-primary/20 relative shadow-inner overflow-hidden">
                 <Quote className="absolute top-6 right-8 h-12 w-12 opacity-10 rotate-12" />
-                <p className="text-xl sm:text-2xl font-serif italic leading-relaxed text-justify text-balance relative z-10 break-words">{devotional.text}</p>
-                <p className="text-xs sm:text-sm font-black uppercase text-primary/80 text-right mt-10 tracking-widest border-t border-primary/10 pt-4 relative z-10 break-words">— {devotional.scripture}</p>
+                <p className="text-xl sm:text-2xl font-serif italic leading-relaxed text-justify text-balance relative z-10 break-words [overflow-wrap:anywhere]">{devotional.text}</p>
+                <p className="text-xs sm:text-sm font-black uppercase text-primary/80 text-right mt-10 tracking-widest border-t border-primary/10 pt-4 relative z-10 break-words [overflow-wrap:anywhere]">— {devotional.scripture}</p>
             </div>
             
             {devotional.prayer && (
@@ -74,7 +74,7 @@ function FullDevotionalDialog({ devotional, children }: { devotional: DailyDevot
                         </div>
                         <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-muted-foreground">PRAYER FOR TODAY</span>
                     </div>
-                    <p className="text-lg sm:text-xl font-medium leading-relaxed italic text-muted-foreground text-balance break-words">
+                    <p className="text-lg sm:text-xl font-medium leading-relaxed italic text-muted-foreground text-balance break-words [overflow-wrap:anywhere]">
                         &ldquo;{devotional.prayer}&rdquo;
                     </p>
                 </div>
@@ -82,7 +82,7 @@ function FullDevotionalDialog({ devotional, children }: { devotional: DailyDevot
 
             <div className="flex items-center justify-center gap-3 bg-muted/30 px-4 py-2 rounded-full border border-dashed w-fit mx-auto">
                 <Sparkles className="h-4 w-4 text-primary fill-current" />
-                <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Messenger: {devotional.authorName}</span>
+                <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground truncate max-w-[200px]">Messenger: {devotional.authorName}</span>
             </div>
         </div>
     );
@@ -94,7 +94,7 @@ function FullDevotionalDialog({ devotional, children }: { devotional: DailyDevot
                 <SheetContent side="bottom" className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem]">
                     <div className="p-8 border-b flex-shrink-0 bg-muted/10">
                         <SheetHeader className="text-left flex-shrink-0">
-                            <SheetTitle className="text-2xl font-black font-headline uppercase leading-tight break-words">{devotional.title}</SheetTitle>
+                            <SheetTitle className="text-2xl font-black font-headline uppercase leading-tight break-words [overflow-wrap:anywhere]">{devotional.title}</SheetTitle>
                             <SheetDescription className="text-sm font-medium mt-1">Word for {format(parseISO(devotional.scheduledDate), 'PPPP')}</SheetDescription>
                         </SheetHeader>
                     </div>
@@ -114,7 +114,7 @@ function FullDevotionalDialog({ devotional, children }: { devotional: DailyDevot
             <DialogContent className="sm:max-w-2xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl">
                 <div className="p-8 border-b bg-muted/10">
                     <DialogHeader>
-                        <DialogTitle className="text-2xl font-black font-headline uppercase leading-tight break-words">{devotional.title}</DialogTitle>
+                        <DialogTitle className="text-2xl font-black font-headline uppercase leading-tight break-words [overflow-wrap:anywhere]">{devotional.title}</DialogTitle>
                         <DialogDescription className="text-sm font-medium mt-1">Daily Word • {format(parseISO(devotional.scheduledDate), 'PPPP')}</DialogDescription>
                     </DialogHeader>
                 </div>
@@ -393,8 +393,8 @@ export default function FellowshipPageClient() {
                                     <span className="text-[10px] font-black uppercase tracking-widest text-primary/70">{format(parseISO(devo.scheduledDate), 'EEEE, MMM d')}</span>
                                     {isSameDay(parseISO(devo.scheduledDate), new Date()) && <Badge className="bg-white text-primary h-4 px-1.5 font-black uppercase text-[7px] tracking-widest animate-pulse border-none">Today</Badge>}
                                 </div>
-                                <p className="font-bold text-sm truncate pr-6 break-words">{devo.title}</p>
-                                <p className="text-[9px] text-muted-foreground mt-1 uppercase font-bold tracking-tighter italic break-words">Ref: {devo.scripture}</p>
+                                <p className="font-bold text-sm truncate pr-6 break-words [overflow-wrap:anywhere]">{devo.title}</p>
+                                <p className="text-[9px] text-muted-foreground mt-1 uppercase font-bold tracking-tighter italic break-words [overflow-wrap:anywhere]">Ref: {devo.scripture}</p>
                                 <ChevronRight className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-primary opacity-0 group-hover:opacity-100 transition-opacity" />
                             </button>
                         );
@@ -450,7 +450,7 @@ export default function FellowshipPageClient() {
                     <span className="sr-only">Back</span>
                 </Button>
                 <div className="min-w-0 flex-1">
-                    <h1 className="text-xl sm:text-2xl md:text-4xl font-black font-headline tracking-tight truncate leading-tight uppercase text-balance break-words">{fellowship.name}</h1>
+                    <h1 className="text-xl sm:text-2xl md:text-4xl font-black font-headline tracking-tight truncate leading-tight uppercase text-balance break-words [overflow-wrap:anywhere]">{fellowship.name}</h1>
                     <div className="flex items-center gap-2 mt-0.5">
                         <Badge variant="secondary" className="uppercase font-bold tracking-[0.2em] text-[8px] sm:text-[10px] px-2 h-5 shrink-0">{fellowship.groupType || 'Fellowship'}</Badge>
                         <span className="text-[9px] sm:text-xs text-muted-foreground font-medium uppercase tracking-widest opacity-60 truncate">Global Community</span>
@@ -475,7 +475,7 @@ export default function FellowshipPageClient() {
                                         </Badge>
                                     )}
                                 </div>
-                                <CardTitle className="text-3xl sm:text-4xl font-black font-headline tracking-tight uppercase leading-none break-words text-balance">
+                                <CardTitle className="text-3xl sm:text-4xl font-black font-headline tracking-tight uppercase leading-none break-words [overflow-wrap:anywhere] text-balance">
                                     {activeDevotional?.title || (devoLoading ? 'Checking...' : 'The Living Word')}
                                 </CardTitle>
                                 <p className="text-[10px] sm:text-xs font-black uppercase tracking-[0.15em] opacity-70 mt-2">
@@ -541,8 +541,8 @@ export default function FellowshipPageClient() {
                                     <div className="bg-black/60 rounded-[2rem] p-8 sm:p-12 border border-white/20 relative shadow-2xl group overflow-hidden">
                                         <div className="absolute -top-6 -right-6 h-24 w-24 bg-white/5 rounded-full blur-2xl" />
                                         <Quote className="absolute top-6 right-8 h-12 w-12 opacity-10 rotate-12 transition-transform group-hover:scale-110" />
-                                        <p className="text-xl sm:text-2xl font-serif italic leading-relaxed text-justify text-balance relative z-10 break-words text-white font-medium">{activeDevotional.text}</p>
-                                        <p className="text-xs sm:text-sm font-black uppercase text-white text-right mt-10 tracking-widest border-t border-white/20 pt-4 relative z-10 break-words">— {activeDevotional.scripture}</p>
+                                        <p className="text-xl sm:text-2xl font-serif italic leading-relaxed text-justify text-balance relative z-10 break-words [overflow-wrap:anywhere] text-white font-medium">{activeDevotional.text}</p>
+                                        <p className="text-xs sm:text-sm font-black uppercase text-white text-right mt-10 tracking-widest border-t border-white/20 pt-4 relative z-10 break-words [overflow-wrap:anywhere]">— {activeDevotional.scripture}</p>
                                     </div>
                                     
                                     {activeDevotional.prayer && (
@@ -553,7 +553,7 @@ export default function FellowshipPageClient() {
                                                 </div>
                                                 <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-white/90">PRAYER FOR TODAY</span>
                                             </div>
-                                            <p className="text-base sm:text-lg font-medium text-white leading-relaxed text-justify italic break-words text-balance">
+                                            <p className="text-base sm:text-lg font-medium text-white leading-relaxed text-justify italic break-words [overflow-wrap:anywhere] text-balance">
                                                 {activeDevotional.prayer}
                                             </p>
                                         </div>
@@ -562,7 +562,7 @@ export default function FellowshipPageClient() {
                                     <div className="flex flex-col sm:flex-row items-center justify-between gap-6 pt-2">
                                         <div className="flex items-center gap-3 bg-white/10 px-4 py-2 rounded-full border border-white/10">
                                             <Sparkles className="h-4 w-4 text-white fill-current" />
-                                            <span className="text-[10px] font-black uppercase tracking-widest text-white">Messenger: {activeDevotional.authorName}</span>
+                                            <span className="text-[10px] font-black uppercase tracking-widest text-white truncate max-w-[200px]">Messenger: {activeDevotional.authorName}</span>
                                         </div>
                                         
                                         <div className="flex items-center gap-2 bg-white/10 rounded-2xl p-1.5 border border-white/10 shadow-2xl w-full sm:w-auto">
@@ -625,7 +625,7 @@ export default function FellowshipPageClient() {
                             <CardTitle className="text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">About this Group</CardTitle>
                         </CardHeader>
                         <CardContent className="px-6 sm:px-8 pb-8">
-                            <p className="text-sm sm:text-base text-foreground leading-relaxed whitespace-pre-wrap font-medium text-balance break-words">
+                            <p className="text-sm sm:text-base text-foreground leading-relaxed whitespace-pre-wrap font-medium text-balance break-words [overflow-wrap:anywhere]">
                                 {fellowship.description}
                             </p>
                         </CardContent>
@@ -656,7 +656,7 @@ export default function FellowshipPageClient() {
                                                         <AvatarFallback className="text-[10px] font-black bg-primary/10 text-primary">{member.firstName?.charAt(0)}</AvatarFallback>
                                                     </Avatar>
                                                     <div className="flex-1 min-w-0">
-                                                        <p className="font-bold truncate text-xs sm:text-sm leading-tight break-words">{member.firstName} {member.lastName}</p>
+                                                        <p className="font-bold truncate text-xs sm:text-sm leading-tight break-words [overflow-wrap:anywhere]">{member.firstName} {member.lastName}</p>
                                                         {member.userId === fellowship.organizerId && <span className="text-[8px] font-black uppercase text-primary tracking-widest block mt-0.5">Organizer</span>}
                                                     </div>
                                                     {isOrganizer && member.userId !== user?.uid && (
@@ -672,7 +672,7 @@ export default function FellowshipPageClient() {
                                                 <div key={soul.id} className="flex items-center gap-3 p-3 sm:p-4 rounded-xl sm:rounded-2xl border bg-primary/5 transition-all hover:bg-primary/10 group min-w-0">
                                                     <div className="h-9 w-9 sm:h-10 sm:w-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20"><Heart className="h-4 w-4 sm:h-5 w-5 text-primary fill-current" /></div>
                                                     <div className="flex-1 min-w-0">
-                                                        <p className="font-bold truncate text-xs sm:text-sm leading-tight break-words">{soul.firstName} {soul.lastName}</p>
+                                                        <p className="font-bold truncate text-xs sm:text-sm leading-tight break-words [overflow-wrap:anywhere]">{soul.firstName} {soul.lastName}</p>
                                                         <Badge className="mt-1 h-3.5 text-[7px] sm:text-[8px]" variant="secondary">{soul.status}</Badge>
                                                     </div>
                                                     <Button variant="outline" size="sm" className="h-7 sm:h-8 text-[9px] sm:text-[10px] font-black" onClick={() => { setSelectedSoulId(soul.id); setIsSoulDetailsOpen(true); }}>Details</Button>
@@ -702,13 +702,13 @@ export default function FellowshipPageClient() {
                             {fellowship.schedule && (
                                 <div className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-muted/30 border border-dashed">
                                     <p className="font-black text-[8px] sm:text-[9px] uppercase tracking-[0.2em] text-muted-foreground mb-1.5">Schedule</p>
-                                    <p className="text-foreground font-bold text-xs sm:text-sm leading-tight text-balance break-words">{fellowship.schedule}</p>
+                                    <p className="text-foreground font-bold text-xs sm:text-sm leading-tight text-balance break-words [overflow-wrap:anywhere]">{fellowship.schedule}</p>
                                 </div>
                             )}
                             {fellowship.location && (
                                 <div className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-muted/30 border border-dashed">
                                     <p className="font-black text-[8px] sm:text-[9px] uppercase tracking-[0.2em] text-muted-foreground mb-1.5">Location Area</p>
-                                    <p className="text-foreground font-bold text-xs sm:text-sm flex items-start gap-1.5 leading-tight break-words text-balance">
+                                    <p className="text-foreground font-bold text-xs sm:text-sm flex items-start gap-1.5 leading-tight break-words [overflow-wrap:anywhere] text-balance">
                                         <MapPin className="h-3 sm:h-3.5 w-3 sm:w-3.5 text-primary shrink-0 mt-0.5" /> {fellowship.location}
                                     </p>
                                 </div>
