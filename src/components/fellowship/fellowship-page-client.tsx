@@ -81,7 +81,6 @@ export default function FellowshipPageClient() {
     const [isLogFollowUpOpen, setIsLogFollowUpOpen] = useState(false);
     const [isChatLoading, setIsChatLoading] = useState(false);
     
-    // Devotional State
     const [viewDate, setViewDate] = useState(new Date());
     const [isDevotionalDialogOpen, setIsDevotionalDialogOpen] = useState(false);
     const [isSavingDevotional, setIsSavingDevotional] = useState(false);
@@ -838,7 +837,6 @@ export default function FellowshipPageClient() {
                 </div>
             </div>
 
-            {/* Devotional Hub Modal */}
             {mounted && isMobile ? (
                 <Sheet open={isDevotionalDialogOpen} onOpenChange={setIsDevotionalDialogOpen}>
                     <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
@@ -967,7 +965,6 @@ export default function FellowshipPageClient() {
                 </Dialog>
             )}
 
-            {/* Schedule Viewer (For members to peek ahead) */}
             {mounted && isMobile ? (
                 <Sheet open={isScheduleViewOpen} onOpenChange={setIsScheduleViewOpen}>
                     <SheetContent side="bottom" className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem]">
@@ -1048,7 +1045,6 @@ export default function FellowshipPageClient() {
                 userProfile={userProfile}
             />
 
-            {/* Admin Overlays */}
             <AlertDialog open={!!memberToRemove} onOpenChange={(open) => !open && setMemberToRemove(null)}>
                 <AlertDialogContent className="rounded-3xl p-8">
                     <AlertDialogHeader>

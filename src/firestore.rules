@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Finalizing robust devotional synchronization - 2025-05-22T17:45:00Z
+    // Deployment trigger: Finalizing robust devotional synchronization - 2025-05-22T19:00:00Z
     
     function isOwner(userId) {
       return request.auth != null && request.auth.uid == userId;
@@ -24,10 +24,7 @@ service cloud.firestore {
 
     function isFellowshipOrganizer(fId) {
       return request.auth != null && 
-             fId != null && 
-             fId != "" &&
-             exists(/databases/$(database)/documents/fellowships/$(fId)) &&
-             get(/databases/$(database)/documents/fellowships/$(fId)).data.get('organizerId', '') == request.auth.uid;
+             get(/databases/$(database)/documents/fellowships/$(fId)).data.organizerId == request.auth.uid;
     }
 
     match /users/{userId} {
@@ -123,8 +120,8 @@ service cloud.firestore {
       allow delete: if request.auth != null && resource.data.authorId == request.auth.uid;
       allow update: if request.auth != null && ( 
         (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['usersWhoPrayed']) && 
-         ( (request.resource.data.usersWhoPrayed.size() == resource.data.get('supporters', []).size() + 1 && request.auth.uid in request.resource.data.usersWhoPrayed) ||
-           (request.resource.data.usersWhoPrayed.size() == resource.data.get('supporters', []).size() - 1 && !(request.auth.uid in request.resource.data.usersWhoPrayed))
+         ( (request.resource.data.usersWhoPrayed.size() == resource.data.get('usersWhoPrayed', []).size() + 1 && request.auth.uid in request.resource.data.usersWhoPrayed) ||
+           (request.resource.data.usersWhoPrayed.size() == resource.data.get('usersWhoPrayed', []).size() - 1 && !(request.auth.uid in request.resource.data.usersWhoPrayed))
          )) || 
         (resource.data.authorId == request.auth.uid && request.resource.data.status in ['pending', 'answered'])
       );
