@@ -21,27 +21,17 @@ import { safeToDate, cn } from '@/lib/utils';
 import { LogFollowUpDialog } from '@/components/souls/log-follow-up-dialog';
 import { actionItems } from '@/lib/follow-up-data';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { Skeleton } from '@/components/ui/skeleton';
-import { errorEmitter } from '@/firebase/error-emitter';
-import { FirestorePermissionError } from '@/firebase/errors';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
+import { Skeleton } from '../ui/skeleton';
+import { getBibleChapter, type BibleChapterOutput } from '@/ai/flows/get-bible-chapter-flow';
+import { Input } from '../ui/input';
+import { Textarea } from '../ui/textarea';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Separator } from '@/components/ui/separator';
+import { FirestorePermissionError } from '@/firebase/errors';
+import { errorEmitter } from '@/firebase/error-emitter';
 
 const devotionalSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters.").max(100),
@@ -451,7 +441,7 @@ export default function FellowshipPageClient() {
                                 </div>
                             ) : activeDevotional ? (
                                 <div className="space-y-8">
-                                    <div className="bg-white/15 rounded-[2rem] p-8 sm:p-12 border border-white/20 relative shadow-2xl group overflow-hidden">
+                                    <div className="bg-white/20 rounded-[2rem] p-8 sm:p-12 border border-white/30 relative shadow-2xl group overflow-hidden">
                                         <div className="absolute -top-6 -right-6 h-24 w-24 bg-white/10 rounded-full blur-2xl" />
                                         <Quote className="absolute top-6 right-8 h-12 w-12 opacity-10 rotate-12 transition-transform group-hover:scale-110" />
                                         <p className="text-xl sm:text-2xl font-serif italic leading-relaxed text-justify text-balance relative z-10 break-words text-white">{activeDevotional.text}</p>
@@ -459,7 +449,7 @@ export default function FellowshipPageClient() {
                                     </div>
                                     
                                     {activeDevotional.prayer && (
-                                        <div className="bg-white/10 rounded-[1.5rem] sm:rounded-[2rem] p-6 sm:p-10 border border-dashed border-white/20 relative group/prayer overflow-hidden">
+                                        <div className="bg-white/15 rounded-[1.5rem] sm:rounded-[2rem] p-6 sm:p-10 border border-dashed border-white/30 relative group/prayer overflow-hidden">
                                             <div className="flex items-center gap-3 mb-4">
                                                 <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-full bg-white/20 flex items-center justify-center">
                                                     <HandHeart className="h-4 w-4 text-white" />
@@ -779,7 +769,7 @@ export default function FellowshipPageClient() {
                 <Sheet open={isScheduleViewOpen} onOpenChange={setIsScheduleViewOpen}>
                     <SheetContent side="bottom" className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem]">
                         <div className="p-8 border-b flex-shrink-0 bg-muted/10">
-                            <SheetHeader classNametext-left">
+                            <SheetHeader className="text-left">
                                 <div className="flex items-center gap-2 mb-2">
                                     <CalendarClock className="h-4 w-4 text-primary" />
                                     <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Spiritual Schedule</span>
