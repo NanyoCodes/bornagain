@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Finalizing robust devotional synchronization - 2025-05-23T10:00:00Z
+    // Deployment trigger: Finalizing direct fellowship organizer authority check - 2025-05-23T11:45:00Z
     
     function isOwner(userId) {
       return request.auth != null && request.auth.uid == userId;
@@ -24,7 +24,7 @@ service cloud.firestore {
 
     function isFellowshipOrganizer(fId) {
       return request.auth != null && 
-             exists(/databases/$(database)/documents/fellowships/$(fId)) &&
+             fId != null &&
              get(/databases/$(database)/documents/fellowships/$(fId)).data.organizerId == request.auth.uid;
     }
 
@@ -163,7 +163,7 @@ service cloud.firestore {
     match /fellowships/{fellowshipId} {
       allow get, list: if true;
       allow create: if request.auth != null && request.resource.data.get('organizerId', '') == request.auth.uid;
-      allow update: if request.auth != null && (resource.data.organizerId == request.auth.uid || request.resource.data.diff(resource.data).affectedKeys().hasOnly(['memberIds', 'memberCount', 'hasGroupChat']));
+      allow update: if request.auth != null && (resource.data.organizerId == request.auth.uid || request.resource.data.diff(resource.data).affectedKeys().hasOnly(['memberIds', 'memberCount', 'hasGroupChat', 'lastUpdatedAt']));
 
       match /members/{memberId} {
         allow read, list: if request.auth != null;

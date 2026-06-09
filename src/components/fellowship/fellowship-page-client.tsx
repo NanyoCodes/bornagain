@@ -19,7 +19,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { format, addDays, isSameDay, subDays, parseISO } from 'date-fns';
 import { safeToDate, cn } from '@/lib/utils';
 import { LogFollowUpDialog } from '@/components/souls/log-follow-up-dialog';
-import { actionItems, statusOptions } from '@/lib/follow-up-data';
+import { actionItems } from '@/lib/follow-up-data';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Skeleton } from '@/components/ui/skeleton';
 import { errorEmitter } from '@/firebase/error-emitter';
@@ -167,8 +167,6 @@ export default function FellowshipPageClient() {
         return assignedSouls.find(s => s.id === selectedSoulId) || null;
     }, [selectedSoulId, assignedSouls]);
 
-    const totalDirectoryCount = (members?.length || 0) + (assignedSouls?.length || 0);
-
     const handleSaveDevotional = (values: z.infer<typeof devotionalSchema>) => {
         if (!user || !firestore || !fellowship || !isOrganizer) return;
         setIsSavingDevotional(true);
@@ -208,18 +206,7 @@ export default function FellowshipPageClient() {
             });
     };
 
-    const handleDeleteDevotional = async (date: string) => {
-        if (!user || !firestore || !fellowship || !isOrganizer) return;
-        const devotionalRef = doc(firestore, 'fellowships', fellowshipId, 'devotionals', date);
-        try {
-            await deleteDoc(devotionalRef);
-            toast({ title: 'Entry Removed' });
-        } catch (e) {
-            errorEmitter.emit('permission-error', new FirestorePermissionError({ path: devotionalRef.path, operation: 'delete' }, user));
-        }
-    };
-
-    const handleRemoveMember = async () => {
+    const handleDeleteMember = async () => {
         if (!user || !firestore || !fellowship || !isOrganizer || !memberToRemove) return;
         setIsProcessingRemoval(true);
         
@@ -1055,7 +1042,7 @@ export default function FellowshipPageClient() {
                     </AlertDialogHeader>
                     <AlertDialogFooter className="mt-6 gap-3">
                         <AlertDialogCancel disabled={isProcessingRemoval} className="rounded-2xl h-11 font-bold">Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleRemoveMember} disabled={isProcessingRemoval} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-11 font-bold">
+                        <AlertDialogAction onClick={handleDeleteMember} disabled={isProcessingRemoval} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-11 font-bold">
                             {isProcessingRemoval && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                             Confirm Removal
                         </AlertDialogAction>
