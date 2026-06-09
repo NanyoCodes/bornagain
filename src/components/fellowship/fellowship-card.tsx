@@ -74,7 +74,7 @@ function FullDevotionalDialog({ devotional, children }: { devotional: DailyDevot
                 <SheetTrigger asChild onClick={(e) => e.stopPropagation()}>{children}</SheetTrigger>
                 <SheetContent side="bottom" className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem]">
                     <div className="p-8 border-b flex-shrink-0 bg-muted/10">
-                        <SheetHeader className="text-left">
+                        <SheetHeader className="text-left flex-shrink-0">
                             <SheetTitle className="text-2xl font-black font-headline uppercase leading-tight break-words">{devotional.title}</SheetTitle>
                             <SheetDescription className="text-sm font-medium mt-1">Word for {format(parseISO(devotional.scheduledDate), 'PPPP')}</SheetDescription>
                         </SheetHeader>
@@ -338,6 +338,14 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
                             >
                                 &ldquo;{todayDevotional.text}&rdquo;
                             </p>
+                            {todayDevotional.prayer && (
+                                <div className="mt-2 pl-3 border-l-2 border-primary/20">
+                                    <p className="text-[9px] font-black uppercase text-primary/60 mb-0.5">Prayer</p>
+                                    <p className="text-[10px] text-muted-foreground italic line-clamp-1 leading-tight break-all">
+                                        &ldquo;{todayDevotional.prayer}&rdquo;
+                                    </p>
+                                </div>
+                            )}
                             {isDevotionalTruncated && (
                                 <FullDevotionalDialog devotional={todayDevotional}>
                                     <button className="text-[10px] font-black text-primary uppercase tracking-widest hover:underline h-auto p-0 mt-1">

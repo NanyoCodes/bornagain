@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Universal Authenticated Devotional Write Access - 2025-06-12T17:45:00Z
+    // Deployment trigger: Universal Authenticated Devotional Write Access - 2025-06-13T10:15:00Z
     
     function isOwner(userId) {
       return request.auth != null && request.auth.uid == userId;
@@ -175,7 +175,6 @@ service cloud.firestore {
 
       match /devotionals/{date} {
         allow read: if true;
-        // Updated rule: if user is logged in, allow to write (publish/update) devotionals.
         allow write: if request.auth != null;
       }
     }
