@@ -83,12 +83,6 @@ export default function FellowshipPageClient() {
     }, [firestore, fellowshipId]);
     const { data: fellowship, loading: fellowshipLoading, error: fellowshipError } = useDoc<Fellowship>(fellowshipDocRef);
 
-    const organizerDocRef = useMemo(() => {
-        if (!fellowship?.organizerId || !firestore) return null;
-        return doc(firestore, 'users', fellowship.organizerId);
-    }, [fellowship?.organizerId, firestore]);
-    const { data: organizer, loading: organizerLoading } = useDoc<UserProfile>(organizerDocRef);
-
     const isMember = useMemo(() => {
         if (!user || !fellowship) return false;
         return fellowship.memberIds?.includes(user.uid) || false;
@@ -154,12 +148,13 @@ export default function FellowshipPageClient() {
         return assignedSouls.find(s => s.id === selectedSoulId) || null;
     }, [selectedSoulId, assignedSouls]);
 
-    const handleSaveDevotional = (values: z.infer<typeof devotionalSchema>) => {
+    const handleSaveDevotional = async (values: z.infer<typeof devotionalSchema>) => {
         if (!user || !firestore || !fellowship || !isOrganizer) return;
         setIsSavingDevotional(true);
 
         const devotionalRef = doc(firestore, 'fellowships', fellowshipId, 'devotionals', values.scheduledDate);
-        const devotionalData: Omit<DailyDevotional, 'id'> = {
+        
+        const devotionalData: any = {
             title: values.title,
             text: values.text,
             scripture: values.scripture,
@@ -167,12 +162,20 @@ export default function FellowshipPageClient() {
             scheduledDate: values.scheduledDate,
             authorId: user.uid,
             authorName: `${userProfile?.firstName} ${userProfile?.lastName}`,
-            createdAt: serverTimestamp() as any,
+            updatedAt: serverTimestamp(),
         };
+
+        // Only set createdAt if we are creating a new record for this date
+        if (!activeDevotional || activeDevotional.scheduledDate !== values.scheduledDate) {
+            devotionalData.createdAt = serverTimestamp();
+        }
 
         setDoc(devotionalRef, devotionalData, { merge: true })
             .then(() => {
-                toast({ title: 'Devotional Published', description: `Word for ${format(new Date(values.scheduledDate), 'MMM d')} is active.` });
+                toast({ 
+                    title: activeDevotional ? 'Word Updated' : 'Word Published', 
+                    description: `Word for ${format(new Date(values.scheduledDate), 'MMM d')} is ready.` 
+                });
                 setIsDevotionalDialogOpen(false);
             })
             .catch(async (serverError) => {
@@ -288,7 +291,7 @@ export default function FellowshipPageClient() {
 
     const isAnyModalOpen = !!(isDevotionalDialogOpen || isScheduleViewOpen || memberToRemove || soulToUnassign || isSoulDetailsOpen || isLogFollowUpOpen);
 
-    const totalLoading = fellowshipLoading || profileLoading || loadingMembers || soulsLoading || organizerLoading || devoLoading;
+    const totalLoading = fellowshipLoading || profileLoading || loadingMembers || soulsLoading || devoLoading;
 
     if (totalLoading) return <div className="flex items-center justify-center h-full py-20"><Loader2 className="animate-spin text-primary" /></div>;
     if (fellowshipError || !fellowship || fellowship.status === 'deleted') return <div className="text-center p-12"><Loader2 className="mx-auto h-12 w-12 opacity-20" /><h2 className="mt-4 text-xl font-bold">Group Not Found</h2><Button asChild variant="outline" className="mt-4"><Link href="/dashboard/fellowship">Return to Directory</Link></Button></div>;
@@ -703,7 +706,7 @@ export default function FellowshipPageClient() {
                                         )} />
                                         <Button type="submit" form="devotional-form-mobile" disabled={isSavingDevotional} className="w-full h-14 font-black shadow-xl rounded-2xl tracking-widest uppercase">
                                             {isSavingDevotional && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                            {activeDevotional ? 'UPDATE WORD' : 'PUBLISH WORD'}
+                                            {activeDevotional && isSameDay(parseISO(activeDevotional.scheduledDate), parseISO(form.getValues('scheduledDate'))) ? 'UPDATE WORD' : 'PUBLISH WORD'}
                                         </Button>
                                     </form>
                                 </Form>
@@ -763,7 +766,7 @@ export default function FellowshipPageClient() {
                                         )} />
                                         <Button type="submit" form="devotional-form-desktop" disabled={isSavingDevotional} className="w-full h-12 rounded-xl font-black shadow-xl tracking-widest uppercase">
                                             {isSavingDevotional && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                            {activeDevotional ? 'UPDATE WORD' : 'PUBLISH WORD'}
+                                            {activeDevotional && isSameDay(parseISO(activeDevotional.scheduledDate), parseISO(form.getValues('scheduledDate'))) ? 'UPDATE WORD' : 'PUBLISH WORD'}
                                         </Button>
                                     </form>
                                 </Form>
@@ -844,7 +847,7 @@ export default function FellowshipPageClient() {
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter className="gap-3 mt-6">
-                        <AlertDialogCancel disabled={isProcessingRemoval} className="rounded-2xl h-11 font-bold">Cancel</AlertDialogCancel>
+                        <AlertDialogCancel rounded-2xl h-11 font-bold>Cancel</AlertDialogCancel>
                         <AlertDialogAction onClick={handleRemoveSoul} disabled={isProcessingRemoval} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-11 font-bold">
                             {isProcessingRemoval && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                             Confirm Unassign
