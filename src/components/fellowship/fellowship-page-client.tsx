@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useDoc, useFirestore, useUser, useCollection, useUserProfile } from '@/firebase';
-import type { Fellowship, UserProfile, FellowshipMember, Soul, DailyDevotional, Testimony } from '@/lib/types';
+import type { Fellowship, UserProfile, FellowshipMember, Soul, DailyDevotional } from '@/lib/types';
 import { doc, collection, query, orderBy, where, writeBatch, serverTimestamp, updateDoc, arrayRemove, increment, deleteField, setDoc, limit } from 'firebase/firestore';
 import { Loader2, ArrowLeft, Users, Calendar, PlayCircle, MapPin, Heart, Phone, Mail, Church, History, PlusCircle, Award, MessagesSquare, User, Info, Sparkles, UserMinus, Trash2, BookOpen, Quote, Edit, CalendarClock, ChevronLeft, ChevronRight, CalendarDays, CheckCircle2, HandHeart } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -288,9 +288,9 @@ export default function FellowshipPageClient() {
 
     const isAnyModalOpen = !!(isDevotionalDialogOpen || isScheduleViewOpen || memberToRemove || soulToUnassign || isSoulDetailsOpen || isLogFollowUpOpen);
 
-    const loading = fellowshipLoading || profileLoading || loadingMembers || soulsLoading || organizerLoading || devoLoading;
+    const totalLoading = fellowshipLoading || profileLoading || loadingMembers || soulsLoading || organizerLoading || devoLoading;
 
-    if (loading) return <div className="flex items-center justify-center h-full py-20"><Loader2 className="animate-spin text-primary" /></div>;
+    if (totalLoading) return <div className="flex items-center justify-center h-full py-20"><Loader2 className="animate-spin text-primary" /></div>;
     if (fellowshipError || !fellowship || fellowship.status === 'deleted') return <div className="text-center p-12"><Loader2 className="mx-auto h-12 w-12 opacity-20" /><h2 className="mt-4 text-xl font-bold">Group Not Found</h2><Button asChild variant="outline" className="mt-4"><Link href="/dashboard/fellowship">Return to Directory</Link></Button></div>;
 
     const ScheduleList = (
@@ -515,7 +515,7 @@ export default function FellowshipPageClient() {
                                                     setIsDevotionalDialogOpen(true);
                                                 }}
                                             >
-                                                ARRANGE WORD
+                                                {activeDevotional ? 'UPDATE WORD' : 'PUBLISH WORD'}
                                             </Button>
                                         )}
                                         <Button variant="outline" className="bg-white/5 border-white/10 text-white rounded-2xl h-12 px-8 font-black uppercase tracking-widest text-[10px] shadow-lg" onClick={() => handleDateNav('next')}>NEXT <ChevronRight className="ml-2 h-4 w-4" /></Button>

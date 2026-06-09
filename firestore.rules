@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Direct Property Validation for Robust Organizer Authority - 2025-05-25T11:00:00Z
+    // Deployment trigger: Direct Property Validation for Robust Organizer Authority - 2025-05-25T11:45:00Z
     
     function isOwner(userId) {
       return request.auth != null && request.auth.uid == userId;
@@ -25,7 +25,7 @@ service cloud.firestore {
     function isFellowshipOrganizer(fId) {
       return request.auth != null && 
              fId != null &&
-             exists(/databases/$(database)/documents/fellowships/$(fId)) &&
+             fId != "" &&
              get(/databases/$(database)/documents/fellowships/$(fId)).data.organizerId == request.auth.uid;
     }
 
@@ -174,7 +174,7 @@ service cloud.firestore {
 
       match /devotionals/{date} {
         allow read: if true;
-        allow write: if isFellowshipOrganizer(fellowshipId);
+        allow create, update, delete: if isFellowshipOrganizer(fellowshipId);
       }
     }
 
