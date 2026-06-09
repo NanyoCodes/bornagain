@@ -211,7 +211,7 @@ export default function FellowshipPageClient() {
         if (!firestore || !fellowshipId || !(isMember || isOrganizer)) return null;
         return query(collection(firestore, 'fellowships', fellowshipId, 'members'), orderBy('joinedAt', 'desc'));
     }, [firestore, fellowshipId, isMember, isOrganizer]);
-    const { data: members, loading: loadingMembers } = useCollection<FellowshipMember>(membersQuery);
+    const { data: members, loading: participantsLoading } = useCollection<FellowshipMember>(membersQuery);
 
     const soulsQuery = useMemo(() => {
         if (!firestore || !fellowshipId || !(isMember || isOrganizer) || !fellowship) return null;
@@ -367,7 +367,7 @@ export default function FellowshipPageClient() {
 
     const isAnyModalOpen = !!(isDevotionalDialogOpen || isScheduleViewOpen || memberToRemove || soulToUnassign || isSoulDetailsOpen || isLogFollowUpOpen);
 
-    const loading = fellowshipLoading || profileLoading || loadingMembers || soulsLoading || devoLoading;
+    const loading = fellowshipLoading || profileLoading || participantsLoading || soulsLoading || devoLoading;
 
     if (loading) return <div className="flex items-center justify-center h-full py-20"><Loader2 className="animate-spin text-primary" /></div>;
     if (fellowshipError || !fellowship || fellowship.status === 'deleted') return <div className="text-center p-12"><Loader2 className="mx-auto h-12 w-12 opacity-20" /><h2 className="mt-4 text-xl font-bold">Group Not Found</h2><Button asChild variant="outline" className="mt-4"><Link href="/dashboard/fellowship">Return to Directory</Link></Button></div>;
