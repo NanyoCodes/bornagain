@@ -16,6 +16,8 @@ import { Loader2, Users, MoreVertical, PlayCircle, Edit, Trash2, Group, MapPin, 
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useRouter } from 'next/navigation';
 import { format } from 'date-fns';
+import { FirestorePermissionError } from '@/firebase/errors';
+import { errorEmitter } from '@/firebase/error-emitter';
 
 type FellowshipCardProps = {
   fellowship: Fellowship;
@@ -184,7 +186,7 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
                                         className="h-9 w-9 sm:h-10 sm:w-10 border-primary/20 text-primary/60 hover:text-primary hover:bg-primary/10 rounded-full shadow-md bg-background" 
                                         onClick={() => triggerAction(() => router.push(`/dashboard/fellowship/${fellowship.id}`))}
                                     >
-                                        <BarChart3 className="h-4 w-4 sm:h-5 sm:w-5" />
+                                        <BarChart3 className="h-4 w-4 sm:h-5 w-5" />
                                         <span className="sr-only">View Details</span>
                                     </Button>
                                 </TooltipTrigger>
@@ -237,7 +239,7 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
                             <div className="h-4 w-4 bg-primary/20 rounded-full flex items-center justify-center">
                                 <Sparkles className="h-2.5 w-2.5 text-primary" />
                             </div>
-                            <span className="text-[8px] font-black uppercase tracking-[0.2em] text-primary">Daily Word</span>
+                            <span className="text-[8px] font-black uppercase tracking-[0.2em] text-primary">DEVOTIONAL</span>
                         </div>
                         <p className="font-bold text-xs sm:text-sm mb-1 truncate text-foreground">{todayDevotional.title}</p>
                         <p className="text-[10px] sm:text-xs text-muted-foreground italic line-clamp-2 font-medium">
