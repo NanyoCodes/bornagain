@@ -368,6 +368,7 @@ export type DailyDevotional = {
   title: string;
   text: string;
   scripture: string;
+  prayer?: string; // Guided prayer for the day
   authorId: string;
   authorName: string;
   scheduledDate: string; // YYYY-MM-DD

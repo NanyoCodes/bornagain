@@ -1,8 +1,9 @@
+
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Finalizing robust devotional synchronization - 2025-05-23T10:00:00Z
+    // Deployment trigger: Synchronizing "Prayer for Today" devotional field and robust organizer authority - 2025-05-23T12:00:00Z
     
     function isOwner(userId) {
       return request.auth != null && request.auth.uid == userId;

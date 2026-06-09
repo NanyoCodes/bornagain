@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useMemo, useEffect, useRef } from 'react';
@@ -12,7 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Loader2, Users, MoreVertical, PlayCircle, Edit, Trash2, Group, MapPin, BarChart3, BookOpen, LogOut, Quote, Sparkles, ChevronDown } from 'lucide-react';
+import { Loader2, Users, MoreVertical, PlayCircle, Edit, Trash2, Group, MapPin, BarChart3, BookOpen, LogOut, Quote, Sparkles, ChevronDown, HandHeart } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useRouter } from 'next/navigation';
 import { format, parseISO } from 'date-fns';
@@ -40,12 +41,27 @@ function FullDevotionalDialog({ devotional, children }: { devotional: DailyDevot
     if (!mounted) return <>{children}</>;
 
     const content = (
-        <div className="space-y-6">
+        <div className="space-y-8">
             <div className="bg-primary/5 rounded-[2rem] p-8 sm:p-12 border-2 border-dashed border-primary/20 relative shadow-inner overflow-hidden">
                 <Quote className="absolute top-6 right-8 h-12 w-12 opacity-10 rotate-12" />
                 <p className="text-xl sm:text-2xl font-serif italic leading-relaxed text-justify text-balance relative z-10">&ldquo;{devotional.text}&rdquo;</p>
                 <p className="text-xs sm:text-sm font-black uppercase text-primary/80 text-right mt-10 tracking-widest border-t border-primary/10 pt-4 relative z-10">— {devotional.scripture}</p>
             </div>
+            
+            {devotional.prayer && (
+                <div className="bg-muted/30 rounded-[2rem] p-8 sm:p-10 border border-muted-foreground/10 shadow-sm relative overflow-hidden">
+                    <div className="flex items-center gap-3 mb-4">
+                        <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
+                            <HandHeart className="h-4 w-4 text-primary" />
+                        </div>
+                        <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-muted-foreground">PRAYER FOR TODAY</span>
+                    </div>
+                    <p className="text-lg sm:text-xl font-medium leading-relaxed italic text-muted-foreground text-balance">
+                        &ldquo;{devotional.prayer}&rdquo;
+                    </p>
+                </div>
+            )}
+
             <div className="flex items-center justify-center gap-3 bg-muted/30 px-4 py-2 rounded-full border border-dashed w-fit mx-auto">
                 <Sparkles className="h-4 w-4 text-primary fill-current" />
                 <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Messenger: {devotional.authorName}</span>
@@ -128,7 +144,7 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
             const checkTruncation = () => {
                 if (devotionalTextRef.current) {
                     setIsDevotionalTruncated(
-                        devotionalTextRef.current.scrollHeight > devotionalTextRef.current.clientHeight
+                        devotionalTextRef.current.scrollHeight > devotionalTextRef.current.clientHeight || (!!todayDevotional?.prayer)
                     );
                 }
             };

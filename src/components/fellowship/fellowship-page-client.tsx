@@ -1,11 +1,12 @@
+
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useDoc, useFirestore, useUser, useCollection, useUserProfile } from '@/firebase';
 import type { Fellowship, UserProfile, FellowshipMember, Soul, DailyDevotional } from '@/lib/types';
-import { doc, collection, query, orderBy, where, writeBatch, serverTimestamp, updateDoc, arrayRemove, increment, deleteField, setDoc, deleteDoc, limit } from 'firebase/firestore';
-import { Loader2, ArrowLeft, Users, Calendar, PlayCircle, MapPin, Heart, Phone, Mail, Church, History, PlusCircle, Award, MessagesSquare, User, Info, Sparkles, UserMinus, Trash2, BookOpen, Quote, Edit, CalendarClock, ChevronLeft, ChevronRight, CalendarDays, CheckCircle2 } from 'lucide-react';
+import { doc, collection, query, orderBy, where, writeBatch, serverTimestamp, updateDoc, arrayRemove, increment, deleteField, setDoc, limit } from 'firebase/firestore';
+import { Loader2, ArrowLeft, Users, Calendar, PlayCircle, MapPin, Heart, Phone, Mail, Church, History, PlusCircle, Award, MessagesSquare, User, Info, Sparkles, UserMinus, Trash2, BookOpen, Quote, Edit, CalendarClock, ChevronLeft, ChevronRight, CalendarDays, CheckCircle2, HandHeart } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -13,7 +14,7 @@ import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { format, addDays, isSameDay, subDays, parseISO } from 'date-fns';
@@ -47,6 +48,7 @@ const devotionalSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters.").max(100),
   scripture: z.string().min(3, "Scripture is required.").max(100),
   text: z.string().min(20, "Devotional text is too short.").max(5000),
+  prayer: z.string().max(1000).optional(),
   scheduledDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Please enter a valid date."),
 });
 
@@ -136,6 +138,7 @@ export default function FellowshipPageClient() {
             title: '',
             scripture: '',
             text: '',
+            prayer: '',
             scheduledDate: viewDateStr,
         },
     });
@@ -145,6 +148,7 @@ export default function FellowshipPageClient() {
             title: devo.title,
             scripture: devo.scripture,
             text: devo.text,
+            prayer: devo.prayer || '',
             scheduledDate: devo.scheduledDate,
         });
     };
@@ -176,6 +180,7 @@ export default function FellowshipPageClient() {
             title: values.title,
             text: values.text,
             scripture: values.scripture,
+            prayer: values.prayer || '',
             scheduledDate: values.scheduledDate,
             authorId: user.uid,
             authorName: `${userProfile?.firstName} ${userProfile?.lastName}`,
@@ -189,6 +194,7 @@ export default function FellowshipPageClient() {
                     title: '',
                     scripture: '',
                     text: '',
+                    prayer: '',
                     scheduledDate: values.scheduledDate,
                 });
                 setIsDevotionalDialogOpen(false);
@@ -629,13 +635,27 @@ export default function FellowshipPageClient() {
                                     <p className="text-[10px] font-black uppercase tracking-widest opacity-20">Accessing Records...</p>
                                 </div>
                             ) : activeDevotional ? (
-                                <>
+                                <div className="space-y-8">
                                     <div className="bg-white/5 rounded-[2rem] p-8 sm:p-12 border border-white/10 relative shadow-2xl group overflow-hidden">
                                         <div className="absolute -top-6 -right-6 h-24 w-24 bg-white/5 rounded-full blur-2xl" />
                                         <Quote className="absolute top-6 right-8 h-12 w-12 opacity-10 rotate-12 transition-transform group-hover:scale-110" />
                                         <p className="text-xl sm:text-2xl font-serif italic leading-relaxed text-justify text-balance relative z-10">&ldquo;{activeDevotional.text}&rdquo;</p>
                                         <p className="text-xs sm:text-sm font-black uppercase text-white/80 text-right mt-10 tracking-widest border-t border-white/10 pt-4 relative z-10">— {activeDevotional.scripture}</p>
                                     </div>
+                                    
+                                    {activeDevotional.prayer && (
+                                        <div className="bg-white/10 rounded-[1.5rem] sm:rounded-[2rem] p-6 sm:p-10 border border-dashed border-white/20 relative group/prayer overflow-hidden">
+                                            <div className="flex items-center gap-3 mb-4">
+                                                <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-full bg-white/20 flex items-center justify-center">
+                                                    <HandHeart className="h-4 w-4 text-white" />
+                                                </div>
+                                                <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-white/90">PRAYER FOR TODAY</span>
+                                            </div>
+                                            <p className="text-base sm:text-lg font-medium text-white/90 leading-relaxed text-justify italic">
+                                                {activeDevotional.prayer}
+                                            </p>
+                                        </div>
+                                    )}
                                     
                                     <div className="flex flex-col sm:flex-row items-center justify-between gap-6 pt-2">
                                         <div className="flex items-center gap-3 bg-white/10 px-4 py-2 rounded-full border border-white/10">
@@ -663,7 +683,7 @@ export default function FellowshipPageClient() {
                                             <CalendarDays className="mr-2 h-4 w-4" /> Jump to Today
                                         </Button>
                                     )}
-                                </>
+                                </div>
                             ) : (
                                 <div className="text-center py-20 sm:py-24 bg-white/5 rounded-[2.5rem] border-2 border-dashed border-white/10 mx-auto flex flex-col items-center px-8 shadow-inner">
                                     <BookOpen className="h-16 w-16 opacity-10 mb-6" />
@@ -830,7 +850,7 @@ export default function FellowshipPageClient() {
                         <div className="p-8 border-b flex-shrink-0 bg-muted/10">
                             <SheetHeader className="text-left">
                                 <SheetTitle className="text-2xl font-black font-headline">Devotional Hub</SheetTitle>
-                                <SheetDescription className="text-sm font-medium">Arrange the Word for your group.</SheetDescription>
+                                <SheetDescription className="text-sm font-medium">Arrange the Word and Prayer for your group.</SheetDescription>
                             </SheetHeader>
                         </div>
                         <ScrollArea className="flex-grow">
@@ -861,7 +881,14 @@ export default function FellowshipPageClient() {
                                         <FormField control={form.control} name="text" render={({ field }) => (
                                             <FormItem>
                                                 <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Message Content</FormLabel>
-                                                <FormControl><Textarea placeholder="Share the revelation..." className="min-h-[150px] rounded-2xl bg-muted/20 border-none text-base" {...field} /></FormControl>
+                                                <FormControl><Textarea placeholder="Share the revelation..." className="min-h-[120px] rounded-2xl bg-muted/20 border-none text-base" {...field} /></FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )} />
+                                        <FormField control={form.control} name="prayer" render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Prayer for Today</FormLabel>
+                                                <FormControl><Textarea placeholder="Type a guided prayer..." className="min-h-[100px] rounded-2xl bg-muted/20 border-none text-base" {...field} /></FormControl>
                                                 <FormMessage />
                                             </FormItem>
                                         )} />
@@ -889,8 +916,8 @@ export default function FellowshipPageClient() {
                                 <DialogDescription className="text-base font-medium">Prepare and schedule spiritual nourishment for your group.</DialogDescription>
                             </DialogHeader>
                         </div>
-                        <div className="flex h-[70vh]">
-                            <div className="w-1/2 border-r flex flex-col bg-muted/5">
+                        <div className="flex h-[75vh]">
+                            <div className="w-1/3 border-r flex flex-col bg-muted/5">
                                 <div className="p-4 border-b bg-muted/10 flex items-center gap-2">
                                     <History className="h-4 w-4 text-primary" />
                                     <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Advance Planner</span>
@@ -901,29 +928,31 @@ export default function FellowshipPageClient() {
                                     </div>
                                 </ScrollArea>
                             </div>
-                            <div className="w-1/2 flex flex-col">
+                            <div className="w-2/3 flex flex-col">
                                 <div className="p-4 border-b bg-muted/10 flex items-center gap-2">
                                     <PlusCircle className="h-4 w-4 text-primary" />
-                                    <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Arrange The Word</span>
+                                    <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Arrange The Word & Prayer</span>
                                 </div>
                                 <ScrollArea className="flex-1">
                                     <div className="p-8">
                                         <Form {...form}>
                                             <form id="devotional-form-desktop" onSubmit={form.handleSubmit(handleSaveDevotional)} className="space-y-6">
-                                                <FormField control={form.control} name="scheduledDate" render={({ field }) => (
-                                                    <FormItem>
-                                                        <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Pin to Date</FormLabel>
-                                                        <FormControl><Input type="date" min={todayStr} {...field} className="h-11 rounded-xl bg-muted/20 border-none font-bold" /></FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                )} />
-                                                <FormField control={form.control} name="title" render={({ field }) => (
-                                                    <FormItem>
-                                                        <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Title</FormLabel>
-                                                        <FormControl><Input placeholder="e.g., Power of Prayer" {...field} className="h-11 rounded-xl bg-muted/20 border-none font-bold" /></FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                )} />
+                                                <div className="grid grid-cols-2 gap-4">
+                                                    <FormField control={form.control} name="scheduledDate" render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Pin to Date</FormLabel>
+                                                            <FormControl><Input type="date" min={todayStr} {...field} className="h-11 rounded-xl bg-muted/20 border-none font-bold" /></FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )} />
+                                                    <FormField control={form.control} name="title" render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Title</FormLabel>
+                                                            <FormControl><Input placeholder="e.g., Power of Prayer" {...field} className="h-11 rounded-xl bg-muted/20 border-none font-bold" /></FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )} />
+                                                </div>
                                                 <FormField control={form.control} name="scripture" render={({ field }) => (
                                                     <FormItem>
                                                         <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Primary Scripture</FormLabel>
@@ -934,7 +963,14 @@ export default function FellowshipPageClient() {
                                                 <FormField control={form.control} name="text" render={({ field }) => (
                                                     <FormItem>
                                                         <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Message Content</FormLabel>
-                                                        <FormControl><Textarea placeholder="Type the daily word here..." className="min-h-[150px] rounded-xl bg-muted/20 border-none text-base" {...field} /></FormControl>
+                                                        <FormControl><Textarea placeholder="Type the daily word here..." className="min-h-[120px] rounded-xl bg-muted/20 border-none text-base" {...field} /></FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )} />
+                                                <FormField control={form.control} name="prayer" render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Prayer for Today</FormLabel>
+                                                        <FormControl><Textarea placeholder="Add a guided prayer..." className="min-h-[100px] rounded-xl bg-muted/20 border-none text-base" {...field} /></FormControl>
                                                         <FormMessage />
                                                     </FormItem>
                                                 )} />
