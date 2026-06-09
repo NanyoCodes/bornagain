@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useUser, useFirestore, useDoc } from '@/firebase';
 import type { Fellowship, UserProfile, DailyDevotional } from '@/lib/types';
@@ -12,12 +12,16 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Loader2, Users, MoreVertical, PlayCircle, Edit, Trash2, Group, MapPin, BarChart3, BookOpen, LogOut, Quote, Sparkles } from 'lucide-react';
+import { Loader2, Users, MoreVertical, PlayCircle, Edit, Trash2, Group, MapPin, BarChart3, BookOpen, LogOut, Quote, Sparkles, ChevronDown } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useRouter } from 'next/navigation';
-import { format } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { errorEmitter } from '@/firebase/error-emitter';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 type FellowshipCardProps = {
   fellowship: Fellowship;
@@ -27,6 +31,69 @@ type FellowshipCardProps = {
   onClick?: () => void;
 };
 
+function FullDevotionalDialog({ devotional, children }: { devotional: DailyDevotional, children: React.ReactNode }) {
+    const isMobile = useIsMobile();
+    const [isOpen, setIsOpen] = useState(false);
+    const [mounted, setMounted] = useState(false);
+    useEffect(() => setMounted(true), []);
+
+    if (!mounted) return <>{children}</>;
+
+    const content = (
+        <div className="space-y-6">
+            <div className="bg-primary/5 rounded-[2rem] p-8 sm:p-12 border-2 border-dashed border-primary/20 relative shadow-inner overflow-hidden">
+                <Quote className="absolute top-6 right-8 h-12 w-12 opacity-10 rotate-12" />
+                <p className="text-xl sm:text-2xl font-serif italic leading-relaxed text-justify text-balance relative z-10">&ldquo;{devotional.text}&rdquo;</p>
+                <p className="text-xs sm:text-sm font-black uppercase text-primary/80 text-right mt-10 tracking-widest border-t border-primary/10 pt-4 relative z-10">— {devotional.scripture}</p>
+            </div>
+            <div className="flex items-center justify-center gap-3 bg-muted/30 px-4 py-2 rounded-full border border-dashed w-fit mx-auto">
+                <Sparkles className="h-4 w-4 text-primary fill-current" />
+                <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Messenger: {devotional.authorName}</span>
+            </div>
+        </div>
+    );
+
+    if (isMobile) {
+        return (
+            <Sheet open={isOpen} onOpenChange={setIsOpen}>
+                <SheetTrigger asChild onClick={(e) => e.stopPropagation()}>{children}</SheetTrigger>
+                <SheetContent side="bottom" className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+                    <div className="p-8 border-b flex-shrink-0 bg-muted/10">
+                        <SheetHeader className="text-left">
+                            <SheetTitle className="text-2xl font-black font-headline uppercase leading-tight">{devotional.title}</SheetTitle>
+                            <SheetDescription className="text-sm font-medium mt-1">Word for {format(parseISO(devotional.scheduledDate), 'PPPP')}</SheetDescription>
+                        </SheetHeader>
+                    </div>
+                    <ScrollArea className="flex-grow">
+                        <div className="p-8 pb-32">
+                            {content}
+                        </div>
+                    </ScrollArea>
+                </SheetContent>
+            </Sheet>
+        );
+    }
+
+    return (
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
+            <DialogTrigger asChild onClick={(e) => e.stopPropagation()}>{children}</DialogTrigger>
+            <DialogContent className="sm:max-w-2xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl">
+                <div className="p-8 border-b bg-muted/10">
+                    <DialogHeader>
+                        <DialogTitle className="text-2xl font-black font-headline uppercase leading-tight">{devotional.title}</DialogTitle>
+                        <DialogDescription className="text-sm font-medium mt-1">Daily Word • {format(parseISO(devotional.scheduledDate), 'PPPP')}</DialogDescription>
+                    </DialogHeader>
+                </div>
+                <ScrollArea className="max-h-[70vh]">
+                    <div className="p-8">
+                        {content}
+                    </div>
+                </ScrollArea>
+            </DialogContent>
+        </Dialog>
+    );
+}
+
 const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, onClick }: FellowshipCardProps) => {
     const { user } = useUser();
     const firestore = useFirestore();
@@ -35,6 +102,9 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
     const [isJoining, setIsJoining] = useState(false);
     const [isLeaving, setIsLeaving] = useState(false);
     
+    const devotionalTextRef = useRef<HTMLParagraphElement>(null);
+    const [isDevotionalTruncated, setIsDevotionalTruncated] = useState(false);
+
     const isMember = useMemo(() => {
         if (!user || !fellowship.memberIds) return false;
         return fellowship.memberIds.includes(user.uid);
@@ -45,7 +115,6 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
         return fellowship.organizerId === user.uid;
     }, [user, fellowship.organizerId]);
 
-    // Fetch Today's Word for members/organizers
     const todayStr = useMemo(() => format(new Date(), 'yyyy-MM-dd'), []);
     const devotionalRef = useMemo(() => {
         if (!firestore || !fellowship.id || !(isMember || isOrganizer)) return null;
@@ -53,6 +122,21 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
     }, [firestore, fellowship.id, isMember, isOrganizer, todayStr]);
     
     const { data: todayDevotional } = useDoc<DailyDevotional>(devotionalRef);
+
+    useEffect(() => {
+        if (devotionalTextRef.current) {
+            const checkTruncation = () => {
+                if (devotionalTextRef.current) {
+                    setIsDevotionalTruncated(
+                        devotionalTextRef.current.scrollHeight > devotionalTextRef.current.clientHeight
+                    );
+                }
+            };
+            setTimeout(checkTruncation, 100);
+            window.addEventListener('resize', checkTruncation);
+            return () => window.removeEventListener('resize', checkTruncation);
+        }
+    }, [todayDevotional]);
 
     const distance = useMemo(() => {
         if (!userProfile?.location?.latitude || !userProfile?.location?.longitude || !fellowship.latitude || !fellowship.longitude) {
@@ -242,9 +326,21 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
                             <span className="text-[8px] font-black uppercase tracking-[0.2em] text-primary">DEVOTIONAL</span>
                         </div>
                         <p className="font-bold text-xs sm:text-sm mb-1 truncate text-foreground">{todayDevotional.title}</p>
-                        <p className="text-[10px] sm:text-xs text-muted-foreground italic line-clamp-2 font-medium">
-                            &ldquo;{todayDevotional.text}&rdquo;
-                        </p>
+                        <div className="space-y-1">
+                            <p 
+                                ref={devotionalTextRef}
+                                className="text-[10px] sm:text-xs text-muted-foreground italic line-clamp-2 font-medium leading-relaxed"
+                            >
+                                &ldquo;{todayDevotional.text}&rdquo;
+                            </p>
+                            {isDevotionalTruncated && (
+                                <FullDevotionalDialog devotional={todayDevotional}>
+                                    <button className="text-[10px] font-black text-primary uppercase tracking-widest hover:underline h-auto p-0 mt-1">
+                                        Read More
+                                    </button>
+                                </FullDevotionalDialog>
+                            )}
+                        </div>
                         <p className="text-[8px] font-black uppercase text-primary/60 text-right mt-2 tracking-widest">— {todayDevotional.scripture}</p>
                     </div>
                 )}
