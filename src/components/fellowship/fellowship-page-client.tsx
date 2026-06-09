@@ -669,7 +669,7 @@ export default function FellowshipPageClient() {
                                     <TabsContent value="souls" className="mt-0 p-4 sm:p-8">
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                                             {assignedSouls?.map(soul => (
-                                                <div key={soul.id} className="flex items-center gap-3 p-3 sm:p-4 rounded-xl sm:rounded-2xl border bg-primary/5 transition-all hover:bg-primary/10 group min-w-0">
+                                                <div key={soul.id} className="flex items-center gap-3 p-3 sm:p-4 rounded-xl sm:rounded-2xl border bg-primary/5 transition-all hover:bg-muted/10 group min-w-0">
                                                     <div className="h-9 w-9 sm:h-10 sm:w-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20"><Heart className="h-4 w-4 sm:h-5 w-5 text-primary fill-current" /></div>
                                                     <div className="flex-1 min-w-0">
                                                         <p className="font-bold truncate text-xs sm:text-sm leading-tight break-words [overflow-wrap:anywhere]">{soul.firstName} {soul.lastName}</p>
@@ -798,7 +798,7 @@ export default function FellowshipPageClient() {
                                         )} />
                                         <Button type="submit" form="devotional-form-mobile" disabled={isSavingDevotional} className="w-full h-14 font-black shadow-xl rounded-2xl tracking-widest uppercase">
                                             {isSavingDevotional && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                            {activeDevotional && isSameDay(parseISO(activeDevotional.scheduledDate), parseISO(form.getValues('scheduledDate'))) ? 'UPDATE WORD' : 'PUBLISH WORD'}
+                                            {activeDevotional && activeDevotional.scheduledDate === form.getValues('scheduledDate') ? 'UPDATE WORD' : 'PUBLISH WORD'}
                                         </Button>
                                     </form>
                                 </Form>
@@ -858,7 +858,7 @@ export default function FellowshipPageClient() {
                                         )} />
                                         <Button type="submit" form="devotional-form-desktop" disabled={isSavingDevotional} className="w-full h-12 rounded-xl font-black shadow-xl tracking-widest uppercase">
                                             {isSavingDevotional && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                            {activeDevotional && isSameDay(parseISO(activeDevotional.scheduledDate), parseISO(form.getValues('scheduledDate'))) ? 'UPDATE WORD' : 'PUBLISH WORD'}
+                                            {activeDevotional && activeDevotional.scheduledDate === form.getValues('scheduledDate') ? 'UPDATE WORD' : 'PUBLISH WORD'}
                                         </Button>
                                     </form>
                                 </Form>

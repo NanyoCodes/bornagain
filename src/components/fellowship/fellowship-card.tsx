@@ -20,7 +20,7 @@ import { FirestorePermissionError } from '@/firebase/errors';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
 type FellowshipCardProps = {
@@ -340,7 +340,7 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
                             </p>
                             {todayDevotional.prayer && (
                                 <div className="mt-2 pl-3 border-l-2 border-primary/20">
-                                    <p className="text-[9px] font-black uppercase text-primary/60 mb-0.5">Prayer</p>
+                                    <p className="text-[9px] font-black uppercase text-primary/60 mb-0.5">Prayer focus</p>
                                     <p className="text-[10px] text-muted-foreground italic line-clamp-1 leading-tight break-words [overflow-wrap:anywhere]">
                                         &ldquo;{todayDevotional.prayer}&rdquo;
                                     </p>
@@ -370,7 +370,7 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
                         </div>
                     )}
                 </div>
-            </CardHeader>
+            </CardContent>
             <CardFooter className="px-5 sm:px-6 py-4 flex justify-between items-center border-t bg-black/5">
                 <div className="flex items-center text-[10px] sm:text-xs text-muted-foreground font-black uppercase tracking-widest">
                     <Users className="mr-2 h-4 w-4 text-primary" /> {fellowship.memberCount} SOUL WINNERS
