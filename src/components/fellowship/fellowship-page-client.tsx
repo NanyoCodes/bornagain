@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useDoc, useFirestore, useUser, useCollection, useUserProfile } from '@/firebase';
 import type { Fellowship, UserProfile, FellowshipMember, Soul, DailyDevotional } from '@/lib/types';
 import { doc, collection, query, orderBy, where, writeBatch, serverTimestamp, updateDoc, arrayRemove, increment, deleteField, setDoc, limit } from 'firebase/firestore';
-import { Loader2, ArrowLeft, Users, Calendar, PlayCircle, MapPin, Heart, Phone, Mail, Church, History, PlusCircle, Award, MessagesSquare, User, Info, Sparkles, UserMinus, Trash2, BookOpen, Quote, Edit, CalendarClock, ChevronLeft, ChevronRight, CalendarDays, CheckCircle2, HandHeart } from 'lucide-react';
+import { Loader2, ArrowLeft, Users, Calendar, PlayCircle, MapPin, Heart, Phone, Mail, Church, History, PlusCircle, Award, MessagesSquare, User, Info, Sparkles, UserMinus, Trash2, BookOpen, Quote, Edit, CalendarClock, ChevronLeft, ChevronRight, CalendarDays, CheckCircle2, HandHeart, ChevronDown } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -51,6 +51,84 @@ const devotionalSchema = z.object({
   scheduledDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Please enter a valid date."),
 });
 
+function FullDevotionalDialog({ devotional, children }: { devotional: DailyDevotional, children: React.ReactNode }) {
+    const isMobile = useIsMobile();
+    const [isOpen, setIsOpen] = useState(false);
+    const [mounted, setMounted] = useState(false);
+    useEffect(() => setMounted(true), []);
+
+    if (!mounted) return <>{children}</>;
+
+    const content = (
+        <div className="space-y-8">
+            <div className="bg-primary/5 rounded-[2rem] p-8 sm:p-12 border-2 border-dashed border-primary/20 relative shadow-inner overflow-hidden">
+                <Quote className="absolute top-6 right-8 h-12 w-12 opacity-10 rotate-12" />
+                <p className="text-xl sm:text-2xl font-serif italic leading-relaxed text-justify text-balance relative z-10 break-words [overflow-wrap:anywhere]">{devotional.text}</p>
+                <p className="text-xs sm:text-sm font-black uppercase text-primary/80 text-right mt-10 tracking-widest border-t border-primary/10 pt-4 relative z-10 break-words [overflow-wrap:anywhere]">— {devotional.scripture}</p>
+            </div>
+            
+            {devotional.prayer && (
+                <div className="bg-muted/30 rounded-[2rem] p-8 sm:p-10 border border-muted-foreground/10 shadow-sm relative overflow-hidden">
+                    <div className="flex items-center gap-3 mb-4">
+                        <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
+                            <HandHeart className="h-4 w-4 text-primary" />
+                        </div>
+                        <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-muted-foreground">PRAYER FOR TODAY</span>
+                    </div>
+                    <p className="text-lg sm:text-xl font-medium leading-relaxed italic text-muted-foreground text-balance break-words [overflow-wrap:anywhere]">
+                        &ldquo;{devotional.prayer}&rdquo;
+                    </p>
+                </div>
+            )}
+
+            <div className="flex items-center justify-center gap-3 bg-muted/30 px-4 py-2 rounded-full border border-dashed w-fit mx-auto">
+                <Sparkles className="h-4 w-4 text-primary fill-current" />
+                <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground truncate max-w-[200px]">Messenger: {devotional.authorName}</span>
+            </div>
+        </div>
+    );
+
+    if (isMobile) {
+        return (
+            <Sheet open={isOpen} onOpenChange={setIsOpen}>
+                <SheetTrigger asChild onClick={(e) => e.stopPropagation()}>{children}</SheetTrigger>
+                <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+                    <div className="p-8 border-b flex-shrink-0 bg-muted/10">
+                        <SheetHeader className="text-left flex-shrink-0">
+                            <SheetTitle className="text-2xl font-black font-headline uppercase leading-tight break-words [overflow-wrap:anywhere]">{devotional.title}</SheetTitle>
+                            <SheetDescription className="text-sm font-medium mt-1">Word for {format(parseISO(devotional.scheduledDate), 'PPPP')}</SheetDescription>
+                        </SheetHeader>
+                    </div>
+                    <ScrollArea className="flex-grow">
+                        <div className="p-8 pb-32">
+                            {content}
+                        </div>
+                    </ScrollArea>
+                </SheetContent>
+            </Sheet>
+        );
+    }
+
+    return (
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
+            <DialogTrigger asChild onClick={(e) => e.stopPropagation()}>{children}</DialogTrigger>
+            <DialogContent className="sm:max-w-2xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl">
+                <div className="p-8 border-b bg-muted/10">
+                    <DialogHeader>
+                        <DialogTitle className="text-2xl font-black font-headline uppercase leading-tight break-words [overflow-wrap:anywhere]">{devotional.title}</DialogTitle>
+                        <DialogDescription className="text-sm font-medium mt-1">Daily Word • {format(parseISO(devotional.scheduledDate), 'PPPP')}</DialogDescription>
+                    </DialogHeader>
+                </div>
+                <ScrollArea className="max-h-[70vh]">
+                    <div className="p-8">
+                        {content}
+                    </div>
+                </ScrollArea>
+            </DialogContent>
+        </Dialog>
+    );
+}
+
 export default function FellowshipPageClient() {
     const router = useRouter();
     const params = useParams();
@@ -75,6 +153,9 @@ export default function FellowshipPageClient() {
     const [memberToRemove, setMemberToRemove] = useState<FellowshipMember | null>(null);
     const [soulToUnassign, setSoulToUnassign] = useState<Soul | null>(null);
     const [isProcessingRemoval, setIsProcessingRemoval] = useState(false);
+
+    const devotionalTextRef = useRef<HTMLParagraphElement>(null);
+    const [isDevotionalTruncated, setIsDevotionalTruncated] = useState(false);
 
     useEffect(() => { setMounted(true); }, []);
 
@@ -103,6 +184,21 @@ export default function FellowshipPageClient() {
         return doc(firestore, 'fellowships', fellowshipId, 'devotionals', viewDateStr);
     }, [firestore, fellowshipId, viewDateStr]);
     const { data: activeDevotional, loading: devoLoading } = useDoc<DailyDevotional>(activeDevotionalRef);
+
+    useEffect(() => {
+        if (activeDevotional) {
+            const checkTruncation = () => {
+                if (devotionalTextRef.current) {
+                    setIsDevotionalTruncated(
+                        devotionalTextRef.current.scrollHeight > devotionalTextRef.current.clientHeight
+                    );
+                }
+            };
+            setTimeout(checkTruncation, 100);
+            window.addEventListener('resize', checkTruncation);
+            return () => window.removeEventListener('resize', checkTruncation);
+        }
+    }, [activeDevotional]);
 
     const scheduledDevotionalsQuery = useMemo(() => {
         if (!firestore || !fellowshipId || !(isMember || isOrganizer)) return null;
@@ -473,7 +569,21 @@ export default function FellowshipPageClient() {
                                     <div className="bg-black/60 rounded-[2rem] p-8 sm:p-12 border border-white/20 relative shadow-2xl group overflow-hidden">
                                         <div className="absolute -top-6 -right-6 h-24 w-24 bg-white/5 rounded-full blur-2xl" />
                                         <Quote className="absolute top-6 right-8 h-12 w-12 opacity-10 rotate-12 transition-transform group-hover:scale-110" />
-                                        <p className="text-xl sm:text-2xl font-serif italic leading-relaxed text-justify text-balance relative z-10 break-words [overflow-wrap:anywhere] text-white font-medium">{activeDevotional.text}</p>
+                                        <div className="space-y-1">
+                                            <p 
+                                                ref={devotionalTextRef}
+                                                className="text-xl sm:text-2xl font-serif italic leading-relaxed text-justify text-balance relative z-10 break-words [overflow-wrap:anywhere] text-white font-medium line-clamp-6"
+                                            >
+                                                {activeDevotional.text}
+                                            </p>
+                                            {isDevotionalTruncated && (
+                                                <FullDevotionalDialog devotional={activeDevotional}>
+                                                    <button className="text-[10px] font-black text-white/80 uppercase tracking-[0.2em] hover:text-white transition-colors relative z-20 mt-4 flex items-center gap-1.5 border border-white/20 px-3 py-1 rounded-full bg-white/5 shadow-lg">
+                                                        READ FULL WORD <ChevronDown className="h-3 w-3" />
+                                                    </button>
+                                                </FullDevotionalDialog>
+                                            )}
+                                        </div>
                                         <p className="text-xs sm:text-sm font-black uppercase text-white text-right mt-10 tracking-widest border-t border-white/20 pt-4 relative z-10 break-words [overflow-wrap:anywhere]">— {activeDevotional.scripture}</p>
                                     </div>
                                     
