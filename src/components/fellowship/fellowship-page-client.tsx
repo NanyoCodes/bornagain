@@ -554,7 +554,7 @@ export default function FellowshipPageClient() {
                                     )}
                                 </div>
                                 <CardTitle className="text-3xl sm:text-4xl font-black font-headline tracking-tight uppercase leading-none break-words [overflow-wrap:anywhere] text-balance">
-                                    {activeDevotional?.title || (devoLoading ? 'Checking...' : 'The Living Word')}
+                                    {activeDevotional?.title || (devoLoading ? 'Checking...' : (fellowship?.groupType === 'Association' ? 'Association Word' : 'The Living Word'))}
                                 </CardTitle>
                                 <p className="text-[10px] sm:text-xs font-black uppercase tracking-[0.15em] opacity-70 mt-2">
                                     {format(viewDate, 'EEEE, MMMM d, yyyy')}
