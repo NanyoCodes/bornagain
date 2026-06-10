@@ -353,21 +353,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     setMounted(true); 
     setLoadingMessage(inspirationalMessages[Math.floor(Math.random() * inspirationalMessages.length)]);
 
-    // Interactivity Safety Valve
-    const interval = setInterval(() => {
-        if (typeof document !== 'undefined') {
-            const hasModals = !!document.querySelector('[role="dialog"], [role="menu"], [data-radix-portal]');
-            if (!hasModals) {
-                if (document.body.style.pointerEvents === 'none') {
-                    document.body.style.pointerEvents = 'auto';
-                }
-                if (document.body.style.overflow === 'hidden' && !pathname.includes('/chats')) {
-                    document.body.style.overflow = 'auto';
-                }
-            }
-        }
-    }, 1000);
-
     const SPLASH_COOLDOWN = 12 * 60 * 60 * 1000;
     const lastShown = localStorage.getItem('testify_splash_last_shown');
     const forceSplash = sessionStorage.getItem('testify_force_splash') === 'true';
@@ -385,12 +370,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         }, 10000);
         return () => {
             clearTimeout(timer);
-            clearInterval(interval);
         };
     } else {
         setContentVisible(true);
     }
-    return () => clearInterval(interval);
   }, [pathname]);
 
   const handleDismissSplash = () => {

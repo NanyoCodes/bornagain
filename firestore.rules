@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Phrasing refinement for Kingdom Connections - 2025-06-14T14:45:00Z
+    // Deployment trigger: Scroll refinement and global layout stabilization - 2025-06-16T10:30:00Z
     
     function isOwner(userId) {
       return request.auth != null && request.auth.uid == userId;

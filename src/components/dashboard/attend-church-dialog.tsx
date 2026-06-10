@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -178,7 +177,7 @@ export function AttendChurchDialog({ isOpen, onOpenChange, onDisciplineCompleted
   const dialogDesc = `For ${format(new Date(), 'PPP')}`;
 
   const bodyContent = (
-    <div className="flex-grow overflow-y-auto pt-4 space-y-4">
+    <div className="pt-4 space-y-4">
         {view === 'confirm' && userProfile?.churchInfo?.name ? (
             <div className="space-y-6">
                 <div className="text-center p-8 bg-muted/30 rounded-3xl border border-dashed">
@@ -345,7 +344,9 @@ export function AttendChurchDialog({ isOpen, onOpenChange, onDisciplineCompleted
            <DialogDescription>{dialogDesc}</DialogDescription>
         </DialogHeader>
         <ScrollArea className="flex-grow -mx-6 px-6">
-            {bodyContent}
+            <div className="py-6">
+                {bodyContent}
+            </div>
         </ScrollArea>
         <DialogFooter className="flex-shrink-0 pt-4 border-t">
           {footerContent}
