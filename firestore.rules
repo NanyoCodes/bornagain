@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Feed layout bottom spacing refinement - 2025-06-14T13:15:00Z
+    // Deployment trigger: Phrasing refinement for Kingdom Connections - 2025-06-14T14:45:00Z
     
     function isOwner(userId) {
       return request.auth != null && request.auth.uid == userId;

@@ -96,7 +96,7 @@ function SoulSelectionDialog({
                             placeholder="Search by name..." 
                             value={search} 
                             onChange={e => setSearch(e.target.value)}
-                            className="rounded-2xl h-12 pl-10 bg-muted/20 border-none shadow-inner"
+                            className="rounded-2xl h-12 pl-10 bg-muted/20 border-none shadow-inner text-base"
                         />
                     </div>
                     <ScrollArea className="h-[40vh] border rounded-3xl bg-muted/5">
@@ -211,7 +211,7 @@ export function RelationshipTrackerCard() {
     // 2. Update soul's history
     const memberName = `${userProfile?.firstName || ''} ${userProfile?.lastName || ''}`.trim() || user.displayName || 'Member';
     const logEntry = {
-        date: new Date(),
+        date: new Date(), 
         note: `Logged via Kingdom Connections: ${action.label}`,
         actions: [selectedActionId],
         memberId: user.uid,
@@ -251,7 +251,7 @@ export function RelationshipTrackerCard() {
   };
 
   const activeActionLabel = useMemo(() => 
-    actionItems.find(a => a.id === selectedActionId)?.label || "Connect", 
+    actionItems.find(a => a.id === selectedActionId)?.label || "Connect with", 
   [selectedActionId]);
 
   if (userLoading || profileLoading || soulsLoading) {
@@ -378,7 +378,7 @@ export function RelationshipTrackerCard() {
           </div>
         </CardContent>
         <CardFooter className="px-4 sm:px-6 pb-6 pt-4 flex flex-col gap-4 border-t mt-4 bg-muted/5">
-              <Button asChild variant="default" className="w-full font-black h-12 rounded-2xl shadow-xl shadow-primary/20 tracking-widest uppercase">
+              <Button asChild variant="default" className="w-full font-black h-12 rounded-2xl shadow-xl shadow-primary/20 tracking-widest uppercase text-xs sm:text-sm">
                   <Link href="/dashboard/souls-won">
                       <UserPlus className="mr-2 h-4 w-4" />
                       MANAGE SOULS WON
