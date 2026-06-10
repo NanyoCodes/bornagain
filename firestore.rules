@@ -3,7 +3,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Prophetic Word Integration and UI Synchronization - 2025-06-16T11:00:00Z
+    // Deployment trigger: Expanded prophetic words library for Kingdom encouragement - 2025-06-16T12:30:00Z
     
     function isOwner(userId) {
       return request.auth != null && request.auth.uid == userId;
