@@ -139,7 +139,7 @@ export default function FellowshipPageClient() {
 
     const soulsQuery = useMemo(() => {
         if (!firestore || !fellowshipId || !(isMember || isOrganizer) || !fellowship) return null;
-        const soulQueryField = fellowship.groupType === 'Association' ? 'associationId' : 'fellowshipId';
+        const soulQueryField = fellowship?.groupType === 'Association' ? 'associationId' : 'fellowshipId';
         return query(collection(firestore, 'souls'), where(soulQueryField, '==', fellowshipId));
     }, [firestore, fellowshipId, isMember, isOrganizer, fellowship?.groupType]);
     const { data: assignedSouls, loading: soulsLoading } = useCollection<Soul>(soulsQuery);
@@ -230,8 +230,8 @@ export default function FellowshipPageClient() {
 
         const soul = soulToUnassign;
         const batch = writeBatch(firestore);
-        const groupTypeField = fellowship.groupType === 'Association' ? 'associationId' : 'fellowshipId';
-        const groupTypeNameField = fellowship.groupType === 'Association' ? 'associationName' : 'fellowshipName';
+        const groupTypeField = fellowship?.groupType === 'Association' ? 'associationId' : 'fellowshipId';
+        const groupTypeNameField = fellowship?.groupType === 'Association' ? 'associationName' : 'fellowshipName';
 
         const update = {
             [groupTypeField]: deleteField(),
@@ -400,7 +400,7 @@ export default function FellowshipPageClient() {
                                     <div className="flex items-center justify-center h-5 w-5 bg-white/10 rounded-full">
                                         <BookOpen className="h-3 w-3 opacity-80" />
                                     </div>
-                                    <span className="text-[10px] font-black uppercase tracking-0.3em opacity-80">DEVOTIONAL</span>
+                                    <span className="text-[10px] font-black uppercase tracking-0.3em opacity-80">DEVOTIONAL FOR TODAY</span>
                                     {isViewingToday && (
                                         <Badge className="bg-white text-primary h-4 px-1.5 font-black uppercase text-[7px] tracking-widest animate-pulse border-none">
                                             Today

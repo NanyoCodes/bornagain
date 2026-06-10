@@ -328,7 +328,7 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
                             <div className="h-4 w-4 bg-primary/20 rounded-full flex items-center justify-center">
                                 <Sparkles className="h-2.5 w-2.5 text-primary" />
                             </div>
-                            <span className="text-[8px] font-black uppercase tracking-[0.2em] text-primary">DEVOTIONAL</span>
+                            <span className="text-[8px] font-black uppercase tracking-[0.2em] text-primary">DEVOTIONAL FOR TODAY</span>
                         </div>
                         <p className="font-bold text-xs sm:text-sm mb-1 truncate text-foreground break-words [overflow-wrap:anywhere]">{todayDevotional.title}</p>
                         <div className="space-y-1">
