@@ -84,6 +84,17 @@ const journeyPhases = [
       { title: "Fellowship Groups", content: "Nurture converts collectively by sharing follow-up logs and interaction history within groups." },
       { title: "Accountability", content: "Partner with a brother or sister to stay sharp. Nudge each other to maintain daily disciplines." }
     ]
+  },
+  {
+    title: "Phase 5: Spiritual Nourishment",
+    description: "Empowering the body through the shared Word.",
+    icon: BookOpen,
+    color: "text-purple-600",
+    bgColor: "bg-purple-600/10",
+    items: [
+      { title: "Daily Devotionals", content: "Organizers can arrange daily spiritual nourishment and prayer focuses for their Fellowship or Association members." },
+      { title: "Shared Agreement", content: "Agree with the word via reactions and share these daily seeds of faith with others to spread the light beyond your group." }
+    ]
   }
 ];
 

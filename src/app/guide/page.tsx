@@ -164,6 +164,23 @@ const journeyPhases = [
         content: "Use AI-powered analysis to get personalized follow-up suggestions and encouraging message templates for every soul you log."
       }
     ]
+  },
+  {
+    title: "Phase 5: Spiritual Nourishment",
+    description: "Feeding the flock through collective spiritual guidance.",
+    icon: BookOpen,
+    color: "text-purple-600",
+    bgColor: "bg-purple-600/10",
+    items: [
+      {
+        title: "Daily Group Devotionals",
+        content: "Organizers can publish a 'Word for Today' within Fellowships and Associations. These daily seeds provide the community with a unified spiritual focus and prayer direction."
+      },
+      {
+        title: "Spiritual Agreements",
+        content: "Members can agree with the word via reactions and share devotionals directly to other platforms, allowing the message of grace to spread beyond the group's walls."
+      }
+    ]
   }
 ];
 
