@@ -1,8 +1,9 @@
+
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Scroll refinement and global layout stabilization - 2025-06-16T10:30:00Z
+    // Deployment trigger: Prophetic Word Integration and UI Synchronization - 2025-06-16T11:00:00Z
     
     function isOwner(userId) {
       return request.auth != null && request.auth.uid == userId;
@@ -36,7 +37,7 @@ service cloud.firestore {
 
       allow update: if request.auth != null && (
         isOwner(userId) ||
-        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['accountabilityPartners', 'partnerIds', 'lastActive']) && (
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['accountabilityPartners', 'partnerIds', 'lastActive', 'backgroundImage', 'backgroundOverlayOpacity', 'churchInfo', 'prayerLinks', 'notificationSettings', 'monthlySoulsGoal']) && (
           exists(/databases/$(database)/documents/accountabilityRequests/$(getRequestId(userId, request.auth.uid))) ||
           (resource.data.get('partnerIds', []).size() > 0 && request.auth.uid in resource.data.partnerIds)
         ))
