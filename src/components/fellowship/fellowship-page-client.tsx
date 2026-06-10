@@ -41,6 +41,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Separator } from '@/components/ui/separator';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { errorEmitter } from '@/firebase/error-emitter';
+import { useToast } from '@/hooks/use-toast';
 
 const devotionalSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters.").max(100),
@@ -50,84 +51,6 @@ const devotionalSchema = z.object({
   scheduledDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Please enter a valid date."),
 });
 
-function FullDevotionalDialog({ devotional, children }: { devotional: DailyDevotional, children: React.ReactNode }) {
-    const isMobile = useIsMobile();
-    const [isOpen, setIsOpen] = useState(false);
-    const [mounted, setMounted] = useState(false);
-    useEffect(() => setMounted(true), []);
-
-    if (!mounted) return <>{children}</>;
-
-    const content = (
-        <div className="space-y-8">
-            <div className="bg-primary/5 rounded-[2rem] p-8 sm:p-12 border-2 border-dashed border-primary/20 relative shadow-inner overflow-hidden">
-                <Quote className="absolute top-6 right-8 h-12 w-12 opacity-10 rotate-12" />
-                <p className="text-xl sm:text-2xl font-serif italic leading-relaxed text-justify text-balance relative z-10 break-words [overflow-wrap:anywhere]">{devotional.text}</p>
-                <p className="text-xs sm:text-sm font-black uppercase text-primary/80 text-right mt-10 tracking-widest border-t border-primary/10 pt-4 relative z-10 break-words [overflow-wrap:anywhere]">— {devotional.scripture}</p>
-            </div>
-            
-            {devotional.prayer && (
-                <div className="bg-muted/30 rounded-[2rem] p-8 sm:p-10 border border-muted-foreground/10 shadow-sm relative overflow-hidden">
-                    <div className="flex items-center gap-3 mb-4">
-                        <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
-                            <HandHeart className="h-4 w-4 text-primary" />
-                        </div>
-                        <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-muted-foreground">PRAYER FOR TODAY</span>
-                    </div>
-                    <p className="text-lg sm:text-xl font-medium leading-relaxed italic text-muted-foreground text-balance break-words [overflow-wrap:anywhere]">
-                        &ldquo;{devotional.prayer}&rdquo;
-                    </p>
-                </div>
-            )}
-
-            <div className="flex items-center justify-center gap-3 bg-muted/30 px-4 py-2 rounded-full border border-dashed w-fit mx-auto">
-                <Sparkles className="h-4 w-4 text-primary fill-current" />
-                <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground truncate max-w-[200px]">Messenger: {devotional.authorName}</span>
-            </div>
-        </div>
-    );
-
-    if (isMobile) {
-        return (
-            <Sheet open={isOpen} onOpenChange={setIsOpen}>
-                <SheetTrigger asChild onClick={(e) => e.stopPropagation()}>{children}</SheetTrigger>
-                <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
-                    <div className="p-8 border-b flex-shrink-0 bg-muted/10">
-                        <SheetHeader className="text-left flex-shrink-0">
-                            <SheetTitle className="text-2xl font-black font-headline uppercase leading-tight break-words [overflow-wrap:anywhere]">{devotional.title}</SheetTitle>
-                            <SheetDescription className="text-sm font-medium mt-1">Word for {format(parseISO(devotional.scheduledDate), 'PPPP')}</SheetDescription>
-                        </SheetHeader>
-                    </div>
-                    <ScrollArea className="flex-grow">
-                        <div className="p-8 pb-32">
-                            {content}
-                        </div>
-                    </ScrollArea>
-                </SheetContent>
-            </Sheet>
-        );
-    }
-
-    return (
-        <Dialog open={isOpen} onOpenChange={setIsOpen}>
-            <DialogTrigger asChild onClick={(e) => e.stopPropagation()}>{children}</DialogTrigger>
-            <DialogContent className="sm:max-w-2xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl">
-                <div className="p-8 border-b bg-muted/10">
-                    <DialogHeader>
-                        <DialogTitle className="text-2xl font-black font-headline uppercase leading-tight break-words [overflow-wrap:anywhere]">{devotional.title}</DialogTitle>
-                        <DialogDescription className="text-sm font-medium mt-1">Daily Word • {format(parseISO(devotional.scheduledDate), 'PPPP')}</DialogDescription>
-                    </DialogHeader>
-                </div>
-                <ScrollArea className="max-h-[70vh]">
-                    <div className="p-8">
-                        {content}
-                    </div>
-                </ScrollArea>
-            </DialogContent>
-        </Dialog>
-    );
-}
-
 export default function FellowshipPageClient() {
     const router = useRouter();
     const params = useParams();
@@ -136,6 +59,7 @@ export default function FellowshipPageClient() {
     const { user } = useUser();
     const { userProfile, loading: profileLoading } = useUserProfile();
     const isMobile = useIsMobile();
+    const { toast } = useToast();
     const [mounted, setMounted] = useState(false);
 
     const [selectedSoulId, setSelectedSoulId] = useState<string | null>(null);
@@ -254,13 +178,21 @@ export default function FellowshipPageClient() {
                 });
                 setIsDevotionalDialogOpen(false);
             })
-            .catch(async (serverError) => {
-                const permissionError = new FirestorePermissionError({ 
-                    path: devotionalRef.path, 
-                    operation: 'write',
-                    requestResourceData: devotionalData
-                }, user);
-                errorEmitter.emit('permission-error', permissionError);
+            .catch(async (serverError: any) => {
+                if (serverError.code === 'permission-denied') {
+                  const permissionError = new FirestorePermissionError({ 
+                      path: devotionalRef.path, 
+                      operation: 'write',
+                      requestResourceData: devotionalData
+                  }, user);
+                  errorEmitter.emit('permission-error', permissionError);
+                } else {
+                  toast({
+                    variant: 'destructive',
+                    title: 'Update Failed',
+                    description: serverError.message || 'An unexpected error occurred.'
+                  });
+                }
             })
             .finally(() => {
                 setIsSavingDevotional(false);
