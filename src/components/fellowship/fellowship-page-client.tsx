@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useMemo, useRef } from 'react';
@@ -519,27 +520,31 @@ export default function FellowshipPageClient() {
 
     return (
         <div 
-            className="space-y-6 max-w-6xl mx-auto pb-32"
+            className="space-y-6 md:space-y-10 w-full max-w-6xl mx-auto pt-4"
             inert={isAnyModalOpen ? true : undefined}
         >
-            <div className="flex items-center gap-3 sm:gap-4 px-4 sm:px-0">
-                <Button variant="ghost" size="icon" onClick={() => router.back()} className="shrink-0 h-9 w-9 sm:h-10 sm:w-10 rounded-full border bg-background shadow-sm hover:bg-muted/50">
-                    <ArrowLeft className="h-5 w-5 sm:h-6 sm:w-6"/>
-                    <span className="sr-only">Back</span>
-                </Button>
-                <div className="min-w-0 flex-1">
-                    <h1 className="text-xl sm:text-2xl md:text-4xl font-black font-headline tracking-tight truncate leading-tight uppercase text-balance break-words [overflow-wrap:anywhere]">{fellowship.name}</h1>
-                    <div className="flex items-center gap-2 mt-0.5">
-                        <Badge variant="secondary" className="uppercase font-bold tracking-[0.2em] text-[8px] sm:text-[10px] px-2 h-5 shrink-0">{fellowship.groupType || 'Fellowship'}</Badge>
-                        <span className="text-[9px] sm:text-xs text-muted-foreground font-medium uppercase tracking-widest opacity-60 truncate">Global Community</span>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 px-4 sm:px-0">
+                <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto">
+                    <Button variant="ghost" size="icon" onClick={() => router.back()} className="shrink-0 h-9 w-9 sm:h-12 sm:w-12 rounded-full border bg-background shadow-sm hover:bg-muted/50">
+                        <ArrowLeft className="h-5 w-5 sm:h-6 sm:w-6"/>
+                        <span className="sr-only">Back</span>
+                    </Button>
+                    <div className="min-w-0 flex-1">
+                        <h1 className="text-xl sm:text-2xl md:text-4xl font-black font-headline tracking-tight truncate leading-tight uppercase text-balance break-words [overflow-wrap:anywhere]">{fellowship.name}</h1>
+                        <div className="flex items-center gap-2 mt-0.5">
+                            <Badge variant="secondary" className="uppercase font-bold tracking-[0.2em] text-[8px] sm:text-[10px] px-2 h-5 shrink-0">{fellowship.groupType || 'Fellowship'}</Badge>
+                            <span className="text-[9px] sm:text-xs text-muted-foreground font-medium uppercase tracking-widest opacity-60 truncate">Global Community</span>
+                        </div>
                     </div>
                 </div>
-                {HeaderActions}
+                <div className="flex w-full sm:w-auto justify-end sm:ml-auto">
+                    {HeaderActions}
+                </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
-                <div className="space-y-6 lg:col-span-2">
-                    <Card className="rounded-none sm:rounded-[2.5rem] border-x-0 sm:border-x shadow-none sm:shadow-lg border-none bg-primary text-primary-foreground overflow-hidden border-b-8 border-b-white/10">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-10">
+                <div className="space-y-8 lg:col-span-2">
+                    <Card className="rounded-none sm:rounded-[2.5rem] border-x-0 sm:border-x shadow-none sm:shadow-xl border-none bg-primary text-primary-foreground overflow-hidden border-b-8 border-b-white/10">
                         <CardHeader className="p-6 sm:p-10 pb-6 flex flex-col items-start gap-6 sm:flex-row sm:items-center sm:justify-between">
                             <div className="space-y-1.5 min-w-0 flex-1">
                                 <div className="flex items-center gap-3 mb-1">
@@ -654,12 +659,12 @@ export default function FellowshipPageClient() {
                                     <div className="flex flex-col sm:flex-row items-center justify-between gap-6 pt-2">
                                         <div className="flex items-center gap-3 bg-white/10 px-4 py-2 rounded-full border border-white/10">
                                             <Sparkles className="h-4 w-4 text-white fill-current" />
-                                            <span className="text-[10px] font-black uppercase tracking-widest text-white">Messenger: {activeDevotional.authorName}</span>
+                                            <span className="text-[10px] font-black uppercase tracking-widest text-white truncate max-w-[200px]">Messenger: {activeDevotional.authorName}</span>
                                         </div>
                                         
                                         <div className="flex items-center gap-2 bg-white/10 rounded-2xl p-1.5 border border-white/10 shadow-2xl w-full sm:w-auto">
                                             <Button variant="ghost" className="flex-1 sm:flex-none h-10 px-4 text-white hover:bg-white/10 rounded-xl gap-2 font-black text-[10px] uppercase tracking-widest" onClick={() => handleDateNav('prev')}>
-                                                <ChevronLeft className="h-4 w-4" /> Previous
+                                                <ChevronLeft className="h-4 w-4" /> Prev
                                             </Button>
                                             <Separator orientation="vertical" className="h-6 bg-white/20" />
                                             <Button variant="ghost" className="flex-1 sm:flex-none h-10 px-4 text-white hover:bg-white/10 rounded-xl gap-2 font-black text-[10px] uppercase tracking-widest" onClick={() => handleDateNav('next')}>
@@ -682,15 +687,15 @@ export default function FellowshipPageClient() {
                                 <div className="text-center py-20 sm:py-24 bg-white/5 rounded-[2.5rem] border-2 border-dashed border-white/10 mx-auto flex flex-col items-center px-8 shadow-inner">
                                     <BookOpen className="h-16 w-16 opacity-10 mb-6" />
                                     <h4 className="text-xl font-black uppercase tracking-tight opacity-40">Spiritual Silence</h4>
-                                    <p className="text-sm font-medium opacity-40 mt-2 italic max-w-sm text-balance">
+                                    <p className="text-sm font-medium opacity-40 mt-2 italic max-w-sm text-balance leading-relaxed">
                                         No word arranged for {isViewingToday ? 'today' : format(viewDate, 'MMM d')} yet.
                                     </p>
                                     {(isMember || isOrganizer) && (
-                                      <div className="flex flex-col sm:flex-row gap-4 mt-12 w-full sm:w-auto">
-                                          <Button variant="outline" className="bg-white/5 border-white/10 text-white rounded-2xl h-12 px-8 font-black uppercase tracking-widest text-[10px] shadow-lg" onClick={() => handleDateNav('prev')}><ChevronLeft className="mr-2 h-4 w-4" /> PREVIOUS</Button>
+                                      <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-12 w-full sm:w-auto">
+                                          <Button variant="outline" className="bg-white/5 border-white/10 text-white rounded-2xl h-12 px-8 font-black uppercase tracking-widest text-[10px] shadow-lg order-2 sm:order-1" onClick={() => handleDateNav('prev')}><ChevronLeft className="mr-2 h-4 w-4" /> PREVIOUS</Button>
                                           <Button 
                                               variant="secondary" 
-                                              className="font-black rounded-2xl h-12 px-10 shadow-2xl text-[10px] uppercase tracking-[0.2em]"
+                                              className="font-black rounded-2xl h-12 px-10 shadow-2xl text-[10px] uppercase tracking-[0.2em] order-1 sm:order-2"
                                               onClick={() => {
                                                   form.reset({
                                                       title: '',
@@ -704,7 +709,7 @@ export default function FellowshipPageClient() {
                                           >
                                               PUBLISH WORD
                                           </Button>
-                                          <Button variant="outline" className="bg-white/5 border-white/10 text-white rounded-2xl h-12 px-8 font-black uppercase tracking-widest text-[10px] shadow-lg" onClick={() => handleDateNav('next')}>NEXT <ChevronRight className="ml-2 h-4 w-4" /></Button>
+                                          <Button variant="outline" className="bg-white/5 border-white/10 text-white rounded-2xl h-12 px-8 font-black uppercase tracking-widest text-[10px] shadow-lg order-3" onClick={() => handleDateNav('next')}>NEXT <ChevronRight className="ml-2 h-4 w-4" /></Button>
                                       </div>
                                     )}
                                 </div>
@@ -713,10 +718,10 @@ export default function FellowshipPageClient() {
                     </Card>
 
                     <Card className="rounded-none sm:rounded-[2.5rem] border-x-0 sm:border-x shadow-none sm:shadow-sm border-none bg-muted/20">
-                        <CardHeader className="p-6 sm:p-8">
+                        <CardHeader className="p-6 sm:p-10">
                             <CardTitle className="text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">About this Group</CardTitle>
                         </CardHeader>
-                        <CardContent className="px-6 sm:px-8 pb-8">
+                        <CardContent className="px-6 sm:px-10 pb-8 sm:pb-12">
                             <p className="text-sm sm:text-base text-foreground leading-relaxed whitespace-pre-wrap font-medium text-balance break-words [overflow-wrap:anywhere]">
                                 {fellowship.description}
                             </p>
@@ -724,7 +729,7 @@ export default function FellowshipPageClient() {
                     </Card>
 
                     <Card className="rounded-none sm:rounded-[2.5rem] border-x-0 sm:border-x shadow-none sm:shadow-sm border-none bg-background border border-muted-foreground/10 overflow-hidden">
-                        <CardHeader className="p-6 sm:p-8 border-b bg-muted/5">
+                        <CardHeader className="p-6 sm:p-10 border-b bg-muted/5">
                             <CardTitle className="flex items-center justify-between text-base sm:text-lg font-black uppercase tracking-[0.1em]">
                                 <span className="flex items-center gap-2.5">
                                     <Users className="h-5 w-5 text-primary" />
@@ -740,77 +745,77 @@ export default function FellowshipPageClient() {
                                         <TabsTrigger value="believers" className="flex-1 text-xs sm:text-sm font-bold h-full rounded-none data-[state=active]:bg-background data-[state=active]:shadow-none border-r last:border-r-0 truncate px-4">Believers ({members?.length || 0})</TabsTrigger>
                                         <TabsTrigger value="souls" className="flex-1 text-xs sm:text-sm font-bold h-full rounded-none data-[state=active]:bg-background data-[state=active]:shadow-none border-r last:border-r-0 truncate px-4">Converts ({assignedSouls?.length || 0})</TabsTrigger>
                                     </TabsList>
-                                    <TabsContent value="believers" className="mt-0 p-4 sm:p-8">
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                                    <TabsContent value="believers" className="mt-0 p-4 sm:p-10">
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                             {members?.map(member => (
-                                                <div key={member.id} className="flex items-center gap-3 p-3 sm:p-4 rounded-xl sm:rounded-2xl border bg-muted/5 transition-all hover:bg-muted/10 group min-w-0">
-                                                    <Avatar className="h-8 w-8 sm:h-9 sm:w-9 border shadow-sm shrink-0">
-                                                        <AvatarFallback className="text-[10px] font-black bg-primary/10 text-primary">{member.firstName?.charAt(0)}</AvatarFallback>
+                                                <div key={member.id} className="flex items-center gap-4 p-4 rounded-2xl border bg-muted/5 transition-all hover:bg-muted/10 group min-w-0">
+                                                    <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border shadow-sm shrink-0">
+                                                        <AvatarFallback className="text-xs sm:text-sm font-black bg-primary/10 text-primary">{member.firstName?.charAt(0)}</AvatarFallback>
                                                     </Avatar>
                                                     <div className="flex-1 min-w-0">
-                                                        <p className="font-bold truncate text-xs sm:text-sm leading-tight break-words [overflow-wrap:anywhere]">{member.firstName} {member.lastName}</p>
-                                                        {member.userId === fellowship.organizerId && <span className="text-[8px] font-black uppercase text-primary tracking-widest block mt-0.5">Organizer</span>}
+                                                        <p className="font-black truncate text-sm sm:text-base leading-tight break-words [overflow-wrap:anywhere] uppercase tracking-tight">{member.firstName} {member.lastName}</p>
+                                                        {member.userId === fellowship.organizerId && <span className="text-[8px] font-black uppercase text-primary tracking-[0.15em] block mt-1">Organizer</span>}
                                                     </div>
                                                     {isOrganizer && member.userId !== user?.uid && (
-                                                        <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive opacity-60 group-hover:opacity-100" onClick={() => setMemberToRemove(member)}><UserMinus className="h-4 w-4" /></Button>
+                                                        <Button variant="ghost" size="icon" className="h-9 w-9 text-destructive opacity-40 hover:opacity-100 hover:bg-destructive/10 rounded-full" onClick={() => setMemberToRemove(member)}><UserMinus className="h-4 w-4" /></Button>
                                                     )}
                                                 </div>
                                             ))}
                                         </div>
                                     </TabsContent>
-                                    <TabsContent value="souls" className="mt-0 p-4 sm:p-8">
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                                    <TabsContent value="souls" className="mt-0 p-4 sm:p-10">
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                             {assignedSouls?.map(soul => (
-                                                <div key={soul.id} className="flex items-center gap-3 p-3 sm:p-4 rounded-xl sm:rounded-2xl border bg-primary/5 transition-all hover:bg-muted/10 group min-w-0">
-                                                    <div className="h-9 w-9 sm:h-10 sm:w-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20"><Heart className="h-4 w-4 sm:h-5 w-5 text-primary fill-current" /></div>
+                                                <div key={soul.id} className="flex items-center gap-4 p-4 rounded-2xl border bg-primary/5 transition-all hover:bg-muted/10 group min-w-0">
+                                                    <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20"><Heart className="h-5 w-5 text-primary fill-current" /></div>
                                                     <div className="flex-1 min-w-0">
-                                                        <p className="font-bold truncate text-xs sm:text-sm leading-tight break-words [overflow-wrap:anywhere]">{soul.firstName} {soul.lastName}</p>
-                                                        <Badge className="mt-1 h-3.5 text-[7px] sm:text-[8px]" variant="secondary">{soul.status}</Badge>
+                                                        <p className="font-black truncate text-sm sm:text-base leading-tight break-words [overflow-wrap:anywhere] uppercase tracking-tight">{soul.firstName} {soul.lastName}</p>
+                                                        <Badge className="mt-1 h-4 text-[8px] sm:text-[9px] font-black uppercase tracking-widest" variant="secondary">{soul.status}</Badge>
                                                     </div>
-                                                    <Button variant="outline" size="sm" className="h-7 sm:h-8 text-[9px] sm:text-[10px] font-black" onClick={() => { setSelectedSoulId(soul.id); setIsSoulDetailsOpen(true); }}>Details</Button>
+                                                    <Button variant="outline" size="sm" className="h-8 sm:h-9 text-[10px] sm:text-[11px] font-black uppercase tracking-widest px-4 rounded-xl shadow-sm" onClick={() => { setSelectedSoulId(soul.id); setIsSoulDetailsOpen(true); }}>Details</Button>
                                                 </div>
                                             ))}
                                         </div>
                                     </TabsContent>
                                </Tabs>
                            ) : (
-                               <div className="p-16 sm:p-20 text-center bg-muted/30 flex flex-col items-center">
-                                   <div className="h-12 w-12 sm:h-16 sm:w-16 bg-muted/20 rounded-full flex items-center justify-center mb-6">
-                                       <Users className="h-6 w-6 sm:h-8 sm:w-8 text-muted-foreground opacity-20" />
+                               <div className="p-16 sm:p-24 text-center bg-muted/30 flex flex-col items-center">
+                                   <div className="h-16 w-16 sm:h-20 sm:w-20 bg-muted/20 rounded-full flex items-center justify-center mb-8">
+                                       <Users className="h-8 w-8 sm:h-10 sm:w-10 text-muted-foreground opacity-20" />
                                    </div>
-                                   <p className="text-xs sm:text-sm text-muted-foreground italic px-10 sm:px-12 leading-relaxed font-medium max-w-sm mx-auto text-balance">Join this fellowship to collaborate on follow-up and view the member directory.</p>
+                                   <p className="text-xs sm:text-base text-muted-foreground italic px-12 leading-relaxed font-medium max-w-md mx-auto text-balance">Join this community to access the shared directory and spiritual history.</p>
                                </div>
                            )}
                         </CardContent>
                     </Card>
                 </div>
 
-                <div className="space-y-6 sm:space-y-8 flex flex-col px-4 sm:px-0">
+                <div className="space-y-8 flex flex-col px-4 sm:px-0">
                     <Card className="rounded-[1.5rem] sm:rounded-[2.5rem] shadow-sm border-none bg-background border border-muted-foreground/10 overflow-hidden border-b-8 border-b-primary/10">
-                        <CardHeader className="p-5 sm:p-8 pb-2 sm:pb-3">
-                            <CardTitle className="text-[10px] sm:text-sm font-black uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2"><Calendar className="h-4 w-4 text-primary"/> Gathering Details</CardTitle>
+                        <CardHeader className="p-6 sm:p-8 pb-3 sm:pb-4">
+                            <CardTitle className="text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2.5"><Calendar className="h-4 w-4 text-primary"/> Gathering Details</CardTitle>
                         </CardHeader>
-                        <CardContent className="px-5 sm:px-8 pb-6 sm:pb-8 space-y-4 sm:space-y-5 pt-1 sm:pt-2">
+                        <CardContent className="px-6 sm:px-8 pb-8 sm:pb-10 space-y-5 sm:space-y-6 pt-2">
                             {fellowship.schedule && (
-                                <div className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-muted/30 border border-dashed">
-                                    <p className="font-black text-[8px] sm:text-[9px] uppercase tracking-[0.2em] text-muted-foreground mb-1.5">Schedule</p>
-                                    <p className="text-foreground font-bold text-xs sm:text-sm leading-tight text-balance break-words [overflow-wrap:anywhere]">{fellowship.schedule}</p>
+                                <div className="p-4 sm:p-5 rounded-2xl bg-muted/30 border border-dashed">
+                                    <p className="font-black text-[8px] sm:text-[9px] uppercase tracking-[0.2em] text-muted-foreground mb-2">Schedule</p>
+                                    <p className="text-foreground font-black text-xs sm:text-base leading-tight text-balance break-words [overflow-wrap:anywhere]">{fellowship.schedule}</p>
                                 </div>
                             )}
                             {fellowship.location && (
-                                <div className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-muted/30 border border-dashed">
-                                    <p className="font-black text-[8px] sm:text-[9px] uppercase tracking-[0.2em] text-muted-foreground mb-1.5">Location Area</p>
-                                    <p className="text-foreground font-bold text-xs sm:text-sm flex items-start gap-1.5 leading-tight break-words [overflow-wrap:anywhere] text-balance">
-                                        <MapPin className="h-3 sm:h-3.5 w-3 sm:w-3.5 text-primary shrink-0 mt-0.5" /> {fellowship.location}
+                                <div className="p-4 sm:p-5 rounded-2xl bg-muted/30 border border-dashed">
+                                    <p className="font-black text-[8px] sm:text-[9px] uppercase tracking-[0.2em] text-muted-foreground mb-2">Primary Location</p>
+                                    <p className="text-foreground font-black text-xs sm:text-base flex items-start gap-2 leading-tight break-words [overflow-wrap:anywhere] text-balance">
+                                        <MapPin className="h-4 w-4 sm:h-5 sm:w-5 text-primary shrink-0 mt-0.5" /> {fellowship.location}
                                     </p>
                                 </div>
                             )}
                             
                             {(isMember || isOrganizer) && fellowship.streamUrl && (
-                                <Button asChild className="w-full h-12 sm:h-14 font-black rounded-2xl shadow-md transition-transform active:scale-95 text-sm sm:text-base">
+                                <Button asChild className="w-full h-14 sm:h-16 font-black rounded-2xl shadow-xl transition-all active:scale-95 text-sm sm:text-base uppercase tracking-widest">
                                     <Link href={fellowship.streamUrl} target="_blank" rel="noopener noreferrer">
-                                        <PlayCircle className="mr-2 h-4 sm:h-5 w-4 sm:w-5" />
-                                        GATHER ONLINE
+                                        <PlayCircle className="mr-3 h-5 sm:h-6 w-5 sm:w-6" />
+                                        ENTER MEETING
                                     </Link>
                                 </Button>
                             )}
@@ -818,20 +823,20 @@ export default function FellowshipPageClient() {
                     </Card>
 
                     <Card className="rounded-[1.5rem] sm:rounded-[2.5rem] shadow-sm border-none bg-background border border-muted-foreground/10 border-b-8 border-b-primary/5">
-                        <CardHeader className="p-5 sm:p-8 pb-2 sm:pb-3">
-                            <CardTitle className="text-[10px] sm:text-sm font-black uppercase tracking-[0.2em] text-muted-foreground">Lead Organizer</CardTitle>
+                        <CardHeader className="p-6 sm:p-8 pb-3 sm:pb-4">
+                            <CardTitle className="text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">Organizer</CardTitle>
                         </CardHeader>
-                        <CardContent className="px-5 sm:px-8 pb-6 sm:pb-8 pt-1 sm:pt-2">
-                            <Link href={isOrganizer ? '/dashboard/profile' : `/dashboard/profile/${fellowship.organizerId}`} className="flex items-center gap-3 sm:gap-4 group bg-muted/20 p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-dashed transition-all hover:bg-muted/40 hover:border-primary/20 min-w-0">
-                                <Avatar className="h-9 w-9 sm:h-11 sm:w-11 border-2 border-primary/20 shadow-sm shrink-0">
-                                    <AvatarFallback className="font-black text-xs sm:text-sm bg-primary/10 text-primary">{fellowship.organizerName?.charAt(0)}</AvatarFallback>
+                        <CardContent className="px-6 sm:px-8 pb-8 sm:pb-10 pt-2">
+                            <Link href={isOrganizer ? '/dashboard/profile' : `/dashboard/profile/${fellowship.organizerId}`} className="flex items-center gap-4 group bg-muted/20 p-4 sm:p-5 rounded-2xl border border-dashed transition-all hover:bg-muted/40 hover:border-primary/20 min-w-0 shadow-inner">
+                                <Avatar className="h-12 w-12 sm:h-14 sm:w-14 border-2 border-primary/20 shadow-sm shrink-0">
+                                    <AvatarFallback className="font-black text-sm sm:text-base bg-primary/10 text-primary">{fellowship.organizerName?.charAt(0)}</AvatarFallback>
                                 </Avatar>
                                 <div className="min-w-0 flex-1">
-                                    <span className="font-black text-xs sm:text-base group-hover:text-primary transition-colors truncate block leading-tight">
+                                    <span className="font-black text-xs sm:text-base group-hover:text-primary transition-colors truncate block leading-tight uppercase tracking-tight">
                                         {fellowship.organizerName}
                                     </span>
-                                    <div className="flex items-center gap-1.5 mt-0.5">
-                                        <Badge className="h-3.5 sm:h-4 text-[6px] sm:text-[7px] uppercase font-black tracking-widest px-1 sm:px-1.5" variant={isOrganizer ? "default" : "secondary"}>{isOrganizer ? "YOU" : "LEADER"}</Badge>
+                                    <div className="flex items-center gap-2 mt-1">
+                                        <Badge className="h-4 sm:h-5 text-[7px] sm:text-[8px] uppercase font-black tracking-widest px-2" variant={isOrganizer ? "default" : "secondary"}>{isOrganizer ? "YOU" : "LEADER"}</Badge>
                                     </div>
                                 </div>
                             </Link>
@@ -1009,12 +1014,12 @@ export default function FellowshipPageClient() {
                     <AlertDialogHeader>
                         <AlertDialogTitle className="text-2xl font-black font-headline">Remove Member?</AlertDialogTitle>
                         <AlertDialogDescription className="text-sm font-medium">
-                            Are you sure you want to remove {memberToRemove?.firstName} from this group?
+                            Are you sure you want to remove {memberToRemove?.firstName} from this community?
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter className="gap-3 mt-6">
-                        <AlertDialogCancel disabled={isProcessingRemoval} className="rounded-2xl h-11 font-bold">Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleDeleteMember} disabled={isProcessingRemoval} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-11 font-bold">
+                        <AlertDialogCancel disabled={isProcessingRemoval} className="rounded-2xl h-12 font-bold">Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleDeleteMember} disabled={isProcessingRemoval} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold">
                             {isProcessingRemoval && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                             Confirm Removal
                         </AlertDialogAction>
@@ -1031,8 +1036,8 @@ export default function FellowshipPageClient() {
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter className="gap-3 mt-6">
-                        <AlertDialogCancel className="rounded-2xl h-11 font-bold">Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleRemoveSoul} disabled={isProcessingRemoval} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-11 font-bold">
+                        <AlertDialogCancel className="rounded-2xl h-12 font-bold">Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleRemoveSoul} disabled={isProcessingRemoval} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold">
                             {isProcessingRemoval && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                             Confirm Unassign
                         </AlertDialogAction>
