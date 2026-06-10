@@ -230,7 +230,7 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
 
     return (
         <Card onClick={onClick} className="cursor-pointer rounded-none sm:rounded-lg border-x-0 sm:border-x transition-all duration-300 hover:shadow-lg border-t-2 border-t-primary/10 border-b-2 sm:border-b bg-card/50 backdrop-blur-sm">
-            <CardHeader className="p-5 sm:p-6">
+            <CardHeader className="p-5 sm:p-6 pb-2">
                 <div className="flex justify-between items-start gap-4">
                     <div className="min-w-0 flex-1">
                         <CardTitle className="text-lg sm:text-xl font-black leading-tight mb-2 uppercase tracking-tight break-words [overflow-wrap:anywhere]">
@@ -316,7 +316,7 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
                     </div>
                 </div>
             </CardHeader>
-            <CardContent className="px-5 sm:px-6 pb-4 space-y-4">
+            <CardContent className="px-5 sm:px-6 pb-4 space-y-4 pt-4">
                 <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2 leading-relaxed font-medium break-words [overflow-wrap:anywhere]">{fellowship.description}</p>
                 
                 {(isMember || isOrganizer) && todayDevotional && (

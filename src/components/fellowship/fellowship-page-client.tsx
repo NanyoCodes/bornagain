@@ -166,7 +166,7 @@ export default function FellowshipPageClient() {
     }, [user, fellowship]);
 
     const isOrganizer = useMemo(() => {
-        if (!user) return false;
+        if (!user || !fellowship) return false;
         return fellowship.organizerId === user.uid;
     }, [user, fellowship]);
 
@@ -498,7 +498,7 @@ export default function FellowshipPageClient() {
                                         <TooltipContent><p className="text-[10px] font-bold uppercase">View Schedule</p></TooltipContent>
                                     </Tooltip>
                                 </TooltipProvider>
-                                {isOrganizer && (
+                                {(isOrganizer || isMember) && (
                                     <TooltipProvider>
                                         <Tooltip>
                                             <TooltipTrigger asChild>
@@ -524,7 +524,7 @@ export default function FellowshipPageClient() {
                                                     <Edit className="h-5 w-5 sm:h-6 sm:w-6" />
                                                 </Button>
                                             </TooltipTrigger>
-                                            <TooltipContent><p className="text-[10px] font-bold uppercase">Arrange Word</p></TooltipContent>
+                                            <TooltipContent><p className="text-[10px] font-bold uppercase">{activeDevotional ? 'Arrange Word' : 'Publish Word'}</p></TooltipContent>
                                         </Tooltip>
                                     </TooltipProvider>
                                 )}
@@ -593,26 +593,28 @@ export default function FellowshipPageClient() {
                                     <p className="text-sm font-medium opacity-40 mt-2 italic max-w-sm text-balance">
                                         No word arranged for {isViewingToday ? 'today' : format(viewDate, 'MMM d')} yet.
                                     </p>
-                                    <div className="flex flex-col sm:flex-row gap-4 mt-12 w-full sm:w-auto">
-                                        <Button variant="outline" className="bg-white/5 border-white/10 text-white rounded-2xl h-12 px-8 font-black uppercase tracking-widest text-[10px] shadow-lg" onClick={() => handleDateNav('prev')}><ChevronLeft className="mr-2 h-4 w-4" /> PREVIOUS</Button>
-                                        <Button 
-                                            variant="secondary" 
-                                            className="font-black rounded-2xl h-12 px-10 shadow-2xl text-[10px] uppercase tracking-[0.2em]"
-                                            onClick={() => {
-                                                form.reset({
-                                                    title: '',
-                                                    scripture: '',
-                                                    text: '',
-                                                    prayer: '',
-                                                    scheduledDate: viewDateStr,
-                                                });
-                                                setIsDevotionalDialogOpen(true);
-                                            }}
-                                        >
-                                            PUBLISH WORD
-                                        </Button>
-                                        <Button variant="outline" className="bg-white/5 border-white/10 text-white rounded-2xl h-12 px-8 font-black uppercase tracking-widest text-[10px] shadow-lg" onClick={() => handleDateNav('next')}>NEXT <ChevronRight className="ml-2 h-4 w-4" /></Button>
-                                    </div>
+                                    {(isMember || isOrganizer) && (
+                                      <div className="flex flex-col sm:flex-row gap-4 mt-12 w-full sm:w-auto">
+                                          <Button variant="outline" className="bg-white/5 border-white/10 text-white rounded-2xl h-12 px-8 font-black uppercase tracking-widest text-[10px] shadow-lg" onClick={() => handleDateNav('prev')}><ChevronLeft className="mr-2 h-4 w-4" /> PREVIOUS</Button>
+                                          <Button 
+                                              variant="secondary" 
+                                              className="font-black rounded-2xl h-12 px-10 shadow-2xl text-[10px] uppercase tracking-[0.2em]"
+                                              onClick={() => {
+                                                  form.reset({
+                                                      title: '',
+                                                      scripture: '',
+                                                      text: '',
+                                                      prayer: '',
+                                                      scheduledDate: viewDateStr,
+                                                  });
+                                                  setIsDevotionalDialogOpen(true);
+                                              }}
+                                          >
+                                              PUBLISH WORD
+                                          </Button>
+                                          <Button variant="outline" className="bg-white/5 border-white/10 text-white rounded-2xl h-12 px-8 font-black uppercase tracking-widest text-[10px] shadow-lg" onClick={() => handleDateNav('next')}>NEXT <ChevronRight className="ml-2 h-4 w-4" /></Button>
+                                      </div>
+                                    )}
                                 </div>
                             )}
                         </CardContent>
