@@ -212,7 +212,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({
   return (
     <>
       <Card id={testimony.id} className={cn(
-        "flex flex-col h-full w-full overflow-hidden transition-all duration-300 scroll-mt-32 rounded-none sm:rounded-xl border-x-0 sm:border-x border-t-4 border-t-primary/20 border-b-2 sm:border-b shadow-none bg-card/50 backdrop-blur-sm",
+        "flex flex-col h-full w-full overflow-hidden transition-all duration-300 scroll-mt-48 rounded-none sm:rounded-xl border-x-0 sm:border-x border-t-4 border-t-primary/20 border-b-2 sm:border-b shadow-none bg-card/50 backdrop-blur-sm",
         isPartner && "ring-1 ring-primary/20",
         testimony.answeredPrayerId && "border-l-4 border-l-amber-500"
       )}>
@@ -340,7 +340,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({
                         </SheetContent>
                     </Sheet>
                     <Sheet open={isCommentsOpen} onOpenChange={setIsCommentsOpen}>
-                        <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]"><div className="p-8 border-b shrink-0 bg-muted/20"><SheetHeader className="text-left"><SheetTitle className="text-2xl font-black font-headline tracking-tight uppercase">Responses</SheetTitle><SheetDescription className="text-xs font-bold uppercase tracking-widest">GATHERED JOY FOR {authorFullName}</SheetDescription></SheetHeader></div><div className="flex-grow min-h-0"><CommentSection testimonyId={testimony.id} /></div></SheetContent>
+                        <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]"><div className="p-8 border-b shrink-0 bg-muted/10"><SheetHeader className="text-left"><SheetTitle className="text-2xl font-black font-headline tracking-tight uppercase">Responses</SheetTitle><SheetDescription className="text-xs font-bold uppercase tracking-widest">GATHERED JOY FOR {authorFullName}</SheetDescription></SheetHeader></div><div className="flex-grow min-h-0"><CommentSection testimonyId={testimony.id} /></div></SheetContent>
                     </Sheet>
                 </>
             ) : (

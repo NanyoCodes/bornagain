@@ -550,7 +550,7 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
       <Card
         id={campaign.id}
         className={cn(
-          "flex flex-col h-full w-full overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 scroll-mt-20 border-t-4 cursor-pointer rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b bg-card/50 backdrop-blur-sm",
+          "flex flex-col h-full w-full overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 scroll-mt-48 border-t-4 cursor-pointer rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b bg-card/50 backdrop-blur-sm",
           borderColorClass
         )}
         onClick={handleCardClick}
@@ -578,7 +578,7 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
                       className="h-9 w-9 sm:h-10 sm:w-10 border-primary/20 text-primary/60 hover:text-primary hover:bg-primary/10 rounded-full shadow-md bg-background" 
                       onClick={(e) => { e.stopPropagation(); router.push(`/dashboard/campaigns/${campaign.id}`); }}
                     >
-                      <BarChart3 className="h-4 w-4 sm:h-5 sm:w-5" />
+                      <BarChart3 className="h-4 w-4 sm:h-5 w-5" />
                       <span className="sr-only">View Insights</span>
                     </Button>
                   </TooltipTrigger>
@@ -725,4 +725,3 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
     </>
   );
 }
-

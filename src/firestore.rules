@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Fellowship Association Context Title Sync - 2025-06-14T11:00:00Z
+    // Deployment trigger: Navbar scroll offset refinement - 2025-06-14T12:00:00Z
     
     function isOwner(userId) {
       return request.auth != null && request.auth.uid == userId;

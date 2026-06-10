@@ -302,7 +302,7 @@ export default function TestimoniesPage() {
 
   return (
     <div 
-      className="space-y-6 md:space-y-10 w-full max-w-3xl mx-auto"
+      className="space-y-6 md:space-y-10 w-full max-w-3xl mx-auto pt-4"
       {...(isAnyModalOpen ? { inert: true } : {})}
     >
       {/* Interaction Box - Full Width Mobile */}
