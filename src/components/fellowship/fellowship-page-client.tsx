@@ -31,7 +31,7 @@ import { safeToDate, cn } from '@/lib/utils';
 import { LogFollowUpDialog } from '@/components/souls/log-follow-up-dialog';
 import { actionItems } from '@/lib/follow-up-data';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Skeleton } from '../ui/skeleton';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useForm } from 'react-hook-form';
@@ -595,24 +595,22 @@ export default function FellowshipPageClient() {
                                     </p>
                                     <div className="flex flex-col sm:flex-row gap-4 mt-12 w-full sm:w-auto">
                                         <Button variant="outline" className="bg-white/5 border-white/10 text-white rounded-2xl h-12 px-8 font-black uppercase tracking-widest text-[10px] shadow-lg" onClick={() => handleDateNav('prev')}><ChevronLeft className="mr-2 h-4 w-4" /> PREVIOUS</Button>
-                                        {isOrganizer && (
-                                            <Button 
-                                                variant="secondary" 
-                                                className="font-black rounded-2xl h-12 px-10 shadow-2xl text-[10px] uppercase tracking-[0.2em]"
-                                                onClick={() => {
-                                                    form.reset({
-                                                        title: '',
-                                                        scripture: '',
-                                                        text: '',
-                                                        prayer: '',
-                                                        scheduledDate: viewDateStr,
-                                                    });
-                                                    setIsDevotionalDialogOpen(true);
-                                                }}
-                                            >
-                                                PUBLISH WORD
-                                            </Button>
-                                        )}
+                                        <Button 
+                                            variant="secondary" 
+                                            className="font-black rounded-2xl h-12 px-10 shadow-2xl text-[10px] uppercase tracking-[0.2em]"
+                                            onClick={() => {
+                                                form.reset({
+                                                    title: '',
+                                                    scripture: '',
+                                                    text: '',
+                                                    prayer: '',
+                                                    scheduledDate: viewDateStr,
+                                                });
+                                                setIsDevotionalDialogOpen(true);
+                                            }}
+                                        >
+                                            PUBLISH WORD
+                                        </Button>
                                         <Button variant="outline" className="bg-white/5 border-white/10 text-white rounded-2xl h-12 px-8 font-black uppercase tracking-widest text-[10px] shadow-lg" onClick={() => handleDateNav('next')}>NEXT <ChevronRight className="ml-2 h-4 w-4" /></Button>
                                     </div>
                                 </div>

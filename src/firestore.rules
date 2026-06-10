@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Universal Authenticated Devotional Write Access - 2025-06-13T14:15:00Z
+    // Deployment trigger: Universal Authenticated Fellowship Write Access - 2025-06-13T16:15:00Z
     
     function isOwner(userId) {
       return request.auth != null && request.auth.uid == userId;
@@ -164,19 +164,17 @@ service cloud.firestore {
     
     match /fellowships/{fellowshipId} {
       allow get, list: if true;
-      allow create: if request.auth != null && request.resource.data.get('organizerId', '') == request.auth.uid;
-      allow update: if request.auth != null && (resource.data.organizerId == request.auth.uid || request.resource.data.diff(resource.data).affectedKeys().hasOnly(['memberIds', 'memberCount', 'hasGroupChat', 'lastUpdatedAt']));
+      allow create, update: if request.auth != null;
+      allow delete: if request.auth != null && resource.data.organizerId == request.auth.uid;
 
       match /members/{memberId} {
         allow read, list: if request.auth != null;
-        allow create: if request.auth != null && request.auth.uid == memberId;
-        allow delete: if request.auth != null && ( request.auth.uid == memberId || request.auth.uid == get(/databases/$(database)/documents/fellowships/$(fellowshipId)).data.get('organizerId', '') );
+        allow create, update, delete: if request.auth != null;
       }
 
       match /devotionals/{date} {
         allow read: if true;
-        allow create, update: if request.auth != null;
-        allow delete: if request.auth != null && (get(/databases/$(database)/documents/fellowships/$(fellowshipId)).data.organizerId == request.auth.uid);
+        allow create, update, delete: if request.auth != null;
       }
     }
 
