@@ -133,7 +133,6 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
     const todayStr = useMemo(() => format(new Date(), 'yyyy-MM-dd'), []);
     const devotionalRef = useMemo(() => {
         if (!firestore || !fellowship.id) return null;
-        // Devotionals are public for all users to see as an invitation
         return doc(firestore, 'fellowships', fellowship.id, 'devotionals', todayStr);
     }, [firestore, fellowship.id, todayStr]);
     
@@ -262,7 +261,7 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
     };
 
     return (
-        <Card onClick={onClick} className="cursor-pointer rounded-none sm:rounded-lg border-x-0 sm:border-x transition-all duration-300 hover:shadow-lg border-t-2 border-t-primary/10 border-b-2 sm:border-b bg-card/50 backdrop-blur-sm">
+        <Card onClick={onClick} className="cursor-pointer rounded-none sm:rounded-lg border-x-0 sm:border-x transition-all duration-300 hover:shadow-lg border-t-2 border-t-primary/10 border-b-4 border-b-primary/10 sm:border-b-4 bg-card/50 backdrop-blur-sm">
             <CardHeader className="p-5 sm:p-6 pb-2">
                 <div className="flex justify-between items-start gap-4">
                     <div className="min-w-0 flex-1">

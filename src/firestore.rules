@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Public devotional access on Fellowship cards for outreach - 2025-06-17T10:00:00Z
+    // Deployment trigger: Thicker borders for Fellowship cards visibility - 2025-06-18T14:30:00Z
     
     function isOwner(userId) {
       return request.auth != null && request.auth.uid == userId;
@@ -178,7 +178,7 @@ service cloud.firestore {
       }
     }
 
-    match /match /mail/{mailId} {
+    match /mail/{mailId} {
       allow create: if request.auth != null;
       allow read, update, delete: if false;
     }
