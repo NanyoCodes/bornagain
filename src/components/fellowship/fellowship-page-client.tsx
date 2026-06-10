@@ -83,7 +83,7 @@ function FullDevotionalDialog({ devotional, children }: { devotional: DailyDevot
 
             <div className="flex items-center justify-center gap-3 bg-muted/30 px-4 py-2 rounded-full border border-dashed w-fit mx-auto">
                 <Sparkles className="h-4 w-4 text-primary fill-current" />
-                <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground truncate max-w-[200px]">Messenger: {devotional.authorName}</span>
+                <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Messenger: {devotional.authorName}</span>
             </div>
         </div>
     );
@@ -604,7 +604,7 @@ export default function FellowshipPageClient() {
                                     <div className="flex flex-col sm:flex-row items-center justify-between gap-6 pt-2">
                                         <div className="flex items-center gap-3 bg-white/10 px-4 py-2 rounded-full border border-white/10">
                                             <Sparkles className="h-4 w-4 text-white fill-current" />
-                                            <span className="text-[10px] font-black uppercase tracking-widest text-white truncate max-w-[200px]">Messenger: {activeDevotional.authorName}</span>
+                                            <span className="text-[10px] font-black uppercase tracking-widest text-white">Messenger: {activeDevotional.authorName}</span>
                                         </div>
                                         
                                         <div className="flex items-center gap-2 bg-white/10 rounded-2xl p-1.5 border border-white/10 shadow-2xl w-full sm:w-auto">
@@ -794,7 +794,7 @@ export default function FellowshipPageClient() {
                 <Sheet open={isDevotionalDialogOpen} onOpenChange={setIsDevotionalDialogOpen}>
                     <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
                         <div className="p-8 border-b flex-shrink-0 bg-muted/10">
-                            <SheetHeader className="text-left">
+                            <SheetHeader className="text-left flex-shrink-0">
                                 <SheetTitle className="text-2xl font-black font-headline">Devotional Hub</SheetTitle>
                                 <SheetDescription className="text-sm font-medium">Arrange the Word and Prayer for your group.</SheetDescription>
                             </SheetHeader>

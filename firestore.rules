@@ -174,8 +174,7 @@ service cloud.firestore {
 
       match /devotionals/{date} {
         allow read: if true;
-        allow create, update: if request.auth != null;
-        allow delete: if request.auth != null && isFellowshipOrganizer(fellowshipId);
+        allow create, update, delete: if request.auth != null && isFellowshipOrganizer(fellowshipId);
       }
     }
 

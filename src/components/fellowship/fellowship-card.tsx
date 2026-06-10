@@ -63,7 +63,7 @@ function FullDevotionalDialog({ devotional, children }: { devotional: DailyDevot
 
             <div className="flex items-center justify-center gap-3 bg-muted/30 px-4 py-2 rounded-full border border-dashed w-fit mx-auto">
                 <Sparkles className="h-4 w-4 text-primary fill-current" />
-                <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground truncate max-w-[200px]">Messenger: {devotional.authorName}</span>
+                <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Messenger: {devotional.authorName}</span>
             </div>
         </div>
     );
