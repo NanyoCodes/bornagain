@@ -12,7 +12,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tabs, TabsList, TabsContent, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '../ui/sheet';
 import { 
@@ -246,7 +246,7 @@ export default function FellowshipPageClient() {
           if (navigator && navigator.share) {
             await navigator.share(shareData);
           } else {
-            throw new Error('Native share not supported');
+            throw new Error('Share API not supported');
           }
         } catch (err: any) {
             if (err.name === 'AbortError') return;
@@ -540,7 +540,7 @@ export default function FellowshipPageClient() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
                 <div className="space-y-6 lg:col-span-2">
                     <Card className="rounded-none sm:rounded-[2.5rem] border-x-0 sm:border-x shadow-none sm:shadow-lg border-none bg-primary text-primary-foreground overflow-hidden border-b-8 border-b-white/10">
-                        <CardHeader className="p-6 sm:p-10 pb-6 flex flex-row items-center justify-between gap-4">
+                        <CardHeader className="p-6 sm:p-10 pb-6 flex flex-col items-start gap-6 sm:flex-row sm:items-center sm:justify-between">
                             <div className="space-y-1.5 min-w-0 flex-1">
                                 <div className="flex items-center gap-3 mb-1">
                                     <div className="flex items-center justify-center h-5 w-5 bg-white/10 rounded-full">
@@ -553,14 +553,14 @@ export default function FellowshipPageClient() {
                                         </Badge>
                                     )}
                                 </div>
-                                <CardTitle className="text-3xl sm:text-4xl font-black font-headline tracking-tight uppercase leading-none break-words [overflow-wrap:anywhere] text-balance">
+                                <CardTitle className="text-2xl sm:text-3xl md:text-4xl font-black font-headline tracking-tight uppercase leading-tight sm:leading-none break-words [overflow-wrap:anywhere] text-balance">
                                     {activeDevotional?.title || (devoLoading ? 'Checking...' : (fellowship?.groupType === 'Association' ? 'Association Word' : 'The Living Word'))}
                                 </CardTitle>
                                 <p className="text-[10px] sm:text-xs font-black uppercase tracking-[0.15em] opacity-70 mt-2">
                                     {format(viewDate, 'EEEE, MMMM d, yyyy')}
                                 </p>
                             </div>
-                            <div className="flex gap-2 shrink-0">
+                            <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto justify-end">
                                 <TooltipProvider>
                                     <Tooltip>
                                         <TooltipTrigger asChild>
@@ -616,19 +616,19 @@ export default function FellowshipPageClient() {
                                 </div>
                             ) : activeDevotional ? (
                                 <div className="space-y-8">
-                                    <div className="bg-black/60 rounded-[2rem] p-8 sm:p-12 border border-white/20 relative shadow-2xl group overflow-hidden">
+                                    <div className="bg-black/60 rounded-[2rem] p-6 sm:p-12 border border-white/20 relative shadow-2xl group overflow-hidden">
                                         <div className="absolute -top-6 -right-6 h-24 w-24 bg-white/5 rounded-full blur-2xl" />
                                         <Quote className="absolute top-6 right-8 h-12 w-12 opacity-10 rotate-12 transition-transform group-hover:scale-110" />
                                         <div className="space-y-1">
                                             <p 
                                                 ref={devotionalTextRef}
-                                                className="text-xl sm:text-2xl font-serif italic leading-relaxed text-justify text-balance relative z-10 break-words [overflow-wrap:anywhere] text-white font-medium line-clamp-6"
+                                                className="text-lg sm:text-2xl font-serif italic leading-relaxed text-justify text-balance relative z-10 break-words [overflow-wrap:anywhere] text-white font-medium line-clamp-[12] sm:line-clamp-6"
                                             >
                                                 {activeDevotional.text}
                                             </p>
                                             {isDevotionalTruncated && (
                                                 <FullDevotionalDialog devotional={activeDevotional}>
-                                                    <button className="text-[10px] font-black text-white/80 uppercase tracking-[0.2em] hover:text-white transition-colors relative z-20 mt-4 flex items-center gap-1.5 border border-white/20 px-3 py-1 rounded-full bg-white/5 shadow-lg">
+                                                    <button className="text-[10px] font-black text-white/80 uppercase tracking-[0.2em] hover:text-white transition-colors relative z-20 mt-6 flex items-center gap-1.5 border border-white/20 px-4 py-1.5 rounded-full bg-white/5 shadow-lg">
                                                         READ FULL WORD <ChevronDown className="h-3 w-3" />
                                                     </button>
                                                 </FullDevotionalDialog>
