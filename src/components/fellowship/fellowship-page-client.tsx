@@ -872,10 +872,10 @@ export default function FellowshipPageClient() {
                 <Sheet open={isScheduleViewOpen} onOpenChange={setIsScheduleViewOpen}>
                     <SheetContent side="bottom" className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem]">
                         <div className="p-8 border-b flex-shrink-0 bg-muted/10">
-                            <SheetHeader className="text-left">
+                            <SheetHeader className="text-left flex-shrink-0">
                                 <div className="flex items-center gap-2 mb-2">
                                     <CalendarClock className="h-4 w-4 text-primary" />
-                                    <span className="text-[10px] font-black uppercase tracking-0.3em text-primary">Spiritual Schedule</span>
+                                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Spiritual Schedule</span>
                                 </div>
                                 <SheetTitle className="text-2xl font-black font-headline">Planned Word</SheetTitle>
                                 <SheetDescription className="text-sm font-medium">Browse scheduled meditations for this group.</SheetDescription>
