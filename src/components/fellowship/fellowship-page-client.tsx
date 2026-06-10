@@ -166,7 +166,7 @@ export default function FellowshipPageClient() {
     }, [user, fellowship]);
 
     const isOrganizer = useMemo(() => {
-        if (!user || !fellowship) return false;
+        if (!user) return false;
         return fellowship.organizerId === user.uid;
     }, [user, fellowship]);
 
