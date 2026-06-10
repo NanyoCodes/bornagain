@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Synchronized Fellowship Write Permissions - 2025-06-13T23:30:00Z
+    // Deployment trigger: Synchronized Fellowship Devotional Access - 2025-06-14T10:00:00Z
     
     function isOwner(userId) {
       return request.auth != null && request.auth.uid == userId;
@@ -174,7 +174,7 @@ service cloud.firestore {
 
       match /devotionals/{date} {
         allow read: if true;
-        allow create, update, delete: if request.auth != null && isFellowshipOrganizer(fellowshipId);
+        allow create, update, delete: if request.auth != null;
       }
     }
 

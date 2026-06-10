@@ -5,7 +5,7 @@ import { useRouter, useParams } from 'next/navigation';
 import { useDoc, useFirestore, useUser, useCollection, useUserProfile } from '@/firebase';
 import type { Fellowship, UserProfile, FellowshipMember, Soul, DailyDevotional } from '@/lib/types';
 import { doc, collection, query, orderBy, where, writeBatch, serverTimestamp, updateDoc, arrayRemove, increment, deleteField, setDoc, limit } from 'firebase/firestore';
-import { Loader2, ArrowLeft, Users, Calendar, PlayCircle, MapPin, Heart, Phone, Mail, Church, History, PlusCircle, Award, MessagesSquare, User, Info, Sparkles, UserMinus, Trash2, BookOpen, Quote, Edit, CalendarClock, ChevronLeft, ChevronRight, CalendarDays, CheckCircle2, HandHeart, ChevronDown } from 'lucide-react';
+import { Loader2, ArrowLeft, Users, Calendar, PlayCircle, MapPin, Heart, Phone, Mail, Church, History, PlusCircle, Award, MessagesSquare, User, Info, Sparkles, UserMinus, Trash2, BookOpen, Quote, Edit, CalendarClock, ChevronLeft, ChevronRight, CalendarDays, HandHeart, ChevronDown, Share2 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -14,7 +14,7 @@ import Link from 'next/link';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '../ui/sheet';
 import { 
   AlertDialog, 
   AlertDialogAction, 
@@ -225,6 +225,38 @@ export default function FellowshipPageClient() {
             prayer: devo.prayer || '',
             scheduledDate: devo.scheduledDate,
         });
+    };
+
+    const handleShare = async () => {
+        if (!fellowship) return;
+        const shareUrl = window.location.href;
+        let shareText = `Join the '${fellowship.name}' fellowship on Testify!`;
+        
+        if (activeDevotional) {
+            shareText = `Read today's word: '${activeDevotional.title}' in the '${fellowship.name}' fellowship on Testify!`;
+        }
+
+        const shareData = {
+          title: fellowship.name,
+          text: shareText,
+          url: shareUrl,
+        };
+
+        try {
+          if (navigator && navigator.share) {
+            await navigator.share(shareData);
+          } else {
+            throw new Error('Native share not supported');
+          }
+        } catch (err: any) {
+            if (err.name === 'AbortError') return;
+            try {
+              await navigator.clipboard.writeText(`${shareData.text} ${shareUrl}`);
+              toast({ title: 'Link Copied!', description: 'Fellowship link has been copied to your clipboard.' });
+            } catch (clipErr) {
+              console.error("Clipboard fallback failed", clipErr);
+            }
+        }
     };
 
     const membersQuery = useMemo(() => {
@@ -438,33 +470,51 @@ export default function FellowshipPageClient() {
     );
 
     const HeaderActions = (isMember || isOrganizer) && (
-        <TooltipProvider>
-            <Tooltip>
-                <TooltipTrigger asChild>
-                    <Button 
-                        variant={fellowship.hasGroupChat ? "default" : "outline"}
-                        size="icon" 
-                        onClick={fellowship.hasGroupChat ? () => router.push(`/dashboard/chats/${fellowshipId}`) : handleStartGroupChat}
-                        disabled={isChatLoading || (!fellowship.hasGroupChat && isOrganizer && (!members || members.length < 2))}
-                        className={cn(
-                            "h-9 w-9 sm:h-12 sm:w-12 rounded-full shadow-lg transition-all active:scale-90 relative shrink-0",
-                            fellowship.hasGroupChat && "bg-primary text-primary-foreground border-primary hover:bg-primary/90"
-                        )}
-                    >
-                        {isChatLoading ? <Loader2 className="h-4 w-4 sm:h-5 w-5 animate-spin" /> : <MessagesSquare className="h-4 w-4 sm:h-5 w-5" />}
-                        {!fellowship.hasGroupChat && isOrganizer && members && members.length >= 2 && (
-                            <span className="absolute -top-1 -right-1 flex h-3 w-3">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                                <span className="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
-                            </span>
-                        )}
-                    </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                    <p>{fellowship.hasGroupChat ? "Open Group Chat" : isOrganizer ? "Start Group Chat" : "Chat coming soon"}</p>
-                </TooltipContent>
-            </Tooltip>
-        </TooltipProvider>
+        <div className="flex items-center gap-2">
+            <TooltipProvider>
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <Button 
+                            variant="outline" 
+                            size="icon" 
+                            onClick={handleShare}
+                            className="h-9 w-9 sm:h-12 sm:w-12 rounded-full shadow-lg transition-all active:scale-90 bg-background border-primary/20 text-primary/60 hover:text-primary hover:bg-primary/5"
+                        >
+                            <Share2 className="h-4 w-4 sm:h-5 w-5" />
+                        </Button>
+                    </TooltipTrigger>
+                    <TooltipContent><p className="text-[10px] font-bold uppercase">Share Fellowship</p></TooltipContent>
+                </Tooltip>
+            </TooltipProvider>
+
+            <TooltipProvider>
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <Button 
+                            variant={fellowship.hasGroupChat ? "default" : "outline"}
+                            size="icon" 
+                            onClick={fellowship.hasGroupChat ? () => router.push(`/dashboard/chats/${fellowshipId}`) : handleStartGroupChat}
+                            disabled={isChatLoading || (!fellowship.hasGroupChat && isOrganizer && (!members || members.length < 2))}
+                            className={cn(
+                                "h-9 w-9 sm:h-12 sm:w-12 rounded-full shadow-lg transition-all active:scale-90 relative shrink-0",
+                                fellowship.hasGroupChat && "bg-primary text-primary-foreground border-primary hover:bg-primary/90"
+                            )}
+                        >
+                            {isChatLoading ? <Loader2 className="h-4 w-4 sm:h-5 w-5 animate-spin" /> : <MessagesSquare className="h-4 w-4 sm:h-5 w-5" />}
+                            {!fellowship.hasGroupChat && isOrganizer && members && members.length >= 2 && (
+                                <span className="absolute -top-1 -right-1 flex h-3 w-3">
+                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                                    <span className="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
+                                </span>
+                            )}
+                        </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                        <p>{fellowship.hasGroupChat ? "Open Group Chat" : isOrganizer ? "Start Group Chat" : "Chat coming soon"}</p>
+                    </TooltipContent>
+                </Tooltip>
+            </TooltipProvider>
+        </div>
     );
 
     return (

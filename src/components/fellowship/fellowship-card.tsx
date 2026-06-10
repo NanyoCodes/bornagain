@@ -6,13 +6,13 @@ import { useUser, useFirestore, useDoc } from '@/firebase';
 import type { Fellowship, UserProfile, DailyDevotional } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { doc, runTransaction, arrayUnion, arrayRemove, increment, serverTimestamp } from 'firebase/firestore';
-import { haversineDistance, cn } from '@/lib/utils';
+import { cn } from '@/lib/utils';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Loader2, Users, MoreVertical, PlayCircle, Edit, Trash2, Group, MapPin, BarChart3, BookOpen, LogOut, Quote, Sparkles, HandHeart } from 'lucide-react';
+import { Loader2, Users, MoreVertical, PlayCircle, Edit, Trash2, MapPin, BarChart3, BookOpen, LogOut, Quote, Sparkles, HandHeart, Share2 } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useRouter } from 'next/navigation';
 import { format, parseISO } from 'date-fns';
@@ -159,6 +159,38 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
         });
     };
 
+    const handleShare = async (e: React.MouseEvent) => {
+        e.stopPropagation();
+        const shareUrl = `${window.location.origin}/dashboard/fellowship/${fellowship.id}`;
+        let shareText = `Join the '${fellowship.name}' fellowship on Testify!`;
+        
+        if (todayDevotional) {
+            shareText = `Read today's word: '${todayDevotional.title}' in the '${fellowship.name}' fellowship on Testify!`;
+        }
+
+        const shareData = {
+          title: fellowship.name,
+          text: shareText,
+          url: shareUrl,
+        };
+
+        try {
+          if (navigator && navigator.share) {
+            await navigator.share(shareData);
+          } else {
+            throw new Error('Native share not supported');
+          }
+        } catch (err: any) {
+            if (err.name === 'AbortError') return;
+            try {
+              await navigator.clipboard.writeText(`${shareData.text} ${shareUrl}`);
+              toast({ title: 'Link Copied!', description: 'Fellowship link has been copied to your clipboard.' });
+            } catch (clipErr) {
+              console.error("Clipboard fallback failed", clipErr);
+            }
+        }
+    };
+
     const handleJoin = async (e: React.MouseEvent) => {
         e.stopPropagation();
         if (!user || !userProfile || !firestore || isMember || isOrganizer) return;
@@ -269,6 +301,16 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
                         <TooltipProvider>
                             <Tooltip>
                                 <TooltipTrigger asChild>
+                                    <Button variant="outline" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 rounded-full shadow-sm bg-background border-primary/20 text-primary/60 hover:text-primary hover:bg-primary/5" onClick={handleShare}>
+                                        <Share2 className="h-4 w-4" />
+                                    </Button>
+                                </TooltipTrigger>
+                                <TooltipContent><p className="text-[10px] font-bold uppercase">Share Group</p></TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
+                        <TooltipProvider>
+                            <Tooltip>
+                                <TooltipTrigger asChild>
                                     <Button 
                                         variant="outline" 
                                         size="icon" 
@@ -316,6 +358,7 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
                     </div>
                 </div>
             </CardHeader>
+            
             <CardContent className="px-5 sm:px-6 pb-4 space-y-4 pt-4">
                 <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2 leading-relaxed font-medium break-words [overflow-wrap:anywhere]">{fellowship.description}</p>
                 
@@ -371,6 +414,7 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
                     )}
                 </div>
             </CardContent>
+            
             <CardFooter className="px-5 sm:px-6 py-4 flex justify-between items-center border-t bg-black/5">
                 <div className="flex items-center text-[10px] sm:text-xs text-muted-foreground font-black uppercase tracking-widest">
                     <Users className="mr-2 h-4 w-4 text-primary" /> {fellowship.memberCount} SOUL WINNERS
