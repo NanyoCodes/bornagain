@@ -354,7 +354,7 @@ export default function TestimoniesPage() {
           
           {/* Feed Content - Full Width Mobile */}
           <TabsContent value="testimonies" className="mt-4 sm:mt-10 outline-none -mx-4 sm:mx-0">
-              <div className="flex flex-col gap-0 w-full">
+              <div className="flex flex-col gap-0 w-full pb-24 sm:pb-12">
                 {loading && (
                   [...Array(3)].map((_, i) => (
                     <Card key={i} className="flex flex-col h-full rounded-none sm:rounded-xl border-x-0 sm:border-x bg-card/50 backdrop-blur-sm"><CardContent className="p-6 space-y-4"><Skeleton className="h-12 w-12 rounded-full" /><div className="w-full space-y-2"><Skeleton className="h-4 w-1/4" /><Skeleton className="h-4 w-1/5" /></div><Skeleton className="h-5 w-3/4" /><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-full" /></CardContent></Card>
@@ -384,7 +384,7 @@ export default function TestimoniesPage() {
           </TabsContent>
           
           <TabsContent value="prayers" className="mt-4 sm:mt-10 outline-none -mx-4 sm:mx-0">
-              <div className="flex flex-col gap-0 w-full">
+              <div className="flex flex-col gap-0 w-full pb-24 sm:pb-12">
                 {loading && (
                   [...Array(3)].map((_, i) => (
                     <Card key={i} className="flex flex-col h-full rounded-none sm:rounded-xl border-x-0 sm:border-x bg-card/50 backdrop-blur-sm"><CardContent className="p-6 space-y-4"><Skeleton className="h-12 w-12 rounded-full" /><div className="w-full space-y-2"><Skeleton className="h-4 w-1/4" /><Skeleton className="h-4 w-1/5" /></div><Skeleton className="h-5 w-3/4" /><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-full" /></CardContent></Card>
