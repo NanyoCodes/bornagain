@@ -353,7 +353,7 @@ export default function TestimoniesPage() {
           </div>
           
           {/* Feed Content - Full Width Mobile */}
-          <TabsContent value="testimonies" className="mt-0 sm:mt-10 outline-none -mx-4 sm:mx-0">
+          <TabsContent value="testimonies" className="mt-4 sm:mt-10 outline-none -mx-4 sm:mx-0">
               <div className="flex flex-col gap-0 w-full">
                 {loading && (
                   [...Array(3)].map((_, i) => (
@@ -383,7 +383,7 @@ export default function TestimoniesPage() {
               </div>
           </TabsContent>
           
-          <TabsContent value="prayers" className="mt-0 sm:mt-10 outline-none -mx-4 sm:mx-0">
+          <TabsContent value="prayers" className="mt-4 sm:mt-10 outline-none -mx-4 sm:mx-0">
               <div className="flex flex-col gap-0 w-full">
                 {loading && (
                   [...Array(3)].map((_, i) => (
