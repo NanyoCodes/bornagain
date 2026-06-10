@@ -1,9 +1,8 @@
-
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Expanded prophetic words library for Kingdom encouragement - 2025-06-16T12:30:00Z
+    // Deployment trigger: Public devotional access on Fellowship cards for outreach - 2025-06-17T10:00:00Z
     
     function isOwner(userId) {
       return request.auth != null && request.auth.uid == userId;
@@ -103,7 +102,7 @@ service cloud.firestore {
          )) ||
         (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['connectedBy']) && 
          ( (request.resource.data.connectedBy.size() == resource.data.get('connectedBy', []).size() + 1 && request.auth.uid in request.resource.data.connectedBy) ||
-           (request.resource.data.connectedBy.size() == resource.data.get('connectedBy', []).size() - 1 && !(request.auth.uid in request.resource.data.connectedBy))
+           (request.resource.data.connectedBy.size() == radius.data.get('connectedBy', []).size() - 1 && !(request.auth.uid in request.resource.data.connectedBy))
          ))
       );
 

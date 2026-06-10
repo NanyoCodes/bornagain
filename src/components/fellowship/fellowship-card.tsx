@@ -132,9 +132,10 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
 
     const todayStr = useMemo(() => format(new Date(), 'yyyy-MM-dd'), []);
     const devotionalRef = useMemo(() => {
-        if (!firestore || !fellowship.id || !(isMember || isOrganizer)) return null;
+        if (!firestore || !fellowship.id) return null;
+        // Devotionals are public for all users to see as an invitation
         return doc(firestore, 'fellowships', fellowship.id, 'devotionals', todayStr);
-    }, [firestore, fellowship.id, isMember, isOrganizer, todayStr]);
+    }, [firestore, fellowship.id, todayStr]);
     
     const { data: todayDevotional } = useDoc<DailyDevotional>(devotionalRef);
 
@@ -362,7 +363,7 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
             <CardContent className="px-5 sm:px-6 pb-4 space-y-4 pt-4">
                 <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2 leading-relaxed font-medium break-words [overflow-wrap:anywhere]">{fellowship.description}</p>
                 
-                {(isMember || isOrganizer) && todayDevotional && (
+                {todayDevotional && (
                     <div className="bg-primary/5 rounded-2xl p-4 border border-primary/10 relative group/devo overflow-hidden shadow-inner">
                         <div className="absolute top-0 right-0 p-3 opacity-[0.03] pointer-events-none group-hover/devo:opacity-[0.06] transition-opacity">
                             <BookOpen className="h-12 w-12 text-primary rotate-12" />
