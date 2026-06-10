@@ -409,7 +409,7 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
                     {fellowship.location && (
                         <div className="flex items-start gap-2.5 pt-1 border-t border-muted-foreground/10 mt-1">
                             <span className="font-black text-[9px] sm:text-[10px] text-muted-foreground shrink-0 uppercase tracking-widest pt-0.5">Area</span>
-                            <span className="text-foreground font-bold line-clamp-1 leading-tight flex items-center gap-1.5 break-words [overflow-wrap:anywhere]"><MapPin className="h-3 w-3 text-primary" /> {fellowship.location}</span>
+                            <span className="text-foreground font-bold line-clamp-1 leading-tight flex items-center gap-1.5 break-words [overflow-wrap:anywhere]"><MapPin className="h-3 text-primary" /> {fellowship.location}</span>
                         </div>
                     )}
                 </div>

@@ -538,8 +538,8 @@ export default function FellowshipPageClient() {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
-                <div className="space-y-6 sm:order-last lg:order-first lg:col-span-2">
-                    <Card className="rounded-none sm:rounded-[2.5rem] border-x-0 sm:border-x shadow-none sm:shadow-lg border-none bg-primary text-primary-foreground overflow-hidden">
+                <div className="space-y-6 lg:col-span-2">
+                    <Card className="rounded-none sm:rounded-[2.5rem] border-x-0 sm:border-x shadow-none sm:shadow-lg border-none bg-primary text-primary-foreground overflow-hidden border-b-8 border-b-white/10">
                         <CardHeader className="p-6 sm:p-10 pb-6 flex flex-row items-center justify-between gap-4">
                             <div className="space-y-1.5 min-w-0 flex-1">
                                 <div className="flex items-center gap-3 mb-1">
@@ -785,8 +785,8 @@ export default function FellowshipPageClient() {
                     </Card>
                 </div>
 
-                <div className="space-y-6 sm:order-first lg:order-last sm:space-y-8 flex flex-col px-4 sm:px-0">
-                    <Card className="rounded-[1.5rem] sm:rounded-[2.5rem] shadow-sm border-none bg-background border border-muted-foreground/10 overflow-hidden">
+                <div className="space-y-6 sm:space-y-8 flex flex-col px-4 sm:px-0">
+                    <Card className="rounded-[1.5rem] sm:rounded-[2.5rem] shadow-sm border-none bg-background border border-muted-foreground/10 overflow-hidden border-b-8 border-b-primary/10">
                         <CardHeader className="p-5 sm:p-8 pb-2 sm:pb-3">
                             <CardTitle className="text-[10px] sm:text-sm font-black uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2"><Calendar className="h-4 w-4 text-primary"/> Gathering Details</CardTitle>
                         </CardHeader>
@@ -817,7 +817,7 @@ export default function FellowshipPageClient() {
                         </CardContent>
                     </Card>
 
-                    <Card className="rounded-[1.5rem] sm:rounded-[2.5rem] shadow-sm border-none bg-background border border-muted-foreground/10">
+                    <Card className="rounded-[1.5rem] sm:rounded-[2.5rem] shadow-sm border-none bg-background border border-muted-foreground/10 border-b-8 border-b-primary/5">
                         <CardHeader className="p-5 sm:p-8 pb-2 sm:pb-3">
                             <CardTitle className="text-[10px] sm:text-sm font-black uppercase tracking-[0.2em] text-muted-foreground">Lead Organizer</CardTitle>
                         </CardHeader>
