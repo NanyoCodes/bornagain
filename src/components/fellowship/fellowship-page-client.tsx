@@ -161,8 +161,8 @@ export default function FellowshipPageClient() {
     const { data: fellowship, loading: fellowshipLoading, error: fellowshipError } = useDoc<Fellowship>(fellowshipDocRef);
 
     const isMember = useMemo(() => {
-        if (!user || !fellowship) return false;
-        return fellowship.memberIds?.includes(user.uid) || false;
+        if (!user || !fellowship || !fellowship.memberIds) return false;
+        return fellowship.memberIds.includes(user.uid);
     }, [user, fellowship]);
 
     const isOrganizer = useMemo(() => {

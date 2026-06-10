@@ -72,7 +72,7 @@ function FullDevotionalDialog({ devotional, children }: { devotional: DailyDevot
         return (
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
                 <SheetTrigger asChild onClick={(e) => e.stopPropagation()}>{children}</SheetTrigger>
-                <SheetContent side="bottom" className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+                <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
                     <div className="p-8 border-b flex-shrink-0 bg-muted/10">
                         <SheetHeader className="text-left flex-shrink-0">
                             <SheetTitle className="text-2xl font-black font-headline uppercase leading-tight break-words [overflow-wrap:anywhere]">{devotional.title}</SheetTitle>
@@ -126,9 +126,9 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
     }, [user, fellowship.memberIds]);
 
     const isOrganizer = useMemo(() => {
-        if (!user) return false;
+        if (!user || !fellowship) return false;
         return fellowship.organizerId === user.uid;
-    }, [user, fellowship.organizerId]);
+    }, [user, fellowship]);
 
     const todayStr = useMemo(() => format(new Date(), 'yyyy-MM-dd'), []);
     const devotionalRef = useMemo(() => {
