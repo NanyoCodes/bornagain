@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useMemo, useEffect, useRef } from 'react';
@@ -21,7 +20,7 @@ import { FirestorePermissionError } from '@/firebase/errors';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '../ui/sheet';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
 type FellowshipCardProps = {
@@ -92,9 +91,15 @@ function FullDevotionalDialog({ devotional, children }: { devotional: DailyDevot
 
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
-            <DialogTrigger asChild onClick={(e) => e.stopPropagation()}>{children}</DialogTrigger>
+            <DialogTrigger asChild onClick={(e) => e.stopPropagation()}>
+                {children}
+            </DialogTrigger>
             <DialogContent className="sm:max-w-2xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl">
                 <div className="p-8 border-b bg-muted/10">
+                    <div className="flex items-center gap-3 mb-2">
+                        <Target className="h-5 w-5 text-primary" />
+                        <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Mission Overview</span>
+                    </div>
                     <DialogHeader>
                         <DialogTitle className="text-2xl font-black font-headline uppercase leading-tight break-words [overflow-wrap:anywhere]">{devotional.title}</DialogTitle>
                         <DialogDescription className="text-sm font-medium mt-1">Daily Word • {format(parseISO(devotional.scheduledDate), 'PPPP')}</DialogDescription>
