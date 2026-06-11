@@ -5,7 +5,7 @@ import { useRouter, useParams } from 'next/navigation';
 import { useDoc, useFirestore, useUser, useCollection, useUserProfile } from '@/firebase';
 import type { Fellowship, UserProfile, FellowshipMember, Soul, DailyDevotional, Campaign, TestimonyComment } from '@/lib/types';
 import { doc, collection, query, orderBy, where, writeBatch, serverTimestamp, updateDoc, arrayRemove, increment, deleteField, setDoc, limit, arrayUnion } from 'firebase/firestore';
-import { Loader2, ArrowLeft, Users, Calendar, PlayCircle, MapPin, Heart, Phone, Mail, Church, History, PlusCircle, Award, MessagesSquare, User, Info, Sparkles, UserMinus, Trash2, BookOpen, Quote, Edit, CalendarClock, ChevronLeft, ChevronRight, CalendarDays, HandHeart, ChevronDown, Share2, UserPlus, PartyPopper, MessageSquare, Target } from 'lucide-react';
+import { Loader2, ArrowLeft, Users, Calendar, PlayCircle, MapPin, Heart, Phone, Mail, Church, History, PlusCircle, Award, MessagesSquare, User, Info, Sparkles, UserMinus, Trash2, BookOpen, Quote, Edit, CalendarClock, ChevronLeft, ChevronRight, CalendarDays, HandHeart, ChevronDown, Share2, UserPlus, PartyPopper, MessageSquare, Target, X } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -45,6 +45,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import Image from 'next/image';
 
 const devotionalSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters.").max(100),
@@ -61,7 +62,9 @@ function FullDevotionalDialog({
     commentCount = 0,
     supporters = [],
     inspiredBy = [],
-    connectedBy = []
+    connectedBy = [],
+    onReaction,
+    isProcessingReaction
 }: { 
     devotional: DailyDevotional, 
     children: React.ReactNode,
@@ -69,13 +72,20 @@ function FullDevotionalDialog({
     commentCount?: number,
     supporters?: string[],
     inspiredBy?: string[],
-    connectedBy?: string[]
+    connectedBy?: string[],
+    onReaction: (type: 'amen' | 'inspired' | 'celebrate') => void,
+    isProcessingReaction: string | null
 }) {
+    const { user } = useUser();
     const isMobile = useIsMobile();
     const [isOpen, setIsOpen] = useState(false);
     const [isCommentsOpen, setIsCommentsOpen] = useState(false);
     const [mounted, setMounted] = useState(false);
     useEffect(() => setMounted(true), []);
+
+    const hasAmened = user ? supporters.includes(user.uid) : false;
+    const hasInspired = user ? inspiredBy.includes(user.uid) : false;
+    const hasCelebrated = user ? connectedBy.includes(user.uid) : false;
 
     const totalReactions = (supporters?.length || 0) + (inspiredBy?.length || 0) + (connectedBy?.length || 0);
     const commentPath = `fellowships/${fellowshipId}/devotionals/${devotional.scheduledDate}/comments`;
@@ -110,24 +120,46 @@ function FullDevotionalDialog({
                     <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Messenger: {devotional.authorName}</span>
                 </div>
 
-                <div className="flex items-center gap-4 flex-wrap justify-center">
-                    {totalReactions > 0 && (
-                        <div className="flex items-center gap-2 bg-primary/5 px-3 py-1.5 rounded-full border border-primary/10">
-                            <div className="flex items-center -space-x-1.5">
-                                {supporters.length > 0 && <div className="bg-primary rounded-full p-1 border-2 border-background shadow-sm"><HandHeart className="h-2.5 w-2.5 text-primary-foreground fill-current" /></div>}
-                                {inspiredBy.length > 0 && <div className="bg-chart-3 rounded-full p-1 border-2 border-background shadow-sm"><Sparkles className="h-2.5 w-2.5 text-white fill-current" /></div>}
-                                {connectedBy.length > 0 && <div className="bg-blue-500 rounded-full p-1 border-2 border-background shadow-sm"><PartyPopper className="h-2.5 w-2.5 text-white" /></div>}
-                            </div>
-                            <span className="text-[10px] font-black text-primary">{totalReactions} Reactions</span>
-                        </div>
-                    )}
-                    
+                <div className="flex items-center gap-2 flex-wrap justify-center w-full sm:w-auto">
+                    <div className="flex items-center gap-1.5 flex-wrap justify-center">
+                        <Button 
+                            onClick={(e) => { e.stopPropagation(); onReaction('amen'); }} 
+                            disabled={isProcessingReaction !== null || !user} 
+                            variant="outline" 
+                            size="sm" 
+                            className={cn("h-9 rounded-xl gap-2 font-bold uppercase text-[10px] tracking-widest bg-background", hasAmened && "bg-primary/10 border-primary/30 text-primary")}
+                        >
+                            {isProcessingReaction === 'amen' ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <HandHeart className={cn("h-3.5 w-3.5", hasAmened && "fill-current")} />}
+                            <span>Amen</span>
+                        </Button>
+                        <Button 
+                            onClick={(e) => { e.stopPropagation(); onReaction('inspired'); }} 
+                            disabled={isProcessingReaction !== null || !user} 
+                            variant="outline" 
+                            size="sm" 
+                            className={cn("h-9 rounded-xl gap-2 font-bold uppercase text-[10px] tracking-widest bg-background", hasInspired && "bg-chart-3/10 border-chart-3/30 text-chart-3")}
+                        >
+                            {isProcessingReaction === 'inspired' ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className={cn("h-3.5 w-3.5", hasInspired && "fill-current")} />}
+                            <span>Hallelujah</span>
+                        </Button>
+                        <Button 
+                            onClick={(e) => { e.stopPropagation(); onReaction('celebrate'); }} 
+                            disabled={isProcessingReaction !== null || !user} 
+                            variant="outline" 
+                            size="sm" 
+                            className={cn("h-9 rounded-xl gap-2 font-bold uppercase text-[10px] tracking-widest bg-background", hasCelebrated && "bg-blue-500/10 border-blue-500/30 text-blue-500")}
+                        >
+                            {isProcessingReaction === 'celebrate' ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <PartyPopper className={cn("h-3.5 w-3.5", hasCelebrated && "fill-current")} />}
+                            <span>Celebrate</span>
+                        </Button>
+                    </div>
+
                     <Sheet open={isCommentsOpen} onOpenChange={setIsCommentsOpen}>
                         <SheetTrigger asChild>
                             <Button 
                                 variant="outline" 
                                 size="sm" 
-                                className="h-10 rounded-xl gap-2 font-black uppercase text-[10px] tracking-widest bg-muted/20 border-primary/20 hover:bg-muted/30 transition-all active:scale-95 px-6 shadow-sm"
+                                className="h-9 rounded-xl gap-2 font-black uppercase text-[10px] tracking-widest bg-muted/20 border-primary/20 hover:bg-muted/30 transition-all active:scale-95 px-6 shadow-sm"
                             >
                                 <MessageSquare className="h-4 w-4 text-primary" />
                                 <span>{commentCount} Response{commentCount !== 1 ? 's' : ''}</span>
@@ -754,6 +786,8 @@ export default function FellowshipPageClient() {
                                                     supporters={supporters}
                                                     inspiredBy={inspiredBy}
                                                     connectedBy={connectedBy}
+                                                    onReaction={handleReaction}
+                                                    isProcessingReaction={isProcessingReaction}
                                                 >
                                                     <button className="text-[10px] font-black text-white/80 uppercase tracking-[0.2em] hover:text-white transition-colors relative z-20 mt-6 flex items-center gap-1.5 border border-white/20 px-4 py-1.5 rounded-full bg-white/5 shadow-lg">
                                                         READ FULL WORD <ChevronDown className="h-3 w-3" />
@@ -779,8 +813,8 @@ export default function FellowshipPageClient() {
                                     )}
 
                                     <div className="flex flex-col gap-4">
-                                        <div className="flex items-center justify-between flex-wrap gap-2 px-1">
-                                            <div className="flex items-center gap-1.5 sm:gap-3">
+                                        <div className="flex items-center justify-between flex-wrap gap-4 px-1">
+                                            <div className="flex items-center flex-wrap gap-2 sm:gap-3">
                                                 <Button onClick={() => handleReaction('amen')} disabled={isProcessingReaction !== null || !user} variant="ghost" size="sm" className={cn("h-9 rounded-xl gap-2 font-bold uppercase text-[10px] tracking-widest border border-white/10 bg-white/5 hover:bg-white/10 text-white transition-all", hasAmened && "bg-white/20 border-white/30")}>
                                                     {isProcessingReaction === 'amen' ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <HandHeart className={cn("h-3.5 w-3.5", hasAmened && "fill-current")} />}
                                                     <span>Amen</span>
