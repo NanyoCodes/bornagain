@@ -1,11 +1,12 @@
+
 'use client';
 
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useDoc, useFirestore, useUser, useCollection, useUserProfile } from '@/firebase';
-import type { Fellowship, UserProfile, FellowshipMember, Soul, DailyDevotional, Campaign } from '@/lib/types';
-import { doc, collection, query, orderBy, where, writeBatch, serverTimestamp, updateDoc, arrayRemove, increment, deleteField, setDoc, limit } from 'firebase/firestore';
-import { Loader2, ArrowLeft, Users, Calendar, PlayCircle, MapPin, Heart, Phone, Mail, Church, History, PlusCircle, Award, MessagesSquare, User, Info, Sparkles, UserMinus, Trash2, BookOpen, Quote, Edit, CalendarClock, ChevronLeft, ChevronRight, CalendarDays, HandHeart, ChevronDown, Share2, UserPlus } from 'lucide-react';
+import type { Fellowship, UserProfile, FellowshipMember, Soul, DailyDevotional, Campaign, TestimonyComment } from '@/lib/types';
+import { doc, collection, query, orderBy, where, writeBatch, serverTimestamp, updateDoc, arrayRemove, increment, deleteField, setDoc, limit, arrayUnion } from 'firebase/firestore';
+import { Loader2, ArrowLeft, Users, Calendar, PlayCircle, MapPin, Heart, Phone, Mail, Church, History, PlusCircle, Award, MessagesSquare, User, Info, Sparkles, UserMinus, Trash2, BookOpen, Quote, Edit, CalendarClock, ChevronLeft, ChevronRight, CalendarDays, HandHeart, ChevronDown, Share2, UserPlus, PartyPopper, MessageSquare } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -44,6 +45,7 @@ import { FirestorePermissionError } from '@/firebase/errors';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { useToast } from '@/hooks/use-toast';
 import { LogSoulForm } from '@/components/souls/log-soul-form';
+import { CommentSection } from '../testimonies/comment-section';
 
 const devotionalSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters.").max(100),
@@ -147,11 +149,13 @@ export default function FellowshipPageClient() {
     const [isLogFollowUpOpen, setIsLogFollowUpOpen] = useState(false);
     const [isChatLoading, setIsChatLoading] = useState(false);
     const [isLogSoulOpen, setIsLogSoulOpen] = useState(false);
+    const [isCommentsOpen, setIsCommentsOpen] = useState(false);
     
     const [viewDate, setViewDate] = useState(new Date());
     const [isDevotionalDialogOpen, setIsDevotionalDialogOpen] = useState(false);
     const [isSavingDevotional, setIsSavingDevotional] = useState(false);
     const [isScheduleViewOpen, setIsScheduleViewOpen] = useState(false);
+    const [isProcessingReaction, setIsProcessingReaction] = useState<string | null>(null);
     
     const [memberToRemove, setMemberToRemove] = useState<FellowshipMember | null>(null);
     const [soulToUnassign, setSoulToUnassign] = useState<Soul | null>(null);
@@ -188,6 +192,20 @@ export default function FellowshipPageClient() {
     }, [firestore, fellowshipId, viewDateStr]);
     const { data: activeDevotional, loading: devoLoading } = useDoc<DailyDevotional>(activeDevotionalRef);
 
+    const commentsQuery = useMemo(() => {
+        if (!firestore || !fellowshipId || !activeDevotional) return null;
+        return query(collection(firestore, 'fellowships', fellowshipId, 'devotionals', viewDateStr, 'comments'));
+    }, [firestore, fellowshipId, viewDateStr, activeDevotional]);
+    const { data: comments } = useCollection<TestimonyComment>(commentsQuery);
+    const commentCount = comments?.length || 0;
+
+    const supporters = activeDevotional?.supporters || [];
+    const inspiredBy = activeDevotional?.inspiredBy || [];
+    const connectedBy = activeDevotional?.connectedBy || [];
+    const hasAmened = user ? supporters.includes(user.uid) : false;
+    const hasInspired = user ? inspiredBy.includes(user.uid) : false;
+    const hasCelebrated = user ? connectedBy.includes(user.uid) : false;
+
     useEffect(() => {
         if (activeDevotional) {
             const checkTruncation = () => {
@@ -204,9 +222,9 @@ export default function FellowshipPageClient() {
     }, [activeDevotional]);
 
     const scheduledDevotionalsQuery = useMemo(() => {
-        if (!firestore || !fellowshipId || !(isMember || isOrganizer)) return null;
+        if (!firestore || !fellowshipId) return null;
         return query(collection(firestore, 'fellowships', fellowshipId, 'devotionals'), orderBy('scheduledDate', 'asc'), limit(60));
-    }, [firestore, fellowshipId, isMember, isOrganizer]);
+    }, [firestore, fellowshipId]);
     const { data: scheduledDevotionals, loading: loadingSchedule } = useCollection<DailyDevotional>(scheduledDevotionalsQuery);
 
     const form = useForm<z.infer<typeof devotionalSchema>>({
@@ -299,6 +317,9 @@ export default function FellowshipPageClient() {
 
         if (!activeDevotional || activeDevotional.scheduledDate !== values.scheduledDate) {
             devotionalData.createdAt = serverTimestamp();
+            devotionalData.supporters = [];
+            devotionalData.inspiredBy = [];
+            devotionalData.connectedBy = [];
         }
 
         setDoc(devotionalRef, devotionalData, { merge: true })
@@ -329,6 +350,23 @@ export default function FellowshipPageClient() {
                 setIsSavingDevotional(false);
             });
     };
+
+    const handleReaction = (type: 'amen' | 'inspired' | 'celebrate') => {
+        if (!user || !firestore || !activeDevotional) return;
+        const hasReacted = (type === 'amen' && hasAmened) || (type === 'inspired' && hasInspired) || (type === 'celebrate' && hasCelebrated);
+        setIsProcessingReaction(type);
+        
+        const devoRef = doc(firestore, 'fellowships', fellowshipId, 'devotionals', viewDateStr);
+        const field = type === 'amen' ? 'supporters' : type === 'inspired' ? 'inspiredBy' : 'connectedBy';
+        const updatePayload = { [field]: hasReacted ? arrayRemove(user.uid) : arrayUnion(user.uid) };
+        
+        updateDoc(devoRef, updatePayload)
+            .catch(() => {
+                const permissionError = new FirestorePermissionError({ path: devoRef.path, operation: 'update', requestResourceData: updatePayload }, user);
+                errorEmitter.emit('permission-error', permissionError);
+            })
+            .finally(() => setIsProcessingReaction(null));
+    }
 
     const handleDeleteMember = async () => {
         if (!user || !firestore || !fellowship || !isOrganizer || !memberToRemove) return;
@@ -470,7 +508,7 @@ export default function FellowshipPageClient() {
         </div>
     );
 
-    const HeaderActions = (isMember || isOrganizer) && (
+    const HeaderActions = (
         <div className="flex items-center gap-2">
             <TooltipProvider>
                 <Tooltip>
@@ -488,33 +526,35 @@ export default function FellowshipPageClient() {
                 </Tooltip>
             </TooltipProvider>
 
-            <TooltipProvider>
-                <Tooltip>
-                    <TooltipTrigger asChild>
-                        <Button 
-                            variant={fellowship.hasGroupChat ? "default" : "outline"}
-                            size="icon" 
-                            onClick={fellowship.hasGroupChat ? () => router.push(`/dashboard/chats/${fellowshipId}`) : handleStartGroupChat}
-                            disabled={isChatLoading || (!fellowship.hasGroupChat && isOrganizer && (!members || members.length < 2))}
-                            className={cn(
-                                "h-9 w-9 sm:h-12 sm:w-12 rounded-full shadow-lg transition-all active:scale-90 relative shrink-0",
-                                fellowship.hasGroupChat && "bg-primary text-primary-foreground border-primary hover:bg-primary/90"
-                            )}
-                        >
-                            {isChatLoading ? <Loader2 className="h-4 w-4 sm:h-5 w-5 animate-spin" /> : <MessagesSquare className="h-4 w-4 sm:h-5 w-5" />}
-                            {!fellowship.hasGroupChat && isOrganizer && members && members.length >= 2 && (
-                                <span className="absolute -top-1 -right-1 flex h-3 w-3">
-                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                                    <span className="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
-                                </span>
-                            )}
-                        </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                        <p>{fellowship.hasGroupChat ? "Open Group Chat" : isOrganizer ? "Start Group Chat" : "Chat coming soon"}</p>
-                    </TooltipContent>
-                </Tooltip>
-            </TooltipProvider>
+            {(isMember || isOrganizer) && (
+                <TooltipProvider>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <Button 
+                                variant={fellowship.hasGroupChat ? "default" : "outline"}
+                                size="icon" 
+                                onClick={fellowship.hasGroupChat ? () => router.push(`/dashboard/chats/${fellowshipId}`) : handleStartGroupChat}
+                                disabled={isChatLoading || (!fellowship.hasGroupChat && isOrganizer && (!members || members.length < 2))}
+                                className={cn(
+                                    "h-9 w-9 sm:h-12 sm:w-12 rounded-full shadow-lg transition-all active:scale-90 relative shrink-0",
+                                    fellowship.hasGroupChat && "bg-primary text-primary-foreground border-primary hover:bg-primary/90"
+                                )}
+                            >
+                                {isChatLoading ? <Loader2 className="h-4 w-4 sm:h-5 w-5 animate-spin" /> : <MessagesSquare className="h-4 w-4 sm:h-5 w-5" />}
+                                {!fellowship.hasGroupChat && isOrganizer && members && members.length >= 2 && (
+                                    <span className="absolute -top-1 -right-1 flex h-3 w-3">
+                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                                        <span className="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
+                                    </span>
+                                )}
+                            </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p>{fellowship.hasGroupChat ? "Open Group Chat" : isOrganizer ? "Start Group Chat" : "Chat coming soon"}</p>
+                        </TooltipContent>
+                    </Tooltip>
+                </TooltipProvider>
+            )}
         </div>
     );
 
@@ -652,6 +692,34 @@ export default function FellowshipPageClient() {
                                             </p>
                                         </div>
                                     )}
+
+                                    <div className="flex flex-col gap-4">
+                                        <div className="flex items-center justify-between flex-wrap gap-2 px-1">
+                                            <div className="flex items-center gap-1.5 sm:gap-3">
+                                                <Button onClick={() => handleReaction('amen')} disabled={isProcessingReaction !== null || !user} variant="ghost" size="sm" className={cn("h-9 rounded-xl gap-2 font-bold uppercase text-[10px] tracking-widest border border-white/10 bg-white/5 hover:bg-white/10 text-white transition-all", hasAmened && "bg-white/20 border-white/30")}>
+                                                    {isProcessingReaction === 'amen' ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <HandHeart className={cn("h-3.5 w-3.5", hasAmened && "fill-current")} />}
+                                                    <span>Amen</span>
+                                                </Button>
+                                                <Button onClick={() => handleReaction('inspired')} disabled={isProcessingReaction !== null || !user} variant="ghost" size="sm" className={cn("h-9 rounded-xl gap-2 font-bold uppercase text-[10px] tracking-widest border border-white/10 bg-white/5 hover:bg-white/10 text-white transition-all", hasInspired && "bg-white/20 border-white/30")}>
+                                                    {isProcessingReaction === 'inspired' ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className={cn("h-3.5 w-3.5", hasInspired && "fill-current")} />}
+                                                    <span>Hallelujah</span>
+                                                </Button>
+                                                <Button onClick={() => handleReaction('celebrate')} disabled={isProcessingReaction !== null || !user} variant="ghost" size="sm" className={cn("h-9 rounded-xl gap-2 font-bold uppercase text-[10px] tracking-widest border border-white/10 bg-white/5 hover:bg-white/10 text-white transition-all", hasCelebrated && "bg-white/20 border-white/30")}>
+                                                    {isProcessingReaction === 'celebrate' ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <PartyPopper className={cn("h-3.5 w-3.5", hasCelebrated && "fill-current")} />}
+                                                    <span>Celebrate</span>
+                                                </Button>
+                                            </div>
+                                            <Button 
+                                                variant="ghost" 
+                                                size="sm" 
+                                                className={cn("h-9 rounded-xl gap-2 font-bold uppercase text-[10px] tracking-widest border border-white/10 bg-white/5 hover:bg-white/10 text-white transition-all", isCommentsOpen && "bg-white/20 border-white/30")}
+                                                onClick={() => setIsCommentsOpen(true)}
+                                            >
+                                                <MessageSquare className="h-3.5 w-3.5" />
+                                                <span>{commentCount} Response{commentCount !== 1 && 's'}</span>
+                                            </Button>
+                                        </div>
+                                    </div>
                                     
                                     <div className="flex flex-col sm:flex-row items-center justify-between gap-6 pt-2">
                                         <div className="flex items-center gap-3 bg-white/10 px-4 py-2 rounded-full border border-white/10">
@@ -687,28 +755,31 @@ export default function FellowshipPageClient() {
                                     <p className="text-sm font-medium opacity-40 mt-2 italic max-w-sm text-balance leading-relaxed">
                                         No word arranged for {isViewingToday ? 'today' : format(viewDate, 'MMM d')} yet.
                                     </p>
-                                    {(isMember || isOrganizer) && (
+                                    
                                       <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-12 w-full sm:w-auto">
                                           <Button variant="outline" className="bg-white/5 border-white/10 text-white rounded-2xl h-12 px-8 font-black uppercase tracking-widest text-[10px] shadow-lg order-2 sm:order-1" onClick={() => handleDateNav('prev')}><ChevronLeft className="mr-2 h-4 w-4" /> PREVIOUS</Button>
-                                          <Button 
-                                              variant="secondary" 
-                                              className="font-black rounded-2xl h-12 px-10 shadow-2xl text-[10px] uppercase tracking-[0.2em] order-1 sm:order-2"
-                                              onClick={() => {
-                                                  form.reset({
-                                                      title: '',
-                                                      scripture: '',
-                                                      text: '',
-                                                      prayer: '',
-                                                      scheduledDate: viewDateStr,
-                                                  });
-                                                  setIsDevotionalDialogOpen(true);
-                                              }}
-                                          >
-                                              PUBLISH WORD
-                                          </Button>
+                                          
+                                          {(isMember || isOrganizer) && (
+                                              <Button 
+                                                  variant="secondary" 
+                                                  className="font-black rounded-2xl h-12 px-10 shadow-2xl text-[10px] uppercase tracking-[0.2em] order-1 sm:order-2"
+                                                  onClick={() => {
+                                                      form.reset({
+                                                          title: '',
+                                                          scripture: '',
+                                                          text: '',
+                                                          prayer: '',
+                                                          scheduledDate: viewDateStr,
+                                                      });
+                                                      setIsDevotionalDialogOpen(true);
+                                                  }}
+                                              >
+                                                  PUBLISH WORD
+                                              </Button>
+                                          )}
+
                                           <Button variant="outline" className="bg-white/5 border-white/10 text-white rounded-2xl h-12 px-8 font-black uppercase tracking-widest text-[10px] shadow-lg order-3" onClick={() => handleDateNav('next')}>NEXT <ChevronRight className="ml-2 h-4 w-4" /></Button>
                                       </div>
-                                    )}
                                 </div>
                             )}
                         </CardContent>
@@ -998,6 +1069,7 @@ export default function FellowshipPageClient() {
             )}
 
             {mounted && isMobile ? (
+                <>
                 <Sheet open={isScheduleViewOpen} onOpenChange={setIsScheduleViewOpen}>
                     <SheetContent side="bottom" className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem]">
                         <div className="p-8 border-b flex-shrink-0 bg-muted/10">
@@ -1015,7 +1087,22 @@ export default function FellowshipPageClient() {
                         </ScrollArea>
                     </SheetContent>
                 </Sheet>
+                <Sheet open={isCommentsOpen} onOpenChange={setIsCommentsOpen}>
+                    <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+                        <div className="p-8 border-b shrink-0 bg-muted/10">
+                            <SheetHeader className="text-left">
+                                <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Gathered Responses</SheetTitle>
+                                <SheetDescription className="text-xs font-bold uppercase tracking-widest">PRAYERS & AGREEMENT FOR {viewDateStr}</SheetDescription>
+                            </SheetHeader>
+                        </div>
+                        <div className="flex-grow min-h-0">
+                            <CommentSection path={`fellowships/${fellowshipId}/devotionals/${viewDateStr}/comments`} />
+                        </div>
+                    </SheetContent>
+                </Sheet>
+                </>
             ) : (
+                <>
                 <Dialog open={isScheduleViewOpen} onOpenChange={setIsScheduleViewOpen}>
                     <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl">
                         <div className="p-8 border-b bg-muted/10">
@@ -1029,6 +1116,20 @@ export default function FellowshipPageClient() {
                         </ScrollArea>
                     </DialogContent>
                 </Dialog>
+                <Dialog open={isCommentsOpen} onOpenChange={setIsCommentsOpen}>
+                    <DialogContent className="sm:max-w-lg flex flex-col max-h-[85vh] p-0 overflow-hidden rounded-3xl">
+                        <div className="p-8 border-b shrink-0 bg-muted/10">
+                            <DialogHeader>
+                                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Gathered Responses</DialogTitle>
+                                <DialogDescription className="text-xs font-bold uppercase tracking-widest">COMMUNITY VOICES ON THIS WORD</DialogDescription>
+                            </DialogHeader>
+                        </div>
+                        <div className="flex-1 min-h-0">
+                            <CommentSection path={`fellowships/${fellowshipId}/devotionals/${viewDateStr}/comments`} />
+                        </div>
+                    </DialogContent>
+                </Dialog>
+                </>
             )}
 
             <ViewHistoryDialog 

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -13,6 +14,7 @@ import { cn, safeToDate } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { useIsMobile } from '@/hooks/use-mobile';
 import Link from 'next/link';
+import { useDoc } from '@/firebase/firestore/use-doc';
 
 function CommentAuthorAvatar({ userId, fallbackInitials, className }: { userId: string, fallbackInitials: string, className?: string }) {
     const firestore = useFirestore();
@@ -30,13 +32,13 @@ function CommentAuthorAvatar({ userId, fallbackInitials, className }: { userId: 
 
 function CommentItem({ 
     comment, 
-    testimonyId, 
+    basePath, 
     level = 0,
     onReply,
     children
 }: { 
     comment: TestimonyComment, 
-    testimonyId: string, 
+    basePath: string, 
     level?: number,
     onReply: (comment: TestimonyComment) => void,
     children?: React.ReactNode
@@ -65,7 +67,7 @@ function CommentItem({
         if (!user || !firestore) return;
         setIsReacting(type);
 
-        const commentRef = doc(firestore, 'testimonies', testimonyId, 'comments', comment.id);
+        const commentRef = doc(firestore, basePath, comment.id);
         const field = type === 'amen' ? 'supporters' : type === 'inspired' ? 'inspiredBy' : 'connectedBy';
         const hasReacted = type === 'amen' ? hasAmened : type === 'inspired' ? hasInspired : hasCelebrated;
 
@@ -85,7 +87,7 @@ function CommentItem({
     const handleDelete = async () => {
         if (!user || !firestore) return;
         try {
-            await deleteDoc(doc(firestore, 'testimonies', testimonyId, 'comments', comment.id));
+            await deleteDoc(doc(firestore, basePath, comment.id));
             toast({ title: 'Comment deleted' });
         } catch (error) {
             toast({ variant: 'destructive', title: 'Error', description: 'Failed to delete comment.' });
@@ -99,7 +101,7 @@ function CommentItem({
             return;
         }
 
-        const commentRef = doc(firestore, 'testimonies', testimonyId, 'comments', comment.id);
+        const commentRef = doc(firestore, basePath, comment.id);
         updateDoc(commentRef, { 
             text: editedText.trim(),
             updatedAt: serverTimestamp() 
@@ -244,7 +246,7 @@ function CommentItem({
     );
 }
 
-export function CommentSection({ testimonyId }: { testimonyId: string }) {
+export function CommentSection({ testimonyId, path }: { testimonyId?: string; path?: string }) {
     const { user, loading: userLoading } = useUser();
     const firestore = useFirestore();
     const { toast } = useToast();
@@ -254,13 +256,15 @@ export function CommentSection({ testimonyId }: { testimonyId: string }) {
 
     const { userProfile: profile, loading: profileLoading } = useUserProfile();
 
+    const basePath = path || `testimonies/${testimonyId}/comments`;
+
     const commentsQuery = useMemo(() => {
         if (!firestore) return null;
         return query(
-            collection(firestore, 'testimonies', testimonyId, 'comments'),
+            collection(firestore, basePath),
             orderBy('createdAt', 'asc')
         );
-    }, [firestore, testimonyId]);
+    }, [firestore, basePath]);
 
     const { data: comments, loading } = useCollection<TestimonyComment>(commentsQuery);
 
@@ -295,7 +299,7 @@ export function CommentSection({ testimonyId }: { testimonyId: string }) {
         };
 
         try {
-            await addDoc(collection(firestore, 'testimonies', testimonyId, 'comments'), commentData);
+            await addDoc(collection(firestore, basePath), commentData);
             setNewMessage('');
             setReplyingTo(null);
         } catch (error) {
@@ -313,7 +317,7 @@ export function CommentSection({ testimonyId }: { testimonyId: string }) {
             <CommentItem 
                 key={comment.id} 
                 comment={comment} 
-                testimonyId={testimonyId} 
+                basePath={basePath} 
                 level={indentLevel}
                 onReply={setReplyingTo}
             >
@@ -333,7 +337,7 @@ export function CommentSection({ testimonyId }: { testimonyId: string }) {
                     ) : (
                         <div className="text-center py-20 bg-muted/20 rounded-3xl border-2 border-dashed mx-2 flex flex-col items-center">
                              <Sparkles className="h-10 w-10 text-muted-foreground/20 mb-4" />
-                             <p className="text-sm text-muted-foreground italic px-8 text-balance">No comments yet. Be the first to share a word of encouragement!</p>
+                             <p className="text-sm text-muted-foreground italic px-8 text-balance">No responses yet. Be the first to share a prayer or word of encouragement!</p>
                         </div>
                     )}
                 </div>
@@ -351,7 +355,7 @@ export function CommentSection({ testimonyId }: { testimonyId: string }) {
                     )}
                     <form onSubmit={handleSendComment} className={cn("flex gap-2 items-center", replyingTo && "border-x border-b p-1.5 rounded-b-2xl bg-muted/5 border-primary/20")}>
                         <Input
-                            placeholder={replyingTo ? "Write your reply..." : "Encourage with a comment..."}
+                            placeholder={replyingTo ? "Write your reply..." : "Write a prayer or encouragement..."}
                             value={newComment}
                             onChange={(e) => setNewMessage(e.target.value)}
                             className="text-sm sm:text-base h-11 sm:h-12 shadow-inner rounded-2xl focus-visible:ring-primary/20 border-muted-foreground/20"

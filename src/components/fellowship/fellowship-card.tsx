@@ -1,18 +1,19 @@
+
 'use client';
 
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { useUser, useFirestore, useDoc } from '@/firebase';
-import type { Fellowship, UserProfile, DailyDevotional } from '@/lib/types';
+import { useUser, useFirestore, useDoc, useCollection } from '@/firebase';
+import type { Fellowship, UserProfile, DailyDevotional, TestimonyComment } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
-import { doc, runTransaction, arrayUnion, arrayRemove, increment, serverTimestamp } from 'firebase/firestore';
+import { doc, runTransaction, arrayUnion, arrayRemove, increment, serverTimestamp, collection, query } from 'firebase/firestore';
 import { cn } from '@/lib/utils';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Loader2, Users, MoreVertical, PlayCircle, Edit, Trash2, MapPin, BarChart3, BookOpen, LogOut, Quote, Sparkles, HandHeart, Share2 } from 'lucide-react';
+import { Loader2, Users, MoreVertical, PlayCircle, Edit, Trash2, MapPin, BarChart3, BookOpen, LogOut, Quote, Sparkles, HandHeart, Share2, MessageSquare } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useRouter } from 'next/navigation';
 import { format, parseISO } from 'date-fns';
@@ -135,8 +136,19 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
         if (!firestore || !fellowship.id) return null;
         return doc(firestore, 'fellowships', fellowship.id, 'devotionals', todayStr);
     }, [firestore, fellowship.id, todayStr]);
-    
     const { data: todayDevotional } = useDoc<DailyDevotional>(devotionalRef);
+
+    const commentsQuery = useMemo(() => {
+        if (!firestore || !fellowship.id) return null;
+        return query(collection(firestore, 'fellowships', fellowship.id, 'devotionals', todayStr, 'comments'));
+    }, [firestore, fellowship.id, todayStr]);
+    const { data: comments } = useCollection<TestimonyComment>(commentsQuery);
+    const commentCount = comments?.length || 0;
+
+    const supporters = todayDevotional?.supporters || [];
+    const inspiredBy = todayDevotional?.inspiredBy || [];
+    const connectedBy = todayDevotional?.connectedBy || [];
+    const totalReactions = supporters.length + inspiredBy.length + connectedBy.length;
 
     useEffect(() => {
         if (devotionalTextRef.current) {
@@ -389,13 +401,37 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
                                     </p>
                                 </div>
                             )}
-                            {isDevotionalTruncated && (
-                                <FullDevotionalDialog devotional={todayDevotional}>
-                                    <button className="text-[10px] font-black text-primary uppercase tracking-widest hover:underline h-auto p-0 mt-1">
-                                        Read More
-                                    </button>
-                                </FullDevotionalDialog>
-                            )}
+                            
+                            <div className="flex items-center justify-between mt-4">
+                                {totalReactions > 0 || commentCount > 0 ? (
+                                    <div className="flex items-center gap-3">
+                                        {totalReactions > 0 && (
+                                            <div className="flex items-center gap-1 bg-background/50 px-1.5 py-0.5 rounded-full border border-primary/10 shadow-sm">
+                                                <div className="flex items-center -space-x-1">
+                                                    {supporters.length > 0 && <HandHeart className="h-2.5 w-2.5 text-primary fill-current" />}
+                                                    {inspiredBy.length > 0 && <Sparkles className="h-2.5 w-2.5 text-chart-3 fill-current" />}
+                                                    {connectedBy.length > 0 && <PartyPopper className="h-2.5 w-2.5 text-blue-500" />}
+                                                </div>
+                                                <span className="text-[8px] font-black text-muted-foreground">{totalReactions}</span>
+                                            </div>
+                                        )}
+                                        {commentCount > 0 && (
+                                            <div className="flex items-center gap-1 text-muted-foreground">
+                                                <MessageSquare className="h-2.5 w-2.5" />
+                                                <span className="text-[8px] font-black">{commentCount}</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                ) : <div />}
+                                
+                                {isDevotionalTruncated && (
+                                    <FullDevotionalDialog devotional={todayDevotional}>
+                                        <button className="text-[10px] font-black text-primary uppercase tracking-widest hover:underline h-auto p-0">
+                                            Read More
+                                        </button>
+                                    </FullDevotionalDialog>
+                                )}
+                            </div>
                         </div>
                         <p className="text-[8px] font-black uppercase text-primary/60 text-right mt-2 tracking-widest break-words [overflow-wrap:anywhere]">— {todayDevotional.scripture}</p>
                     </div>

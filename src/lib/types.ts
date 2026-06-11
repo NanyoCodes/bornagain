@@ -373,6 +373,9 @@ export type DailyDevotional = {
   authorName: string;
   scheduledDate: string; // YYYY-MM-DD
   createdAt: Timestamp;
+  supporters?: string[];
+  inspiredBy?: string[];
+  connectedBy?: string[];
 };
 
 export type Fellowship = {

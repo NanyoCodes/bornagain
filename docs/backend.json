@@ -307,7 +307,10 @@
         "authorId": { "type": "string" },
         "authorName": { "type": "string" },
         "scheduledDate": { "type": "string", "description": "Date string in YYYY-MM-DD format." },
-        "createdAt": { "type": "object" }
+        "createdAt": { "type": "object" },
+        "supporters": { "type": "array", "items": { "type": "string" }, "description": "List of UIDs who gave an 'Amen'." },
+        "inspiredBy": { "type": "array", "items": { "type": "string" }, "description": "List of UIDs who gave an 'Hallelujah'." },
+        "connectedBy": { "type": "array", "items": { "type": "string" }, "description": "List of UIDs who gave a 'Celebrate'." }
       },
       "required": ["title", "text", "scripture", "authorId", "scheduledDate"]
     }
@@ -343,6 +346,12 @@
           "$ref": "#/entities/DailyDevotional"
       },
       "description": "Stores scheduled daily devotionals for the group, keyed by YYYY-MM-DD."
+    },
+    "/fellowships/{fellowshipId}/devotionals/{date}/comments/{commentId}": {
+      "schema": {
+          "$ref": "#/entities/TestimonyComment"
+      },
+      "description": "Stores community responses to devotionals."
     }
   }
 }
