@@ -3,7 +3,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Devotional interactions & public responses - 2025-06-25T11:45:00Z
+    // Deployment trigger: Public devotional comments & community engagement - 2025-06-25T12:00:00Z
     
     function isOwner(userId) {
       return request.auth != null && request.auth.uid == userId;
@@ -46,7 +46,6 @@ service cloud.firestore {
       match /souls/{soulId} {
         allow read: if isOwner(userId) || isFellowshipMember(resource.data.get('fellowshipId', '')) || isFellowshipMember(resource.data.get('associationId', ''));
         allow create, update, delete: if isOwner(userId);
-        allow update: if request.auth != null && (isFellowshipMember(resource.data.get('fellowshipId', '')) || isFellowshipMember(resource.data.get('associationId', '')));
       }
       
       match /joinedCampaigns/{campaignId} {
@@ -93,18 +92,7 @@ service cloud.firestore {
       allow delete: if request.auth != null && resource.data.authorId == request.auth.uid;
       allow update: if request.auth != null && ( 
         (resource.data.authorId == request.auth.uid) || 
-        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters']) && 
-         ( (request.resource.data.supporters.size() == resource.data.get('supporters', []).size() + 1 && request.auth.uid in request.resource.data.supporters) ||
-           (request.resource.data.supporters.size() == resource.data.get('supporters', []).size() - 1 && !(request.auth.uid in request.resource.data.supporters))
-         )) ||
-        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['inspiredBy']) && 
-         ( (request.resource.data.inspiredBy.size() == request.auth.uid in request.resource.data.inspiredBy) ||
-           (request.resource.data.inspiredBy.size() == request.auth.uid in request.resource.data.inspiredBy))
-         )) ||
-        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['connectedBy']) && 
-         ( (request.resource.data.connectedBy.size() == request.auth.uid in request.resource.data.connectedBy) ||
-           (request.resource.data.connectedBy.size() == radius.data.get('connectedBy', []).size() - 1 && !(request.auth.uid in request.resource.data.connectedBy))
-         ))
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']))
       );
 
       match /comments/{commentId} {
@@ -123,10 +111,7 @@ service cloud.firestore {
       allow create: if request.auth != null && request.auth.uid == request.resource.data.authorId;
       allow delete: if request.auth != null && resource.data.authorId == request.auth.uid;
       allow update: if request.auth != null && ( 
-        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['usersWhoPrayed']) && 
-         ( (request.resource.data.usersWhoPrayed.size() == resource.data.get('usersWhoPrayed', []).size() + 1 && request.auth.uid in request.resource.data.usersWhoPrayed) ||
-           (request.resource.data.usersWhoPrayed.size() == resource.data.get('usersWhoPrayed', []).size() - 1 && !(request.auth.uid in request.resource.data.usersWhoPrayed))
-         )) || 
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['usersWhoPrayed'])) || 
         (resource.data.authorId == request.auth.uid && request.resource.data.status in ['pending', 'answered'])
       );
     }
