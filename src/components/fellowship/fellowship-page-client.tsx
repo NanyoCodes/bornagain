@@ -270,7 +270,7 @@ export default function FellowshipPageClient() {
 
     const soulsQuery = useMemo(() => {
         if (!firestore || !fellowshipId || !(isMember || isOrganizer) || !fellowship) return null;
-        const soulQueryField = fellowship?.groupType === 'Association' ? 'associationId' : 'fellowshipId';
+        const soulQueryField = fellowship.groupType === 'Association' ? 'associationId' : 'fellowshipId';
         return query(collection(firestore, 'souls'), where(soulQueryField, '==', fellowshipId));
     }, [firestore, fellowshipId, isMember, isOrganizer, fellowship?.groupType]);
     const { data: assignedSouls, loading: soulsLoading } = useCollection<Soul>(soulsQuery);
