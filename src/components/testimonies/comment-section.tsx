@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { useUser, useFirestore, useCollection, useDoc } from '@/firebase';
+import { useUser, useFirestore, useCollection, useUserProfile } from '@/firebase';
 import { collection, query, orderBy, addDoc, serverTimestamp, doc, deleteDoc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
 import type { TestimonyComment, UserProfile } from '@/lib/types';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -252,8 +252,7 @@ export function CommentSection({ testimonyId }: { testimonyId: string }) {
     const [replyingTo, setReplyingTo] = useState<TestimonyComment | null>(null);
     const [isSending, setIsSending] = useState(false);
 
-    const userProfileRef = useMemo(() => user ? doc(firestore, 'users', user.uid) : null, [user, firestore]);
-    const { data: profile } = useDoc<UserProfile>(userProfileRef);
+    const { userProfile: profile, loading: profileLoading } = useUserProfile();
 
     const commentsQuery = useMemo(() => {
         if (!firestore) return null;
@@ -327,7 +326,7 @@ export function CommentSection({ testimonyId }: { testimonyId: string }) {
         <div className="flex flex-col h-full min-h-0 overflow-hidden bg-background">
             <div className="flex-1 min-h-0 overflow-y-auto scrollbar-hide">
                 <div className="space-y-6 p-4 sm:p-6 pb-24">
-                    {(loading || userLoading) ? (
+                    {(loading || userLoading || (profileLoading && !profile)) ? (
                         <div className="flex justify-center py-12"><Loader2 className="h-8 w-8 animate-spin opacity-20" /></div>
                     ) : topLevelComments.length > 0 ? (
                         topLevelComments.map(comment => renderComment(comment))
@@ -356,10 +355,9 @@ export function CommentSection({ testimonyId }: { testimonyId: string }) {
                             value={newComment}
                             onChange={(e) => setNewMessage(e.target.value)}
                             className="text-sm sm:text-base h-11 sm:h-12 shadow-inner rounded-2xl focus-visible:ring-primary/20 border-muted-foreground/20"
-                            disabled={isSending}
-                            autoFocus={!!replyingTo}
+                            disabled={isSending || profileLoading}
                         />
-                        <Button type="submit" size="icon" className="h-11 w-11 sm:h-12 sm:w-12 shrink-0 rounded-2xl shadow-lg transition-transform active:scale-90" disabled={!newComment.trim() || isSending}>
+                        <Button type="submit" size="icon" className="h-11 w-11 sm:h-12 sm:w-12 shrink-0 rounded-2xl shadow-lg transition-transform active:scale-90" disabled={!newComment.trim() || isSending || profileLoading}>
                             {isSending ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
                         </Button>
                     </form>

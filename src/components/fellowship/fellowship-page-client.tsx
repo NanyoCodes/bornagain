@@ -425,8 +425,6 @@ export default function FellowshipPageClient() {
         setViewDate(prev => direction === 'prev' ? subDays(prev, 1) : addDays(prev, 1));
     };
 
-    const isAnyModalOpen = !!(isDevotionalDialogOpen || isScheduleViewOpen || memberToRemove || soulToUnassign || isSoulDetailsOpen || isLogFollowUpOpen);
-
     const loading = fellowshipLoading || profileLoading || loadingMembers || soulsLoading || devoLoading;
 
     if (loading) return <div className="flex items-center justify-center h-full py-20"><Loader2 className="animate-spin text-primary" /></div>;
@@ -518,10 +516,7 @@ export default function FellowshipPageClient() {
     );
 
     return (
-        <div 
-            className="space-y-6 md:space-y-10 w-full max-w-6xl mx-auto pt-4"
-            inert={isAnyModalOpen ? true : undefined}
-        >
+        <div className="space-y-6 md:space-y-10 w-full max-w-6xl mx-auto pt-4">
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 px-4 sm:px-0">
                 <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto">
                     <Button variant="ghost" size="icon" onClick={() => router.back()} className="shrink-0 h-9 w-9 sm:h-12 sm:w-12 rounded-full border bg-background shadow-sm hover:bg-muted/50">
@@ -795,7 +790,7 @@ export default function FellowshipPageClient() {
                     </Card>
                 </div>
 
-                <div className="space-y-8 flex flex-col px-4 sm:px-0 pb-12 sm:pb-0">
+                <div className="space-y-8 flex flex-col px-4 sm:px-0 pb-[calc(4rem+env(safe-area-inset-bottom))] sm:pb-0">
                     <Card className="rounded-[1.5rem] sm:rounded-[2.5rem] shadow-sm border-none bg-background border border-muted-foreground/10 overflow-hidden border-b-8 border-b-primary/10">
                         <CardHeader className="p-6 sm:p-8 pb-3 sm:pb-4">
                             <CardTitle className="text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2.5"><Calendar className="h-4 w-4 text-primary"/> Gathering Details</CardTitle>
