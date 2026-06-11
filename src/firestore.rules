@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Resolve useIsMobile ReferenceError and synchronize engagement features - 2025-07-06T12:30:00Z
+    // Deployment trigger: Resolve ReferenceErrors and synchronize engagement UI - 2025-07-10T12:00:00Z
     
     function isOwner(userId) {
       return request.auth != null && request.auth.uid == userId;
