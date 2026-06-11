@@ -261,6 +261,8 @@ export default function FellowshipPageClient() {
     const viewDateStr = format(viewDate, 'yyyy-MM-dd');
     const isViewingToday = isSameDay(viewDate, new Date());
     
+    const commentPath = useMemo(() => `fellowships/${fellowshipId}/devotionals/${viewDateStr}/comments`, [fellowshipId, viewDateStr]);
+    
     const activeDevotionalRef = useMemo(() => {
         if (!firestore || !fellowshipId) return null;
         return doc(firestore, 'fellowships', fellowshipId, 'devotionals', viewDateStr);
@@ -269,8 +271,8 @@ export default function FellowshipPageClient() {
 
     const commentsQuery = useMemo(() => {
         if (!firestore || !fellowshipId || !activeDevotional) return null;
-        return query(collection(firestore, 'fellowships', fellowshipId, 'devotionals', viewDateStr, 'comments'));
-    }, [firestore, fellowshipId, viewDateStr, activeDevotional]);
+        return query(collection(firestore, commentPath), orderBy('createdAt', 'asc'));
+    }, [firestore, fellowshipId, commentPath, activeDevotional]);
     const { data: comments } = useCollection<TestimonyComment>(commentsQuery);
     const commentCount = comments?.length || 0;
 
@@ -400,8 +402,8 @@ export default function FellowshipPageClient() {
         setDoc(devotionalRef, devotionalData, { merge: true })
             .then(() => {
                 toast({ 
-                    title: activeDevotional ? 'Word Updated' : 'Word Published', 
-                    description: `Word for ${format(new Date(values.scheduledDate), 'MMM d')} is ready.` 
+                    title: 'Success', 
+                    description: `Devotional for ${format(new Date(values.scheduledDate), 'MMM d')} is set.` 
                 });
                 setIsDevotionalDialogOpen(false);
             })
@@ -1243,7 +1245,7 @@ export default function FellowshipPageClient() {
                         <div className="p-8 border-b flex-shrink-0 bg-muted/10">
                             <SheetHeader className="text-left">
                                 <SheetTitle className="text-2xl font-black font-headline">Log Group Convert</SheetTitle>
-                                <SheetDescription className="text-sm font-medium">Record a new life won directly to this community.</SheetDescription>
+                                <SheetDescription className="text-sm font-medium mt-1">Record a new life won directly to this community.</SheetDescription>
                             </SheetHeader>
                         </div>
                         <ScrollArea className="flex-grow">

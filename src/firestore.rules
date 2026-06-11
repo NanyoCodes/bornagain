@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Devotional response navigation & interactive feedback - 2025-07-05T14:30:00Z
+    // Deployment trigger: Define commentPath and sync devotional response logic - 2025-07-05T15:00:00Z
     
     function isOwner(userId) {
       return request.auth != null && request.auth.uid == userId;
