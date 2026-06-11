@@ -1,8 +1,9 @@
+
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Resolution for Association Soul Visibility - 2025-06-21T18:30:00Z
+    // Deployment trigger: Unassignment notification integration - 2025-06-22T10:00:00Z
     
     function isOwner(userId) {
       return request.auth != null && request.auth.uid == userId;

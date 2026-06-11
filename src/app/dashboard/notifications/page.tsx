@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useMemo } from 'react';
@@ -7,7 +8,7 @@ import { collection, query, doc, updateDoc, writeBatch, where } from 'firebase/f
 import type { Notification } from '@/lib/types';
 import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Bell, HeartHandshake, Target, Users, CheckCircle2, MessageSquare, Info, XCircle, ArrowLeft, CircleAlert } from 'lucide-react';
+import { Bell, HeartHandshake, Target, Users, CheckCircle2, MessageSquare, Info, XCircle, ArrowLeft, CircleAlert, UserMinus } from 'lucide-react';
 import { format, formatDistanceToNow } from 'date-fns';
 import { cn, safeToDate } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -23,7 +24,8 @@ const NOTIFICATION_TYPES = [
   'request_declined', 
   'accountability_partner_removed',
   'new_soul_in_fellowship',
-  'new_chat_message'
+  'new_chat_message',
+  'soul_unassigned_from_fellowship'
 ];
 
 function getNotificationIcon(type: string) {
@@ -42,6 +44,8 @@ function getNotificationIcon(type: string) {
             return <Users className="h-4 w-4 text-blue-500" />;
         case 'new_chat_message':
             return <MessageSquare className="h-4 w-4 text-primary" />;
+        case 'soul_unassigned_from_fellowship':
+            return <UserMinus className="h-4 w-4 text-destructive" />;
         default:
             return <Bell className="h-4 w-4 text-muted-foreground" />;
     }

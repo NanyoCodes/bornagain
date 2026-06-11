@@ -238,6 +238,25 @@ export default function SoulsWonPage() {
     };
 
     if (groupId === 'none') {
+        const oldGroupId = groupType === 'Association' ? soul.associationId : soul.fellowshipId;
+        const oldGroupName = groupType === 'Association' ? soul.associationName : soul.fellowshipName;
+        
+        if (oldGroupId && oldGroupName) {
+            const oldGroup = activeFellowships?.find(f => f.id === oldGroupId);
+            if (oldGroup && oldGroup.organizerId !== user.uid) {
+                const notificationRef = collection(firestore, `users/${oldGroup.organizerId}/notifications`);
+                addDoc(notificationRef, {
+                    userId: oldGroup.organizerId,
+                    type: 'soul_unassigned_from_fellowship',
+                    title: `Convert unassigned from ${oldGroupName}`,
+                    message: `${soul.firstName} ${soul.lastName} was unassigned from your group.`,
+                    link: `/dashboard/fellowship/${oldGroupId}`,
+                    isRead: false,
+                    createdAt: serverTimestamp(),
+                }).catch(() => {});
+            }
+        }
+
         if (groupType === 'Association') {
             updateData.associationId = deleteField();
             updateData.associationName = deleteField();
