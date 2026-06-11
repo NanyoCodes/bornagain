@@ -3,9 +3,9 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useDoc, useFirestore, useUser, useCollection, useUserProfile } from '@/firebase';
-import type { Fellowship, UserProfile, FellowshipMember, Soul, DailyDevotional } from '@/lib/types';
+import type { Fellowship, UserProfile, FellowshipMember, Soul, DailyDevotional, Campaign } from '@/lib/types';
 import { doc, collection, query, orderBy, where, writeBatch, serverTimestamp, updateDoc, arrayRemove, increment, deleteField, setDoc, limit } from 'firebase/firestore';
-import { Loader2, ArrowLeft, Users, Calendar, PlayCircle, MapPin, Heart, Phone, Mail, Church, History, PlusCircle, Award, MessagesSquare, User, Info, Sparkles, UserMinus, Trash2, BookOpen, Quote, Edit, CalendarClock, ChevronLeft, ChevronRight, CalendarDays, HandHeart, ChevronDown, Share2 } from 'lucide-react';
+import { Loader2, ArrowLeft, Users, Calendar, PlayCircle, MapPin, Heart, Phone, Mail, Church, History, PlusCircle, Award, MessagesSquare, User, Info, Sparkles, UserMinus, Trash2, BookOpen, Quote, Edit, CalendarClock, ChevronLeft, ChevronRight, CalendarDays, HandHeart, ChevronDown, Share2, UserPlus } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -43,6 +43,7 @@ import { Separator } from '@/components/ui/separator';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { useToast } from '@/hooks/use-toast';
+import { LogSoulForm } from '@/components/souls/log-soul-form';
 
 const devotionalSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters.").max(100),
@@ -145,6 +146,7 @@ export default function FellowshipPageClient() {
     const [isSoulDetailsOpen, setIsSoulDetailsOpen] = useState(false);
     const [isLogFollowUpOpen, setIsLogFollowUpOpen] = useState(false);
     const [isChatLoading, setIsChatLoading] = useState(false);
+    const [isLogSoulOpen, setIsLogSoulOpen] = useState(false);
     
     const [viewDate, setViewDate] = useState(new Date());
     const [isDevotionalDialogOpen, setIsDevotionalDialogOpen] = useState(false);
@@ -169,12 +171,12 @@ export default function FellowshipPageClient() {
     const isMember = useMemo(() => {
         if (!user || !fellowship || !fellowship.memberIds) return false;
         return fellowship.memberIds.includes(user.uid);
-    }, [user, fellowship]);
+    }, [user, fellowship?.memberIds]);
 
     const isOrganizer = useMemo(() => {
         if (!user || !fellowship) return false;
         return fellowship.organizerId === user.uid;
-    }, [user, fellowship]);
+    }, [user, fellowship?.organizerId]);
 
     const todayStr = useMemo(() => format(new Date(), 'yyyy-MM-dd'), []);
     const viewDateStr = format(viewDate, 'yyyy-MM-dd');
@@ -765,8 +767,18 @@ export default function FellowshipPageClient() {
                                         </div>
                                     </TabsContent>
                                     <TabsContent value="souls" className="mt-0 p-4 sm:p-10">
+                                        <div className="flex items-center justify-between mb-6 px-1">
+                                            <div className="flex items-center gap-2">
+                                                <Heart className="h-4 w-4 text-primary" />
+                                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Assigned Converts</span>
+                                            </div>
+                                            <Button onClick={() => setIsLogSoulOpen(true)} size="sm" className="h-8 px-4 rounded-xl font-black uppercase tracking-widest text-[9px] shadow-md transition-transform active:scale-95">
+                                                <UserPlus className="mr-1.5 h-3.5 w-3.5" />
+                                                Log Soul
+                                            </Button>
+                                        </div>
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                            {assignedSouls?.map(soul => (
+                                            {assignedSouls && assignedSouls.length > 0 ? assignedSouls.map(soul => (
                                                 <div key={soul.id} className="flex items-center gap-4 p-4 rounded-2xl border bg-primary/5 transition-all hover:bg-muted/10 group min-w-0">
                                                     <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20"><Heart className="h-5 w-5 text-primary fill-current" /></div>
                                                     <div className="flex-1 min-w-0">
@@ -776,11 +788,25 @@ export default function FellowshipPageClient() {
                                                         >
                                                             {soul.firstName} {soul.lastName}
                                                         </button>
-                                                        <Badge className="mt-1 h-4 text-[8px] sm:text-[9px] font-black uppercase tracking-widest" variant="secondary">{soul.status}</Badge>
+                                                        <div className="flex items-center gap-2 mt-1">
+                                                            <Badge className="h-4 text-[8px] sm:text-[9px] font-black uppercase tracking-widest" variant="secondary">{soul.status}</Badge>
+                                                            <button 
+                                                                onClick={() => { setSelectedSoulId(soul.id); setIsLogFollowUpOpen(true); }}
+                                                                className="text-[8px] font-black uppercase text-primary/60 hover:text-primary transition-colors hover:underline tracking-tighter"
+                                                            >
+                                                                Log Follow-up
+                                                            </button>
+                                                        </div>
                                                     </div>
                                                     <Button variant="outline" size="sm" className="h-8 sm:h-9 text-[10px] sm:text-[11px] font-black uppercase tracking-widest px-4 rounded-xl shadow-sm" onClick={() => { setSelectedSoulId(soul.id); setIsSoulDetailsOpen(true); }}>Details</Button>
                                                 </div>
-                                            ))}
+                                            )) : (
+                                                <div className="col-span-full py-12 text-center flex flex-col items-center">
+                                                    <Heart className="h-10 w-10 text-muted-foreground opacity-10 mb-4" />
+                                                    <p className="text-xs text-muted-foreground italic max-w-xs mx-auto">No converts have been assigned to this group yet.</p>
+                                                    <Button variant="outline" size="sm" className="mt-4 h-8 rounded-xl font-bold text-[10px] uppercase" onClick={() => setIsLogSoulOpen(true)}>Log First Soul</Button>
+                                                </div>
+                                            )}
                                         </div>
                                     </TabsContent>
                                </Tabs>
@@ -796,7 +822,7 @@ export default function FellowshipPageClient() {
                     </Card>
                 </div>
 
-                <div className="space-y-8 flex flex-col px-4 sm:px-0 pb-[calc(4rem+env(safe-area-inset-bottom))] sm:pb-0">
+                <div className="space-y-8 flex flex-col px-4 sm:px-0 pb-32">
                     <Card className="rounded-[1.5rem] sm:rounded-[2.5rem] shadow-sm border-none bg-background border border-muted-foreground/10 overflow-hidden border-b-8 border-b-primary/10">
                         <CardHeader className="p-6 sm:p-8 pb-3 sm:pb-4">
                             <CardTitle className="text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2.5"><Calendar className="h-4 w-4 text-primary"/> Gathering Details</CardTitle>
@@ -832,7 +858,7 @@ export default function FellowshipPageClient() {
                         <CardHeader className="p-6 sm:p-8 pb-3 sm:pb-4">
                             <CardTitle className="text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">Organizer</CardTitle>
                         </CardHeader>
-                        <CardContent className="px-6 sm:px-8 pb-8 sm:pb-24 pt-2">
+                        <CardContent className="px-6 sm:px-8 pb-8 sm:pb-12 pt-2">
                             <Link href={isOrganizer ? '/dashboard/profile' : `/dashboard/profile/${fellowship.organizerId}`} className="flex items-center gap-4 group bg-muted/20 p-4 sm:p-5 rounded-2xl border border-dashed transition-all hover:bg-muted/40 hover:border-primary/20 min-w-0 shadow-inner">
                                 <Avatar className="h-12 w-12 sm:h-14 sm:w-14 border-2 border-primary/20 shadow-sm shrink-0">
                                     <AvatarFallback className="font-black text-sm sm:text-base bg-primary/10 text-primary">{fellowship.organizerName?.charAt(0)}</AvatarFallback>
@@ -1020,6 +1046,48 @@ export default function FellowshipPageClient() {
                 }}
                 userProfile={userProfile}
             />
+            
+            {mounted && isMobile ? (
+                <Sheet open={isLogSoulOpen} onOpenChange={setIsLogSoulOpen}>
+                    <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+                        <div className="p-8 border-b flex-shrink-0 bg-muted/10">
+                            <SheetHeader className="text-left">
+                                <SheetTitle className="text-2xl font-black font-headline">Log Group Convert</SheetTitle>
+                                <SheetDescription className="text-sm font-medium">Record a new life won directly to this community.</SheetDescription>
+                            </SheetHeader>
+                        </div>
+                        <ScrollArea className="flex-grow">
+                            <div className="p-8">
+                                <LogSoulForm 
+                                    onSoulLogged={() => { setIsLogSoulOpen(false); }} 
+                                    fellowships={[]} 
+                                    campaigns={[]} 
+                                    defaultFellowship={fellowship?.groupType === 'Fellowship' ? fellowship : undefined}
+                                    defaultAssociation={fellowship?.groupType === 'Association' ? fellowship : undefined}
+                                />
+                            </div>
+                        </ScrollArea>
+                    </SheetContent>
+                </Sheet>
+            ) : (
+                <Dialog open={isLogSoulOpen} onOpenChange={setIsLogSoulOpen}>
+                    <DialogContent className="sm:max-w-lg">
+                        <DialogHeader>
+                            <DialogTitle>Log Convert to {fellowship.name}</DialogTitle>
+                            <DialogDescription>Record a new life won. This convert will be automatically assigned to this group.</DialogDescription>
+                        </DialogHeader>
+                        <div className="max-h-[70vh] overflow-y-auto pr-2">
+                            <LogSoulForm 
+                                onSoulLogged={() => { setIsLogSoulOpen(false); }} 
+                                fellowships={[]} 
+                                campaigns={[]} 
+                                defaultFellowship={fellowship?.groupType === 'Fellowship' ? fellowship : undefined}
+                                defaultAssociation={fellowship?.groupType === 'Association' ? fellowship : undefined}
+                            />
+                        </div>
+                    </DialogContent>
+                </Dialog>
+            )}
 
             <AlertDialog open={!!memberToRemove} onOpenChange={(open) => !open && setMemberToRemove(null)}>
                 <AlertDialogContent className="rounded-3xl p-8">

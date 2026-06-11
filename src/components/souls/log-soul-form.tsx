@@ -55,11 +55,21 @@ type LogSoulFormProps = {
   onSoulLogged: () => void;
   defaultCampaign?: Campaign;
   defaultRelationship?: SoulRelationship;
+  defaultFellowship?: Fellowship;
+  defaultAssociation?: Fellowship;
   fellowships: Fellowship[];
   campaigns: Campaign[];
 };
 
-export function LogSoulForm({ onSoulLogged, defaultCampaign, defaultRelationship, fellowships, campaigns }: LogSoulFormProps) {
+export function LogSoulForm({ 
+    onSoulLogged, 
+    defaultCampaign, 
+    defaultRelationship, 
+    defaultFellowship, 
+    defaultAssociation,
+    fellowships, 
+    campaigns 
+}: LogSoulFormProps) {
   const { toast } = useToast();
   const { user, loading: userLoading } = useUser();
   const firestore = useFirestore();
@@ -142,6 +152,11 @@ export function LogSoulForm({ onSoulLogged, defaultCampaign, defaultRelationship
       phone: values.phone || null,
       church: values.church || null,
       sourceDetails: values.sourceDetails || null,
+      // Auto-assignment from props
+      fellowshipId: defaultFellowship?.id || null,
+      fellowshipName: defaultFellowship?.name || null,
+      associationId: defaultAssociation?.id || null,
+      associationName: defaultAssociation?.name || null,
     };
     
     const locationWon: { [key: string]: any } = {
