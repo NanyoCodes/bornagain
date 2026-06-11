@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useMemo, useRef } from 'react';
@@ -790,7 +789,7 @@ export default function FellowshipPageClient() {
                     </Card>
                 </div>
 
-                <div className="space-y-8 flex flex-col px-4 sm:px-0">
+                <div className="space-y-8 flex flex-col px-4 sm:px-0 pb-12 sm:pb-0">
                     <Card className="rounded-[1.5rem] sm:rounded-[2.5rem] shadow-sm border-none bg-background border border-muted-foreground/10 overflow-hidden border-b-8 border-b-primary/10">
                         <CardHeader className="p-6 sm:p-8 pb-3 sm:pb-4">
                             <CardTitle className="text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2.5"><Calendar className="h-4 w-4 text-primary"/> Gathering Details</CardTitle>
